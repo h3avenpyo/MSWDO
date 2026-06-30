@@ -8,6 +8,9 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Instrument Sans', sans-serif;
             background-color: #F8FAFC; /* Clean off-white */
@@ -27,8 +30,9 @@
         }
         .portal-container {
             width: 100%;
-            max-width: 56rem;
+            max-width: 72rem;
             transition: max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0 auto;
         }
         .portal-container.login-mode {
             max-width: 80rem;
@@ -92,32 +96,42 @@
             line-height: 1.5;
         }
 
-        /* Roles Grid */
         .roles-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
             margin-top: 1rem;
+            width: 100%;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
+            .roles-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .portal-container.login-mode {
+                gap: 2rem;
+            }
+        }
+        @media (max-width: 640px) {
             .roles-grid {
                 grid-template-columns: 1fr;
             }
             .portal-container.login-mode {
                 flex-direction: column;
-                gap: 2rem;
             }
         }
         .role-card {
             background: #FFFFFF;
             border: 1px solid #E2E8F0;
             border-radius: 0.75rem;
-            padding: 2.25rem 1.75rem;
+            padding: 1.5rem;
             text-align: center;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            aspect-ratio: 1 / 1;
+            min-width: 0;
             transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease;
         }
         .role-card:hover {
@@ -291,19 +305,7 @@
         .submit-button:active {
             transform: translateY(1px);
         }
-        .back-to-site {
-            text-align: center;
-            margin-top: 1.5rem;
-        }
-        .back-link {
-            font-size: 0.875rem;
-            color: #64748B;
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-        .back-link:hover {
-            color: #1A237E;
-        }
+
 
         /* Loading Overlay */
         .loading-overlay {
@@ -326,46 +328,87 @@
         .skeleton {
             background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
             background-size: 200% 100%;
-            animation: shimmer 2s infinite;
+            animation: shimmer 1.5s infinite linear;
             border-radius: 0.5rem;
         }
         @keyframes shimmer {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
         .skeleton-wrapper {
             width: 100%;
-            max-width: 56rem;
+            max-width: 72rem;
             margin: 0 auto;
             padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .skeleton-logo {
             width: 6rem;
             height: 6rem;
             border-radius: 50%;
-            margin: 0 auto 1rem;
+            margin-bottom: 1rem;
         }
         .skeleton-title {
-            width: 80%;
-            height: 2.5rem;
-            margin: 0 auto 0.5rem;
+            width: 24rem;
+            max-width: 80%;
+            height: 2.25rem;
+            margin-bottom: 0.5rem;
         }
         .skeleton-subtitle {
-            width: 60%;
+            width: 30rem;
+            max-width: 60%;
             height: 1rem;
-            margin: 0 auto 3rem;
+            margin-bottom: 3rem;
         }
         .skeleton-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
+            width: 100%;
         }
-        .skeleton-card {
-            height: 12rem;
+        @media (max-width: 1024px) {
+            .skeleton-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 640px) {
+            .skeleton-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .skeleton-card-container {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 1 / 1;
+            min-width: 0;
+        }
+        .skeleton-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .skeleton-text-1 {
+            width: 80%;
+            height: 1.125rem;
+            margin-bottom: 0.75rem;
+        }
+        .skeleton-text-2 {
+            width: 95%;
+            height: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        .skeleton-text-3 {
+            width: 70%;
+            height: 0.875rem;
         }
     </style>
 </head>
@@ -377,9 +420,30 @@
             <div class="skeleton skeleton-title"></div>
             <div class="skeleton skeleton-subtitle"></div>
             <div class="skeleton-grid">
-                <div class="skeleton skeleton-card"></div>
-                <div class="skeleton skeleton-card"></div>
-                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton-card-container">
+                    <div class="skeleton skeleton-icon"></div>
+                    <div class="skeleton skeleton-text-1"></div>
+                    <div class="skeleton skeleton-text-2"></div>
+                    <div class="skeleton skeleton-text-3"></div>
+                </div>
+                <div class="skeleton-card-container">
+                    <div class="skeleton skeleton-icon"></div>
+                    <div class="skeleton skeleton-text-1"></div>
+                    <div class="skeleton skeleton-text-2"></div>
+                    <div class="skeleton skeleton-text-3"></div>
+                </div>
+                <div class="skeleton-card-container">
+                    <div class="skeleton skeleton-icon"></div>
+                    <div class="skeleton skeleton-text-1"></div>
+                    <div class="skeleton skeleton-text-2"></div>
+                    <div class="skeleton skeleton-text-3"></div>
+                </div>
+                <div class="skeleton-card-container">
+                    <div class="skeleton skeleton-icon"></div>
+                    <div class="skeleton skeleton-text-1"></div>
+                    <div class="skeleton skeleton-text-2"></div>
+                    <div class="skeleton skeleton-text-3"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -456,10 +520,7 @@
             </div>
         </div>
 
-        <!-- Back Link -->
-        <div class="back-to-site" id="backToSiteLink">
-            <a href="{{ url('/') }}" class="back-link">← Back to Homepage</a>
-        </div>
+
 
         <!-- Login Form Panel (Hidden initially) -->
         <div id="loginPanel" class="login-panel">
@@ -501,10 +562,7 @@
                     Sign In
                 </button>
 
-                <!-- Back Link -->
-                <div class="back-to-site">
-                    <a href="{{ url('/admin') }}" class="back-link">← Go back</a>
-                </div>
+
             </form>
         </div>
     </div>
