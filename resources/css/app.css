@@ -1,0 +1,94 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+:root {
+    --primary-blue: #1A237E;
+    --accent-red: #D32F2F;
+    --warm-gold: #FBC02D;
+    --off-white: #F8FAFC;
+    --dark-text: #1F2937;
+    --secondary-text: #6B7280;
+    --border-color: #E5E7EB;
+    --card-white: #FFFFFF;
+}
+
+body {
+    background-color: var(--off-white);
+    color: var(--dark-text);
+    font-family: var(--font-sans);
+}
+
+section {
+    scroll-margin-top: 6rem;
+}
+
+.text-primary {
+    color: var(--primary-blue);
+}
+
+.text-secondary {
+    color: var(--secondary-text);
+}
+
+.text-offwhite {
+    color: var(--off-white);
+}
+
+.bg-primary {
+    background-color: var(--primary-blue);
+}
+
+.bg-accent {
+    background-color: var(--accent-red);
+}
+
+.bg-warm-gold {
+    background-color: var(--warm-gold);
+}
+
+.bg-offwhite {
+    background-color: var(--off-white);
+}
+
+.text-accent {
+    color: var(--accent-red);
+}
+
+.border-primary {
+    border-color: var(--primary-blue);
+}
+
+:root {
+    color-scheme: light;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-sans);
+    background: linear-gradient(180deg, #f8fbff 0%, #f3f7fd 100%);
+}
+
+section {
+    scroll-margin-top: 7rem;
+}
+
+.welcome-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.welcome-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 45px -20px rgba(21, 61, 107, 0.25);
+}
