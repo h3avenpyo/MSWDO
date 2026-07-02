@@ -345,9 +345,9 @@ Providing quality welfare services for every Silangueño.
 
 </div>
 
-<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-14">
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-14 justify-items-center mx-auto max-w-4xl">
 
-<div class="bg-card-white rounded-2xl shadow-lg p-8 hover:-translate-y-2 transition">
+<div class="bg-card-white rounded-2xl shadow-lg p-8 hover:-translate-y-2 transition flex flex-col items-center text-center">
 
 <div class="text-5xl mb-4"></div>
 
@@ -365,37 +365,21 @@ Emergency and medical financial support for qualified residents.
 
 </div>
 
-<div class="welcome-card bg-card-white rounded-2xl shadow-lg p-8">
+
+
+<div class="bg-card-white rounded-2xl shadow-lg p-8 hover:-translate-y-2 transition flex flex-col items-center text-center">
 
 <div class="text-5xl mb-4"></div>
 
 <h3 class="font-bold text-xl">
 
-VAWC
+Social Case Study
 
 </h3>
 
 <p class="text-secondary mt-3">
 
-Violence Against Women and Children protection and intervention.
-
-</p>
-
-</div>
-
-<div class="welcome-card bg-card-white rounded-2xl shadow-lg p-8">
-
-<div class="text-5xl mb-4"></div>
-
-<h3 class="font-bold text-xl">
-
-BCPC
-
-</h3>
-
-<p class="text-secondary mt-3">
-
-Barangay Council for the Protection of Children services.
+Social case study services for families in need.
 
 </p>
 
@@ -403,7 +387,7 @@ Barangay Council for the Protection of Children services.
 
 
 
-<div class="welcome-card bg-card-white rounded-2xl shadow-lg p-8">
+<div class="bg-card-white rounded-2xl shadow-lg p-8 hover:-translate-y-2 transition flex flex-col items-center text-center">
 
 <div class="text-5xl mb-4"></div>
 
