@@ -131,6 +131,7 @@
         .stat-card {
             padding: 1.5rem;
             display: flex;
+            flex-direction: row;
             align-items: center;
             justify-content: space-between;
         }
