@@ -73,7 +73,14 @@ class DashboardController extends Controller
     public function storeOfficer(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', function ($attribute, $value, $fail) {
+                $exists = User::on('mswdo_admin')
+                    ->whereRaw('LOWER(name) = ?', [strtolower($value)])
+                    ->exists();
+                if ($exists) {
+                    $fail('An officer with this name already exists.');
+                }
+            }],
             'email' => ['required', 'email', 'unique:mswdo_admin.users,email'],
             'password' => ['required', 'confirmed', 'min:8'],
             'role' => ['required', 'string', 'max:255'],

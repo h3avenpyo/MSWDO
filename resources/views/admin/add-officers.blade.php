@@ -447,7 +447,17 @@
             <p class="text-muted small mb-4">Register a new social worker or administrator to access the MSWDO platform.</p>
 
             @if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
+                <div class="alert alert-success" id="successAlert">{{ session('success') }}</div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-danger" id="errorAlert">
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
             @endif
 
             <form method="POST" action="{{ route('admin.officers.store') }}">
@@ -455,26 +465,26 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Full Name</label>
-                        <input type="text" name="name" class="form-control" placeholder="Enter full name" required>
+                        <input type="text" name="name" class="form-control" placeholder="Enter full name" value="{{ old('name') }}" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Email Address</label>
-                        <input type="email" name="email" class="form-control" placeholder="Enter email address" required>
+                        <input type="email" name="email" class="form-control" placeholder="Enter email address" value="{{ old('email') }}" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Role / Assignment</label>
                         <div class="select-dropdown-wrap">
                             <select class="form-select" name="role" id="roleSelect" required>
                                 <option value="" disabled selected>▼ Select Role / Assignment</option>
-                                <option value="Financial assistance officer">Financial assistance officer</option>
-                                <option value="Senior Citizen officer">Senior Citizen officer</option>
+                                <option value="Financial assistance officer" {{ old('role') == 'Financial assistance officer' ? 'selected' : '' }}>Financial assistance officer</option>
+                                <option value="Senior Citizen officer" {{ old('role') == 'Senior Citizen officer' ? 'selected' : '' }}>Senior Citizen officer</option>
                             </select>
                         </div>
                         <p class="select-hint"><i class="fas fa-info-circle"></i> Click to open the dropdown and choose a role</p>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Contact Number</label>
-                        <input type="text" name="phone" class="form-control" placeholder="e.g. 0917XXXXXXX">
+                        <input type="text" name="phone" class="form-control" placeholder="e.g. 0917XXXXXXX" value="{{ old('phone') }}">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Password</label>
@@ -497,8 +507,8 @@
                     <div class="col-md-6">
                         <label class="form-label">Status</label>
                         <select class="form-select" name="status" required>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
                     </div>
                     <div class="col-12 mt-4 text-end">
@@ -664,6 +674,31 @@
             btn.title = 'Show password';
         }
     }
+
+    // Auto-hide success alert after 3 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const successAlert = document.getElementById('successAlert');
+        if (successAlert) {
+            setTimeout(function() {
+                successAlert.style.transition = 'opacity 0.5s ease';
+                successAlert.style.opacity = '0';
+                setTimeout(function() {
+                    successAlert.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
+
+        const errorAlert = document.getElementById('errorAlert');
+        if (errorAlert) {
+            setTimeout(function() {
+                errorAlert.style.transition = 'opacity 0.5s ease';
+                errorAlert.style.opacity = '0';
+                setTimeout(function() {
+                    errorAlert.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
+    });
 </script>
 </body>
 </html>
