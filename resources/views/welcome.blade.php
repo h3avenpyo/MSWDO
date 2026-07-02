@@ -349,7 +349,7 @@ Providing quality welfare services for every Silangueño.
 
 <div class="bg-card-white rounded-2xl shadow-lg p-8 hover:-translate-y-2 transition flex flex-col items-center text-center">
 
-<div class="text-5xl mb-4"></div>
+<div class="text-5xl mb-4"> </div>
 
 <h3 class="font-bold text-xl">
 
