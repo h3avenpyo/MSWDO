@@ -11,11 +11,16 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $officers = User::on('mswdo_admin')
+            ->where('email', '!=', 'admin@mswdo.test')
+            ->orderByDesc('created_at')
+            ->get();
+
         $data = [
             'totalCases' => 0,
             'pendingCases' => 0,
             'resolvedCases' => 0,
-            'totalUsers' => 0,
+            'totalUsers' => $officers->count(),
             'staffPerformance' => [],
             'recentActivities' => [],
             'casesRequiringAttention' => [],
@@ -33,6 +38,7 @@ class DashboardController extends Controller
                 'generatedReports' => 0,
                 'financialReleased' => 0,
             ],
+            'officers' => $officers,
         ];
 
         $data['caseDistribution'] = [];

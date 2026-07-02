@@ -135,14 +135,21 @@
             justify-content: space-between;
         }
 
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
         .stat-icon {
-            width: 60px;
-            height: 60px;
+            width: 56px;
+            height: 56px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
+            flex-shrink: 0;
         }
 
         .stat-icon.primary { background-color: rgba(37, 99, 235, 0.1); color: var(--primary); }
@@ -154,12 +161,14 @@
             font-size: 2rem;
             font-weight: 700;
             margin: 0;
+            line-height: 1;
         }
 
         .stat-label {
             color: #6B7280;
             font-size: 0.875rem;
-            margin: 0;
+            margin: 0 0 0.5rem 0;
+            font-weight: 500;
         }
 
         .stat-change {
@@ -301,21 +310,7 @@
                 </div>
                 <div class="d-flex align-items-center">
                     <div class="me-4 text-muted small" id="currentDateTime"></div>
-                    <div class="position-relative me-3">
-                        <i class="fas fa-bell text-muted" style="font-size: 1.25rem;"></i>
-                        <span class="notification-badge">5</span>
-                    </div>
-                    <div class="dropdown">
-                        <button class="btn btn-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
-                            <div class="activity-avatar" style="width: 35px; height: 35px; font-size: 0.875rem;">AD</div>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="/admin"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
-                        </ul>
-                    </div>
+                    <div class="activity-avatar" style="width: 35px; height: 35px; font-size: 0.875rem;">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
                 </div>
             </div>
         </nav>
@@ -325,46 +320,100 @@
             <!-- Overview Cards -->
             <div class="row mb-4">
                 <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card stat-card animate-fade-in">
-                        <div>
-                            <p class="stat-label">Total Cases</p>
-                            <h3 class="stat-value counter" data-target="{{ $totalCases }}">0</h3>
-                        </div>
-                        <div class="stat-icon primary">
-                            <i class="fas fa-folder"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card stat-card animate-fade-in delay-1">
-                        <div>
-                            <p class="stat-label">Pending Cases</p>
-                            <h3 class="stat-value counter" data-target="{{ $pendingCases }}">0</h3>
-                        </div>
-                        <div class="stat-icon warning">
-                            <i class="fas fa-clock"></i>
+                    <div class="card animate-fade-in" style="padding: 0;">
+                        <div style="display: flex; align-items: center; padding: 1.5rem;">
+                            <div style="width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background-color: rgba(37, 99, 235, 0.1); color: #1A237E; flex-shrink: 0; margin-right: 1rem;">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                            <div style="display: flex; flex-direction: column; justify-content: center;">
+                                <p style="color: #6B7280; font-size: 0.875rem; margin: 0 0 0.25rem 0; font-weight: 500;">Total Cases</p>
+                                <h3 class="counter" data-target="{{ $totalCases }}" style="font-size: 2rem; font-weight: 700; margin: 0; line-height: 1;">0</h3>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card stat-card animate-fade-in delay-2">
-                        <div>
-                            <p class="stat-label">Resolved Cases</p>
-                            <h3 class="stat-value counter" data-target="{{ $resolvedCases }}">0</h3>
-                        </div>
-                        <div class="stat-icon success">
-                            <i class="fas fa-check-circle"></i>
+                    <div class="card animate-fade-in delay-1" style="padding: 0;">
+                        <div style="display: flex; align-items: center; padding: 1.5rem;">
+                            <div style="width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background-color: rgba(245, 158, 11, 0.1); color: #FBC02D; flex-shrink: 0; margin-right: 1rem;">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div style="display: flex; flex-direction: column; justify-content: center;">
+                                <p style="color: #6B7280; font-size: 0.875rem; margin: 0 0 0.25rem 0; font-weight: 500;">Pending Cases</p>
+                                <h3 class="counter" data-target="{{ $pendingCases }}" style="font-size: 2rem; font-weight: 700; margin: 0; line-height: 1;">0</h3>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card stat-card animate-fade-in delay-3">
-                        <div>
-                            <p class="stat-label">Total Users</p>
-                            <h3 class="stat-value counter" data-target="{{ $totalUsers }}">0</h3>
+                    <div class="card animate-fade-in delay-2" style="padding: 0;">
+                        <div style="display: flex; align-items: center; padding: 1.5rem;">
+                            <div style="width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background-color: rgba(20, 184, 166, 0.1); color: #6B7280; flex-shrink: 0; margin-right: 1rem;">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div style="display: flex; flex-direction: column; justify-content: center;">
+                                <p style="color: #6B7280; font-size: 0.875rem; margin: 0 0 0.25rem 0; font-weight: 500;">Resolved Cases</p>
+                                <h3 class="counter" data-target="{{ $resolvedCases }}" style="font-size: 2rem; font-weight: 700; margin: 0; line-height: 1;">0</h3>
+                            </div>
                         </div>
-                        <div class="stat-icon info">
-                            <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card animate-fade-in delay-3" style="padding: 0;">
+                        <div style="display: flex; align-items: center; padding: 1.5rem;">
+                            <div style="width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background-color: rgba(37, 99, 235, 0.1); color: #1A237E; flex-shrink: 0; margin-right: 1rem;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div style="display: flex; flex-direction: column; justify-content: center;">
+                                <p style="color: #6B7280; font-size: 0.875rem; margin: 0 0 0.25rem 0; font-weight: 500;">Total Users</p>
+                                <h3 class="counter" data-target="{{ $totalUsers }}" style="font-size: 2rem; font-weight: 700; margin: 0; line-height: 1;">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Officers Table -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card p-4 animate-fade-in">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h6 class="mb-0">Officers Directory</h6>
+                            <a href="/admin/add-officers" class="btn btn-sm btn-primary">Add Officer</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Contact</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($officers as $officer)
+                                    <tr>
+                                        <td>{{ $officer->name }}</td>
+                                        <td>{{ $officer->email }}</td>
+                                        <td>{{ $officer->role }}</td>
+                                        <td>{{ $officer->phone ?? '-' }}</td>
+                                        <td>
+                                            @if($officer->status == 'active')
+                                                <span class="badge badge-low">Active</span>
+                                            @else
+                                                <span class="badge badge-high">Inactive</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">No officers created yet.</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
