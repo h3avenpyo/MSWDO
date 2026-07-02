@@ -401,23 +401,7 @@ Barangay Council for the Protection of Children services.
 
 </div>
 
-<div class="welcome-card bg-card-white rounded-2xl shadow-lg p-8">
 
-<div class="text-5xl mb-4"></div>
-
-<h3 class="font-bold text-xl">
-
-Social Case Study
-
-</h3>
-
-<p class="text-secondary mt-3">
-
-Assessment and support planning for families in need.
-
-</p>
-
-</div>
 
 <div class="welcome-card bg-card-white rounded-2xl shadow-lg p-8">
 
@@ -1337,7 +1321,6 @@ View Services
                     <li>BCPC</li>
                     <li>Senior Citizens</li>
                     <!-- <li>Solo Parent</li> -->
-                    <li>Social Case Study</li>
                 </ul>
 
             </div>

@@ -536,7 +536,7 @@
                 <p class="login-subtitle">Please enter your credentials below.</p>
             </div>
 
-            <form id="loginForm" onsubmit="handleLogin(event)">
+            <form id="loginForm" method="POST" action="{{ route('admin.login') }}" onsubmit="handleLogin(event)">
                 @csrf
                 <input type="hidden" id="selectedRoleInput" name="role" value="">
 
@@ -576,10 +576,13 @@
         });
 
         function handleLogin(event) {
-            event.preventDefault();
             const role = document.getElementById('selectedRoleInput').value;
-            // Bypass authentication and redirect to dashboard
-            window.location.href = '/admin/dashboard';
+            if (!role) {
+                event.preventDefault();
+                alert('Please select a role first.');
+                return;
+            }
+            return true;
         }
 
         function selectRole(roleName) {

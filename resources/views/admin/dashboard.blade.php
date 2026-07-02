@@ -282,7 +282,6 @@
             <li><a href="/admin/dashboard" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
             <li><a href="/admin/statistics"><i class="fas fa-chart-line"></i> Statistics</a></li>
             <li><a href="#"><i class="fas fa-hand-holding-usd"></i> Financial Assistance</a></li>
-            <li><a href="#"><i class="fas fa-file-alt"></i> Social Case Study</a></li>
             <li><a href="#"><i class="fas fa-user-friends"></i> Senior Citizen</a></li>
             <li><a href="/admin/add-officers"><i class="fas fa-user-shield"></i> Add Officers</a></li>
             <li><a href="/admin"><i class="fas fa-sign-out-alt"></i> Logout</a></li>

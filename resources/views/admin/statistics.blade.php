@@ -413,7 +413,6 @@
         <li><a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
         <li><a href="/admin/statistics" class="active"><i class="fas fa-chart-line"></i> Statistics</a></li>
         <li><a href="#"><i class="fas fa-hand-holding-usd"></i> Financial Assistance</a></li>
-        <li><a href="#"><i class="fas fa-file-alt"></i> Social Case Study</a></li>
         <li><a href="#"><i class="fas fa-user-friends"></i> Senior Citizen</a></li>
         <li><a href="/admin/add-officers"><i class="fas fa-user-shield"></i> Add Officers</a></li>
         <li><a href="/admin"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
@@ -465,7 +464,6 @@
             @php
                 $totalCases = array_sum($barangayStats);
                 $fa  = $caseDistribution['Financial Assistance'] ?? 0;
-                $scs = $caseDistribution['Social Case Study'] ?? 0;
                 $sc  = $caseDistribution['Senior Citizen'] ?? 0;
                 $topBarangay = array_search(max($barangayStats), $barangayStats);
             @endphp
@@ -484,20 +482,13 @@
                 </div>
             </div>
             <div class="kpi-card d3">
-                <div class="kpi-icon amber"><i class="fas fa-file-alt"></i></div>
-                <div>
-                    <p class="kpi-value">{{ number_format($scs) }}</p>
-                    <p class="kpi-label">Social Case Study</p>
-                </div>
-            </div>
-            <div class="kpi-card d4">
                 <div class="kpi-icon violet"><i class="fas fa-user-friends"></i></div>
                 <div>
                     <p class="kpi-value">{{ number_format($sc) }}</p>
                     <p class="kpi-label">Senior Citizen</p>
                 </div>
             </div>
-            <div class="kpi-card d5">
+            <div class="kpi-card d4">
                 <div class="kpi-icon blue"><i class="fas fa-map-marker-alt"></i></div>
                 <div>
                     <p class="kpi-value" style="font-size:1.1rem;">{{ $topBarangay }}</p>
@@ -518,7 +509,6 @@
                         <select class="filter-select" id="barangayFilterSelect" onchange="filterBarangayChart(this.value)">
                             <option value="all">All Cases</option>
                             <option value="fa">Financial Assistance</option>
-                            <option value="scs">Social Case Study</option>
                             <option value="sc">Senior Citizen</option>
                         </select>
                     </div>
@@ -541,7 +531,7 @@
                     <!-- Legend detail -->
                     <div class="mt-4">
                         @php
-                            $colors = ['#1A237E','#FBC02D','#D32F2F'];
+                            $colors = ['#1A237E','#D32F2F'];
                             $i = 0;
                             $total = array_sum($caseDistribution);
                         @endphp
@@ -608,23 +598,19 @@
                 arsort($barangayStats);
                 $grandTotal = array_sum($barangayStats);
                 $grandFA    = 0;
-                $grandSCS   = 0;
                 $grandSC    = 0;
 
                 // In production, replace with real DB queries per barangay
                 $brgyData = [];
                 foreach ($barangayStats as $brgy => $total_b) {
-                    $fa_b  = (int) round($total_b * 0.55);
-                    $scs_b = (int) round($total_b * 0.30);
-                    $sc_b  = $total_b - $fa_b - $scs_b;
+                    $fa_b  = (int) round($total_b * 0.60);
+                    $sc_b  = $total_b - $fa_b;
                     $grandFA  += $fa_b;
-                    $grandSCS += $scs_b;
                     $grandSC  += $sc_b;
 
                     $brgyData[] = [
                         'name'  => $brgy,
                         'fa'    => $fa_b,
-                        'scs'   => $scs_b,
                         'sc'    => $sc_b,
                         'total' => $total_b,
                     ];
@@ -641,9 +627,6 @@
                             <th class="sortable text-end" onclick="sortTable('fa')">
                                 Fin. Assistance <i class="fas fa-sort sort-icon" id="sort-fa"></i>
                             </th>
-                            <th class="sortable text-end" onclick="sortTable('scs')">
-                                Social Case Study <i class="fas fa-sort sort-icon" id="sort-scs"></i>
-                            </th>
                             <th class="sortable text-end" onclick="sortTable('sc')">
                                 Senior Citizen <i class="fas fa-sort sort-icon" id="sort-sc"></i>
                             </th>
@@ -657,7 +640,6 @@
                         <tr class="brgy-row"
                             data-name="{{ strtolower($row['name']) }}"
                             data-fa="{{ $row['fa'] }}"
-                            data-scs="{{ $row['scs'] }}"
                             data-sc="{{ $row['sc'] }}"
                             data-total="{{ $row['total'] }}">
 
@@ -667,7 +649,6 @@
                             </td>
 
                             <td class="num">{{ number_format($row['fa']) }}</td>
-                            <td class="num">{{ number_format($row['scs']) }}</td>
                             <td class="num">{{ number_format($row['sc']) }}</td>
 
                             <td class="num" style="font-weight:700; color: var(--text);">
@@ -680,7 +661,6 @@
                         <tr>
                             <td style="font-weight:600; color: var(--muted);">GRAND TOTAL</td>
                             <td class="num">{{ number_format($grandFA) }}</td>
-                            <td class="num">{{ number_format($grandSCS) }}</td>
                             <td class="num">{{ number_format($grandSC) }}</td>
                             <td class="num" style="font-size:.9rem;">{{ number_format($grandTotal) }}</td>
                         </tr>
@@ -772,7 +752,7 @@ new Chart(distCtx, {
         labels: Object.keys(distRaw),
         datasets: [{
             data: Object.values(distRaw),
-            backgroundColor: ['#1A237E','#FBC02D','#D32F2F'],
+            backgroundColor: ['#1A237E','#D32F2F'],
             borderWidth: 0,
             hoverOffset: 8
         }]
@@ -805,16 +785,6 @@ new Chart(trendCtx, {
                 data: [65, 72, 80, 78, 88, 92],
                 borderColor: '#1A237E',
                 backgroundColor: 'rgba(26,35,126,.08)',
-                tension: .4,
-                fill: true,
-                pointRadius: 5,
-                pointHoverRadius: 7,
-            },
-            {
-                label: 'Social Case Study',
-                data: [42, 50, 48, 55, 58, 62],
-                borderColor: '#FBC02D',
-                backgroundColor: 'rgba(251,192,45,.08)',
                 tension: .4,
                 fill: true,
                 pointRadius: 5,

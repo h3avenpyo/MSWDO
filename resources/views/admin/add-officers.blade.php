@@ -358,11 +358,14 @@
             flex-shrink: 0;
         }
         .pw-checklist li.met {
-            color: #059669;
+            color: #16a34a;
+            background: #f0fdf4;
+            border-radius: 6px;
+            padding: 0.15rem 0.35rem;
         }
         .pw-checklist li.met i {
-            background: #059669;
-            color: #fff;
+            background: #86efac;
+            color: #166534;
         }
         .pw-match-msg {
             font-size: .74rem;
@@ -443,23 +446,26 @@
             <h2 class="h5 fw-bold mb-1">Create Officer Account</h2>
             <p class="text-muted small mb-4">Register a new social worker or administrator to access the MSWDO platform.</p>
 
-            <form onsubmit="event.preventDefault(); alert('Success! Officer account has been created (Simulation)'); location.reload();">
+            @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
+            <form method="POST" action="{{ route('admin.officers.store') }}">
+                @csrf
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Full Name</label>
-                        <input type="text" class="form-control" placeholder="Enter full name" required>
+                        <input type="text" name="name" class="form-control" placeholder="Enter full name" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Email Address</label>
-                        <input type="email" class="form-control" placeholder="Enter email address" required>
+                        <input type="email" name="email" class="form-control" placeholder="Enter email address" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Role / Assignment</label>
                         <div class="select-dropdown-wrap">
-
-                            <select class="form-select" id="roleSelect" required>
-                                <option value="" disabled selected>&#9662; Select Role / Assignment</option>
-                                <option value="Social Case Study officer">Social Case Study officer</option>
+                            <select class="form-select" name="role" id="roleSelect" required>
+                                <option value="" disabled selected>▼ Select Role / Assignment</option>
                                 <option value="Financial assistance officer">Financial assistance officer</option>
                                 <option value="Senior Citizen officer">Senior Citizen officer</option>
                             </select>
@@ -468,35 +474,32 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Contact Number</label>
-                        <input type="text" class="form-control" placeholder="e.g. 0917XXXXXXX" required>
+                        <input type="text" name="phone" class="form-control" placeholder="e.g. 0917XXXXXXX">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Password</label>
-                        <div class="pw-input-wrap">
-                            <input type="password" class="form-control" id="passwordInput" placeholder="Create password" required oninput="checkPassword()">
-                            <button type="button" class="pw-toggle" onclick="togglePassword('passwordInput', this)" title="Show password">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                        <div class="pw-feedback" id="pwFeedback" style="display:none;">
+                        <input type="password" id="passwordInput" name="password" class="form-control" placeholder="Create password" required oninput="checkPassword()">
+                        <div id="pwFeedback" class="mt-2" style="display:none;">
                             <ul class="pw-checklist">
-                                <li id="reqLength"><i class="fas fa-circle"></i> Min. 8 characters</li>
-                                <li id="reqUpper"><i class="fas fa-circle"></i> Uppercase letter</li>
-                                <li id="reqLower"><i class="fas fa-circle"></i> Lowercase letter</li>
-                                <li id="reqNumber"><i class="fas fa-circle"></i> Number (0-9)</li>
-                                <li id="reqSpecial"><i class="fas fa-circle"></i> Special character</li>
+                                <li id="reqLength"><i class="fas fa-circle"></i> At least 8 characters</li>
+                                <li id="reqUpper"><i class="fas fa-circle"></i> One uppercase letter</li>
+                                <li id="reqLower"><i class="fas fa-circle"></i> One lowercase letter</li>
+                                <li id="reqNumber"><i class="fas fa-circle"></i> One number</li>
+                                <li id="reqSpecial"><i class="fas fa-circle"></i> One special character</li>
                             </ul>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Confirm Password</label>
-                        <div class="pw-input-wrap">
-                            <input type="password" class="form-control" id="confirmPasswordInput" placeholder="Confirm password" required oninput="checkPasswordMatch()">
-                            <button type="button" class="pw-toggle" onclick="togglePassword('confirmPasswordInput', this)" title="Show password">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                        <div class="pw-match-msg" id="pwMatchMsg" style="display:none;"></div>
+                        <input type="password" id="confirmPasswordInput" name="password_confirmation" class="form-control" placeholder="Confirm password" required oninput="checkPassword()">
+                        <div id="pwMatchMsg" class="pw-match-msg" style="display:none;"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" name="status" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
                     </div>
                     <div class="col-12 mt-4 text-end">
                         <button type="button" class="btn btn-light me-2 border" onclick="location.href='/admin/dashboard'">Cancel</button>
@@ -532,86 +535,28 @@
                         </tr>
                     </thead>
                     <tbody id="officersTableBody">
-                        <tr class="brgy-row">
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="avatar-initial">MS</div>
-                                    <span class="fw-semibold">Maria Santos</span>
-                                </div>
-                            </td>
-                            <td>m.santos@silang.gov.ph</td>
-                            <td>Social Worker (Supervisor)</td>
-                            <td>+63 917 555 0192</td>
-                            <td><span class="status-badge badge-active">Active</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-link text-primary p-0 me-2" onclick="alert('Editing Maria Santos')"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-link text-danger p-0" onclick="alert('Deactivating account')"><i class="fas fa-ban"></i></button>
-                            </td>
-                        </tr>
-                        <tr class="brgy-row">
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="avatar-initial" style="background:#14B8A6;">JR</div>
-                                    <span class="fw-semibold">Juan Reyes</span>
-                                </div>
-                            </td>
-                            <td>j.reyes@silang.gov.ph</td>
-                            <td>Social Worker</td>
-                            <td>+63 918 555 0281</td>
-                            <td><span class="status-badge badge-active">Active</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-link text-primary p-0 me-2" onclick="alert('Editing Juan Reyes')"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-link text-danger p-0" onclick="alert('Deactivating account')"><i class="fas fa-ban"></i></button>
-                            </td>
-                        </tr>
-                        <tr class="brgy-row">
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="avatar-initial" style="background:#F59E0B;">AC</div>
-                                    <span class="fw-semibold">Ana Cruz</span>
-                                </div>
-                            </td>
-                            <td>a.cruz@silang.gov.ph</td>
-                            <td>Social Worker</td>
-                            <td>+63 919 555 0373</td>
-                            <td><span class="status-badge badge-active">Active</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-link text-primary p-0 me-2" onclick="alert('Editing Ana Cruz')"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-link text-danger p-0" onclick="alert('Deactivating account')"><i class="fas fa-ban"></i></button>
-                            </td>
-                        </tr>
-                        <tr class="brgy-row">
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="avatar-initial" style="background:#DC2626;">CM</div>
-                                    <span class="fw-semibold">Carlos Mendoza</span>
-                                </div>
-                            </td>
-                            <td>c.mendoza@silang.gov.ph</td>
-                            <td>Office Staff</td>
-                            <td>+63 920 555 0462</td>
-                            <td><span class="status-badge badge-active">Active</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-link text-primary p-0 me-2" onclick="alert('Editing Carlos Mendoza')"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-link text-danger p-0" onclick="alert('Deactivating account')"><i class="fas fa-ban"></i></button>
-                            </td>
-                        </tr>
-                        <tr class="brgy-row">
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="avatar-initial" style="background:#8B5CF6;">LG</div>
-                                    <span class="fw-semibold">Liza Garcia</span>
-                                </div>
-                            </td>
-                            <td>l.garcia@silang.gov.ph</td>
-                            <td>Office Staff</td>
-                            <td>+63 921 555 0551</td>
-                            <td><span class="status-badge badge-inactive">Inactive</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-link text-primary p-0 me-2" onclick="alert('Editing Liza Garcia')"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-link text-success p-0" onclick="alert('Activating account')"><i class="fas fa-check"></i></button>
-                            </td>
-                        </tr>
+                        @forelse($officers as $officer)
+                            <tr class="brgy-row">
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-initial">{{ strtoupper(substr($officer->name ?? 'O', 0, 2)) }}</div>
+                                        <span class="fw-semibold">{{ $officer->name ?? 'Officer' }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ $officer->email ?? '-' }}</td>
+                                <td>{{ $officer->role ?? '-' }}</td>
+                                <td>{{ $officer->phone ?? '-' }}</td>
+                                <td><span class="status-badge badge-active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-link text-primary p-0 me-2" type="button"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-link text-danger p-0" type="button"><i class="fas fa-ban"></i></button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">No officers yet.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
