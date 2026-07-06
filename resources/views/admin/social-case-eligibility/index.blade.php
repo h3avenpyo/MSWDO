@@ -6,6 +6,8 @@
     <title>Eligibility Validation | MSWDO Social Case Study</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary: #1A237E;
@@ -48,7 +50,7 @@
             <li><a href="/admin/social-case" class="active"><i class="fas fa-clipboard-list"></i> Eligibility Validation</a></li>
             <li><a href="/admin/statistics"><i class="fas fa-chart-line"></i> Statistics</a></li>
             <li><a href="/admin/add-officers"><i class="fas fa-user-shield"></i> Add Officers</a></li>
-            <li><a href="/admin"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </div>
 
@@ -213,6 +215,35 @@
             }).join('');
 
             resultArea.innerHTML = rows;
+        }
+    </script>
+
+    <!-- Hidden form for secure POST logout -->
+    <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+        @csrf
+    </form>
+
+    <script>
+        function confirmLogout(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you really want to log out?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#1A237E',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, log out',
+                cancelButtonText: 'Cancel',
+                background: '#ffffff',
+                customClass: {
+                    popup: 'rounded-4 shadow-lg'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('logout-form').submit();
+                }
+            });
         }
     </script>
 </body>
