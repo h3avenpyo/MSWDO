@@ -225,9 +225,9 @@
             <li><a href="/admin/senior" class="active"><i class="fas fa-user-friends"></i> Dashboard</a></li>
             <li><a href="/admin/senior/registration"><i class="fas fa-user-plus"></i> Registration</a></li>
             <li><a href="/admin/senior/masterlist"><i class="fas fa-list"></i> Masterlist</a></li>
-            <li><a href="/admin/senior/birthdays"><i class="fas fa-birthday-cake"></i> Upcoming Birthday</a></li>
+            <li><a href="/admin/senior/birthdays"><i class="fas fa-birthday-cake"></i> Birthday Beneficiaries</a></li>
+            <li><a href="/admin/senior/statistics"><i class="fas fa-chart-bar"></i> Statistics</a></li>
             <li><a href="/admin/senior/reports"><i class="fas fa-file-alt"></i> Reports</a></li>
-            <li><a href="/admin/statistics"><i class="fas fa-chart-line"></i> Statistics</a></li>
             
             <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
@@ -296,54 +296,133 @@
                 </div>
             </div>
 
+            <!-- Birthday Notifications -->
+            @php
+                use App\Models\Senior\SeniorCitizenRecord;
+                $bdayToday = SeniorCitizenRecord::on('mswdo_senior')->where('status','active')->whereNotNull('birth_date')->whereRaw("MONTH(birth_date) = ? AND DAY(birth_date) = ?", [now()->format('n'), now()->format('j')])->count();
+                $bdayWeek = SeniorCitizenRecord::on('mswdo_senior')->where('status','active')->whereNotNull('birth_date')->where(function($q){ $s=now();$e=now()->addDays(7);$sMD=$s->format('m-d');$eMD=$e->format('m-d');if($sMD<=$eMD){$q->whereRaw("DATE_FORMAT(birth_date,'%m-%d') BETWEEN ? AND ?",[$sMD,$eMD]);}else{$q->whereRaw("DATE_FORMAT(birth_date,'%m-%d') >= ?",[$sMD])->orWhereRaw("DATE_FORMAT(birth_date,'%m-%d') <= ?",[$eMD]);}})->count();
+                $bdayNextMonth = SeniorCitizenRecord::on('mswdo_senior')->where('status','active')->whereNotNull('birth_date')->whereRaw("MONTH(birth_date) = ?", [now()->addMonth()->format('n')])->count();
+            @endphp
+            <a href="/admin/senior/birthdays" style="text-decoration: none;">
+                <div class="row g-2 mb-4">
+                    <div class="col-md-4">
+                        <div class="card animate-fade-in" style="padding: 0; border-left: 4px solid #DC2626; cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+                            <div style="display: flex; align-items: center; padding: 1rem 1.25rem;">
+                                <div style="width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; background: rgba(220,38,38,.1); color: #DC2626; flex-shrink: 0; margin-right: 1rem;"><i class="fas fa-birthday-cake"></i></div>
+                                <div><p style="color: #6B7280; font-size: 0.78rem; margin: 0 0 0.15rem 0; font-weight: 500;">🎂 Today's Birthdays</p><h3 style="font-size: 1.35rem; font-weight: 700; margin: 0; line-height: 1.2; color: var(--text);">{{ $bdayToday }}</h3></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card animate-fade-in delay-1" style="padding: 0; border-left: 4px solid #D97706; cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+                            <div style="display: flex; align-items: center; padding: 1rem 1.25rem;">
+                                <div style="width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; background: rgba(251,192,45,.15); color: #D97706; flex-shrink: 0; margin-right: 1rem;"><i class="fas fa-calendar-week"></i></div>
+                                <div><p style="color: #6B7280; font-size: 0.78rem; margin: 0 0 0.15rem 0; font-weight: 500;">📅 Next 7 Days</p><h3 style="font-size: 1.35rem; font-weight: 700; margin: 0; line-height: 1.2; color: var(--text);">{{ $bdayWeek }}</h3></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card animate-fade-in delay-2" style="padding: 0; border-left: 4px solid #1A237E; cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+                            <div style="display: flex; align-items: center; padding: 1rem 1.25rem;">
+                                <div style="width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; background: rgba(26,35,126,.08); color: var(--primary); flex-shrink: 0; margin-right: 1rem;"><i class="fas fa-calendar-alt"></i></div>
+                                <div><p style="color: #6B7280; font-size: 0.78rem; margin: 0 0 0.15rem 0; font-weight: 500;">🎉 Next Month</p><h3 style="font-size: 1.35rem; font-weight: 700; margin: 0; line-height: 1.2; color: var(--text);">{{ $bdayNextMonth }}</h3></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
             <!-- Recent Senior Citizen Records -->
             <div class="row mb-4">
                 <div class="col-12">
-                    <div class="card p-4 animate-fade-in">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h6 class="mb-0">Recent Senior Citizen Records</h6>
-                            <button class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i> Add New Record</button>
+                    <div class="card p-0 animate-fade-in" style="overflow: hidden;">
+                        <div class="d-flex justify-content-between align-items-center p-4 pb-0">
+                            <div>
+                                <h6 class="mb-1" style="font-weight: 700; color: var(--text);">Recent Senior Citizen Records</h6>
+                                <span class="text-muted small">Latest {{ $recentSeniors->count() }} registered seniors</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <div class="input-group input-group-sm" style="width: 220px;">
+                                    <span class="input-group-text bg-white border-end-0" style="border-color: var(--border);">
+                                        <i class="fas fa-search text-muted" style="font-size: 0.75rem;"></i>
+                                    </span>
+                                    <input type="text" class="form-control border-start-0 ps-0" placeholder="Search records..." style="border-color: var(--border); font-size: 0.85rem; box-shadow: none;" onkeyup="filterSeniorTable(this.value)" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+                                </div>
+                                <button class="btn btn-sm" style="background-color: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 0.8rem; box-shadow: 0 2px 6px rgba(26, 35, 126, 0.25);" onclick="window.location.href='/admin/senior/registration'">
+                                    <i class="fas fa-plus me-1"></i> Add New
+                                </button>
+                            </div>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Record Number</th>
-                                        <th>Full Name</th>
-                                        <th>Birth Date</th>
-                                        <th>OSCA ID</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($recentSeniors as $senior)
-                                    <tr>
-                                        <td>{{ $senior->record_number ?? '-' }}</td>
-                                        <td>{{ $senior->full_name ?? '-' }}</td>
-                                        <td>{{ $senior->birth_date ? \Carbon\Carbon::parse($senior->birth_date)->format('M d, Y') : '-' }}</td>
-                                        <td>{{ $senior->osca_id ?? '-' }}</td>
-                                        <td>
-                                            @if($senior->status == 'active')
-                                                <span class="badge badge-active">Active</span>
-                                            @else
-                                                <span class="badge badge-pending">Pending</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-link text-primary p-0 me-2" type="button"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-sm btn-link text-primary p-0 me-2" type="button"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-sm btn-link text-danger p-0" type="button"><i class="fas fa-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center text-muted">No senior citizen records found.</td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                        <div class="p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="seniorTable" style="margin-bottom: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Control No.</th>
+                                            <th>Full Name</th>
+                                            <th>Barangay</th>
+                                            <th>Sex / Age</th>
+                                            <th>Birth Date</th>
+                                            <th>Contact</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($recentSeniors as $index => $senior)
+                                        <tr>
+                                            <td style="color: #9CA3AF; font-weight: 600;">{{ $index + 1 }}</td>
+                                            <td><strong>{{ $senior->control_number ?? $senior->record_number ?? '-' }}</strong></td>
+                                            <td>
+                                                <div style="font-weight: 600;">{{ $senior->full_name ?? '-' }}</div>
+                                                <div class="text-muted" style="font-size: 0.8rem;">{{ $senior->address ? \Illuminate\Support\Str::limit($senior->address, 30) : '' }}</div>
+                                            </td>
+                                            <td>
+                                                @if($senior->barangay)
+                                                    <span class="badge" style="background: rgba(26, 35, 126, 0.1); color: var(--primary); font-weight: 500; padding: 0.35rem 0.65rem; font-size: 0.8rem;">{{ $senior->barangay }}</span>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($senior->sex)
+                                                    <span class="badge" style="background: var(--primary); color: white; border-radius: 50%; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; padding: 0; font-size: 0.7rem; font-weight: 700; margin-right: 0.3rem;">{{ $senior->sex == 'Male' ? 'M' : 'F' }}</span>
+                                                @endif
+                                                <strong>{{ $senior->age ?? '-' }}</strong>
+                                            </td>
+                                            <td>
+                                                @if($senior->birth_date)
+                                                    {{ \Carbon\Carbon::parse($senior->birth_date)->format('M d, Y') }}
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($senior->contact_number)
+                                                    <a href="tel:{{ $senior->contact_number }}" style="color: var(--primary); text-decoration: none; font-weight: 500;">{{ $senior->contact_number }}</a>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted py-5">
+                                                <i class="fas fa-inbox" style="font-size: 2rem; display: block; margin-bottom: 0.75rem; color: #D1D5DB;"></i>
+                                                No senior citizen records found.
+                                            </td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
+                        @if($recentSeniors->count() > 0)
+                        <div style="border-top: 1px solid var(--border); padding: 0.75rem 1.5rem; background: #F9FAFB; text-align: right;">
+                            <a href="/admin/senior/masterlist" style="text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.85rem; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+                                View All Records <i class="fas fa-arrow-right ms-1" style="font-size: 0.7rem;"></i>
+                            </a>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -352,6 +431,16 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Senior table filter
+        function filterSeniorTable(value) {
+            const filter = value.toLowerCase();
+            const rows = document.querySelectorAll('#seniorTable tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        }
+
         // Toggle Sidebar
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('show');

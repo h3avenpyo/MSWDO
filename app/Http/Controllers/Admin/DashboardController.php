@@ -57,16 +57,6 @@ class DashboardController extends Controller
         return view('admin.dashboard', $data);
     }
 
-    public function statistics()
-    {
-        $data = [
-            'caseDistribution' => [],
-            'barangayStats' => [],
-        ];
-
-        return view('admin.statistics', $data);
-    }
-
     public function financial()
     {
         return view('admin.financial');
@@ -100,6 +90,35 @@ class DashboardController extends Controller
         ];
 
         return view('admin.senior', $data);
+    }
+
+    public function seniorBirthdays()
+    {
+        $today = now();
+        $endDate = now()->addDays(30);
+        $todayMD = $today->format('m-d');
+        $endMD = $endDate->format('m-d');
+
+        $query = SeniorCitizenRecord::on('mswdo_senior')
+            ->where('status', 'active')
+            ->whereNotNull('birth_date')
+            ->orderByRaw("MONTH(birth_date), DAY(birth_date)");
+
+        if ($todayMD <= $endMD) {
+            $query->whereRaw("DATE_FORMAT(birth_date, '%m-%d') BETWEEN ? AND ?", [$todayMD, $endMD]);
+        } else {
+            $query->where(function ($q) use ($todayMD, $endMD) {
+                $q->whereRaw("DATE_FORMAT(birth_date, '%m-%d') >= ?", [$todayMD])
+                  ->orWhereRaw("DATE_FORMAT(birth_date, '%m-%d') <= ?", [$endMD]);
+            });
+        }
+
+        $celebrants = $query->get();
+
+        $todayFormatted = $today->format('M d, Y');
+        $endFormatted = $endDate->format('M d, Y');
+
+        return view('admin.senior-birthdays', compact('celebrants', 'todayFormatted', 'endFormatted'));
     }
 
     public function seniorRegistration()

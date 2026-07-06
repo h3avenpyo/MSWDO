@@ -185,9 +185,9 @@
         <li><a href="/admin/senior"><i class="fas fa-user-friends"></i> Dashboard</a></li>
         <li><a href="/admin/senior/registration" class="active"><i class="fas fa-user-plus"></i> Registration</a></li>
         <li><a href="/admin/senior/masterlist"><i class="fas fa-list"></i> Masterlist</a></li>
-        <li><a href="/admin/senior/birthdays"><i class="fas fa-birthday-cake"></i> Upcoming Birthday</a></li>
+        <li><a href="/admin/senior/birthdays"><i class="fas fa-birthday-cake"></i> Birthday Beneficiaries</a></li>
+        <li><a href="/admin/senior/statistics"><i class="fas fa-chart-bar"></i> Statistics</a></li>
         <li><a href="/admin/senior/reports"><i class="fas fa-file-alt"></i> Reports</a></li>
-        <li><a href="/admin/statistics"><i class="fas fa-chart-line"></i> Statistics</a></li>
         
         <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
     </ul>
