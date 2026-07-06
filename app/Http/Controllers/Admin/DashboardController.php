@@ -78,11 +78,19 @@ class DashboardController extends Controller
 
     public function addOfficers()
     {
+        // Check if officer was just created and pass to view
+        $officerCreated = session('officer_created', false);
+        
+        // Clear the flag after first visit
+        if ($officerCreated) {
+            session()->forget('officer_created');
+        }
+
         $officers = User::on('mswdo_admin')
             ->orderByDesc('created_at')
             ->get();
 
-        return view('admin.add-officers', compact('officers'));
+        return view('admin.add-officers', compact('officers', 'officerCreated'));
     }
 
     public function storeOfficer(Request $request)
@@ -112,6 +120,6 @@ class DashboardController extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect()->route('admin.add-officers')->with('success', 'Officer created successfully.');
+        return redirect()->route('admin.add-officers')->with('success', 'Officer created successfully.')->with('officer_created', true);
     }
 }

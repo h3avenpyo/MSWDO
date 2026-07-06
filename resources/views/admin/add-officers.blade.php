@@ -679,6 +679,23 @@
 
     // Auto-hide success alert after 3 seconds
     document.addEventListener('DOMContentLoaded', function() {
+        // Show success popup if officer was just created
+        @if($officerCreated ?? false)
+            Swal.fire({
+                title: 'Officer Added Successfully!',
+                // text: 'Officer created successfully',
+                icon: 'success',
+                confirmButtonColor: '#1A237E',
+                confirmButtonText: 'Continue',
+                background: '#ffffff',
+                customClass: {
+                    popup: 'rounded-4 shadow-lg'
+                },
+                timer: 3000,
+                timerProgressBar: true
+            });
+        @endif
+
         const successAlert = document.getElementById('successAlert');
         if (successAlert) {
             setTimeout(function() {
