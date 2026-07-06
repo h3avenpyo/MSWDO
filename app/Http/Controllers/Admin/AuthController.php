@@ -47,6 +47,7 @@ class AuthController extends Controller
             'admin_user_id' => $user->id,
             'admin_user_name' => $user->name,
             'admin_user_role' => $user->role,
+            'admin_just_logged_in' => true,
         ]);
 
         if ($user->role === 'Financial assistance officer') {

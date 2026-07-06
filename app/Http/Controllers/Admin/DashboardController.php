@@ -11,6 +11,14 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Check if just logged in and pass to view
+        $justLoggedIn = session('admin_just_logged_in', false);
+        
+        // Clear the just logged in flag after first dashboard visit
+        if ($justLoggedIn) {
+            session()->forget('admin_just_logged_in');
+        }
+
         $officers = User::on('mswdo_admin')
             ->where('email', '!=', 'admin@mswdo.test')
             ->orderByDesc('created_at')
@@ -39,6 +47,7 @@ class DashboardController extends Controller
                 'financialReleased' => 0,
             ],
             'officers' => $officers,
+            'justLoggedIn' => $justLoggedIn,
         ];
 
         $data['caseDistribution'] = [];
