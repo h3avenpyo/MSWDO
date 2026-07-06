@@ -536,9 +536,20 @@
                 <p class="login-subtitle">Please enter your credentials below.</p>
             </div>
 
-            <form id="loginForm" method="POST" action="{{ route('admin.login') }}" onsubmit="handleLogin(event)">
+            @if ($errors->any())
+                <div class="alert alert-danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 0.5rem; background-color: #FEE2E2; border: 1px solid #FECACA; color: #991B1B;">
+                    <ul style="margin: 0; padding-left: 1.25rem;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form id="loginForm" method="POST" action="{{ route('admin.login') }}">
                 @csrf
                 <input type="hidden" id="selectedRoleInput" name="role" value="">
+                <input type="hidden" name="_debug" value="1">
 
                 <div class="form-group">
                     <label for="email" class="form-label">Email Address</label>
@@ -575,15 +586,25 @@
             }, 1000);
         });
 
-        function handleLogin(event) {
+        // Add form submission debugging
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
             const role = document.getElementById('selectedRoleInput').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            console.log('Form submitting...');
+            console.log('Role:', role);
+            console.log('Email:', email);
+            console.log('Password length:', password.length);
+            
             if (!role) {
-                event.preventDefault();
+                e.preventDefault();
                 alert('Please select a role first.');
-                return;
+                return false;
             }
+            
             return true;
-        }
+        });
 
         function selectRole(roleName) {
             const container = document.getElementById('portalContainer');

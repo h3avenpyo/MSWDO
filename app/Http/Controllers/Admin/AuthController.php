@@ -40,7 +40,7 @@ class AuthController extends Controller
         $expectedRole = $roleMap[$request->role] ?? null;
 
         if ($expectedRole && $user->role !== $expectedRole) {
-            return back()->withErrors(['role' => 'This account is not authorized for the selected role.'])->withInput();
+            return back()->withErrors(['role' => "This account is not authorized for the selected role. User role: {$user->role}, Expected: {$expectedRole}"])->withInput();
         }
 
         session([

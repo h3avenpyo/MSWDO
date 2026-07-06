@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Senior\SeniorCitizenRecord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -73,7 +74,134 @@ class DashboardController extends Controller
 
     public function senior()
     {
-        return view('admin.senior');
+        // Check if just logged in and pass to view
+        $justLoggedIn = session('admin_just_logged_in', false);
+        
+        // Clear the just logged in flag after first visit
+        if ($justLoggedIn) {
+            session()->forget('admin_just_logged_in');
+        }
+
+        // Fetch senior citizen records
+        $totalSeniors = SeniorCitizenRecord::on('mswdo_senior')->count();
+        $activeSeniors = SeniorCitizenRecord::on('mswdo_senior')->where('status', 'active')->count();
+        $pendingSeniors = SeniorCitizenRecord::on('mswdo_senior')->where('status', 'pending')->count();
+        $recentSeniors = SeniorCitizenRecord::on('mswdo_senior')
+            ->orderByDesc('created_at')
+            ->limit(5)
+            ->get();
+
+        $data = [
+            'totalSeniors' => $totalSeniors,
+            'activeSeniors' => $activeSeniors,
+            'pendingSeniors' => $pendingSeniors,
+            'recentSeniors' => $recentSeniors,
+            'justLoggedIn' => $justLoggedIn,
+        ];
+
+        return view('admin.senior', $data);
+    }
+
+    public function seniorRegistration()
+    {
+        // Check if senior was just created and pass to view
+        $seniorCreated = session('senior_created', false);
+        
+        // Clear the flag after first visit
+        if ($seniorCreated) {
+            session()->forget('senior_created');
+        }
+
+        // Get the next sequence number for control number generation
+        $year = date('Y');
+        $lastRecord = SeniorCitizenRecord::on('mswdo_senior')
+            ->where('year_applied', $year)
+            ->orderByDesc('id')
+            ->first();
+        
+        $nextSequence = $lastRecord ? intval(substr($lastRecord->control_number, -6)) + 1 : 1;
+        
+        return view('admin.senior-registration', compact('nextSequence', 'seniorCreated'));
+    }
+
+    public function seniorMasterlist(Request $request)
+    {
+        $query = SeniorCitizenRecord::on('mswdo_senior');
+
+        if ($request->filled('barangay') && $request->barangay !== '') {
+            $query->where('barangay', $request->barangay);
+        }
+
+        if ($request->filled('search')) {
+            $query->where('full_name', 'like', '%' . $request->search . '%');
+        }
+
+        $seniors = $query->orderByDesc('created_at')->paginate(15);
+
+        return view('admin.senior-masterlist', compact('seniors'));
+    }
+
+    public function storeSeniorRegistration(Request $request)
+    {
+        $request->validate([
+            'year_applied' => ['required', 'integer', 'min:1900', 'max:' . (date('Y') + 1)],
+            'control_number' => ['required', 'string', 'max:255'],
+            'full_name' => ['required', 'string', 'max:255'],
+            'address' => ['required', 'string', 'max:500'],
+            'barangay' => ['required', 'string', 'max:255'],
+            'birth_date' => ['required', 'date'],
+            'month' => ['required', 'string'],
+            'sex' => ['required', 'in:Male,Female'],
+            'age' => ['required', 'integer', 'min:60', 'max:150'],
+            'contact_number' => ['required', 'string', 'max:20'],
+            'philsys_number' => ['nullable', 'string', 'max:255'],
+            'rrn_number' => ['nullable', 'string', 'max:255'],
+            'remarks' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        // Check for duplicate name (case-insensitive)
+        $existingName = SeniorCitizenRecord::on('mswdo_senior')
+            ->whereRaw('LOWER(full_name) = ?', [strtolower($request->full_name)])
+            ->first();
+
+        if ($existingName) {
+            return back()->withErrors(['full_name' => 'A senior citizen with this name already exists.'])->withInput();
+        }
+
+        SeniorCitizenRecord::on('mswdo_senior')->create([
+            'year_applied' => $request->year_applied,
+            'control_number' => $request->control_number,
+            'full_name' => $request->full_name,
+            'address' => $request->address,
+            'barangay' => $request->barangay,
+            'birth_date' => $request->birth_date,
+            'month' => $request->month,
+            'sex' => $request->sex,
+            'age' => $request->age,
+            'contact_number' => $request->contact_number,
+            'philsys_number' => $request->philsys_number,
+            'rrn_number' => $request->rrn_number,
+            'remarks' => $request->remarks,
+            'created_by' => session('admin_user_id'),
+            'status' => 'active',
+        ]);
+
+        return redirect()->route('admin.senior.registration')->with('success', 'Senior citizen registered successfully.')->with('senior_created', true);
+    }
+
+    public function archiveSenior($id)
+    {
+        $senior = SeniorCitizenRecord::on('mswdo_senior')->find($id);
+
+        if (!$senior) {
+            return redirect()->route('admin.senior.masterlist')->with('error', 'Senior citizen not found.');
+        }
+
+        $senior->update([
+            'status' => 'archived',
+        ]);
+
+        return redirect()->route('admin.senior.masterlist')->with('success', 'Senior citizen archived successfully.');
     }
 
     public function addOfficers()
