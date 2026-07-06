@@ -590,6 +590,24 @@
     </form>
 
     <script>
+        // Welcome popup on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const adminName = '{{ session('admin_user_name') ?? 'Admin' }}';
+            Swal.fire({
+                title: 'Welcome Admin!',
+                text: adminName,
+                icon: 'success',
+                confirmButtonColor: '#1A237E',
+                confirmButtonText: 'Continue',
+                background: '#ffffff',
+                customClass: {
+                    popup: 'rounded-4 shadow-lg'
+                },
+                timer: 3000,
+                timerProgressBar: true
+            });
+        });
+
         function confirmLogout(event) {
             event.preventDefault();
             Swal.fire({
