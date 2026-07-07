@@ -410,6 +410,9 @@
             width: 70%;
             height: 0.875rem;
         }
+        .portal-container.login-mode #backToHomepage {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -520,7 +523,7 @@
             </div>
         </div>
 
-        <div style="text-align: center; margin-top: 1.5rem;">
+        <div id="backToHomepage" style="text-align: center; margin-top: 1.5rem;">
             <a href="/" style="color: #64748B; text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: color 0.2s ease; display: inline-flex; align-items: center; gap: 0.375rem;">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 1rem; height: 1rem;">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />

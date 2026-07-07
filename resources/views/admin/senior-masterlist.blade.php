@@ -412,6 +412,9 @@
                                                 data-year-applied="{{ $senior->year_applied }}">
                                                 <i class="fas fa-eye"></i>
                                             </button>
+                                            <a href="{{ route('admin.senior.id-card', $senior->id) }}" class="btn btn-sm" style="background-color: var(--accent); color: var(--primary-dark); border: none; border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.8rem;" title="ID Card">
+                                                <i class="fas fa-id-card"></i>
+                                            </a>
                                             <button class="btn btn-sm archive-senior-btn" style="background-color: #dc3545; color: white; border: none; border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.8rem;"
                                                 data-id="{{ $senior->id }}"
                                                 data-name="{{ $senior->full_name }}">

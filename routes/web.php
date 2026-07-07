@@ -23,6 +23,11 @@ Route::get('/admin/senior/registration', [DashboardController::class, 'seniorReg
 Route::post('/admin/senior/registration', [DashboardController::class, 'storeSeniorRegistration'])->name('admin.senior.registration.store');
 Route::get('/admin/senior/masterlist', [DashboardController::class, 'seniorMasterlist'])->name('admin.senior.masterlist');
 Route::post('/admin/senior/archive/{id}', [DashboardController::class, 'archiveSenior'])->name('admin.senior.archive');
+Route::get('/admin/senior/id-card/{id}', [DashboardController::class, 'showIdCard'])->name('admin.senior.id-card');
+Route::post('/admin/senior/id-card/{id}/generate', [DashboardController::class, 'generateIdCard'])->name('admin.senior.id-card.generate');
+Route::post('/admin/senior/id-card/{id}/reprint', [DashboardController::class, 'reprintIdCard'])->name('admin.senior.id-card.reprint');
+Route::get('/admin/senior/id-card/{id}/download', [DashboardController::class, 'downloadIdCardPdf'])->name('admin.senior.id-card.download');
+Route::get('/admin/senior/profile/{id}', [DashboardController::class, 'seniorProfile'])->name('admin.senior.profile');
 Route::prefix('admin/senior/birthdays')->name('admin.senior.birthdays')->group(function () {
     Route::get('/', [App\Http\Controllers\Admin\BirthdayController::class, 'index']);
     Route::get('/data', [App\Http\Controllers\Admin\BirthdayController::class, 'data'])->name('.data');

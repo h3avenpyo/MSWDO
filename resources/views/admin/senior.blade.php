@@ -365,6 +365,7 @@
                                             <th>Sex / Age</th>
                                             <th>Birth Date</th>
                                             <th>Contact</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -403,10 +404,15 @@
                                                     <span class="text-muted">-</span>
                                                 @endif
                                             </td>
+                                            <td>
+                                                <a href="{{ route('admin.senior.id-card', $senior->id) }}" class="btn btn-sm" style="background-color: var(--accent); color: var(--primary-dark); border: none; border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.8rem;" title="ID Card">
+                                                    <i class="fas fa-id-card"></i>
+                                                </a>
+                                            </td>
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="7" class="text-center text-muted py-5">
+                                            <td colspan="8" class="text-center text-muted py-5">
                                                 <i class="fas fa-inbox" style="font-size: 2rem; display: block; margin-bottom: 0.75rem; color: #D1D5DB;"></i>
                                                 No senior citizen records found.
                                             </td>

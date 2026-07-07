@@ -151,10 +151,15 @@ class BirthdayController extends Controller
 
         $seniors->getCollection()->transform(function ($s) {
             $bday = Carbon::parse($s->birth_date);
-            $next = $bday->copy()->year(now()->year);
-            if ($next->isPast()) { $next->addYear(); }
-            $daysLeft = now()->startOfDay()->diffInDays($next->startOfDay());
-            $ageTurning = $bday->age + 1;
+            $today = now()->startOfDay();
+            $next = $bday->copy()->year($today->year)->startOfDay();
+            if ($next->isBefore($today)) {
+                $next->addYear();
+            }
+            $daysLeft = $today->diffInDays($next);
+            $isToday = ($daysLeft == 0);
+            $currentAge = $bday->age;
+            $ageTurning = $isToday ? $currentAge : ($currentAge + 1);
 
             return (object) [
                 'id' => $s->id,
@@ -163,14 +168,14 @@ class BirthdayController extends Controller
                 'full_name' => $s->full_name,
                 'birth_date' => $s->birth_date,
                 'birth_date_formatted' => $bday->format('M d, Y'),
-                'current_age' => $s->age ?? $bday->age,
+                'current_age' => $currentAge,
                 'age_turning' => $ageTurning,
                 'barangay' => $s->barangay ?? '-',
                 'contact_number' => $s->contact_number ?? '-',
                 'address' => $s->address ?? '-',
                 'month' => $s->month ?? $bday->format('F'),
                 'days_left' => $daysLeft,
-                'is_today' => $daysLeft == 0,
+                'is_today' => $isToday,
                 'sex' => $s->sex,
                 'philsys_number' => $s->philsys_number,
                 'rrn_number' => $s->rrn_number,
@@ -187,17 +192,22 @@ class BirthdayController extends Controller
         $senior = SeniorCitizenRecord::on('mswdo_senior')->findOrFail($id);
 
         $bday = Carbon::parse($senior->birth_date);
-        $next = $bday->copy()->year(now()->year);
-        if ($next->isPast()) { $next->addYear(); }
-        $daysLeft = now()->startOfDay()->diffInDays($next->startOfDay());
-        $ageTurning = $bday->age + 1;
+        $today = now()->startOfDay();
+        $next = $bday->copy()->year($today->year)->startOfDay();
+        if ($next->isBefore($today)) {
+            $next->addYear();
+        }
+        $daysLeft = $today->diffInDays($next);
+        $isToday = ($daysLeft == 0);
+        $currentAge = $bday->age;
+        $ageTurning = $isToday ? $currentAge : ($currentAge + 1);
 
         return response()->json([
             'control_number' => $senior->control_number ?? $senior->record_number ?? '-',
             'osca_id' => $senior->osca_id ?? '-',
             'full_name' => $senior->full_name,
             'birth_date' => $bday->format('M d, Y'),
-            'current_age' => $senior->age ?? $bday->age,
+            'current_age' => $currentAge,
             'age_turning' => $ageTurning,
             'address' => $senior->address ?? '-',
             'barangay' => $senior->barangay ?? '-',
@@ -208,7 +218,7 @@ class BirthdayController extends Controller
             'remarks' => $senior->remarks ?? '-',
             'month' => $senior->month ?? $bday->format('F'),
             'days_left' => $daysLeft,
-            'is_today' => $daysLeft == 0,
+            'is_today' => $isToday,
             'status' => $senior->status,
         ]);
     }
@@ -240,15 +250,19 @@ class BirthdayController extends Controller
                 'count' => $seniors->count(),
                 'seniors' => $seniors->map(function ($s) {
                     $bday = Carbon::parse($s->birth_date);
-                    $next = $bday->copy()->year(now()->year);
-                    if ($next->isPast()) { $next->addYear(); }
-                    $daysLeft = now()->startOfDay()->diffInDays($next->startOfDay());
+                    $today = now()->startOfDay();
+                    $next = $bday->copy()->year($today->year)->startOfDay();
+                    if ($next->isBefore($today)) {
+                        $next->addYear();
+                    }
+                    $daysLeft = $today->diffInDays($next);
+                    $isToday = ($daysLeft == 0);
                     return [
                         'id' => $s->id,
                         'full_name' => $s->full_name,
                         'birth_date' => $bday->format('M d, Y'),
                         'days_left' => $daysLeft,
-                        'is_today' => $daysLeft == 0,
+                        'is_today' => $isToday,
                     ];
                 })->sortBy('days_left')->values(),
             ];
@@ -357,22 +371,27 @@ class BirthdayController extends Controller
         $all = $query->get();
         return $all->map(function ($s) {
             $bday = Carbon::parse($s->birth_date);
-            $next = $bday->copy()->year(now()->year);
-            if ($next->isPast()) { $next->addYear(); }
-            $daysLeft = now()->startOfDay()->diffInDays($next->startOfDay());
-            $ageTurning = $bday->age + 1;
+            $today = now()->startOfDay();
+            $next = $bday->copy()->year($today->year)->startOfDay();
+            if ($next->isBefore($today)) {
+                $next->addYear();
+            }
+            $daysLeft = $today->diffInDays($next);
+            $isToday = ($daysLeft == 0);
+            $currentAge = $bday->age;
+            $ageTurning = $isToday ? $currentAge : ($currentAge + 1);
             return [
                 'control_number' => $s->control_number ?? $s->record_number ?? '-',
                 'osca_id' => $s->osca_id ?? '-',
                 'full_name' => $s->full_name,
                 'birth_date' => $bday->format('M d, Y'),
-                'current_age' => $s->age ?? $bday->age,
+                'current_age' => $currentAge,
                 'age_turning' => $ageTurning,
                 'barangay' => $s->barangay ?? '-',
                 'contact_number' => $s->contact_number ?? '-',
                 'address' => $s->address ?? '-',
                 'days_left' => $daysLeft,
-                'is_today' => $daysLeft == 0,
+                'is_today' => $isToday,
                 'status' => $s->status,
             ];
         })->sortBy('days_left')->values();
