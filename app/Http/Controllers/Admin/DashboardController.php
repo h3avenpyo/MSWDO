@@ -152,7 +152,7 @@ class DashboardController extends Controller
     public function seniorMasterlist(Request $request)
     {
         $query = SeniorCitizenRecord::on('mswdo_senior')
-            ->select('id', 'control_number', 'full_name', 'address', 'barangay', 'birth_date', 'month', 'age', 'sex', 'status');
+            ->select('id', 'control_number', 'full_name', 'address', 'barangay', 'birth_date', 'month', 'sex', 'status');
 
         if ($request->filled('barangay') && $request->barangay !== '') {
             $query->where('barangay', $request->barangay);
@@ -163,6 +163,13 @@ class DashboardController extends Controller
         }
 
         $seniors = $query->orderByDesc('created_at')->paginate(15);
+
+        // Calculate age dynamically for each senior
+        $seniors->getCollection()->transform(function ($senior) {
+            $birthDate = Carbon::parse($senior->birth_date);
+            $senior->age = $birthDate->age;
+            return $senior;
+        });
 
         return view('admin.senior-masterlist', compact('seniors'));
     }

@@ -78,18 +78,10 @@ class BirthdayController extends Controller
             ->where('status', 'active')
             ->whereNotNull('birth_date');
 
-        $start = now();
-        $end = now()->addDays(30);
-        $sMD = $start->format('m-d');
-        $eMD = $end->format('m-d');
-
-        if ($sMD <= $eMD) {
-            $query->whereRaw("DATE_FORMAT(birth_date, '%m-%d') BETWEEN ? AND ?", [$sMD, $eMD]);
-        } else {
-            $query->where(function ($q) use ($sMD, $eMD) {
-                $q->whereRaw("DATE_FORMAT(birth_date, '%m-%d') >= ?", [$sMD])
-                  ->orWhereRaw("DATE_FORMAT(birth_date, '%m-%d') <= ?", [$eMD]);
-            });
+        // Only apply 30-day range filter if no specific filter is set or filter is 'all'
+        if (!$request->filled('filter') || $request->filter === 'all') {
+            // Show birthdays for current month
+            $query->whereRaw("MONTH(birth_date) = ?", [now()->format('n')]);
         }
 
         if ($request->filled('search')) {

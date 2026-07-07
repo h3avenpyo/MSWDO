@@ -174,7 +174,7 @@
         {{-- Filter Section --}}
         <div class="filter-section">
             <div class="filter-chips" id="filterChips">
-                <span class="filter-chip active" data-filter="all" onclick="applyFilter('all')"><i class="fas fa-list"></i> All (30 Days)</span>
+                <span class="filter-chip active" data-filter="all" onclick="applyFilter('all')"><i class="fas fa-calendar"></i> This Month</span>
                 <span class="filter-chip" data-filter="today" onclick="applyFilter('today')"><i class="fas fa-birthday-cake"></i> Today</span>
                 <span class="filter-chip" data-filter="week" onclick="applyFilter('week')"><i class="fas fa-calendar-week"></i> This Week</span>
                 <span class="filter-chip" data-filter="nextmonth" onclick="applyFilter('nextmonth')"><i class="fas fa-calendar-alt"></i> Next Month</span>

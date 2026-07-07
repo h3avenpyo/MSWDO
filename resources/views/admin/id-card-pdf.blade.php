@@ -7,10 +7,10 @@
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
+            background: #F8FAFC;
         }
         .cards-container {
             padding: 20px;
-            background: #F8FAFC;
         }
         .cards-table {
             width: 100%;
@@ -18,161 +18,231 @@
         }
         .card {
             width: 85.6mm;
-            height: 53.98mm;
-            border: 2px solid #000;
-            background: white;
+            height: 54mm;
+            border: 1px solid #000;
+            background: linear-gradient(180deg, #1A237E 0%, #283593 50%, #1A237E 100%);
             vertical-align: top;
         }
-        .header {
-            background: #1A237E;
-            color: white;
-            border-bottom: 0.5mm solid #FBC02D;
+        .card-inner {
+            background: white;
+            margin: 1.5mm;
+            height: 51mm;
+            border: 1px solid #1A237E;
+            position: relative;
+        }
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30pt;
+            color: rgba(26, 35, 126, 0.05);
+            font-weight: bold;
+            text-transform: uppercase;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .card-content {
+            position: relative;
+            z-index: 1;
+            height: 100%;
         }
         .header-table {
             width: 100%;
             border-collapse: collapse;
+            background: #1A237E;
         }
         .header-table td {
-            padding: 1mm 2mm;
+            padding: 1.5mm 1mm;
             vertical-align: middle;
         }
-        .logo {
-            width: 6mm;
-            height: 6mm;
-            background: white;
-            border-radius: 50%;
-        }
-        .header-text {
+        .logo-cell {
+            width: 12mm;
             text-align: center;
         }
-        .header-text h5 {
+        .logo {
+            width: 10mm;
+            height: 10mm;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid #FBC02D;
+        }
+        .gov-info {
             font-size: 6pt;
-            font-weight: bold;
-            margin: 0;
+            color: white;
+            text-align: center;
+            line-height: 1.4;
+        }
+        .gov-info strong {
+            display: block;
+            font-size: 8pt;
             text-transform: uppercase;
+            margin-bottom: 0.5mm;
+            letter-spacing: 0.5px;
         }
-        .header-text p {
-            font-size: 4.5pt;
-            margin: 0;
-        }
-        .header-text span {
-            font-size: 4.5pt;
+        .gov-info .dept {
+            font-size: 7pt;
             font-weight: bold;
             color: #FBC02D;
+            margin-top: 0.5mm;
+        }
+        .header-divider {
+            height: 1mm;
+            background: linear-gradient(90deg, #1A237E 0%, #FBC02D 50%, #1A237E 100%);
         }
         .body-table {
             width: 100%;
             border-collapse: collapse;
-            height: 42mm;
         }
         .body-table td {
-            padding: 2mm;
+            padding: 1.5mm;
             vertical-align: top;
         }
-        .photo-section {
-            width: 18mm;
-            vertical-align: top;
+        .photo-cell {
+            width: 24mm;
+        }
+        .photo-frame {
+            border: 2px solid #1A237E;
+            padding: 1mm;
+            background: #F8FAFC;
         }
         .photo {
-            width: 16mm;
-            height: 16mm;
-            border: 0.3mm solid #1A237E;
+            width: 18mm;
+            height: 24mm;
+            border: 1px solid #E5E7EB;
             display: block;
         }
-        .id-num {
+        .id-badge {
+            background: #D32F2F;
+            color: white;
             font-size: 5pt;
             font-weight: bold;
-            color: #D32F2F;
-            background: #FFEBEE;
-            padding: 0.5mm;
-            border: 0.1mm solid #FFCDD2;
+            padding: 0.5mm 1mm;
             text-align: center;
-            width: 16mm;
+            margin-top: 1mm;
+            border-radius: 2px;
+        }
+        .signature-box {
+            border-top: 1px solid #000;
+            padding-top: 0.5mm;
+            text-align: center;
+            font-size: 4.5pt;
+            color: #666;
             margin-top: 1mm;
         }
-        .qr-code {
-            width: 10mm;
-            height: 10mm;
-            border: 0.1mm solid #E5E7EB;
-            padding: 0.5mm;
-            background: white;
-            display: block;
-            margin-top: 2mm;
-        }
-        .details {
+        .info-cell {
             padding-left: 2mm;
         }
         .name {
-            font-size: 7pt;
+            font-size: 11pt;
             font-weight: bold;
-            color: #111827;
-            margin: 0 0 0.5mm 0;
+            color: #1A237E;
+            margin: 0 0 1.5mm 0;
             text-transform: uppercase;
-            border-bottom: 0.2mm solid #E5E7EB;
+            border-bottom: 2px solid #1A237E;
             padding-bottom: 0.5mm;
+            letter-spacing: 0.5px;
         }
         .field {
-            font-size: 5pt;
-            margin: 0.5mm 0;
+            font-size: 6pt;
+            margin: 1mm 0;
+            line-height: 1.4;
         }
         .label {
             font-weight: bold;
-            color: #4B5563;
-            width: 10mm;
+            color: #666;
+            width: 14mm;
             display: inline-block;
+            font-size: 5.5pt;
             text-transform: uppercase;
         }
         .value {
-            color: #1F2937;
-            font-weight: 500;
+            color: #000;
+            font-weight: 600;
+            font-size: 6pt;
         }
-        .signature-holder {
-            border-top: 0.1mm dashed #9CA3AF;
-            text-align: center;
-            font-size: 4pt;
-            color: #6B7280;
-            padding-top: 0.5mm;
+        .footer-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 2mm;
+        }
+        .footer-table td {
+            padding: 1mm;
+            vertical-align: middle;
+        }
+        .qr-cell {
+            width: 18mm;
+        }
+        .qr-code {
+            width: 16mm;
+            height: 16mm;
+            border: 1px solid #E5E7EB;
+            display: block;
+            padding: 1mm;
+            background: white;
+        }
+        .signature-section {
+            text-align: center;
+        }
+        .signature-line {
+            border-top: 1px solid #000;
+            padding-top: 0.5mm;
+            font-size: 5pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 0.5mm;
+        }
+        .signature-label {
+            font-size: 4.5pt;
+            color: #666;
         }
         /* Back Side Styles */
         .back-header {
-            background-color: #F8FAFC;
-            border-bottom: 2px solid #1A237E;
-            padding: 2mm 3mm;
+            background: #1A237E;
+            color: white;
+            padding: 1.5mm;
             text-align: center;
+            font-size: 7pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .back-header h6 {
+        .back-body-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .back-body-table td {
+            padding: 1.5mm;
+            vertical-align: top;
+            width: 50%;
+        }
+        .section-title {
             font-size: 6pt;
             font-weight: bold;
             color: #1A237E;
-            margin: 0;
             text-transform: uppercase;
+            border-bottom: 2px solid #1A237E;
+            padding-bottom: 0.5mm;
+            margin-bottom: 1.5mm;
+            letter-spacing: 0.3px;
         }
-        .back-body {
-            padding: 2.5mm 3.5mm;
-            height: 42mm;
-        }
-        .back-details-table {
-            width: 100%;
-            border-collapse: collapse;
+        .back-field {
             font-size: 5.5pt;
-        }
-        .back-details-table td {
-            padding: 0.5mm;
-            vertical-align: top;
+            margin: 1mm 0;
+            line-height: 1.4;
         }
         .back-label {
             font-weight: bold;
-            color: #4B5563;
-            text-transform: uppercase;
-            font-size: 4.5pt;
+            color: #666;
             display: block;
-            margin-bottom: 0.2mm;
+            font-size: 5pt;
+            text-transform: uppercase;
+            margin-bottom: 0.3mm;
         }
         .back-value {
-            color: #111827;
+            color: #000;
             font-weight: 600;
-            display: block;
+            font-size: 5.5pt;
         }
         .signatures-table {
             width: 100%;
@@ -181,29 +251,33 @@
         }
         .signatures-table td {
             width: 50%;
-            text-align: center;
-            padding: 0.5mm;
+            padding: 1.5mm;
             vertical-align: top;
         }
         .sign-line {
-            border-top: 0.3mm solid #000000;
-            padding-top: 0.5mm;
-            font-size: 5pt;
+            border-top: 1px solid #000;
+            padding-top: 1mm;
+            font-size: 5.5pt;
             font-weight: bold;
             text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 0.5mm;
         }
         .sign-subtitle {
-            font-size: 4pt;
-            color: #4B5563;
+            font-size: 4.5pt;
+            color: #666;
+            text-align: center;
         }
         .back-footer {
-            background-color: #1A237E;
+            background: #1A237E;
             color: white;
-            font-size: 4pt;
+            font-size: 4.5pt;
             text-align: center;
-            padding: 1mm 2mm;
+            padding: 1mm;
             margin-top: 2mm;
             font-weight: 500;
+            line-height: 1.3;
+            letter-spacing: 0.2px;
         }
     </style>
 </head>
@@ -213,101 +287,106 @@
             <tr>
                 <!-- FRONT SIDE -->
                 <td class="card">
-                    <table class="header-table">
-                        <tr>
-                            <td width="6mm"><div class="logo"></div></td>
-                            <td class="header-text">
-                                <h5>Republic of the Philippines</h5>
-                                <p>Province of Cavite • Municipality of Silang</p>
-                                <span>OFFICE OF THE SENIOR CITIZENS AFFAIRS</span>
-                            </td>
-                            <td width="6mm"><div class="logo"></div></td>
-                        </tr>
-                    </table>
-                    <table class="body-table">
-                        <tr>
-                            <td class="photo-section">
-                                @if($senior->photo && file_exists(public_path($senior->photo)))
-                                    <img src="{{ asset($senior->photo) }}" class="photo">
-                                @elseif($senior->avatar_image && file_exists(public_path($senior->avatar_image)))
-                                    <img src="{{ asset($senior->avatar_image) }}" class="photo">
-                                @else
-                                    <div class="photo" style="background: #1A237E; color: white; text-align: center; line-height: 16mm; font-size: 8pt;">{{ strtoupper(substr($senior->full_name, 0, 2)) }}</div>
-                                @endif
-                                <div class="id-num">{{ $senior->senior_id_number ?? $senior->control_number }}</div>
-                                @if($senior->qr_code_image && file_exists(public_path($senior->qr_code_image)))
-                                    <img src="{{ asset($senior->qr_code_image) }}" class="qr-code">
-                                @else
-                                    <div class="qr-code" style="background: #f0f0f0; text-align: center; line-height: 10mm; font-size: 3pt;">QR</div>
-                                @endif
-                            </td>
-                            <td class="details">
-                                <p class="name">{{ $senior->full_name }}</p>
-                                <div class="field"><span class="label">Birthdate:</span> <span class="value">{{ \Carbon\Carbon::parse($senior->birth_date)->format('M d, Y') }}</span></div>
-                                <div class="field"><span class="label">Age:</span> <span class="value">{{ $senior->age }}</span></div>
-                                <div class="field"><span class="label">Sex:</span> <span class="value">{{ $senior->sex }}</span></div>
-                                <div class="field"><span class="label">Barangay:</span> <span class="value">{{ $senior->barangay }}</span></div>
-                                <div class="field"><span class="label">Address:</span> <span class="value">{{ $senior->address }}</span></div>
-                                <div class="signature-holder">SIGNATURE OF HOLDER</div>
-                            </td>
-                        </tr>
-                    </table>
+                    <div class="card-inner">
+                        <div class="watermark">OSCA</div>
+                        <div class="card-content">
+                            <table class="header-table">
+                                <tr>
+                                    <td class="logo-cell"><div class="logo"></div></td>
+                                    <td class="gov-info">
+                                        <strong>Republic of the Philippines</strong>
+                                        Province of Cavite • Municipality of Silang<br>
+                                        <span class="dept">OFFICE OF THE SENIOR CITIZENS AFFAIRS</span>
+                                    </td>
+                                    <td class="logo-cell"><div class="logo"></div></td>
+                                </tr>
+                            </table>
+                            <div class="header-divider"></div>
+                            <table class="body-table">
+                                <tr>
+                                    <td class="photo-cell">
+                                        <div class="photo-frame">
+                                            @if($senior->photo && file_exists(public_path($senior->photo)))
+                                                <img src="{{ asset($senior->photo) }}" class="photo">
+                                            @elseif($senior->avatar_image && file_exists(public_path($senior->avatar_image)))
+                                                <img src="{{ asset($senior->avatar_image) }}" class="photo">
+                                            @else
+                                                <div class="photo" style="background: #1A237E; color: white; text-align: center; line-height: 24mm; font-size: 12pt;">{{ strtoupper(substr($senior->full_name, 0, 2)) }}</div>
+                                            @endif
+                                        </div>
+                                        <div class="id-badge">{{ $senior->senior_id_number ?? $senior->control_number }}</div>
+                                        <div class="signature-box">Signature</div>
+                                    </td>
+                                    <td class="info-cell">
+                                        <p class="name">{{ $senior->full_name }}</p>
+                                        <div class="field"><span class="label">Address:</span> <span class="value">{{ $senior->address }}</span></div>
+                                        <div class="field"><span class="label">Barangay:</span> <span class="value">{{ $senior->barangay }}</span></div>
+                                        <div class="field"><span class="label">Birthdate:</span> <span class="value">{{ \Carbon\Carbon::parse($senior->birth_date)->format('M d, Y') }}</span></div>
+                                        <div class="field"><span class="label">Sex:</span> <span class="value">{{ $senior->sex }}</span></div>
+                                        <div class="field"><span class="label">Civil Status:</span> <span class="value">{{ $senior->civil_status ?? 'N/A' }}</span></div>
+                                        <div class="field"><span class="label">ID Number:</span> <span class="value">{{ $senior->senior_id_number ?? $senior->control_number }}</span></div>
+                                        <div class="field"><span class="label">Date Issued:</span> <span class="value">{{ $senior->date_issued ? \Carbon\Carbon::parse($senior->date_issued)->format('M d, Y') : 'N/A' }}</span></div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table class="footer-table">
+                                <tr>
+                                    <td class="signature-section">
+                                        <div class="signature-line">Signature of Holder</div>
+                                        <div class="signature-label">Sign above line</div>
+                                    </td>
+                                    <td class="qr-cell">
+                                        @if($senior->qr_code_image && file_exists(public_path($senior->qr_code_image)))
+                                            <img src="{{ asset($senior->qr_code_image) }}" class="qr-code">
+                                        @else
+                                            <div class="qr-code" style="background: #f0f0f0; text-align: center; line-height: 14mm; font-size: 4pt;">QR</div>
+                                        @endif
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </td>
                 <td width="20px"></td>
                 <!-- BACK SIDE -->
                 <td class="card">
-                    <div class="back-header">
-                        <h6>ID Card Terms &amp; Reference Information</h6>
-                    </div>
-                    <div class="back-body">
-                        <table class="back-details-table">
-                            <tr>
-                                <td colspan="2">
-                                    <span class="back-label">Residential Address:</span>
-                                    <span class="back-value">{{ $senior->address }}, {{ $senior->barangay }}, Silang, Cavite</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span class="back-label">Blood Type:</span>
-                                    <span class="back-value">{{ $senior->blood_type ?? 'N/A' }}</span>
-                                </td>
-                                <td>
-                                    <span class="back-label">Civil Status:</span>
-                                    <span class="back-value">{{ $senior->civil_status ?? 'N/A' }}</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <span class="back-label">Emergency Contact Name:</span>
-                                    <span class="back-value">{{ $senior->emergency_contact_name ?? 'N/A' }}</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span class="back-label">Contact Number:</span>
-                                    <span class="back-value">{{ $senior->emergency_contact_number ?? 'N/A' }}</span>
-                                </td>
-                                <td>
-                                    <span class="back-label">Relationship:</span>
-                                    <span class="back-value">{{ $senior->emergency_contact_relationship ?? 'N/A' }}</span>
-                                </td>
-                            </tr>
-                        </table>
-                        <table class="signatures-table">
-                            <tr>
-                                <td>
-                                    <span class="sign-line">OSCA Head</span>
-                                    <span class="sign-subtitle">OSCA Silang Head Office</span>
-                                </td>
-                                <td>
-                                    <span class="sign-line">MSWDO Officer</span>
-                                    <span class="sign-subtitle">Authorized Signature</span>
-                                </td>
-                            </tr>
-                        </table>
-                        <div class="back-footer">
-                            If found, please return this card to the Office of the Senior Citizens Affairs, Municipality of Silang, Cavite.
+                    <div class="card-inner">
+                        <div class="watermark">OSCA</div>
+                        <div class="card-content">
+                            <div class="back-header">Emergency Contact Information</div>
+                            <table class="back-body-table">
+                                <tr>
+                                    <td>
+                                        <div class="section-title">Emergency Contact</div>
+                                        <div class="back-field"><span class="back-label">Contact Person:</span> <span class="back-value">{{ $senior->emergency_contact_name ?? 'N/A' }}</span></div>
+                                        <div class="back-field"><span class="back-label">Relationship:</span> <span class="back-value">{{ $senior->emergency_contact_relationship ?? 'N/A' }}</span></div>
+                                        <div class="back-field"><span class="back-label">Contact Number:</span> <span class="back-value">{{ $senior->emergency_contact_number ?? 'N/A' }}</span></div>
+                                        <div class="back-field"><span class="back-label">Address:</span> <span class="back-value">{{ $senior->address }}</span></div>
+                                    </td>
+                                    <td>
+                                        <div class="section-title">Medical Info</div>
+                                        <div class="back-field"><span class="back-label">Blood Type:</span> <span class="back-value">{{ $senior->blood_type ?? 'N/A' }}</span></div>
+                                        <div class="back-field"><span class="back-label">PhilHealth No:</span> <span class="back-value">{{ $senior->philsys_number ?? 'N/A' }}</span></div>
+                                        <div class="back-field"><span class="back-label">OSCA ID:</span> <span class="back-value">{{ $senior->osca_id ?? 'N/A' }}</span></div>
+                                        <div class="back-field"><span class="back-label">Civil Status:</span> <span class="back-value">{{ $senior->civil_status ?? 'N/A' }}</span></div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table class="signatures-table">
+                                <tr>
+                                    <td>
+                                        <div class="sign-line">OSCA Head</div>
+                                        <div class="sign-subtitle">OSCA Silang Head Office</div>
+                                    </td>
+                                    <td>
+                                        <div class="sign-line">MSWDO Officer</div>
+                                        <div class="sign-subtitle">Authorized Signature</div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="back-footer">
+                                If found, please return this card to the Office of the Senior Citizens Affairs, Municipality of Silang, Cavite.
+                            </div>
                         </div>
                     </div>
                 </td>
