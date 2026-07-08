@@ -26,7 +26,7 @@ class DashboardController extends Controller
         // Optimize query - only select needed fields
         $officers = User::on('mswdo_admin')
             ->where('email', '!=', 'admin@mswdo.test')
-            ->select('id', 'name', 'email', 'role', 'created_at', 'is_active')
+            ->select('id', 'name', 'email', 'role', 'created_at', 'status')
             ->orderByDesc('created_at')
             ->get();
 
@@ -86,11 +86,25 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        // Get barangay distribution data
+        $barangayDistribution = SeniorCitizenRecord::on('mswdo_senior')
+            ->where('status', 'active')
+            ->whereNotNull('barangay')
+            ->selectRaw('barangay, COUNT(*) as count')
+            ->groupBy('barangay')
+            ->orderByDesc('count')
+            ->get();
+
+        // Get recent activities from session (stored as array)
+        $recentActivities = session('recent_activities', []);
+
         $data = [
             'totalSeniors' => $totalSeniors,
             'activeSeniors' => $activeSeniors,
             'pendingSeniors' => $pendingSeniors,
             'recentSeniors' => $recentSeniors,
+            'barangayDistribution' => $barangayDistribution,
+            'recentActivities' => $recentActivities,
             'justLoggedIn' => $justLoggedIn,
         ];
 
@@ -136,22 +150,109 @@ class DashboardController extends Controller
             session()->forget('senior_created');
         }
 
-        // Get the next sequence number for control number generation
+        // Get barangay sequences for control number generation (per barangay)
         $year = date('Y');
-        $lastRecord = SeniorCitizenRecord::on('mswdo_senior')
-            ->where('year_applied', $year)
-            ->select('id', 'control_number')
-            ->orderByDesc('id')
-            ->first();
+        $barangaySequences = [];
         
-        $nextSequence = $lastRecord ? intval(substr($lastRecord->control_number, -6)) + 1 : 1;
+        // Get all barangays from the form options
+        $barangays = [
+            'Acacia', 'Adlas', 'Anahaw I', 'Anahaw II', 'Balite I', 'Balite II', 'Balubad', 'Banaba', 'Batas',
+            'Biga I', 'Biga II', 'Biluso', 'Bucal', 'Buho', 'Bulihan', 'Cabangaan', 'Carmen', 'Hoyo', 'Hukay', 'Iba',
+            'Inchican', 'Ipil I', 'Ipil II', 'Kalubkob', 'Kaong', 'Lalaan I', 'Lalaan II', 'Litlit', 'Lucsuhin', 'Lumil',
+            'Maguyam', 'Malabag', 'Malaking Tatyao', 'Mataas na Burol', 'Munting Ilog', 'Narra I', 'Narra II', 'Narra III',
+            'Paligawan', 'Pasong Langka', 'Barangay I (Poblacion)', 'Barangay II (Poblacion)', 'Barangay III (Poblacion)',
+            'Barangay IV (Poblacion)', 'Barangay V (Poblacion)', 'Pooc I', 'Pooc II', 'Pulong Bunga', 'Pulong Saging',
+            'Puting Kahoy', 'Sabutan', 'San Miguel I', 'San Miguel II', 'San Vicente I', 'San Vicente II', 'Santol',
+            'Tartaria', 'Tibig', 'Toledo', 'Tubuan I', 'Tubuan II', 'Tubuan III', 'Ulat', 'Yakal'
+        ];
+
+        // Unique barangay codes mapping
+        $barangayCodes = [
+            'Acacia' => 'ACA',
+            'Adlas' => 'ADL',
+            'Anahaw I' => 'ANA1',
+            'Anahaw II' => 'ANA2',
+            'Balite I' => 'BLT1',
+            'Balite II' => 'BLT2',
+            'Balubad' => 'BLB',
+            'Banaba' => 'BAN',
+            'Batas' => 'BAT',
+            'Biga I' => 'BIG1',
+            'Biga II' => 'BIG2',
+            'Biluso' => 'BIL',
+            'Bucal' => 'BUC',
+            'Buho' => 'BUH',
+            'Bulihan' => 'BUL',
+            'Cabangaan' => 'CAB',
+            'Carmen' => 'CAR',
+            'Hoyo' => 'HOY',
+            'Hukay' => 'HUK',
+            'Iba' => 'IBA',
+            'Inchican' => 'INC',
+            'Ipil I' => 'IPI1',
+            'Ipil II' => 'IPI2',
+            'Kalubkob' => 'KAL',
+            'Kaong' => 'KAO',
+            'Lalaan I' => 'LAL1',
+            'Lalaan II' => 'LAL2',
+            'Litlit' => 'LIT',
+            'Lucsuhin' => 'LUC',
+            'Lumil' => 'LUM',
+            'Maguyam' => 'MAG',
+            'Malabag' => 'MLB',
+            'Malaking Tatyao' => 'MLK',
+            'Mataas na Burol' => 'MTA',
+            'Munting Ilog' => 'MUN',
+            'Narra I' => 'NAR1',
+            'Narra II' => 'NAR2',
+            'Narra III' => 'NAR3',
+            'Paligawan' => 'PAL',
+            'Pasong Langka' => 'PAS',
+            'Barangay I (Poblacion)' => 'POB1',
+            'Barangay II (Poblacion)' => 'POB2',
+            'Barangay III (Poblacion)' => 'POB3',
+            'Barangay IV (Poblacion)' => 'POB4',
+            'Barangay V (Poblacion)' => 'POB5',
+            'Pooc I' => 'POO1',
+            'Pooc II' => 'POO2',
+            'Pulong Bunga' => 'PLB',
+            'Pulong Saging' => 'PLS',
+            'Puting Kahoy' => 'PUT',
+            'Sabutan' => 'SAB',
+            'San Miguel I' => 'SMI1',
+            'San Miguel II' => 'SMI2',
+            'San Vicente I' => 'SVI1',
+            'San Vicente II' => 'SVI2',
+            'Santol' => 'SAN',
+            'Tartaria' => 'TAR',
+            'Tibig' => 'TIB',
+            'Toledo' => 'TOL',
+            'Tubuan I' => 'TUB1',
+            'Tubuan II' => 'TUB2',
+            'Tubuan III' => 'TUB3',
+            'Ulat' => 'ULA',
+            'Yakal' => 'YAK'
+        ];
         
-        return view('admin.senior-registration', compact('nextSequence', 'seniorCreated'));
+        foreach ($barangays as $barangay) {
+            $lastRecord = SeniorCitizenRecord::on('mswdo_senior')
+                ->where('barangay', $barangay)
+                ->where('year_applied', $year)
+                ->select('id', 'control_number')
+                ->orderByDesc('id')
+                ->first();
+            
+            $nextSequence = $lastRecord ? intval(substr($lastRecord->control_number, -6)) + 1 : 1;
+            $barangaySequences[$barangay] = $nextSequence;
+        }
+        
+        return view('admin.senior-registration', compact('barangaySequences', 'barangayCodes', 'seniorCreated'));
     }
 
     public function seniorMasterlist(Request $request)
     {
         $query = SeniorCitizenRecord::on('mswdo_senior')
+            ->where('status', '!=', 'archived')
             ->select('id', 'control_number', 'full_name', 'address', 'barangay', 'birth_date', 'month', 'sex', 'status');
 
         if ($request->filled('barangay') && $request->barangay !== '') {
@@ -237,7 +338,7 @@ class DashboardController extends Controller
             $avatarPath = null;
         }
 
-        SeniorCitizenRecord::on('mswdo_senior')->create([
+        $senior = SeniorCitizenRecord::on('mswdo_senior')->create([
             'year_applied' => $request->year_applied,
             'control_number' => $request->control_number,
             'full_name' => $request->full_name,
@@ -258,6 +359,9 @@ class DashboardController extends Controller
             'avatar_image' => $avatarPath,
         ]);
 
+        // Log activity
+        $this->logActivity('registered', $senior->full_name, $senior->control_number);
+
         return redirect()->route('admin.senior.registration')->with('success', 'Senior citizen registered successfully.')->with('senior_created', true);
     }
 
@@ -273,7 +377,54 @@ class DashboardController extends Controller
             'status' => 'archived',
         ]);
 
+        // Log activity
+        $this->logActivity('archived', $senior->full_name, $senior->control_number);
+
         return redirect()->route('admin.senior.masterlist')->with('success', 'Senior citizen archived successfully.');
+    }
+
+    public function unarchiveSenior($id)
+    {
+        $senior = SeniorCitizenRecord::on('mswdo_senior')->find($id);
+
+        if (!$senior) {
+            return redirect()->route('admin.senior.archive.list')->with('error', 'Senior citizen not found.');
+        }
+
+        $senior->update([
+            'status' => 'active',
+        ]);
+
+        // Log activity
+        $this->logActivity('restored', $senior->full_name, $senior->control_number);
+
+        return redirect()->route('admin.senior.archive.list')->with('success', 'Senior citizen restored to active successfully.');
+    }
+
+    public function seniorArchiveList(Request $request)
+    {
+        $query = SeniorCitizenRecord::on('mswdo_senior')
+            ->where('status', 'archived')
+            ->select('id', 'control_number', 'full_name', 'address', 'barangay', 'birth_date', 'month', 'sex', 'status', 'created_at', 'updated_at');
+
+        if ($request->filled('barangay') && $request->barangay !== '') {
+            $query->where('barangay', $request->barangay);
+        }
+
+        if ($request->filled('search')) {
+            $query->where('full_name', 'like', '%' . $request->search . '%');
+        }
+
+        $archivedSeniors = $query->orderByDesc('updated_at')->paginate(15);
+
+        // Calculate age dynamically for each senior
+        $archivedSeniors->getCollection()->transform(function ($senior) {
+            $birthDate = Carbon::parse($senior->birth_date);
+            $senior->age = $birthDate->age;
+            return $senior;
+        });
+
+        return view('admin.senior-archive', compact('archivedSeniors'));
     }
 
     public function addOfficers()
@@ -309,7 +460,17 @@ class DashboardController extends Controller
             'role' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
             'status' => ['required', 'in:active,inactive'],
+            'signature_position' => ['nullable', 'in:osca_head,mswdo_officer'],
+            'signature_image' => ['nullable', 'image', 'max:2048'],
         ]);
+
+        $signatureImagePath = null;
+        if ($request->hasFile('signature_image')) {
+            $file = $request->file('signature_image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('images/signatures'), $filename);
+            $signatureImagePath = 'images/signatures/' . $filename;
+        }
 
         User::on('mswdo_admin')->create([
             'name' => $request->name,
@@ -318,6 +479,8 @@ class DashboardController extends Controller
             'role' => $request->role,
             'phone' => $request->phone,
             'status' => $request->status,
+            'signature_position' => $request->signature_position,
+            'signature_image' => $signatureImagePath,
         ]);
 
         return redirect()->route('admin.add-officers')->with('success', 'Officer created successfully.')->with('officer_created', true);
@@ -331,7 +494,18 @@ class DashboardController extends Controller
 
         $senior = SeniorCitizenRecord::on('mswdo_senior')->findOrFail($id);
 
-        return view('admin.id-card', compact('senior'));
+        // Get signatures for OSCA Head and MSWDO Officer
+        $oscaHeadSignature = User::on('mswdo_admin')
+            ->where('signature_position', 'osca_head')
+            ->where('status', 'active')
+            ->value('signature_image');
+
+        $mswdoOfficerSignature = User::on('mswdo_admin')
+            ->where('signature_position', 'mswdo_officer')
+            ->where('status', 'active')
+            ->value('signature_image');
+
+        return view('admin.id-card', compact('senior', 'oscaHeadSignature', 'mswdoOfficerSignature'));
     }
 
     public function generateIdCard(Request $request, $id)
@@ -382,6 +556,9 @@ class DashboardController extends Controller
 
         $senior->save();
 
+        // Log activity
+        $this->logActivity('generated ID card', $senior->full_name, $senior->senior_id_number ?? $senior->control_number);
+
         return redirect()->route('admin.senior.id-card', $senior->id)->with('success', 'ID Card generated successfully.');
     }
 
@@ -421,7 +598,18 @@ class DashboardController extends Controller
                 return redirect()->route('admin.senior.id-card', $id)->with('error', 'Please generate the ID Card first before downloading.');
             }
 
-            $pdf = Pdf::loadView('admin.id-card-pdf', compact('senior'));
+            // Get signatures for OSCA Head and MSWDO Officer
+            $oscaHeadSignature = User::on('mswdo_admin')
+                ->where('signature_position', 'osca_head')
+                ->where('status', 'active')
+                ->value('signature_image');
+
+            $mswdoOfficerSignature = User::on('mswdo_admin')
+                ->where('signature_position', 'mswdo_officer')
+                ->where('status', 'active')
+                ->value('signature_image');
+
+            $pdf = Pdf::loadView('admin.id-card-pdf', compact('senior', 'oscaHeadSignature', 'mswdoOfficerSignature'));
             
             // Use standard A4 paper for better compatibility and speed
             $pdf->setPaper('a4', 'landscape');
@@ -448,5 +636,234 @@ class DashboardController extends Controller
         $senior = SeniorCitizenRecord::on('mswdo_senior')->findOrFail($id);
 
         return view('admin.senior-profile', compact('senior'));
+    }
+
+    /**
+     * Get senior profile data as JSON for modal
+     */
+    public function seniorProfileJson($id)
+    {
+        $senior = SeniorCitizenRecord::on('mswdo_senior')->findOrFail($id);
+
+        return response()->json([
+            'id' => $senior->id,
+            'control_number' => $senior->control_number ?? '-',
+            'osca_id' => $senior->osca_id ?? '-',
+            'full_name' => $senior->full_name ?? '-',
+            'address' => $senior->address ?? '-',
+            'barangay' => $senior->barangay ?? '-',
+            'birth_date' => $senior->birth_date ? date('M d, Y', strtotime($senior->birth_date)) : '-',
+            'current_age' => $senior->age ?? '-',
+            'sex' => $senior->sex ?? '-',
+            'month' => $senior->month ?? '-',
+            'contact_number' => $senior->contact_number ?? '-',
+            'philsys_number' => $senior->philsys_number ?? '-',
+            'rrn_number' => $senior->rrn_number ?? '-',
+            'remarks' => $senior->remarks ?? '-',
+            'status' => ucfirst($senior->status ?? 'pending'),
+            'year_applied' => $senior->year_applied ?? '-',
+        ]);
+    }
+
+    /**
+     * Log activity to session for recent actions display
+     */
+    private function logActivity($action, $name, $identifier)
+    {
+        $activities = session('recent_activities', []);
+        
+        $newActivity = [
+            'action' => $action,
+            'name' => $name,
+            'identifier' => $identifier,
+            'timestamp' => now()->format('M d, Y h:i A'),
+            'admin' => session('admin_user_name') ?? 'Admin'
+        ];
+        
+        // Add new activity to the beginning
+        array_unshift($activities, $newActivity);
+        
+        // Keep only the last 10 activities
+        $activities = array_slice($activities, 0, 10);
+        
+        session(['recent_activities' => $activities]);
+    }
+
+    /**
+     * Clear recent activities from session
+     */
+    public function clearRecentActivities()
+    {
+        session()->forget('recent_activities');
+        return redirect()->back()->with('success', 'Recent activities cleared successfully.');
+    }
+
+    /**
+     * Bulk archive selected senior records
+     */
+    public function bulkArchive(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer'
+        ]);
+
+        $ids = $request->ids;
+        
+        $updated = SeniorCitizenRecord::on('mswdo_senior')
+            ->whereIn('id', $ids)
+            ->update(['status' => 'archived']);
+
+        if ($updated > 0) {
+            // Log bulk activity
+            $this->logActivity('bulk archived', "{$updated} senior(s)", 'Multiple');
+            
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully archived {$updated} record(s)."
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No records were archived.'
+        ], 400);
+    }
+
+    /**
+     * Bulk restore archived senior records
+     */
+    public function bulkRestore(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer'
+        ]);
+
+        $ids = $request->ids;
+        
+        $updated = SeniorCitizenRecord::on('mswdo_senior')
+            ->whereIn('id', $ids)
+            ->update(['status' => 'active']);
+
+        if ($updated > 0) {
+            // Log bulk activity
+            $this->logActivity('bulk restored', "{$updated} senior(s)", 'Multiple');
+            
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully restored {$updated} record(s)."
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No records were restored.'
+        ], 400);
+    }
+
+    /**
+     * Export selected senior records
+     */
+    public function exportSeniors(Request $request)
+    {
+        $ids = $request->get('ids');
+        
+        if ($ids) {
+            $idsArray = explode(',', $ids);
+            $seniors = SeniorCitizenRecord::on('mswdo_senior')
+                ->whereIn('id', $idsArray)
+                ->get();
+        } else {
+            $seniors = SeniorCitizenRecord::on('mswdo_senior')
+                ->where('status', 'active')
+                ->get();
+        }
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="senior_citizens_export_' . now()->format('Y-m-d') . '.csv"',
+        ];
+
+        $callback = function () use ($seniors) {
+            $file = fopen('php://output', 'w');
+            
+            // Add CSV headers
+            fputcsv($file, [
+                'Control Number',
+                'Full Name',
+                'Address',
+                'Barangay',
+                'Birth Date',
+                'Sex',
+                'Age',
+                'Contact Number',
+                'Status'
+            ]);
+
+            // Add data rows
+            foreach ($seniors as $senior) {
+                fputcsv($file, [
+                    $senior->control_number ?? '',
+                    $senior->full_name ?? '',
+                    $senior->address ?? '',
+                    $senior->barangay ?? '',
+                    $senior->birth_date ?? '',
+                    $senior->sex ?? '',
+                    $senior->age ?? '',
+                    $senior->contact_number ?? '',
+                    $senior->status ?? ''
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Export senior records as PDF
+     */
+    public function exportSeniorsPdf(Request $request)
+    {
+        $ids = $request->get('ids');
+        $barangay = $request->get('barangay');
+        $search = $request->get('search');
+        
+        $query = SeniorCitizenRecord::on('mswdo_senior')->where('status', 'active');
+        
+        if ($ids) {
+            $idsArray = explode(',', $ids);
+            $query->whereIn('id', $idsArray);
+        }
+        
+        if ($barangay) {
+            $query->where('barangay', $barangay);
+        }
+        
+        if ($search) {
+            $query->where('full_name', 'like', '%' . $search . '%');
+        }
+        
+        $seniors = $query->get();
+
+        $data = [
+            'seniors' => $seniors,
+            'date' => now()->format('F d, Y'),
+            'total' => $seniors->count(),
+            'barangay' => $barangay,
+            'search' => $search
+        ];
+
+        $pdf = PDF::loadView('admin.seniors-pdf', $data);
+        
+        $filename = 'senior_citizens';
+        if ($barangay) {
+            $filename .= '_' . str_replace(' ', '_', strtolower($barangay));
+        }
+        $filename .= '_' . now()->format('Y-m-d') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

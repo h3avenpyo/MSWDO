@@ -30,6 +30,7 @@
             background: var(--background);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: var(--text);
+            overflow: hidden;
         }
 
         /* Sidebar */
@@ -49,7 +50,6 @@
             border-bottom: 1px solid rgba(255,255,255,.1);
             color: #fff;
             font-weight: 700;
-            font-size: 1.1rem;
             display: flex;
             align-items: center;
             gap: .65rem;
@@ -87,9 +87,10 @@
         /* Main content */
         .main-content {
             margin-left: 260px;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         /* Top-bar */
@@ -103,13 +104,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-shrink: 0;
         }
         .page-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
         .breadcrumb-nav { font-size: .8rem; color: var(--muted); margin: 0; }
         .breadcrumb-nav a { color: var(--primary); text-decoration: none; }
 
         /* Page body */
-        .page-body { padding: 2rem; flex: 1; }
+        .page-body { padding: 2rem; flex: 1; overflow: hidden; display: flex; flex-direction: column; }
 
         /* Form & Card */
         .form-card {
@@ -118,23 +120,26 @@
             border: 1px solid var(--border);
             box-shadow: 0 4px 6px -1px rgba(0,0,0,.05);
             padding: 2rem;
-            margin-bottom: 2rem;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
         }
         .form-label {
-            font-size: .82rem;
+            font-size: .95rem;
             font-weight: 600;
-            color: #475569;
-            margin-bottom: .4rem;
+            color: #1F2937;
+            margin-bottom: .5rem;
+            letter-spacing: 0.3px;
         }
         .form-control, .form-select {
-            background: var(--background);
+            background: #FFFFFF;
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: .6rem .85rem;
-            font-size: .875rem;
+            padding: .75rem 1rem;
+            font-size: .95rem;
             color: var(--text);
             outline: none;
-            transition: border-color .2s;
+            transition: border-color .2s, box-shadow .2s;
         }
         .form-select {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
@@ -145,7 +150,7 @@
         }
         .form-control:focus, .form-select:focus {
             border-color: var(--primary);
-            box-shadow: none;
+            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
             background: #fff;
         }
 
@@ -186,8 +191,11 @@
         <li><a href="/admin/senior/registration" class="active"><i class="fas fa-user-plus"></i> Registration</a></li>
         <li><a href="/admin/senior/masterlist"><i class="fas fa-list"></i> Masterlist</a></li>
         <li><a href="/admin/senior/birthdays"><i class="fas fa-birthday-cake"></i> Birthday Beneficiaries</a></li>
+        <li><a href="/admin/senior/birthday-payouts"><i class="fas fa-money-bill-wave"></i> Birthday Payouts</a></li>
+        <li><a href="/admin/senior/birthday-payouts/history"><i class="fas fa-history"></i> Payout History</a></li>
         <li><a href="/admin/senior/statistics"><i class="fas fa-chart-bar"></i> Statistics</a></li>
         <li><a href="/admin/senior/reports"><i class="fas fa-file-alt"></i> Reports</a></li>
+        <li><a href="/admin/senior/archive"><i class="fas fa-archive"></i> Archive</a></li>
         
         <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
     </ul>
@@ -454,19 +462,19 @@
         return true;
     }
 
-    function getBarangayCode(barangay) {
-        // Convert barangay name to 3-letter code (first 3 letters, uppercase, no spaces)
-        return barangay.substring(0, 3).toUpperCase().replace(/\s/g, '');
-    }
-
     function updateControlNumber() {
         const barangay = document.getElementById('barangay').value;
         const year = document.getElementById('year_applied').value || new Date().getFullYear();
         const controlNumberField = document.getElementById('controlNumber');
-        const nextSequence = {{ $nextSequence ?? 1 }};
         
-        if (barangay) {
-            const barangayCode = getBarangayCode(barangay);
+        // Get barangay sequences and codes from PHP
+        const barangaySequences = {!! json_encode($barangaySequences ?? []) !!};
+        const barangayCodes = {!! json_encode($barangayCodes ?? []) !!};
+        
+        if (barangay && barangaySequences[barangay] && barangayCodes[barangay]) {
+            const barangayCode = barangayCodes[barangay];
+            // Get the next sequence for this specific barangay
+            const nextSequence = barangaySequences[barangay];
             // Format sequence as 6-digit number with leading zeros
             const sequence = String(nextSequence).padStart(6, '0');
             controlNumberField.value = `SC-${barangayCode}-${year}-${sequence}`;

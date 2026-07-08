@@ -15,26 +15,26 @@
             --success: #059669; --warning: #D97706; --danger: #DC2626;
         }
         * { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background: var(--background); font-family: 'Segoe UI', system-ui, sans-serif; color: var(--text); }
+        body { margin: 0; padding: 0; background: var(--background); font-family: 'Segoe UI', system-ui, sans-serif; color: var(--text); overflow: hidden; }
 
         .sidebar { background: var(--sidebar-bg); width: 260px; min-height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; display: flex; flex-direction: column; transition: transform .3s ease; }
-        .sidebar-brand { padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,.1); color: #fff; font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: .65rem; }
+        .sidebar-brand { padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,.1); color: #fff; font-weight: 700; display: flex; align-items: center; gap: .65rem; }
         .sidebar-brand i { font-size: 1.3rem; color: var(--accent); }
         .sidebar-menu { list-style: none; margin: 0; padding: 1rem 0; flex: 1; }
         .sidebar-menu li { margin-bottom: .2rem; }
         .sidebar-menu a { color: rgba(255,255,255,.75); padding: .75rem 1.5rem; display: flex; align-items: center; gap: .75rem; text-decoration: none; font-size: .9rem; border-left: 3px solid transparent; transition: all .2s ease; }
         .sidebar-menu a:hover { background: rgba(255,255,255,.1); color: var(--accent); }
         .sidebar-menu a.active { background: rgba(255,255,255,.1); color: var(--accent); border-left-color: var(--accent); }
-        .sidebar-menu a i { width: 20px; text-align: center; font-size: .95rem; }
+        .sidebar-menu a i { width: 20px; text-align: center; }
 
-        .main-content { margin-left: 260px; min-height: 100vh; display: flex; flex-direction: column; }
+        .main-content { margin-left: 260px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        .top-navbar { background-color: var(--cards); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 0; z-index: 999; display: flex; align-items: center; justify-content: space-between; }
+        .top-navbar { background-color: var(--cards); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 0; z-index: 999; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
         .page-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
         .breadcrumb-nav { font-size: .8rem; color: var(--muted); margin: 0; }
         .breadcrumb-nav a { color: var(--primary); text-decoration: none; }
 
-        .page-body { padding: 2rem; flex: 1; }
+        .page-body { padding: 2rem; flex: 1; overflow: hidden; display: flex; flex-direction: column; }
 
         .stat-card { background: var(--cards); border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,.04); padding: 1.25rem; display: flex; align-items: center; gap: 1rem; cursor: pointer; transition: all .2s ease; height: 100%; }
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,.08); border-color: var(--primary); }
@@ -44,10 +44,10 @@
 
         .filter-section { background: var(--cards); border-radius: 16px; border: 1px solid var(--border); padding: 1.25rem; margin-bottom: 1.5rem; }
 
-        .main-card { background: var(--cards); border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,.04); overflow: hidden; }
+        .main-card { background: var(--cards); border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,.04); overflow: hidden; flex: 1; display: flex; flex-direction: column; }
 
         .table { margin-bottom: 0; }
-        .table thead th { background: #F9FAFB; border-bottom: 2px solid var(--border); font-weight: 600; font-size: .8rem; color: var(--text); padding: .7rem .6rem; white-space: nowrap; position: sticky; top: 0; z-index: 2; }
+        .table thead th { background: var(--cards); border-bottom: 2px solid var(--border); font-weight: 600; font-size: .8rem; color: var(--text); padding: .7rem .6rem; white-space: nowrap; position: sticky; top: 0; z-index: 2; }
         .table thead th.sortable { cursor: pointer; user-select: none; }
         .table thead th.sortable:hover { color: var(--primary); }
         .table tbody td { border-bottom: 1px solid var(--border); padding: .6rem; font-size: .85rem; color: var(--text); vertical-align: middle; }
@@ -69,7 +69,7 @@
         .avatar-circle { width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: .65rem; color: white; background: var(--primary); flex-shrink: 0; }
 
         .barangay-group { margin-bottom: 1rem; }
-        .barangay-group-header { padding: .75rem 1rem; background: #F9FAFB; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all .15s ease; }
+        .barangay-group-header { padding: .75rem 1rem; background: #F9FAFB; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all .15s ease; flex-shrink: 0; flex-wrap: nowrap; }
         .barangay-group-header:hover { border-color: var(--primary); }
 
         @media (max-width: 768px) {
@@ -94,7 +94,7 @@
         .btn-primary:hover { background: var(--primary-dark); }
 
         .loading-overlay { position: absolute; inset: 0; background: rgba(255,255,255,.7); display: flex; align-items: center; justify-content: center; z-index: 10; border-radius: 16px; }
-        .table-wrapper { position: relative; min-height: 200px; }
+        .table-wrapper { position: relative; min-height: 200px; flex: 1; overflow: hidden; display: flex; flex-direction: column; }
 
         .avatar-sm { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: .6rem; font-weight: 700; color: white; }
     </style>
@@ -108,8 +108,11 @@
         <li><a href="/admin/senior/registration"><i class="fas fa-user-plus"></i> Registration</a></li>
         <li><a href="/admin/senior/masterlist"><i class="fas fa-list"></i> Masterlist</a></li>
         <li><a href="/admin/senior/birthdays" class="active"><i class="fas fa-birthday-cake"></i> Birthday Beneficiaries</a></li>
+        <li><a href="/admin/senior/birthday-payouts"><i class="fas fa-money-bill-wave"></i> Birthday Payouts</a></li>
+        <li><a href="/admin/senior/birthday-payouts/history"><i class="fas fa-history"></i> Payout History</a></li>
         <li><a href="/admin/senior/statistics"><i class="fas fa-chart-bar"></i> Statistics</a></li>
         <li><a href="/admin/senior/reports"><i class="fas fa-file-alt"></i> Reports</a></li>
+        <li><a href="/admin/senior/archive"><i class="fas fa-archive"></i> Archive</a></li>
         <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
     </ul>
 </div>
@@ -257,7 +260,7 @@
         {{-- Table View --}}
         <div class="main-card" id="tableView">
             <div class="table-wrapper">
-                <div class="table-responsive">
+                <div class="table-responsive" style="flex: 1; overflow-y: auto; min-height: 0;">
                     <table class="table" id="birthdayTable">
                         <thead>
                             <tr>
@@ -287,8 +290,8 @@
         </div>
 
         {{-- Barangay Grouped View --}}
-        <div class="main-card" id="groupedView" style="display: none; padding: 1.5rem;">
-            <div id="groupedContent">
+        <div class="main-card" id="groupedView" style="display: none; padding: 0;">
+            <div id="groupedContent" style="padding: 1.5rem; overflow-y: auto; flex: 1;">
                 <div class="text-center py-5 text-muted">Loading...</div>
             </div>
         </div>
@@ -449,14 +452,14 @@
                 container.innerHTML = data.map(g => `
                     <div class="barangay-group">
                         <div class="barangay-group-header" onclick="this.nextElementSibling.classList.toggle('d-none'); this.querySelector('.chevron').classList.toggle('fa-chevron-down'); this.querySelector('.chevron').classList.toggle('fa-chevron-up');">
-                            <div class="d-flex align-items-center gap-2">
-                                <i class="fas fa-map-pin" style="color: var(--primary);"></i>
-                                <strong>${g.barangay}</strong>
-                                <span class="badge" style="background: var(--primary); color: white;">${g.count} beneficiary${g.count !== 1 ? 'ies' : 'y'}</span>
+                            <div class="d-flex align-items-center gap-2" style="flex: 1; min-width: 0;">
+                                <i class="fas fa-map-pin" style="color: var(--primary); flex-shrink: 0;"></i>
+                                <strong style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${g.barangay}</strong>
+                                <span class="badge" style="background: var(--primary); color: white; flex-shrink: 0;">${g.count} beneficiary${g.count !== 1 ? 'ies' : 'y'}</span>
                             </div>
-                            <i class="fas fa-chevron-down chevron" style="color: #9CA3AF;"></i>
+                            <i class="fas fa-chevron-down chevron" style="color: #9CA3AF; flex-shrink: 0;"></i>
                         </div>
-                        <div class="mt-2">
+                        <div class="mt-2 d-none">
                             <table class="table table-sm">
                                 <thead><tr><th style="width: 5%;">#</th><th>Full Name</th><th>Birth Date</th><th>Countdown</th></tr></thead>
                                 <tbody>

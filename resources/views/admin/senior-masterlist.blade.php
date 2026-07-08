@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Senior Citizen Masterlist</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -30,6 +31,7 @@
             background: var(--background);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: var(--text);
+            overflow: hidden;
         }
 
         /* Sidebar */
@@ -49,7 +51,6 @@
             border-bottom: 1px solid rgba(255,255,255,.1);
             color: #fff;
             font-weight: 700;
-            font-size: 1.1rem;
             display: flex;
             align-items: center;
             gap: .65rem;
@@ -87,9 +88,10 @@
         /* Main content */
         .main-content {
             margin-left: 260px;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         /* Top-bar */
@@ -103,13 +105,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-shrink: 0;
         }
         .page-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
         .breadcrumb-nav { font-size: .8rem; color: var(--muted); margin: 0; }
         .breadcrumb-nav a { color: var(--primary); text-decoration: none; }
 
         /* Page body */
-        .page-body { padding: 2rem; flex: 1; }
+        .page-body { padding: 2rem; flex: 1; overflow: hidden; display: flex; flex-direction: column; }
 
         /* Table Card */
         .table-card {
@@ -118,7 +121,10 @@
             border: 1px solid var(--border);
             box-shadow: 0 4px 6px -1px rgba(0,0,0,.05);
             padding: 2rem;
-            margin-bottom: 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         .table {
@@ -228,8 +234,11 @@
         <li><a href="/admin/senior/registration"><i class="fas fa-user-plus"></i> Registration</a></li>
         <li><a href="/admin/senior/masterlist" class="active"><i class="fas fa-list"></i> Masterlist</a></li>
         <li><a href="/admin/senior/birthdays"><i class="fas fa-birthday-cake"></i> Birthday Beneficiaries</a></li>
+        <li><a href="/admin/senior/birthday-payouts"><i class="fas fa-money-bill-wave"></i> Birthday Payouts</a></li>
+        <li><a href="/admin/senior/birthday-payouts/history"><i class="fas fa-history"></i> Payout History</a></li>
         <li><a href="/admin/senior/statistics"><i class="fas fa-chart-bar"></i> Statistics</a></li>
         <li><a href="/admin/senior/reports"><i class="fas fa-file-alt"></i> Reports</a></li>
+        <li><a href="/admin/senior/archive"><i class="fas fa-archive"></i> Archive</a></li>
         
         <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
     </ul>
@@ -262,30 +271,26 @@
 
         <!-- Table Card -->
         <div class="table-card">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="h5 fw-bold mb-0">Registered Senior Citizens</h2>
-                <a href="/admin/senior/registration" class="btn btn-primary" style="background-color: var(--primary); border: none; border-radius: 8px; padding: .5rem 1rem; font-size: .875rem;">
-                    <i class="fas fa-plus me-2"></i>Add New
-                </a>
-            </div>
+            <h2 class="h5 fw-bold mb-3">Registered Senior Citizens</h2>
 
             <!-- Filter Section -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <form method="GET" action="{{ route('admin.senior.masterlist') }}" id="filterForm">
-                        <div class="row g-2 align-items-end">
-                            <div class="col-md-5">
+            <div class="mb-4">
+                <form method="GET" action="{{ route('admin.senior.masterlist') }}" id="filterForm">
+                    <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                        <!-- Left Section: Search and Filter -->
+                        <div style="display: flex; gap: 12px; flex: 1; min-width: 0;">
+                            <div style="flex: 1; min-width: 250px;">
                                 <label class="form-label small text-muted fw-semibold mb-1">Search by Name</label>
                                 <div class="input-group">
-                                    <input type="text" name="search" class="form-control" placeholder="Search by name..." value="{{ request('search') }}" style="border-right: none;">
-                                    <button type="submit" style="background-color: var(--primary); color: white; border: none; padding: 0 1rem; border-radius: 0 6px 6px 0; cursor: pointer;">
+                                    <input type="text" name="search" class="form-control" placeholder="Search by name..." value="{{ request('search') }}" style="height: 44px; border-right: none;">
+                                    <button type="submit" style="background-color: var(--primary); color: white; border: none; padding: 0 1rem; border-radius: 0 6px 6px 0; cursor: pointer; height: 44px;">
                                         <i class="fas fa-search"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div style="min-width: 200px;">
                                 <label class="form-label small text-muted fw-semibold mb-1">Filter by Barangay</label>
-                                <select class="form-select" name="barangay" onchange="this.form.submit()">
+                                <select class="form-select" name="barangay" onchange="this.form.submit()" style="height: 44px;">
                                     <option value="">All Barangays</option>
                                     <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
                                     <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
@@ -353,23 +358,41 @@
                                     <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
                                 </select>
                             </div>
-                            <div class="col-md-2 d-flex gap-2 align-items-end">
-                                @if(request('search') || request('barangay'))
-                                    <a href="{{ route('admin.senior.masterlist') }}" class="btn" style="background-color: #6B7280; color: white; border: none; border-radius: 8px; padding: .5rem 1rem; font-size: .875rem; width: 100%;">
-                                        <i class="fas fa-times me-1"></i> Clear
-                                    </a>
-                                @endif
-                            </div>
                         </div>
-                    </form>
-                </div>
+
+                        <!-- Right Section: Action Buttons -->
+                        <div style="display: flex; gap: 12px; flex-shrink: 0;">
+                            <a href="/admin/senior/registration" class="btn" style="background-color: var(--primary); color: white; border: none; border-radius: 8px; padding: 0 1rem; font-size: .875rem; height: 44px; display: flex; align-items: center;">
+                                <i class="fas fa-plus me-2"></i>Add New
+                            </a>
+                            <a href="{{ route('admin.senior.export-pdf') }}?barangay={{ request('barangay') }}&search={{ request('search') }}" class="btn" style="background-color: #DC2626; color: white; border: none; border-radius: 8px; padding: 0 1rem; font-size: .875rem; height: 44px; display: flex; align-items: center;">
+                                <i class="fas fa-file-pdf me-2"></i>Export PDF
+                            </a>
+                            <div class="dropdown" id="bulkActionDropdown">
+                                <button class="btn dropdown-toggle" style="background-color: var(--accent); color: var(--primary-dark); border: none; border-radius: 8px; font-weight: 600; font-size: 0.8rem; padding: 0 1rem; height: 44px; display: flex; align-items: center;" data-bs-toggle="dropdown" id="bulkActionButton" disabled>
+                                    <i class="fas fa-tasks me-1"></i> Bulk Actions <span id="selectedCount" style="background: var(--primary-dark); color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; margin-left: 5px;">0</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" onclick="bulkArchive()"><i class="fas fa-archive me-2"></i>Archive Selected</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="bulkExport()"><i class="fas fa-download me-2"></i>Export Selected</a></li>
+                                </ul>
+                            </div>
+                            @if(request('search') || request('barangay'))
+                                <a href="{{ route('admin.senior.masterlist') }}" class="btn" style="background-color: #6B7280; color: white; border: none; border-radius: 8px; padding: 0 1rem; font-size: .875rem; height: 44px; display: flex; align-items: center;">
+                                    <i class="fas fa-times me-1"></i> Clear
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </form>
             </div>
 
             @if($seniors->count() > 0)
-                <div class="table-responsive">
+                <div class="table-responsive" style="flex: 1; overflow-y: auto; min-height: 0;">
                     <table class="table table-hover" style="table-layout: fixed;">
-                        <thead>
+                        <thead style="position: sticky; top: 0; z-index: 1; background: var(--cards);">
                             <tr>
+                                <th style="width: 5%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="cursor: pointer;"></th>
                                 <th style="width: 12%;">Control No</th>
                                 <th style="width: 18%;">Full Name</th>
                                 <th style="width: 15%;">Barangay</th>
@@ -382,6 +405,7 @@
                         <tbody>
                             @foreach($seniors as $senior)
                                 <tr>
+                                    <td><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="cursor: pointer;"></td>
                                     <td style="word-wrap: break-word;"><strong>{{ $senior->control_number ?? '-' }}</strong></td>
                                     <td style="word-wrap: break-word;">{{ $senior->full_name ?? '-' }}</td>
                                     <td style="word-wrap: break-word;">{{ $senior->barangay ?? '-' }}</td>
@@ -394,31 +418,16 @@
                                     <td style="word-wrap: break-word;">{{ $senior->age ?? '-' }}</td>
                                     <td>
                                         <div class="d-flex gap-1">
-                                            <button class="btn btn-sm view-senior-btn" style="background-color: var(--primary); color: white; border: none; border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.8rem;"
-                                                data-id="{{ $senior->id }}"
-                                                data-control-number="{{ $senior->control_number }}"
-                                                data-full-name="{{ $senior->full_name }}"
-                                                data-address="{{ $senior->address }}"
-                                                data-barangay="{{ $senior->barangay }}"
-                                                data-birth-date="{{ $senior->birth_date ? date('M d, Y', strtotime($senior->birth_date)) : '' }}"
-                                                data-month="{{ $senior->month }}"
-                                                data-age="{{ $senior->age }}"
-                                                data-sex="{{ $senior->sex }}"
-                                                data-contact-number="{{ $senior->contact_number }}"
-                                                data-philsys-number="{{ $senior->philsys_number }}"
-                                                data-rrn-number="{{ $senior->rrn_number }}"
-                                                data-remarks="{{ $senior->remarks }}"
-                                                data-status="{{ ucfirst($senior->status ?? 'pending') }}"
-                                                data-year-applied="{{ $senior->year_applied }}">
-                                                <i class="fas fa-eye"></i>
+                                            <button class="btn btn-sm" style="background-color: var(--primary); color: white; border: none; border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.8rem;" onclick="viewProfile({{ $senior->id }})">
+                                                <i class="fas fa-eye" style="pointer-events: none;"></i>
                                             </button>
                                             <a href="{{ route('admin.senior.id-card', $senior->id) }}" class="btn btn-sm" style="background-color: var(--accent); color: var(--primary-dark); border: none; border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.8rem;" title="ID Card">
-                                                <i class="fas fa-id-card"></i>
+                                                <i class="fas fa-id-card" style="pointer-events: none;"></i>
                                             </a>
                                             <button class="btn btn-sm archive-senior-btn" style="background-color: #dc3545; color: white; border: none; border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.8rem;"
                                                 data-id="{{ $senior->id }}"
                                                 data-name="{{ $senior->full_name }}">
-                                                <i class="fas fa-archive"></i>
+                                                <i class="fas fa-archive" style="pointer-events: none;"></i>
                                             </button>
                                         </div>
                                     </td>
@@ -448,11 +457,11 @@
 
 <!-- Senior Citizen Details Modal -->
 <div class="modal fade" id="seniorModal" tabindex="-1" aria-labelledby="seniorModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="border-radius: 12px; border: 1px solid var(--border); background: var(--cards);">
-            <div class="modal-header" style="border-bottom: 1px solid var(--border); background: var(--cards);">
-                <h5 class="modal-title" id="seniorModalLabel" style="color: var(--text); font-weight: 600;">Senior Citizen Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(0.5);"></button>
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,.12);">
+            <div class="modal-header" style="border-bottom: 1px solid var(--border); background: var(--primary); color: white; border-radius: 16px 16px 0 0;">
+                <h5 class="modal-title" id="seniorModalLabel"><i class="fas fa-user-circle me-2"></i>Senior Citizen Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" style="background: var(--background);">
                 <div class="row">
@@ -535,29 +544,55 @@
     }
     updateDateTime();
 
-    // Event delegation for View and Archive buttons
+    // View senior profile function
+    function viewProfile(id) {
+        const modal = new bootstrap.Modal(document.getElementById('seniorModal'));
+        const content = document.getElementById('seniorModal');
+        
+        // Show loading state
+        document.getElementById('modalControlNumber').textContent = 'Loading...';
+        document.getElementById('modalFullName').textContent = 'Loading...';
+        document.getElementById('modalAddress').textContent = 'Loading...';
+        document.getElementById('modalBarangay').textContent = 'Loading...';
+        document.getElementById('modalBirthDate').textContent = 'Loading...';
+        document.getElementById('modalMonth').textContent = 'Loading...';
+        document.getElementById('modalAge').textContent = 'Loading...';
+        document.getElementById('modalSex').textContent = 'Loading...';
+        document.getElementById('modalContactNumber').textContent = 'Loading...';
+        document.getElementById('modalPhilsysNumber').textContent = 'Loading...';
+        document.getElementById('modalRrnNumber').textContent = 'Loading...';
+        document.getElementById('modalRemarks').textContent = 'Loading...';
+        document.getElementById('modalStatus').textContent = 'Loading...';
+        document.getElementById('modalYearApplied').textContent = 'Loading...';
+        
+        modal.show();
+
+        fetch(`{{ route('admin.senior.profile.json', 0) }}`.replace('/0', `/${id}`))
+            .then(r => r.json())
+            .then(d => {
+                document.getElementById('modalControlNumber').textContent = d.control_number;
+                document.getElementById('modalFullName').textContent = d.full_name;
+                document.getElementById('modalAddress').textContent = d.address;
+                document.getElementById('modalBarangay').textContent = d.barangay;
+                document.getElementById('modalBirthDate').textContent = d.birth_date;
+                document.getElementById('modalMonth').textContent = d.month;
+                document.getElementById('modalAge').textContent = d.current_age;
+                document.getElementById('modalSex').textContent = d.sex;
+                document.getElementById('modalContactNumber').textContent = d.contact_number;
+                document.getElementById('modalPhilsysNumber').textContent = d.philsys_number;
+                document.getElementById('modalRrnNumber').textContent = d.rrn_number;
+                document.getElementById('modalRemarks').textContent = d.remarks;
+                document.getElementById('modalStatus').textContent = d.status;
+                document.getElementById('modalYearApplied').textContent = d.year_applied;
+            })
+            .catch(err => {
+                console.error('Error loading profile:', err);
+                document.getElementById('modalFullName').textContent = 'Error loading data';
+            });
+    }
+
+    // Event delegation for Archive buttons
     document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('view-senior-btn')) {
-            const button = e.target;
-            document.getElementById('modalControlNumber').textContent = button.dataset.controlNumber || '-';
-            document.getElementById('modalFullName').textContent = button.dataset.fullName || '-';
-            document.getElementById('modalAddress').textContent = button.dataset.address || '-';
-            document.getElementById('modalBarangay').textContent = button.dataset.barangay || '-';
-            document.getElementById('modalBirthDate').textContent = button.dataset.birthDate || '-';
-            document.getElementById('modalMonth').textContent = button.dataset.month || '-';
-            document.getElementById('modalAge').textContent = button.dataset.age || '-';
-            document.getElementById('modalSex').textContent = button.dataset.sex || '-';
-            document.getElementById('modalContactNumber').textContent = button.dataset.contactNumber || '-';
-            document.getElementById('modalPhilsysNumber').textContent = button.dataset.philsysNumber || '-';
-            document.getElementById('modalRrnNumber').textContent = button.dataset.rrnNumber || '-';
-            document.getElementById('modalRemarks').textContent = button.dataset.remarks || '-';
-            document.getElementById('modalStatus').textContent = button.dataset.status || '-';
-            document.getElementById('modalYearApplied').textContent = button.dataset.yearApplied || '-';
-
-            const modal = new bootstrap.Modal(document.getElementById('seniorModal'));
-            modal.show();
-        }
-
         if (e.target.classList.contains('archive-senior-btn')) {
             const button = e.target;
             const seniorId = button.dataset.id;
@@ -600,6 +635,131 @@
     });
 
     setInterval(updateDateTime, 60000);
+
+    // Bulk Actions Functions
+    function toggleSelectAll() {
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.senior-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAll.checked;
+        });
+        updateBulkActions();
+    }
+
+    function updateBulkActions() {
+        const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
+        const button = document.getElementById('bulkActionButton');
+        const countSpan = document.getElementById('selectedCount');
+        
+        countSpan.textContent = checkboxes.length;
+        
+        if (checkboxes.length > 0) {
+            button.disabled = false;
+            button.style.opacity = '1';
+        } else {
+            button.disabled = true;
+            button.style.opacity = '0.5';
+        }
+    }
+
+    function bulkArchive() {
+        const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
+        const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+        
+        if (ids.length === 0) {
+            Swal.fire('No Selection', 'Please select at least one record.', 'warning');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Archive Selected Records?',
+            text: `You are about to archive ${ids.length} record(s). This action can be undone.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#1A237E',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Archive',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Send AJAX request to bulk archive
+                fetch('/admin/senior/bulk-archive', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ ids: ids })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Archived!', 'Selected records have been archived.', 'success');
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        Swal.fire('Error', data.message || 'Failed to archive records.', 'error');
+                    }
+                })
+                .catch(error => {
+                    Swal.fire('Error', 'An error occurred while archiving records.', 'error');
+                });
+            }
+        });
+    }
+
+    function bulkExport() {
+        const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
+        const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+        
+        if (ids.length === 0) {
+            Swal.fire('No Selection', 'Please select at least one record.', 'warning');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Export Selected Records?',
+            text: `You are about to export ${ids.length} record(s).`,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#1A237E',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Export',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Redirect to export with IDs
+                window.location.href = `/admin/senior/export?ids=${ids.join(',')}`;
+            }
+        });
+    }
+
+    // Show popup for archive success/error
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('success'))
+            Swal.fire({
+                title: 'Success!',
+                text: '{{ session('success') }}',
+                icon: 'success',
+                confirmButtonColor: '#1A237E',
+                confirmButtonText: 'OK',
+                background: '#ffffff',
+                timer: 3000,
+                timerProgressBar: true,
+                customClass: { popup: 'rounded-4 shadow-lg' }
+            });
+        @endif
+        @if(session('error'))
+            Swal.fire({
+                title: 'Error!',
+                text: '{{ session('error') }}',
+                icon: 'error',
+                confirmButtonColor: '#1A237E',
+                confirmButtonText: 'OK',
+                background: '#ffffff',
+                customClass: { popup: 'rounded-4 shadow-lg' }
+            });
+        @endif
+    });
 </script>
 
 <!-- Hidden form for secure POST logout -->

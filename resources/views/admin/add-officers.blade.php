@@ -512,6 +512,20 @@
                             <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Signature Position</label>
+                        <select class="form-select" name="signature_position">
+                            <option value="">None</option>
+                            <option value="osca_head" {{ old('signature_position') == 'osca_head' ? 'selected' : '' }}>OSCA Head</option>
+                            <option value="mswdo_officer" {{ old('signature_position') == 'mswdo_officer' ? 'selected' : '' }}>MSWDO Officer</option>
+                        </select>
+                        <p class="select-hint"><i class="fas fa-info-circle"></i> Select if this officer's signature should appear on ID cards</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Signature Image</label>
+                        <input type="file" name="signature_image" class="form-control" accept="image/*">
+                        <p class="select-hint"><i class="fas fa-info-circle"></i> Upload signature image (PNG, JPG) for ID cards</p>
+                    </div>
                     <div class="col-12 mt-4 text-end">
                         <button type="button" class="btn btn-light me-2 border" onclick="location.href='/admin/dashboard'">Cancel</button>
                         <button type="submit" class="btn-submit">Add Officer</button>

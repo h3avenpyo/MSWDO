@@ -622,12 +622,20 @@
                                     
                                     <div class="pvc-signatures-row">
                                         <div class="pvc-sign-block">
-                                            <div style="height: 12px;"></div>
+                                            @if($oscaHeadSignature && file_exists(public_path($oscaHeadSignature)))
+                                                <img src="{{ asset($oscaHeadSignature) }}" style="max-height: 20px; max-width: 100%; margin-bottom: 2px;">
+                                            @else
+                                                <div style="height: 12px;"></div>
+                                            @endif
                                             <div class="pvc-sign-line">OSCA head</div>
                                             <div class="pvc-sign-subtitle">OSCA Silang Head Office</div>
                                         </div>
                                         <div class="pvc-sign-block">
-                                            <div style="height: 12px;"></div>
+                                            @if($mswdoOfficerSignature && file_exists(public_path($mswdoOfficerSignature)))
+                                                <img src="{{ asset($mswdoOfficerSignature) }}" style="max-height: 20px; max-width: 100%; margin-bottom: 2px;">
+                                            @else
+                                                <div style="height: 12px;"></div>
+                                            @endif
                                             <div class="pvc-sign-line">MSWDO officer</div>
                                             <div class="pvc-sign-subtitle">Authorized Signature</div>
                                         </div>
@@ -773,12 +781,20 @@
                 
                 <div class="pvc-signatures-row">
                     <div class="pvc-sign-block">
-                        <div style="height: 12px;"></div>
+                        @if($oscaHeadSignature && file_exists(public_path($oscaHeadSignature)))
+                            <img src="{{ asset($oscaHeadSignature) }}" style="max-height: 12px; max-width: 100%; margin-bottom: 2px;">
+                        @else
+                            <div style="height: 12px;"></div>
+                        @endif
                         <div class="pvc-sign-line">OSCA head</div>
                         <div class="pvc-sign-subtitle">OSCA Silang Head Office</div>
                     </div>
                     <div class="pvc-sign-block">
-                        <div style="height: 12px;"></div>
+                        @if($mswdoOfficerSignature && file_exists(public_path($mswdoOfficerSignature)))
+                            <img src="{{ asset($mswdoOfficerSignature) }}" style="max-height: 12px; max-width: 100%; margin-bottom: 2px;">
+                        @else
+                            <div style="height: 12px;"></div>
+                        @endif
                         <div class="pvc-sign-line">MSWDO officer</div>
                         <div class="pvc-sign-subtitle">Authorized Signature</div>
                     </div>
