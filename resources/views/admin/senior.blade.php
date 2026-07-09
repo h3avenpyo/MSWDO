@@ -265,148 +265,140 @@
 
         <!-- Dashboard Content -->
         <div class="p-4" style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
-            <!-- Overview Cards -->
-            <div class="row mb-4">
-                <div class="col-xl-4 col-md-6 mb-4">
-                    <div class="card animate-fade-in" style="padding: 0;">
-                        <div style="display: flex; align-items: center; padding: 1.5rem;">
-                            <div style="width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background-color: rgba(37, 99, 235, 0.1); color: #1A237E; flex-shrink: 0; margin-right: 1rem;">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div style="display: flex; flex-direction: column; justify-content: center;">
-                                <p style="color: #6B7280; font-size: 0.875rem; margin: 0 0 0.25rem 0; font-weight: 500;">Total Seniors</p>
-                                <h3 class="counter" data-target="{{ $totalSeniors }}" style="font-size: 2rem; font-weight: 700; margin: 0; line-height: 1;">0</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-md-6 mb-4">
-                    <div class="card animate-fade-in delay-1" style="padding: 0;">
-                        <div style="display: flex; align-items: center; padding: 1.5rem;">
-                            <div style="width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background-color: rgba(20, 184, 166, 0.1); color: #6B7280; flex-shrink: 0; margin-right: 1rem;">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div style="display: flex; flex-direction: column; justify-content: center;">
-                                <p style="color: #6B7280; font-size: 0.875rem; margin: 0 0 0.25rem 0; font-weight: 500;">Active Seniors</p>
-                                <h3 class="counter" data-target="{{ $activeSeniors }}" style="font-size: 2rem; font-weight: 700; margin: 0; line-height: 1;">0</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-md-6 mb-4">
-                    <div class="card animate-fade-in delay-2" style="padding: 0;">
-                        <div style="display: flex; align-items: center; padding: 1.5rem;">
-                            <div style="width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background-color: rgba(245, 158, 11, 0.1); color: #FBC02D; flex-shrink: 0; margin-right: 1rem;">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div style="display: flex; flex-direction: column; justify-content: center;">
-                                <p style="color: #6B7280; font-size: 0.875rem; margin: 0 0 0.25rem 0; font-weight: 500;">Pending Applications</p>
-                                <h3 class="counter" data-target="{{ $pendingSeniors }}" style="font-size: 2rem; font-weight: 700; margin: 0; line-height: 1;">0</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Birthday Notifications -->
+            <!-- Summary Cards -->
             @php
                 use App\Models\Senior\SeniorCitizenRecord;
                 $bdayToday = SeniorCitizenRecord::on('mswdo_senior')->where('status','active')->whereNotNull('birth_date')->whereRaw("MONTH(birth_date) = ? AND DAY(birth_date) = ?", [now()->format('n'), now()->format('j')])->count();
                 $bdayWeek = SeniorCitizenRecord::on('mswdo_senior')->where('status','active')->whereNotNull('birth_date')->where(function($q){ $s=now();$e=now()->addDays(7);$sMD=$s->format('m-d');$eMD=$e->format('m-d');if($sMD<=$eMD){$q->whereRaw("DATE_FORMAT(birth_date,'%m-%d') BETWEEN ? AND ?",[$sMD,$eMD]);}else{$q->whereRaw("DATE_FORMAT(birth_date,'%m-%d') >= ?",[$sMD])->orWhereRaw("DATE_FORMAT(birth_date,'%m-%d') <= ?",[$eMD]);}})->count();
                 $bdayNextMonth = SeniorCitizenRecord::on('mswdo_senior')->where('status','active')->whereNotNull('birth_date')->whereRaw("MONTH(birth_date) = ?", [now()->addMonth()->format('n')])->count();
             @endphp
-            <a href="/admin/senior/birthdays" style="text-decoration: none;">
-                <div class="row g-2 mb-4">
-                    <div class="col-md-4">
-                        <div class="card animate-fade-in" style="padding: 0; border-left: 4px solid #DC2626; cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
-                            <div style="display: flex; align-items: center; padding: 1rem 1.25rem;">
-                                <div style="width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; background: rgba(220,38,38,.1); color: #DC2626; flex-shrink: 0; margin-right: 1rem;"><i class="fas fa-birthday-cake"></i></div>
-                                <div><p style="color: #6B7280; font-size: 0.78rem; margin: 0 0 0.15rem 0; font-weight: 500;">🎂 Today's Birthdays</p><h3 style="font-size: 1.35rem; font-weight: 700; margin: 0; line-height: 1.2; color: var(--text);">{{ $bdayToday }}</h3></div>
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-xl col-lg-3 col-md-4">
+                    <div class="card animate-fade-in" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(37, 99, 235, 0.1); color: #1A237E; flex-shrink: 0; margin-right: 0.75rem;">
+                                <i class="fas fa-users"></i>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card animate-fade-in delay-1" style="padding: 0; border-left: 4px solid #D97706; cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
-                            <div style="display: flex; align-items: center; padding: 1rem 1.25rem;">
-                                <div style="width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; background: rgba(251,192,45,.15); color: #D97706; flex-shrink: 0; margin-right: 1rem;"><i class="fas fa-calendar-week"></i></div>
-                                <div><p style="color: #6B7280; font-size: 0.78rem; margin: 0 0 0.15rem 0; font-weight: 500;">📅 Next 7 Days</p><h3 style="font-size: 1.35rem; font-weight: 700; margin: 0; line-height: 1.2; color: var(--text);">{{ $bdayWeek }}</h3></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card animate-fade-in delay-2" style="padding: 0; border-left: 4px solid #1A237E; cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
-                            <div style="display: flex; align-items: center; padding: 1rem 1.25rem;">
-                                <div style="width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; background: rgba(26,35,126,.08); color: var(--primary); flex-shrink: 0; margin-right: 1rem;"><i class="fas fa-calendar-alt"></i></div>
-                                <div><p style="color: #6B7280; font-size: 0.78rem; margin: 0 0 0.15rem 0; font-weight: 500;">🎉 Next Month</p><h3 style="font-size: 1.35rem; font-weight: 700; margin: 0; line-height: 1.2; color: var(--text);">{{ $bdayNextMonth }}</h3></div>
+                            <div style="flex: 1;">
+                                <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Total Seniors</p>
+                                <h3 class="counter" data-target="{{ $totalSeniors }}" style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $totalSeniors }}</h3>
                             </div>
                         </div>
                     </div>
                 </div>
-            </a>
-
-            <!-- Charts Row -->
-            <div class="row mb-4">
-                <!-- Barangay Distribution Chart -->
-                <div class="col-lg-6 mb-4">
-                    <div class="card animate-fade-in p-0" style="overflow: hidden;">
-                        <div class="p-4">
-                            <h6 class="mb-1" style="font-weight: 700; color: var(--text);">
-                                <i class="fas fa-chart-pie me-2" style="color: var(--primary);"></i>Barangay Distribution
-                            </h6>
-                            <span class="text-muted small">Active seniors by barangay</span>
-                        </div>
-                        <div class="p-4 pt-0">
-                            <div style="height: 300px; position: relative;">
-                                <canvas id="barangayChart"></canvas>
+                <div class="col-6 col-xl col-lg-3 col-md-4">
+                    <div class="card animate-fade-in delay-1" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(16, 185, 129, 0.1); color: #10B981; flex-shrink: 0; margin-right: 0.75rem;">
+                                <i class="fas fa-check-circle"></i>
                             </div>
+                            <div style="flex: 1;">
+                                <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Active Seniors</p>
+                                <h3 class="counter" data-target="{{ $activeSeniors }}" style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $activeSeniors }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-xl col-lg-3 col-md-4">
+                    <a href="/admin/senior/birthdays" style="text-decoration: none;">
+                        <div class="card animate-fade-in delay-2" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(220, 38, 38, 0.1); color: #DC2626; flex-shrink: 0; margin-right: 0.75rem;">
+                                    <i class="fas fa-birthday-cake"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Today's Birthdays</p>
+                                    <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $bdayToday }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6 col-xl col-lg-3 col-md-4">
+                    <a href="/admin/senior/birthdays" style="text-decoration: none;">
+                        <div class="card animate-fade-in delay-3" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(245, 158, 11, 0.1); color: #F59E0B; flex-shrink: 0; margin-right: 0.75rem;">
+                                    <i class="fas fa-calendar-week"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Next 7 Days</p>
+                                    <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $bdayWeek }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6 col-xl col-lg-3 col-md-4">
+                    <a href="/admin/senior/birthdays" style="text-decoration: none;">
+                        <div class="card animate-fade-in delay-4" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(26, 35, 126, 0.1); color: #1A237E; flex-shrink: 0; margin-right: 0.75rem;">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Next Month</p>
+                                    <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $bdayNextMonth }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Dashboard Insights -->
+            <div class="row g-4 mb-4">
+                <!-- Top Barangays -->
+                <div class="col-lg-6">
+                    <div class="card animate-fade-in" style="padding: 1.25rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 style="font-weight: 700; font-size: 0.875rem; color: var(--text); margin: 0;">
+                                <i class="fas fa-building me-2" style="color: var(--primary);"></i>Top Barangays
+                            </h6>
+                            <button class="btn btn-sm" style="background: rgba(26, 35, 126, 0.1); color: var(--primary); border: none; border-radius: 6px; font-size: 0.7rem; padding: 0.25rem 0.5rem;" data-bs-toggle="modal" data-bs-target="#barangayModal">
+                                View All
+                            </button>
+                        </div>
+                        <div id="topBarangaysList" style="max-height: 280px; overflow-y: auto;">
+                            <!-- Top barangays will be rendered here -->
                         </div>
                     </div>
                 </div>
 
                 <!-- Recent Activities -->
-                <div class="col-lg-6 mb-4">
-                    <div class="card animate-fade-in delay-1 p-0" style="overflow: hidden;">
-                        <div class="p-4">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-1" style="font-weight: 700; color: var(--text);">
-                                        <i class="fas fa-history me-2" style="color: var(--primary);"></i>Recent Activities
-                                    </h6>
-                                    <span class="text-muted small">Latest admin actions</span>
-                                </div>
-                                <button type="button" class="btn btn-sm" style="background: rgba(220, 38, 38, 0.1); color: #DC2626; border: none; border-radius: 6px; font-size: 0.75rem; padding: 0.35rem 0.75rem;" onclick="confirmClearActivities()">
-                                    <i class="fas fa-trash-alt me-1"></i>Clear
-                                </button>
-                            </div>
+                <div class="col-lg-6">
+                    <div class="card animate-fade-in delay-1" style="padding: 1.25rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 style="font-weight: 700; font-size: 0.875rem; color: var(--text); margin: 0;">
+                                <i class="fas fa-history me-2" style="color: var(--primary);"></i>Recent Activities
+                            </h6>
+                            <button type="button" class="btn btn-sm" style="background: rgba(220, 38, 38, 0.1); color: #DC2626; border: none; border-radius: 6px; font-size: 0.7rem; padding: 0.25rem 0.5rem;" onclick="confirmClearActivities()">
+                                Clear
+                            </button>
                         </div>
-                        <div class="p-4 pt-0">
-                            <div style="max-height: 300px; overflow-y: auto;">
-                                @if(count($recentActivities) > 0)
-                                    @foreach($recentActivities as $activity)
-                                    <div class="d-flex align-items-start mb-3 pb-3" style="border-bottom: 1px solid var(--border);">
-                                        <div style="width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; background: rgba(26, 35, 126, 0.1); color: var(--primary); flex-shrink: 0; margin-right: 0.75rem;">
-                                            <i class="fas fa-{{ $activity['action'] == 'registered' ? 'user-plus' : ($activity['action'] == 'archived' ? 'archive' : ($activity['action'] == 'restored' ? 'undo' : 'id-card')) }}"></i>
+                        <div style="max-height: 280px; overflow-y: auto;">
+                            @if(count($recentActivities) > 0)
+                                @foreach($recentActivities as $activity)
+                                <div class="d-flex align-items-start mb-3 pb-3" style="border-bottom: 1px solid var(--border);">
+                                    <div style="width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; background: rgba(26, 35, 126, 0.1); color: var(--primary); flex-shrink: 0; margin-right: 0.75rem;">
+                                        <i class="fas fa-{{ $activity['action'] == 'registered' ? 'user-plus' : ($activity['action'] == 'archived' ? 'archive' : ($activity['action'] == 'restored' ? 'undo' : 'id-card')) }}"></i>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 600; font-size: 0.8rem; color: var(--text);">
+                                            {{ ucfirst($activity['action']) }} <strong>{{ $activity['name'] }}</strong>
                                         </div>
-                                        <div style="flex: 1;">
-                                            <div style="font-weight: 600; font-size: 0.875rem; color: var(--text);">
-                                                {{ ucfirst($activity['action']) }} <strong>{{ $activity['name'] }}</strong>
-                                            </div>
-                                            <div class="text-muted" style="font-size: 0.75rem;">
-                                                <span>{{ $activity['identifier'] }}</span> • {{ $activity['timestamp'] }}
-                                            </div>
-                                            <div class="text-muted" style="font-size: 0.75rem;">
-                                                by {{ $activity['admin'] }}
-                                            </div>
+                                        <div class="text-muted" style="font-size: 0.7rem;">
+                                            <span>{{ $activity['identifier'] }}</span> • {{ $activity['timestamp'] }}
                                         </div>
                                     </div>
-                                    @endforeach
-                                @else
-                                    <div class="text-center text-muted py-4">
-                                        <i class="fas fa-inbox" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; color: #D1D5DB;"></i>
-                                        No recent activities
-                                    </div>
-                                @endif
-                            </div>
+                                </div>
+                                @endforeach
+                            @else
+                                <div class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem; color: #D1D5DB;"></i>
+                                    <span style="font-size: 0.8rem;">No recent activities</span>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -415,37 +407,37 @@
             <!-- Recent Senior Citizen Records -->
             <div class="row mb-4" style="flex: 1; min-height: 0;">
                 <div class="col-12" style="height: 100%; display: flex; flex-direction: column;">
-                    <div class="card p-0 animate-fade-in" style="overflow: hidden; flex: 1; display: flex; flex-direction: column;">
-                        <div class="d-flex justify-content-between align-items-center p-4 pb-0" style="flex-shrink: 0;">
+                    <div class="card p-0 animate-fade-in" style="overflow: hidden; flex: 1; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <div class="d-flex justify-content-between align-items-center p-3 pb-0" style="flex-shrink: 0;">
                             <div>
-                                <h6 class="mb-1" style="font-weight: 700; color: var(--text);">Recent Senior Citizen Records</h6>
-                                <span class="text-muted small">Latest {{ $recentSeniors->count() }} registered seniors</span>
+                                <h6 style="font-weight: 700; font-size: 0.875rem; color: var(--text); margin: 0;">Recent Senior Citizen Records</h6>
+                                <span class="text-muted" style="font-size: 0.75rem;">Latest {{ $recentSeniors->count() }} registered seniors</span>
                             </div>
                             <div class="d-flex gap-2 align-items-center">
-                                <div class="input-group input-group-sm" style="width: 220px;">
-                                    <span class="input-group-text bg-white border-end-0" style="border-color: var(--border);">
-                                        <i class="fas fa-search text-muted" style="font-size: 0.75rem;"></i>
+                                <div class="input-group input-group-sm" style="width: 200px;">
+                                    <span class="input-group-text bg-white border-end-0" style="border-color: var(--border); padding: 0.375rem 0.5rem;">
+                                        <i class="fas fa-search text-muted" style="font-size: 0.7rem;"></i>
                                     </span>
-                                    <input type="text" class="form-control border-start-0 ps-0" placeholder="Search records..." style="border-color: var(--border); font-size: 0.85rem; box-shadow: none;" onkeyup="filterSeniorTable(this.value)" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+                                    <input type="text" class="form-control border-start-0 ps-0" placeholder="Search..." style="border-color: var(--border); font-size: 0.75rem; box-shadow: none; padding: 0.375rem 0.5rem;" onkeyup="filterSeniorTable(this.value)" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
                                 </div>
-                                <button class="btn btn-sm" style="background-color: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 0.8rem; box-shadow: 0 2px 6px rgba(26, 35, 126, 0.25);" onclick="window.location.href='/admin/senior/registration'">
-                                    <i class="fas fa-plus me-1"></i> Add New
+                                <button class="btn btn-sm" style="background-color: var(--primary); color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 0.75rem; padding: 0.375rem 0.75rem;" onclick="window.location.href='/admin/senior/registration'">
+                                    <i class="fas fa-plus me-1" style="font-size: 0.7rem;"></i> Add New
                                 </button>
                             </div>
                         </div>
                         <div class="p-0" style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
                             <div class="table-responsive" style="flex: 1; overflow-y: auto; min-height: 0;">
-                                <table class="table table-hover" id="seniorTable" style="margin-bottom: 0;">
+                                <table class="table table-hover" id="seniorTable" style="margin-bottom: 0; font-size: 0.8rem;">
                                     <thead style="position: sticky; top: 0; z-index: 1; background: var(--cards);">
                                         <tr>
-                                            <th>#</th>
-                                            <th>Control No.</th>
-                                            <th>Full Name</th>
-                                            <th>Barangay</th>
-                                            <th>Sex / Age</th>
-                                            <th>Birth Date</th>
-                                            <th>Contact</th>
-                                            <th>Action</th>
+                                            <th style="font-size: 0.75rem; font-weight: 600;">#</th>
+                                            <th style="font-size: 0.75rem; font-weight: 600;">Control No.</th>
+                                            <th style="font-size: 0.75rem; font-weight: 600;">Full Name</th>
+                                            <th style="font-size: 0.75rem; font-weight: 600;">Barangay</th>
+                                            <th style="font-size: 0.75rem; font-weight: 600;">Sex / Age</th>
+                                            <th style="font-size: 0.75rem; font-weight: 600;">Birth Date</th>
+                                            <th style="font-size: 0.75rem; font-weight: 600;">Contact</th>
+                                            <th style="font-size: 0.75rem; font-weight: 600;">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -509,6 +501,23 @@
                             </a>
                         </div>
                         @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barangay Distribution Modal -->
+    <div class="modal fade" id="barangayModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,.12);">
+                <div class="modal-header" style="border-bottom: 1px solid var(--border); background: var(--accent); color: var(--primary-dark); border-radius: 16px 16px 0 0;">
+                    <h5 class="modal-title"><i class="fas fa-building me-2"></i>All Barangays Distribution</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="barangayModalCards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; max-height: 600px; overflow-y: auto;">
+                        <!-- All barangay cards will be rendered here -->
                     </div>
                 </div>
             </div>
@@ -585,142 +594,82 @@
         });
 
         // Barangay Distribution Chart
+        let barangayChart = null;
+        let showingAll = false;
+
         function initBarangayChart() {
-            const ctx = document.getElementById('barangayChart');
-            if (!ctx) return;
+            const barangayData = @json($barangayDistribution);
+
+            // Sort by count (highest to lowest)
+            const sortedData = [...barangayData].sort((a, b) => b.count - a.count);
+
+            renderTopBarangaysList(sortedData.slice(0, 10));
+        }
+
+        function renderTopBarangaysList(data) {
+            const container = document.getElementById('topBarangaysList');
+            if (!container) return;
+
+            const totalCount = data.reduce((sum, item) => sum + item.count, 0);
+
+            container.innerHTML = data.map((item, index) => {
+                const percentage = totalCount > 0 ? ((item.count / totalCount) * 100).toFixed(1) : 0;
+                const barColor = index === 0 ? '#1A237E' :
+                               index === 1 ? '#3B82F6' :
+                               index === 2 ? '#6366F1' :
+                               '#9CA3AF';
+
+                return `
+                    <div style="display: flex; align-items: center; margin-bottom: 0.75rem;">
+                        <div style="width: 24px; font-size: 0.75rem; color: #6B7280; font-weight: 600; flex-shrink: 0;">${index + 1}.</div>
+                        <div style="flex: 1; margin-left: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                <span style="font-size: 0.8rem; font-weight: 500; color: var(--text);">${item.barangay}</span>
+                                <span style="font-size: 0.8rem; font-weight: 600; color: var(--primary);">${item.count}</span>
+                            </div>
+                            <div style="height: 4px; background: #E5E7EB; border-radius: 2px; overflow: hidden;">
+                                <div style="height: 100%; background: ${barColor}; border-radius: 2px; width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render all barangay cards in modal
+        function renderModalCards() {
+            const container = document.getElementById('barangayModalCards');
+            if (!container) return;
 
             const barangayData = @json($barangayDistribution);
-            
-            const labels = barangayData.map(item => item.barangay || 'Unknown');
-            const data = barangayData.map(item => item.count);
+            const sortedData = [...barangayData].sort((a, b) => b.count - a.count);
 
-            // Generate colors - expanded to avoid repetition
-            const colors = [
-                'rgba(26, 35, 126, 0.8)',
-                'rgba(251, 192, 45, 0.8)',
-                'rgba(107, 114, 128, 0.8)',
-                'rgba(20, 184, 166, 0.8)',
-                'rgba(220, 38, 38, 0.8)',
-                'rgba(59, 130, 246, 0.8)',
-                'rgba(139, 92, 246, 0.8)',
-                'rgba(236, 72, 153, 0.8)',
-                'rgba(34, 197, 94, 0.8)',
-                'rgba(249, 115, 22, 0.8)',
-                'rgba(168, 85, 247, 0.8)',
-                'rgba(14, 165, 233, 0.8)',
-                'rgba(234, 179, 8, 0.8)',
-                'rgba(132, 204, 22, 0.8)',
-                'rgba(249, 115, 22, 0.8)',
-                'rgba(239, 68, 68, 0.8)',
-                'rgba(34, 197, 94, 0.8)',
-                'rgba(6, 182, 212, 0.8)',
-                'rgba(99, 102, 241, 0.8)',
-                'rgba(168, 85, 247, 0.8)',
-                'rgba(217, 70, 239, 0.8)',
-                'rgba(236, 72, 153, 0.8)',
-                'rgba(244, 114, 182, 0.8)',
-                'rgba(251, 146, 60, 0.8)',
-                'rgba(250, 204, 21, 0.8)',
-                'rgba(163, 230, 53, 0.8)',
-                'rgba(74, 222, 128, 0.8)',
-                'rgba(45, 212, 191, 0.8)',
-                'rgba(56, 189, 248, 0.8)',
-                'rgba(96, 165, 250, 0.8)',
-                'rgba(129, 140, 248, 0.8)',
-                'rgba(192, 132, 252, 0.8)',
-                'rgba(251, 113, 133, 0.8)',
-                'rgba(253, 186, 116, 0.8)',
-                'rgba(250, 204, 21, 0.8)',
-                'rgba(163, 230, 53, 0.8)',
-                'rgba(74, 222, 128, 0.8)',
-                'rgba(20, 184, 166, 0.8)',
-                'rgba(15, 118, 110, 0.8)',
-                'rgba(88, 28, 135, 0.8)',
-                'rgba(124, 58, 237, 0.8)',
-                'rgba(79, 70, 229, 0.8)',
-                'rgba(30, 64, 175, 0.8)',
-                'rgba(29, 78, 216, 0.8)',
-                'rgba(37, 99, 235, 0.8)',
-                'rgba(59, 130, 246, 0.8)',
-                'rgba(99, 102, 241, 0.8)',
-                'rgba(139, 92, 246, 0.8)',
-                'rgba(168, 85, 247, 0.8)',
-                'rgba(192, 132, 252, 0.8)',
-                'rgba(217, 70, 239, 0.8)',
-                'rgba(236, 72, 153, 0.8)',
-                'rgba(244, 114, 182, 0.8)',
-                'rgba(251, 113, 133, 0.8)',
-                'rgba(254, 202, 202, 0.8)',
-                'rgba(252, 165, 165, 0.8)',
-                'rgba(254, 215, 170, 0.8)',
-                'rgba(253, 230, 138, 0.8)',
-                'rgba(254, 240, 138, 0.8)',
-                'rgba(253, 224, 71, 0.8)',
-                'rgba(250, 204, 21, 0.8)',
-                'rgba(234, 179, 8, 0.8)',
-                'rgba(202, 138, 4, 0.8)',
-                'rgba(161, 98, 7, 0.8)',
-                'rgba(120, 53, 15, 0.8)',
-                'rgba(185, 28, 28, 0.8)',
-                'rgba(220, 38, 38, 0.8)',
-                'rgba(239, 68, 68, 0.8)',
-                'rgba(248, 113, 113, 0.8)',
-                'rgba(253, 164, 175, 0.8)',
-                'rgba(251, 146, 60, 0.8)',
-                'rgba(249, 115, 22, 0.8)',
-                'rgba(234, 88, 12, 0.8)',
-                'rgba(154, 52, 18, 0.8)',
-                'rgba(120, 53, 15, 0.8)',
-                'rgba(71, 85, 105, 0.8)',
-                'rgba(51, 65, 85, 0.8)',
-                'rgba(30, 41, 59, 0.8)',
-                'rgba(15, 23, 42, 0.8)',
-                'rgba(75, 85, 99, 0.8)',
-                'rgba(100, 116, 139, 0.8)',
-                'rgba(148, 163, 184, 0.8)',
-                'rgba(203, 213, 225, 0.8)',
-                'rgba(226, 232, 240, 0.8)',
-                'rgba(241, 245, 249, 0.8)'
-            ];
+            container.innerHTML = sortedData.map((item, index) => {
+                const bgColor = index === 0 ? 'rgba(26, 35, 126, 0.1)' :
+                               index === 1 ? 'rgba(59, 130, 246, 0.1)' :
+                               index === 2 ? 'rgba(99, 102, 241, 0.1)' :
+                               'rgba(107, 114, 128, 0.05)';
+                const textColor = index < 3 ? 'var(--primary)' : 'var(--text)';
+                const borderColor = index < 3 ? 'var(--primary)' : 'var(--border)';
 
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: colors.slice(0, labels.length),
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                padding: 15,
-                                usePointStyle: true,
-                                pointStyle: 'circle',
-                                font: {
-                                    size: 11
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((context.raw / total) * 100).toFixed(1);
-                                    return context.label + ': ' + context.raw + ' (' + percentage + '%)';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+                return `
+                    <div style="background: ${bgColor}; border: 1px solid ${borderColor}; border-radius: 8px; padding: 1rem; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-bottom: 0.25rem;">${item.barangay}</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: ${textColor};">${item.count}</div>
+                    </div>
+                `;
+            }).join('');
         }
+
+        // Initialize modal cards when modal is shown
+        document.addEventListener('DOMContentLoaded', function() {
+            const barangayModal = document.getElementById('barangayModal');
+            if (barangayModal) {
+                barangayModal.addEventListener('shown.bs.modal', function() {
+                    renderModalCards();
+                });
+            }
+        });
     </script>
 
     <!-- Hidden form for secure POST logout -->

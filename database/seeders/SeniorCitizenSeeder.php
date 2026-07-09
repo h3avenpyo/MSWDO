@@ -100,8 +100,57 @@ class SeniorCitizenSeeder extends Seeder
         $months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
         $currentYear = date('Y');
+        $currentMonth = date('m');
+        $currentDay = date('d');
         $sequenceCounter = [];
         $recordNumberCounter = 1;
+
+        // Calculate date ranges for birthday distribution
+        $today = date('Y-m-d');
+        $next7DaysStart = date('Y-m-d', strtotime('+1 day'));
+        $next7DaysEnd = date('Y-m-d', strtotime('+7 days'));
+        $nextMonthStart = date('Y-m-01', strtotime('+1 month'));
+        $nextMonthEnd = date('Y-m-t', strtotime('+1 month'));
+
+        // Target distribution: 671 total seniors
+        // Today: 0, Next 7 days: 10, Next month: 53, Others: 608
+        $targetTotal = 671;
+        $targetToday = 0;
+        $targetNext7Days = 10;
+        $targetNextMonth = 53;
+        $targetOthers = $targetTotal - $targetToday - $targetNext7Days - $targetNextMonth;
+
+        // Generate birth dates for each category
+        $birthDates = [];
+
+        // Today's birthdays (0)
+        for ($i = 0; $i < $targetToday; $i++) {
+            $birthDates[] = $today;
+        }
+
+        // Next 7 days birthdays (10)
+        for ($i = 0; $i < $targetNext7Days; $i++) {
+            $dayOffset = rand(1, 7);
+            $birthDates[] = date('Y-m-d', strtotime("+$dayOffset days"));
+        }
+
+        // Next month birthdays (53)
+        for ($i = 0; $i < $targetNextMonth; $i++) {
+            $dayOffset = rand(1, 28);
+            $birthDates[] = date('Y-m-d', strtotime("+1 month +$dayOffset days"));
+        }
+
+        // Other birthdays (608) - random dates throughout the year
+        for ($i = 0; $i < $targetOthers; $i++) {
+            $monthOffset = rand(2, 11); // Skip current and next month
+            $dayOffset = rand(1, 28);
+            $birthDates[] = date('Y-m-d', strtotime("+$monthOffset months +$dayOffset days"));
+        }
+
+        // Shuffle birth dates
+        shuffle($birthDates);
+
+        $birthDateIndex = 0;
 
         foreach ($barangays as $barangay) {
             // Initialize sequence counter for this barangay
@@ -109,18 +158,42 @@ class SeniorCitizenSeeder extends Seeder
                 $sequenceCounter[$barangay] = 1;
             }
 
-            for ($i = 1; $i <= 5; $i++) {
+            // Calculate seniors per barangay to reach exactly 671 total
+            // Distribute unevenly: some barangays get more, some get fewer
+            $baseCount = floor($targetTotal / count($barangays));
+            $remaining = $targetTotal % count($barangays);
+            $seniorCount = $baseCount + ($remaining > 0 ? 1 : 0);
+            $remaining--;
+
+            // Make it more uneven by random adjustment
+            $adjustment = rand(-5, 5);
+            $seniorCount = max(0, min(20, $seniorCount + $adjustment));
+
+            for ($i = 1; $i <= $seniorCount && $birthDateIndex < count($birthDates); $i++) {
                 $firstName = $firstNames[array_rand($firstNames)];
                 $lastName = $lastNames[array_rand($lastNames)];
                 $fullName = $firstName . ' ' . $lastName;
                 $sex = $sexes[array_rand($sexes)];
-                
-                // Generate birth date for someone 60-85 years old
-                $age = rand(60, 85);
-                $birthYear = $currentYear - $age;
-                $birthMonth = rand(1, 12);
-                $birthDay = rand(1, 28);
-                $birthDate = sprintf('%04d-%02d-%02d', $birthYear, $birthMonth, $birthDay);
+
+                // Use pre-generated birth date
+                $birthDate = $birthDates[$birthDateIndex];
+                $birthDateIndex++;
+
+                // Calculate age from birth date (60-85 years old)
+                $birthDateTime = new \DateTime($birthDate);
+                $currentDateTime = new \DateTime();
+                $age = $currentDateTime->diff($birthDateTime)->y;
+
+                // Ensure age is in valid range
+                if ($age < 60 || $age > 85) {
+                    $age = rand(60, 85);
+                    $birthYear = $currentYear - $age;
+                    $birthMonth = rand(1, 12);
+                    $birthDay = rand(1, 28);
+                    $birthDate = sprintf('%04d-%02d-%02d', $birthYear, $birthMonth, $birthDay);
+                }
+
+                $birthMonth = date('m', strtotime($birthDate));
                 $month = $months[$birthMonth - 1];
 
                 // Generate barangay code using the unique mapping
@@ -171,6 +244,6 @@ class SeniorCitizenSeeder extends Seeder
             }
         }
 
-        $this->command->info('Senior citizen records seeded successfully (5 per barangay).');
+        $this->command->info('Senior citizen records seeded successfully (uneven distribution 0-20 per barangay).');
     }
 }

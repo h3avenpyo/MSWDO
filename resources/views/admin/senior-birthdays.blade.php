@@ -246,14 +246,6 @@
                     <button class="btn btn-outline-secondary active" id="viewTable" onclick="setView('table')" style="font-size: .8rem;"><i class="fas fa-table"></i></button>
                     <button class="btn btn-outline-secondary" id="viewGrouped" onclick="setView('grouped')" style="font-size: .8rem;"><i class="fas fa-layer-group"></i></button>
                 </div>
-                <div class="dropdown">
-                    <button class="btn btn-sm" style="background: var(--primary); color: white; border: none; border-radius: 8px; font-size: .8rem;" data-bs-toggle="dropdown"><i class="fas fa-download me-1"></i> Export</button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item small" href="{{ route('admin.senior.birthdays.export.pdf') }}" target="_blank"><i class="fas fa-file-pdf me-2 text-danger"></i>PDF</a></li>
-                        <li><a class="dropdown-item small" href="{{ route('admin.senior.birthdays.export.csv') }}"><i class="fas fa-file-csv me-2 text-success"></i>CSV</a></li>
-                        <li><a class="dropdown-item small" href="{{ route('admin.senior.birthdays.print') }}" target="_blank"><i class="fas fa-print me-2 text-muted"></i>Print</a></li>
-                    </ul>
-                </div>
             </div>
         </div>
 
@@ -455,7 +447,7 @@
                             <div class="d-flex align-items-center gap-2" style="flex: 1; min-width: 0;">
                                 <i class="fas fa-map-pin" style="color: var(--primary); flex-shrink: 0;"></i>
                                 <strong style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${g.barangay}</strong>
-                                <span class="badge" style="background: var(--primary); color: white; flex-shrink: 0;">${g.count} beneficiary${g.count !== 1 ? 'ies' : 'y'}</span>
+                                <span class="badge" style="background: var(--primary); color: white; flex-shrink: 0;">${g.count} ${g.count === 1 ? 'beneficiary' : 'beneficiaries'}</span>
                             </div>
                             <i class="fas fa-chevron-down chevron" style="color: #9CA3AF; flex-shrink: 0;"></i>
                         </div>

@@ -400,15 +400,9 @@
                             <a href="/admin/senior/masterlist" class="btn" style="background-color: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 0.85rem; padding: 0 1rem; height: 38px; display: flex; align-items: center;">
                                 <i class="fas fa-list me-1"></i> Back to Masterlist
                             </a>
-                            <div class="dropdown" id="bulkActionDropdown">
-                                <button class="btn dropdown-toggle" style="background-color: var(--accent); color: var(--primary-dark); border: none; border-radius: 8px; font-weight: 600; font-size: 0.8rem; padding: 0 1rem; height: 38px; display: flex; align-items: center;" data-bs-toggle="dropdown" data-bs-container="body" id="bulkActionButton" disabled>
-                                    <i class="fas fa-tasks me-1"></i> Bulk Actions <span id="selectedCount" style="background: var(--primary-dark); color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; margin-left: 5px;">0</span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" onclick="bulkRestore()"><i class="fas fa-undo me-2"></i>Restore Selected</a></li>
-                                    <li><a class="dropdown-item" href="#" onclick="bulkExport()"><i class="fas fa-download me-2"></i>Export Selected</a></li>
-                                </ul>
-                            </div>
+                            <button type="button" class="btn" style="background-color: var(--accent); color: var(--primary-dark); border: none; border-radius: 8px; font-weight: 600; font-size: 0.8rem; padding: 0 1rem; height: 38px; display: flex; align-items: center;" id="bulkActionButton" disabled data-bs-toggle="modal" data-bs-target="#bulkActionModal">
+                                <i class="fas fa-tasks me-1"></i> Bulk Actions <span id="selectedCount" style="background: var(--primary-dark); color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; margin-left: 5px;">0</span>
+                            </button>
                             @if(request('search') || request('barangay'))
                                 <a href="{{ route('admin.senior.archive.list') }}" class="btn" style="background-color: #6B7280; color: white; border: none; border-radius: 8px; padding: 0 1rem; font-size: .875rem; height: 38px; display: flex; align-items: center;">
                                     <i class="fas fa-times me-1"></i> Clear
@@ -523,6 +517,28 @@
         </div>
     </div>
 
+    <!-- Bulk Action Modal -->
+    <div class="modal fade" id="bulkActionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,.12);">
+                <div class="modal-header" style="border-bottom: 1px solid var(--border); background: var(--accent); color: var(--primary-dark); border-radius: 16px 16px 0 0;">
+                    <h5 class="modal-title"><i class="fas fa-tasks me-2"></i>Bulk Actions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <button type="button" class="btn" style="background: #0f766e; color: white; border: none; border-radius: 8px; padding: 12px 20px; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px;" onclick="bulkRestore()">
+                            <i class="fas fa-undo"></i> Restore Selected
+                        </button>
+                        <button type="button" class="btn" style="background: #1A237E; color: white; border: none; border-radius: 8px; padding: 12px 20px; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px;" onclick="bulkExport()">
+                            <i class="fas fa-download"></i> Export Selected
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function toggleSidebar() {
@@ -551,9 +567,9 @@
             const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
             const button = document.getElementById('bulkActionButton');
             const countSpan = document.getElementById('selectedCount');
-            
+
             countSpan.textContent = checkboxes.length;
-            
+
             if (checkboxes.length > 0) {
                 button.disabled = false;
                 button.style.opacity = '1';
@@ -563,14 +579,31 @@
             }
         }
 
-        function bulkRestore() {
+        function showBulkActionPopup() {
             const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
             const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
-            
+
             if (ids.length === 0) {
                 Swal.fire('No Selection', 'Please select at least one record.', 'warning');
                 return;
             }
+
+            const modal = new bootstrap.Modal(document.getElementById('bulkActionModal'));
+            modal.show();
+        }
+
+        function bulkRestore() {
+            const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
+            const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+
+            if (ids.length === 0) {
+                Swal.fire('No Selection', 'Please select at least one record.', 'warning');
+                return;
+            }
+
+            // Close the modal first
+            const modal = bootstrap.Modal.getInstance(document.getElementById('bulkActionModal'));
+            modal.hide();
 
             Swal.fire({
                 title: 'Restore Selected Records?',
@@ -611,11 +644,15 @@
         function bulkExport() {
             const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
             const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
-            
+
             if (ids.length === 0) {
                 Swal.fire('No Selection', 'Please select at least one record.', 'warning');
                 return;
             }
+
+            // Close the modal first
+            const modal = bootstrap.Modal.getInstance(document.getElementById('bulkActionModal'));
+            modal.hide();
 
             Swal.fire({
                 title: 'Export Selected Records?',
@@ -660,6 +697,7 @@
                     customClass: { popup: 'rounded-4 shadow-lg' }
                 });
             @endif
+
         });
 
         function confirmRestore(id, name) {

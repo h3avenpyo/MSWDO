@@ -86,14 +86,41 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        // Get barangay distribution data
+        // Get barangay distribution data - include all barangays with 0 count
+        $allBarangays = [
+            'Acacia', 'Adlas', 'Anahaw I', 'Anahaw II', 'Balite I', 'Balite II', 'Balubad', 'Banaba', 'Batas',
+            'Biga I', 'Biga II', 'Biluso', 'Bucal', 'Buho', 'Bulihan', 'Cabangaan', 'Carmen', 'Hoyo', 'Hukay', 'Iba',
+            'Inchican', 'Ipil I', 'Ipil II', 'Kalubkob', 'Kaong', 'Lalaan I', 'Lalaan II', 'Litlit', 'Lucsuhin', 'Lumil',
+            'Maguyam', 'Malabag', 'Malaking Tatyao', 'Mataas na Burol', 'Munting Ilog', 'Narra I', 'Narra II', 'Narra III',
+            'Paligawan', 'Pasong Langka', 'Barangay I (Poblacion)', 'Barangay II (Poblacion)', 'Barangay III (Poblacion)',
+            'Barangay IV (Poblacion)', 'Barangay V (Poblacion)', 'Pooc I', 'Pooc II', 'Pulong Bunga', 'Pulong Saging',
+            'Puting Kahoy', 'Sabutan', 'San Miguel I', 'San Miguel II', 'San Vicente I', 'San Vicente II', 'Santol',
+            'Tartaria', 'Tibig', 'Toledo', 'Tubuan I', 'Tubuan II', 'Tubuan III', 'Ulat', 'Yakal'
+        ];
+
         $barangayDistribution = SeniorCitizenRecord::on('mswdo_senior')
             ->where('status', 'active')
             ->whereNotNull('barangay')
             ->selectRaw('barangay, COUNT(*) as count')
             ->groupBy('barangay')
-            ->orderByDesc('count')
-            ->get();
+            ->get()
+            ->keyBy('barangay');
+
+        // Build distribution array including all barangays with 0 count
+        $completeDistribution = [];
+        foreach ($allBarangays as $barangay) {
+            $completeDistribution[] = [
+                'barangay' => $barangay,
+                'count' => $barangayDistribution->has($barangay) ? $barangayDistribution[$barangay]->count : 0
+            ];
+        }
+
+        // Sort by count (highest to lowest)
+        usort($completeDistribution, function($a, $b) {
+            return $b['count'] - $a['count'];
+        });
+
+        $barangayDistribution = collect($completeDistribution);
 
         // Get recent activities from session (stored as array)
         $recentActivities = session('recent_activities', []);

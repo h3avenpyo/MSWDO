@@ -193,19 +193,19 @@
                             <table class="table table-hover align-middle mb-0" style="font-size: 0.875rem;">
                                 <tbody>
                                     @foreach($barangayStats->take(10) as $i => $row)
-                                    @php $pct = $totalSeniors > 0 ? round(($row->total / $totalSeniors) * 100, 1) : 0; @endphp
+                                    @php $pct = $totalSeniors > 0 ? round(($row['total'] / $totalSeniors) * 100, 1) : 0; @endphp
                                     <tr>
                                         <td style="width: 50px;">
                                             <span class="badge" style="background: rgba(26,35,126,0.1); color: var(--primary);">{{ $i + 1 }}</span>
                                         </td>
                                         <td>
-                                            <div style="font-weight: 600;">{{ $row->barangay }}</div>
+                                            <div style="font-weight: 600;">{{ $row['barangay'] }}</div>
                                             <div class="progress mt-1" style="height: 6px;">
                                                 <div class="progress-bar" style="width: {{ $pct }}%; background: var(--primary); border-radius: 3px;"></div>
                                             </div>
                                         </td>
                                         <td style="width: 100px; text-align: right;">
-                                            <div style="font-weight: 700; color: var(--primary);">{{ $row->total }}</div>
+                                            <div style="font-weight: 700; color: var(--primary);">{{ $row['total'] }}</div>
                                             <small class="text-muted" style="font-size: 0.75rem;">{{ $pct }}%</small>
                                         </td>
                                     </tr>
@@ -275,8 +275,8 @@
         updateClock();
         setInterval(updateClock, 1000);
 
-        const labels = {!! json_encode($barangayStats->pluck('barangay')) !!};
-        const values = {!! json_encode($barangayStats->pluck('total')) !!};
+        const labels = {!! json_encode($barangayStats->pluck('barangay')->values()) !!};
+        const values = {!! json_encode($barangayStats->pluck('total')->values()) !!};
         const colors = [
             'rgba(26, 35, 126, 0.8)',
             'rgba(251, 192, 45, 0.8)',
