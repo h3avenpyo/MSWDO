@@ -317,15 +317,15 @@
                             <div style="flex: 1; min-width: 250px;">
                                 <label class="form-label small text-muted fw-semibold mb-1">Search by Name</label>
                                 <div class="input-group">
-                                    <input type="text" name="search" class="form-control" placeholder="Search by name..." value="{{ request('search') }}" style="height: 38px; border-right: none;">
-                                    <button type="submit" style="background-color: var(--primary); color: white; border: none; padding: 0 1rem; border-radius: 0 6px 6px 0; cursor: pointer; height: 38px;">
+                                    <input type="text" name="search" class="form-control" placeholder="Search by name..." value="{{ request('search') }}" style="height: 44px; border-right: none;">
+                                    <button type="submit" style="background-color: var(--primary); color: white; border: none; padding: 0 1rem; border-radius: 0 6px 6px 0; cursor: pointer; height: 44px;">
                                         <i class="fas fa-search"></i>
                                     </button>
                                 </div>
                             </div>
                             <div style="min-width: 200px;">
                                 <label class="form-label small text-muted fw-semibold mb-1">Filter by Barangay</label>
-                                <select class="form-select" name="barangay" onchange="this.form.submit()" style="height: 38px;">
+                                <select class="form-select" name="barangay" onchange="this.form.submit()" style="height: 44px;">
                                     <option value="">All Barangays</option>
                                     <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
                                     <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>

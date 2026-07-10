@@ -51,6 +51,7 @@
             border-bottom: 1px solid rgba(255,255,255,.1);
             color: #fff;
             font-weight: 700;
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
             gap: .65rem;
@@ -64,7 +65,7 @@
         }
         .sidebar-menu li { margin-bottom: .2rem; }
         .sidebar-menu a {
-            color: rgba(255,255,255,.85);
+            color: rgba(255,255,255,.75);
             padding: .75rem 1.5rem;
             display: flex;
             align-items: center;
@@ -75,15 +76,15 @@
             transition: all .2s ease;
         }
         .sidebar-menu a:hover {
-            background: rgba(255,255,255,.15);
-            color: #fff;
+            background: rgba(255,255,255,.1);
+            color: var(--accent);
         }
         .sidebar-menu a.active {
-            background: rgba(255,255,255,.15);
-            color: #fff;
+            background: rgba(255,255,255,.1);
+            color: var(--accent);
             border-left-color: var(--accent);
         }
-        .sidebar-menu a i { width: 20px; text-align: center; font-size: .95rem; }
+        .sidebar-menu a i { width: 20px; text-align: center; }
 
         /* Main Content */
         .main-content {
@@ -91,6 +92,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            width: calc(100% - 260px);
         }
 
         .top-navbar {
@@ -230,7 +232,6 @@
             <span>Senior Citizen</span>
         </div>
         <ul class="sidebar-menu">
-            <!-- <li><a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a></li> -->
             <li><a href="/admin/senior" class="active"><i class="fas fa-user-friends"></i> Dashboard</a></li>
             <li><a href="/admin/senior/registration"><i class="fas fa-user-plus"></i> Registration</a></li>
             <li><a href="/admin/senior/masterlist"><i class="fas fa-list"></i> Masterlist</a></li>
@@ -240,7 +241,6 @@
             <li><a href="/admin/senior/statistics"><i class="fas fa-chart-bar"></i> Statistics</a></li>
             <li><a href="/admin/senior/reports"><i class="fas fa-file-alt"></i> Reports</a></li>
             <li><a href="/admin/senior/archive"><i class="fas fa-archive"></i> Archive</a></li>
-
             <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </div>
@@ -408,20 +408,20 @@
             <div class="row mb-4" style="flex: 1; min-height: 0;">
                 <div class="col-12" style="height: 100%; display: flex; flex-direction: column;">
                     <div class="card p-0 animate-fade-in" style="overflow: hidden; flex: 1; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                        <div class="d-flex justify-content-between align-items-center p-3 pb-0" style="flex-shrink: 0;">
+                        <div class="d-flex justify-content-between align-items-center p-3" style="flex-shrink: 0;">
                             <div>
                                 <h6 style="font-weight: 700; font-size: 0.875rem; color: var(--text); margin: 0;">Recent Senior Citizen Records</h6>
                                 <span class="text-muted" style="font-size: 0.75rem;">Latest {{ $recentSeniors->count() }} registered seniors</span>
                             </div>
                             <div class="d-flex gap-2 align-items-center">
-                                <div class="input-group input-group-sm" style="width: 200px;">
-                                    <span class="input-group-text bg-white border-end-0" style="border-color: var(--border); padding: 0.375rem 0.5rem;">
-                                        <i class="fas fa-search text-muted" style="font-size: 0.7rem;"></i>
+                                <div class="input-group" style="width: 200px;">
+                                    <span class="input-group-text bg-white border-end-0" style="border-color: var(--border); padding: 0.5rem;">
+                                        <i class="fas fa-search text-muted" style="font-size: 0.875rem;"></i>
                                     </span>
-                                    <input type="text" class="form-control border-start-0 ps-0" placeholder="Search..." style="border-color: var(--border); font-size: 0.75rem; box-shadow: none; padding: 0.375rem 0.5rem;" onkeyup="filterSeniorTable(this.value)" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+                                    <input type="text" class="form-control border-start-0 ps-0" placeholder="Search..." style="border-color: var(--border); font-size: 0.875rem; box-shadow: none; padding: 0.5rem; height: 44px;" onkeyup="filterSeniorTable(this.value)" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
                                 </div>
-                                <button class="btn btn-sm" style="background-color: var(--primary); color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 0.75rem; padding: 0.375rem 0.75rem;" onclick="window.location.href='/admin/senior/registration'">
-                                    <i class="fas fa-plus me-1" style="font-size: 0.7rem;"></i> Add New
+                                <button class="btn" style="background-color: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 0.875rem; padding: 0 1rem; height: 44px;" onclick="window.location.href='/admin/senior/registration'">
+                                    <i class="fas fa-plus me-2"></i> Add New
                                 </button>
                             </div>
                         </div>

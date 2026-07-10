@@ -5,13 +5,54 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Senior\SeniorCitizenRecord;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class SeniorAnalyticsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $barangayStats = SeniorCitizenRecord::on('mswdo_senior')
-            ->where('status', 'active')
+        // Get filter parameters
+        $year = $request->get('year', now()->year);
+        $month = $request->get('month');
+        $barangay = $request->get('barangay');
+        if ($barangay === null || $barangay === '') {
+            $barangay = null;
+        }
+        $gender = $request->get('gender');
+        $ageGroup = $request->get('age_group');
+
+        // Build base query with filters
+        $baseQuery = SeniorCitizenRecord::on('mswdo_senior')->where('status', 'active');
+
+        if ($barangay) {
+            $baseQuery->where('barangay', $barangay);
+        }
+        if ($gender) {
+            $baseQuery->where('sex', $gender);
+        }
+        if ($ageGroup) {
+            switch ($ageGroup) {
+                case '60-69':
+                    $baseQuery->whereBetween('age', [60, 69]);
+                    break;
+                case '70-79':
+                    $baseQuery->whereBetween('age', [70, 79]);
+                    break;
+                case '80-89':
+                    $baseQuery->whereBetween('age', [80, 89]);
+                    break;
+                case '90-99':
+                    $baseQuery->whereBetween('age', [90, 99]);
+                    break;
+                case '100+':
+                    $baseQuery->where('age', '>=', 100);
+                    break;
+            }
+        }
+
+        // Barangay statistics
+        $barangayQuery = clone $baseQuery;
+        $barangayStats = $barangayQuery
             ->whereNotNull('barangay')
             ->select('barangay', DB::raw('count(*) as total'))
             ->groupBy('barangay')
@@ -47,56 +88,62 @@ class SeniorAnalyticsController extends Controller
 
         $barangayStats = collect($completeStats);
 
-        $totalSeniors = SeniorCitizenRecord::on('mswdo_senior')->where('status', 'active')->count();
+        // Total statistics
+        $totalSeniors = $baseQuery->count();
         $totalBarangays = count($allBarangays);
-        $activeSeniors = SeniorCitizenRecord::on('mswdo_senior')->where('status', 'active')->count();
+        $activeSeniors = $baseQuery->count();
+        $inactiveSeniors = SeniorCitizenRecord::on('mswdo_senior')->where('status', '!=', 'active')->count();
         $avgPerBarangay = $totalBarangays > 0 ? round($totalSeniors / $totalBarangays) : 0;
 
         $topBarangay = $barangayStats->first()?->barangay ?? 'N/A';
         $topBarangayCount = $barangayStats->first()?->total ?? 0;
 
         // Gender distribution
-        $genderStats = SeniorCitizenRecord::on('mswdo_senior')
+        $genderQuery = clone $baseQuery;
+        $genderStats = $genderQuery
             ->select('sex', DB::raw('count(*) as total'))
             ->whereNotNull('sex')
             ->groupBy('sex')
             ->get();
 
+        $maleCount = $genderStats->where('sex', 'Male')->first()?->total ?? 0;
+        $femaleCount = $genderStats->where('sex', 'Female')->first()?->total ?? 0;
+
         // Age groups
-        $ageGroups = SeniorCitizenRecord::on('mswdo_senior')
+        $ageQuery = clone $baseQuery;
+        $ageGroups = $ageQuery
             ->select(DB::raw('
                 CASE
                     WHEN age >= 60 AND age <= 69 THEN "60-69"
                     WHEN age >= 70 AND age <= 79 THEN "70-79"
                     WHEN age >= 80 AND age <= 89 THEN "80-89"
-                    WHEN age >= 90 THEN "90+"
+                    WHEN age >= 90 AND age <= 99 THEN "90-99"
+                    WHEN age >= 100 THEN "100+"
                     ELSE "Unknown"
                 END as age_group,
                 count(*) as total
             '))
             ->whereNotNull('age')
             ->groupBy('age_group')
-            ->orderByRaw('FIELD(age_group, "60-69", "70-79", "80-89", "90+", "Unknown")')
+            ->orderByRaw('FIELD(age_group, "60-69", "70-79", "80-89", "90-99", "100+", "Unknown")')
             ->get();
 
-        // Monthly registrations (current year)
-        $monthlyRegistrations = SeniorCitizenRecord::on('mswdo_senior')
-            ->select(DB::raw('MONTH(created_at) as month'), DB::raw('count(*) as total'))
-            ->whereYear('created_at', now()->year)
-            ->groupBy(DB::raw('MONTH(created_at)'))
+        // Monthly registrations for selected year
+        $registrationQuery = clone $baseQuery;
+        $monthlyRegistrations = $registrationQuery
+            ->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'), DB::raw('count(*) as total'))
+            ->whereYear('created_at', $year)
+            ->groupBy(DB::raw('DATE_FORMAT(created_at, "%Y-%m")'))
             ->orderBy('month')
             ->get();
 
-        // New seniors this month
-        $newSeniorsThisMonth = SeniorCitizenRecord::on('mswdo_senior')
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
-            ->count();
-
         return view('admin.senior-analytics', compact(
             'barangayStats', 'totalSeniors', 'totalBarangays',
-            'activeSeniors', 'avgPerBarangay', 'topBarangay', 'topBarangayCount',
-            'genderStats', 'ageGroups', 'monthlyRegistrations', 'newSeniorsThisMonth'
+            'activeSeniors', 'inactiveSeniors', 'avgPerBarangay', 'topBarangay', 'topBarangayCount',
+            'genderStats', 'ageGroups', 'monthlyRegistrations',
+            'maleCount', 'femaleCount',
+            'allBarangays',
+            'year', 'month', 'barangay', 'gender', 'ageGroup'
         ));
     }
 }

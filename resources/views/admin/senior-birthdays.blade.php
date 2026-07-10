@@ -87,7 +87,7 @@
         .pagination .active .page-link { background: var(--primary); color: white; border-color: var(--primary); }
         .pagination .disabled .page-link { color: #D1D5DB; cursor: not-allowed; }
 
-        .form-select, .form-control { font-size: .85rem; }
+        .form-select, .form-control { font-size: .875rem; height: 44px; }
         .form-select:focus, .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,35,126,.1); }
 
         .btn-primary { background: var(--primary); border: none; }
