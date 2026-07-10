@@ -12,17 +12,16 @@
         :root {
             --primary: #1A237E;
             --primary-dark: #121858;
-            --secondary: #6B7280;
+            --secondary: #374151;
             --accent: #FBC02D;
             --danger: #D32F2F;
-            --background: #F8FAFC;
+            --background: #F1F5F9;
             --cards: #FFFFFF;
-            --text: #1F2937;
+            --text: #111827;
+            --text-muted: #4B5563;
             --sidebar-bg: #1A237E;
-            --border: #E5E7EB;
+            --border: #D1D5DB;
         }
-
-        *, *::before, *::after { box-sizing: border-box; }
 
         body {
             background-color: var(--background);
@@ -32,13 +31,13 @@
             padding: 0;
         }
 
+        /* Sidebar */
         .sidebar {
             background: var(--sidebar-bg);
             width: 260px;
             min-height: 100vh;
             position: fixed;
-            left: 0;
-            top: 0;
+            left: 0; top: 0;
             z-index: 1000;
             display: flex;
             flex-direction: column;
@@ -73,15 +72,24 @@
             border-left: 3px solid transparent;
             transition: all .2s ease;
         }
-        .sidebar-menu a:hover { background: rgba(255,255,255,.1); color: var(--accent); }
-        .sidebar-menu a.active { background: rgba(255,255,255,.1); color: var(--accent); border-left-color: var(--accent); }
-        .sidebar-menu a i { width: 20px; text-align: center; font-size: .95rem; }
+        .sidebar-menu a:hover {
+            background: rgba(255,255,255,.1);
+            color: var(--accent);
+        }
+        .sidebar-menu a.active {
+            background: rgba(255,255,255,.1);
+            color: var(--accent);
+            border-left-color: var(--accent);
+        }
+        .sidebar-menu a i { width: 20px; text-align: center; }
 
+        /* Main Content */
         .main-content {
             margin-left: 260px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            width: calc(100% - 260px);
         }
 
         .top-navbar {
@@ -91,64 +99,25 @@
             position: sticky;
             top: 0;
             z-index: 999;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            flex-shrink: 0;
         }
-        .page-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
-        .page-subtitle { color: var(--secondary); margin: .35rem 0 0; font-size: .93rem; }
-        .breadcrumb-nav { font-size: .8rem; color: var(--secondary); margin: 0; }
-        .breadcrumb-nav a { color: var(--primary); text-decoration: none; }
-        .btn-icon {
-            background: var(--background);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            width: 38px;
-            height: 38px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--secondary);
-            cursor: pointer;
-            transition: all .2s ease;
-        }
-        .btn-icon:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
 
-        .page-body { padding: 2rem; flex: 1; }
-
+        /* Cards */
         .card {
-            background: var(--cards);
-            border-radius: 16px;
+            background-color: var(--cards);
             border: 1px solid var(--border);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,.05);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
             margin-bottom: 1.5rem;
-            transition: transform .2s ease, box-shadow .2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+
         .card-body { padding: 1.5rem; }
-
-        .stat-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            padding: 1.5rem;
-        }
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.35rem;
-        }
-        .stat-icon.blue { background: rgba(37,99,235,.1); color: var(--primary); }
-        .stat-icon.teal { background: rgba(20,184,166,.1); color: var(--secondary); }
-        .stat-icon.amber { background: rgba(245,158,11,.1); color: var(--accent); }
-
-        .stat-value { font-size: 1.9rem; font-weight: 700; margin: 0; }
-        .stat-label { color: var(--secondary); margin: .25rem 0 0; font-size: .88rem; }
 
         .form-control, .form-select {
             background: var(--background);
@@ -158,7 +127,7 @@
             color: var(--text);
             transition: border-color .2s ease, box-shadow .2s ease;
         }
-        .form-control:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+        .form-control:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,35,126,.08); }
         .form-label { font-weight: 600; color: #475569; margin-bottom: .55rem; }
 
         .badge-pill {
@@ -173,48 +142,83 @@
 
         .table thead th { background: var(--background); border-bottom: 1px solid var(--border); font-size: .82rem; color: var(--secondary); text-transform: uppercase; letter-spacing: .05em; }
 
-        @media (max-width: 992px) {
-            .main-content { margin-left: 0; }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
         }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+
+        .page-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
+        .page-subtitle { color: var(--text-muted); margin: .35rem 0 0; font-size: .93rem; }
+        .btn-icon {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+        .btn-icon:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        .page-body { padding: 2rem; flex: 1; }
     </style>
 </head>
 <body>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-brand"><i class="fas fa-building"></i> MSWDO Admin</div>
         <ul class="sidebar-menu">
-            <li><a href=""><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="/admin/social-case" class="active"><i class="fas fa-clipboard-list"></i> Social Case Eligibility</a></li>
-            <!-- <li><a href="/admin/add-officers"><i class="fas fa-user-shield"></i> Add Officers</a></li> -->
+            <li><a href="/admin/social-case/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="/admin/social-case" class="active"><i class="fas fa-clipboard-list"></i> Eligibility Check</a></li>
+            <li><a href="/admin/social-case-studies"><i class="fas fa-file-alt"></i> Case Studies</a></li>
             <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </div>
 
     <div class="main-content">
+        <!-- Top Navigation -->
         <nav class="top-navbar">
-            <div>
-                <h5 class="page-title">Social Case Eligibility</h5>
-                <p class="page-subtitle">Search for clients, validate assistance status, and proceed to social case creation.</p>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn-icon d-md-none" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-                <div class="text-end">
-                    <div id="currentDateTime" class="text-secondary small"></div>
-                </div>
-                <div class="dropdown">
-                    <button class="btn btn-link dropdown-toggle text-secondary" data-bs-toggle="dropdown">
-                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width:36px;height:36px;font-size:.85rem;">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-link d-md-none me-3" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profile</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
-                    </ul>
+                    <h5 class="mb-0 me-4">Social Case Eligibility</h5>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="me-4 text-muted small" id="currentDateTime"></div>
+                    <div class="activity-avatar" style="width: 35px; height: 35px; font-size: 0.875rem; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; border-radius: 50%;">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
                 </div>
             </div>
         </nav>
 
-        <div class="page-body">
+        <!-- Dashboard Content -->
+        <div class="p-4" style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
             <div class="row g-4">
                 <div class="col-xl-8">
                     <div class="card">
@@ -402,6 +406,10 @@
     </form>
 
     <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+        }
+
         function confirmLogout(event) {
             event.preventDefault();
             Swal.fire({
@@ -423,6 +431,22 @@
                 }
             });
         }
+
+        // Update current date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
     </script>
 </body>
 </html>

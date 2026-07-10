@@ -11,60 +11,281 @@
     <style>
         :root {
             --primary: #1A237E;
-            --secondary: #6B7280;
+            --primary-dark: #121858;
+            --secondary: #374151;
             --accent: #FBC02D;
-            --success: #047857;
-            --danger: #C62828;
-            --bg: #F8FAFC;
+            --danger: #D32F2F;
+            --background: #F1F5F9;
             --cards: #FFFFFF;
-            --border: #E5E7EB;
-            --text: #1F2937;
+            --text: #111827;
+            --text-muted: #4B5563;
+            --sidebar-bg: #1A237E;
+            --border: #D1D5DB;
         }
-        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; }
-        .sidebar { background: var(--primary); width: 260px; min-height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; display: flex; flex-direction: column; }
-        .sidebar-brand { padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,.1); color: #fff; font-weight: 700; display: flex; align-items: center; gap: .75rem; }
-        .sidebar-menu { list-style: none; margin: 0; padding: 1rem 0; flex: 1; }
-        .sidebar-menu li { margin-bottom: .25rem; }
-        .sidebar-menu a { display: flex; align-items: center; gap: .75rem; padding: .75rem 1.5rem; color: rgba(255,255,255,.8); text-decoration: none; transition: all .2s ease; }
-        .sidebar-menu a:hover, .sidebar-menu a.active { background: rgba(255,255,255,.1); color: var(--accent); }
+
+        body {
+            background-color: var(--background);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--sidebar-bg);
+            width: 260px;
+            min-height: 100vh;
+            position: fixed;
+            left: 0; top: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transition: transform .3s ease;
+        }
+        .sidebar-brand {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,.1);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+        }
+        .sidebar-brand i { font-size: 1.3rem; color: var(--accent); }
+        .sidebar-menu {
+            list-style: none;
+            margin: 0;
+            padding: 1rem 0;
+            flex: 1;
+        }
+        .sidebar-menu li { margin-bottom: .2rem; }
+        .sidebar-menu a {
+            color: rgba(255,255,255,.75);
+            padding: .75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            text-decoration: none;
+            font-size: .9rem;
+            border-left: 3px solid transparent;
+            transition: all .2s ease;
+        }
+        .sidebar-menu a:hover {
+            background: rgba(255,255,255,.1);
+            color: var(--accent);
+        }
+        .sidebar-menu a.active {
+            background: rgba(255,255,255,.1);
+            color: var(--accent);
+            border-left-color: var(--accent);
+        }
         .sidebar-menu a i { width: 20px; text-align: center; }
-        .main-content { margin-left: 260px; min-height: 100vh; }
-        .top-navbar { background: var(--cards); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 0; z-index: 999; }
-        .top-navbar h5 { margin: 0; }
-        .card { border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, .03); }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - 260px);
+        }
+
+        .top-navbar {
+            background-color: var(--cards);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            flex-shrink: 0;
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--cards);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+
+        .card-body { padding: 1.5rem; }
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .stat-icon.primary { background-color: rgba(37, 99, 235, 0.1); color: var(--primary); }
+        .stat-icon.warning { background-color: rgba(245, 158, 11, 0.1); color: var(--accent); }
+        .stat-icon.success { background-color: rgba(20, 184, 166, 0.1); color: var(--secondary); }
+        .stat-icon.info { background-color: rgba(37, 99, 235, 0.1); color: var(--primary); }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 500;
+        }
+
+        /* Table */
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background-color: #E2E8F0;
+            font-weight: 700;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1rem;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-active { background-color: rgba(20, 184, 166, 0.15); color: #0D9488; }
+        .badge-pending { background-color: rgba(245, 158, 11, 0.15); color: #D97706; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+
+        .page-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
+        .page-subtitle { color: var(--text-muted); margin: .35rem 0 0; font-size: .93rem; }
+        .btn-icon {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+        .btn-icon:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        .page-body { padding: 2rem; flex: 1; }
+
         .metric-card { padding: 1.25rem; }
         .metric-card .value { font-size: 2rem; font-weight: 700; margin: 0; }
-        .metric-card .label { color: var(--secondary); font-size: .9rem; margin: .5rem 0 0; }
+        .metric-card .label { color: var(--text-muted); font-size: .9rem; margin: .5rem 0 0; }
         .search-panel { padding: 1.5rem; }
         .results-panel { padding: 1.5rem; }
         .badge-status { font-size: .9rem; font-weight: 600; }
         .btn-disabled { pointer-events: none; opacity: .65; }
-        @media (max-width: 992px) { .main-content { margin-left: 0; } }
     </style>
 </head>
 <body>
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-brand"><i class="fas fa-building"></i> MSWDO Admin</div>
         <ul class="sidebar-menu">
-            <li><a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="/admin/social-case" class="active"><i class="fas fa-clipboard-list"></i> Eligibility Validation</a></li>
-            <li><a href="/admin/add-officers"><i class="fas fa-user-shield"></i> Add Officers</a></li>
+            <li><a href="/admin/social-case/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="/admin/social-case" class="active"><i class="fas fa-clipboard-list"></i> Eligibility Check</a></li>
+            <li><a href="/admin/social-case-studies"><i class="fas fa-file-alt"></i> Case Studies</a></li>
             <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </div>
 
     <div class="main-content">
-        <nav class="top-navbar d-flex align-items-center justify-content-between">
-            <div>
-                <h5>Eligibility Validation</h5>
-                <small class="text-muted">Search clients by name, ID, or birthdate and validate assistance eligibility instantly.</small>
-            </div>
-            <div class="text-end">
-                <div class="text-muted small">Officer: {{ session('admin_user_name') ?? 'N/A' }}</div>
+        <!-- Top Navigation -->
+        <nav class="top-navbar">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-link d-md-none me-3" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h5 class="mb-0 me-4">Eligibility Validation</h5>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="me-4 text-muted small" id="currentDateTime"></div>
+                    <div class="activity-avatar" style="width: 35px; height: 35px; font-size: 0.875rem; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; border-radius: 50%;">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
+                </div>
             </div>
         </nav>
 
-        <div class="p-4">
+        <!-- Dashboard Content -->
+        <div class="p-4" style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
             <div class="row g-4 mb-4">
                 <div class="col-lg-3">
                     <div class="card metric-card">
@@ -98,16 +319,20 @@
                         <h6>Find Client</h6>
                         <form id="searchForm" class="row g-3" onsubmit="return false;">
                             <div class="col-12">
-                                <label class="form-label">Client ID</label>
-                                <input type="text" id="clientId" class="form-control" placeholder="Enter client ID">
+                                <label class="form-label">Control Number</label>
+                                <input type="text" id="controlNumber" class="form-control" placeholder="Enter control number">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">First Name</label>
+                                <input type="text" id="firstName" class="form-control" placeholder="Juan">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" id="lastName" class="form-control" placeholder="Dela Cruz">
                             </div>
                             <div class="col-12">
-                                <label class="form-label">Full Name</label>
-                                <input type="text" id="fullName" class="form-control" placeholder="Juan dela Cruz">
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Birthdate</label>
-                                <input type="date" id="birthdate" class="form-control">
+                                <label class="form-label">Contact Number</label>
+                                <input type="text" id="contactNumber" class="form-control" placeholder="09123456789">
                             </div>
                             <div class="col-12 d-grid gap-2">
                                 <button type="button" class="btn btn-primary" onclick="searchClients()">Search</button>
@@ -169,9 +394,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         async function searchClients() {
-            const clientId = document.getElementById('clientId').value.trim();
-            const fullName = document.getElementById('fullName').value.trim();
-            const birthdate = document.getElementById('birthdate').value;
+            const controlNumber = document.getElementById('controlNumber').value.trim();
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const contactNumber = document.getElementById('contactNumber').value.trim();
             const resultArea = document.getElementById('searchResults');
             const messageArea = document.getElementById('searchResultMessage');
 
@@ -184,7 +410,7 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 },
-                body: JSON.stringify({ client_id: clientId, full_name: fullName, birthdate }),
+                body: JSON.stringify({ control_number: controlNumber, first_name: firstName, last_name: lastName, contact_number: contactNumber }),
             });
 
             const payload = await response.json();
@@ -205,15 +431,63 @@
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
                                 <div class="fw-bold">${client.first_name} ${client.middle_name || ''} ${client.last_name}</div>
-                                <div class="text-muted small">ID ${client.id} • ${client.birthdate}</div>
+                                <div class="text-muted small">ID ${client.id} • ${client.contact_number || 'No contact'}</div>
                             </div>
-                            <a href="/admin/social-case-eligibility/${client.id}" class="btn btn-sm btn-primary">Validate Eligibility</a>
+                            <button onclick="checkEligibility(${client.id})" class="btn btn-sm btn-primary">Check Eligibility</button>
                         </div>
                     </div>
                 `;
             }).join('');
 
             resultArea.innerHTML = rows;
+        }
+
+        async function checkEligibility(clientId) {
+            const response = await fetch(`/admin/social-case-eligibility/${clientId}/check`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.eligible) {
+                Swal.fire({
+                    title: 'ELIGIBLE',
+                    text: 'This client is eligible for assistance.',
+                    icon: 'success',
+                    confirmButtonColor: '#22C55E',
+                    confirmButtonText: 'Proceed',
+                    background: '#ffffff',
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/admin/social-case-studies/create/${clientId}`;
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'NOT ELIGIBLE',
+                    html: `
+                        <div style="text-align: left;">
+                            <p><strong>Reason:</strong> ${data.reason}</p>
+                            <p><strong>Date of last assistance:</strong> ${data.assistance_date}</p>
+                            <p><strong>Type of assistance:</strong> ${data.assistance_type}</p>
+                            <p><strong>Next eligible date:</strong> ${data.next_eligible_date}</p>
+                        </div>
+                    `,
+                    icon: 'error',
+                    confirmButtonColor: '#D32F2F',
+                    confirmButtonText: 'Close',
+                    background: '#ffffff',
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg'
+                    }
+                });
+            }
         }
     </script>
 
@@ -223,6 +497,10 @@
     </form>
 
     <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+        }
+
         function confirmLogout(event) {
             event.preventDefault();
             Swal.fire({
@@ -244,6 +522,22 @@
                 }
             });
         }
+
+        // Update current date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
     </script>
 </body>
 </html>

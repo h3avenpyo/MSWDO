@@ -14,9 +14,10 @@ class ClientSearchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'full_name' => ['nullable', 'string', 'max:255'],
-            'client_id' => ['nullable', 'integer', 'exists:mswdo_social_case.clients,id'],
-            'birthdate' => ['nullable', 'date'],
+            'control_number' => ['nullable', 'string', 'max:255'],
+            'first_name' => ['nullable', 'string', 'max:255'],
+            'last_name' => ['nullable', 'string', 'max:255'],
+            'contact_number' => ['nullable', 'string', 'max:20'],
         ];
     }
 }

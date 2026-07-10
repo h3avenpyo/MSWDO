@@ -46,17 +46,20 @@ class EligibilityController extends Controller
     {
         $query = Client::on('mswdo_social_case')->query();
 
-        if ($request->filled('client_id')) {
-            $query->where('id', $request->client_id);
+        if ($request->filled('control_number')) {
+            $query->where('id', $request->control_number);
         }
 
-        if ($request->filled('full_name')) {
-            $name = strtolower(trim($request->full_name));
-            $query->whereRaw("LOWER(CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name)) LIKE ?", ["%{$name}%"]);
+        if ($request->filled('first_name')) {
+            $query->where('first_name', 'like', '%' . $request->first_name . '%');
         }
 
-        if ($request->filled('birthdate')) {
-            $query->whereDate('birthdate', $request->birthdate);
+        if ($request->filled('last_name')) {
+            $query->where('last_name', 'like', '%' . $request->last_name . '%');
+        }
+
+        if ($request->filled('contact_number')) {
+            $query->where('contact_number', 'like', '%' . $request->contact_number . '%');
         }
 
         $clients = $query->limit(12)->get();
@@ -88,6 +91,21 @@ class EligibilityController extends Controller
         ]);
 
         return view('admin.social-case-eligibility.show', $result);
+    }
+
+    public function checkEligibility(Client $client, EligibilityChecker $checker)
+    {
+        $result = $checker->check($client);
+
+        return response()->json([
+            'eligible' => $result['eligible'],
+            'reason' => $result['eligible']
+                ? 'No approved or released assistance in the last 6 months.'
+                : 'This client has already received assistance within the last six (6) months.',
+            'assistance_date' => $result['lastAssistanceDate']?->format('M d, Y') ?? 'None',
+            'assistance_type' => $result['latestAssistance']?->assistance_type ?? 'None',
+            'next_eligible_date' => $result['eligibleAgainDate']?->format('M d, Y') ?? 'N/A',
+        ]);
     }
 
     public function createRegistration()

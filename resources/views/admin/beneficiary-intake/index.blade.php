@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Eligibility Result</title>
+    <title>Beneficiary Intake List | MSWDO Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -118,21 +118,37 @@
 
         .card-body { padding: 1.5rem; }
 
-        .status-card-header { display: flex; justify-content: space-between; align-items: center; }
-        .status-title { font-size: 1.25rem; font-weight: 700; margin: 0; }
-        .badge-state { font-size: .9rem; padding: .6rem 1rem; border-radius: 999px; }
-        .badge-eligible { background: rgba(34, 197, 94, .15); color: #166534; }
-        .badge-not-eligible { background: rgba(211, 47, 47, .15); color: #991B1B; }
-        .summary-list { list-style: none; padding: 0; margin: 0; }
-        .summary-list li { padding: 1rem 0; border-bottom: 1px solid var(--border); }
-        .summary-list li:last-child { border-bottom: 0; }
-        .summary-list .label { display: block; color: var(--text-muted); font-size: .9rem; }
-        .summary-list .value { font-weight: 700; font-size: 1rem; }
-        .action-group { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
-        .btn-block { flex: 1 1 220px; }
+        /* Table */
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background-color: #E2E8F0;
+            font-weight: 700;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1rem;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
 
         .page-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
-        .page-subtitle { color: var(--text-muted); margin: .35rem 0 0; font-size: .93rem; }
         .btn-icon {
             background: var(--background);
             border: 1px solid var(--border);
@@ -147,8 +163,6 @@
             transition: all .2s ease;
         }
         .btn-icon:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-        .page-body { padding: 2rem; flex: 1; }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -168,9 +182,10 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-brand"><i class="fas fa-building"></i> MSWDO Admin</div>
         <ul class="sidebar-menu">
-            <li><a href="/admin/social-case/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="/admin/social-case"><i class="fas fa-clipboard-list"></i> Eligibility Check</a></li>
-            <li><a href="/admin/social-case-studies"><i class="fas fa-file-alt"></i> Case Studies</a></li>
+            <li><a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="/admin/senior"><i class="fas fa-user"></i> Senior Citizen</a></li>
+            <li><a href="/admin/social-case/dashboard"><i class="fas fa-home"></i> Social Case Dashboard</a></li>
+            <li><a href="/admin/beneficiary-intake" class="active"><i class="fas fa-clipboard-list"></i> Beneficiary Intake</a></li>
             <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </div>
@@ -183,7 +198,7 @@
                     <button class="btn btn-link d-md-none me-3" onclick="toggleSidebar()">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <h5 class="mb-0 me-4">Eligibility Result</h5>
+                    <h5 class="mb-0 me-4">Beneficiary Intake List</h5>
                 </div>
                 <div class="d-flex align-items-center">
                     <div class="me-4 text-muted small" id="currentDateTime"></div>
@@ -196,58 +211,60 @@
         <div class="p-4" style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
             <div class="card">
                 <div class="card-body">
-            <div class="status-card-header mb-3">
-                <div>
-                    <p class="status-title">Eligibility validation for {{ $client->full_name }}</p>
-                    <p class="text-muted small">Birthdate: {{ $client->birthdate->format('M d, Y') }}</p>
-                </div>
-                <span class="badge-state {{ $eligible ? 'badge-eligible' : 'badge-not-eligible' }} eligible-status">
-                    {{ $eligible ? 'ELIGIBLE' : 'NOT ELIGIBLE' }}
-                </span>
-            </div>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h6 class="mb-0">All Beneficiary Intakes</h6>
+                        <a href="{{ route('admin.beneficiary-intake.create') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>New Intake
+                        </a>
+                    </div>
 
-            @if($eligible)
-                <div class="alert alert-success reason-text">
-                    <i class="fas fa-check-circle me-2"></i>
-                    Client is eligible to proceed.
-                </div>
-            @else
-                <div class="alert alert-danger reason-text">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    This client has already received assistance within the last six (6) months and is currently not eligible.
-                </div>
-            @endif
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Control Number</th>
+                                    <th>Client Name</th>
+                                    <th>Date Processed</th>
+                                    <th>Service</th>
+                                    <th>Purpose</th>
+                                    <th>Submitted To</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($intakes as $intake)
+                                <tr>
+                                    <td>{{ $intake->control_number }}</td>
+                                    <td>{{ $intake->client_full_name }}</td>
+                                    <td>{{ $intake->date_processed->format('M d, Y') }}</td>
+                                    <td>{{ $intake->service_provided }}</td>
+                                    <td>{{ $intake->purpose }}</td>
+                                    <td>{{ $intake->submitted_to }}</td>
+                                    <td>
+                                        <a href="{{ route('admin.beneficiary-intake.show', $intake) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <p class="text-muted mb-0">No beneficiary intakes found.</p>
+                                        <a href="{{ route('admin.beneficiary-intake.create') }}" class="btn btn-primary btn-sm mt-2">
+                                            Create New Intake
+                                        </a>
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
 
-            <ul class="summary-list">
-                <li>
-                    <span class="label">Client Name</span>
-                    <span class="value">{{ $client->full_name }}</span>
-                </li>
-                <li>
-                    <span class="label">Last Assistance Type</span>
-                    <span class="value assistance-type">{{ $latestAssistance?->assistance_type ?? 'None' }}</span>
-                </li>
-                <li>
-                    <span class="label">Release Date</span>
-                    <span class="value assistance-date">{{ $latestAssistance?->release_date?->format('M d, Y') ?? 'None' }}</span>
-                </li>
-                <li>
-                    <span class="label">Eligible Again Date</span>
-                    <span class="value next-eligible-date">{{ $eligibleAgainDate?->format('M d, Y') ?? 'N/A' }}</span>
-                </li>
-                @unless($eligible)
-                <li>
-                    <span class="label">Remaining Waiting Period</span>
-                    <span class="value">{{ $eligibleAgainDate ? now()->diffForHumans($eligibleAgainDate, ['parts' => 3, 'short' => true, 'syntax' => now()->lessThan($eligibleAgainDate) ? 1 : 0]) : 'N/A' }}</span>
-                </li>
-                @endunless
-            </ul>
-
-            <div class="action-group">
-                <a href="/admin/social-case" class="btn btn-outline-primary btn-block">New Search</a>
-                <a href="/admin/social-case-eligibility/register" class="btn btn-outline-secondary btn-block">Register Another Client</a>
-                <a href="{{ $eligible ? route('admin.social-case-studies.create', $client) : '#' }}" class="btn btn-primary btn-block {{ $eligible ? '' : 'btn-disabled' }}">Proceed to Interview</a>
-            </div>
+                    @if($intakes->hasPages())
+                    <div class="d-flex justify-content-center mt-4">
+                        {{ $intakes->links() }}
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -281,7 +298,6 @@
             });
         }
 
-        // Update current date and time
         function updateDateTime() {
             const now = new Date();
             const options = { 
@@ -298,7 +314,6 @@
         setInterval(updateDateTime, 60000);
     </script>
 
-    <!-- Hidden form for secure POST logout -->
     <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
         @csrf
     </form>
