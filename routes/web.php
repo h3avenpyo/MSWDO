@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\SocialCase\SocialCaseDashboardController;
 use App\Http\Controllers\Admin\SocialCase\EligibilityController;
 use App\Http\Controllers\Admin\SocialCase\SocialCaseStudyController;
+use App\Http\Controllers\Admin\BeneficiaryIntakeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -66,30 +67,33 @@ Route::get('/admin/senior/export-pdf', [DashboardController::class, 'exportSenio
 Route::get('/admin/multi-database', [MultiDatabaseDemoController::class, 'index'])->name('admin.multi-database.index');
 Route::post('/admin/multi-database', [MultiDatabaseDemoController::class, 'store'])->name('admin.multi-database.store');
 
-// Social Case Study Routes
-Route::get('/admin/social-case', [EligibilityController::class, 'index'])->name('admin.social-case');
-Route::get('/admin/social-case/dashboard', [SocialCaseDashboardController::class, 'index'])->name('admin.social-case.dashboard');
-Route::prefix('admin/social-case-eligibility')->name('admin.social-case-eligibility.')->group(function () {
-    Route::get('/', [EligibilityController::class, 'index'])->name('index');
-    Route::post('/search', [EligibilityController::class, 'search'])->name('search');
-    Route::get('/{client}', [EligibilityController::class, 'show'])->name('show');
-    Route::get('/{client}/check', [EligibilityController::class, 'checkEligibility'])->name('check');
-    Route::get('/register', [EligibilityController::class, 'createRegistration'])->name('register');
-    Route::post('/register', [EligibilityController::class, 'storeClient'])->name('store');
-});
-Route::prefix('admin/social-case-studies')->name('admin.social-case-studies.')->group(function () {
-    Route::get('/', [SocialCaseStudyController::class, 'index'])->name('index');
-    Route::get('/create/{client}', [SocialCaseStudyController::class, 'create'])->name('create');
-    Route::post('/store/{client}', [SocialCaseStudyController::class, 'store'])->name('store');
-    Route::get('/edit/{socialCaseStudy}', [SocialCaseStudyController::class, 'edit'])->name('edit');
-    Route::post('/update/{socialCaseStudy}', [SocialCaseStudyController::class, 'update'])->name('update');
-    Route::post('/destroy/{socialCaseStudy}', [SocialCaseStudyController::class, 'destroy'])->name('destroy');
-});
+// Social Case Study & Beneficiary Intake Routes (admin session required)
+Route::middleware('admin.auth')->group(function () {
+    Route::get('/admin/social-case', [EligibilityController::class, 'index'])->name('admin.social-case');
+    Route::get('/admin/social-case/dashboard', [SocialCaseDashboardController::class, 'index'])->name('admin.social-case.dashboard');
 
-// Beneficiary Intake Routes
-Route::prefix('admin/beneficiary-intake')->name('admin.beneficiary-intake.')->group(function () {
-    Route::get('/', [BeneficiaryIntakeController::class, 'index'])->name('index');
-    Route::get('/create', [BeneficiaryIntakeController::class, 'create'])->name('create');
-    Route::post('/', [BeneficiaryIntakeController::class, 'store'])->name('store');
-    Route::get('/{intake}', [BeneficiaryIntakeController::class, 'show'])->name('show');
+    Route::prefix('admin/social-case-eligibility')->name('admin.social-case-eligibility.')->group(function () {
+        Route::get('/', [EligibilityController::class, 'index'])->name('index');
+        Route::post('/search', [EligibilityController::class, 'search'])->name('search');
+        Route::get('/register', [EligibilityController::class, 'createRegistration'])->name('register');
+        Route::post('/register', [EligibilityController::class, 'storeClient'])->name('store');
+        Route::get('/{client}', [EligibilityController::class, 'show'])->name('show');
+        Route::get('/{client}/check', [EligibilityController::class, 'checkEligibility'])->name('check');
+    });
+
+    Route::prefix('admin/social-case-studies')->name('admin.social-case-studies.')->group(function () {
+        Route::get('/', [SocialCaseStudyController::class, 'index'])->name('index');
+        Route::get('/create/{client}', [SocialCaseStudyController::class, 'create'])->name('create');
+        Route::post('/store/{client}', [SocialCaseStudyController::class, 'store'])->name('store');
+        Route::get('/edit/{socialCaseStudy}', [SocialCaseStudyController::class, 'edit'])->name('edit');
+        Route::post('/update/{socialCaseStudy}', [SocialCaseStudyController::class, 'update'])->name('update');
+        Route::post('/destroy/{socialCaseStudy}', [SocialCaseStudyController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('admin/beneficiary-intake')->name('admin.beneficiary-intake.')->group(function () {
+        Route::get('/', [BeneficiaryIntakeController::class, 'index'])->name('index');
+        Route::get('/create', [BeneficiaryIntakeController::class, 'create'])->name('create');
+        Route::post('/', [BeneficiaryIntakeController::class, 'store'])->name('store');
+        Route::get('/{intake}', [BeneficiaryIntakeController::class, 'show'])->name('show');
+    });
 });

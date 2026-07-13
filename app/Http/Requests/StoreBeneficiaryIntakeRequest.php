@@ -15,6 +15,13 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'is_client_beneficiary' => $this->boolean('is_client_beneficiary'),
+        ]);
+    }
+
     public function rules(): array
     {
         return [

@@ -11,14 +11,15 @@
         :root {
             --primary: #1A237E;
             --primary-dark: #121858;
-            --secondary: #6B7280;
+            --secondary: #374151;
             --accent: #FBC02D;
             --danger: #D32F2F;
-            --background: #F8FAFC;
+            --background: #F1F5F9;
             --cards: #FFFFFF;
-            --text: #1F2937;
+            --text: #111827;
+            --text-muted: #4B5563;
             --sidebar-bg: #1A237E;
-            --border: #E5E7EB;
+            --border: #D1D5DB;
         }
 
         *, *::before, *::after { box-sizing: border-box; }
@@ -72,78 +73,197 @@
             border-left: 3px solid transparent;
             transition: all .2s ease;
         }
-        .sidebar-menu a:hover { background: rgba(255,255,255,.1); color: var(--accent); }
-        .sidebar-menu a.active { background: rgba(255,255,255,.1); color: var(--accent); border-left-color: var(--accent); }
-        .sidebar-menu a i { width: 20px; text-align: center; font-size: .95rem; }
+        .sidebar-menu a:hover {
+            background: rgba(255,255,255,.1);
+            color: var(--accent);
+        }
+        .sidebar-menu a.active {
+            background: rgba(255,255,255,.1);
+            color: var(--accent);
+            border-left-color: var(--accent);
+        }
+        .sidebar-menu a i { width: 20px; text-align: center; }
+        .sidebar-menu-header {
+            color: rgba(255,255,255,.5);
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: .75rem 1.5rem .25rem;
+        }
+        .sidebar-menu a.submenu {
+            padding-left: 2.5rem;
+            font-size: .85rem;
+        }
 
         .main-content {
             margin-left: 260px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            width: calc(100% - 260px);
         }
 
         .top-navbar {
-            background-color: var(--cards);
+            background-color: #FFFFFF;
             border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
+            padding: 1.25rem 2rem;
             position: sticky;
             top: 0;
             z-index: 999;
+            flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .navbar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .navbar-right {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 1.5rem;
         }
-        .page-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
-        .page-subtitle { color: var(--secondary); margin: .35rem 0 0; font-size: .93rem; }
-        .btn-icon {
-            background: var(--background);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            width: 38px;
-            height: 38px;
-            display: inline-flex;
+
+        .navbar-datetime {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .navbar-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--secondary);
-            cursor: pointer;
-            transition: all .2s ease;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
-        .btn-icon:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-        .page-body { padding: 2rem; flex: 1; }
 
         .card {
-            background: var(--cards);
-            border-radius: 16px;
+            background-color: var(--cards);
             border: 1px solid var(--border);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,.05);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
             margin-bottom: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+
         .card-body { padding: 1.5rem; }
 
-        .form-control, .form-select {
-            background: var(--background);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: .75rem 1rem;
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid var(--border);
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
             color: var(--text);
-            transition: border-color .2s ease, box-shadow .2s ease;
         }
-        .form-control:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,35,126,.08); }
-        .form-label { font-weight: 600; color: #475569; margin-bottom: .55rem; }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge-warning {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+
+        .badge-danger {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .badge-info {
+            background-color: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .badge-secondary {
+            background-color: #F1F5F9;
+            color: #475569;
+        }
+
+        .btn {
+            padding: 0.6rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
 
         .btn-primary {
-            background: var(--primary);
+            background-color: var(--primary);
             border-color: var(--primary);
         }
+
         .btn-primary:hover {
-            background: var(--primary-dark);
+            background-color: var(--primary-dark);
             border-color: var(--primary-dark);
         }
 
-        @media (max-width: 992px) {
-            .main-content { margin-left: 0; }
+        .btn-outline-secondary {
+            border-color: var(--border);
+            color: var(--text-muted);
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--border);
+            color: var(--text);
+        }
+
+        .page-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            margin: .35rem 0 0;
+            font-size: .93rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.875rem;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .main-content { margin-left: 0; width: 100%; }
             .sidebar { transform: translateX(-100%); }
             .sidebar.show { transform: translateX(0); }
         }
@@ -154,33 +274,37 @@
         <div class="sidebar-brand"><i class="fas fa-building"></i> MSWDO Admin</div>
         <ul class="sidebar-menu">
             <li><a href="/admin/social-case/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="/admin/social-case"><i class="fas fa-clipboard-list"></i> Eligibility Check</a></li>
-            <li><a href="/admin/social-case-studies"><i class="fas fa-file-alt"></i> Case Studies</a></li>
+            
+            <li class="sidebar-menu-header">Cases</li>
+            <li><a href="/admin/social-case-eligibility/register" class="submenu"><i class="fas fa-plus"></i> New Case</a></li>
+            <li><a href="/admin/social-case-studies" class="submenu active"><i class="fas fa-folder-open"></i> Active Cases</a></li>
+            <li><a href="#" class="submenu"><i class="fas fa-archive"></i> Released</a></li>
+            
+            <li class="sidebar-menu-header">Clients</li>
+            <li><a href="/admin/beneficiary-intake" class="submenu"><i class="fas fa-users"></i> Beneficiary Intake</a></li>
+            
+            <li class="sidebar-menu-header">Reports</li>
+            <li><a href="#" class="submenu"><i class="fas fa-chart-bar"></i> Generate Reports</a></li>
+            
+            <li class="sidebar-menu-header">System</li>
+            <li><a href="#" class="submenu"><i class="fas fa-cog"></i> Settings</a></li>
             <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </div>
 
     <div class="main-content">
+        <!-- Top Navigation -->
         <nav class="top-navbar">
-            <div>
-                <h5 class="page-title">Edit Social Case Study</h5>
-                <p class="page-subtitle">Client: {{ $socialCaseStudy->client->full_name }}</p>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn-icon d-md-none" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-                <div class="text-end">
-                    <div id="currentDateTime" class="text-secondary small"></div>
-                </div>
-                <div class="dropdown">
-                    <button class="btn btn-link dropdown-toggle text-secondary" data-bs-toggle="dropdown">
-                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width:36px;height:36px;font-size:.85rem;">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
+            <div class="d-flex align-items-center justify-content-between w-100">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-link d-md-none" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profile</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
-                    </ul>
+                    <h1 class="navbar-title">Edit Social Case Study</h1>
+                </div>
+                <div class="navbar-right">
+                    <div class="navbar-datetime" id="currentDateTime"></div>
+                    <div class="navbar-avatar">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
                 </div>
             </div>
         </nav>

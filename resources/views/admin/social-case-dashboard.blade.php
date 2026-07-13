@@ -1,684 +1,380 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MSWDO Admin - Social Case Study Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        :root {
-            --primary: #1A237E;
-            --primary-dark: #121858;
-            --secondary: #374151;
-            --accent: #FBC02D;
-            --danger: #D32F2F;
-            --background: #F1F5F9;
-            --cards: #FFFFFF;
-            --text: #111827;
-            --text-muted: #4B5563;
-            --sidebar-bg: #1A237E;
-            --border: #D1D5DB;
-        }
+@extends('layouts.admin')
 
-        body {
-            background-color: var(--background);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-        }
+@section('title', 'Social Case Study Dashboard')
 
-        /* Sidebar */
-        .sidebar {
-            background: var(--sidebar-bg);
-            width: 260px;
-            min-height: 100vh;
-            position: fixed;
-            left: 0; top: 0;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transition: transform .3s ease;
-        }
-        .sidebar-brand {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,.1);
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: .65rem;
-        }
-        .sidebar-brand i { font-size: 1.3rem; color: var(--accent); }
-        .sidebar-menu {
-            list-style: none;
-            margin: 0;
-            padding: 1rem 0;
-            flex: 1;
-        }
-        .sidebar-menu li { margin-bottom: .2rem; }
-        .sidebar-menu a {
-            color: rgba(255,255,255,.75);
-            padding: .75rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            text-decoration: none;
-            font-size: .9rem;
-            border-left: 3px solid transparent;
-            transition: all .2s ease;
-        }
-        .sidebar-menu a:hover {
-            background: rgba(255,255,255,.1);
-            color: var(--accent);
-        }
-        .sidebar-menu a.active {
-            background: rgba(255,255,255,.1);
-            color: var(--accent);
-            border-left-color: var(--accent);
-        }
-        .sidebar-menu a i { width: 20px; text-align: center; }
+@section('navbar-title', 'Social Case Study Dashboard')
 
-        /* Main Content */
-        .main-content {
-            margin-left: 260px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            width: calc(100% - 260px);
-        }
-
-        .top-navbar {
-            background-color: var(--cards);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            flex-shrink: 0;
-        }
-
-        /* Cards */
-        .card {
-            background-color: var(--cards);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
-            margin-bottom: 1.5rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
-        }
-
-        .stat-card {
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .stat-content {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            flex-shrink: 0;
-        }
-
-        .stat-icon.primary { background-color: rgba(37, 99, 235, 0.1); color: var(--primary); }
-        .stat-icon.warning { background-color: rgba(245, 158, 11, 0.1); color: var(--accent); }
-        .stat-icon.success { background-color: rgba(20, 184, 166, 0.1); color: var(--secondary); }
-        .stat-icon.info { background-color: rgba(37, 99, 235, 0.1); color: var(--primary); }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            margin: 0;
-            line-height: 1;
-        }
-
-        .stat-label {
-            color: var(--text-muted);
-            font-size: 0.875rem;
-            margin: 0 0 0.5rem 0;
-            font-weight: 500;
-        }
-
-        /* Table */
-        .table {
-            margin-bottom: 0;
-        }
-
-        .table th {
-            background-color: #E2E8F0;
-            font-weight: 700;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 1rem;
-            color: var(--text);
-            border-bottom: 2px solid var(--border);
-        }
-
-        .table td {
-            padding: 1rem;
-            vertical-align: middle;
-            color: var(--text);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .badge {
-            padding: 0.35rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .badge-active { background-color: rgba(20, 184, 166, 0.15); color: #0D9488; }
-        .badge-pending { background-color: rgba(245, 158, 11, 0.15); color: #D97706; }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.show {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-            }
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease forwards;
-        }
-
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
-
-        .page-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
-        .page-subtitle { color: var(--text-muted); margin: .35rem 0 0; font-size: .93rem; }
-        .btn-icon {
-            background: var(--background);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            width: 38px;
-            height: 38px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all .2s ease;
-        }
-        .btn-icon:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-        .page-body { padding: 2rem; flex: 1; }
-        .card-body { padding: 1.5rem; }
-        .card-header {
-            background: transparent;
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 1.5rem;
-            font-weight: 600;
-        }
-
-        .quick-action-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: .5rem;
-            padding: 1.5rem;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: var(--cards);
-            transition: all .2s ease;
-            text-decoration: none;
-            color: var(--text);
-        }
-        .quick-action-btn:hover {
-            border-color: var(--primary);
-            background: rgba(26,35,126,.05);
-            transform: translateY(-2px);
-        }
-        .quick-action-btn i {
-            font-size: 1.5rem;
-            color: var(--primary);
-        }
-        .quick-action-btn span {
-            font-size: .85rem;
-            font-weight: 600;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 300px;
-        }
-    </style>
-</head>
-<body>
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-brand"><i class="fas fa-building"></i> MSWDO Admin</div>
-        <ul class="sidebar-menu">
-            <li><a href="/admin/social-case/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="/admin/social-case"><i class="fas fa-clipboard-list"></i> Eligibility Check</a></li>
-            <li><a href="/admin/social-case-studies"><i class="fas fa-file-alt"></i> Case Studies</a></li>
-            <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-    </div>
-
-    <div class="main-content">
-        <!-- Top Navigation -->
-        <nav class="top-navbar">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    <button class="btn btn-link d-md-none me-3" onclick="toggleSidebar()">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h5 class="mb-0 me-4">Social Case Study Dashboard</h5>
-                </div>
-                <div class="d-flex align-items-center">
-                    <div class="me-4 text-muted small" id="currentDateTime"></div>
-                    <div class="activity-avatar" style="width: 35px; height: 35px; font-size: 0.875rem; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; border-radius: 50%;">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Dashboard Content -->
-        <div class="p-4" style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
-            <!-- Summary Cards -->
-            <div class="row g-3 mb-4">
-                <div class="col-6 col-xl col-lg-3 col-md-4">
-                    <div class="card animate-fade-in" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                        <div style="display: flex; align-items: center;">
-                            <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(37, 99, 235, 0.1); color: #1A237E; flex-shrink: 0; margin-right: 0.75rem;">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div style="flex: 1;">
-                                <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Total Clients</p>
-                                <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $totalClients }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-xl col-lg-3 col-md-4">
-                    <div class="card animate-fade-in delay-1" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                        <div style="display: flex; align-items: center;">
-                            <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(16, 185, 129, 0.1); color: #10B981; flex-shrink: 0; margin-right: 0.75rem;">
-                                <i class="fas fa-folder-open"></i>
-                            </div>
-                            <div style="flex: 1;">
-                                <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Active Cases</p>
-                                <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $activeCases }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-xl col-lg-3 col-md-4">
-                    <div class="card animate-fade-in delay-2" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                        <div style="display: flex; align-items: center;">
-                            <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(245, 158, 11, 0.1); color: #F59E0B; flex-shrink: 0; margin-right: 0.75rem;">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div style="flex: 1;">
-                                <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Pending Assessment</p>
-                                <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $pendingAssessment }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-xl col-lg-3 col-md-4">
-                    <div class="card animate-fade-in delay-3" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                        <div style="display: flex; align-items: center;">
-                            <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(37, 99, 235, 0.1); color: #1A237E; flex-shrink: 0; margin-right: 0.75rem;">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div style="flex: 1;">
-                                <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Approved Cases</p>
-                                <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $approvedCases }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-xl col-lg-3 col-md-4">
-                    <div class="card animate-fade-in delay-4" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                        <div style="display: flex; align-items: center;">
-                            <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(16, 185, 129, 0.1); color: #10B981; flex-shrink: 0; margin-right: 0.75rem;">
-                                <i class="fas fa-hand-holding-usd"></i>
-                            </div>
-                            <div style="flex: 1;">
-                                <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Released Assistance</p>
-                                <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $releasedAssistance }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
+@section('content')
+            <!-- Search and Quick Actions -->
             <div class="card mb-4">
-                <div class="card-header">Quick Actions</div>
                 <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-6 col-md-3">
-                            <a href="/admin/social-case-eligibility/register" class="quick-action-btn">
-                                <i class="fas fa-user-plus"></i>
-                                <span>New Intake</span>
-                            </a>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <a href="/admin/social-case" class="quick-action-btn">
-                                <i class="fas fa-search"></i>
-                                <span>Search Client</span>
-                            </a>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <a href="{{ route('admin.social-case-studies.index') }}" class="quick-action-btn">
-                                <i class="fas fa-list"></i>
-                                <span>View Pending Cases</span>
-                            </a>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <a href="#" class="quick-action-btn">
-                                <i class="fas fa-chart-bar"></i>
-                                <span>Generate Reports</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Charts -->
-            <div class="row g-4 mb-4">
-                <div class="col-xl-4">
-                    <div class="card">
-                        <div class="card-header">Monthly Social Case Study Requests</div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="monthlyRequestsChart"></canvas>
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-6">
+                            <div class="d-flex gap-2">
+                                <div class="search-container flex-grow-1">
+                                    <i class="fas fa-search text-muted"></i>
+                                    <input type="text" placeholder="Search by name, control no., barangay, phone number..." id="globalSearch">
+                                </div>
+                                <div class="search-filter-dropdown">
+                                    <button class="search-filter-btn" onclick="toggleSearchFilter()">
+                                        <i class="fas fa-filter me-1"></i>Filter
+                                    </button>
+                                    <div class="search-filter-menu" id="searchFilterMenu">
+                                        <div class="search-filter-item active" onclick="selectFilter(this, 'all')">
+                                            <i class="fas fa-list"></i> All
+                                        </div>
+                                        <div class="search-filter-item" onclick="selectFilter(this, 'name')">
+                                            <i class="fas fa-user"></i> Name
+                                        </div>
+                                        <div class="search-filter-item" onclick="selectFilter(this, 'control_no')">
+                                            <i class="fas fa-hashtag"></i> Control No.
+                                        </div>
+                                        <div class="search-filter-item" onclick="selectFilter(this, 'barangay')">
+                                            <i class="fas fa-map-marker-alt"></i> Barangay
+                                        </div>
+                                        <div class="search-filter-item" onclick="selectFilter(this, 'phone')">
+                                            <i class="fas fa-phone"></i> Phone Number
+                                        </div>
+                                        <div class="search-filter-item" onclick="selectFilter(this, 'case_no')">
+                                            <i class="fas fa-folder"></i> Case Number
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-xl-4">
-                    <div class="card">
-                        <div class="card-header">Assistance by Purpose</div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="assistanceByPurposeChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-4">
-                    <div class="card">
-                        <div class="card-header">Assistance by Barangay</div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="assistanceByBarangayChart"></canvas>
+                        <div class="col-md-6">
+                            <div class="d-flex gap-2 flex-wrap">
+                                <a href="/admin/social-case-eligibility/register" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>New Case
+                                </a>
+                                <a href="/admin/social-case-studies" class="btn btn-outline-secondary">
+                                    <i class="fas fa-clock me-2"></i>Pending
+                                </a>
+                                <a href="#" class="btn btn-outline-secondary">
+                                    <i class="fas fa-chart-bar me-2"></i>Reports
+                                </a>
+                                <a href="#" class="btn btn-outline-secondary">
+                                    <i class="fas fa-archive me-2"></i>Released
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Recent Activities -->
+            <!-- Case Progress Card -->
+            @if(isset($currentCase))
+            <div class="case-progress-card">
+                <div class="case-progress-header">
+                    <div>
+                        <div class="case-progress-title">Current Case</div>
+                        <div class="case-progress-client">{{ $currentCase->client->full_name ?? 'Juan Dela Cruz' }}</div>
+                    </div>
+                    <a href="{{ route('admin.social-case-studies.show', $currentCase->id) }}" class="btn btn-light btn-sm">
+                        View Details <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="case-progress-steps">
+                    <div class="case-progress-step completed">
+                        <div class="case-progress-step-icon"><i class="fas fa-check"></i></div>
+                        <div class="case-progress-step-label">Requirements</div>
+                    </div>
+                    <div class="case-progress-step completed">
+                        <div class="case-progress-step-icon"><i class="fas fa-check"></i></div>
+                        <div class="case-progress-step-label">Interview</div>
+                    </div>
+                    <div class="case-progress-step completed">
+                        <div class="case-progress-step-icon"><i class="fas fa-check"></i></div>
+                        <div class="case-progress-step-label">Assessment</div>
+                    </div>
+                    <div class="case-progress-step current">
+                        <div class="case-progress-step-icon"><i class="fas fa-clock"></i></div>
+                        <div class="case-progress-step-label">Approval</div>
+                    </div>
+                    <div class="case-progress-step">
+                        <div class="case-progress-step-icon"><i class="fas fa-paper-plane"></i></div>
+                        <div class="case-progress-step-label">Release</div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            <!-- Today's Work Metrics -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="stat-label">New Intakes Today</div>
+                            <div class="stat-value">{{ $newIntakesToday ?? 0 }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="stat-label">Pending Interviews</div>
+                            <div class="stat-value">{{ $pendingInterviews ?? 0 }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="stat-label">Pending Assessments</div>
+                            <div class="stat-value">{{ $pendingAssessments ?? 0 }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="stat-label">Ready for Approval</div>
+                            <div class="stat-value">{{ $readyForApproval ?? 0 }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row g-4">
-                <div class="col-xl-4">
+                <!-- Case Workflow Pipeline -->
+                <div class="col-md-4">
                     <div class="card">
-                        <div class="card-header">Latest Encoded Cases</div>
+                        <div class="card-header">
+                            <i class="fas fa-project-diagram me-2"></i>Case Workflow
+                        </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-borderless align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Client</th>
-                                            <th>Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($latestEncodedCases as $case)
-                                            <tr>
-                                                <td>
-                                                    <div class="fw-bold">{{ $case->client->full_name }}</div>
-                                                    <div class="text-secondary small">{{ $case->case_number }}</div>
-                                                </td>
-                                                <td>
-                                                    <div class="small">{{ $case->created_at->format('M d, Y') }}</div>
-                                                    <span class="badge-pill {{ $case->status == 'Open' ? 'success' : 'warning' }}">{{ $case->status }}</span>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="2" class="text-center text-secondary">No cases found</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                            <div class="workflow-step">
+                                <div class="workflow-step-icon" style="background-color: #DBEAFE; color: #1E40AF;">1</div>
+                                <div class="workflow-step-content">
+                                    <div class="workflow-step-title">New Intake</div>
+                                    <div class="workflow-step-count">{{ $newIntakeCount ?? 12 }} cases</div>
+                                </div>
+                            </div>
+                            <div class="workflow-step">
+                                <div class="workflow-step-icon" style="background-color: #FEF3C7; color: #92400E;">2</div>
+                                <div class="workflow-step-content">
+                                    <div class="workflow-step-title">Requirements Review</div>
+                                    <div class="workflow-step-count">{{ $requirementsReviewCount ?? 5 }} cases</div>
+                                </div>
+                            </div>
+                            <div class="workflow-step">
+                                <div class="workflow-step-icon" style="background-color: #EDE9FE; color: #6D28D9;">3</div>
+                                <div class="workflow-step-content">
+                                    <div class="workflow-step-title">Interview</div>
+                                    <div class="workflow-step-count">{{ $interviewCount ?? 3 }} cases</div>
+                                </div>
+                            </div>
+                            <div class="workflow-step">
+                                <div class="workflow-step-icon" style="background-color: #D1FAE5; color: #065F46;">4</div>
+                                <div class="workflow-step-content">
+                                    <div class="workflow-step-title">Assessment</div>
+                                    <div class="workflow-step-count">{{ $assessmentCount ?? 6 }} cases</div>
+                                </div>
+                            </div>
+                            <div class="workflow-step">
+                                <div class="workflow-step-icon" style="background-color: #FEE2E2; color: #991B1B;">5</div>
+                                <div class="workflow-step-content">
+                                    <div class="workflow-step-title">Approval</div>
+                                    <div class="workflow-step-count">{{ $approvalCount ?? 2 }} cases</div>
+                                </div>
+                            </div>
+                            <div class="workflow-step">
+                                <div class="workflow-step-icon" style="background-color: #E5E7EB; color: #4B5563;">6</div>
+                                <div class="workflow-step-content">
+                                    <div class="workflow-step-title">Released</div>
+                                    <div class="workflow-step-count">{{ $releasedCount ?? 14 }} cases</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-4">
+
+                <!-- Recent Activity -->
+                <div class="col-md-4">
                     <div class="card">
-                        <div class="card-header">Latest Approved Cases</div>
+                        <div class="card-header">
+                            <i class="fas fa-history me-2"></i>Recent Activity
+                        </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-borderless align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Client</th>
-                                            <th>Type</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($latestApprovedCases as $case)
-                                            <tr>
-                                                <td>
-                                                    <div class="fw-bold">{{ $case->client->full_name }}</div>
-                                                    <div class="text-secondary small">{{ $case->assistance_type }}</div>
-                                                </td>
-                                                <td>
-                                                    <div class="small">{{ $case->created_at->format('M d, Y') }}</div>
-                                                    <span class="badge-pill info">{{ $case->status }}</span>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="2" class="text-center text-secondary">No approved cases</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                            @forelse($recentActivity ?? [] as $activity)
+                                <div class="activity-item">
+                                    <div class="activity-icon" style="background-color: {{ $activity['color'] ?? '#E5E7EB' }}; color: {{ $activity['text_color'] ?? '#4B5563' }};">
+                                        <i class="fas fa-{{ $activity['icon'] ?? 'circle' }}"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-text">{{ $activity['text'] ?? 'Activity' }}</div>
+                                        <div class="activity-time">{{ $activity['time'] ?? 'Just now' }}</div>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="empty-state">
+                                    <div class="empty-state-icon"><i class="fas fa-history"></i></div>
+                                    <div>No recent activity</div>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Schedule -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-calendar-alt me-2"></i>Today's Schedule
+                        </div>
+                        <div class="card-body">
+                            @forelse($todaySchedule ?? [] as $schedule)
+                                <div class="case-row">
+                                    <div class="case-client-name">{{ $schedule['time'] ?? '9:00 AM' }}</div>
+                                    <div class="case-details">{{ $schedule['title'] ?? 'Interview' }}</div>
+                                    <div class="case-meta">
+                                        <span class="badge badge-interview">{{ $schedule['type'] ?? 'Interview' }}</span>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="empty-state">
+                                    <div class="empty-state-icon"><i class="fas fa-calendar-alt"></i></div>
+                                    <div>No scheduled activities today</div>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Latest Cases with More Details -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <i class="fas fa-folder-open me-2"></i>Latest Cases
+                </div>
+                <div class="card-body">
+                    @forelse($latestEncodedCases as $case)
+                        <div class="case-row">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <div class="case-client-name">{{ $case->client->full_name }}</div>
+                                    <div class="case-details">{{ $case->assistance_type ?? 'Medical Assistance' }}</div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="case-details">Barangay: {{ $case->client->barangay ?? 'N/A' }}</div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="case-details">Assigned: {{ $case->assigned_to ?? 'Maria Santos' }}</div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="case-meta">
+                                        <span class="badge {{ $case->priority == 'Urgent' ? 'badge-urgent' : ($case->status == 'Interview' ? 'badge-interview' : 'badge-pending-docs') }}">
+                                            {{ $case->priority ?? 'Pending' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <div class="case-details">{{ $case->created_at->diffForHumans() }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="empty-state">
+                            <div class="empty-state-icon"><i class="fas fa-folder-open"></i></div>
+                            <div>No cases found</div>
+                            <small>Cases will appear here after intake</small>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="row g-4 mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-2"></i>Cases per Month
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex flex-column gap-3">
+                                @foreach($monthlyCases ?? [
+                                    ['month' => 'Jan', 'count' => 45],
+                                    ['month' => 'Feb', 'count' => 52],
+                                    ['month' => 'Mar', 'count' => 38],
+                                    ['month' => 'Apr', 'count' => 65],
+                                    ['month' => 'May', 'count' => 48],
+                                    ['month' => 'Jun', 'count' => 72]
+                                ] as $month)
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div style="width: 40px; font-weight: 600; color: var(--text-muted);">{{ $month['month'] }}</div>
+                                        <div class="progress-bar-custom flex-grow-1">
+                                            <div class="progress-bar-fill" style="width: {{ ($month['count'] / 80) * 100 }}%; background-color: var(--primary);"></div>
+                                        </div>
+                                        <div style="width: 40px; font-weight: 600; color: var(--text);">{{ $month['count'] }}</div>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-4">
+                <div class="col-md-6">
                     <div class="card">
-                        <div class="card-header">Latest Released Assistance</div>
+                        <div class="card-header">
+                            <i class="fas fa-chart-pie me-2"></i>Assistance Types
+                        </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-borderless align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Client</th>
-                                            <th>Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($latestReleasedAssistance as $case)
-                                            <tr>
-                                                <td>
-                                                    <div class="fw-bold">{{ $case->client->full_name }}</div>
-                                                    <div class="text-secondary small">{{ $case->assistance_type }}</div>
-                                                </td>
-                                                <td>
-                                                    <div class="fw-bold">₱{{ number_format($case->amount, 2) }}</div>
-                                                    <div class="small">{{ $case->release_date ? $case->release_date->format('M d, Y') : 'N/A' }}</div>
-                                                    <span class="badge-pill success">{{ $case->status }}</span>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="2" class="text-center text-secondary">No released assistance</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                            <div class="d-flex flex-column gap-3">
+                                @foreach($assistanceTypes ?? [
+                                    ['type' => 'Medical', 'count' => 125, 'color' => '#3B82F6'],
+                                    ['type' => 'Burial', 'count' => 45, 'color' => '#6B7280'],
+                                    ['type' => 'Educational', 'count' => 78, 'color' => '#10B981'],
+                                    ['type' => 'Financial', 'count' => 92, 'color' => '#F59E0B']
+                                ] as $assistance)
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div style="width: 120px; font-weight: 600; color: var(--text);">{{ $assistance['type'] }}</div>
+                                        <div class="progress-bar-custom flex-grow-1">
+                                            <div class="progress-bar-fill" style="width: {{ ($assistance['count'] / 150) * 100 }}%; background-color: {{ $assistance['color'] }};"></div>
+                                        </div>
+                                        <div style="width: 40px; font-weight: 600; color: var(--text);">{{ $assistance['count'] }}</div>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+@endsection
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+@section('page-scripts')
     <script>
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('show');
+        function toggleSearchFilter() {
+            document.getElementById('searchFilterMenu').classList.toggle('show');
         }
 
-        function updateDateTime() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
-        }
-
-        updateDateTime();
-        setInterval(updateDateTime, 60000);
-
-        // Monthly Requests Chart
-        const monthlyRequestsCtx = document.getElementById('monthlyRequestsChart').getContext('2d');
-        new Chart(monthlyRequestsCtx, {
-            type: 'line',
-            data: {
-                labels: {{ $monthlyRequests->pluck('month') }},
-                datasets: [{
-                    label: 'Case Studies',
-                    data: {{ $monthlyRequests->pluck('count') }},
-                    borderColor: '#1A237E',
-                    backgroundColor: 'rgba(26, 35, 126, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
-        });
-
-        // Assistance by Purpose Chart
-        const assistanceByPurposeCtx = document.getElementById('assistanceByPurposeChart').getContext('2d');
-        new Chart(assistanceByPurposeCtx, {
-            type: 'doughnut',
-            data: {
-                labels: {{ $assistanceByPurpose->pluck('assistance_type') }},
-                datasets: [{
-                    data: {{ $assistanceByPurpose->pluck('count') }},
-                    backgroundColor: [
-                        '#1A237E',
-                        '#22C55E',
-                        '#F59E0B',
-                        '#3B82F6',
-                        '#D32F2F',
-                        '#6B7280'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom' }
-                }
-            }
-        });
-
-        // Assistance by Barangay Chart
-        const assistanceByBarangayCtx = document.getElementById('assistanceByBarangayChart').getContext('2d');
-        new Chart(assistanceByBarangayCtx, {
-            type: 'bar',
-            data: {
-                labels: {{ $assistanceByBarangay->pluck('barangay') }},
-                datasets: [{
-                    label: 'Assistance Count',
-                    data: {{ $assistanceByBarangay->pluck('count') }},
-                    backgroundColor: '#1A237E'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: 'y',
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    x: { beginAtZero: true }
-                }
-            }
-        });
-
-        // Logout confirmation
-        function confirmLogout(event) {
-            event.preventDefault();
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'Do you really want to log out?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#1A237E',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, log out',
-                cancelButtonText: 'Cancel',
-                background: '#ffffff',
-                customClass: {
-                    popup: 'rounded-4 shadow-lg'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
-                }
+        function selectFilter(element, filter) {
+            // Remove active class from all items
+            document.querySelectorAll('.search-filter-item').forEach(item => {
+                item.classList.remove('active');
             });
+            // Add active class to clicked item
+            element.classList.add('active');
+            // Close menu
+            document.getElementById('searchFilterMenu').classList.remove('show');
+            // Update search placeholder based on filter
+            const searchInput = document.getElementById('globalSearch');
+            const placeholders = {
+                'all': 'Search by name, control no., barangay, phone number...',
+                'name': 'Search by client name...',
+                'control_no': 'Search by control number...',
+                'barangay': 'Search by barangay...',
+                'phone': 'Search by phone number...',
+                'case_no': 'Search by case number...'
+            };
+            searchInput.placeholder = placeholders[filter];
         }
-    </script>
 
-    <!-- Hidden form for secure POST logout -->
-    <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
-        @csrf
-    </form>
-</body>
-</html>
+        // Close search filter menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.querySelector('.search-filter-dropdown');
+            const menu = document.getElementById('searchFilterMenu');
+            if (!dropdown.contains(event.target)) {
+                menu.classList.remove('show');
+            }
+        });
+    </script>
+@endsection

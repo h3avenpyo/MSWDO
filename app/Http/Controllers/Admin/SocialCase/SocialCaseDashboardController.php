@@ -13,10 +13,6 @@ class SocialCaseDashboardController extends Controller
 {
     public function index(Request $request)
     {
-        if (! session('admin_user_id')) {
-            return redirect()->route('admin.login.form');
-        }
-
         // Get filter parameters
         $startDate = $request->input('start_date', now()->subMonths(6)->toDateString());
         $endDate = $request->input('end_date', now()->toDateString());

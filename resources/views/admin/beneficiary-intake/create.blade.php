@@ -1,295 +1,125 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beneficiary Intake Form | MSWDO Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@extends('layouts.admin')
+
+@section('title', 'Beneficiary Intake Form')
+
+@section('navbar-title', 'Beneficiary Intake Form')
+
+@section('page-styles')
     <style>
-        :root {
-            --primary: #1A237E;
-            --primary-dark: #121858;
-            --secondary: #374151;
-            --accent: #FBC02D;
-            --danger: #D32F2F;
-            --background: #F1F5F9;
-            --cards: #FFFFFF;
-            --text: #111827;
-            --text-muted: #4B5563;
-            --sidebar-bg: #1A237E;
-            --border: #D1D5DB;
-        }
-
-        body {
-            background-color: var(--background);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            background: var(--sidebar-bg);
-            width: 260px;
-            min-height: 100vh;
-            position: fixed;
-            left: 0; top: 0;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transition: transform .3s ease;
-        }
-        .sidebar-brand {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,.1);
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: .65rem;
-        }
-        .sidebar-brand i { font-size: 1.3rem; color: var(--accent); }
-        .sidebar-menu {
-            list-style: none;
-            margin: 0;
-            padding: 1rem 0;
-            flex: 1;
-        }
-        .sidebar-menu li { margin-bottom: .2rem; }
-        .sidebar-menu a {
-            color: rgba(255,255,255,.75);
-            padding: .75rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            text-decoration: none;
-            font-size: .9rem;
-            border-left: 3px solid transparent;
-            transition: all .2s ease;
-        }
-        .sidebar-menu a:hover {
-            background: rgba(255,255,255,.1);
-            color: var(--accent);
-        }
-        .sidebar-menu a.active {
-            background: rgba(255,255,255,.1);
-            color: var(--accent);
-            border-left-color: var(--accent);
-        }
-        .sidebar-menu a i { width: 20px; text-align: center; }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 260px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            width: calc(100% - 260px);
-        }
-
-        .top-navbar {
-            background-color: var(--cards);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            flex-shrink: 0;
-        }
-
-        /* Cards */
-        .card {
-            background-color: var(--cards);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
-            margin-bottom: 1.5rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
-        }
-
-        .card-body { padding: 1.5rem; }
-
-        .form-control, .form-select {
-            background: var(--background);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: .75rem 1rem;
-            color: var(--text);
-            transition: border-color .2s ease, box-shadow .2s ease;
-        }
-        .form-control:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,35,126,.08); }
-        .form-label { font-weight: 600; color: #475569; margin-bottom: .55rem; }
-
-        /* Step Wizard */
+        /* Step Wizard Styles */
         .step-wizard {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 2rem;
+            padding: 1rem 0;
+            border-bottom: 2px solid var(--border);
             position: relative;
         }
-        .step-wizard::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--border);
-            z-index: 0;
-            transform: translateY(-50%);
-        }
+
         .step-item {
-            position: relative;
-            z-index: 1;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
             flex: 1;
+            position: relative;
+            opacity: 0.5;
+            transition: all 0.3s ease;
         }
+
+        .step-item.active {
+            opacity: 1;
+        }
+
+        .step-item.completed {
+            opacity: 0.7;
+        }
+
         .step-circle {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: var(--cards);
-            border: 2px solid var(--border);
+            background-color: #E2E8F0;
+            color: #64748B;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 0.5rem;
             font-weight: 600;
-            color: var(--text-muted);
-            transition: all .3s ease;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: 2px solid #E2E8F0;
         }
+
         .step-item.active .step-circle {
-            background: var(--primary);
+            background-color: var(--primary);
+            color: white;
             border-color: var(--primary);
-            color: white;
+            box-shadow: 0 0 0 4px rgba(26, 35, 126, 0.1);
         }
+
         .step-item.completed .step-circle {
-            background: #22C55E;
-            border-color: #22C55E;
+            background-color: var(--success);
             color: white;
+            border-color: var(--success);
         }
+
         .step-label {
             font-size: 0.75rem;
-            color: var(--text-muted);
             font-weight: 500;
+            color: var(--text-muted);
+            text-align: center;
         }
+
         .step-item.active .step-label {
             color: var(--primary);
             font-weight: 600;
         }
-        .step-item.completed .step-label {
-            color: #22C55E;
-        }
 
         .step-content {
             display: none;
+            animation: fadeIn 0.3s ease;
         }
+
         .step-content.active {
             display: block;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+            border-color: #059669;
+        }
+
         .btn-step {
-            padding: 0.75rem 2rem;
-            border-radius: 10px;
-            font-weight: 600;
-        }
-
-        .page-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
-        .btn-icon {
-            background: var(--background);
-            border: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
             border-radius: 8px;
-            width: 38px;
-            height: 38px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all .2s ease;
-        }
-        .btn-icon:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.show {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .step-wizard {
-                flex-wrap: wrap;
-            }
-            .step-wizard::before {
-                display: none;
-            }
-            .step-item {
-                flex: 0 0 33.333%;
-                margin-bottom: 1rem;
-            }
-        }
-
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 0.75rem;
-        }
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .checkbox-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary);
         }
     </style>
-</head>
-<body>
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-brand"><i class="fas fa-building"></i> MSWDO Admin</div>
-        <ul class="sidebar-menu">
-            <li><a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="/admin/senior"><i class="fas fa-user"></i> Senior Citizen</a></li>
-            <li><a href="/admin/social-case/dashboard"><i class="fas fa-home"></i> Social Case Dashboard</a></li>
-            <li><a href="/admin/beneficiary-intake" class="active"><i class="fas fa-clipboard-list"></i> Beneficiary Intake</a></li>
-            <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-    </div>
+@endsection
 
-    <div class="main-content">
-        <!-- Top Navigation -->
-        <nav class="top-navbar">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    <button class="btn btn-link d-md-none me-3" onclick="toggleSidebar()">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h5 class="mb-0 me-4">Beneficiary Intake Form</h5>
+@section('content')
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <strong>Please correct the following errors:</strong>
+                    <ul class="mb-0 mt-2">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
-                <div class="d-flex align-items-center">
-                    <div class="me-4 text-muted small" id="currentDateTime"></div>
-                    <div class="activity-avatar" style="width: 35px; height: 35px; font-size: 0.875rem; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; border-radius: 50%;">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
-                </div>
-            </div>
-        </nav>
+            @endif
 
-        <!-- Dashboard Content -->
-        <div class="p-4" style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
             <div class="card">
                 <div class="card-body">
                     <!-- Step Wizard -->
@@ -328,99 +158,99 @@
                         </div>
                     </div>
 
-                    <form id="intakeForm" action="{{ route('admin.beneficiary-intake.store') }}" method="POST">
+                    <form id="intakeForm" action="{{ route('admin.beneficiary-intake.store') }}" method="POST" novalidate>
                         @csrf
 
                         <!-- Step 1: Processing Information -->
                         <div class="step-content active" data-step="1">
-                            <h5 class="mb-4">Processing Information</h5>
+                            <h5 class="mb-4" style="font-weight: 600; color: var(--text);">Processing Information</h5>
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <label class="form-label">Control Number</label>
-                                    <input type="text" name="control_number" class="form-control" value="{{ $controlNumber }}" readonly>
+                                    <input type="text" name="control_number" class="form-control" value="{{ $controlNumber }}" readonly style="background-color: #F8FAFC;">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Date Processed</label>
-                                    <input type="date" name="date_processed" class="form-control" value="{{ now()->format('Y-m-d') }}" required>
+                                    <input type="date" name="date_processed" class="form-control" value="{{ old('date_processed', now()->format('Y-m-d')) }}" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Encoder</label>
-                                    <input type="text" name="encoder" class="form-control" value="{{ $encoder }}" readonly>
+                                    <input type="text" name="encoder" class="form-control" value="{{ $encoder }}" readonly style="background-color: #F8FAFC;">
                                 </div>
                             </div>
                         </div>
 
                         <!-- Step 2: Client Information -->
                         <div class="step-content" data-step="2">
-                            <h5 class="mb-4">Client Information</h5>
+                            <h5 class="mb-4" style="font-weight: 600; color: var(--text);">Client Information</h5>
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <label class="form-label">Last Name</label>
-                                    <input type="text" name="client_last_name" class="form-control" required>
+                                    <input type="text" name="client_last_name" class="form-control" value="{{ old('client_last_name') }}" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">First Name</label>
-                                    <input type="text" name="client_first_name" class="form-control" required>
+                                    <input type="text" name="client_first_name" class="form-control" value="{{ old('client_first_name') }}" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Middle Name</label>
-                                    <input type="text" name="client_middle_name" class="form-control">
+                                    <input type="text" name="client_middle_name" class="form-control" value="{{ old('client_middle_name') }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Birthday</label>
-                                    <input type="date" name="client_birthday" class="form-control" required onchange="calculateClientAge()">
+                                    <input type="date" name="client_birthday" class="form-control" value="{{ old('client_birthday') }}" required onchange="calculateClientAge()">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Age</label>
-                                    <input type="number" name="client_age" class="form-control" required>
+                                    <input type="number" name="client_age" class="form-control" value="{{ old('client_age') }}" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Sex</label>
                                     <select name="client_sex" class="form-select" required>
                                         <option value="">Select Sex</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
+                                        <option value="Male" @selected(old('client_sex') === 'Male')>Male</option>
+                                        <option value="Female" @selected(old('client_sex') === 'Female')>Female</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Civil Status</label>
                                     <select name="client_civil_status" class="form-select" required>
                                         <option value="">Select Civil Status</option>
-                                        <option value="Single">Single</option>
-                                        <option value="Married">Married</option>
-                                        <option value="Widowed">Widowed</option>
-                                        <option value="Separated">Separated</option>
-                                        <option value="Divorced">Divorced</option>
+                                        <option value="Single" @selected(old('client_civil_status') === 'Single')>Single</option>
+                                        <option value="Married" @selected(old('client_civil_status') === 'Married')>Married</option>
+                                        <option value="Widowed" @selected(old('client_civil_status') === 'Widowed')>Widowed</option>
+                                        <option value="Separated" @selected(old('client_civil_status') === 'Separated')>Separated</option>
+                                        <option value="Divorced" @selected(old('client_civil_status') === 'Divorced')>Divorced</option>
                                     </select>
                                 </div>
                                 <div class="col-md-8">
                                     <label class="form-label">Address</label>
-                                    <textarea name="client_address" class="form-control" rows="2" required></textarea>
+                                    <textarea name="client_address" class="form-control" rows="2" required>{{ old('client_address') }}</textarea>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Barangay</label>
-                                    <input type="text" name="client_barangay" class="form-control" required>
+                                    <input type="text" name="client_barangay" class="form-control" value="{{ old('client_barangay') }}" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Contact Number</label>
-                                    <input type="text" name="client_contact_number" class="form-control" required>
+                                    <input type="text" name="client_contact_number" class="form-control" value="{{ old('client_contact_number') }}" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Occupation</label>
-                                    <input type="text" name="client_occupation" class="form-control">
+                                    <input type="text" name="client_occupation" class="form-control" value="{{ old('client_occupation') }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Monthly Income</label>
-                                    <input type="number" name="client_monthly_income" class="form-control" step="0.01">
+                                    <input type="number" name="client_monthly_income" class="form-control" step="0.01" value="{{ old('client_monthly_income') }}">
                                 </div>
                             </div>
                         </div>
 
                         <!-- Step 3: Beneficiary Information -->
                         <div class="step-content" data-step="3">
-                            <h5 class="mb-4">Beneficiary Information</h5>
+                            <h5 class="mb-4" style="font-weight: 600; color: var(--text);">Beneficiary Information</h5>
                             <div class="form-check mb-4">
-                                <input class="form-check-input" type="checkbox" name="is_client_beneficiary" id="isClientBeneficiary" value="1" checked onchange="toggleBeneficiaryFields()">
+                                <input class="form-check-input" type="checkbox" name="is_client_beneficiary" id="isClientBeneficiary" value="1" @checked(old('is_client_beneficiary', true)) onchange="toggleBeneficiaryFields()">
                                 <label class="form-check-label" for="isClientBeneficiary">
                                     Client is also the Beneficiary
                                 </label>
@@ -470,7 +300,7 @@
 
                         <!-- Step 4: Medical Condition -->
                         <div class="step-content" data-step="4">
-                            <h5 class="mb-4">Medical Condition</h5>
+                            <h5 class="mb-4" style="font-weight: 600; color: var(--text);">Medical Condition</h5>
                             <div class="checkbox-group mb-4">
                                 <div class="checkbox-item">
                                     <input type="checkbox" name="medical_conditions[]" value="Cancer" id="med_cancer">
@@ -525,24 +355,24 @@
 
                         <!-- Step 5: Service Provided -->
                         <div class="step-content" data-step="5">
-                            <h5 class="mb-4">Service Provided</h5>
+                            <h5 class="mb-4" style="font-weight: 600; color: var(--text);">Service Provided</h5>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="service_provided" id="service_social" value="Social Case Study" required>
+                                <input class="form-check-input" type="radio" name="service_provided" id="service_social" value="Social Case Study" @checked(old('service_provided', 'Social Case Study') === 'Social Case Study') required>
                                 <label class="form-check-label" for="service_social">Social Case Study</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="service_provided" id="service_general" value="General Intake">
+                                <input class="form-check-input" type="radio" name="service_provided" id="service_general" value="General Intake" @checked(old('service_provided') === 'General Intake')>
                                 <label class="form-check-label" for="service_general">General Intake</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="service_provided" id="service_certification" value="Certification">
+                                <input class="form-check-input" type="radio" name="service_provided" id="service_certification" value="Certification" @checked(old('service_provided') === 'Certification')>
                                 <label class="form-check-label" for="service_certification">Certification</label>
                             </div>
                         </div>
 
                         <!-- Step 6: Purpose -->
                         <div class="step-content" data-step="6">
-                            <h5 class="mb-4">Purpose</h5>
+                            <h5 class="mb-4" style="font-weight: 600; color: var(--text);">Purpose</h5>
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <select name="purpose" class="form-select" required onchange="togglePurposeOther()">
@@ -572,7 +402,7 @@
 
                         <!-- Step 7: Submitted To -->
                         <div class="step-content" data-step="7">
-                            <h5 class="mb-4">Submitted To</h5>
+                            <h5 class="mb-4" style="font-weight: 600; color: var(--text);">Submitted To</h5>
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <select name="submitted_to" class="form-select" required>
@@ -595,7 +425,7 @@
 
                         <!-- Step 8: Review -->
                         <div class="step-content" data-step="8">
-                            <h5 class="mb-4">Review Intake Information</h5>
+                            <h5 class="mb-4" style="font-weight: 600; color: var(--text);">Review Intake Information</h5>
                             <div id="reviewContent" class="alert alert-info">
                                 Please review all information before submitting.
                             </div>
@@ -610,42 +440,125 @@
                     </form>
                 </div>
             </div>
-        </div>
-    </div>
+@endsection
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+@section('page-scripts')
     <script>
         let currentStep = 1;
         const totalSteps = 8;
 
+        function getStepFields(step) {
+            const stepEl = document.querySelector(`.step-content[data-step="${step}"]`);
+            return [...stepEl.querySelectorAll('input, select, textarea')].filter(el => {
+                if (el.type === 'hidden' || el.disabled) {
+                    return false;
+                }
+
+                if (step === 3 && document.getElementById('isClientBeneficiary').checked && el.closest('#beneficiaryFields')) {
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        function validateStep(step) {
+            const fields = getStepFields(step);
+            let valid = true;
+            let firstInvalid = null;
+
+            if (step === 5) {
+                const serviceSelected = document.querySelector('input[name="service_provided"]:checked');
+                if (!serviceSelected) {
+                    valid = false;
+                }
+            }
+
+            fields.forEach(field => {
+                field.classList.remove('is-invalid');
+
+                if (field.type === 'radio') {
+                    return;
+                }
+
+                if (!field.checkValidity()) {
+                    valid = false;
+                    field.classList.add('is-invalid');
+                    if (!firstInvalid) {
+                        firstInvalid = field;
+                    }
+                }
+            });
+
+            if (step === 4 && document.getElementById('med_other').checked) {
+                const otherField = document.querySelector('input[name="medical_condition_other"]');
+                otherField.required = true;
+                if (!otherField.value.trim()) {
+                    valid = false;
+                    otherField.classList.add('is-invalid');
+                    if (!firstInvalid) {
+                        firstInvalid = otherField;
+                    }
+                }
+            }
+
+            if (step === 6 && document.querySelector('select[name="purpose"]').value === 'Others') {
+                const otherField = document.querySelector('input[name="purpose_other"]');
+                otherField.required = true;
+                if (!otherField.value.trim()) {
+                    valid = false;
+                    otherField.classList.add('is-invalid');
+                    if (!firstInvalid) {
+                        firstInvalid = otherField;
+                    }
+                }
+            }
+
+            if (!valid) {
+                if (firstInvalid) {
+                    firstInvalid.focus();
+                }
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Incomplete Information',
+                    text: 'Please fill in all required fields before continuing.',
+                    confirmButtonColor: '#1A237E'
+                });
+            }
+
+            return valid;
+        }
+
         function showStep(step) {
-            // Hide all steps
             document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
-            
-            // Show current step
+            document.querySelectorAll('.step-item').forEach(el => {
+                el.classList.remove('active');
+                el.classList.remove('completed');
+            });
+
             document.querySelector(`.step-content[data-step="${step}"]`).classList.add('active');
             document.querySelector(`.step-item[data-step="${step}"]`).classList.add('active');
-            
-            // Mark previous steps as completed
+
             for (let i = 1; i < step; i++) {
                 document.querySelector(`.step-item[data-step="${i}"]`).classList.add('completed');
             }
-            
-            // Update buttons
+
             document.getElementById('prevBtn').style.display = step > 1 ? 'inline-block' : 'none';
             document.getElementById('nextBtn').style.display = step < totalSteps ? 'inline-block' : 'none';
             document.getElementById('submitBtn').style.display = step === totalSteps ? 'inline-block' : 'none';
-            
-            // If on review step, populate review content
+
             if (step === totalSteps) {
                 populateReview();
             }
-            
+
             currentStep = step;
         }
 
         function nextStep() {
+            if (!validateStep(currentStep)) {
+                return;
+            }
+
             if (currentStep < totalSteps) {
                 showStep(currentStep + 1);
             }
@@ -695,7 +608,7 @@
             html += `<p><strong>Control Number:</strong> ${formData.get('control_number')}</p>`;
             html += `<p><strong>Date Processed:</strong> ${formData.get('date_processed')}</p>`;
             html += `<p><strong>Encoder:</strong> ${formData.get('encoder')}</p>`;
-            
+
             html += '<hr><h6>Client Information</h6>';
             html += `<p><strong>Name:</strong> ${formData.get('client_first_name')} ${formData.get('client_middle_name')} ${formData.get('client_last_name')}</p>`;
             html += `<p><strong>Birthday:</strong> ${formData.get('client_birthday')} (Age: ${formData.get('client_age')})</p>`;
@@ -704,7 +617,7 @@
             html += `<p><strong>Address:</strong> ${formData.get('client_address')}</p>`;
             html += `<p><strong>Barangay:</strong> ${formData.get('client_barangay')}</p>`;
             html += `<p><strong>Contact:</strong> ${formData.get('client_contact_number')}</p>`;
-            
+
             const isClientBeneficiary = formData.get('is_client_beneficiary');
             html += '<hr><h6>Beneficiary Information</h6>';
             html += `<p><strong>Client is Beneficiary:</strong> ${isClientBeneficiary ? 'Yes' : 'No'}</p>`;
@@ -712,73 +625,47 @@
                 html += `<p><strong>Beneficiary Name:</strong> ${formData.get('beneficiary_first_name')} ${formData.get('beneficiary_middle_name')} ${formData.get('beneficiary_last_name')}</p>`;
                 html += `<p><strong>Relationship:</strong> ${formData.get('beneficiary_relationship')}</p>`;
             }
-            
+
             html += '<hr><h6>Medical Conditions</h6>';
             const conditions = formData.getAll('medical_conditions[]');
             html += `<p>${conditions.length > 0 ? conditions.join(', ') : 'None'}</p>`;
             if (conditions.includes('Other')) {
                 html += `<p><strong>Other:</strong> ${formData.get('medical_condition_other')}</p>`;
             }
-            
+
             html += '<hr><h6>Service Provided</h6>';
             html += `<p>${formData.get('service_provided')}</p>`;
-            
+
             html += '<hr><h6>Purpose</h6>';
             html += `<p>${formData.get('purpose')}</p>`;
             if (formData.get('purpose') === 'Others') {
                 html += `<p><strong>Other:</strong> ${formData.get('purpose_other')}</p>`;
             }
-            
+
             html += '<hr><h6>Submitted To</h6>';
             html += `<p>${formData.get('submitted_to')}</p>`;
-            
+
             document.getElementById('reviewContent').innerHTML = html;
         }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('show');
-        }
-
-        function confirmLogout(event) {
-            event.preventDefault();
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'Do you really want to log out?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#1A237E',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, log out',
-                cancelButtonText: 'Cancel',
-                background: '#ffffff',
-                customClass: {
-                    popup: 'rounded-4 shadow-lg'
+        document.getElementById('intakeForm').addEventListener('submit', function (event) {
+            for (let step = 1; step <= 7; step++) {
+                if (!validateStep(step)) {
+                    event.preventDefault();
+                    showStep(step);
+                    return;
                 }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
-                }
-            });
-        }
+            }
+        });
 
-        function updateDateTime() {
-            const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            };
-            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
-        }
-        updateDateTime();
-        setInterval(updateDateTime, 60000);
+        document.addEventListener('DOMContentLoaded', function () {
+            toggleBeneficiaryFields();
+            toggleMedicalOther();
+            togglePurposeOther();
+
+            @if($errors->any())
+                showStep(2);
+            @endif
+        });
     </script>
-
-    <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
-        @csrf
-    </form>
-</body>
-</html>
+@endsection

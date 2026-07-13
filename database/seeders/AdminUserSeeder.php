@@ -23,5 +23,15 @@ class AdminUserSeeder extends Seeder
                 'status' => 'active',
             ]
         );
+
+        User::on('mswdo_admin')->updateOrCreate(
+            ['email' => 'senior@mswdo.test'],
+            [
+                'name' => 'Senior Citizen Officer',
+                'password' => Hash::make('password'),
+                'role' => 'Senior Citizen officer',
+                'status' => 'active',
+            ]
+        );
     }
 }
