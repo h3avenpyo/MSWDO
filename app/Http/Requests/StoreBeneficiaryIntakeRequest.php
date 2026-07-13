@@ -26,7 +26,8 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
     {
         return [
             // Processing Information
-            'control_number' => ['required', 'string', 'unique:beneficiary_intakes,control_number'],
+            'client_id' => ['nullable', 'integer', 'exists:mswdo_social_case.clients,id'],
+            'control_number' => ['required', 'string', 'unique:mswdo_social_case.beneficiary_intakes,control_number'],
             'date_processed' => ['required', 'date'],
             'encoder' => ['required', 'string'],
             

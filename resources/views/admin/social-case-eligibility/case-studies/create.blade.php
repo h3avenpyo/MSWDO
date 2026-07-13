@@ -1,320 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Social Case Study</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        :root {
-            --primary: #1A237E;
-            --primary-dark: #121858;
-            --secondary: #374151;
-            --accent: #FBC02D;
-            --danger: #D32F2F;
-            --background: #F1F5F9;
-            --cards: #FFFFFF;
-            --text: #111827;
-            --text-muted: #4B5563;
-            --sidebar-bg: #1A237E;
-            --border: #D1D5DB;
-        }
+﻿@extends('layouts.admin')
 
-        *, *::before, *::after { box-sizing: border-box; }
+@section('title', 'Create Social Case Study')
+@section('navbar-title', 'Create Social Case Study')
 
-        body {
-            background-color: var(--background);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-        }
+@section('page-styles')
+<style>
+    .case-study-step-indicator { gap: .75rem; }
+    .case-study-step-indicator .step-indicator { position: relative; z-index: 1; flex: 1 1 0; min-width: 0; }
+    .case-study-step-indicator small { display: block; line-height: 1.2; }
 
-        .sidebar {
-            background: var(--sidebar-bg);
-            width: 260px;
-            min-height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transition: transform .3s ease;
-        }
-        .sidebar-brand {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,.1);
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: .65rem;
-        }
-        .sidebar-brand i { font-size: 1.3rem; color: var(--accent); }
-        .sidebar-menu {
-            list-style: none;
-            margin: 0;
-            padding: 1rem 0;
-            flex: 1;
-        }
-        .sidebar-menu li { margin-bottom: .2rem; }
-        .sidebar-menu a {
-            color: rgba(255,255,255,.75);
-            padding: .75rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            text-decoration: none;
-            font-size: .9rem;
-            border-left: 3px solid transparent;
-            transition: all .2s ease;
-        }
-        .sidebar-menu a:hover {
-            background: rgba(255,255,255,.1);
-            color: var(--accent);
-        }
-        .sidebar-menu a.active {
-            background: rgba(255,255,255,.1);
-            color: var(--accent);
-            border-left-color: var(--accent);
-        }
-        .sidebar-menu a i { width: 20px; text-align: center; }
-        .sidebar-menu-header {
-            color: rgba(255,255,255,.5);
-            font-size: .75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: .75rem 1.5rem .25rem;
-        }
-        .sidebar-menu a.submenu {
-            padding-left: 2.5rem;
-            font-size: .85rem;
-        }
+    @media (max-width: 575.98px) {
+        .case-study-step-indicator { align-items: flex-start !important; overflow-x: auto; padding-bottom: .5rem; }
+        .case-study-step-indicator .progress { display: none; }
+        .case-study-step-indicator .step-indicator { flex: 0 0 72px; }
+        .case-study-step-indicator .step-circle { width: 34px !important; height: 34px !important; margin-bottom: .35rem !important; }
+        .case-study-step-indicator small { font-size: .7rem; white-space: normal; }
+    }
+</style>
+@endsection
 
-        .main-content {
-            margin-left: 260px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            width: calc(100% - 260px);
-        }
-
-        .top-navbar {
-            background-color: #FFFFFF;
-            border-bottom: 1px solid var(--border);
-            padding: 1.25rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            flex-shrink: 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .navbar-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text);
-            margin: 0;
-        }
-
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .navbar-datetime {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .navbar-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .card {
-            background-color: var(--cards);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
-            margin-bottom: 1.5rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
-        }
-
-        .card-body { padding: 1.5rem; }
-
-        .card-header {
-            background-color: transparent;
-            border-bottom: 1px solid var(--border);
-            padding: 1.25rem 1.5rem;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--text);
-        }
-
-        .badge {
-            padding: 0.35rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .badge-success {
-            background-color: #D1FAE5;
-            color: #065F46;
-        }
-
-        .badge-warning {
-            background-color: #FEF3C7;
-            color: #92400E;
-        }
-
-        .badge-danger {
-            background-color: #FEE2E2;
-            color: #991B1B;
-        }
-
-        .badge-info {
-            background-color: #DBEAFE;
-            color: #1E40AF;
-        }
-
-        .badge-secondary {
-            background-color: #F1F5F9;
-            color: #475569;
-        }
-
-        .btn {
-            padding: 0.6rem 1.25rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
-        }
-
-        .btn-outline-secondary {
-            border-color: var(--border);
-            color: var(--text-muted);
-        }
-
-        .btn-outline-secondary:hover {
-            background-color: var(--border);
-            color: var(--text);
-        }
-
-        .page-title {
-            font-size: 1.15rem;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .page-subtitle {
-            color: var(--text-muted);
-            margin: .35rem 0 0;
-            font-size: .93rem;
-        }
-
-        .form-label {
-            font-weight: 500;
-            color: var(--text);
-            margin-bottom: 0.5rem;
-        }
-
-        .form-control, .form-select {
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            padding: 0.6rem 0.875rem;
-            font-size: 0.95rem;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
-        }
-
-        @media (max-width: 768px) {
-            .main-content { margin-left: 0; width: 100%; }
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.show { transform: translateX(0); }
-        }
-    </style>
-</head>
-<body>
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-brand"><i class="fas fa-building"></i> MSWDO Admin</div>
-        <ul class="sidebar-menu">
-            <li><a href="/admin/social-case/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
-            
-            <li class="sidebar-menu-header">Cases</li>
-            <li><a href="/admin/social-case-eligibility/register" class="submenu"><i class="fas fa-plus"></i> New Case</a></li>
-            <li><a href="/admin/social-case-studies" class="submenu active"><i class="fas fa-folder-open"></i> Active Cases</a></li>
-            <li><a href="#" class="submenu"><i class="fas fa-archive"></i> Released</a></li>
-            
-            <li class="sidebar-menu-header">Clients</li>
-            <li><a href="/admin/beneficiary-intake" class="submenu"><i class="fas fa-users"></i> Beneficiary Intake</a></li>
-            
-            <li class="sidebar-menu-header">Reports</li>
-            <li><a href="#" class="submenu"><i class="fas fa-chart-bar"></i> Generate Reports</a></li>
-            
-            <li class="sidebar-menu-header">System</li>
-            <li><a href="#" class="submenu"><i class="fas fa-cog"></i> Settings</a></li>
-            <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-    </div>
-
-    <div class="main-content">
-        <!-- Top Navigation -->
-        <nav class="top-navbar">
-            <div class="d-flex align-items-center justify-content-between w-100">
-                <div class="d-flex align-items-center gap-3">
-                    <button class="btn btn-link d-md-none" onclick="toggleSidebar()">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h1 class="navbar-title">Create Social Case Study</h1>
-                </div>
-                <div class="navbar-right">
-                    <div class="navbar-datetime" id="currentDateTime"></div>
-                    <div class="navbar-avatar">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
-                </div>
-            </div>
-        </nav>
-
-        <div class="page-body">
-            <div class="card">
+@section('content')
+<div class="card">
                 <div class="card-body">
                     <!-- Step Progress -->
                     <div class="mb-4">
-                        <div class="d-flex justify-content-between align-items-center position-relative">
+                        <div class="d-flex justify-content-between align-items-center position-relative case-study-step-indicator">
                             <div class="progress position-absolute w-100" style="height: 4px; top: 50%; transform: translateY(-50%); z-index: 0;">
                                 <div class="progress-bar" id="progressBar" style="width: 20%;"></div>
                             </div>
@@ -343,7 +53,9 @@
 
             <form method="POST" action="{{ route('admin.social-case-studies.store', $client) }}" id="socialCaseForm">
                 @csrf
+                @php($caseBeneficiary = $intake && ! $intake->is_client_beneficiary ? $intake : null)
                 <input type="hidden" name="current_step" id="currentStep" value="1">
+                <input type="hidden" name="beneficiary_intake_id" value="{{ $intake?->id }}">
                 
                 <!-- Step 1: Requirements Verification -->
                 <div class="step-content" id="step1">
@@ -352,33 +64,33 @@
                     
                     <div class="mb-3">
                         <label class="form-label">Date Processed *</label>
-                        <input type="date" name="date_processed" class="form-control" value="{{ now()->format('Y-m-d') }}" required>
+                        <input type="date" name="date_processed" class="form-control" value="{{ old('date_processed', $intake?->date_processed?->format('Y-m-d') ?? now()->format('Y-m-d')) }}" required>
                     </div>
 
                     <h6 class="mt-4 mb-3">CLIENT INFORMATION</h6>
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
                             <label class="form-label">Last Name *</label>
-                            <input type="text" name="client_last_name" class="form-control" value="{{ $client->last_name }}" required>
+                            <input type="text" name="client_last_name" class="form-control" value="{{ old('client_last_name', $intake?->client_last_name ?? $client->last_name) }}" required readonly>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">First Name *</label>
-                            <input type="text" name="client_first_name" class="form-control" value="{{ $client->first_name }}" required>
+                            <input type="text" name="client_first_name" class="form-control" value="{{ old('client_first_name', $intake?->client_first_name ?? $client->first_name) }}" required readonly>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Middle Name</label>
-                            <input type="text" name="client_middle_name" class="form-control" value="{{ $client->middle_name ?? '' }}">
+                            <input type="text" name="client_middle_name" class="form-control" value="{{ old('client_middle_name', $intake?->client_middle_name ?? $client->middle_name ?? '') }}" readonly>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Age *</label>
-                            <input type="number" name="client_age" class="form-control" required>
+                            <input type="number" name="client_age" class="form-control" value="{{ old('client_age', $intake?->client_age ?? $client->birthdate?->age) }}" required readonly>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Sex *</label>
                             <select name="client_sex" class="form-select" required>
                                 <option value="">Select Sex</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
+                                <option value="Male" @selected(old('client_sex', $intake?->client_sex ?? $client->gender) === 'Male')>Male</option>
+                                <option value="Female" @selected(old('client_sex', $intake?->client_sex ?? $client->gender) === 'Female')>Female</option>
                             </select>
                         </div>
                         <div class="col-md-4">
@@ -457,30 +169,30 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
                             <label class="form-label">Last Name</label>
-                            <input type="text" name="beneficiary_last_name" class="form-control">
+                            <input type="text" name="beneficiary_last_name" class="form-control" value="{{ old('beneficiary_last_name', $caseBeneficiary?->beneficiary_last_name ?? ($intake?->is_client_beneficiary ? $intake->client_last_name : '')) }}">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">First Name</label>
-                            <input type="text" name="beneficiary_first_name" class="form-control">
+                            <input type="text" name="beneficiary_first_name" class="form-control" value="{{ old('beneficiary_first_name', $caseBeneficiary?->beneficiary_first_name ?? ($intake?->is_client_beneficiary ? $intake->client_first_name : '')) }}">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Middle Name</label>
-                            <input type="text" name="beneficiary_middle_name" class="form-control">
+                            <input type="text" name="beneficiary_middle_name" class="form-control" value="{{ old('beneficiary_middle_name', $caseBeneficiary?->beneficiary_middle_name ?? ($intake?->is_client_beneficiary ? $intake->client_middle_name : '')) }}">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Age</label>
-                            <input type="number" name="beneficiary_age" class="form-control">
+                            <input type="number" name="beneficiary_age" class="form-control" value="{{ old('beneficiary_age', $caseBeneficiary?->beneficiary_age ?? ($intake?->is_client_beneficiary ? $intake->client_age : '')) }}">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Birthday</label>
-                            <input type="date" name="beneficiary_birthday" class="form-control">
+                            <input type="date" name="beneficiary_birthday" class="form-control" value="{{ old('beneficiary_birthday', $caseBeneficiary?->beneficiary_birthday?->format('Y-m-d') ?? ($intake?->is_client_beneficiary ? $intake->client_birthday?->format('Y-m-d') : '')) }}">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Sex</label>
                             <select name="beneficiary_sex" class="form-select">
                                 <option value="">Select Sex</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
+                                <option value="Male" @selected(old('beneficiary_sex', $caseBeneficiary?->beneficiary_sex ?? ($intake?->is_client_beneficiary ? $intake->client_sex : null)) === 'Male')>Male</option>
+                                <option value="Female" @selected(old('beneficiary_sex', $caseBeneficiary?->beneficiary_sex ?? ($intake?->is_client_beneficiary ? $intake->client_sex : null)) === 'Female')>Female</option>
                             </select>
                         </div>
                         <div class="col-md-12">
@@ -719,10 +431,10 @@
                     </div>
                 </div>
 
-                <!-- Step 3: Social Worker Evaluation & Approval -->
+                <!-- Step 3: Social Worker Assessment -->
                 <div class="step-content d-none" id="step3">
-                    <h6 class="mb-3">Step 3: Social Worker Evaluation & Approval</h6>
-                    <p class="text-muted mb-4">Evaluate the case and provide recommendation for approval.</p>
+                    <h6 class="mb-3">Step 3: Social Worker Assessment</h6>
+                    <p class="text-muted mb-4">Evaluate the case and submit a recommendation for the report.</p>
                     
                     <div class="mb-3">
                         <label class="form-label">Social Worker Assessment</label>
@@ -741,17 +453,6 @@
                         <label class="form-label">Assistance Amount Recommended</label>
                         <input type="number" name="recommended_amount" class="form-control" step="0.01">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Supervisor Notes</label>
-                        <textarea name="supervisor_notes" rows="3" class="form-control"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="evaluation_complete" id="eval_complete">
-                            <label class="form-check-label fw-bold" for="eval_complete">Evaluation complete and approved</label>
-                        </div>
-                    </div>
-
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-outline-secondary" onclick="prevStep(2)"><i class="fas fa-arrow-left me-2"></i> Back</button>
                         <button type="button" class="btn btn-primary" onclick="nextStep(4)">Next: Report Generation <i class="fas fa-arrow-right ms-2"></i></button>
@@ -819,13 +520,6 @@
                         <label class="form-label">Summary / Case Details</label>
                         <textarea name="summary" rows="6" class="form-control"></textarea>
                     </div>
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="report_generated" id="report_gen">
-                            <label class="form-check-label fw-bold" for="report_gen">Report generated and ready for release</label>
-                        </div>
-                    </div>
-
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-outline-secondary" onclick="prevStep(3)"><i class="fas fa-arrow-left me-2"></i> Back</button>
                         <button type="button" class="btn btn-primary" onclick="nextStep(5)">Next: Assistance Release <i class="fas fa-arrow-right ms-2"></i></button>
@@ -876,40 +570,12 @@
                 </div>
             </form>
                 </div>
-            </div>
-        </div>
-    </div>
+</div>
+@endsection
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('show');
-        }
-
-        function confirmLogout(event) {
-            event.preventDefault();
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'Do you really want to log out?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#1A237E',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, log out',
-                cancelButtonText: 'Cancel',
-                background: '#ffffff',
-                customClass: {
-                    popup: 'rounded-4 shadow-lg'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
-                }
-            });
-        }
-
-        // Step Navigation
-        function nextStep(step) {
+@section('page-scripts')
+<script>
+function nextStep(step) {
             // Hide all steps
             document.querySelectorAll('.step-content').forEach(el => el.classList.add('d-none'));
             // Show target step
@@ -950,27 +616,5 @@
                 }
             });
         }
-
-        // Update current date and time
-        function updateDateTime() {
-            const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            };
-            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
-        }
-        updateDateTime();
-        setInterval(updateDateTime, 60000);
-    </script>
-
-    <!-- Hidden form for secure POST logout -->
-    <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
-        @csrf
-    </form>
-</body>
-</html>
+</script>
+@endsection

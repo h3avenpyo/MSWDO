@@ -33,7 +33,7 @@ class SocialCaseDashboardController extends Controller
             ->count();
 
         $pendingAssessment = SocialCaseStudy::on('mswdo_social_case')
-            ->where('status', 'Pending')
+            ->where('status', 'In Progress')
             ->when($barangay, function ($query) use ($barangay) {
                 return $query->whereHas('client', function ($q) use ($barangay) {
                     $q->where('address', 'like', "%{$barangay}%");

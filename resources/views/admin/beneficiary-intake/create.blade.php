@@ -160,6 +160,7 @@
 
                     <form id="intakeForm" action="{{ route('admin.beneficiary-intake.store') }}" method="POST" novalidate>
                         @csrf
+                        <input type="hidden" name="client_id" value="{{ $client?->id }}">
 
                         <!-- Step 1: Processing Information -->
                         <div class="step-content active" data-step="1">
@@ -186,30 +187,30 @@
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <label class="form-label">Last Name</label>
-                                    <input type="text" name="client_last_name" class="form-control" value="{{ old('client_last_name') }}" required>
+                                    <input type="text" name="client_last_name" class="form-control" value="{{ old('client_last_name', $client?->last_name) }}" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">First Name</label>
-                                    <input type="text" name="client_first_name" class="form-control" value="{{ old('client_first_name') }}" required>
+                                    <input type="text" name="client_first_name" class="form-control" value="{{ old('client_first_name', $client?->first_name) }}" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Middle Name</label>
-                                    <input type="text" name="client_middle_name" class="form-control" value="{{ old('client_middle_name') }}">
+                                    <input type="text" name="client_middle_name" class="form-control" value="{{ old('client_middle_name', $client?->middle_name) }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Birthday</label>
-                                    <input type="date" name="client_birthday" class="form-control" value="{{ old('client_birthday') }}" required onchange="calculateClientAge()">
+                                    <input type="date" name="client_birthday" class="form-control" value="{{ old('client_birthday', $client?->birthdate?->format('Y-m-d')) }}" required onchange="calculateClientAge()">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Age</label>
-                                    <input type="number" name="client_age" class="form-control" value="{{ old('client_age') }}" required>
+                                    <input type="number" name="client_age" class="form-control" value="{{ old('client_age', $client?->birthdate?->age) }}" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Sex</label>
                                     <select name="client_sex" class="form-select" required>
                                         <option value="">Select Sex</option>
-                                        <option value="Male" @selected(old('client_sex') === 'Male')>Male</option>
-                                        <option value="Female" @selected(old('client_sex') === 'Female')>Female</option>
+                                        <option value="Male" @selected(old('client_sex', $client?->gender) === 'Male')>Male</option>
+                                        <option value="Female" @selected(old('client_sex', $client?->gender) === 'Female')>Female</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4">
@@ -225,7 +226,7 @@
                                 </div>
                                 <div class="col-md-8">
                                     <label class="form-label">Address</label>
-                                    <textarea name="client_address" class="form-control" rows="2" required>{{ old('client_address') }}</textarea>
+                                    <textarea name="client_address" class="form-control" rows="2" required>{{ old('client_address', $client?->address) }}</textarea>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Barangay</label>
@@ -233,7 +234,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Contact Number</label>
-                                    <input type="text" name="client_contact_number" class="form-control" value="{{ old('client_contact_number') }}" required>
+                                    <input type="text" name="client_contact_number" class="form-control" value="{{ old('client_contact_number', $client?->contact_number) }}" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Occupation</label>

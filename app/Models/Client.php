@@ -42,6 +42,16 @@ class Client extends Model
         return $this->hasMany(EligibilityAuditLog::class, 'client_id', 'id');
     }
 
+    public function caseRejections(): HasMany
+    {
+        return $this->hasMany(CaseRejection::class, 'client_id', 'id');
+    }
+
+    public function beneficiaryIntakes(): HasMany
+    {
+        return $this->hasMany(BeneficiaryIntake::class);
+    }
+
     public function getFullNameAttribute(): string
     {
         return trim(sprintf('%s %s %s', $this->first_name, $this->middle_name, $this->last_name));

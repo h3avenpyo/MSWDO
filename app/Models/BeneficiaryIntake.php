@@ -3,11 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BeneficiaryIntake extends Model
 {
+    protected $connection = 'mswdo_social_case';
+
     protected $fillable = [
+        'client_id',
+        'social_case_study_id',
         'control_number',
         'date_processed',
         'encoder',
@@ -39,6 +43,16 @@ class BeneficiaryIntake extends Model
         'purpose_other',
         'submitted_to',
     ];
+
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class);
+    }
+
+    public function socialCaseStudy(): BelongsTo
+    {
+        return $this->belongsTo(SocialCaseStudy::class);
+    }
 
     protected $casts = [
         'date_processed' => 'date',

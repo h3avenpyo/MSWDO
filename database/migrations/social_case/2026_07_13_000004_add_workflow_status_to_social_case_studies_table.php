@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::connection('mswdo_social_case')->table('social_case_studies', function (Blueprint $table) {
             if (!Schema::connection('mswdo_social_case')->hasColumn('social_case_studies', 'workflow_step')) {
-                $table->enum('workflow_step', ['requirements_verification', 'assessment_interview', 'evaluation_approval', 'report_generation', 'assistance_release', 'case_closed'])->default('requirements_verification')->after('status');
+                $table->enum('workflow_step', ['client_search', 'eligibility', 'beneficiary_intake', 'requirements_verification', 'assessment_interview', 'family_composition', 'social_case_assessment', 'supervisor_review', 'report_generation', 'print_export', 'release_report', 'assistance_release', 'case_closed'])->default('requirements_verification')->after('status');
             }
             if (!Schema::connection('mswdo_social_case')->hasColumn('social_case_studies', 'requirements_complete')) {
                 $table->boolean('requirements_complete')->default(false)->after('workflow_step');

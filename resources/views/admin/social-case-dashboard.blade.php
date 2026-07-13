@@ -44,8 +44,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex gap-2 flex-wrap">
-                                <a href="/admin/social-case-eligibility/register" class="btn btn-primary">
-                                    <i class="fas fa-plus me-2"></i>New Case
+                                <a href="{{ route('admin.social-case-eligibility.index') }}" class="btn btn-primary">
+                                    <i class="fas fa-search me-2"></i>Start New Case
                                 </a>
                                 <a href="/admin/social-case-studies" class="btn btn-outline-secondary">
                                     <i class="fas fa-clock me-2"></i>Pending

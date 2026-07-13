@@ -1,16 +1,16 @@
 @extends('layouts.admin')
 
-@section('title', 'Eligibility Result')
+@section('title', 'Step 3: Eligibility Validation')
 
-@section('navbar-title', 'Eligibility Result')
+@section('navbar-title', 'Step 3: Eligibility Validation')
 
 @section('content')
-            <div class="card">
+            <div class="card shadow-sm border-start border-primary border-4">
                 <div class="card-body">
             <div class="status-card-header mb-3">
                 <div>
-                    <p class="status-title">Eligibility validation for {{ $client->full_name }}</p>
-                    <p class="text-muted small">Birthdate: {{ $client->birthdate->format('M d, Y') }}</p>
+                    <h4 class="fw-bold text-primary mb-1"><i class="fas fa-check-shield me-2"></i>Step 3: Eligibility Validation</h4>
+                    <p class="text-muted small">Client: {{ $client->full_name }} | Birthdate: {{ $client->birthdate->format('M d, Y') }}</p>
                 </div>
                 <span class="badge-state {{ $eligible ? 'badge-eligible' : 'badge-not-eligible' }} eligible-status">
                     {{ $eligible ? 'ELIGIBLE' : 'NOT ELIGIBLE' }}
@@ -30,6 +30,12 @@
             @endif
 
             <ul class="summary-list">
+                @unless($eligible)
+                <li>
+                    <span class="label">Rejection Reason</span>
+                    <span class="value">Received approved or released assistance within the last six months.</span>
+                </li>
+                @endunless
                 <li>
                     <span class="label">Client Name</span>
                     <span class="value">{{ $client->full_name }}</span>
@@ -55,9 +61,21 @@
             </ul>
 
             <div class="action-group">
-                <a href="/admin/social-case" class="btn btn-outline-primary btn-block">New Search</a>
+                <a href="{{ route('admin.social-case-eligibility.index') }}" class="btn btn-outline-primary btn-block">New Search</a>
                 <a href="/admin/social-case-eligibility/register" class="btn btn-outline-secondary btn-block">Register Another Client</a>
-                <a href="{{ $eligible ? route('admin.social-case-studies.create', $client) : '#' }}" class="btn btn-primary btn-block {{ $eligible ? '' : 'btn-disabled' }}">Proceed to Interview</a>
+                @if($eligible)
+                    <a href="{{ route('admin.beneficiary-intake.create', $client) }}" class="btn btn-primary btn-block">Proceed to Beneficiary Intake</a>
+                @else
+                    <div class="d-grid gap-2 w-100">
+                        <a href="{{ route('admin.social-case-eligibility.rejection-letter', $client) }}" class="btn btn-outline-danger btn-block">
+                            <i class="fas fa-file-pdf me-2"></i>Print Ineligibility Notice
+                        </a>
+                        <form action="{{ route('admin.social-case-eligibility.reject', $client) }}" method="POST" class="d-grid w-100 m-0">
+                            @csrf
+                            <button type="submit" class="btn btn-danger btn-block">Reject &amp; Close</button>
+                        </form>
+                    </div>
+                @endif
             </div>
                 </div>
             </div>

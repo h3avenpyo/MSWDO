@@ -28,7 +28,7 @@ class AdminRoleLoginTest extends TestCase
             'role' => 'Social Case Study',
         ]);
 
-        $response->assertRedirect(route('admin.social-case'));
+        $response->assertRedirect(route('admin.social-case.dashboard'));
         $this->assertSame($user->id, session('admin_user_id'));
         $this->assertSame('Social Case Study officer', session('admin_user_role'));
     }

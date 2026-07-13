@@ -15,7 +15,7 @@ class OfficerRegistrationTest extends TestCase
         $email = 'jane.' . uniqid() . '@example.com';
 
         $response = $this->post(route('admin.officers.store'), [
-            'name' => 'Jane Officer',
+            'name' => 'Jane Officer ' . uniqid(),
             'email' => $email,
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',

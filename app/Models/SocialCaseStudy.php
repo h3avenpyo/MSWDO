@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\SocialCase\SocialCaseReport;
 
 class SocialCaseStudy extends Model
 {
@@ -32,6 +35,18 @@ class SocialCaseStudy extends Model
         'beneficiary_sex',
         'beneficiary_barangay',
         'medical_conditions',
+        'additional_requirements',
+        'interview_reason',
+        'interview_situation',
+        'interview_household',
+        'monthly_income',
+        'monthly_expenses',
+        'family_illnesses',
+        'previous_assistance',
+        'interview_notes',
+        'social_worker_assessment',
+        'recommendation',
+        'recommended_amount',
         'service_provided',
         'purpose',
         'submitted_to',
@@ -42,6 +57,9 @@ class SocialCaseStudy extends Model
         'interview_complete',
         'evaluation_complete',
         'report_generated',
+        'released_at',
+        'released_by',
+        'released_to',
         'assistance_released',
         'assistance_amount',
         'assistance_date',
@@ -54,7 +72,12 @@ class SocialCaseStudy extends Model
         'beneficiary_birthday' => 'date',
         'interview_date' => 'date',
         'assistance_date' => 'date',
+        'released_at' => 'datetime',
         'medical_conditions' => 'array',
+        'monthly_income' => 'decimal:2',
+        'monthly_expenses' => 'decimal:2',
+        'recommended_amount' => 'decimal:2',
+        'assistance_amount' => 'decimal:2',
         'requirements_complete' => 'boolean',
         'interview_complete' => 'boolean',
         'evaluation_complete' => 'boolean',
@@ -65,5 +88,20 @@ class SocialCaseStudy extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class, 'client_id', 'id');
+    }
+
+    public function beneficiaryIntake(): HasOne
+    {
+        return $this->hasOne(BeneficiaryIntake::class);
+    }
+
+    public function familyMembers(): HasMany
+    {
+        return $this->hasMany(FamilyMember::class);
+    }
+
+    public function report(): HasOne
+    {
+        return $this->hasOne(SocialCaseReport::class);
     }
 }

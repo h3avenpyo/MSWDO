@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBeneficiaryIntakeRequest;
 use App\Models\BeneficiaryIntake;
+use App\Models\Client;
+use App\Services\SocialCase\EligibilityChecker;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -16,16 +18,21 @@ class BeneficiaryIntakeController extends Controller
         return view('admin.beneficiary-intake.index', compact('intakes'));
     }
 
-    public function create()
+    public function create(EligibilityChecker $checker, ?Client $client = null)
     {
+        if ($client && ! $checker->check($client)['eligible']) {
+            return redirect()->route('admin.social-case-eligibility.show', $client)
+                ->with('error', 'This client is not eligible to proceed to beneficiary intake.');
+        }
+
         // Generate control number
         $controlNumber = 'MSWDO-' . date('Y') . '-' . str_pad(BeneficiaryIntake::count() + 1, 5, '0', STR_PAD_LEFT);
         $encoder = session('admin_user_name') ?? 'Admin User';
         
-        return view('admin.beneficiary-intake.create', compact('controlNumber', 'encoder'));
+        return view('admin.beneficiary-intake.create', compact('controlNumber', 'encoder', 'client'));
     }
 
-    public function store(StoreBeneficiaryIntakeRequest $request)
+    public function store(StoreBeneficiaryIntakeRequest $request, EligibilityChecker $checker)
     {
         $data = $request->validated();
 
@@ -40,10 +47,26 @@ class BeneficiaryIntakeController extends Controller
             $data['beneficiary_relationship'] = null;
         }
 
-        BeneficiaryIntake::create($data);
+        $client = ! empty($data['client_id'])
+            ? Client::on('mswdo_social_case')->findOrFail($data['client_id'])
+            : null;
 
-        return redirect()->route('admin.beneficiary-intake.index')
-            ->with('success', 'Beneficiary intake form has been saved successfully.');
+        if ($client && ! $checker->check($client)['eligible']) {
+            return redirect()->route('admin.social-case-eligibility.show', $client)
+                ->with('error', 'This client is not eligible to proceed to case study creation.');
+        }
+
+        $intake = BeneficiaryIntake::on('mswdo_social_case')->create($data);
+
+        if (! $client) {
+            return redirect()->route('admin.beneficiary-intake.index')
+                ->with('success', 'Beneficiary intake form has been saved successfully.');
+        }
+
+        return redirect()->route('admin.social-case-studies.create', [
+            'client' => $client,
+            'intake' => $intake->id,
+        ])->with('success', 'Beneficiary intake saved. Continue with case study requirements.');
     }
 
     public function show(BeneficiaryIntake $intake)
