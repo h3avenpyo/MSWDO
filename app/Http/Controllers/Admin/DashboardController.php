@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Senior\SeniorCitizenRecord;
+use App\Models\SocialCaseStudy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -136,6 +137,41 @@ class DashboardController extends Controller
         ];
 
         return view('admin.senior', $data);
+    }
+
+    public function socialCaseWelcome()
+    {
+        return redirect()->route('admin.social-case.dashboard');
+    }
+
+    public function socialCaseDashboard()
+    {
+        return view('admin.social-case.dashboard');
+    }
+
+    public function socialCaseNew()
+    {
+        return view('admin.social-case.new');
+    }
+
+    public function socialCaseIntake()
+    {
+        return view('admin.social-case.intake');
+    }
+
+    public function socialCaseCases()
+    {
+        return view('admin.social-case.cases');
+    }
+
+    public function socialCaseDetail($caseId)
+    {
+        return view('admin.social-case.detail', compact('caseId'));
+    }
+
+    public function socialCaseDocument($caseId, $agency)
+    {
+        return view('admin.social-case.document', compact('caseId', 'agency'));
     }
 
     public function seniorBirthdays()
@@ -892,5 +928,80 @@ class DashboardController extends Controller
         $filename .= '_' . now()->format('Y-m-d') . '.pdf';
         
         return $pdf->download($filename);
+    }
+
+    // Social Case Study API Methods
+    public function getCases()
+    {
+        $cases = SocialCaseStudy::orderBy('created_at', 'desc')->get();
+        return response()->json($cases);
+    }
+
+    public function getCase($id)
+    {
+        $case = SocialCaseStudy::find($id);
+        if (!$case) {
+            return response()->json(['error' => 'Case not found'], 404);
+        }
+        return response()->json($case);
+    }
+
+    public function storeCase(Request $request)
+    {
+        $validated = $request->validate([
+            'control_no' => 'required|unique:social_case_studies,control_no',
+            'status' => 'required',
+            'client' => 'required|array',
+            'household' => 'required|array',
+            'interview' => 'required|array',
+            'signers' => 'required|array',
+            'purpose' => 'required',
+            'agencies' => 'nullable|array',
+            'requirements' => 'required|array',
+            'status_history' => 'required|array',
+            'released_date' => 'nullable|date',
+        ]);
+
+        // Ensure agencies defaults to empty array if null
+        $validated['agencies'] = $validated['agencies'] ?? [];
+
+        $case = SocialCaseStudy::create($validated);
+        return response()->json($case, 201);
+    }
+
+    public function updateCase(Request $request, $id)
+    {
+        $case = SocialCaseStudy::find($id);
+        if (!$case) {
+            return response()->json(['error' => 'Case not found'], 404);
+        }
+
+        $validated = $request->validate([
+            'control_no' => 'sometimes|unique:social_case_studies,control_no,' . $id,
+            'status' => 'sometimes',
+            'client' => 'sometimes|array',
+            'household' => 'sometimes|array',
+            'interview' => 'sometimes|array',
+            'signers' => 'sometimes|array',
+            'purpose' => 'sometimes',
+            'agencies' => 'sometimes|array',
+            'requirements' => 'sometimes|array',
+            'status_history' => 'sometimes|array',
+            'released_date' => 'sometimes|nullable|date',
+        ]);
+
+        $case->update($validated);
+        return response()->json($case);
+    }
+
+    public function deleteCase($id)
+    {
+        $case = SocialCaseStudy::find($id);
+        if (!$case) {
+            return response()->json(['error' => 'Case not found'], 404);
+        }
+
+        $case->delete();
+        return response()->json(['message' => 'Case deleted successfully']);
     }
 }
