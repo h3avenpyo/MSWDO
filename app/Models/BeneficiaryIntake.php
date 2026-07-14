@@ -11,7 +11,6 @@ class BeneficiaryIntake extends Model
 
     protected $fillable = [
         'client_id',
-        'social_case_study_id',
         'control_number',
         'date_processed',
         'encoder',
@@ -47,11 +46,6 @@ class BeneficiaryIntake extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
-    }
-
-    public function socialCaseStudy(): BelongsTo
-    {
-        return $this->belongsTo(SocialCaseStudy::class);
     }
 
     protected $casts = [

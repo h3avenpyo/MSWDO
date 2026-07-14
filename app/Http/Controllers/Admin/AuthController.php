@@ -34,7 +34,6 @@ class AuthController extends Controller
         $roleMap = [
             'Senior Citizen' => 'Senior Citizen officer',
             'Financial Assistance Officer' => 'Financial assistance officer',
-            'Social Case Study' => 'Social Case Study officer',
             'Admin' => 'Admin',
         ];
 
@@ -57,10 +56,6 @@ class AuthController extends Controller
 
         if ($user->role === 'Senior Citizen officer') {
             return redirect()->route('admin.senior');
-        }
-
-        if ($user->role === 'Social Case Study officer') {
-            return redirect()->route('admin.social-case.dashboard');
         }
 
         return redirect()->route('admin.dashboard');

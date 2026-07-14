@@ -10,7 +10,7 @@ class FamilyMember extends Model
     protected $connection = 'mswdo_social_case';
 
     protected $fillable = [
-        'social_case_study_id', 'full_name', 'relationship', 'age', 'sex',
+        'full_name', 'relationship', 'age', 'sex',
         'occupation', 'monthly_income', 'is_dependent', 'notes',
     ];
 
@@ -19,8 +19,4 @@ class FamilyMember extends Model
         'is_dependent' => 'boolean',
     ];
 
-    public function socialCaseStudy(): BelongsTo
-    {
-        return $this->belongsTo(SocialCaseStudy::class);
-    }
 }

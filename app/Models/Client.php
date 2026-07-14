@@ -32,21 +32,6 @@ class Client extends Model
         return $this->hasMany(AssistanceRecord::class, 'client_id', 'id');
     }
 
-    public function socialCaseStudies(): HasMany
-    {
-        return $this->hasMany(SocialCaseStudy::class, 'client_id', 'id');
-    }
-
-    public function auditLogs(): HasMany
-    {
-        return $this->hasMany(EligibilityAuditLog::class, 'client_id', 'id');
-    }
-
-    public function caseRejections(): HasMany
-    {
-        return $this->hasMany(CaseRejection::class, 'client_id', 'id');
-    }
-
     public function beneficiaryIntakes(): HasMany
     {
         return $this->hasMany(BeneficiaryIntake::class);

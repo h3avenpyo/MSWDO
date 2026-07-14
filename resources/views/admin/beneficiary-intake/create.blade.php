@@ -358,11 +358,7 @@
                         <div class="step-content" data-step="5">
                             <h5 class="mb-4" style="font-weight: 600; color: var(--text);">Service Provided</h5>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="service_provided" id="service_social" value="Social Case Study" @checked(old('service_provided', 'Social Case Study') === 'Social Case Study') required>
-                                <label class="form-check-label" for="service_social">Social Case Study</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="service_provided" id="service_general" value="General Intake" @checked(old('service_provided') === 'General Intake')>
+                                <input class="form-check-input" type="radio" name="service_provided" id="service_general" value="General Intake" @checked(old('service_provided', 'General Intake') === 'General Intake') required>
                                 <label class="form-check-label" for="service_general">General Intake</label>
                             </div>
                             <div class="form-check">

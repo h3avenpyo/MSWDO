@@ -373,26 +373,6 @@ Emergency and medical financial support for qualified residents.
 
 <h3 class="font-bold text-xl">
 
-Social Case Study
-
-</h3>
-
-<p class="text-secondary mt-3">
-
-Social case study services for families in need.
-
-</p>
-
-</div>
-
-
-
-<div class="bg-card-white rounded-2xl shadow-lg p-8 hover:-translate-y-2 transition flex flex-col items-center text-center">
-
-<div class="text-5xl mb-4"></div>
-
-<h3 class="font-bold text-xl">
-
 Senior Citizens
 
 </h3>
