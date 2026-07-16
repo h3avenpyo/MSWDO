@@ -159,6 +159,11 @@ class DashboardController extends Controller
         return view('admin.social-case.intake');
     }
 
+    public function socialCaseArchive()
+    {
+        return view('admin.social-case.archive');
+    }
+
     public function socialCaseCases()
     {
         return view('admin.social-case.cases');

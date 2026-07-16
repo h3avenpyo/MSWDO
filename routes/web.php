@@ -21,6 +21,7 @@ Route::prefix('admin/social-case')->name('admin.social-case.')->group(function (
     Route::get('/new', [DashboardController::class, 'socialCaseNew'])->name('new');
     Route::get('/intake', [DashboardController::class, 'socialCaseIntake'])->name('intake');
     Route::get('/cases', [DashboardController::class, 'socialCaseCases'])->name('cases');
+    Route::get('/archive', [DashboardController::class, 'socialCaseArchive'])->name('archive');
     Route::get('/detail/{caseId}', [DashboardController::class, 'socialCaseDetail'])->name('detail');
     Route::get('/document/{caseId}/{agency}', [DashboardController::class, 'socialCaseDocument'])->name('document');
     

@@ -1,7 +1,73 @@
 /* ---------------- Constants ---------------- */
-const STATUSES = ["Draft","Review","Approved","Printed","Released"];
-const STATUS_CLASS = {Draft:"b-draft",Review:"b-review",Approved:"b-approved",Printed:"b-printed",Released:"b-released"};
+const STATUSES = ["Draft","Review","Approved","Released","Archived"];
+const STATUS_CLASS = {Draft:"b-draft",Review:"b-review",Approved:"b-approved",Released:"b-released",Archived:"b-archived"};
 const PURPOSES = ["Medical Assistance","Burial Assistance","Educational Assistance","Financial Assistance","Food / Relief Assistance","Livelihood Assistance","Other"];
+const BARANGAYS = [
+  "ACACIA",
+  "ADLAS",
+  "ANAHAW I",
+  "ANAHAW 2",
+  "BALITE I",
+  "BALITE II",
+  "BALUBAD",
+  "BANABA",
+  "BATAS",
+  "BIGA 1",
+  "BIGA 2",
+  "BILUSO",
+  "BUCAL",
+  "BUHO",
+  "BULIHAN",
+  "CABANGAAN",
+  "CARMEN",
+  "HOYO",
+  "HUKAY",
+  "IBA",
+  "INCHICAN",
+  "IPIL I",
+  "IPIL 2",
+  "KALUBKOB",
+  "KAONG",
+  "LALAAN I",
+  "LALAAN II",
+  "LITLIT",
+  "LUCSUHIN",
+  "LUMIL",
+  "MAGUYAM",
+  "MALABAG",
+  "MALAKING TATIAO",
+  "MATAAS NA BUROL",
+  "MUNTING ILOG",
+  "NARRA I",
+  "NARRA II",
+  "NARRA III",
+  "PALIGAWAN",
+  "PASONG LANGKA",
+  "POBLACION 1",
+  "POBLACION 2",
+  "POBLACION 3",
+  "POBLACION 4",
+  "POBLACION 5",
+  "POOC I",
+  "POOC II",
+  "PULONG BUNGA",
+  "PULONG SAGING",
+  "PUTING KAHOY",
+  "SABUTAN",
+  "SAN MIGUEL I",
+  "SAN MIGUEL II",
+  "SAN VICENTE I",
+  "SAN VICENTE II",
+  "SANTOL",
+  "TARTARIA",
+  "TIBIG",
+  "TOLEDO",
+  "TUBUAN 1",
+  "TUBUAN 2",
+  "TUBUAN 3",
+  "ULAT",
+  "YAKAL"
+];
 const AGENCIES = [
   {key:"PCSO", name:"Philippine Charity Sweepstakes Office", addressee:"The Officer-in-Charge\nPCSO Provincial/District Office"},
   {key:"DSWD", name:"Department of Social Welfare and Development", addressee:"The Regional Director\nDSWD Field Office"},
@@ -47,13 +113,120 @@ async function saveCases(){
   // No longer needed - cases are saved via API
 }
 
+/* ---------------- Case Details Modal ---------------- */
+function showCaseDetailsModal(caseId){
+  const caseRec = cases.find(c => c.id == caseId);
+  if(!caseRec) return;
+
+  const existing = document.getElementById('caseDetailsModal');
+  if(existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'caseDetailsModal';
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9999;animation:fadeIn 0.2s ease;backdrop-filter:blur(4px);';
+  
+  modal.innerHTML = `
+    <div style="background:var(--background);border-radius:16px;width:100%;max-width:800px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.12);overflow:hidden;animation:slideUp 0.25s ease;">
+      <!-- Header -->
+      <div style="background:#1A237E;color:white;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
+        <h5 style="margin:0;font-size:1.1rem;font-weight:600;display:flex;align-items:center;gap:8px;">
+          <i data-lucide="user-circle" style="width:20px;height:20px;"></i>
+          Social Case Study Details
+        </h5>
+        <button onclick="document.getElementById('caseDetailsModal').remove()" style="background:none;border:none;color:white;cursor:pointer;opacity:0.8;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+          <i data-lucide="x" style="width:24px;height:24px;"></i>
+        </button>
+      </div>
+      
+      <!-- Body -->
+      <div style="padding:24px;overflow-y:auto;flex:1;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;margin-bottom:16px;">
+          
+          <div style="margin-bottom:8px;">
+            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Control Number</label>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.controlNo)||"—"}</div>
+          </div>
+          
+          <div style="margin-bottom:8px;">
+            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Date Created</label>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${fmtDate(caseRec.createdAt)}</div>
+          </div>
+
+          <div style="margin-bottom:8px;">
+            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Status</label>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);"><span class="badge ${STATUS_CLASS[caseRec.status]}">${caseRec.status}</span></div>
+          </div>
+
+          <div style="margin-bottom:8px;grid-column:1/-1;">
+            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Client Name</label>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client.name)||"—"}</div>
+          </div>
+          
+          <div style="margin-bottom:8px;grid-column:1/-1;">
+            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Address</label>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client.address)||"—"}</div>
+          </div>
+          
+          <div style="margin-bottom:8px;">
+            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Assistance Type</label>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.purpose)||"—"}</div>
+          </div>
+          
+          <div style="margin-bottom:8px;">
+            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Age</label>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client.age)||"—"}</div>
+          </div>
+          
+          <div style="margin-bottom:8px;">
+            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Civil Status</label>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client.civilStatus)||"—"}</div>
+          </div>
+
+          <div style="margin-bottom:8px;grid-column:1/-1;">
+            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Problem Presented</label>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);white-space:pre-wrap;">${escapeHtml(caseRec.interview.problemPresented)||"—"}</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div style="padding:16px 24px;border-top:1px solid var(--border);background:var(--surface);display:flex;justify-content:flex-end;gap:12px;">
+        <button onclick="document.getElementById('caseDetailsModal').remove()" style="padding:8px 16px;background:var(--background);border:1px solid var(--border);border-radius:6px;font-weight:500;color:var(--text-primary);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='var(--background)'">Close</button>
+        <button onclick="window.location.href='/admin/social-case/detail/${caseRec.id}'" style="padding:8px 16px;background:var(--primary);border:none;border-radius:6px;font-weight:500;color:white;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.2s;" onmouseover="this.style.background='#3730A3'" onmouseout="this.style.background='var(--primary)'">
+           <i data-lucide="edit" style="width:16px;height:16px;"></i> Full Details / Edit
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  
+  // Close on backdrop click
+  modal.addEventListener('click', e => { if(e.target === modal) modal.remove(); });
+  
+  lucide.createIcons();
+}
+
 /* ---------------- Helpers ---------------- */
 function uid(){ return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 function todayISO(){ return new Date().toISOString().slice(0,10); }
 function fmtDate(iso){
-  if(!iso) return "—";
-  const d = new Date(iso+"T00:00:00");
-  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  if(!iso || iso === 'null' || iso === '') return "—";
+  try {
+    // Handle ISO datetime strings (with T) and date strings (without T)
+    let dateStr = iso;
+    if(!iso.includes('T') && !iso.includes('Z')) {
+      dateStr = iso + "T00:00:00";
+    }
+    const d = new Date(dateStr);
+    if(isNaN(d.getTime())) {
+      console.warn('Invalid date format:', iso);
+      return "—";
+    }
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  } catch(e) {
+    console.warn('Error formatting date:', iso, e);
+    return "—";
+  }
 }
 function daysBetween(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
 function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
@@ -65,16 +238,83 @@ function findLatestByName(name){
   matches.sort((a,b)=> new Date(b.releasedDate) - new Date(a.releasedDate));
   return matches[0];
 }
+
+function checkEligibility(clientName){
+  const n = clientName.trim().toLowerCase();
+  if(!n) return {eligible: true, reason: ''};
+  
+  // Find all cases for this client
+  const clientCases = cases.filter(c => c.client.name.toLowerCase().includes(n));
+  
+  // Check for any approved/released cases within the last 6 months
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  
+  const recentApproved = clientCases.filter(c => {
+    return (c.status === 'Approved' || c.status === 'Printed' || c.status === 'Released') &&
+           new Date(c.createdAt) > sixMonthsAgo;
+  });
+  
+  if(recentApproved.length > 0){
+    const latest = recentApproved.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+    const daysSince = Math.floor((new Date() - new Date(latest.createdAt)) / (1000 * 60 * 60 * 24));
+    const daysRemaining = 180 - daysSince;
+    return {
+      eligible: false,
+      reason: `Client received assistance on ${fmtDate(latest.createdAt)}. Must wait ${daysRemaining} more days (6-month rule).`,
+      latestCase: latest,
+      daysRemaining: daysRemaining
+    };
+  }
+  
+  return {eligible: true, reason: ''};
+}
+
 function eligibilityInfo(caseRec){
-  if(!caseRec || !caseRec.releasedDate) return {eligible:true};
+  console.log('eligibilityInfo called with:', caseRec.releasedDate);
+  if(!caseRec || !caseRec.releasedDate) {
+    console.log('No releasedDate, returning eligible');
+    return {eligible:true, daysSince:0, daysLeft:0, nextEligibleDate:null, pct:0};
+  }
+  
+  // Validate the releasedDate before processing
+  try {
+    const testDate = new Date(caseRec.releasedDate);
+    console.log('Test date:', testDate, 'getTime:', testDate.getTime(), 'isNaN:', isNaN(testDate.getTime()));
+    if(isNaN(testDate.getTime())) {
+      console.warn('Invalid releasedDate:', caseRec.releasedDate);
+      return {eligible:true, daysSince:0, daysLeft:0, nextEligibleDate:null, pct:0};
+    }
+  } catch(e) {
+    console.warn('Error parsing releasedDate:', caseRec.releasedDate, e);
+    return {eligible:true, daysSince:0, daysLeft:0, nextEligibleDate:null, pct:0};
+  }
+  
   const daysSince = daysBetween(caseRec.releasedDate, todayISO());
   const daysLeft = ELIGIBILITY_DAYS - daysSince;
-  const nextDate = new Date(caseRec.releasedDate+"T00:00:00");
+  const nextDate = new Date(caseRec.releasedDate);
   nextDate.setDate(nextDate.getDate()+ELIGIBILITY_DAYS);
+  
+  console.log('daysSince:', daysSince, 'daysLeft:', daysLeft, 'nextDate:', nextDate);
+  
+  // Validate nextDate before calling toISOString
+  if(isNaN(nextDate.getTime())) {
+    console.warn('Invalid nextDate calculated');
+    return {
+      eligible: daysLeft <= 0,
+      daysSince, daysLeft: Math.max(daysLeft,0),
+      nextEligibleDate: null,
+      pct: Math.min(100, Math.round((daysSince/ELIGIBILITY_DAYS)*100))
+    };
+  }
+  
+  const nextEligibleDate = nextDate.toISOString().slice(0,10);
+  console.log('nextEligibleDate:', nextEligibleDate);
+  
   return {
     eligible: daysLeft <= 0,
     daysSince, daysLeft: Math.max(daysLeft,0),
-    nextEligibleDate: nextDate.toISOString().slice(0,10),
+    nextEligibleDate: nextEligibleDate,
     pct: Math.min(100, Math.round((daysSince/ELIGIBILITY_DAYS)*100))
   };
 }
@@ -110,9 +350,20 @@ function blankIntake(name){
 
 function startEligibilityCheck(){
   const name = view.eligClientName;
+  
+  // Check eligibility using the new function
+  const eligibility = checkEligibility(name);
+  
+  if(!eligibility.eligible){
+    // Client is ineligible - show error
+    alert(eligibility.reason);
+    return;
+  }
+  
   const match = findLatestByName(name);
   setView({eligMatch: match, eligOverride:false});
   renderNewCase();
+  updateWorkflowStep(2);
   lucide.createIcons();
 }
 
@@ -120,7 +371,26 @@ function proceedToIntake(){
   draftIntake = blankIntake(view.eligClientName);
   setView({newCaseStep:"intake"});
   renderNewCase();
+  updateWorkflowStep(3);
   lucide.createIcons();
+}
+
+function updateWorkflowStep(stepNumber){
+  // Reset all steps
+  for(let i = 1; i <= 4; i++){
+    const stepEl = document.getElementById(`workflowStep${i}`);
+    if(stepEl) stepEl.classList.remove('active', 'completed');
+  }
+  
+  // Set current step as active
+  const currentStep = document.getElementById(`workflowStep${stepNumber}`);
+  if(currentStep) currentStep.classList.add('active');
+  
+  // Mark previous steps as completed
+  for(let i = 1; i < stepNumber; i++){
+    const prevStep = document.getElementById(`workflowStep${i}`);
+    if(prevStep) prevStep.classList.add('completed');
+  }
 }
 
 function saveNewCase(){
@@ -154,6 +424,7 @@ function saveNewCase(){
   })
   .then(data => {
     console.log('Case saved:', data);
+    updateWorkflowStep(4);
     const savedAgencies = data.agencies || [];
     draftIntake = null;
     if (savedAgencies.length > 1) {
@@ -193,10 +464,65 @@ function revertStatus(caseRec){
     renderCaseDetail();
   }
 }
-function deleteCase(id){
-  cases = cases.filter(c=>String(c.id) !== String(id));
-  saveCases();
-  window.location.href = '/admin/social-case/cases';
+function deleteCase(id, fromList = false){
+  Swal.fire({
+    title: 'Archive this case?',
+    text: 'This will move the case to the archive. You can still view it but it will be removed from the active cases list.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Archive',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#DC2626',
+    cancelButtonColor: '#6B7280'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const caseRec = getCase(id);
+      if(caseRec){
+        caseRec.status = 'Archived';
+        caseRec.updatedAt = todayISO();
+        caseRec.statusHistory.push({status: 'Archived', date: todayISO()});
+
+        const payload = convertKeys(caseRec, camelToSnake);
+        fetch(`/admin/social-case/api/cases/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(async data => {
+          console.log('Case archived:', data);
+          await Swal.fire({
+            title: 'Archived!',
+            text: 'The case has been archived successfully.',
+            icon: 'success',
+            timer: 1800,
+            showConfirmButton: false,
+            confirmButtonColor: '#1E3A8A'
+          });
+          // If called from the case list, reload & re-render in place
+          if(fromList || document.getElementById('casesTableBody')){
+            await loadCases();
+            renderCaseList();
+          } else {
+            window.location.href = '/admin/social-case/cases';
+          }
+        })
+        .catch(error => {
+          console.error('Error archiving case:', error);
+          Swal.fire({
+            title: 'Error',
+            text: 'Failed to archive the case. Please try again.',
+            icon: 'error',
+            confirmButtonColor: '#DC2626'
+          });
+        });
+      }
+    }
+  });
 }
 function getCase(id){ return cases.find(c=>String(c.id) === String(id)); }
 
@@ -222,11 +548,113 @@ function renderSidebar(activeTab){
 }
 
 /* ---------------- Rendering: Dashboard ---------------- */
-async function loadDashboard(){
+async function loadArchive(){
   await loadCases();
-  renderDashboard();
+  renderArchive();
   lucide.createIcons();
-  initCharts();
+}
+
+function renderArchive(){
+  const archivedCases = cases.filter(c => c.status === 'Archived');
+  const table = document.getElementById('archiveTable');
+  
+  if(archivedCases.length === 0){
+    table.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted)">
+      <i data-lucide="archive" style="width:32px;height:32px;margin-bottom:8px"></i>
+      <div>No archived cases</div>
+      <div style="font-size:12px;margin-top:4px">Archived cases will appear here</div>
+    </td></tr>`;
+  } else {
+    table.innerHTML = archivedCases.map(c => `
+      <tr class="row-click" onclick="showCaseDetailsModal('${c.id}')">
+        <td><span style="font-family:monospace;font-weight:600">${escapeHtml(c.controlNo)||"—"}</span></td>
+        <td>${escapeHtml(c.client.name)||"<span class=muted>Unnamed</span>"}</td>
+        <td>${escapeHtml(c.purpose)}</td>
+        <td><span class="badge b-archived">${c.status}</span></td>
+        <td>${fmtDate(c.updatedAt)}</td>
+        <td>
+          <div class="actions" style="display:flex; gap: 4px;">
+            <button style="background-color: #1A237E; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); showCaseDetailsModal('${c.id}')" title="View">
+              <i data-lucide="eye" style="width:16px;height:16px; color:#ffffff;"></i>
+            </button>
+            <button style="background-color: #198754; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); restoreCase('${c.id}')" title="Restore">
+              <i data-lucide="rotate-ccw" style="width:16px;height:16px; color:#ffffff;"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  lucide.createIcons();
+}
+
+function restoreCase(id){
+  Swal.fire({
+    title: 'Restore this case?',
+    text: 'This will move the case back to the active cases list with Draft status.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Restore',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#4338CA',
+    cancelButtonColor: '#6B7280'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const caseRec = getCase(id);
+      if(caseRec){
+        caseRec.status = 'Draft';
+        caseRec.updatedAt = todayISO();
+        caseRec.statusHistory.push({status: 'Restored to Draft', date: todayISO()});
+
+        const payload = convertKeys(caseRec, camelToSnake);
+        fetch(`/admin/social-case/api/cases/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(async data => {
+          console.log('Case restored:', data);
+          await Swal.fire({
+            title: 'Restored!',
+            text: 'The case has been restored and moved back to the active list.',
+            icon: 'success',
+            timer: 1800,
+            showConfirmButton: false
+          });
+          await loadCases();
+          renderArchive();
+        })
+        .catch(error => {
+          console.error('Error restoring case:', error);
+          Swal.fire({
+            title: 'Error',
+            text: 'Failed to restore the case. Please try again.',
+            icon: 'error',
+            confirmButtonColor: '#DC2626'
+          });
+        });
+      }
+    }
+  });
+}
+
+async function loadDashboard(){
+  console.log('Loading dashboard...');
+  try {
+    await loadCases();
+    console.log('Dashboard cases loaded:', cases.length);
+    renderDashboard();
+    lucide.createIcons();
+    initCharts();
+  } catch(e) {
+    console.error('Error loading dashboard:', e);
+  }
 }
 
 function renderDashboard(){
@@ -240,54 +668,30 @@ function renderDashboard(){
 
   const recent = [...cases].sort((a,b)=> new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0,6);
 
-  // Update workflow cards
-  document.getElementById('draftCases').textContent = byStatus['Draft'] || 0;
-  document.getElementById('reviewCases').textContent = byStatus['Review'] || 0;
-  document.getElementById('approvedCases').textContent = byStatus['Approved'] || 0;
-  document.getElementById('printedCases').textContent = byStatus['Printed'] || 0;
-  document.getElementById('releasedCases').textContent = byStatus['Released'] || 0;
+  // Calculate KPIs
+  const uniqueClients = new Set(cases.map(c => c.client.name.toLowerCase())).size;
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  const casesThisMonth = cases.filter(c => {
+    const caseDate = new Date(c.createdAt);
+    return caseDate.getMonth() === currentMonth && caseDate.getFullYear() === currentYear;
+  }).length;
+  const today = new Date().toISOString().slice(0,10);
+  const releasedToday = cases.filter(c => c.status === 'Released' && c.releasedDate === today).length;
+  const successRate = cases.length > 0 ? Math.round(((byStatus['Released'] || 0) / cases.length) * 100) : 0;
 
-  // Update trends (mock data for now)
-  updateTrend('draftTrend', byStatus['Draft'] || 0);
-  updateTrend('reviewTrend', byStatus['Review'] || 0);
-  updateTrend('approvedTrend', byStatus['Approved'] || 0, true);
-  updateTrend('printedTrend', byStatus['Printed'] || 0);
-  updateTrend('releasedTrend', byStatus['Released'] || 0, true);
-
-  // Recent cases table
-  const recentTable = document.getElementById('recentCasesTable');
-  if(recent.length){
-    recentTable.innerHTML = recent.map(c=>`<tr class="row-click" onclick="window.location.href='/admin/social-case/detail/${c.id}'">
-      <td><span style="font-family:monospace;font-weight:600">${escapeHtml(c.controlNo)||"—"}</span></td>
-      <td>${escapeHtml(c.client.name)||"<span class=muted>Unnamed</span>"}</td>
-      <td>${escapeHtml(c.purpose)}</td>
-      <td><span class="badge ${STATUS_CLASS[c.status]}">${c.status}</span></td>
-      <td>${fmtDate(c.updatedAt)}</td></tr>`).join("");
-  }else{
-    recentTable.innerHTML = `<tr><td colspan="5"><div class="empty"><i data-lucide="folder-open" style="width:48px;height:48px"></i>No cases yet. Create your first one.</div></td></tr>`;
-  }
-
-  // Today's activities
-  renderTodayActivities(byStatus);
+  // Update KPIs with null checks
+  const updateElement = (id, value) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = value;
+  };
+  
+  updateElement('totalClients', uniqueClients);
+  updateElement('casesThisMonth', casesThisMonth);
+  updateElement('releasedToday', releasedToday);
 
   // Recent activity feed
   renderActivityFeed(recent);
-
-  // Nearing eligibility
-  const nearingPanel = document.getElementById('nearingEligiblePanel');
-  const nearingTable = document.getElementById('nearingEligibleTable');
-  if(nearingEligible.length){
-    nearingPanel.style.display = 'block';
-    nearingTable.innerHTML = nearingEligible.map(c=>{
-      const e = eligibilityInfo(c);
-      return `<tr class="row-click" onclick="window.location.href='/admin/social-case/detail/${c.id}'">
-        <td>${escapeHtml(c.client.name)}</td><td>${fmtDate(c.releasedDate)}</td><td>${fmtDate(e.nextEligibleDate)}</td>
-        <td><span class="badge b-review">${e.daysLeft} days</span></td>
-        <td style="text-align:right"><i data-lucide="chevron-right" class="muted" style="width:16px;height:16px"></i></td></tr>`;
-    }).join("");
-  }else{
-    nearingPanel.style.display = 'none';
-  }
 }
 
 function updateTrend(elementId, count, isMonthly = false){
@@ -306,11 +710,25 @@ function updateTrend(elementId, count, isMonthly = false){
 
 function renderTodayActivities(byStatus){
   const container = document.getElementById('todayActivities');
+  const today = new Date().toISOString().slice(0,10);
+  
+  // Calculate actual today's activities
+  const newToday = cases.filter(c => c.createdAt && c.createdAt.startsWith(today)).length;
+  const approvedToday = cases.filter(c => {
+    const lastApproved = c.statusHistory?.filter(h => h.status === 'Approved').pop();
+    return lastApproved && lastApproved.date === today;
+  }).length;
+  const printedToday = cases.filter(c => {
+    const lastPrinted = c.statusHistory?.filter(h => h.status === 'Printed').pop();
+    return lastPrinted && lastPrinted.date === today;
+  }).length;
+  const releasedToday = cases.filter(c => c.releasedDate === today).length;
+  
   const activities = [
-    {icon:'user-plus', color:'var(--info-bg)', iconColor:'var(--info)', text:`${byStatus['Draft'] || 0} New Requests`, check:byStatus['Draft'] > 0},
-    {icon:'check-circle', color:'var(--success-bg)', iconColor:'var(--success)', text:`${byStatus['Approved'] || 0} Cases Approved`, check:byStatus['Approved'] > 0},
-    {icon:'printer', color:'var(--info-bg)', iconColor:'var(--info)', text:`${byStatus['Printed'] || 0} Cases Printed`, check:byStatus['Printed'] > 0},
-    {icon:'send', color:'var(--purple-bg)', iconColor:'var(--purple)', text:`${byStatus['Released'] || 0} Cases Released`, check:byStatus['Released'] > 0},
+    {icon:'user-plus', color:'var(--info-bg)', iconColor:'var(--info)', text:`${newToday} New Requests`, check:newToday > 0},
+    {icon:'check-circle', color:'var(--success-bg)', iconColor:'var(--success)', text:`${approvedToday} Cases Approved`, check:approvedToday > 0},
+    {icon:'printer', color:'var(--info-bg)', iconColor:'var(--info)', text:`${printedToday} Cases Printed`, check:printedToday > 0},
+    {icon:'send', color:'var(--purple-bg)', iconColor:'var(--purple)', text:`${releasedToday} Cases Released`, check:releasedToday > 0},
   ];
   
   container.innerHTML = activities.map(a=>`
@@ -328,27 +746,32 @@ function renderTodayActivities(byStatus){
 function renderActivityFeed(recent){
   const container = document.getElementById('activityFeed');
   if(!recent.length){
-    container.innerHTML = `<div class="empty" style="padding:20px"><i data-lucide="bell-off" style="width:32px;height:32px"></i>No recent activity</div>`;
+    container.innerHTML = `<div class="empty" style="padding:40px 20px;text-align:center;color:var(--text-muted)">
+      <i data-lucide="bell-off" style="width:48px;height:48px;margin-bottom:12px;opacity:0.5"></i>
+      <div style="font-size:14px;font-weight:500">No recent activity</div>
+    </div>`;
     return;
   }
   
-  container.innerHTML = recent.slice(0,5).map(c=>{
-    const statusColors = {
-      'Draft': {bg:'var(--background)', color:'var(--text-muted)'},
-      'Review': {bg:'var(--warning-bg)', color:'var(--warning)'},
-      'Approved': {bg:'var(--success-bg)', color:'var(--success)'},
-      'Printed': {bg:'var(--info-bg)', color:'var(--info)'},
-      'Released': {bg:'var(--purple-bg)', color:'var(--purple)'}
-    };
+  const statusColors = {
+    'Draft': {bg:'var(--background)', color:'var(--text-muted)'},
+    'Review': {bg:'var(--warning-bg)', color:'var(--warning)'},
+    'Approved': {bg:'var(--success-bg)', color:'var(--success)'},
+    'Printed': {bg:'var(--info-bg)', color:'var(--info)'},
+    'Released': {bg:'var(--purple-bg)', color:'var(--purple)'}
+  };
+  
+  container.innerHTML = recent.slice(0,10).map(c=>{
     const colors = statusColors[c.status] || statusColors['Draft'];
     const timeAgo = getTimeAgo(c.updatedAt);
+    const clientName = escapeHtml(c.client.name) || 'Unnamed client';
     return `
     <div class="activity-item">
       <div class="activity-icon" style="background:${colors.bg};color:${colors.color}">
-        <i data-lucide="file-text" style="width:18px;height:18px"></i>
+        <i data-lucide="file-text"></i>
       </div>
       <div class="activity-content">
-        <div class="activity-text">${escapeHtml(c.client.name)||'Unnamed client'} case ${c.status.toLowerCase()}</div>
+        <div class="activity-text">${clientName}'s case is ${c.status.toLowerCase()}</div>
         <div class="activity-time">${timeAgo}</div>
       </div>
     </div>`;
@@ -368,32 +791,6 @@ function getTimeAgo(dateStr){
 }
 
 function initCharts(){
-  // Monthly Chart
-  const monthlyCtx = document.getElementById('monthlyChart');
-  if(monthlyCtx){
-    new Chart(monthlyCtx, {
-      type: 'bar',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [{
-          label: 'Cases',
-          data: [12, 19, 15, 25, 22, 30],
-          backgroundColor: '#232C84',
-          borderRadius: 6
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { beginAtZero: true, grid: { color: '#E5E7EB' } },
-          x: { grid: { display: false } }
-        }
-      }
-    });
-  }
-
   // Assistance Type Chart
   const assistanceCtx = document.getElementById('assistanceChart');
   if(assistanceCtx){
@@ -403,6 +800,10 @@ function initCharts(){
     });
     const labels = Object.keys(purposeCounts).length ? Object.keys(purposeCounts) : PURPOSES.slice(0,5);
     const data = labels.map(l => purposeCounts[l] || Math.floor(Math.random() * 20) + 5);
+    const total = data.reduce((a, b) => a + b, 0);
+    
+    // Government color palette
+    const colors = ['#1E3A8A', '#3B82F6', '#16A34A', '#F59E0B', '#DC2626'];
     
     new Chart(assistanceCtx, {
       type: 'doughnut',
@@ -410,18 +811,47 @@ function initCharts(){
         labels: labels,
         datasets: [{
           data: data,
-          backgroundColor: ['#232C84', '#303F9F', '#FFC107', '#10B981', '#8B5CF6'],
-          borderWidth: 0
+          backgroundColor: colors,
+          borderWidth: 0,
+          hoverOffset: 8
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        cutout: '70%',
         plugins: {
-          legend: { position: 'right', labels: { boxWidth: 12, padding: 8 } }
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1F2937',
+            titleColor: '#FFFFFF',
+            bodyColor: '#FFFFFF',
+            padding: 12,
+            cornerRadius: 8,
+            displayColors: true
+          }
         }
       }
     });
+    
+    // Render custom legend
+    const legendContainer = document.getElementById('chartLegend');
+    if(legendContainer){
+      legendContainer.innerHTML = labels.map((label, i) => {
+        const count = data[i];
+        const percent = total > 0 ? Math.round((count / total) * 100) : 0;
+        return `
+          <div class="legend-item">
+            <div class="legend-color" style="background:${colors[i]}"></div>
+            <div class="legend-info">
+              <div class="legend-name">${label}</div>
+              <div class="legend-count">${count} cases</div>
+            </div>
+            <div class="legend-percent">${percent}%</div>
+          </div>
+        `;
+      }).join('');
+    }
   }
 
   // Barangay Chart
@@ -501,32 +931,43 @@ function renderSearchResults(query){
   
   console.log('Matches found:', matches.length);
   
+  // Check eligibility for the searched client
+  const eligibility = checkEligibility(query);
+  
   if(matches.length === 0){
     const escapedQuery = escapeHtml(query);
     container.style.display = 'block';
-    container.innerHTML = `
-      <div style="padding:16px;text-align:center;color:var(--text-muted)">
-        <i data-lucide="search-x" style="width:32px;height:32px;margin-bottom:8px"></i>
-        <div>No clients found matching "${escapedQuery}"</div>
-        <div style="font-size:12px;margin-top:4px;margin-bottom:16px">This appears to be a new client. You can proceed with the interview.</div>
-        <button class="btn primary" id="proceedNewClientBtn">
-          <i data-lucide="user-plus" style="width:16px;height:16px"></i> Proceed with New Client
-        </button>
-      </div>
-    `;
     
-    // Attach event listener directly
-    setTimeout(() => {
-      const btn = document.getElementById('proceedNewClientBtn');
-      if(btn){
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('Button clicked');
+    if(!eligibility.eligible){
+      // Client is ineligible
+      container.innerHTML = `
+        <div style="padding:16px;text-align:center;color:var(--danger)">
+          <i data-lucide="alert-triangle" style="width:32px;height:32px;margin-bottom:8px"></i>
+          <div style="font-weight:600">Client Not Eligible</div>
+          <div style="font-size:12px;margin-top:4px;margin-bottom:16px">${escapeHtml(eligibility.reason)}</div>
+          <button class="btn ghost" onclick="document.getElementById('searchResults').style.display='none'">
+            <i data-lucide="x" style="width:16px;height:16px"></i> Close
+          </button>
+        </div>
+      `;
+    } else {
+      // Client is eligible - show popup
+      container.style.display = 'none';
+      Swal.fire({
+        title: 'No clients found',
+        text: `No clients found matching "${escapedQuery}". This appears to be a new client. You can proceed with the interview.`,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Proceed with New Client',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#1E3A8A',
+        cancelButtonColor: '#6B7280'
+      }).then((result) => {
+        if (result.isConfirmed) {
           proceedWithNewClient('${escapedQuery}');
-        });
-      }
-    }, 100);
+        }
+      });
+    }
   }else{
     container.style.display = 'block';
     container.innerHTML = matches.map(c => `
@@ -612,35 +1053,121 @@ function renderEligibilityStatus(match){
       lastCaseEl.textContent = fmtDate(match.releasedDate);
     }
   }else{
-    // Not eligible
-    container.innerHTML = `
-      <div class="eligibility-card not-eligible">
-        <div class="status-icon"><i data-lucide="x-circle" style="width:24px;height:24px"></i></div>
-        <div class="status-title">Not Eligible</div>
-        <div class="status-desc">
-          Previous Social Case Study was released on ${fmtDate(match.releasedDate)}.
-          <br><br>
-          <strong>Eligible Again:</strong> ${fmtDate(e.nextEligibleDate)} (${e.daysLeft} days from now)
+    // Not eligible - Show SweetAlert popup
+    const clientNameEl = document.getElementById('clientNameDisplay');
+    const clientAgeEl = document.getElementById('clientAge');
+    const clientSexEl = document.getElementById('clientSex');
+    const clientBarangayEl = document.getElementById('clientBarangay');
+    
+    const clientName = clientNameEl ? clientNameEl.textContent : 'Unknown';
+    const clientAge = clientAgeEl ? clientAgeEl.textContent : '-';
+    const clientSex = clientSexEl ? clientSexEl.textContent : '-';
+    const clientBarangay = clientBarangayEl ? clientBarangayEl.textContent : '-';
+    
+    Swal.fire({
+      title: `<strong>${clientName}</strong>`,
+      html: `
+        <div style="text-align: left; padding: 10px 0;">
+          <div style="font-size: 13px; color: #6B7280; margin-bottom: 16px;">Selected Client</div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+            <div>
+              <div style="font-size: 12px; color: #6B7280; font-weight: 500;">Age</div>
+              <div style="font-size: 15px; font-weight: 600; color: #111827;">${clientAge}</div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: #6B7280; font-weight: 500;">Sex</div>
+              <div style="font-size: 15px; font-weight: 600; color: #111827;">${clientSex}</div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: #6B7280; font-weight: 500;">Barangay</div>
+              <div style="font-size: 15px; font-weight: 600; color: #111827;">${clientBarangay}</div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: #6B7280; font-weight: 500;">Last Case Study</div>
+              <div style="font-size: 15px; font-weight: 600; color: #111827;">${fmtDate(match.releasedDate)}</div>
+            </div>
+          </div>
+          
+          <div style="background: #FEF2F2; border: 2px solid #DC2626; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <svg style="width: 24px; height: 24px; color: #DC2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <strong style="color: #DC2626; font-size: 16px;">Not Eligible</strong>
+            </div>
+            <div style="font-size: 14px; color: #374151; line-height: 1.5;">
+              Previous Social Case Study was released on ${fmtDate(match.releasedDate)}.
+              <br><br>
+              <strong>Eligible Again:</strong> ${fmtDate(e.nextEligibleDate)} (${e.daysLeft} days from now)
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 16px;">
+            <div style="font-size: 12px; color: #6B7280; margin-bottom: 8px;">Restricted period</div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6B7280; margin-bottom: 4px;">
+              <span>${e.pct}% elapsed</span>
+            </div>
+            <div style="background: #E5E7EB; border-radius: 6px; height: 8px; overflow: hidden;">
+              <div style="background: #DC2626; height: 100%; width: ${e.pct}%"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #9CA3AF; margin-top: 4px;">
+              <span>${fmtDate(match.releasedDate)}</span>
+              <span>${fmtDate(e.nextEligibleDate)}</span>
+            </div>
+          </div>
+          
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+            <input type="checkbox" id="overrideCheck" ${view.eligOverride ? 'checked' : ''} style="width: 18px; height: 18px; cursor: pointer;">
+            <label for="overrideCheck" style="font-size: 13px; color: #374151; cursor: pointer;">Override and proceed anyway (requires supervisor approval)</label>
+          </div>
         </div>
-        <div class="elig-wrap" style="margin-top:16px">
-          <div class="elig-top"><span class="status-text">Restricted period</span><span class="muted">${e.pct}% elapsed</span></div>
-          <div class="elig-track"><div class="elig-fill" style="width:${e.pct}%; background:var(--danger)"></div></div>
-          <div class="elig-marks"><span>${fmtDate(match.releasedDate)}</span><span>${fmtDate(e.nextEligibleDate)}</span></div>
-        </div>
-        <label class="pill-check ${view.eligOverride?'on':''}" style="margin-top:14px;display:flex;align-items:center;gap:8px;cursor:pointer" onclick="event.preventDefault(); setView({eligOverride: !view.eligOverride}); renderEligibilityStatus(match);">
-          <input type="checkbox" ${view.eligOverride?'checked':''}> Override and proceed anyway (requires supervisor approval)
-        </label>
-        <button class="btn ${view.eligOverride?'primary':''}" style="margin-top:12px;width:100%" ${view.eligOverride?'':'disabled'} onclick="proceedToIntake()">
-          <i data-lucide="arrow-right" style="width:16px;height:16px"></i> Continue to Case Encoding
-        </button>
-      </div>
-    `;
+      `,
+      icon: 'warning',
+      iconColor: '#DC2626',
+      showCancelButton: true,
+      confirmButtonText: 'Continue to Case Encoding',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#1E3A8A',
+      cancelButtonColor: '#6B7280',
+      customClass: {
+        popup: 'swal2-popup-custom',
+        title: 'swal2-title-custom'
+      },
+      didOpen: () => {
+        const overrideCheck = document.getElementById('overrideCheck');
+        const confirmBtn = Swal.getConfirmButton();
+        
+        if(overrideCheck){
+          overrideCheck.addEventListener('change', (e) => {
+            setView({eligOverride: e.target.checked});
+            confirmBtn.disabled = !e.target.checked;
+            confirmBtn.style.opacity = e.target.checked ? '1' : '0.5';
+          });
+        }
+        
+        // Initial state
+        confirmBtn.disabled = !view.eligOverride;
+        confirmBtn.style.opacity = view.eligOverride ? '1' : '0.5';
+      },
+      preConfirm: () => {
+        if(!view.eligOverride){
+          Swal.showValidationMessage('Please check the override checkbox to proceed');
+          return false;
+        }
+        proceedToIntake();
+        return false;
+      }
+    });
     
     // Update last case study in summary
     const lastCaseEl = document.getElementById('clientLastCase');
     if(lastCaseEl){
       lastCaseEl.textContent = fmtDate(match.releasedDate);
     }
+    
+    // Clear the container since we're using SweetAlert
+    container.innerHTML = '';
   }
   
   lucide.createIcons();
@@ -699,7 +1226,12 @@ function renderIntakeForm(){
           ${["","Male","Female"].map(o=>`<option ${d.client.sex===o?'selected':''}>${o}</option>`).join("")}
         </select>
       </div>
-      <div class="field" style="grid-column:span 2"><label>Address</label><input type="text" value="${escapeHtml(d.client.address)}" oninput="draftIntake.client.address=this.value"></div>
+      <div class="field" style="grid-column:span 2"><label>Address (Barangay)</label>
+        <select oninput="draftIntake.client.address=this.value">
+          <option value="">Select Barangay</option>
+          ${BARANGAYS.map(b=>`<option ${d.client.address===b?'selected':''}>${b}</option>`).join("")}
+        </select>
+      </div>
       <div class="field"><label>Birthdate</label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value"></div>
       <div class="field"><label>Birthplace</label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value"></div>
       <div class="field"><label>Religion</label><input type="text" value="${escapeHtml(d.client.religion)}" oninput="draftIntake.client.religion=this.value"></div>
@@ -768,15 +1300,15 @@ function renderIntakeForm(){
   <div class="panel">
     <h3>Requirements</h3>
     ${d.requirements.map((r,i)=>`
-      <label class="pill-check ${r.submitted?'on':''}" style="display:flex;align-items:center;gap:8px;margin-bottom:8px" onclick="toggleRequirement(${i})">
-        <input type="checkbox" ${r.submitted?'checked':''}> ${escapeHtml(r.name)}
+      <label class="pill-check ${r.submitted?'on':''}" style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <input type="checkbox" ${r.submitted?'checked':''} onchange="toggleRequirement(${i})"> ${escapeHtml(r.name)}
       </label>
     `).join("")}
   </div>
 
   <div style="display:flex;gap:12px;margin-top:20px">
-    <button class="btn primary" onclick="saveNewCase()"><i data-lucide="save" style="width:16px;height:16px"></i> Save Case</button>
-    <button class="btn ghost" onclick="window.location.href='/admin/social-case/new'"><i data-lucide="x" style="width:16px;height:16px"></i> Cancel</button>
+    <button class="btn primary" onclick="showIntakeSummaryModal()"><i data-lucide="eye" style="width:16px;height:16px"></i> Review & Save</button>
+    <button class="btn" style="background-color: #dc3545; color: white; border: 1px solid #dc3545;" onclick="window.location.href='/admin/social-case/new'"><i data-lucide="x" style="width:16px;height:16px"></i> Cancel</button>
   </div>
   `;
 }
@@ -794,6 +1326,203 @@ function toggleRequirement(index){
   lucide.createIcons();
 }
 
+/* ---------------- Intake Summary Modal ---------------- */
+function showIntakeSummaryModal(){
+  const d = draftIntake;
+  if(!d) return;
+
+  // Remove any existing modal
+  const existing = document.getElementById('intakeSummaryModal');
+  if(existing) existing.remove();
+
+  const val = v => escapeHtml(String(v || '')) || '<span style="color:#9CA3AF;font-style:italic">—</span>';
+  const fmtDateLocal = iso => {
+    if(!iso) return '<span style="color:#9CA3AF;font-style:italic">—</span>';
+    try {
+      const d = new Date(iso + 'T00:00:00');
+      if(isNaN(d.getTime())) return '<span style="color:#9CA3AF;font-style:italic">—</span>';
+      return d.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+    } catch(e) { return '<span style="color:#9CA3AF;font-style:italic">—</span>'; }
+  };
+
+  const submittedReqs = d.requirements.filter(r => r.submitted).map(r => escapeHtml(r.name));
+  const missingReqs  = d.requirements.filter(r => !r.submitted).map(r => escapeHtml(r.name));
+  const selectedAgencies = AGENCIES.filter(a => d.agencies.includes(a.key));
+
+  const householdRows = d.household.map((m, i) => `
+    <tr>
+      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.name)}</td>
+      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.relationship)}</td>
+      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.age)}</td>
+      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.education)}</td>
+      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.occupation)}</td>
+      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.income)}</td>
+    </tr>`);
+
+  const sectionTitle = (label, icon='') => `
+    <div style="display:flex;align-items:center;gap:8px;margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid #E5E7EB">
+      ${icon ? `<div style="width:28px;height:28px;background:#EEF2FF;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <i data-lucide="${icon}" style="width:14px;height:14px;color:#4338CA"></i>
+      </div>` : ''}
+      <h3 style="font-size:13px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.05em;margin:0">${label}</h3>
+    </div>`;
+
+  const infoRow = (label, value) => `
+    <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+      <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.04em">${label}</span>
+      <span style="font-size:14px;color:#111827;font-weight:500">${value}</span>
+    </div>`;
+
+  const modal = document.createElement('div');
+  modal.id = 'intakeSummaryModal';
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.55);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;animation:fadeIn 0.2s ease';
+  modal.innerHTML = `
+    <style>
+      #intakeSummaryModal * { box-sizing: border-box; }
+      @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+      @keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+      #intakeSummaryModal .modal-box { animation: slideUp 0.25s ease; }
+    </style>
+    <div class="modal-box" style="background:#FFFFFF;border-radius:16px;width:100%;max-width:780px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(15,23,42,0.18);overflow:hidden">
+
+      <!-- Modal Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #E5E7EB;background:#FAFAFA;flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:36px;height:36px;background:#4338CA;border-radius:8px;display:flex;align-items:center;justify-content:center">
+            <i data-lucide="file-check" style="width:18px;height:18px;color:#fff"></i>
+          </div>
+          <div>
+            <div style="font-size:17px;font-weight:700;color:#111827;font-family:Inter,sans-serif">Review Case Summary</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:1px">Please verify all information before saving</div>
+          </div>
+        </div>
+        <button onclick="closeIntakeSummaryModal()" style="width:32px;height:32px;border:none;background:#F3F4F6;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-size:18px;color:#6B7280;line-height:1" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='#F3F4F6'">
+          &times;
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div style="overflow-y:auto;padding:24px;flex:1">
+
+        <!-- Control No + Date Banner -->
+        <div style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:8px">
+          <div style="font-size:13px;color:#4338CA">
+            <span style="font-weight:600;text-transform:uppercase;letter-spacing:0.04em">Control No.&nbsp;</span>
+            <span style="font-family:monospace;font-size:15px;font-weight:700">${val(d.controlNo)}</span>
+          </div>
+          <div style="font-size:13px;color:#4338CA">
+            <span style="font-weight:600">Report Date:&nbsp;</span>
+            <span>${fmtDateLocal(d.interview.reportDate)}</span>
+          </div>
+        </div>
+
+        <!-- Client Info -->
+        ${sectionTitle('I. Client Information', 'user')}
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px">
+          ${infoRow('Full Name', val(d.client.name))}
+          ${infoRow('Age', val(d.client.age))}
+          ${infoRow('Sex', val(d.client.sex))}
+          ${infoRow('Civil Status', val(d.client.civilStatus))}
+          ${infoRow('Barangay (Address)', val(d.client.address))}
+          ${infoRow('Birthdate', fmtDateLocal(d.client.birthdate))}
+          ${infoRow('Birthplace', val(d.client.birthplace))}
+          ${infoRow('Religion', val(d.client.religion))}
+          ${infoRow('Education', val(d.client.education))}
+          ${infoRow('Occupation', val(d.client.occupation))}
+          ${infoRow('Income', val(d.client.income))}
+          ${infoRow('Contact No.', val(d.client.contact))}
+        </div>
+
+        <!-- Family Composition -->
+        ${sectionTitle('II. Family Composition', 'users')}
+        <div style="overflow-x:auto;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+          <table style="width:100%;border-collapse:collapse">
+            <thead>
+              <tr style="background:#F9FAFB">
+                ${['Name','Relationship','Age','Education','Occupation','Income'].map(h =>
+                  `<th style="padding:9px 12px;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.04em;text-align:left;border-bottom:1px solid #E5E7EB">${h}</th>`
+                ).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              ${householdRows.length ? householdRows.join('') : `<tr><td colspan="6" style="padding:16px;text-align:center;color:#9CA3AF;font-size:13px">No family members added</td></tr>`}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Narrative Sections -->
+        ${sectionTitle('Narrative Sections', 'align-left')}
+        ${[
+          ['III. Problem Presented', d.interview.problemPresented],
+          ['IV. Home Condition', d.interview.homeCondition],
+          ['V. Socio-Economic Condition', d.interview.socioEconomic],
+          ['VI. Evaluation', d.interview.evaluation],
+          ['VII. Recommendation', d.interview.recommendation]
+        ].map(([label, content]) => `
+          <div style="margin-bottom:14px">
+            <div style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:5px">${label}</div>
+            <div style="font-size:14px;color:#${content ? '111827' : '9CA3AF'};background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:10px 12px;white-space:pre-wrap;min-height:40px;font-style:${content ? 'normal' : 'italic'}">${content ? escapeHtml(content) : 'Not provided'}</div>
+          </div>`).join('')}
+
+        <!-- Signatories -->
+        ${sectionTitle('Signatories', 'pen-line')}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          ${infoRow('Prepared By (Name)', val(d.signers.preparedByName))}
+          ${infoRow('Prepared By (Title)', val(d.signers.preparedByTitle))}
+          ${infoRow('Noted By (Name)', val(d.signers.notedByName))}
+          ${infoRow('Noted By (Title)', val(d.signers.notedByTitle))}
+        </div>
+
+        <!-- Agencies & Purpose -->
+        ${sectionTitle('Agencies & Purpose', 'building-2')}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
+          ${infoRow('Purpose / Type of Assistance', val(d.purpose))}
+          ${infoRow('Agencies Selected', selectedAgencies.length ? selectedAgencies.map(a => `<span style="display:inline-block;background:#EEF2FF;color:#4338CA;font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;margin:1px">${escapeHtml(a.name)}</span>`).join(' ') : '<span style="color:#9CA3AF;font-style:italic">None selected</span>')}
+        </div>
+
+        <!-- Requirements -->
+        ${sectionTitle('Requirements', 'clipboard-list')}
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px">
+          ${d.requirements.map(r => `
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;border:1px solid ${r.submitted ? '#BBF7D0' : '#FEE2E2'};background:${r.submitted ? '#F0FDF4' : '#FFF5F5'}">
+              <div style="width:18px;height:18px;border-radius:50%;background:${r.submitted ? '#16A34A' : '#EF4444'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <span style="color:#fff;font-size:11px;font-weight:700">${r.submitted ? '✓' : '✗'}</span>
+              </div>
+              <span style="font-size:12px;color:${r.submitted ? '#166534' : '#991B1B'};font-weight:500">${escapeHtml(r.name)}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-top:1px solid #E5E7EB;background:#FAFAFA;flex-shrink:0;gap:12px;flex-wrap:wrap">
+        <div style="font-size:12px;color:#6B7280">
+          <i data-lucide="info" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;color:#9CA3AF"></i>
+          Review all fields before saving. This action cannot be undone easily.
+        </div>
+        <div style="display:flex;gap:10px">
+          <button onclick="closeIntakeSummaryModal()" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:1.5px solid #D1D5DB;background:#FFFFFF;color:#374151;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;transition:all 0.15s;font-family:Inter,sans-serif" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='#FFFFFF'">
+            <i data-lucide="pencil" style="width:15px;height:15px"></i> Edit
+          </button>
+          <button onclick="closeIntakeSummaryModal(); saveNewCase();" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border:none;background:#4338CA;color:#FFFFFF;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;transition:all 0.15s;font-family:Inter,sans-serif" onmouseover="this.style.background='#3730A3'" onmouseout="this.style.background='#4338CA'">
+            <i data-lucide="save" style="width:15px;height:15px"></i> Save Case
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  // Close on backdrop click
+  modal.addEventListener('click', e => { if(e.target === modal) closeIntakeSummaryModal(); });
+  // Re-run lucide for newly injected icons
+  lucide.createIcons();
+}
+
+function closeIntakeSummaryModal(){
+  const modal = document.getElementById('intakeSummaryModal');
+  if(modal) modal.remove();
+}
+
 /* ---------------- Rendering: Case list ---------------- */
 async function loadCaseList(){
   console.log('loadCaseList called');
@@ -804,14 +1533,6 @@ async function loadCaseList(){
 }
 
 function renderCaseList(){
-  // Update summary cards
-  const byStatus = {};
-  STATUSES.forEach(s=> byStatus[s] = cases.filter(c=>c.status===s).length);
-  document.getElementById('totalCases').textContent = cases.length;
-  document.getElementById('draftCases').textContent = byStatus['Draft'] || 0;
-  document.getElementById('reviewCases').textContent = byStatus['Review'] || 0;
-  document.getElementById('approvedCases').textContent = byStatus['Approved'] || 0;
-  document.getElementById('releasedCases').textContent = byStatus['Released'] || 0;
 
   // Get filter values
   const searchQuery = (document.getElementById('searchInput')?.value || "").toLowerCase();
@@ -819,15 +1540,16 @@ function renderCaseList(){
   const assistanceFilter = document.getElementById('assistanceFilter')?.value || "All";
   const barangayFilter = document.getElementById('barangayFilter')?.value || "All";
 
-  // Filter cases
+  // Filter cases (exclude archived – those live on the archive page)
   let filtered = cases.filter(c => {
+    if(c.status === 'Archived') return false;
     const matchesSearch = !searchQuery || 
       c.client.name.toLowerCase().includes(searchQuery) || 
       c.controlNo.toLowerCase().includes(searchQuery) ||
       c.purpose.toLowerCase().includes(searchQuery);
     const matchesStatus = statusFilter === "All" || c.status === statusFilter;
     const matchesAssistance = assistanceFilter === "All" || c.purpose === assistanceFilter;
-    const matchesBarangay = barangayFilter === "All" || true; // Mock data - would need actual barangay field
+    const matchesBarangay = barangayFilter === "All" || true;
     return matchesSearch && matchesStatus && matchesAssistance && matchesBarangay;
   });
 
@@ -845,7 +1567,7 @@ function renderCaseList(){
   // Render table
   const tableBody = document.getElementById('casesTableBody');
   const emptyState = document.getElementById('emptyState');
-  const table = document.querySelector('.data-table');
+  const table = document.getElementById('dataTable');
 
   if(paginatedCases.length === 0){
     table.style.display = 'none';
@@ -854,7 +1576,7 @@ function renderCaseList(){
     table.style.display = 'table';
     emptyState.style.display = 'none';
     tableBody.innerHTML = paginatedCases.map(c => `
-      <tr class="row-click" onclick="window.location.href='/admin/social-case/detail/${c.id}'">
+      <tr class="row-click" onclick="showCaseDetailsModal('${c.id}')">
         <td><span class="control-no">${escapeHtml(c.controlNo)||"—"}</span></td>
         <td>${escapeHtml(c.client.name)||"<span class=muted>Unnamed</span>"}</td>
         <td>${escapeHtml(c.purpose)}</td>
@@ -862,20 +1584,22 @@ function renderCaseList(){
         <td><span class="badge ${STATUS_CLASS[c.status]}">${c.status}</span></td>
         <td>${fmtDate(c.createdAt)}</td>
         <td>
-          <div class="actions">
-            <button class="action-btn" onclick="event.stopPropagation(); window.location.href='/admin/social-case/detail/${c.id}'" title="View">
-              <i data-lucide="eye" style="width:14px;height:14px"></i>
+          <div class="actions" style="display:flex; gap: 4px;">
+            <button style="background-color: #1A237E; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); showCaseDetailsModal('${c.id}')" title="View">
+              <i data-lucide="eye" style="width:16px;height:16px; color:#ffffff;"></i>
             </button>
-            ${c.status === 'Draft' ? `
-              <button class="action-btn danger" onclick="event.stopPropagation(); if(confirm('Delete this case?')) deleteCase('${c.id}')" title="Delete">
-                <i data-lucide="trash" style="width:14px;height:14px"></i>
-              </button>
-            ` : ''}
             ${c.status === 'Approved' ? `
-              <button class="action-btn" onclick="event.stopPropagation(); window.location.href='/admin/social-case/document/${c.id}/PCSO'" title="Print">
-                <i data-lucide="printer" style="width:14px;height:14px"></i>
+              <button style="background-color: #FBC02D; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); window.location.href='/admin/social-case/document/${c.id}/PCSO'" title="Print">
+                <i data-lucide="printer" style="width:16px;height:16px; color:#121858;"></i>
               </button>
             ` : ''}
+            ${c.status !== 'Archived' ? `
+              <button style="background-color: #dc3545; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); deleteCase('${c.id}', true)" title="Archive">
+                <i data-lucide="archive" style="width:16px;height:16px; color:#ffffff;"></i>
+              </button>
+            ` : `
+              <span style="font-size:11px;color:#9CA3AF;font-style:italic;padding:0 4px;display:flex;align-items:center;">Archived</span>
+            `}
           </div>
         </td>
       </tr>
@@ -906,10 +1630,18 @@ function applyFilters(){
 }
 
 function resetFilters(){
-  document.getElementById('searchInput').value = '';
-  document.getElementById('statusFilter').value = 'All';
-  document.getElementById('assistanceFilter').value = 'All';
-  document.getElementById('barangayFilter').value = 'All';
+  const searchInput = document.getElementById('searchInput');
+  if(searchInput) searchInput.value = '';
+  
+  const statusFilter = document.getElementById('statusFilter');
+  if(statusFilter) statusFilter.value = 'All';
+  
+  const assistanceFilter = document.getElementById('assistanceFilter');
+  if(assistanceFilter) assistanceFilter.value = 'All';
+  
+  const barangayFilter = document.getElementById('barangayFilter');
+  if(barangayFilter) barangayFilter.value = 'All';
+  
   renderCaseList();
 }
 
@@ -934,6 +1666,49 @@ function printReport(){
   window.print();
 }
 
+function markAsPrinted(caseId){
+  const caseRec = getCase(caseId);
+  if(!caseRec) return;
+  
+  // Update status to Released if not already
+  if(caseRec.status === 'Draft' || caseRec.status === 'Review' || caseRec.status === 'Approved'){
+    // Add Approved status to history first
+    if(caseRec.status !== 'Approved'){
+      caseRec.statusHistory.push({status: 'Approved', date: todayISO()});
+    }
+    
+    // Then mark as Released
+    caseRec.status = 'Released';
+    caseRec.updatedAt = todayISO();
+    caseRec.releasedDate = todayISO();
+    caseRec.statusHistory.push({status: 'Released', date: todayISO()});
+    
+    // Update in database
+    const payload = convertKeys(caseRec, camelToSnake);
+    fetch(`/admin/social-case/api/cases/${caseId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Case marked as approved and released:', data);
+    })
+    .catch(error => {
+      console.error('Error updating case status:', error);
+    });
+  }
+}
+
+function printDocument(caseId){
+  markAsPrinted(caseId);
+  window.print();
+}
+
 /* ---------------- Rendering: Case detail ---------------- */
 async function loadCaseDetail(caseId){
   await loadCases();
@@ -947,89 +1722,168 @@ function renderCaseDetail(){
   if(!container) return;
 
   const c = getCase(view.caseId);
-  if(!c){ container.innerHTML = `<div class="empty"><i data-lucide="alert-triangle" style="width:48px;height:48px"></i>Case not found.</div>`; return; }
-  const idx = STATUSES.indexOf(c.status);
+  if(!c){
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;color:#6B7280;">
+        <i data-lucide="alert-triangle" style="width:48px;height:48px;margin-bottom:16px;color:#D1D5DB;"></i>
+        <p style="font-size:1rem;font-weight:600;">Case not found.</p>
+        <button onclick="window.location.href='/admin/social-case/cases'" style="margin-top:16px;padding:8px 20px;background:#1A237E;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;">← Back to Cases</button>
+      </div>`;
+    return;
+  }
+
   const missingReqs = c.requirements.filter(r=>!r.submitted);
 
+  function row(label, value){
+    return `<div style="display:flex;padding:11px 0;border-bottom:1px solid var(--border);font-size:14px;">
+      <span style="width:160px;min-width:160px;color:var(--text-secondary);font-weight:500;">${label}</span>
+      <span style="flex:1;font-weight:600;text-align:right;color:var(--text-primary);word-break:break-word;">${value||'—'}</span>
+    </div>`;
+  }
+
+  function card(title, content, extra){
+    return `<div class="panel" style="margin-bottom:20px;">
+      <h3 style="font-size:14px;font-weight:700;color:#1E3A8A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">${title}</h3>
+      ${content}
+      ${extra||''}
+    </div>`;
+  }
+
+  const statusColors = {
+    'Draft':    {bg:'#F3F4F6', color:'#374151'},
+    'Review':   {bg:'#FEF3C7', color:'#92400E'},
+    'Approved': {bg:'#D1FAE5', color:'#065F46'},
+    'Printed':  {bg:'#DBEAFE', color:'#1E40AF'},
+    'Released': {bg:'#EDE9FE', color:'#5B21B6'},
+    'Archived': {bg:'#F3F4F6', color:'#6B7280'},
+  };
+  const sc = statusColors[c.status] || statusColors['Draft'];
+
+  /* inject responsive helper style once */
+  if(!document.getElementById('detailPageStyle')){
+    const s=document.createElement('style');s.id='detailPageStyle';
+    s.textContent=`
+      .detail-col-left,.detail-col-right{min-width:0;}
+      .detail-topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+      .detail-topbar h1{margin:0;font-size:1.5rem;font-weight:700;color:#111827;}
+      @media(max-width:900px){.detail-two-col{grid-template-columns:1fr!important;}}
+    `;
+    document.head.appendChild(s);
+  }
+
   container.innerHTML = `
-  <div class="page-head">
-    <div><h1>${escapeHtml(c.client.name)||"Unnamed client"}</h1><p>${escapeHtml(c.purpose)} · Created ${fmtDate(c.createdAt)}</p></div>
-    <div style="display:flex;gap:8px">
-      <button class="btn ghost" onclick="window.location.href='/admin/social-case/cases'"><i data-lucide="arrow-left" style="width:16px;height:16px"></i> All cases</button>
-      <button class="btn danger" onclick="if(confirm('Delete this case permanently?')) deleteCase('${c.id}')"><i data-lucide="trash" style="width:16px;height:16px"></i></button>
+    <!-- Case Header Bar -->
+    <div class="detail-topbar">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+          <button onclick="window.location.href='/admin/social-case/cases'" style="background:none;border:none;cursor:pointer;color:#6B7280;display:flex;align-items:center;gap:4px;font-size:13px;padding:0;" onmouseover="this.style.color='#1E3A8A'" onmouseout="this.style.color='#6B7280'">
+            <i data-lucide="chevron-left" style="width:16px;height:16px;"></i> Back to Cases
+          </button>
+        </div>
+        <h1 style="margin:0;font-size:1.5rem;font-weight:700;color:#111827;">${escapeHtml(c.client.name)||'Unnamed Client'}</h1>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap;">
+          <span class="badge ${STATUS_CLASS[c.status]||'b-draft'}">${c.status}</span>
+          <span style="font-size:13px;color:#6B7280;font-family:monospace;font-weight:600;">${escapeHtml(c.controlNo)}</span>
+          <span style="font-size:13px;color:#9CA3AF;">·</span>
+          <span style="font-size:13px;color:#6B7280;">Created ${fmtDate(c.createdAt)}</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn danger btn-sm" onclick="deleteCase('${c.id}')">
+          <i data-lucide="archive" style="width:15px;height:15px;"></i> Archive
+        </button>
+      </div>
     </div>
-  </div>
 
-  <div class="panel">
-    <h3>Workflow</h3>
-    <div class="stepper">
-      ${STATUSES.map((s,i)=>`
-        <div class="step ${i<idx?'done':''} ${i===idx?'current':''}">
-          <div class="step-line"></div>
-          <div class="dot">${i<idx?'<i class="ti ti-check" aria-hidden="true"></i>':i+1}</div>
-          <div class="lbl">${s}</div>
-        </div>`).join("")}
-    </div>
-    <div style="display:flex;gap:8px;margin-top:14px">
-      ${idx>0?`<button class="btn ghost btn-sm" onclick="revertStatus(getCase('${c.id}'))"><i data-lucide="arrow-left" style="width:16px;height:16px"></i> Send back</button>`:""}
-      ${idx<STATUSES.length-1?`<button class="btn primary btn-sm" onclick="advanceStatus(getCase('${c.id}'))"><i data-lucide="arrow-right" style="width:16px;height:16px"></i> Advance to ${STATUSES[idx+1]}</button>`:`<span class="badge b-released"><i data-lucide="flag" style="width:16px;height:16px"></i> Released ${fmtDate(c.releasedDate)}</span>`}
-    </div>
-  </div>
+    <!-- Two Column Layout -->
+    <div class="detail-two-col" style="display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:start;">
 
-  ${c.releasedDate ? renderEligibilityCard(c) : ""}
+      <!-- Left Column -->
+      <div class="detail-col-left">
+        ${card('Client Information',
+          row('Control No.', `<span style="font-family:monospace;">${escapeHtml(c.controlNo)}</span>`) +
+          row('Age / Sex', (escapeHtml(String(c.client.age))||'—') + ' / ' + (escapeHtml(c.client.sex)||'—')) +
+          row('Birthdate', c.client.birthdate ? fmtDate(c.client.birthdate) : '—') +
+          row('Birthplace', escapeHtml(c.client.birthplace)) +
+          row('Civil Status', escapeHtml(c.client.civilStatus)) +
+          row('Religion', escapeHtml(c.client.religion)) +
+          row('Education', escapeHtml(c.client.education)) +
+          row('Occupation', escapeHtml(c.client.occupation)||'N/A') +
+          row('Income', escapeHtml(c.client.income)||'N/A') +
+          row('Contact', escapeHtml(c.client.contact)) +
+          row('Address', escapeHtml(c.client.address))
+        )}
 
-  <div class="detail-grid">
-    <div>
-      <div class="panel">
-        <h3>Client information</h3>
-        <div class="kv"><span>Age / sex</span><span>${escapeHtml(String(c.client.age))||"—"} / ${escapeHtml(c.client.sex)||"—"}</span></div>
-        <div class="kv"><span>Address</span><span>${escapeHtml(c.client.address)||"—"}</span></div>
-        <div class="kv"><span>Contact</span><span>${escapeHtml(c.client.contact)||"—"}</span></div>
-        <div class="kv"><span>Birthdate</span><span>${c.client.birthdate?fmtDate(c.client.birthdate):"—"}</span></div>
-        <div class="kv"><span>Civil status</span><span>${escapeHtml(c.client.civilStatus)||"—"}</span></div>
-        <div class="kv"><span>Occupation / income</span><span>${escapeHtml(c.client.occupation)||"N/A"} / ${escapeHtml(c.client.income)||"N/A"}</span></div>
-        <div class="kv"><span>Control no.</span><span>${escapeHtml(c.controlNo)}</span></div>
+        ${card('Interview Summary',
+          row('Problem Presented', `<span style="white-space:pre-wrap;">${escapeHtml(c.interview.problemPresented)}</span>`) +
+          row('Home Condition', `<span style="white-space:pre-wrap;">${escapeHtml(c.interview.homeCondition)}</span>`) +
+          row('Socio-Economic', `<span style="white-space:pre-wrap;">${escapeHtml(c.interview.socioEconomic)}</span>`) +
+          row('Evaluation', `<span style="white-space:pre-wrap;">${escapeHtml(c.interview.evaluation)}</span>`) +
+          row('Recommendation', `<span style="white-space:pre-wrap;">${escapeHtml(c.interview.recommendation)}</span>`)
+        )}
       </div>
-      <div class="panel">
-        <h3>Interview summary</h3>
-        <div class="kv"><span>Problem presented</span><span style="text-align:left;max-width:340px">${escapeHtml(c.interview.problemPresented)||"—"}</span></div>
-        <div class="kv"><span>Evaluation</span><span style="text-align:left;max-width:340px">${escapeHtml(c.interview.evaluation)||"—"}</span></div>
-        <div class="kv"><span>Recommendation</span><span style="text-align:left;max-width:340px">${escapeHtml(c.interview.recommendation)||"—"}</span></div>
-        <div class="kv"><span>Prepared by</span><span>${escapeHtml(c.signers.preparedByName)||"—"}</span></div>
-        <div class="kv"><span>Noted by</span><span>${escapeHtml(c.signers.notedByName)||"—"}</span></div>
-      </div>
-      <div class="panel">
-        <h3>History</h3>
-        ${c.statusHistory.slice().reverse().map(h=>`<div class="kv"><span>${h.status}</span><span>${fmtDate(h.date)}</span></div>`).join("")}
+
+      <!-- Right Column -->
+      <div class="detail-col-right">
+        ${card('Signatories',
+          row('Prepared By', escapeHtml(c.signers.preparedByName) + (c.signers.preparedByTitle ? `<br><span style="color:#6B7280;font-size:12px;">${escapeHtml(c.signers.preparedByTitle)}</span>` : '')) +
+          row('Noted By', escapeHtml(c.signers.notedByName) + (c.signers.notedByTitle ? `<br><span style="color:#6B7280;font-size:12px;">${escapeHtml(c.signers.notedByTitle)}${c.signers.notedByLicense ? ', Lic. No. '+escapeHtml(c.signers.notedByLicense) : ''}</span>` : ''))
+        )}
+
+        ${card('Requirements',
+          c.requirements.map(r => `
+            <div class="req-check${r.submitted?'':' missing'}">
+              <i data-lucide="${r.submitted?'check-circle':'x-circle'}" style="width:16px;height:16px;color:${r.submitted?'#16A34A':'#DC2626'};flex-shrink:0;"></i>
+              <span style="font-size:13px;color:#374151;">${escapeHtml(r.name)}</span>
+            </div>`).join('') +
+          (missingReqs.length ? `<p style="margin:10px 0 0;font-size:12px;color:#DC2626;font-weight:500;"><i data-lucide="alert-circle" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"></i>${missingReqs.length} requirement(s) still missing.</p>` : `<p style="margin:10px 0 0;font-size:12px;color:#16A34A;font-weight:500;"><i data-lucide="check-circle" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"></i>All requirements submitted.</p>`)
+        )}
+
+        ${card('Status History',
+          c.statusHistory.slice().reverse().map(h => `
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F3F4F6;">
+              <span style="font-size:13px;font-weight:600;color:#374151;">${h.status}</span>
+              <span style="font-size:12px;color:#6B7280;">${fmtDate(h.date)}</span>
+            </div>`).join('') || '<p style="font-size:13px;color:#9CA3AF;">No status history.</p>'
+        )}
+
+        ${c.agencies.length ? card('Generate Documents',
+          c.agencies.map(a => {
+            const ag = AGENCIES.find(x=>x.key===a);
+            return `<button onclick="window.location.href='/admin/social-case/document/${c.id}/${a}'"
+              style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#F8FAFC;border:1px solid #E5E7EB;border-radius:8px;cursor:pointer;margin-bottom:8px;font-size:13px;color:#1E3A8A;font-weight:600;transition:all 0.2s ease;"
+              onmouseover="this.style.background='#EEF2FF';this.style.borderColor='#1E3A8A'" onmouseout="this.style.background='#F8FAFC';this.style.borderColor='#E5E7EB'">
+              <span style="display:flex;align-items:center;gap:8px;"><i data-lucide="file-text" style="width:15px;height:15px;"></i> ${ag ? ag.name : a}</span>
+              <i data-lucide="chevron-right" style="width:15px;height:15px;color:#9CA3AF;"></i>
+            </button>`;
+          }).join('')
+        ) : ''}
       </div>
     </div>
-    <div>
-      <div class="panel">
-        <h3>Requirements</h3>
-        ${c.requirements.map(r=>`<div class="req-check ${r.submitted?'':'missing'}"><i data-lucide="${r.submitted?'check-circle':'x-circle'}" style="width:16px;height:16px"></i> ${escapeHtml(r.name)}</div>`).join("")}
-        ${missingReqs.length ? `<div class="hint" style="margin-top:8px;color:var(--red-ink)">${missingReqs.length} requirement(s) missing.</div>`:""}
-      </div>
-      <div class="panel">
-        <h3>Generate document</h3>
-        ${c.agencies.length ? c.agencies.map(a=>{
-          const ag = AGENCIES.find(x=>x.key===a);
-          return `<button class="btn" style="width:100%;justify-content:space-between;margin-bottom:8px" onclick="window.location.href='/admin/social-case/document/${c.id}/${a}'">
-            <span><i data-lucide="file-text" style="width:16px;height:16px"></i> ${ag.name}</span><i data-lucide="chevron-right" style="width:16px;height:16px"></i></button>`;
-        }).join("") : `<div class="muted" style="font-size:13px">No agencies selected for this case.</div>`}
-      </div>
-    </div>
-  </div>`;
+  `;
+
+  lucide.createIcons();
 }
 
 function renderEligibilityCard(c){
   const e = eligibilityInfo(c);
-  return `<div class="panel">
-    <h3>Re-eligibility window</h3>
-    <div class="elig-wrap">
-      <div class="elig-top"><span class="status-text">${e.eligible?'Eligible now':'Restricted'}</span><span class="muted">${e.pct}% elapsed</span></div>
-      <div class="elig-track"><div class="elig-fill" style="width:${e.pct}%; background:${e.eligible?'var(--teal)':'var(--amber)'}"></div></div>
-      <div class="elig-marks"><span>Released ${fmtDate(c.releasedDate)}</span><span>Next eligible ${fmtDate(e.nextEligibleDate)}</span></div>
+  return `<div class="panel" style="padding:12px">
+    <h3 style="font-size:14px;margin-bottom:8px">Re-eligibility</h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--background);border-radius:6px">
+      <div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-bottom:2px">Released</div>
+        <div style="font-weight:600;font-size:13px">${fmtDate(c.releasedDate)}</div>
+      </div>
+      <i data-lucide="arrow-right" style="width:14px;height:14px;color:var(--text-muted)"></i>
+      <div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-bottom:2px">Next eligible</div>
+        <div style="font-weight:600;font-size:13px">${fmtDate(e.nextEligibleDate)}</div>
+      </div>
     </div>
+    ${!e.eligible ? `<div style="margin-top:8px;font-size:12px;color:var(--danger)">
+      <i data-lucide="alert-circle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px"></i>
+      Not eligible (${e.daysLeft} days)
+    </div>` : ''}
   </div>`;
 }
 
@@ -1064,14 +1918,14 @@ function renderDocument(){
   }
 
   const toolbarHtml = `
-  <div class="doc-toolbar no-print">
-    <button class="btn ghost" onclick="window.location.href='/admin/social-case/detail/${c.id}'"><i data-lucide="arrow-left" style="width:16px;height:16px"></i> Back to case</button>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <span style="font-size:13px;font-weight:500;color:var(--text-secondary)">Print Copy:</span>
-      <select style="width:auto" onchange="window.location.href='/admin/social-case/document/${c.id}/'+this.value">
+  <div class="doc-toolbar no-print" style="box-shadow:var(--shadow);">
+    <button class="btn ghost btn-sm" onclick="window.location.href='/admin/social-case/detail/${c.id}'"><i data-lucide="arrow-left" style="width:16px;height:16px"></i> Back to case</button>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <span style="font-size:13px;font-weight:500;color:var(--text-secondary);white-space:nowrap;">Print Copy:</span>
+      <select style="width:auto;padding:8px 32px 8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface);cursor:pointer;height:36px;" onchange="window.location.href='/admin/social-case/document/${c.id}/'+this.value">
         ${selectOptions}
       </select>
-      <button class="btn primary" onclick="window.print()"><i data-lucide="printer" style="width:16px;height:16px"></i> Print / save as PDF</button>
+      <button class="btn primary btn-sm" onclick="printDocument('${c.id}')"><i data-lucide="printer" style="width:15px;height:15px"></i> Print / save as PDF</button>
     </div>
   </div>`;
 

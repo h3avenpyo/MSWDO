@@ -11,135 +11,146 @@
         <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i> Dashboard</a></li>
         <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i> New case</a></li>
         <li><a href="/admin/social-case/cases" class="active"><i data-lucide="list" style="width:20px;height:20px"></i> All cases</a></li>
+        <li><a href="/admin/social-case/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
         <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
     </ul>
 </div>
 
 <div class="main">
-    <div class="page-head">
-        <div><h1>All Social Case Studies</h1><p>Manage and track all social case study records.</p></div>
-        <button class="btn primary" onclick="window.location.href='/admin/social-case/new'"><i data-lucide="plus" style="width:16px;height:16px"></i> New Case</button>
-    </div>
+    <!-- Modern Page Header -->
+    @php
+        $userName = session('admin_user_name') ?? 'Admin User';
+        $words = explode(' ', $userName);
+        $initials = '';
+        if (count($words) >= 2) {
+            $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+        } else {
+            $initials = strtoupper(substr($userName, 0, 2));
+        }
+    @endphp
+    <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8"
+            style="margin-top: calc(-1 * var(--content-padding)); margin-left: calc(-1 * var(--content-padding)); margin-right: calc(-1 * var(--content-padding));">
+        <div class="flex items-center">
+            <h1 class="font-['Inter'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">All Social Case Studies</h1>
+        </div>
+        <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
+            <div class="font-['Inter'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime">Thursday, July 16, 2026 at 01:51 PM</div>
+            <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
+                {{ $initials }}
+            </div>
+        </div>
+    </header>
 
-    <!-- Summary Stats Cards -->
-    <div class="summary-cards">
-        <div class="summary-card">
-            <div class="num" id="totalCases">0</div>
-            <div class="label">Total Cases</div>
-        </div>
-        <div class="summary-card">
-            <div class="num" id="draftCases">0</div>
-            <div class="label">Draft</div>
-        </div>
-        <div class="summary-card">
-            <div class="num" id="reviewCases">0</div>
-            <div class="label">Review</div>
-        </div>
-        <div class="summary-card">
-            <div class="num" id="approvedCases">0</div>
-            <div class="label">Approved</div>
-        </div>
-        <div class="summary-card">
-            <div class="num" id="releasedCases">0</div>
-            <div class="label">Released</div>
-        </div>
-    </div>
+    <!-- Unified Table Card (matches Senior Masterlist design) -->
+    <div class="sc-table-card">
+        <h2 class="sc-table-card-title">Registered Social Case Studies</h2>
 
-    <!-- Filter Bar -->
-    <div class="filter-bar">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Search by Client Name, Control No, Assistance Type, or Barangay">
-            <i data-lucide="search" class="search-icon" style="width:20px;height:20px"></i>
-        </div>
-        <select id="statusFilter">
-            <option value="All">All Status</option>
-            <option value="Draft">Draft</option>
-            <option value="Review">Review</option>
-            <option value="Approved">Approved</option>
-            <option value="Printed">Printed</option>
-            <option value="Released">Released</option>
-        </select>
-        <select id="assistanceFilter">
-            <option value="All">All Assistance Types</option>
-            <option value="PCSO">PCSO</option>
-            <option value="DOH">DOH</option>
-            <option value="AICS">AICS</option>
-            <option value="Burial">Burial</option>
-            <option value="Medical">Medical</option>
-        </select>
-        <select id="barangayFilter">
-            <option value="All">All Barangays</option>
-            <option value="Biluso">Biluso</option>
-            <option value="Poblacion IV">Poblacion IV</option>
-            <option value="Tubuan">Tubuan</option>
-            <option value="Batas">Batas</option>
-            <option value="Bigaa">Bigaa</option>
-        </select>
-        <div class="btn-group">
-            <button class="action-btn primary" onclick="applyFilters()">
-                <i data-lucide="filter" style="width:14px;height:14px"></i> Filter
-            </button>
-            <button class="action-btn" onclick="resetFilters()">
-                <i data-lucide="x" style="width:14px;height:14px"></i> Reset
-            </button>
-        </div>
-        <div class="btn-group" style="margin-left:auto">
-            <button class="action-btn" onclick="bulkDelete()">
-                <i data-lucide="trash" style="width:14px;height:14px"></i> Delete
-            </button>
-            <button class="action-btn" onclick="exportExcel()">
-                <i data-lucide="file-spreadsheet" style="width:14px;height:14px"></i> Export Excel
-            </button>
-            <button class="action-btn" onclick="exportPDF()">
-                <i data-lucide="file" style="width:14px;height:14px"></i> Export PDF
-            </button>
-            <button class="action-btn" onclick="printReport()">
-                <i data-lucide="printer" style="width:14px;height:14px"></i> Print
-            </button>
-        </div>
-    </div>
+        <!-- Filter Section -->
+        <div class="sc-filter-section">
+            <div class="sc-filter-row">
+                <!-- Left: Search + Filter Dropdowns -->
+                <div class="sc-filter-left">
+                    <div class="sc-search-group">
+                        <label class="sc-filter-label">Search</label>
+                        <div class="sc-input-group">
+                            <input type="text" id="searchInput" placeholder="Search by name, control no..." class="sc-search-input">
+                            <button type="button" class="sc-search-btn" onclick="applyFilters()">
+                                <i data-lucide="search" style="width:16px;height:16px"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="sc-select-group">
+                        <label class="sc-filter-label">Status</label>
+                        <select id="statusFilter" class="sc-filter-select" onchange="applyFilters()">
+                            <option value="All">All Status</option>
+                            <option value="Draft">Draft</option>
+                            <option value="Review">Review</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Printed">Printed</option>
+                            <option value="Released">Released</option>
+                        </select>
+                    </div>
+                    <div class="sc-select-group">
+                        <label class="sc-filter-label">Assistance Type</label>
+                        <select id="assistanceFilter" class="sc-filter-select" onchange="applyFilters()">
+                            <option value="All">All Types</option>
+                            <option value="Medical Assistance">Medical</option>
+                            <option value="Burial Assistance">Burial</option>
+                            <option value="Educational Assistance">Educational</option>
+                            <option value="Financial Assistance">Financial</option>
+                            <option value="Food / Relief Assistance">Food/Relief</option>
+                            <option value="Livelihood Assistance">Livelihood</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="sc-select-group">
+                        <label class="sc-filter-label">Barangay</label>
+                        <select id="barangayFilter" class="sc-filter-select" onchange="applyFilters()">
+                            <option value="All">All Barangays</option>
+                            <option value="Biluso">Biluso</option>
+                            <option value="Poblacion IV">Poblacion IV</option>
+                            <option value="Tubuan">Tubuan</option>
+                            <option value="Batas">Batas</option>
+                            <option value="Bigaa">Bigaa</option>
+                        </select>
+                    </div>
+                </div>
 
-    <!-- Data Table -->
-    <div class="panel" style="padding:0;overflow:hidden;">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th class="sortable" onclick="sortBy('controlNo')">Control No. <i data-lucide="chevron-up-down" style="width:14px;height:14px"></i></th>
-                    <th class="sortable" onclick="sortBy('clientName')">Client <i data-lucide="chevron-up-down" style="width:14px;height:14px"></i></th>
-                    <th class="sortable" onclick="sortBy('assistance')">Assistance Type <i data-lucide="chevron-up-down" style="width:14px;height:14px"></i></th>
-                    <th class="sortable" onclick="sortBy('barangay')">Barangay <i data-lucide="chevron-up-down" style="width:14px;height:14px"></i></th>
-                    <th class="sortable" onclick="sortBy('status')">Status <i data-lucide="chevron-up-down" style="width:14px;height:14px"></i></th>
-                    <th class="sortable" onclick="sortBy('created')">Created <i data-lucide="chevron-up-down" style="width:14px;height:14px"></i></th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="casesTableBody"></tbody>
-        </table>
-        
+                <!-- Right: Action Buttons -->
+                <div class="sc-filter-right">
+                    <a href="/admin/social-case/new" class="sc-action-btn sc-action-primary">
+                        <i data-lucide="plus" style="width:16px;height:16px"></i> New Case
+                    </a>
+                    <button class="sc-action-btn sc-action-muted" onclick="resetFilters()">
+                        <i data-lucide="x" style="width:14px;height:14px"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Table -->
+        <div class="sc-table-responsive">
+            <table class="sc-data-table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th style="width:14%">Control No.</th>
+                        <th style="width:20%">Client</th>
+                        <th style="width:16%">Assistance Type</th>
+                        <th style="width:13%">Barangay</th>
+                        <th style="width:11%">Status</th>
+                        <th style="width:12%">Created</th>
+                        <th style="width:14%">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="casesTableBody"></tbody>
+            </table>
+        </div>
+
         <!-- Empty State -->
-        <div id="emptyState" class="empty-state" style="display:none;">
-            <i data-lucide="folder-open" class="icon" style="width:64px;height:64px"></i>
+        <div id="emptyState" class="sc-empty-state" style="display:none;">
+            <i data-lucide="folder-open" style="width:56px;height:56px;color:#D1D5DB;margin-bottom:12px"></i>
             <h3>No Social Case Studies Found</h3>
             <p>Create your first Social Case Study to begin managing case records.</p>
-            <button class="btn primary" onclick="window.location.href='/admin/social-case/new'">
+            <a href="/admin/social-case/new" class="sc-action-btn sc-action-primary" style="display:inline-flex;margin-top:8px">
                 <i data-lucide="plus" style="width:16px;height:16px"></i> Create New Case
-            </button>
+            </a>
         </div>
-    </div>
 
-    <!-- Pagination -->
-    <div class="pagination">
-        <div class="pagination-info" id="paginationInfo">Showing 0 of 0 Social Case Studies</div>
-        <div class="pagination-controls" id="paginationControls">
-            <button class="pagination-btn" id="prevBtn" disabled>
-                <i data-lucide="chevron-left" style="width:14px;height:14px"></i> Previous
-            </button>
-            <button class="pagination-btn active" id="page1">1</button>
-            <button class="pagination-btn" id="page2">2</button>
-            <button class="pagination-btn" id="page3">3</button>
-            <button class="pagination-btn" id="nextBtn">
-                Next <i data-lucide="chevron-right" style="width:14px;height:14px"></i>
-            </button>
+        <!-- Pagination -->
+        <div class="sc-pagination">
+            <div class="sc-pagination-info" id="paginationInfo">Showing 0 of 0 Social Case Studies</div>
+            <div class="sc-pagination-controls" id="paginationControls">
+                <button class="sc-page-btn" id="prevBtn" disabled>
+                    <i data-lucide="chevron-left" style="width:14px;height:14px"></i> Previous
+                </button>
+                <button class="sc-page-btn active" id="page1">1</button>
+                <button class="sc-page-btn" id="page2">2</button>
+                <button class="sc-page-btn" id="page3">3</button>
+                <button class="sc-page-btn" id="nextBtn">
+                    Next <i data-lucide="chevron-right" style="width:14px;height:14px"></i>
+                </button>
+            </div>
         </div>
     </div>
 </div>

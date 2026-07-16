@@ -1,5 +1,5 @@
 @extends('admin.social-case.layout')
-@section('title', 'Case Detail - Social Case Study')
+@section('title', 'Archive - Social Case Study')
 
 @section('content')
 <div class="sidebar" id="sidebar">
@@ -10,13 +10,14 @@
     <ul class="sidebar-menu">
         <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i> Dashboard</a></li>
         <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i> New case</a></li>
-        <li><a href="/admin/social-case/cases" class="active"><i data-lucide="list" style="width:20px;height:20px"></i> All cases</a></li>
-        <li><a href="/admin/social-case/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
+        <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i> All cases</a></li>
+        <li><a href="/admin/social-case/archive" class="active"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
         <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
     </ul>
 </div>
 
 <div class="main">
+    <!-- Modern Page Header -->
     @php
         $userName = session('admin_user_name') ?? 'Admin User';
         $words = explode(' ', $userName);
@@ -30,7 +31,7 @@
     <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8"
             style="margin-top: calc(-1 * var(--content-padding)); margin-left: calc(-1 * var(--content-padding)); margin-right: calc(-1 * var(--content-padding));">
         <div class="flex items-center">
-            <h1 class="font-['Inter'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Case Detail</h1>
+            <h1 class="font-['Inter'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Archived Cases</h1>
         </div>
         <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
             <div class="font-['Inter'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime">Thursday, July 16, 2026 at 01:51 PM</div>
@@ -40,7 +41,17 @@
         </div>
     </header>
 
-    <div id="caseDetailContent"></div>
+    <!-- Page Sub-Header -->
+    <div class="mb-6">
+        <p class="text-[#6B7280] text-sm m-0">View and manage archived social case study records.</p>
+    </div>
+
+    <div class="panel">
+        <table>
+            <tr><th>Control No</th><th>Client</th><th>Assistance Type</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+            <tbody id="archiveTable"></tbody>
+        </table>
+    </div>
 </div>
 @endsection
 
@@ -49,10 +60,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
-        const caseId = '{{ $caseId ?? '' }}';
-        if (caseId) {
-            loadCaseDetail(caseId);
-        }
+        loadArchive();
     });
 </script>
 @endpush
