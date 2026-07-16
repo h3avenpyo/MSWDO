@@ -19,16 +19,16 @@ class OfficerRegistrationTest extends TestCase
             'email' => $email,
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',
-            'role' => 'Financial assistance officer',
+            'role' => 'encoder',
             'phone' => '09170000000',
             'status' => 'active',
         ]);
 
         $response->assertRedirect(route('admin.add-officers'));
 
-        $user = User::on('mswdo_admin')->where('email', $email)->first();
+        $user = User::where('email', $email)->first();
         $this->assertNotNull($user);
-        $this->assertSame('Financial assistance officer', $user->role);
+        $this->assertSame('encoder', $user->role->value);
         $this->assertSame('09170000000', $user->phone);
     }
 }

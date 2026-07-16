@@ -22,8 +22,7 @@ class AuthController extends Controller
             'role' => ['required', 'string'],
         ]);
 
-        $user = User::on('mswdo_admin')
-            ->where('email', $request->email)
+        $user = User::where('email', $request->email)
             ->where('status', 'active')
             ->first();
 
@@ -31,39 +30,37 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'Invalid email or password.'])->withInput();
         }
 
-        $roleMap = [
-            'Senior Citizen' => 'Senior Citizen officer',
-            'Financial Assistance Officer' => 'Financial assistance officer',
-            'Social Case Study' => 'Social Case Study officer',
-            'Admin' => 'Admin',
+        $moduleRoleMap = [
+            'Social Case Study' => 'social_worker',
+            'Senior Citizen' => 'staff',
+            'Financial Assistance Officer' => 'staff',
+            'Admin' => 'admin',
         ];
 
-        $expectedRole = $roleMap[$request->role] ?? null;
+        $moduleRedirects = [
+            'Social Case Study' => 'admin.social-case.dashboard',
+            'Senior Citizen' => 'admin.senior',
+            'Financial Assistance Officer' => 'admin.financial',
+            'Admin' => 'admin.dashboard',
+        ];
 
-        if ($expectedRole && $user->role !== $expectedRole) {
-            return back()->withErrors(['role' => "This account is not authorized for the selected role. User role: {$user->role}, Expected: {$expectedRole}"])->withInput();
+        $selectedModule = $request->role;
+        $expectedRoleValue = $moduleRoleMap[$selectedModule] ?? null;
+
+        if ($expectedRoleValue && $user->role->value !== $expectedRoleValue) {
+            return back()->withErrors(['role' => "This account is not authorized for the selected role."])->withInput();
         }
 
         session([
             'admin_user_id' => $user->id,
             'admin_user_name' => $user->name,
-            'admin_user_role' => $user->role,
+            'admin_user_role' => $user->role->value,
             'admin_just_logged_in' => true,
         ]);
 
-        if ($user->role === 'Financial assistance officer') {
-            return redirect()->route('admin.financial');
-        }
+        $redirectRoute = $moduleRedirects[$selectedModule] ?? 'admin.dashboard';
 
-        if ($user->role === 'Senior Citizen officer') {
-            return redirect()->route('admin.senior');
-        }
-
-        if ($user->role === 'Social Case Study officer') {
-            return redirect()->route('admin.social-case.dashboard');
-        }
-
-        return redirect()->route('admin.dashboard');
+        return redirect()->route($redirectRoute);
     }
 
     public function logout(Request $request)

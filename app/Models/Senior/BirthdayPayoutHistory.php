@@ -3,11 +3,10 @@
 namespace App\Models\Senior;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BirthdayPayoutHistory extends Model
 {
-    protected $connection = 'mswdo_senior';
-
     protected $table = 'birthday_payout_history';
 
     protected $fillable = [
@@ -23,36 +22,24 @@ class BirthdayPayoutHistory extends Model
         'created_at' => 'datetime',
     ];
 
-    /**
-     * Relationship with BirthdayPayout
-     */
-    public function payout()
+    public function payout(): BelongsTo
     {
         return $this->belongsTo(BirthdayPayout::class, 'payout_id');
     }
 
-    /**
-     * Relationship with Senior Citizen Record
-     */
-    public function senior()
+    public function senior(): BelongsTo
     {
         return $this->belongsTo(SeniorCitizenRecord::class, 'senior_id');
     }
 
-    /**
-     * Relationship with User (performed by)
-     */
-    public function performedBy()
+    public function performedBy(): BelongsTo
     {
         return $this->belongsTo(\App\Models\User::class, 'performed_by');
     }
 
-    /**
-     * Log an action to the history
-     */
-    public static function logAction($payoutId, $seniorId, $action, $details = null, $performedBy = null, $ipAddress = null)
+    public static function logAction($payoutId, $seniorId, $action, $details = null, $performedBy = null, $ipAddress = null): static
     {
-        return self::on('mswdo_senior')->create([
+        return self::create([
             'payout_id' => $payoutId,
             'senior_id' => $seniorId,
             'action' => $action,

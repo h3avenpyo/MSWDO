@@ -146,13 +146,13 @@
 
         <div class="text-center p-4 pb-0">
             <!-- Verified Badge -->
-            @if($senior->status == 'active')
+            @if($senior->status->value == 'active')
                 <div class="status-badge">
                     <i class="fas fa-check-circle"></i> Verified Active Member
                 </div>
             @else
                 <div class="status-badge bg-warning-subtle text-warning-emphasis border-warning-subtle">
-                    <i class="fas fa-exclamation-circle"></i> Status: {{ ucfirst($senior->status) }}
+                    <i class="fas fa-exclamation-circle"></i> Status: {{ ucfirst($senior->status->value) }}
                 </div>
             @endif
 

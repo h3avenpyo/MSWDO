@@ -10,11 +10,9 @@ class AssistanceRecord extends Model
 {
     use HasFactory;
 
-    protected $connection = 'mswdo_social_case';
-    protected $table = 'assistance_records';
-
     protected $fillable = [
         'client_id',
+        'social_case_study_id',
         'assistance_type',
         'status',
         'release_date',
@@ -29,7 +27,12 @@ class AssistanceRecord extends Model
 
     public function client(): BelongsTo
     {
-        return $this->belongsTo(Client::class, 'client_id', 'id');
+        return $this->belongsTo(Client::class);
+    }
+
+    public function socialCaseStudy(): BelongsTo
+    {
+        return $this->belongsTo(SocialCaseStudy::class);
     }
 
     public function scopeApprovedReleased($query)

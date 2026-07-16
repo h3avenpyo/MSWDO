@@ -463,7 +463,7 @@
                         <span class="text-[#9CA3AF] text-xs">Showing {{ $archivedSeniors->firstItem() ?? 0 }}–{{ $archivedSeniors->lastItem() ?? 0 }} of {{ $archivedSeniors->total() }} records</span>
                     </div>
                 </div>
-                <div class="overflow-y-auto flex-1" style="max-height: 55vh;">
+                <div class="flex-1">
                     <table class="custom-table" id="archiveTable">
                         <thead>
                             <tr>

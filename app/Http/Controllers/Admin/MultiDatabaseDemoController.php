@@ -53,7 +53,8 @@ class MultiDatabaseDemoController extends Controller
             ]),
             'senior' => SeniorCitizenRecord::create([
                 'record_number' => 'SR-' . now()->timestamp,
-                'full_name' => $request->title,
+                'first_name' => $request->title,
+                'last_name' => '',
                 'birth_date' => now()->subYears(70)->toDateString(),
                 'osca_id' => 'OSCA-' . now()->timestamp,
                 'created_by' => 1,

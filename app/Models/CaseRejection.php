@@ -10,11 +10,10 @@ class CaseRejection extends Model
 {
     use HasFactory;
 
-    protected $connection = 'mswdo_social_case';
-
     protected $fillable = [
         'client_id',
         'blocking_assistance_id',
+        'social_case_study_id',
         'officer_id',
         'officer_name',
         'reason',
@@ -35,5 +34,20 @@ class CaseRejection extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function blockingAssistance(): BelongsTo
+    {
+        return $this->belongsTo(AssistanceRecord::class, 'blocking_assistance_id');
+    }
+
+    public function socialCaseStudy(): BelongsTo
+    {
+        return $this->belongsTo(SocialCaseStudy::class);
+    }
+
+    public function officer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'officer_id');
     }
 }

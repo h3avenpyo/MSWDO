@@ -20,7 +20,7 @@ class MultiDatabaseSeeder extends Seeder
             ]
         );
 
-        AdminProfile::on('mswdo_admin')->firstOrCreate(
+        AdminProfile::firstOrCreate(
             ['user_id' => $user->id],
             [
                 'position' => 'Administrator',
@@ -31,7 +31,7 @@ class MultiDatabaseSeeder extends Seeder
             ]
         );
 
-        FinancialAssistanceApplication::on('mswdo_financial')->firstOrCreate(
+        FinancialAssistanceApplication::firstOrCreate(
             ['application_number' => 'FA-1001'],
             [
                 'applicant_name' => 'Sample Applicant',
@@ -42,10 +42,12 @@ class MultiDatabaseSeeder extends Seeder
             ]
         );
 
-        SeniorCitizenRecord::on('mswdo_senior')->firstOrCreate(
+        SeniorCitizenRecord::firstOrCreate(
             ['record_number' => 'SR-1001'],
             [
-                'full_name' => 'Sample Senior Citizen',
+                'first_name' => 'Sample',
+                'middle_name' => null,
+                'last_name' => 'Senior Citizen',
                 'birth_date' => '1950-01-01',
                 'osca_id' => 'OSCA-1001',
                 'created_by' => $user->id,

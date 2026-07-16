@@ -14,8 +14,7 @@ class BirthdayController extends Controller
     {
         $today = now();
         $todayCount = $this->birthdayQuery($today->format('m'), $today->format('d'))->count();
-        $weekCount = SeniorCitizenRecord::on('mswdo_senior')
-            ->where('status', 'active')
+        $weekCount = SeniorCitizenRecord::where('status', 'active')
             ->whereNotNull('birth_date')
             ->where(function ($q) {
                 $start = now();
@@ -31,14 +30,12 @@ class BirthdayController extends Controller
             })->count();
 
         $nextMonth = now()->addMonth();
-        $nextMonthCount = SeniorCitizenRecord::on('mswdo_senior')
-            ->where('status', 'active')
+        $nextMonthCount = SeniorCitizenRecord::where('status', 'active')
             ->whereNotNull('birth_date')
             ->whereRaw("MONTH(birth_date) = ?", [$nextMonth->format('n')])
             ->count();
 
-        $total = SeniorCitizenRecord::on('mswdo_senior')
-            ->where('status', 'active')
+        $total = SeniorCitizenRecord::where('status', 'active')
             ->whereNotNull('birth_date')
             ->where(function ($q) {
                 $start = now();
@@ -53,8 +50,7 @@ class BirthdayController extends Controller
                 }
             })->count();
 
-        $barangays = SeniorCitizenRecord::on('mswdo_senior')
-            ->where('status', 'active')
+        $barangays = SeniorCitizenRecord::where('status', 'active')
             ->whereNotNull('barangay')
             ->distinct()
             ->orderBy('barangay')
@@ -74,8 +70,7 @@ class BirthdayController extends Controller
 
     public function data(Request $request)
     {
-        $query = SeniorCitizenRecord::on('mswdo_senior')
-            ->where('status', 'active')
+        $query = SeniorCitizenRecord::where('status', 'active')
             ->whereNotNull('birth_date');
 
         // Only apply 30-day range filter if no specific filter is set or filter is 'all'
@@ -87,7 +82,9 @@ class BirthdayController extends Controller
         if ($request->filled('search')) {
             $s = $request->search;
             $query->where(function ($q) use ($s) {
-                $q->where('full_name', 'like', "%{$s}%")
+                $q->where('first_name', 'like', "%{$s}%")
+                  ->orWhere('middle_name', 'like', "%{$s}%")
+                  ->orWhere('last_name', 'like', "%{$s}%")
                   ->orWhere('control_number', 'like', "%{$s}%")
                   ->orWhere('osca_id', 'like', "%{$s}%")
                   ->orWhere('barangay', 'like', "%{$s}%")
@@ -127,7 +124,7 @@ class BirthdayController extends Controller
         $sortField = $request->sort_field ?? 'birth_date';
         $sortDir = $request->sort_dir === 'asc' ? 'asc' : 'desc';
 
-        $allowedSorts = ['birth_date', 'full_name', 'barangay', 'control_number', 'age'];
+        $allowedSorts = ['birth_date', 'first_name', 'barangay', 'control_number'];
         if (in_array($sortField, $allowedSorts)) {
             if ($sortField === 'birth_date') {
                 $query->orderByRaw("MONTH(birth_date) $sortDir, DAY(birth_date) $sortDir");
@@ -181,7 +178,7 @@ class BirthdayController extends Controller
 
     public function profile($id)
     {
-        $senior = SeniorCitizenRecord::on('mswdo_senior')->findOrFail($id);
+        $senior = SeniorCitizenRecord::findOrFail($id);
 
         $bday = Carbon::parse($senior->birth_date);
         $today = now()->startOfDay();
@@ -217,8 +214,7 @@ class BirthdayController extends Controller
 
     public function dataByBarangay(Request $request)
     {
-        $query = SeniorCitizenRecord::on('mswdo_senior')
-            ->where('status', 'active')
+        $query = SeniorCitizenRecord::where('status', 'active')
             ->whereNotNull('birth_date')
             ->whereNotNull('barangay');
 
@@ -327,16 +323,14 @@ class BirthdayController extends Controller
 
     private function birthdayQuery($month, $day)
     {
-        return SeniorCitizenRecord::on('mswdo_senior')
-            ->where('status', 'active')
+        return SeniorCitizenRecord::where('status', 'active')
             ->whereNotNull('birth_date')
             ->whereRaw("MONTH(birth_date) = ? AND DAY(birth_date) = ?", [$month, $day]);
     }
 
     private function getFilteredData(Request $request)
     {
-        $query = SeniorCitizenRecord::on('mswdo_senior')
-            ->where('status', 'active')
+        $query = SeniorCitizenRecord::where('status', 'active')
             ->whereNotNull('birth_date');
 
         $start = now();

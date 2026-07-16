@@ -441,8 +441,8 @@
                                 <td style="word-wrap:break-word;">{{ $senior->full_name ?? '-' }}</td>
                                 <td style="word-wrap:break-word;">{{ $senior->barangay ?? '-' }}</td>
                                 <td>
-                                    <span class="badge {{ $senior->status == 'active' ? 'badge-active' : 'badge-pending' }}">
-                                        {{ ucfirst($senior->status ?? 'pending') }}
+                                    <span class="badge {{ $senior->status->value == 'active' ? 'badge-active' : 'badge-pending' }}">
+                                        {{ ucfirst($senior->status->value ?? 'pending') }}
                                     </span>
                                 </td>
                                 <td style="word-wrap:break-word;">{{ $senior->address ?? '-' }}</td>

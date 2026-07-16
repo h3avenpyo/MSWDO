@@ -34,6 +34,9 @@ class BirthdayPayoutController extends Controller
         $selectedBarangay = $request->get('barangay', '');
         $search = $request->get('search', '');
 
+        // Get month number from month name
+        $monthNumber = date('m', strtotime($selectedMonth));
+
         // Get barangays for filter
         $barangays = [
             'Acacia', 'Adlas', 'Anahaw I', 'Anahaw II', 'Balite I', 'Balite II', 'Balubad', 'Banaba', 'Batas',
@@ -47,9 +50,11 @@ class BirthdayPayoutController extends Controller
         ];
 
         // Get existing payouts for the selected month and year
-        $query = BirthdayPayout::on('mswdo_senior')
-            ->where('birth_month', $selectedMonth)
+        $query = BirthdayPayout::query()
             ->where('payout_year', $selectedYear)
+            ->whereHas('senior', function ($q) use ($monthNumber) {
+                $q->whereRaw("MONTH(birth_date) = ?", [$monthNumber]);
+            })
             ->with(['senior', 'releasedBy']);
 
         // Apply barangay filter
@@ -62,7 +67,11 @@ class BirthdayPayoutController extends Controller
         // Apply search filter
         if ($search) {
             $query->whereHas('senior', function ($q) use ($search) {
-                $q->where('full_name', 'like', '%' . $search . '%');
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('first_name', 'like', '%' . $search . '%')
+                        ->orWhere('middle_name', 'like', '%' . $search . '%')
+                        ->orWhere('last_name', 'like', '%' . $search . '%');
+                });
             });
         }
 
@@ -102,7 +111,7 @@ class BirthdayPayoutController extends Controller
             return redirect()->route('admin.login.form');
         }
 
-        $query = BirthdayPayoutHistory::on('mswdo_senior')
+        $query = BirthdayPayoutHistory::query()
             ->with(['payout', 'senior', 'performedBy'])
             ->where('action', 'released')
             ->orderBy('created_at', 'desc');
@@ -157,7 +166,7 @@ class BirthdayPayoutController extends Controller
         $monthNumber = date('m', strtotime($month));
 
         // Query eligible seniors
-        $query = SeniorCitizenRecord::on('mswdo_senior')
+        $query = SeniorCitizenRecord::query()
             ->where('status', 'active')
             ->whereNotNull('birth_date')
             ->whereRaw("MONTH(birth_date) = ?", [$monthNumber]);
@@ -173,15 +182,14 @@ class BirthdayPayoutController extends Controller
 
         foreach ($seniors as $senior) {
             // Check if payout already exists for this senior in this year
-            $existingPayout = BirthdayPayout::on('mswdo_senior')
+            $existingPayout = BirthdayPayout::query()
                 ->where('senior_id', $senior->id)
                 ->where('payout_year', $year)
                 ->first();
 
             if (!$existingPayout) {
-                $payout = BirthdayPayout::on('mswdo_senior')->create([
+                $payout = BirthdayPayout::create([
                     'senior_id' => $senior->id,
-                    'birth_month' => $month,
                     'payout_year' => $year,
                     'amount' => 500.00,
                     'status' => 'pending',
@@ -224,7 +232,7 @@ class BirthdayPayoutController extends Controller
             'remarks' => 'nullable|string|max:500',
         ]);
 
-        $payout = BirthdayPayout::on('mswdo_senior')->findOrFail($id);
+        $payout = BirthdayPayout::findOrFail($id);
 
         if (!$payout->canBeReleased()) {
             return response()->json(['error' => 'This payout cannot be released'], 400);
@@ -270,7 +278,7 @@ class BirthdayPayoutController extends Controller
         $releasedCount = 0;
 
         foreach ($payoutIds as $id) {
-            $payout = BirthdayPayout::on('mswdo_senior')->find($id);
+            $payout = BirthdayPayout::find($id);
             if ($payout && $payout->canBeReleased()) {
                 $payout->markAsReleased(session('admin_user_id'), $request->remarks);
 
@@ -310,7 +318,7 @@ class BirthdayPayoutController extends Controller
             'remarks' => 'required|string|max:500',
         ]);
 
-        $payout = BirthdayPayout::on('mswdo_senior')->findOrFail($id);
+        $payout = BirthdayPayout::findOrFail($id);
         $payout->cancel($request->remarks);
 
         // Log the action
@@ -342,7 +350,7 @@ class BirthdayPayoutController extends Controller
 
         if ($resetAll) {
             // Delete all payout records
-            $deletedCount = BirthdayPayout::on('mswdo_senior')->delete();
+            $deletedCount = BirthdayPayout::query()->delete();
             $message = "Deleted {$deletedCount} payout records from the database successfully";
         } else {
             // Delete only for selected month and year
@@ -354,9 +362,13 @@ class BirthdayPayoutController extends Controller
             $month = $request->month;
             $year = $request->year;
 
-            $deletedCount = BirthdayPayout::on('mswdo_senior')
-                ->where('birth_month', $month)
+            $monthNumber = date('m', strtotime($month));
+
+            $deletedCount = BirthdayPayout::query()
                 ->where('payout_year', $year)
+                ->whereHas('senior', function ($q) use ($monthNumber) {
+                    $q->whereRaw("MONTH(birth_date) = ?", [$monthNumber]);
+                })
                 ->delete();
 
             $message = "Deleted {$deletedCount} payout records for {$month} {$year} successfully";
@@ -381,9 +393,13 @@ class BirthdayPayoutController extends Controller
         $year = $request->get('year', now()->year);
         $barangay = $request->get('barangay', '');
 
-        $payouts = BirthdayPayout::on('mswdo_senior')
-            ->where('birth_month', $month)
+        $monthNumber = date('m', strtotime($month));
+
+        $payouts = BirthdayPayout::query()
             ->where('payout_year', $year)
+            ->whereHas('senior', function ($q) use ($monthNumber) {
+                $q->whereRaw("MONTH(birth_date) = ?", [$monthNumber]);
+            })
             ->with(['senior', 'releasedBy'])
             ->get();
 
@@ -417,9 +433,13 @@ class BirthdayPayoutController extends Controller
         $year = $request->get('year', now()->year);
         $barangay = $request->get('barangay', '');
 
-        $payouts = BirthdayPayout::on('mswdo_senior')
-            ->where('birth_month', $month)
+        $monthNumber = date('m', strtotime($month));
+
+        $payouts = BirthdayPayout::query()
             ->where('payout_year', $year)
+            ->whereHas('senior', function ($q) use ($monthNumber) {
+                $q->whereRaw("MONTH(birth_date) = ?", [$monthNumber]);
+            })
             ->with(['senior', 'releasedBy'])
             ->get();
 
@@ -464,7 +484,7 @@ class BirthdayPayoutController extends Controller
             return redirect()->route('admin.login.form');
         }
 
-        $payout = BirthdayPayout::on('mswdo_senior')
+        $payout = BirthdayPayout::query()
             ->with(['senior', 'releasedBy'])
             ->findOrFail($id);
 

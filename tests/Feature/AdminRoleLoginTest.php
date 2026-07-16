@@ -13,11 +13,11 @@ class AdminRoleLoginTest extends TestCase
 
     public function test_social_case_officer_can_login_only_to_social_case_module(): void
     {
-        $user = User::on('mswdo_admin')->create([
+        $user = User::create([
             'name' => 'Social Case Officer',
             'email' => 'social.' . uniqid() . '@example.com',
             'password' => Hash::make('Password123!'),
-            'role' => 'Social Case Study officer',
+            'role' => 'social_worker',
             'phone' => '09170000000',
             'status' => 'active',
         ]);
@@ -30,6 +30,6 @@ class AdminRoleLoginTest extends TestCase
 
         $response->assertRedirect(route('admin.social-case.dashboard'));
         $this->assertSame($user->id, session('admin_user_id'));
-        $this->assertSame('Social Case Study officer', session('admin_user_role'));
+        $this->assertSame('social_worker', session('admin_user_role'));
     }
 }

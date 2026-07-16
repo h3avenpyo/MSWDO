@@ -32,7 +32,7 @@ class SocialCaseRouteAuthenticationTest extends TestCase
     #[Test]
     public function guests_are_redirected_to_the_admin_login_from_social_case_routes(): void
     {
-        $response = $this->get(route('admin.social-case'));
+        $response = $this->get(route('admin.social-case.dashboard'));
 
         $response->assertRedirect(route('admin.login.form'));
     }

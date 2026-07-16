@@ -7,11 +7,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FamilyMember extends Model
 {
-    protected $connection = 'mswdo_social_case';
-
     protected $fillable = [
-        'full_name', 'relationship', 'age', 'sex',
-        'occupation', 'monthly_income', 'is_dependent', 'notes',
+        'social_case_study_id',
+        'full_name',
+        'relationship',
+        'age',
+        'sex',
+        'occupation',
+        'monthly_income',
+        'is_dependent',
+        'notes',
     ];
 
     protected $casts = [
@@ -19,4 +24,8 @@ class FamilyMember extends Model
         'is_dependent' => 'boolean',
     ];
 
+    public function socialCaseStudy(): BelongsTo
+    {
+        return $this->belongsTo(SocialCaseStudy::class);
+    }
 }

@@ -16,23 +16,25 @@ Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.log
 Route::post('/admin/clear-welcome', [AuthController::class, 'clearWelcome'])->name('admin.clear-welcome');
 
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-Route::prefix('admin/social-case')->name('admin.social-case.')->group(function () {
-    Route::get('/welcome', [DashboardController::class, 'socialCaseWelcome'])->name('welcome');
-    Route::get('/dashboard', [DashboardController::class, 'socialCaseDashboard'])->name('dashboard');
-    Route::get('/new', [DashboardController::class, 'socialCaseNew'])->name('new');
-    Route::get('/intake', [DashboardController::class, 'socialCaseIntake'])->name('intake');
-    Route::get('/cases', [DashboardController::class, 'socialCaseCases'])->name('cases');
-    Route::get('/archive', [DashboardController::class, 'socialCaseArchive'])->name('archive');
-    Route::get('/detail/{caseId}', [DashboardController::class, 'socialCaseDetail'])->name('detail');
-    Route::get('/document/{caseId}/{agency}', [DashboardController::class, 'socialCaseDocument'])->name('document');
-    
-    // API routes for CRUD operations (no authentication for now to test)
-    Route::get('/api/cases', [DashboardController::class, 'getCases'])->name('api.cases');
-    Route::post('/api/cases', [DashboardController::class, 'storeCase'])->name('api.store');
-    Route::get('/api/cases/{id}', [DashboardController::class, 'getCase'])->name('api.show');
-    Route::put('/api/cases/{id}', [DashboardController::class, 'updateCase'])->name('api.update');
-    Route::delete('/api/cases/{id}', [DashboardController::class, 'deleteCase'])->name('api.delete');
-})->middleware(['admin.auth']);
+Route::middleware(['admin.auth'])->group(function () {
+    Route::prefix('admin/social-case')->name('admin.social-case.')->group(function () {
+        Route::get('/welcome', [DashboardController::class, 'socialCaseWelcome'])->name('welcome');
+        Route::get('/dashboard', [DashboardController::class, 'socialCaseDashboard'])->name('dashboard');
+        Route::get('/new', [DashboardController::class, 'socialCaseNew'])->name('new');
+        Route::get('/intake', [DashboardController::class, 'socialCaseIntake'])->name('intake');
+        Route::get('/cases', [DashboardController::class, 'socialCaseCases'])->name('cases');
+        Route::get('/archive', [DashboardController::class, 'socialCaseArchive'])->name('archive');
+        Route::get('/detail/{caseId}', [DashboardController::class, 'socialCaseDetail'])->name('detail');
+        Route::get('/document/{caseId}/{agency}', [DashboardController::class, 'socialCaseDocument'])->name('document');
+        
+        // API routes for CRUD operations
+        Route::get('/api/cases', [DashboardController::class, 'getCases'])->name('api.cases');
+        Route::post('/api/cases', [DashboardController::class, 'storeCase'])->name('api.store');
+        Route::get('/api/cases/{id}', [DashboardController::class, 'getCase'])->name('api.show');
+        Route::put('/api/cases/{id}', [DashboardController::class, 'updateCase'])->name('api.update');
+        Route::delete('/api/cases/{id}', [DashboardController::class, 'deleteCase'])->name('api.delete');
+    });
+});
 
 Route::get('/admin/add-officers', [DashboardController::class, 'addOfficers'])->name('admin.add-officers');
 Route::post('/admin/add-officers', [DashboardController::class, 'storeOfficer'])->name('admin.officers.store');

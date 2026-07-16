@@ -26,7 +26,7 @@ class BirthdayPayoutExport implements FromCollection, WithHeadings, WithMapping,
 
     public function collection()
     {
-        $query = BirthdayPayout::on('mswdo_senior')
+        $query = BirthdayPayout::query()
             ->where('birth_month', $this->month)
             ->where('payout_year', $this->year)
             ->with(['senior', 'releasedBy']);

@@ -48,7 +48,7 @@ class BeneficiaryIntakeController extends Controller
         }
 
         $client = ! empty($data['client_id'])
-            ? Client::on('mswdo_social_case')->findOrFail($data['client_id'])
+            ? Client::findOrFail($data['client_id'])
             : null;
 
         if ($client && ! $checker->check($client)['eligible']) {
@@ -56,7 +56,7 @@ class BeneficiaryIntakeController extends Controller
                 ->with('error', 'This client is not eligible to proceed to case study creation.');
         }
 
-        $intake = BeneficiaryIntake::on('mswdo_social_case')->create($data);
+        $intake = BeneficiaryIntake::create($data);
 
         if (! $client) {
             return redirect()->route('admin.beneficiary-intake.index')

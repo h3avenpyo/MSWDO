@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Client;
 use App\Models\Senior\SeniorCitizenRecord;
 use App\Models\SocialCaseStudy;
 use Illuminate\Http\Request;
@@ -16,17 +17,14 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Check if just logged in and pass to view
         $justLoggedIn = session('admin_just_logged_in', false);
-        
-        // Clear the just logged in flag after first dashboard visit
+
         if ($justLoggedIn) {
             session()->forget('admin_just_logged_in');
         }
 
-        // Optimize query - only select needed fields
-        $officers = User::on('mswdo_admin')
-            ->where('email', '!=', 'admin@mswdo.test')
+        $officers = User::
+            where('email', '!=', 'admin@mswdo.test')
             ->select('id', 'name', 'email', 'role', 'created_at', 'status')
             ->orderByDesc('created_at')
             ->get();
@@ -70,24 +68,20 @@ class DashboardController extends Controller
 
     public function senior()
     {
-        // Check if just logged in and pass to view
         $justLoggedIn = session('admin_just_logged_in', false);
-        
-        // Clear the just logged in flag after first visit
+
         if ($justLoggedIn) {
             session()->forget('admin_just_logged_in');
         }
 
-        // Fetch senior citizen records
-        $totalSeniors = SeniorCitizenRecord::on('mswdo_senior')->count();
-        $activeSeniors = SeniorCitizenRecord::on('mswdo_senior')->where('status', 'active')->count();
-        $pendingSeniors = SeniorCitizenRecord::on('mswdo_senior')->where('status', 'pending')->count();
-        $recentSeniors = SeniorCitizenRecord::on('mswdo_senior')
-            ->orderByDesc('created_at')
+        $totalSeniors = SeniorCitizenRecord::count();
+        $activeSeniors = SeniorCitizenRecord::where('status', 'active')->count();
+        $pendingSeniors = SeniorCitizenRecord::where('status', 'pending')->count();
+        $recentSeniors = SeniorCitizenRecord::
+            orderByDesc('created_at')
             ->limit(5)
             ->get();
 
-        // Get barangay distribution data - include all barangays with 0 count
         $allBarangays = [
             'Acacia', 'Adlas', 'Anahaw I', 'Anahaw II', 'Balite I', 'Balite II', 'Balubad', 'Banaba', 'Batas',
             'Biga I', 'Biga II', 'Biluso', 'Bucal', 'Buho', 'Bulihan', 'Cabangaan', 'Carmen', 'Hoyo', 'Hukay', 'Iba',
@@ -99,15 +93,14 @@ class DashboardController extends Controller
             'Tartaria', 'Tibig', 'Toledo', 'Tubuan I', 'Tubuan II', 'Tubuan III', 'Ulat', 'Yakal'
         ];
 
-        $barangayDistribution = SeniorCitizenRecord::on('mswdo_senior')
-            ->where('status', 'active')
+        $barangayDistribution = SeniorCitizenRecord::
+            where('status', 'active')
             ->whereNotNull('barangay')
             ->selectRaw('barangay, COUNT(*) as count')
             ->groupBy('barangay')
             ->get()
             ->keyBy('barangay');
 
-        // Build distribution array including all barangays with 0 count
         $completeDistribution = [];
         foreach ($allBarangays as $barangay) {
             $completeDistribution[] = [
@@ -116,14 +109,12 @@ class DashboardController extends Controller
             ];
         }
 
-        // Sort by count (highest to lowest)
         usort($completeDistribution, function($a, $b) {
             return $b['count'] - $a['count'];
         });
 
         $barangayDistribution = collect($completeDistribution);
 
-        // Get recent activities from session (stored as array)
         $recentActivities = session('recent_activities', []);
 
         $data = [
@@ -186,8 +177,8 @@ class DashboardController extends Controller
         $todayMD = $today->format('m-d');
         $endMD = $endDate->format('m-d');
 
-        $query = SeniorCitizenRecord::on('mswdo_senior')
-            ->where('status', 'active')
+        $query = SeniorCitizenRecord::
+            where('status', 'active')
             ->whereNotNull('birth_date')
             ->orderByRaw("MONTH(birth_date), DAY(birth_date)");
 
@@ -210,19 +201,15 @@ class DashboardController extends Controller
 
     public function seniorRegistration()
     {
-        // Check if senior was just created and pass to view
         $seniorCreated = session('senior_created', false);
-        
-        // Clear the flag after first visit
+
         if ($seniorCreated) {
             session()->forget('senior_created');
         }
 
-        // Get barangay sequences for control number generation (per barangay)
         $year = date('Y');
         $barangaySequences = [];
-        
-        // Get all barangays from the form options
+
         $barangays = [
             'Acacia', 'Adlas', 'Anahaw I', 'Anahaw II', 'Balite I', 'Balite II', 'Balubad', 'Banaba', 'Batas',
             'Biga I', 'Biga II', 'Biluso', 'Bucal', 'Buho', 'Bulihan', 'Cabangaan', 'Carmen', 'Hoyo', 'Hukay', 'Iba',
@@ -234,7 +221,6 @@ class DashboardController extends Controller
             'Tartaria', 'Tibig', 'Toledo', 'Tubuan I', 'Tubuan II', 'Tubuan III', 'Ulat', 'Yakal'
         ];
 
-        // Unique barangay codes mapping
         $barangayCodes = [
             'Acacia' => 'ACA',
             'Adlas' => 'ADL',
@@ -301,44 +287,42 @@ class DashboardController extends Controller
             'Ulat' => 'ULA',
             'Yakal' => 'YAK'
         ];
-        
+
         foreach ($barangays as $barangay) {
-            $lastRecord = SeniorCitizenRecord::on('mswdo_senior')
-                ->where('barangay', $barangay)
+            $lastRecord = SeniorCitizenRecord::
+                where('barangay', $barangay)
                 ->where('year_applied', $year)
                 ->select('id', 'control_number')
                 ->orderByDesc('id')
                 ->first();
-            
+
             $nextSequence = $lastRecord ? intval(substr($lastRecord->control_number, -6)) + 1 : 1;
             $barangaySequences[$barangay] = $nextSequence;
         }
-        
+
         return view('admin.senior-registration', compact('barangaySequences', 'barangayCodes', 'seniorCreated'));
     }
 
     public function seniorMasterlist(Request $request)
     {
-        $query = SeniorCitizenRecord::on('mswdo_senior')
-            ->where('status', '!=', 'archived')
-            ->select('id', 'control_number', 'full_name', 'address', 'barangay', 'birth_date', 'month', 'sex', 'status');
+        $query = SeniorCitizenRecord::
+            where('status', '!=', 'archived')
+            ->select('id', 'control_number', 'first_name', 'middle_name', 'last_name', 'address', 'barangay', 'birth_date', 'sex', 'status');
 
         if ($request->filled('barangay') && $request->barangay !== '') {
             $query->where('barangay', $request->barangay);
         }
 
         if ($request->filled('search')) {
-            $query->where('full_name', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', '%' . $search . '%')
+                  ->orWhere('middle_name', 'like', '%' . $search . '%')
+                  ->orWhere('last_name', 'like', '%' . $search . '%');
+            });
         }
 
         $seniors = $query->orderByDesc('created_at')->paginate(15);
-
-        // Calculate age dynamically for each senior
-        $seniors->getCollection()->transform(function ($senior) {
-            $birthDate = Carbon::parse($senior->birth_date);
-            $senior->age = $birthDate->age;
-            return $senior;
-        });
 
         return view('admin.senior-masterlist', compact('seniors'));
     }
@@ -352,28 +336,29 @@ class DashboardController extends Controller
             'address' => ['required', 'string', 'max:500'],
             'barangay' => ['required', 'string', 'max:255'],
             'birth_date' => ['required', 'date'],
-            'month' => ['required', 'string'],
             'sex' => ['required', 'in:Male,Female'],
-            'age' => ['required', 'integer', 'min:60', 'max:150'],
             'contact_number' => ['required', 'string', 'max:20'],
             'philsys_number' => ['nullable', 'string', 'max:255'],
             'rrn_number' => ['nullable', 'string', 'max:255'],
             'remarks' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        // Check for duplicate name (case-insensitive)
-        $existingName = SeniorCitizenRecord::on('mswdo_senior')
-            ->whereRaw('LOWER(full_name) = ?', [strtolower($request->full_name)])
+        $nameParts = array_filter(array_map('trim', explode(' ', $request->full_name)));
+        $firstName = array_shift($nameParts) ?? '';
+        $lastName = array_pop($nameParts) ?? '';
+        $middleName = implode(' ', $nameParts);
+
+        $existingName = SeniorCitizenRecord::
+            whereRaw('LOWER(first_name) = ? AND LOWER(last_name) = ?', [strtolower($firstName), strtolower($lastName)])
             ->first();
 
         if ($existingName) {
             return back()->withErrors(['full_name' => 'A senior citizen with this name already exists.'])->withInput();
         }
 
-        // Generate QR code locally
         $qrCodeData = $request->control_number;
         $qrCodePath = 'uploads/qr_codes/' . time() . '_qr.png';
-        
+
         try {
             $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($qrCodeData);
             $qrCodeImage = file_get_contents($qrCodeUrl);
@@ -389,7 +374,6 @@ class DashboardController extends Controller
             $qrCodePath = null;
         }
 
-        // Generate avatar locally
         $avatarPath = 'uploads/avatars/' . time() . '_avatar.png';
         try {
             $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($request->full_name) . "&background=1A237E&color=fff&size=128";
@@ -406,16 +390,16 @@ class DashboardController extends Controller
             $avatarPath = null;
         }
 
-        $senior = SeniorCitizenRecord::on('mswdo_senior')->create([
+        $senior = SeniorCitizenRecord::create([
             'year_applied' => $request->year_applied,
             'control_number' => $request->control_number,
-            'full_name' => $request->full_name,
+            'first_name' => $firstName,
+            'middle_name' => $middleName,
+            'last_name' => $lastName,
             'address' => $request->address,
             'barangay' => $request->barangay,
             'birth_date' => $request->birth_date,
-            'month' => $request->month,
             'sex' => $request->sex,
-            'age' => $request->age,
             'contact_number' => $request->contact_number,
             'philsys_number' => $request->philsys_number,
             'rrn_number' => $request->rrn_number,
@@ -427,7 +411,6 @@ class DashboardController extends Controller
             'avatar_image' => $avatarPath,
         ]);
 
-        // Log activity
         $this->logActivity('registered', $senior->full_name, $senior->control_number);
 
         return redirect()->route('admin.senior.registration')->with('success', 'Senior citizen registered successfully.')->with('senior_created', true);
@@ -435,7 +418,7 @@ class DashboardController extends Controller
 
     public function archiveSenior($id)
     {
-        $senior = SeniorCitizenRecord::on('mswdo_senior')->find($id);
+        $senior = SeniorCitizenRecord::find($id);
 
         if (!$senior) {
             return redirect()->route('admin.senior.masterlist')->with('error', 'Senior citizen not found.');
@@ -445,7 +428,6 @@ class DashboardController extends Controller
             'status' => 'archived',
         ]);
 
-        // Log activity
         $this->logActivity('archived', $senior->full_name, $senior->control_number);
 
         return redirect()->route('admin.senior.masterlist')->with('success', 'Senior citizen archived successfully.');
@@ -453,7 +435,7 @@ class DashboardController extends Controller
 
     public function unarchiveSenior($id)
     {
-        $senior = SeniorCitizenRecord::on('mswdo_senior')->find($id);
+        $senior = SeniorCitizenRecord::find($id);
 
         if (!$senior) {
             return redirect()->route('admin.senior.archive.list')->with('error', 'Senior citizen not found.');
@@ -463,7 +445,6 @@ class DashboardController extends Controller
             'status' => 'active',
         ]);
 
-        // Log activity
         $this->logActivity('restored', $senior->full_name, $senior->control_number);
 
         return redirect()->route('admin.senior.archive.list')->with('success', 'Senior citizen restored to active successfully.');
@@ -471,42 +452,38 @@ class DashboardController extends Controller
 
     public function seniorArchiveList(Request $request)
     {
-        $query = SeniorCitizenRecord::on('mswdo_senior')
-            ->where('status', 'archived')
-            ->select('id', 'control_number', 'full_name', 'address', 'barangay', 'birth_date', 'month', 'sex', 'status', 'created_at', 'updated_at');
+        $query = SeniorCitizenRecord::
+            where('status', 'archived')
+            ->select('id', 'control_number', 'first_name', 'middle_name', 'last_name', 'address', 'barangay', 'birth_date', 'sex', 'status', 'created_at', 'updated_at');
 
         if ($request->filled('barangay') && $request->barangay !== '') {
             $query->where('barangay', $request->barangay);
         }
 
         if ($request->filled('search')) {
-            $query->where('full_name', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', '%' . $search . '%')
+                  ->orWhere('middle_name', 'like', '%' . $search . '%')
+                  ->orWhere('last_name', 'like', '%' . $search . '%');
+            });
         }
 
         $archivedSeniors = $query->orderByDesc('updated_at')->paginate(15);
-
-        // Calculate age dynamically for each senior
-        $archivedSeniors->getCollection()->transform(function ($senior) {
-            $birthDate = Carbon::parse($senior->birth_date);
-            $senior->age = $birthDate->age;
-            return $senior;
-        });
 
         return view('admin.senior-archive', compact('archivedSeniors'));
     }
 
     public function addOfficers()
     {
-        // Check if officer was just created and pass to view
         $officerCreated = session('officer_created', false);
-        
-        // Clear the flag after first visit
+
         if ($officerCreated) {
             session()->forget('officer_created');
         }
 
-        $officers = User::on('mswdo_admin')
-            ->orderByDesc('created_at')
+        $officers = User::
+            orderByDesc('created_at')
             ->get();
 
         return view('admin.add-officers', compact('officers', 'officerCreated'));
@@ -516,14 +493,14 @@ class DashboardController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255', function ($attribute, $value, $fail) {
-                $exists = User::on('mswdo_admin')
-                    ->whereRaw('LOWER(name) = ?', [strtolower($value)])
+                $exists = User::
+                    whereRaw('LOWER(name) = ?', [strtolower($value)])
                     ->exists();
                 if ($exists) {
                     $fail('An officer with this name already exists.');
                 }
             }],
-            'email' => ['required', 'email', 'unique:mswdo_admin.users,email'],
+            'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'min:8'],
             'role' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
@@ -540,7 +517,7 @@ class DashboardController extends Controller
             $signatureImagePath = 'images/signatures/' . $filename;
         }
 
-        User::on('mswdo_admin')->create([
+        User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -560,16 +537,15 @@ class DashboardController extends Controller
             return redirect()->route('admin.login.form');
         }
 
-        $senior = SeniorCitizenRecord::on('mswdo_senior')->findOrFail($id);
+        $senior = SeniorCitizenRecord::findOrFail($id);
 
-        // Get signatures for OSCA Head and MSWDO Officer
-        $oscaHeadSignature = User::on('mswdo_admin')
-            ->where('signature_position', 'osca_head')
+        $oscaHeadSignature = User::
+            where('signature_position', 'osca_head')
             ->where('status', 'active')
             ->value('signature_image');
 
-        $mswdoOfficerSignature = User::on('mswdo_admin')
-            ->where('signature_position', 'mswdo_officer')
+        $mswdoOfficerSignature = User::
+            where('signature_position', 'mswdo_officer')
             ->where('status', 'active')
             ->value('signature_image');
 
@@ -582,7 +558,7 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $senior = SeniorCitizenRecord::on('mswdo_senior')->findOrFail($id);
+        $senior = SeniorCitizenRecord::findOrFail($id);
 
         $request->validate([
             'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -593,27 +569,23 @@ class DashboardController extends Controller
             'emergency_contact_relationship' => 'nullable|string|max:50',
         ]);
 
-        // Auto-generate unique senior_id_number if not already set
         if (!$senior->senior_id_number) {
             $senior->senior_id_number = $senior->generateSeniorIdNumber();
         }
 
-        // Upload photo
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
             $filename = time() . '_' . $senior->id . '.' . $file->getClientOriginalExtension();
-            
-            // Ensure uploads directory exists
+
             $uploadDir = public_path('uploads/senior_photos');
             if (!file_exists($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
-            
+
             $file->move($uploadDir, $filename);
             $senior->photo = 'uploads/senior_photos/' . $filename;
         }
 
-        // Generate QR code link
         $senior->qr_code = route('admin.senior.profile', $senior->id);
         $senior->date_issued = now()->toDateString();
         $senior->blood_type = $request->blood_type;
@@ -624,7 +596,6 @@ class DashboardController extends Controller
 
         $senior->save();
 
-        // Log activity
         $this->logActivity('generated ID card', $senior->full_name, $senior->senior_id_number ?? $senior->control_number);
 
         return redirect()->route('admin.senior.id-card', $senior->id)->with('success', 'ID Card generated successfully.');
@@ -636,8 +607,8 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $senior = SeniorCitizenRecord::on('mswdo_senior')->findOrFail($id);
-        
+        $senior = SeniorCitizenRecord::findOrFail($id);
+
         $senior->print_count = $senior->print_count + 1;
         $senior->last_printed_at = now();
         $senior->save();
@@ -658,42 +629,38 @@ class DashboardController extends Controller
                 return redirect()->route('admin.login.form');
             }
 
-            $senior = SeniorCitizenRecord::on('mswdo_senior')
-                ->select('id', 'full_name', 'senior_id_number', 'control_number', 'birth_date', 'age', 'sex', 'barangay', 'address', 'photo', 'blood_type', 'civil_status', 'emergency_contact_name', 'emergency_contact_number', 'emergency_contact_relationship', 'date_issued', 'qr_code', 'qr_code_image', 'avatar_image')
+            $senior = SeniorCitizenRecord::
+                select('id', 'first_name', 'middle_name', 'last_name', 'senior_id_number', 'control_number', 'birth_date', 'sex', 'barangay', 'address', 'photo', 'blood_type', 'civil_status', 'emergency_contact_name', 'emergency_contact_number', 'emergency_contact_relationship', 'date_issued', 'qr_code', 'qr_code_image', 'avatar_image')
                 ->findOrFail($id);
 
             if (!$senior->senior_id_number) {
                 return redirect()->route('admin.senior.id-card', $id)->with('error', 'Please generate the ID Card first before downloading.');
             }
 
-            // Get signatures for OSCA Head and MSWDO Officer
-            $oscaHeadSignature = User::on('mswdo_admin')
-                ->where('signature_position', 'osca_head')
+            $oscaHeadSignature = User::
+                where('signature_position', 'osca_head')
                 ->where('status', 'active')
                 ->value('signature_image');
 
-            $mswdoOfficerSignature = User::on('mswdo_admin')
-                ->where('signature_position', 'mswdo_officer')
+            $mswdoOfficerSignature = User::
+                where('signature_position', 'mswdo_officer')
                 ->where('status', 'active')
                 ->value('signature_image');
 
             $pdf = Pdf::loadView('admin.id-card-pdf', compact('senior', 'oscaHeadSignature', 'mswdoOfficerSignature'));
-            
-            // Use standard A4 paper for better compatibility and speed
+
             $pdf->setPaper('a4', 'landscape');
-            
-            // Disable remote images - using local assets only for speed
+
             $pdf->setOption('isRemoteEnabled', false);
-            
-            // Disable PHP and JavaScript for speed
+
             $pdf->setOption('enable_php', false);
             $pdf->setOption('enable_javascript', false);
 
             return $pdf->download('senior-id-' . $senior->senior_id_number . '.pdf');
-            
+
         } catch (\Exception $e) {
             \Log::error('PDF generation failed: ' . $e->getMessage());
-            
+
             return redirect()->route('admin.senior.id-card', $id)
                 ->with('error', 'Failed to generate PDF. Please try again.');
         }
@@ -701,17 +668,14 @@ class DashboardController extends Controller
 
     public function seniorProfile($id)
     {
-        $senior = SeniorCitizenRecord::on('mswdo_senior')->findOrFail($id);
+        $senior = SeniorCitizenRecord::findOrFail($id);
 
         return view('admin.senior-profile', compact('senior'));
     }
 
-    /**
-     * Get senior profile data as JSON for modal
-     */
     public function seniorProfileJson($id)
     {
-        $senior = SeniorCitizenRecord::on('mswdo_senior')->findOrFail($id);
+        $senior = SeniorCitizenRecord::findOrFail($id);
 
         return response()->json([
             'id' => $senior->id,
@@ -723,23 +687,20 @@ class DashboardController extends Controller
             'birth_date' => $senior->birth_date ? date('M d, Y', strtotime($senior->birth_date)) : '-',
             'current_age' => $senior->age ?? '-',
             'sex' => $senior->sex ?? '-',
-            'month' => $senior->month ?? '-',
+            'month' => $senior->birth_month ?? '-',
             'contact_number' => $senior->contact_number ?? '-',
             'philsys_number' => $senior->philsys_number ?? '-',
             'rrn_number' => $senior->rrn_number ?? '-',
             'remarks' => $senior->remarks ?? '-',
-            'status' => ucfirst($senior->status ?? 'pending'),
+            'status' => $senior->status ? ucfirst($senior->status->value) : 'pending',
             'year_applied' => $senior->year_applied ?? '-',
         ]);
     }
 
-    /**
-     * Log activity to session for recent actions display
-     */
     private function logActivity($action, $name, $identifier)
     {
         $activities = session('recent_activities', []);
-        
+
         $newActivity = [
             'action' => $action,
             'name' => $name,
@@ -747,28 +708,20 @@ class DashboardController extends Controller
             'timestamp' => now()->format('M d, Y h:i A'),
             'admin' => session('admin_user_name') ?? 'Admin'
         ];
-        
-        // Add new activity to the beginning
+
         array_unshift($activities, $newActivity);
-        
-        // Keep only the last 10 activities
+
         $activities = array_slice($activities, 0, 10);
-        
+
         session(['recent_activities' => $activities]);
     }
 
-    /**
-     * Clear recent activities from session
-     */
     public function clearRecentActivities()
     {
         session()->forget('recent_activities');
         return redirect()->back()->with('success', 'Recent activities cleared successfully.');
     }
 
-    /**
-     * Bulk archive selected senior records
-     */
     public function bulkArchive(Request $request)
     {
         $request->validate([
@@ -777,15 +730,14 @@ class DashboardController extends Controller
         ]);
 
         $ids = $request->ids;
-        
-        $updated = SeniorCitizenRecord::on('mswdo_senior')
-            ->whereIn('id', $ids)
+
+        $updated = SeniorCitizenRecord::
+            whereIn('id', $ids)
             ->update(['status' => 'archived']);
 
         if ($updated > 0) {
-            // Log bulk activity
             $this->logActivity('bulk archived', "{$updated} senior(s)", 'Multiple');
-            
+
             return response()->json([
                 'success' => true,
                 'message' => "Successfully archived {$updated} record(s)."
@@ -798,9 +750,6 @@ class DashboardController extends Controller
         ], 400);
     }
 
-    /**
-     * Bulk restore archived senior records
-     */
     public function bulkRestore(Request $request)
     {
         $request->validate([
@@ -809,15 +758,14 @@ class DashboardController extends Controller
         ]);
 
         $ids = $request->ids;
-        
-        $updated = SeniorCitizenRecord::on('mswdo_senior')
-            ->whereIn('id', $ids)
+
+        $updated = SeniorCitizenRecord::
+            whereIn('id', $ids)
             ->update(['status' => 'active']);
 
         if ($updated > 0) {
-            // Log bulk activity
             $this->logActivity('bulk restored', "{$updated} senior(s)", 'Multiple');
-            
+
             return response()->json([
                 'success' => true,
                 'message' => "Successfully restored {$updated} record(s)."
@@ -830,21 +778,18 @@ class DashboardController extends Controller
         ], 400);
     }
 
-    /**
-     * Export selected senior records
-     */
     public function exportSeniors(Request $request)
     {
         $ids = $request->get('ids');
-        
+
         if ($ids) {
             $idsArray = explode(',', $ids);
-            $seniors = SeniorCitizenRecord::on('mswdo_senior')
-                ->whereIn('id', $idsArray)
+            $seniors = SeniorCitizenRecord::
+                whereIn('id', $idsArray)
                 ->get();
         } else {
-            $seniors = SeniorCitizenRecord::on('mswdo_senior')
-                ->where('status', 'active')
+            $seniors = SeniorCitizenRecord::
+                where('status', 'active')
                 ->get();
         }
 
@@ -855,8 +800,7 @@ class DashboardController extends Controller
 
         $callback = function () use ($seniors) {
             $file = fopen('php://output', 'w');
-            
-            // Add CSV headers
+
             fputcsv($file, [
                 'Control Number',
                 'Full Name',
@@ -869,7 +813,6 @@ class DashboardController extends Controller
                 'Status'
             ]);
 
-            // Add data rows
             foreach ($seniors as $senior) {
                 fputcsv($file, [
                     $senior->control_number ?? '',
@@ -880,7 +823,7 @@ class DashboardController extends Controller
                     $senior->sex ?? '',
                     $senior->age ?? '',
                     $senior->contact_number ?? '',
-                    $senior->status ?? ''
+                    $senior->status ? $senior->status->value : ''
                 ]);
             }
 
@@ -890,30 +833,31 @@ class DashboardController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
-    /**
-     * Export senior records as PDF
-     */
     public function exportSeniorsPdf(Request $request)
     {
         $ids = $request->get('ids');
         $barangay = $request->get('barangay');
         $search = $request->get('search');
-        
-        $query = SeniorCitizenRecord::on('mswdo_senior')->where('status', 'active');
-        
+
+        $query = SeniorCitizenRecord::where('status', 'active');
+
         if ($ids) {
             $idsArray = explode(',', $ids);
             $query->whereIn('id', $idsArray);
         }
-        
+
         if ($barangay) {
             $query->where('barangay', $barangay);
         }
-        
+
         if ($search) {
-            $query->where('full_name', 'like', '%' . $search . '%');
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', '%' . $search . '%')
+                  ->orWhere('middle_name', 'like', '%' . $search . '%')
+                  ->orWhere('last_name', 'like', '%' . $search . '%');
+            });
         }
-        
+
         $seniors = $query->get();
 
         $data = [
@@ -925,26 +869,33 @@ class DashboardController extends Controller
         ];
 
         $pdf = PDF::loadView('admin.seniors-pdf', $data);
-        
+
         $filename = 'senior_citizens';
         if ($barangay) {
             $filename .= '_' . str_replace(' ', '_', strtolower($barangay));
         }
         $filename .= '_' . now()->format('Y-m-d') . '.pdf';
-        
+
         return $pdf->download($filename);
     }
 
-    // Social Case Study API Methods
     public function getCases()
     {
-        $cases = SocialCaseStudy::orderBy('created_at', 'desc')->get();
+        $cases = SocialCaseStudy::with('client', 'officer', 'encoder', 'releasedByUser')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $cases->each(function ($case) {
+            $case->client_name = $case->client ? $case->client->full_name : '';
+            $case->client_barangay = $case->client ? $case->client->barangay : '';
+        });
+
         return response()->json($cases);
     }
 
     public function getCase($id)
     {
-        $case = SocialCaseStudy::find($id);
+        $case = SocialCaseStudy::with('client', 'officer', 'encoder', 'releasedByUser', 'interview', 'familyMembers')->find($id);
         if (!$case) {
             return response()->json(['error' => 'Case not found'], 404);
         }
@@ -953,25 +904,93 @@ class DashboardController extends Controller
 
     public function storeCase(Request $request)
     {
-        $validated = $request->validate([
-            'control_no' => 'required|unique:social_case_studies,control_no',
-            'status' => 'required',
-            'client' => 'required|array',
-            'household' => 'required|array',
-            'interview' => 'required|array',
-            'signers' => 'required|array',
-            'purpose' => 'required',
-            'agencies' => 'nullable|array',
+        $data = $request->validate([
+            'control_no'   => 'required|string|unique:social_case_studies,case_number',
+            'status'       => 'required|string',
+            'client'       => 'required|array',
+            'client.name'  => 'required|string',
+            'household'    => 'required|array',
+            'interview'    => 'required|array',
+            'signers'      => 'required|array',
+            'purpose'      => 'required|string',
+            'agencies'     => 'nullable|array',
             'requirements' => 'required|array',
-            'status_history' => 'required|array',
-            'released_date' => 'nullable|date',
         ]);
 
-        // Ensure agencies defaults to empty array if null
-        $validated['agencies'] = $validated['agencies'] ?? [];
+        $clientId = $this->findOrCreateClient($data['client']);
 
-        $case = SocialCaseStudy::create($validated);
-        return response()->json($case, 201);
+        $agencies = $data['agencies'] ?? [];
+
+        $case = SocialCaseStudy::create([
+            'client_id'          => $clientId,
+            'officer_id'         => session('admin_user_id'),
+            'case_number'        => $data['control_no'],
+            'date_processed'     => now()->toDateString(),
+            'purpose'            => $data['purpose'],
+            'submitted_to'       => implode(', ', $agencies),
+            'encoded_by'         => session('admin_user_id'),
+            'status'             => $data['status'],
+            'summary'            => $data['interview']['problem_presented'] ?? null,
+            'workflow_step'       => 'requirements_verification',
+            'requirements_complete' => !empty($data['requirements']),
+        ]);
+
+        $interview = $data['interview'];
+        \App\Models\CaseInterview::create([
+            'social_case_study_id'    => $case->id,
+            'interview_reason'        => $data['purpose'],
+            'interview_situation'     => $interview['problem_presented'] ?? null,
+            'interview_household'     => $interview['home_condition'] ?? null,
+            'monthly_income'          => null,
+            'monthly_expenses'        => null,
+            'interview_notes'         => $interview['socio_economic'] ?? null,
+            'social_worker_assessment' => $interview['evaluation'] ?? null,
+            'recommendation'          => $interview['recommendation'] ?? null,
+        ]);
+
+        $household = $data['household'] ?? [];
+        foreach ($household as $member) {
+            if (empty($member['name'])) continue;
+            \App\Models\FamilyMember::create([
+                'social_case_study_id' => $case->id,
+                'full_name'            => $member['name'] ?? '',
+                'relationship'         => $member['relationship'] ?? '',
+                'age'                  => is_numeric($member['age'] ?? null) ? (int) $member['age'] : null,
+                'occupation'           => $member['occupation'] ?? null,
+                'monthly_income'       => is_numeric($member['income'] ?? null) ? $member['income'] : null,
+            ]);
+        }
+
+        return response()->json($case->load('client'), 201);
+    }
+
+    private function findOrCreateClient(array $clientData): int
+    {
+        $fullName = trim($clientData['name'] ?? '');
+        $nameParts = array_filter(array_map('trim', explode(' ', $fullName)));
+        $firstName = array_shift($nameParts) ?? '';
+        $lastName  = array_pop($nameParts) ?? '';
+        $middleName = implode(' ', $nameParts);
+
+        $client = Client::whereRaw('LOWER(first_name) = ? AND LOWER(last_name) = ?', [
+            strtolower($firstName),
+            strtolower($lastName),
+        ])->first();
+
+        if (!$client) {
+            $client = Client::create([
+                'first_name'     => $firstName,
+                'middle_name'    => $middleName,
+                'last_name'      => $lastName,
+                'birthdate'      => $clientData['birthdate'] ?? null,
+                'gender'         => $clientData['sex'] ?? null,
+                'address'        => $clientData['address'] ?? null,
+                'barangay'       => $clientData['address'] ?? null,
+                'contact_number' => $clientData['contact'] ?? null,
+            ]);
+        }
+
+        return $client->id;
     }
 
     public function updateCase(Request $request, $id)

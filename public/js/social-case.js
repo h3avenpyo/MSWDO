@@ -868,8 +868,8 @@ function initCharts(){
     cases.forEach(c => {
       purposeCounts[c.purpose] = (purposeCounts[c.purpose] || 0) + 1;
     });
-    const labels = Object.keys(purposeCounts).length ? Object.keys(purposeCounts) : PURPOSES.slice(0,5);
-    const data = labels.map(l => purposeCounts[l] || Math.floor(Math.random() * 20) + 5);
+    const labels = Object.keys(purposeCounts);
+    const data = labels.map(l => purposeCounts[l]);
     const total = data.reduce((a, b) => a + b, 0);
     
     // Government color palette

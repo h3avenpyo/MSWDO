@@ -2,18 +2,17 @@
 
 namespace App\Models\Senior;
 
+use App\Enums\PayoutStatus;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Senior\BirthdayPayoutHistory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BirthdayPayout extends Model
 {
-    protected $connection = 'mswdo_senior';
-
     protected $table = 'birthday_payouts';
 
     protected $fillable = [
         'senior_id',
-        'birth_month',
         'payout_year',
         'amount',
         'status',
@@ -25,84 +24,58 @@ class BirthdayPayout extends Model
     protected $casts = [
         'amount' => 'decimal:2',
         'released_date' => 'datetime',
+        'status' => PayoutStatus::class,
     ];
 
-    /**
-     * Relationship with Senior Citizen Record
-     */
-    public function senior()
+    public function senior(): BelongsTo
     {
         return $this->belongsTo(SeniorCitizenRecord::class, 'senior_id');
     }
 
-    /**
-     * Relationship with User (released by)
-     */
-    public function releasedBy()
+    public function releasedBy(): BelongsTo
     {
         return $this->belongsTo(\App\Models\User::class, 'released_by');
     }
 
-    /**
-     * Relationship with Payout History
-     */
-    public function history()
+    public function history(): HasMany
     {
         return $this->hasMany(BirthdayPayoutHistory::class, 'payout_id')->orderBy('created_at', 'desc');
     }
 
-    /**
-     * Scope for pending payouts
-     */
     public function scopePending($query)
     {
-        return $query->where('status', 'pending');
+        return $query->where('status', PayoutStatus::Pending);
     }
 
-    /**
-     * Scope for released payouts
-     */
     public function scopeReleased($query)
     {
-        return $query->where('status', 'released');
+        return $query->where('status', PayoutStatus::Released);
     }
 
-    /**
-     * Scope for cancelled payouts
-     */
     public function scopeCancelled($query)
     {
-        return $query->where('status', 'cancelled');
+        return $query->where('status', PayoutStatus::Cancelled);
     }
 
-    /**
-     * Check if payout can be released
-     */
-    public function canBeReleased()
+    public function canBeReleased(): bool
     {
-        return $this->status === 'pending';
+        return $this->status === PayoutStatus::Pending;
     }
 
-    /**
-     * Mark payout as released
-     */
-    public function markAsReleased($releasedBy, $remarks = null)
+    public function markAsReleased($releasedBy, $remarks = null): void
     {
         $this->update([
-            'status' => 'released',
+            'status' => PayoutStatus::Released,
             'released_by' => $releasedBy,
             'released_date' => now(),
             'remarks' => $remarks,
         ]);
     }
 
-    /**
-     * Cancel payout
-     */
-    public function cancel($remarks = null)
+    public function cancel($remarks = null): void
     {
         $this->update([
-            'status' => 'cancelled',
+            'status' => PayoutStatus::Cancelled,
             'remarks' => $remarks,
         ]);
     }

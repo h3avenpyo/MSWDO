@@ -10,9 +10,6 @@ class EligibilityAuditLog extends Model
 {
     use HasFactory;
 
-    protected $connection = 'mswdo_social_case';
-    protected $table = 'eligibility_audit_logs';
-
     protected $fillable = [
         'client_id',
         'client_name',
@@ -27,6 +24,11 @@ class EligibilityAuditLog extends Model
 
     public function client(): BelongsTo
     {
-        return $this->belongsTo(Client::class, 'client_id', 'id');
+        return $this->belongsTo(Client::class);
+    }
+
+    public function officer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'officer_id');
     }
 }

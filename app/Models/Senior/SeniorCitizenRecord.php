@@ -2,48 +2,96 @@
 
 namespace App\Models\Senior;
 
+use App\Enums\SeniorStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
 
 class SeniorCitizenRecord extends Model
 {
-    protected $connection = 'mswdo_senior';
-
     protected $table = 'senior_citizen_records';
 
     protected $fillable = [
         'record_number',
+        'first_name',
+        'middle_name',
+        'last_name',
         'year_applied',
         'control_number',
-        'full_name',
+        'senior_id_number',
         'address',
         'barangay',
         'birth_date',
-        'month',
         'sex',
-        'age',
         'contact_number',
         'philsys_number',
         'rrn_number',
-        'remarks',
         'osca_id',
-        'created_by',
-        'status',
-        'senior_id_number',
-        'photo',
-        'qr_code',
-        'date_issued',
-        'last_printed_at',
-        'print_count',
         'blood_type',
         'civil_status',
         'emergency_contact_name',
         'emergency_contact_number',
         'emergency_contact_relationship',
+        'photo',
+        'avatar_image',
+        'qr_code',
+        'qr_code_image',
+        'date_issued',
+        'last_printed_at',
+        'print_count',
+        'remarks',
+        'created_by',
+        'status',
     ];
 
-    /**
-     * Generate unique Senior ID Number using the control number.
-     */
+    protected $casts = [
+        'birth_date' => 'date',
+        'date_issued' => 'date',
+        'last_printed_at' => 'datetime',
+        'print_count' => 'integer',
+        'status' => SeniorStatus::class,
+    ];
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\User::class, 'created_by');
+    }
+
+    public function payouts(): HasMany
+    {
+        return $this->hasMany(BirthdayPayout::class, 'senior_id');
+    }
+
+    public function payoutHistories(): HasMany
+    {
+        return $this->hasMany(BirthdayPayoutHistory::class, 'senior_id');
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
+    }
+
+    public function getAgeAttribute(): ?int
+    {
+        return $this->birth_date ? Carbon::parse($this->birth_date)->age : null;
+    }
+
+    public function getBirthMonthAttribute(): ?string
+    {
+        return $this->birth_date ? Carbon::parse($this->birth_date)->format('F') : null;
+    }
+
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->photo && file_exists(public_path($this->photo))) {
+            return asset($this->photo);
+        }
+
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->full_name) . '&background=1A237E&color=fff&size=128';
+    }
+
     public function generateSeniorIdNumber()
     {
         if ($this->senior_id_number) {
@@ -61,18 +109,5 @@ class SeniorCitizenRecord extends Model
         $year = $this->year_applied ?? now()->format('Y');
         $sequence = str_pad($this->id, 6, '0', STR_PAD_LEFT);
         return "SC-{$year}-{$sequence}";
-    }
-
-    /**
-     * Get URL for the uploaded photo, or a placeholder if none exists.
-     */
-    public function getPhotoUrlAttribute()
-    {
-        if ($this->photo && file_exists(public_path($this->photo))) {
-            return asset($this->photo);
-        }
-        
-        // Return a public domain default avatar or SVGs
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->full_name) . '&background=1A237E&color=fff&size=128';
     }
 }

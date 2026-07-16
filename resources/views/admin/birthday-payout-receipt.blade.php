@@ -79,8 +79,8 @@
             <div class="amount">₱{{ number_format($payout->amount, 2) }}</div>
             <div class="label">Birthday Financial Assistance Amount</div>
             <div style="margin-top: 10px;">
-                <span class="status-badge status-{{ $payout->status }}">
-                    {{ ucfirst($payout->status) }}
+                <span class="status-badge status-{{ $payout->status->value }}">
+                    {{ ucfirst($payout->status->value) }}
                 </span>
             </div>
         </div>

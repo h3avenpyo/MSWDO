@@ -14,22 +14,42 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::on('mswdo_admin')->updateOrCreate(
+        User::updateOrCreate(
             ['email' => 'admin@mswdo.test'],
             [
                 'name' => 'Admin User',
                 'password' => Hash::make('AdminPass123!'),
-                'role' => 'Admin',
+                'role' => 'admin',
                 'status' => 'active',
             ]
         );
 
-        User::on('mswdo_admin')->updateOrCreate(
+        User::updateOrCreate(
+            ['email' => 'social@mswdo.test'],
+            [
+                'name' => 'Social Case Officer',
+                'password' => Hash::make('password'),
+                'role' => 'social_worker',
+                'status' => 'active',
+            ]
+        );
+
+        User::updateOrCreate(
             ['email' => 'senior@mswdo.test'],
             [
                 'name' => 'Senior Citizen Officer',
                 'password' => Hash::make('password'),
-                'role' => 'Senior Citizen officer',
+                'role' => 'staff',
+                'status' => 'active',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'financial@mswdo.test'],
+            [
+                'name' => 'Financial Assistance Officer',
+                'password' => Hash::make('password'),
+                'role' => 'staff',
                 'status' => 'active',
             ]
         );

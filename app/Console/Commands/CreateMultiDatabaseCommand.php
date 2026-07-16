@@ -9,20 +9,14 @@ class CreateMultiDatabaseCommand extends Command
 {
     protected $signature = 'db:create-multi';
 
-    protected $description = 'Create the MSWDO multi-database schemas in MySQL';
+    protected $description = 'Create the MSWDO database schema in MySQL';
 
     public function handle(): int
     {
-        $databases = [
-            config('database.connections.mswdo_admin.database'),
-            config('database.connections.mswdo_financial.database'),
-            config('database.connections.mswdo_senior.database'),
-        ];
+        $database = config('database.connections.mysql.database');
 
-        foreach (array_unique($databases) as $database) {
-            DB::connection('mysql')->statement("CREATE DATABASE IF NOT EXISTS `{$database}`");
-            $this->info("Created or confirmed database: {$database}");
-        }
+        DB::connection('mysql')->statement("CREATE DATABASE IF NOT EXISTS `{$database}`");
+        $this->info("Created or confirmed database: {$database}");
 
         return self::SUCCESS;
     }

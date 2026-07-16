@@ -125,10 +125,10 @@
                 <td>{{ $senior->age ?? '-' }}</td>
                 <td>{{ $senior->contact_number ?? '-' }}</td>
                 <td>
-                    @if($senior->status == 'active')
+                    @if($senior->status->value == 'active')
                         <span class="status-active">Active</span>
                     @else
-                        <span class="status-pending">{{ ucfirst($senior->status) }}</span>
+                        <span class="status-pending">{{ ucfirst($senior->status->value) }}</span>
                     @endif
                 </td>
             </tr>

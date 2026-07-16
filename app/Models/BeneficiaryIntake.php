@@ -7,25 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BeneficiaryIntake extends Model
 {
-    protected $connection = 'mswdo_social_case';
-
     protected $fillable = [
         'client_id',
+        'social_case_study_id',
         'control_number',
         'date_processed',
         'encoder',
-        'client_last_name',
-        'client_first_name',
-        'client_middle_name',
-        'client_birthday',
-        'client_age',
-        'client_sex',
-        'client_civil_status',
-        'client_address',
-        'client_barangay',
-        'client_contact_number',
-        'client_occupation',
-        'client_monthly_income',
         'is_client_beneficiary',
         'beneficiary_last_name',
         'beneficiary_first_name',
@@ -43,23 +30,31 @@ class BeneficiaryIntake extends Model
         'submitted_to',
     ];
 
+    protected $casts = [
+        'date_processed' => 'date',
+        'beneficiary_birthday' => 'date',
+        'is_client_beneficiary' => 'boolean',
+        'medical_conditions' => 'array',
+    ];
+
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
 
-    protected $casts = [
-        'date_processed' => 'date',
-        'client_birthday' => 'date',
-        'beneficiary_birthday' => 'date',
-        'client_monthly_income' => 'decimal:2',
-        'is_client_beneficiary' => 'boolean',
-        'medical_conditions' => 'array',
-    ];
-
-    public function getClientFullNameAttribute(): string
+    public function socialCaseStudy(): BelongsTo
     {
-        return trim("{$this->client_first_name} {$this->client_middle_name} {$this->client_last_name}");
+        return $this->belongsTo(SocialCaseStudy::class);
+    }
+
+    public function encoderUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'encoder');
+    }
+
+    public function getClientFullNameAttribute(): ?string
+    {
+        return $this->client?->full_name;
     }
 
     public function getBeneficiaryFullNameAttribute(): ?string

@@ -68,12 +68,12 @@
         }
         
         *{box-sizing:border-box;}
-        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100%;}
+        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100%;overflow:hidden;}
         body{font-size:14px;line-height:1.5;}
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
         button{font-family:inherit;cursor:pointer;}
         input,select,textarea{font-family:inherit;font-size:14px;}
-        .app{display:flex;min-height:100vh;}
+        .app{display:flex;height:100vh;overflow:hidden;}
 
         /* ---------- Sidebar ---------- */
         .sidebar{
@@ -136,6 +136,8 @@
             display:grid;
             grid-template-columns: 1.8fr 1fr;
             gap:24px;
+            flex:1;
+            min-height:0;
         }
         @media (max-width:1024px){.dashboard-grid{grid-template-columns:1fr;}}
         
@@ -874,6 +876,10 @@
             margin-left:var(--sidebar-width);
             padding:var(--content-padding);
             max-width:calc(100% - var(--sidebar-width));
+            height:100vh;
+            overflow-y:auto;
+            display:flex;
+            flex-direction:column;
         }
         
         /* ---------- Modern Page Header (Styling migrated to Tailwind classes in dashboard.blade.php) ---------- */
@@ -1004,13 +1010,22 @@
         }
         
         /* ---------- Analytics Card ---------- */
+        .analytics-section, .activity-section{
+            display:flex;
+            flex-direction:column;
+            min-height:0;
+        }
         .analytics-card{
             background:var(--surface);
             border-radius:16px;
             padding:24px;
             box-shadow:var(--shadow);
             border:1px solid var(--border);
-            height:100%;
+            flex:1;
+            display:flex;
+            flex-direction:column;
+            min-height:0;
+            overflow:hidden;
             animation:fadeInUp 0.6s ease-out 0.1s backwards;
         }
         .analytics-card h3{
@@ -1022,52 +1037,65 @@
         .chart-wrapper{
             display:flex;
             align-items:center;
-            gap:32px;
+            gap:24px;
+            flex:1;
+            min-height:0;
+            min-width:0;
         }
         .chart-canvas{
             flex:1;
             position:relative;
-            height:280px;
+            min-height:0;
+            min-width:0;
         }
         .chart-legend{
-            width:200px;
+            flex:0 1 220px;
+            min-width:0;
             display:flex;
             flex-direction:column;
-            gap:12px;
+            gap:8px;
+            overflow-y:auto;
+            min-height:0;
         }
         .legend-item{
             display:flex;
             align-items:center;
             gap:10px;
-            padding:8px 12px;
+            padding:6px 10px;
             border-radius:8px;
             transition:background 0.2s ease;
+            min-width:0;
         }
         .legend-item:hover{
             background:var(--background);
         }
         .legend-color{
-            width:12px;
-            height:12px;
+            width:10px;
+            height:10px;
             border-radius:3px;
             flex-shrink:0;
         }
         .legend-info{
             flex:1;
+            min-width:0;
         }
         .legend-name{
-            font-size:13px;
+            font-size:12px;
             font-weight:500;
             color:var(--text-primary);
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
         }
         .legend-count{
-            font-size:12px;
+            font-size:11px;
             color:var(--text-secondary);
         }
         .legend-percent{
-            font-size:12px;
+            font-size:11px;
             font-weight:600;
             color:var(--text-primary);
+            flex-shrink:0;
         }
         
         /* ---------- Activity Card ---------- */
@@ -1077,7 +1105,11 @@
             padding:24px;
             box-shadow:var(--shadow);
             border:1px solid var(--border);
-            height:100%;
+            flex:1;
+            display:flex;
+            flex-direction:column;
+            min-height:0;
+            overflow:hidden;
             animation:fadeInUp 0.6s ease-out 0.2s backwards;
         }
         .activity-card h3{
@@ -1087,23 +1119,10 @@
             margin-bottom:20px;
         }
         .activity-feed{
-            max-height:400px;
+            flex:1;
+            min-height:0;
             overflow-y:auto;
-            padding-right:8px;
-        }
-        .activity-feed::-webkit-scrollbar{
-            width:6px;
-        }
-        .activity-feed::-webkit-scrollbar-track{
-            background:var(--background);
-            border-radius:3px;
-        }
-        .activity-feed::-webkit-scrollbar-thumb{
-            background:var(--border);
-            border-radius:3px;
-        }
-        .activity-feed::-webkit-scrollbar-thumb:hover{
-            background:var(--text-muted);
+            overflow-x:hidden;
         }
         
         /* ---------- Modern Activity Item ---------- */
@@ -1175,14 +1194,16 @@
                 align-items:center;
             }
             .chart-legend{
+                flex:1 1 auto;
                 width:100%;
                 flex-direction:row;
                 flex-wrap:wrap;
                 justify-content:center;
+                gap:8px;
             }
             .legend-item{
                 flex:1 1 auto;
-                min-width:150px;
+                min-width:140px;
             }
         }
         
@@ -1224,10 +1245,10 @@
                 justify-content:center;
             }
             .chart-canvas{
-                height:220px;
+                min-height:0;
             }
             .activity-feed{
-                max-height:300px;
+                padding-right:0;
             }
         }
         
@@ -1456,6 +1477,7 @@
         .doc-sign .line{border-top:1px solid #333;padding-top:8px;width:240px;text-align:center;}
         .doc-toolbar{max-width:800px;margin:0 auto 20px;display:flex;justify-content:space-between;align-items:center;padding:20px;background:var(--surface);border-radius:12px;border:1px solid var(--border);}
         @media print{
+            html,body,.app,.main{overflow:visible !important;height:auto !important;}
             .no-print{display:none !important;}
             .sidebar,.page-head,.toolbar-row{display:none !important;}
             .main{padding:0;max-width:none;margin:0;}

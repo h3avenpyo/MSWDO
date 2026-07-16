@@ -11,7 +11,7 @@ class CaseRejectionRecorder
     {
         $blockingRecord = $eligibility['blockingRecord'];
 
-        $rejection = CaseRejection::on('mswdo_social_case')->firstOrNew([
+        $rejection = CaseRejection::firstOrNew([
             'client_id' => $client->id,
             'blocking_assistance_id' => $blockingRecord?->id,
         ]);

@@ -10,9 +10,9 @@ class SeniorCitizenDummySeeder extends Seeder
 {
     public function run(): void
     {
-        DB::connection('mswdo_senior')->statement('SET FOREIGN_KEY_CHECKS=0');
-        SeniorCitizenRecord::on('mswdo_senior')->truncate();
-        DB::connection('mswdo_senior')->statement('SET FOREIGN_KEY_CHECKS=1');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        SeniorCitizenRecord::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         $barangays = [
             'Acacia' => 'ACA',
@@ -84,7 +84,6 @@ class SeniorCitizenDummySeeder extends Seeder
         $firstNames = ['Maria', 'Jose', 'Carmen', 'Antonio', 'Rosa', 'Juan', 'Teresa', 'Pedro', 'Sofia', 'Miguel', 'Ana', 'Carlos', 'Luz', 'Francisco', 'Elena', 'Ricardo', 'Lourdes', 'Fernando', 'Isabel', 'Roberto', 'Concepcion', 'Luis', 'Mercedes', 'Ramon', 'Victoria'];
         $lastNames = ['Santos', 'Reyes', 'Cruz', 'Bautista', 'Garcia', 'Fernandez', 'Ramos', 'Flores', 'Mendoza', 'Castillo', 'Torres', 'Rivera', 'Morales', 'Navarro', 'Villanueva', 'Santiago', 'Del Rosario', 'Aquino', 'Dizon', 'Tan', 'Lim', 'Ong', 'Wong', 'Lee'];
         $sexes = ['Male', 'Female'];
-        $months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         $bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
         $civilStatuses = ['Single', 'Married', 'Widowed', 'Separated'];
 
@@ -98,7 +97,6 @@ class SeniorCitizenDummySeeder extends Seeder
                 $lastName = $lastNames[array_rand($lastNames)];
                 $middleInitial = chr(rand(65, 90)) . '.';
                 $sex = $sexes[array_rand($sexes)];
-                $month = $months[array_rand($months)];
                 $bloodType = $bloodTypes[array_rand($bloodTypes)];
                 $civilStatus = $civilStatuses[array_rand($civilStatuses)];
 
@@ -107,9 +105,6 @@ class SeniorCitizenDummySeeder extends Seeder
                 $birthMonth = rand(1, 12);
                 $birthDay = rand(1, 28);
                 $birthDate = sprintf('%04d-%02d-%02d', $birthYear, $birthMonth, $birthDay);
-
-                // Calculate age
-                $age = date('Y') - $birthYear;
 
                 // Generate control number in format: SC-{barangayCode}-{year}-{sequence}
                 $controlNumber = 'SC-' . $barangayCode . '-' . $year . '-' . str_pad($sequence, 6, '0', STR_PAD_LEFT);
@@ -125,15 +120,15 @@ class SeniorCitizenDummySeeder extends Seeder
                 $emergencyRelationships = ['Spouse', 'Child', 'Sibling', 'Parent', 'Relative'];
                 $emergencyContactRelationship = $emergencyRelationships[array_rand($emergencyRelationships)];
 
-                SeniorCitizenRecord::on('mswdo_senior')->create([
+                SeniorCitizenRecord::create([
                     'control_number' => $controlNumber,
                     'osca_id' => $controlNumber,
-                    'full_name' => $firstName . ' ' . $middleInitial . ' ' . $lastName,
+                    'first_name' => $firstName,
+                    'middle_name' => $middleInitial,
+                    'last_name' => $lastName,
                     'address' => 'House ' . rand(1, 100) . ', Street ' . rand(1, 20) . ', ' . $barangay,
                     'barangay' => $barangay,
                     'birth_date' => $birthDate,
-                    'month' => $month,
-                    'age' => $age,
                     'sex' => $sex,
                     'contact_number' => $contactNumber,
                     'philsys_number' => 'PHL-' . rand(100000000, 999999999),
