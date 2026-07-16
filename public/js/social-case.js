@@ -78,7 +78,7 @@ const DEFAULT_REQUIREMENTS = ["Valid government-issued ID","Barangay Certificate
 const ELIGIBILITY_DAYS = 180;
 
 let cases = [];
-let view = {tab:"dashboard", caseId:null, docAgency:null, newCaseStep:"search", eligClientName:"", eligOverride:false, eligMatch:null};
+let view = {tab:"dashboard", caseId:null, docAgency:null, newCaseStep:"search", eligClientName:"", eligOverride:false, eligMatch:null, caseListPage:1, archivePage:1};
 let draftIntake = null;
 
 /* ---- Naming-convention helpers (camelCase <-> snake_case) ---- */
@@ -564,8 +564,22 @@ function renderArchive(){
       <div>No archived cases</div>
       <div style="font-size:12px;margin-top:4px">Archived cases will appear here</div>
     </td></tr>`;
+    const pagInfo = document.getElementById('archivePaginationInfo');
+    if(pagInfo) pagInfo.textContent = 'Showing 0 of 0 Archived Cases';
+    const pagControls = document.getElementById('archivePaginationControls');
+    if(pagControls) pagControls.innerHTML = '';
   } else {
-    table.innerHTML = archivedCases.map(c => `
+    // Pagination
+    const pageSize = 10;
+    const page = view.archivePage || 1;
+    const totalPages = Math.ceil(archivedCases.length / pageSize);
+    if(page > totalPages) view.archivePage = totalPages;
+    const currentPage = Math.max(1, Math.min(view.archivePage || 1, totalPages));
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedCases = archivedCases.slice(startIndex, endIndex);
+
+    table.innerHTML = paginatedCases.map(c => `
       <tr class="row-click" onclick="showCaseDetailsModal('${c.id}')">
         <td><span style="font-family:monospace;font-weight:600">${escapeHtml(c.controlNo)||"—"}</span></td>
         <td>${escapeHtml(c.client.name)||"<span class=muted>Unnamed</span>"}</td>
@@ -584,9 +598,38 @@ function renderArchive(){
         </td>
       </tr>
     `).join('');
+
+    // Pagination info
+    const pagInfo = document.getElementById('archivePaginationInfo');
+    if(pagInfo){
+      const showingFrom = startIndex + 1;
+      const showingTo = Math.min(endIndex, archivedCases.length);
+      pagInfo.textContent = `Showing ${showingFrom}–${showingTo} of ${archivedCases.length} Archived Cases`;
+    }
+
+    // Pagination controls
+    const pagControls = document.getElementById('archivePaginationControls');
+    if(pagControls){
+      let pageButtons = '';
+      pageButtons += `<button class="sc-page-btn" ${currentPage<=1?'disabled':''} onclick="goToArchivePage(${currentPage-1})"><i data-lucide="chevron-left" style="width:14px;height:14px"></i> Previous</button>`;
+      const maxButtons = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxButtons/2));
+      let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+      if(endPage - startPage < maxButtons - 1) startPage = Math.max(1, endPage - maxButtons + 1);
+      for(let i = startPage; i <= endPage; i++){
+        pageButtons += `<button class="sc-page-btn ${i===currentPage?'active':''}" onclick="goToArchivePage(${i})">${i}</button>`;
+      }
+      pageButtons += `<button class="sc-page-btn" ${currentPage>=totalPages?'disabled':''} onclick="goToArchivePage(${currentPage+1})">Next <i data-lucide="chevron-right" style="width:14px;height:14px"></i></button>`;
+      pagControls.innerHTML = pageButtons;
+    }
   }
 
   lucide.createIcons();
+}
+
+function goToArchivePage(page){
+  view.archivePage = page;
+  renderArchive();
 }
 
 function restoreCase(id){
@@ -964,7 +1007,7 @@ function renderSearchResults(query){
         cancelButtonColor: '#6B7280'
       }).then((result) => {
         if (result.isConfirmed) {
-          proceedWithNewClient('${escapedQuery}');
+          proceedWithNewClient(escapedQuery);
         }
       });
     }
@@ -1176,7 +1219,7 @@ function renderEligibilityStatus(match){
 function startEligibilityCheck(){
   const name = document.getElementById('elig-name').value;
   if(!name || name.trim().length < 2){
-    alert('Please enter at least 2 characters to search');
+    Swal.fire({ icon:'warning', title:'Input Required', text:'Please enter at least 2 characters to search.', confirmButtonColor:'#1E3A8A' });
     return;
   }
   view.eligClientName = name;
@@ -1558,18 +1601,20 @@ function renderCaseList(){
 
   // Pagination
   const pageSize = 10;
-  const currentPage = 1; // Would track current page in real implementation
-  const startIndex = (currentPage - 1) * pageSize;
+  const currentPage = view.caseListPage || 1;
+  const totalPages = Math.ceil(filtered.length / pageSize);
+  if(currentPage > totalPages && totalPages > 0) view.caseListPage = totalPages;
+  const page = Math.max(1, Math.min(view.caseListPage || 1, totalPages || 1));
+  const startIndex = (page - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const paginatedCases = filtered.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(filtered.length / pageSize);
 
   // Render table
   const tableBody = document.getElementById('casesTableBody');
   const emptyState = document.getElementById('emptyState');
   const table = document.getElementById('dataTable');
 
-  if(paginatedCases.length === 0){
+  if(paginatedCases.length === 0 && filtered.length === 0){
     table.style.display = 'none';
     emptyState.style.display = 'block';
   }else{
@@ -1617,15 +1662,29 @@ function renderCaseList(){
   }
 
   // Update pagination controls
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  prevBtn.disabled = currentPage === 1;
-  nextBtn.disabled = currentPage >= totalPages;
+  const controls = document.getElementById('paginationControls');
+  let pageButtons = '';
+  pageButtons += `<button class="sc-page-btn" id="prevBtn" ${page<=1?'disabled':''} onclick="goToCaseListPage(${page-1})"><i data-lucide="chevron-left" style="width:14px;height:14px"></i> Previous</button>`;
+  const maxButtons = 5;
+  let startPage = Math.max(1, page - Math.floor(maxButtons/2));
+  let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+  if(endPage - startPage < maxButtons - 1) startPage = Math.max(1, endPage - maxButtons + 1);
+  for(let i = startPage; i <= endPage; i++){
+    pageButtons += `<button class="sc-page-btn ${i===page?'active':''}" onclick="goToCaseListPage(${i})">${i}</button>`;
+  }
+  pageButtons += `<button class="sc-page-btn" id="nextBtn" ${page>=totalPages?'disabled':''} onclick="goToCaseListPage(${page+1})">Next <i data-lucide="chevron-right" style="width:14px;height:14px"></i></button>`;
+  controls.innerHTML = pageButtons;
 
   lucide.createIcons();
 }
 
+function goToCaseListPage(page){
+  view.caseListPage = page;
+  renderCaseList();
+}
+
 function applyFilters(){
+  view.caseListPage = 1;
   renderCaseList();
 }
 
@@ -1642,6 +1701,7 @@ function resetFilters(){
   const barangayFilter = document.getElementById('barangayFilter');
   if(barangayFilter) barangayFilter.value = 'All';
   
+  view.caseListPage = 1;
   renderCaseList();
 }
 
@@ -1775,11 +1835,9 @@ function renderCaseDetail(){
     <!-- Case Header Bar -->
     <div class="detail-topbar">
       <div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-          <button onclick="window.location.href='/admin/social-case/cases'" style="background:none;border:none;cursor:pointer;color:#6B7280;display:flex;align-items:center;gap:4px;font-size:13px;padding:0;" onmouseover="this.style.color='#1E3A8A'" onmouseout="this.style.color='#6B7280'">
-            <i data-lucide="chevron-left" style="width:16px;height:16px;"></i> Back to Cases
-          </button>
-        </div>
+        <button class="btn ghost btn-sm" onclick="window.location.href='/admin/social-case/cases'" style="margin-bottom:12px;">
+          <i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Back to Cases
+        </button>
         <h1 style="margin:0;font-size:1.5rem;font-weight:700;color:#111827;">${escapeHtml(c.client.name)||'Unnamed Client'}</h1>
         <div style="display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap;">
           <span class="badge ${STATUS_CLASS[c.status]||'b-draft'}">${c.status}</span>
@@ -1787,11 +1845,6 @@ function renderCaseDetail(){
           <span style="font-size:13px;color:#9CA3AF;">·</span>
           <span style="font-size:13px;color:#6B7280;">Created ${fmtDate(c.createdAt)}</span>
         </div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <button class="btn danger btn-sm" onclick="deleteCase('${c.id}')">
-          <i data-lucide="archive" style="width:15px;height:15px;"></i> Archive
-        </button>
       </div>
     </div>
 

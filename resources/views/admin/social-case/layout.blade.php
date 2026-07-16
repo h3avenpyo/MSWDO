@@ -7,7 +7,7 @@
     <title>@yield('title', 'Social Case Study System')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Tailwind CSS Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -23,9 +23,9 @@
     <style>
         :root{
             /* Government Color Palette */
-            --primary: #1E3A8A;
-            --primary-hover: #1E2A78;
-            --sidebar-bg: #1E2A78;
+            --primary: #1A237E;
+            --primary-hover: #121858;
+            --sidebar-bg: #1A237E;
             --background: #F5F7FB;
             --surface: #FFFFFF;
             --border: #E5E7EB;
@@ -46,6 +46,7 @@
             --info-bg: #EEF2FF;
             --purple: #7C3AED;
             --purple-bg: #F3E8FF;
+            --accent-yellow: #FBC02D;
             
             /* Icon Colors */
             --icon-blue: #3B82F6;
@@ -63,11 +64,11 @@
             --shadow-hover: 0 20px 40px rgba(15,23,42,.12);
             
             /* Typography */
-            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            --font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
         
         *{box-sizing:border-box;}
-        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);}
+        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100%;}
         body{font-size:14px;line-height:1.5;}
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
         button{font-family:inherit;cursor:pointer;}
@@ -1512,6 +1513,8 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            flex: 1;
+            min-height: 0;
         }
         .sc-table-card-title {
             font-size: 1.25rem;

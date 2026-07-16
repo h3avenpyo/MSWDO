@@ -5,130 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Archived Senior Citizens</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { corePlugins: { preflight: false } }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary: #1A237E;
-            --primary-dark: #121858;
-            --secondary: #6B7280;
-            --accent: #FBC02D;
-            --danger: #D32F2F;
-            --background: #F8FAFC;
-            --cards: #FFFFFF;
-            --text: #1F2937;
+            --primary-hover: #121858;
             --sidebar-bg: #1A237E;
+            --accent-yellow: #FBC02D;
+            --background: #F5F7FB;
+            --surface: #FFFFFF;
             --border: #E5E7EB;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --text-muted: #9CA3AF;
+            --success: #16A34A;
+            --success-bg: #ECFDF5;
+            --danger: #DC2626;
+            --danger-bg: #FEF2F2;
+            --info: #3B82F6;
+            --info-bg: #EEF2FF;
+            --purple: #7C3AED;
+            --purple-bg: #F3E8FF;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,.05);
+            --font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
 
-        body {
-            background-color: var(--background);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; height: 100vh; overflow: hidden; background: var(--background); color: var(--text-primary); font-family: var(--font-family); }
+        body { font-size: 14px; line-height: 1.5; }
 
         /* Sidebar */
-        .sidebar {
-            background: var(--sidebar-bg);
-            width: 260px;
-            min-height: 100vh;
-            position: fixed;
-            left: 0; top: 0;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transition: transform .3s ease;
-        }
-        .sidebar-brand {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,.1);
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: .65rem;
-        }
-        .sidebar-brand i { font-size: 1.3rem; color: var(--accent); }
-        .sidebar-menu {
-            list-style: none;
-            margin: 0;
-            padding: 1rem 0;
-            flex: 1;
-        }
-        .sidebar-menu li { margin-bottom: .2rem; }
-        .sidebar-menu a {
-            color: rgba(255,255,255,.75);
-            padding: .75rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            text-decoration: none;
-            font-size: .9rem;
-            border-left: 3px solid transparent;
-            transition: all .2s ease;
-        }
-        .sidebar-menu a:hover {
-            background: rgba(255,255,255,.1);
-            color: var(--accent);
-        }
-        .sidebar-menu a.active {
-            background: rgba(255,255,255,.1);
-            color: var(--accent);
-            border-left-color: var(--accent);
-        }
-        .sidebar-menu a i { width: 20px; text-align: center; }
+        .sidebar{width:260px;flex-shrink:0;background:var(--primary);color:#FFFFFF;position:fixed;left:0;top:0;height:100vh;z-index:1000;display:flex;flex-direction:column;transition:transform .3s ease;}
+        .sidebar-brand{height:72px;padding:0 1.5rem;border-bottom:1px solid rgba(255,255,255,.1);color:#fff;font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:.65rem;}
+        .sidebar-brand i,.sidebar-brand [data-lucide]{width:24px;height:24px;color:var(--accent-yellow);}
+        .sidebar-menu{list-style:none;margin:0;padding:1rem 0;flex:1;}
+        .sidebar-menu li{margin-bottom:.2rem;}
+        .sidebar-menu a{color:rgba(255,255,255,.75);padding:.75rem 1.5rem;display:flex;align-items:center;gap:.75rem;text-decoration:none;font-size:.9rem;border-left:3px solid transparent;transition:all .2s ease;}
+        .sidebar-menu a:hover{background:rgba(255,255,255,.1);color:var(--accent-yellow);}
+        .sidebar-menu a.active{background:rgba(255,255,255,.1);color:var(--accent-yellow);border-left-color:var(--accent-yellow);}
+        .sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
 
         /* Main Content */
         .main-content {
-            margin-left: 260px;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
+            max-width: calc(100% - 260px); height: 100vh;
+            display: flex; flex-direction: column; overflow: hidden;
+            animation: fadeIn .3s ease;
         }
 
-        .top-navbar {
-            background-color: var(--cards);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            flex-shrink: 0;
+        .main-content-scroll {
+            flex: 1;
+            overflow-y: auto;
         }
 
-        /* Cards */
-        .card {
-            background-color: var(--cards);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            margin-bottom: 1.5rem;
+        /* Custom Table */
+        .custom-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-family: var(--font-family);
         }
-
-        /* Table */
-        .table th {
+        .custom-table thead th {
             background-color: var(--background);
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            padding: 1rem;
+            color: var(--text-secondary);
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            white-space: nowrap;
         }
-        .table td {
-            padding: 1rem;
+        .custom-table tbody td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid #F3F4F6;
             vertical-align: middle;
+            font-size: 0.875rem;
+            color: var(--text-primary);
         }
-        .table tbody tr:hover {
-            background-color: transparent;
+        .custom-table tbody tr:hover {
+            background-color: #F9FAFB;
+        }
+        .custom-table tbody tr:last-child td {
+            border-bottom: none;
         }
 
-        /* Archive Badge */
+        /* Badge */
         .badge-archived {
             background-color: rgba(156, 163, 175, 0.15);
             color: #6B7280;
@@ -136,6 +109,9 @@
             border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
 
         /* Empty state */
@@ -147,23 +123,12 @@
             align-items: center;
             justify-content: center;
         }
-        .empty-state i {
-            font-size: 3.5rem;
-            color: #D1D5DB;
-            margin-bottom: 1rem;
-            display: block;
-        }
-        .empty-state h5 {
-            color: #6B7280;
-            font-weight: 600;
-        }
-        .empty-state p {
-            color: #9CA3AF;
-            font-size: 0.9rem;
-        }
+        .empty-state [data-lucide] { width: 56px; height: 56px; color: #D1D5DB; margin-bottom: 1rem; }
+        .empty-state h5 { color: #6B7280; font-weight: 600; font-size: 1rem; }
+        .empty-state p { color: #9CA3AF; font-size: 0.85rem; margin-top: 0.25rem; }
 
-        /* Pagination styling */
-        .pagination {
+        /* Custom Pagination */
+        .pagination-custom {
             display: flex;
             justify-content: center;
             gap: 0.25rem;
@@ -171,161 +136,232 @@
             list-style: none;
             padding: 0;
         }
-        .pagination .page-item {
-            margin: 0;
-        }
-        .pagination .page-link,
-        .pagination .page-item span {
-            display: inline-block;
+        .pagination-custom li { margin: 0; }
+        .pagination-custom li a,
+        .pagination-custom li span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             border: 1px solid var(--border);
-            color: var(--text);
+            color: var(--text-primary);
             padding: 0.375rem 0.75rem;
-            border-radius: 6px;
+            border-radius: 8px;
             text-decoration: none;
-            background: var(--cards);
+            background: var(--surface);
             transition: all 0.2s;
             min-width: 40px;
             text-align: center;
+            font-size: 0.875rem;
+            font-family: var(--font-family);
         }
-        .pagination .page-link:hover,
-        .pagination .page-item span:hover {
+        .pagination-custom li a:hover {
             background-color: var(--primary);
             color: white;
             border-color: var(--primary);
         }
-        .pagination .page-item.active .page-link,
-        .pagination .page-item.active span {
+        .pagination-custom li.active span,
+        .pagination-custom li.active a {
             background-color: var(--primary);
             color: white;
             border-color: var(--primary);
         }
-        .pagination .page-item.disabled .page-link,
-        .pagination .page-item.disabled span {
-            color: var(--secondary);
+        .pagination-custom li.disabled span,
+        .pagination-custom li.disabled a {
+            color: var(--text-muted);
             background-color: var(--background);
             border-color: var(--border);
             cursor: not-allowed;
         }
 
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.show { transform: translateX(0); }
-            .main-content { margin-left: 0; }
+        /* Custom Select */
+        .custom-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px;
+            padding-right: 2.5rem;
         }
+
+        /* Custom Modal Overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-panel {
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 440px;
+            overflow: hidden;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+        .modal-overlay.active .modal-panel {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .modal-panel-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .modal-panel-body { padding: 1.5rem; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in { animation: fadeIn 0.5s ease forwards; }
+
+        /* Flash messages */
+        .flash-message {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1.25rem;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            font-family: var(--font-family);
+            margin-bottom: 1rem;
+            animation: fadeIn 0.3s ease;
+            position: relative;
+        }
+        .flash-message[data-lucide] { width: 20px; height: 20px; flex-shrink: 0; }
+        .flash-success {
+            background: var(--success-bg);
+            color: #166534;
+            border: 1px solid #BBF7D0;
+        }
+        .flash-error {
+            background: var(--danger-bg);
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+        .flash-close {
+            margin-left: auto;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+            padding: 0;
+            line-height: 0;
+        }
+        .flash-close:hover { opacity: 1; }
+        .flash-close svg { width: 18px; height: 18px; }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+        }
     </style>
 </head>
 <body>
     <!-- ======================== SIDEBAR ======================== -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <i class="fas fa-user-friends"></i>
+            <i data-lucide="users" style="width:24px;height:24px"></i>
             <span>Senior Citizen</span>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="/admin/senior"><i class="fas fa-user-friends"></i> Dashboard</a></li>
-            <li><a href="/admin/senior/registration"><i class="fas fa-user-plus"></i> Registration</a></li>
-            <li><a href="/admin/senior/masterlist"><i class="fas fa-list"></i> Masterlist</a></li>
-            <li><a href="/admin/senior/birthdays"><i class="fas fa-birthday-cake"></i> Birthday Beneficiaries</a></li>
-            <li><a href="/admin/senior/birthday-payouts"><i class="fas fa-money-bill-wave"></i> Birthday Payouts</a></li>
-            <li><a href="/admin/senior/birthday-payouts/history"><i class="fas fa-history"></i> Payout History</a></li>
-            <li><a href="/admin/senior/statistics"><i class="fas fa-chart-bar"></i> Statistics</a></li>
-            <li><a href="/admin/senior/reports"><i class="fas fa-file-alt"></i> Reports</a></li>
-            <li><a href="/admin/senior/archive" class="active"><i class="fas fa-archive"></i> Archive</a></li>
-            <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <li><a href="/admin/senior"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i> Dashboard</a></li>
+            <li><a href="/admin/senior/registration"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
+            <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
+            <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
+            <li><a href="/admin/senior/birthday-payouts"><i data-lucide="banknote" style="width:20px;height:20px"></i> Birthday Payouts</a></li>
+            <li><a href="/admin/senior/birthday-payouts/history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
+            <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
+            <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
+            <li><a href="/admin/senior/archive" class="active"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
+            <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
         </ul>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Top Navigation -->
-        <nav class="top-navbar">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    <button class="btn btn-link d-md-none me-3" onclick="toggleSidebar()">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <nav aria-label="breadcrumb" style="margin-bottom: 0;">
-                        <ol class="breadcrumb mb-0">
-                            <li class="breadcrumb-item"><a href="/admin/senior" style="color: var(--primary); text-decoration: none;">Senior</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Archive</li>
-                        </ol>
-                    </nav>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="text-muted small" id="currentDateTime"></div>
-                    <div style="width: 35px; height: 35px; font-size: 0.875rem; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; border-radius: 50%;">
-                        {{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}
-                    </div>
-                </div>
+        <!-- Top Header -->
+        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8"
+                style="margin-top:-32px;margin-left:-32px;margin-right:-32px">
+            <div class="flex items-center"><h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Archived Seniors</h1></div>
+            <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
+                <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime"></div>
+                <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ session('admin_user_name') ?? 'Admin User' }}">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
             </div>
-        </nav>
+        </header>
 
-        <!-- Archive Content -->
-        <div class="p-4" style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
+        <!-- Scrollable Content -->
+        <div class="main-content-scroll">
 
-            <!-- Page Header -->
-            <div class="mb-3">
-                <h5 class="mb-1" style="font-weight: 700; color: var(--text); font-size: 1rem;">
-                    <i class="fas fa-archive me-2" style="color: var(--secondary);"></i> Archived Senior Citizens
-                </h5>
-                <p class="text-muted mb-0" style="font-size: 0.8rem;">Records that have been removed from the active list. You can restore them at any time.</p>
-            </div>
-
-            <!-- Alert messages -->
+            <!-- Flash Messages -->
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 10px; border: none; background: rgba(20,184,166,0.1); color: #0f766e;">
-                    <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="flash-message flash-success">
+                    <i data-lucide="check-circle"></i>
+                    <span>{{ session('success') }}</span>
+                    <button type="button" class="flash-close" onclick="this.parentElement.remove()"><i data-lucide="x"></i></button>
                 </div>
             @endif
             @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius: 10px; border: none; background: rgba(220,38,38,0.1); color: #b91c1c;">
-                    <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="flash-message flash-error">
+                    <i data-lucide="alert-circle"></i>
+                    <span>{{ session('error') }}</span>
+                    <button type="button" class="flash-close" onclick="this.parentElement.remove()"><i data-lucide="x"></i></button>
                 </div>
             @endif
 
             <!-- Summary Card -->
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <div class="card animate-fade-in" style="padding: 0;">
-                        <div style="display: flex; align-items: center; padding: 0.75rem 1rem;">
-                            <div style="width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background: rgba(107,114,128,0.1); color: #6B7280; flex-shrink: 0; margin-right: 0.75rem;">
-                                <i class="fas fa-archive"></i>
-                            </div>
-                            <div>
-                                <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.1rem 0; font-weight: 500;">Total Archived</p>
-                                <h4 style="font-size: 1.4rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $archivedSeniors->total() }}</h4>
-                            </div>
-                        </div>
+            <div class="animate-fade-in bg-white rounded-2xl border border-[#E5E7EB] shadow-[0_4px_6px_-1px_rgba(0,0,0,.05)] p-4 mb-5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-[10px] flex items-center justify-center bg-[rgba(107,114,128,0.1)] flex-shrink-0">
+                        <i data-lucide="archive" class="w-5 h-5 text-[#6B7280]"></i>
+                    </div>
+                    <div>
+                        <p class="text-[#6B7280] text-[13px] font-medium m-0 leading-tight">Total Archived</p>
+                        <h4 class="text-[1.4rem] font-bold m-0 leading-none text-[#111827]">{{ $archivedSeniors->total() }}</h4>
                     </div>
                 </div>
             </div>
 
             <!-- Filter & Search -->
-            <div class="card animate-fade-in" style="padding: 0.75rem 1rem; margin-bottom: 0.75rem; overflow: visible;">
+            <div class="animate-fade-in bg-white rounded-2xl border border-[#E5E7EB] shadow-[0_4px_6px_-1px_rgba(0,0,0,.05)] p-5 mb-5">
                 <form method="GET" action="{{ route('admin.senior.archive.list') }}">
-                    <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-                        <!-- Left Section: Search and Filter -->
-                        <div style="display: flex; gap: 12px; flex: 1; min-width: 0;">
-                            <div style="flex: 1; min-width: 250px;">
-                                <label class="form-label small text-muted fw-semibold mb-1">Search by Name</label>
-                                <div class="input-group">
-                                    <input type="text" name="search" class="form-control" placeholder="Search by name..." value="{{ request('search') }}" style="height: 44px; border-right: none;">
-                                    <button type="submit" style="background-color: var(--primary); color: white; border: none; padding: 0 1rem; border-radius: 0 6px 6px 0; cursor: pointer; height: 44px;">
-                                        <i class="fas fa-search"></i>
+                    <div class="flex items-end justify-between gap-3 flex-wrap">
+                        <!-- Left: Search + Filter -->
+                        <div class="flex gap-3 flex-1 min-w-0">
+                            <div class="flex-1 min-w-[250px]">
+                                <label class="block text-xs text-[var(--text-primary)] font-semibold mb-1">Search by Name</label>
+                                <div class="flex">
+                                    <input type="text" name="search" placeholder="Search by name..." value="{{ request('search') }}"
+                                           class="flex-1 border border-[#E5E7EB] border-r-0 rounded-l-lg px-3 text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#1A237E] focus:border-transparent"
+                                           style="height:42px;font-family:var(--font-family)">
+                                    <button type="submit"
+                                            class="bg-[#1A237E] hover:bg-[#121858] text-white border-none rounded-r-lg px-3 cursor-pointer transition-colors flex items-center justify-center"
+                                            style="height:42px;width:42px">
+                                        <i data-lucide="search" class="w-4 h-4"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div style="min-width: 200px;">
-                                <label class="form-label small text-muted fw-semibold mb-1">Filter by Barangay</label>
-                                <select class="form-select" name="barangay" onchange="this.form.submit()" style="height: 44px;">
+                            <div class="min-w-[200px]">
+                                <label class="block text-xs text-[var(--text-primary)] font-semibold mb-1">Filter by Barangay</label>
+                                <select name="barangay" onchange="this.form.submit()"
+                                        class="custom-select w-full border border-[#E5E7EB] rounded-lg px-3 text-sm text-[#111827] bg-white focus:outline-none focus:ring-2 focus:ring-[#1A237E] focus:border-transparent cursor-pointer"
+                                        style="height:42px;font-family:var(--font-family)">
                                     <option value="">All Barangays</option>
                                     <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
                                     <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
@@ -395,17 +431,23 @@
                             </div>
                         </div>
 
-                        <!-- Right Section: Action Buttons -->
-                        <div style="display: flex; gap: 12px; flex-shrink: 0;">
-                            <a href="/admin/senior/masterlist" class="btn" style="background-color: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 0.85rem; padding: 0 1rem; height: 38px; display: flex; align-items: center;">
-                                <i class="fas fa-list me-1"></i> Back to Masterlist
+                        <!-- Right: Action Buttons -->
+                        <div class="flex gap-3 flex-shrink-0">
+                            <a href="/admin/senior/masterlist"
+                               class="inline-flex items-center gap-1.5 bg-[#1A237E] hover:bg-[#121858] text-white rounded-lg font-semibold text-[13px] px-3.5 transition-colors no-underline"
+                               style="height:38px;font-family:var(--font-family)">
+                                <i data-lucide="list" class="w-4 h-4"></i> Back to Masterlist
                             </a>
-                            <button type="button" class="btn" style="background-color: var(--accent); color: var(--primary-dark); border: none; border-radius: 8px; font-weight: 600; font-size: 0.8rem; padding: 0 1rem; height: 38px; display: flex; align-items: center;" id="bulkActionButton" disabled data-bs-toggle="modal" data-bs-target="#bulkActionModal">
-                                <i class="fas fa-tasks me-1"></i> Bulk Actions <span id="selectedCount" style="background: var(--primary-dark); color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; margin-left: 5px;">0</span>
+                            <button type="button" id="bulkActionButton" disabled onclick="showBulkActionPopup()"
+                                    class="inline-flex items-center gap-1.5 bg-[#FBC02D] hover:bg-[#F9A825] text-[#121858] rounded-lg font-semibold text-[13px] px-3.5 transition-colors border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                    style="height:38px;font-family:var(--font-family)">
+                                <i data-lucide="list-checks" class="w-4 h-4"></i> Bulk Actions <span id="selectedCount" class="bg-[#121858] text-white px-1.5 py-0.5 rounded-[10px] text-[11px] ml-1 font-bold">0</span>
                             </button>
                             @if(request('search') || request('barangay'))
-                                <a href="{{ route('admin.senior.archive.list') }}" class="btn" style="background-color: #6B7280; color: white; border: none; border-radius: 8px; padding: 0 1rem; font-size: .875rem; height: 38px; display: flex; align-items: center;">
-                                    <i class="fas fa-times me-1"></i> Clear
+                                <a href="{{ route('admin.senior.archive.list') }}"
+                                   class="inline-flex items-center gap-1.5 bg-[#6B7280] hover:bg-[#4B5563] text-white rounded-lg px-3.5 transition-colors no-underline"
+                                   style="height:38px;font-size:13px;font-family:var(--font-family)">
+                                    <i data-lucide="x" class="w-4 h-4"></i> Clear
                                 </a>
                             @endif
                         </div>
@@ -413,19 +455,19 @@
                 </form>
             </div>
 
-            <!-- Archive Table -->
-            <div class="card p-0 animate-fade-in" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
-                <div class="d-flex justify-content-between align-items-center p-4 pb-2" style="flex-shrink: 0;">
+            <!-- Archive Table Card -->
+            <div class="animate-fade-in bg-white rounded-2xl border border-[#E5E7EB] shadow-[0_4px_6px_-1px_rgba(0,0,0,.05)] flex flex-col overflow-hidden mb-6">
+                <div class="flex justify-between items-center px-5 pt-5 pb-3">
                     <div>
-                        <h6 class="mb-1" style="font-weight: 700; color: var(--text);">Archived Records</h6>
-                        <span class="text-muted small">Showing {{ $archivedSeniors->firstItem() ?? 0 }}–{{ $archivedSeniors->lastItem() ?? 0 }} of {{ $archivedSeniors->total() }} records</span>
+                        <h6 class="font-bold text-[15px] text-[#111827] m-0">Archived Records</h6>
+                        <span class="text-[#9CA3AF] text-xs">Showing {{ $archivedSeniors->firstItem() ?? 0 }}–{{ $archivedSeniors->lastItem() ?? 0 }} of {{ $archivedSeniors->total() }} records</span>
                     </div>
                 </div>
-                <div class="table-responsive" style="flex: 1; overflow-y: auto; min-height: 0;">
-                    <table class="table" id="archiveTable" style="margin-bottom: 0;">
-                        <thead style="position: sticky; top: 0; z-index: 1; background: var(--cards);">
+                <div class="overflow-y-auto flex-1" style="max-height: 55vh;">
+                    <table class="custom-table" id="archiveTable">
+                        <thead>
                             <tr>
-                                <th style="width: 40px;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="cursor: pointer;"></th>
+                                <th class="w-[40px]"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px"></th>
                                 <th>#</th>
                                 <th>Control No.</th>
                                 <th>Full Name</th>
@@ -440,23 +482,23 @@
                         <tbody>
                             @forelse($archivedSeniors as $index => $senior)
                             <tr>
-                                <td><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="cursor: pointer;"></td>
-                                <td style="color: #9CA3AF; font-weight: 600;">{{ $archivedSeniors->firstItem() + $index }}</td>
-                                <td><strong>{{ $senior->control_number ?? '-' }}</strong></td>
+                                <td><input type="checkbox" class="senior-checkbox cursor-pointer accent-[#1A237E]" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="width:16px;height:16px"></td>
+                                <td class="text-[#9CA3AF] font-semibold">{{ $archivedSeniors->firstItem() + $index }}</td>
+                                <td class="font-semibold">{{ $senior->control_number ?? '-' }}</td>
                                 <td>
-                                    <div style="font-weight: 600;">{{ $senior->full_name ?? '-' }}</div>
-                                    <div class="text-muted" style="font-size: 0.78rem;">{{ $senior->address ? \Illuminate\Support\Str::limit($senior->address, 35) : '' }}</div>
+                                    <div class="font-semibold">{{ $senior->full_name ?? '-' }}</div>
+                                    <div class="text-[#9CA3AF] text-[12px]">{{ $senior->address ? \Illuminate\Support\Str::limit($senior->address, 35) : '' }}</div>
                                 </td>
                                 <td>
                                     @if($senior->barangay)
-                                        <span class="badge" style="background: rgba(107, 114, 128, 0.1); color: #6B7280; font-weight: 500; padding: 0.35rem 0.65rem; font-size: 0.8rem;">{{ $senior->barangay }}</span>
+                                        <span class="inline-block bg-[rgba(107,114,128,0.1)] text-[#6B7280] font-medium px-2.5 py-1 rounded-md text-[13px]">{{ $senior->barangay }}</span>
                                     @else
-                                        <span class="text-muted">-</span>
+                                        <span class="text-[#9CA3AF]">-</span>
                                     @endif
                                 </td>
                                 <td>
                                     @if($senior->sex)
-                                        <span class="badge" style="background: #6B7280; color: white; border-radius: 50%; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; padding: 0; font-size: 0.7rem; font-weight: 700; margin-right: 0.3rem;">{{ $senior->sex == 'Male' ? 'M' : 'F' }}</span>
+                                        <span class="inline-flex items-center justify-center w-[26px] h-[26px] rounded-full bg-[#6B7280] text-white text-[11px] font-bold mr-1">{{ $senior->sex == 'Male' ? 'M' : 'F' }}</span>
                                     @endif
                                     <strong>{{ $senior->age ?? '-' }}</strong>
                                 </td>
@@ -464,40 +506,39 @@
                                     @if($senior->birth_date)
                                         {{ \Carbon\Carbon::parse($senior->birth_date)->format('M d, Y') }}
                                     @else
-                                        <span class="text-muted">-</span>
+                                        <span class="text-[#9CA3AF]">-</span>
                                     @endif
                                 </td>
                                 <td>
-                                    <span class="text-muted" style="font-size: 0.82rem;">
+                                    <span class="text-[#9CA3AF] text-[13px]">
                                         {{ $senior->updated_at ? \Carbon\Carbon::parse($senior->updated_at)->format('M d, Y') : '-' }}
                                     </span>
                                 </td>
-                                <td style="text-align: center; vertical-align: middle;">
+                                <td class="text-center">
                                     <span class="badge-archived">Archived</span>
                                 </td>
-                                <td style="vertical-align: middle;">
+                                <td>
                                     <!-- Restore Button -->
                                     <form method="POST" action="{{ route('admin.senior.unarchive', $senior->id) }}" id="restore-form-{{ $senior->id }}" style="display: inline;">
                                         @csrf
                                         <button type="button"
-                                            class="btn btn-sm"
-                                            style="background-color: rgba(20, 184, 166, 0.1); color: #0f766e; border: 1px solid rgba(20, 184, 166, 0.3); border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.8rem;"
-                                            onclick="confirmRestore({{ $senior->id }}, '{{ addslashes($senior->full_name) }}')"
-                                            title="Restore to Active">
-                                            <i class="fas fa-undo"></i>
+                                                class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-[rgba(20,184,166,0.1)] text-[#0f766e] border border-[rgba(20,184,166,0.3)] cursor-pointer hover:bg-[rgba(20,184,166,0.2)] transition-colors"
+                                                onclick="confirmRestore({{ $senior->id }}, '{{ addslashes($senior->full_name) }}')"
+                                                title="Restore to Active">
+                                            <i data-lucide="undo-2" class="w-4 h-4"></i>
                                         </button>
                                     </form>
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="9">
+                                <td colspan="10">
                                     <div class="empty-state">
-                                        <i class="fas fa-archive"></i>
+                                        <i data-lucide="archive"></i>
                                         <h5>No Archived Records</h5>
                                         <p>There are no archived senior citizens at the moment. Archived records from the masterlist will appear here.</p>
-                                        <a href="/admin/senior/masterlist" class="btn btn-sm mt-2" style="background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600;">
-                                            <i class="fas fa-list me-1"></i> Go to Masterlist
+                                        <a href="/admin/senior/masterlist" class="inline-flex items-center gap-1.5 bg-[#1A237E] hover:bg-[#121858] text-white rounded-lg font-semibold text-[13px] px-4 py-2 mt-2 transition-colors no-underline" style="font-family:var(--font-family)">
+                                            <i data-lucide="list" class="w-4 h-4"></i> Go to Masterlist
                                         </a>
                                     </div>
                                 </td>
@@ -509,7 +550,7 @@
 
                 <!-- Pagination -->
                 @if($archivedSeniors->hasPages())
-                <div class="d-flex justify-content-center mt-4 pb-3">
+                <div class="flex justify-center py-4 border-t border-[#F3F4F6]">
                     {{ $archivedSeniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
                 </div>
                 @endif
@@ -517,29 +558,34 @@
         </div>
     </div>
 
-    <!-- Bulk Action Modal -->
-    <div class="modal fade" id="bulkActionModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,.12);">
-                <div class="modal-header" style="border-bottom: 1px solid var(--border); background: var(--accent); color: var(--primary-dark); border-radius: 16px 16px 0 0;">
-                    <h5 class="modal-title"><i class="fas fa-tasks me-2"></i>Bulk Actions</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <button type="button" class="btn" style="background: #0f766e; color: white; border: none; border-radius: 8px; padding: 12px 20px; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px;" onclick="bulkRestore()">
-                            <i class="fas fa-undo"></i> Restore Selected
-                        </button>
-                        <button type="button" class="btn" style="background: #1A237E; color: white; border: none; border-radius: 8px; padding: 12px 20px; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px;" onclick="bulkExport()">
-                            <i class="fas fa-download"></i> Export Selected
-                        </button>
-                    </div>
+    <!-- ======================== BULK ACTION MODAL ======================== -->
+    <div class="modal-overlay" id="bulkActionModal">
+        <div class="modal-panel">
+            <div class="modal-panel-header" style="background: var(--accent-yellow); color: #121858;">
+                <h5 class="font-bold text-base flex items-center gap-2 m-0">
+                    <i data-lucide="list-checks" class="w-5 h-5"></i> Bulk Actions
+                </h5>
+                <button type="button" onclick="closeBulkModal()" class="text-[#121858] hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-1 rounded-md flex items-center justify-center">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="modal-panel-body">
+                <div class="flex flex-col gap-3">
+                    <button type="button" onclick="bulkRestore()"
+                            class="flex items-center justify-center gap-2.5 bg-[#0f766e] hover:bg-[#0d6e61] text-white border-none rounded-lg px-5 py-3 text-base font-medium transition-colors cursor-pointer"
+                            style="font-family:var(--font-family)">
+                        <i data-lucide="undo-2" class="w-5 h-5"></i> Restore Selected
+                    </button>
+                    <button type="button" onclick="bulkExport()"
+                            class="flex items-center justify-center gap-2.5 bg-[#1A237E] hover:bg-[#121858] text-white border-none rounded-lg px-5 py-3 text-base font-medium transition-colors cursor-pointer"
+                            style="font-family:var(--font-family)">
+                        <i data-lucide="download" class="w-5 h-5"></i> Export Selected
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('show');
@@ -588,9 +634,17 @@
                 return;
             }
 
-            const modal = new bootstrap.Modal(document.getElementById('bulkActionModal'));
-            modal.show();
+            document.getElementById('bulkActionModal').classList.add('active');
         }
+
+        function closeBulkModal() {
+            document.getElementById('bulkActionModal').classList.remove('active');
+        }
+
+        // Close modal on overlay click
+        document.getElementById('bulkActionModal').addEventListener('click', function(e) {
+            if (e.target === this) closeBulkModal();
+        });
 
         function bulkRestore() {
             const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
@@ -601,9 +655,7 @@
                 return;
             }
 
-            // Close the modal first
-            const modal = bootstrap.Modal.getInstance(document.getElementById('bulkActionModal'));
-            modal.hide();
+            closeBulkModal();
 
             Swal.fire({
                 title: 'Restore Selected Records?',
@@ -616,7 +668,6 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Send AJAX request to bulk restore
                     fetch('/admin/senior/bulk-restore', {
                         method: 'POST',
                         headers: {
@@ -650,9 +701,7 @@
                 return;
             }
 
-            // Close the modal first
-            const modal = bootstrap.Modal.getInstance(document.getElementById('bulkActionModal'));
-            modal.hide();
+            closeBulkModal();
 
             Swal.fire({
                 title: 'Export Selected Records?',
@@ -665,14 +714,34 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Redirect to export with IDs
                     window.location.href = `/admin/senior/export?ids=${ids.join(',')}`;
                 }
             });
         }
 
-        // Show popup for restore success/error
+        function confirmRestore(id, name) {
+            Swal.fire({
+                title: 'Restore Senior?',
+                html: `Are you sure you want to restore <strong>${name}</strong> back to active status?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0f766e',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Yes, Restore',
+                cancelButtonText: 'Cancel',
+                background: '#ffffff',
+                customClass: { popup: 'rounded-4 shadow-lg' }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('restore-form-' + id).submit();
+                }
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Lucide icons
+            lucide.createIcons();
+
             @if(session('success'))
                 Swal.fire({
                     title: 'Success!',
@@ -697,27 +766,7 @@
                     customClass: { popup: 'rounded-4 shadow-lg' }
                 });
             @endif
-
         });
-
-        function confirmRestore(id, name) {
-            Swal.fire({
-                title: 'Restore Senior?',
-                html: `Are you sure you want to restore <strong>${name}</strong> back to active status?`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#0f766e',
-                cancelButtonColor: '#6B7280',
-                confirmButtonText: '<i class="fas fa-undo me-1"></i> Yes, Restore',
-                cancelButtonText: 'Cancel',
-                background: '#ffffff',
-                customClass: { popup: 'rounded-4 shadow-lg' }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('restore-form-' + id).submit();
-                }
-            });
-        }
     </script>
 
     <!-- Hidden form for secure POST logout -->

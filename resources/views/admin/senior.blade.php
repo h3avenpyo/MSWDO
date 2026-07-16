@@ -5,733 +5,502 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Senior Citizen Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Chart.js -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { corePlugins: { preflight: false } }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root {
-            --primary: #1A237E;
-            --primary-dark: #121858;
-            --secondary: #374151;
-            --accent: #FBC02D;
-            --danger: #D32F2F;
-            --background: #F1F5F9;
-            --cards: #FFFFFF;
-            --text: #111827;
-            --text-muted: #4B5563;
-            --sidebar-bg: #1A237E;
-            --border: #D1D5DB;
+        :root{
+            --primary:#1A237E;
+            --primary-hover:#121858;
+            --sidebar-bg:#1A237E;
+            --accent-yellow:#FBC02D;
+            --background:#F1F5F9;
+            --surface:#FFFFFF;
+            --border:#E5E7EB;
+            --text-primary:#111827;
+            --text-secondary:#6B7280;
+            --text-muted:#9CA3AF;
+            --success:#16A34A;
+            --success-bg:#ECFDF5;
+            --danger:#DC2626;
+            --danger-bg:#FEF2F2;
+            --info:#3B82F6;
+            --info-bg:#EEF2FF;
+            --purple:#7C3AED;
+            --purple-bg:#F3E8FF;
+            --icon-blue:#3B82F6;
+            --icon-green:#16A34A;
+            --icon-purple:#7C3AED;
+            --sidebar-width:260px;
+            --content-padding:32px;
+            --shadow:0 4px 6px -1px rgba(0,0,0,.05);
+            --shadow-hover:0 10px 25px rgba(0,0,0,.1);
+            --font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
         }
-
-        body {
-            background-color: var(--background);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-        }
+        *,*::before,*::after{box-sizing:border-box;}
+        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100vh;overflow:hidden;}
+        body{font-size:14px;line-height:1.5;}
+        h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
+        button{font-family:inherit;cursor:pointer;}
+        .app{display:flex;min-height:100vh;}
 
         /* Sidebar */
-        .sidebar {
-            background: var(--sidebar-bg);
-            width: 260px;
-            min-height: 100vh;
-            position: fixed;
-            left: 0; top: 0;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transition: transform .3s ease;
-        }
-        .sidebar-brand {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,.1);
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: .65rem;
-        }
-        .sidebar-brand i { font-size: 1.3rem; color: var(--accent); }
-        .sidebar-menu {
-            list-style: none;
-            margin: 0;
-            padding: 1rem 0;
-            flex: 1;
-        }
-        .sidebar-menu li { margin-bottom: .2rem; }
-        .sidebar-menu a {
-            color: rgba(255,255,255,.75);
-            padding: .75rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            text-decoration: none;
-            font-size: .9rem;
-            border-left: 3px solid transparent;
-            transition: all .2s ease;
-        }
-        .sidebar-menu a:hover {
-            background: rgba(255,255,255,.1);
-            color: var(--accent);
-        }
-        .sidebar-menu a.active {
-            background: rgba(255,255,255,.1);
-            color: var(--accent);
-            border-left-color: var(--accent);
-        }
-        .sidebar-menu a i { width: 20px; text-align: center; }
+        .sidebar{width:var(--sidebar-width);flex-shrink:0;background:var(--primary);color:#FFF;position:fixed;left:0;top:0;height:100vh;z-index:1000;display:flex;flex-direction:column;transition:transform .3s ease;}
+        .sidebar-brand{height:72px;padding:0 1.5rem;border-bottom:1px solid rgba(255,255,255,.1);color:#fff;font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:.65rem;}
+        .sidebar-brand i,.sidebar-brand [data-lucide]{width:24px;height:24px;color:var(--accent-yellow);}
+        .sidebar-menu{list-style:none;margin:0;padding:1rem 0;flex:1;}
+        .sidebar-menu li{margin-bottom:.2rem;}
+        .sidebar-menu a{color:rgba(255,255,255,.75);padding:.75rem 1.5rem;display:flex;align-items:center;gap:.75rem;text-decoration:none;font-size:.9rem;border-left:3px solid transparent;transition:all .2s ease;}
+        .sidebar-menu a:hover{background:rgba(255,255,255,.1);color:var(--accent-yellow);}
+        .sidebar-menu a.active{background:rgba(255,255,255,.1);color:var(--accent-yellow);border-left-color:var(--accent-yellow);}
+        .sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
+        .sidebar-foot{padding:1rem 1.5rem;font-size:11px;color:rgba(255,255,255,.4);border-top:1px solid rgba(255,255,255,.1);}
 
-        /* Main Content */
-        .main-content {
-            margin-left: 260px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            width: calc(100% - 260px);
-        }
+        /* Main */
+        .main{flex:1;min-width:0;margin-left:var(--sidebar-width);padding:var(--content-padding);max-width:calc(100% - var(--sidebar-width));height:100vh;display:flex;flex-direction:column;overflow:hidden;animation:fadeIn .3s ease;}
 
-        .top-navbar {
-            background-color: var(--cards);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            flex-shrink: 0;
-        }
+        /* Dashboard Grid */
+        .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px;}
+        @media(max-width:1024px){.dashboard-grid{grid-template-columns:1fr;}}
 
-        /* Cards */
-        .card {
-            background-color: var(--cards);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
-            margin-bottom: 1.5rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
+        /* Stat Cards */
+        .stat-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-bottom:32px;animation:fadeInUp .6s ease-out;}
+        @media(max-width:1024px){.stat-cards{grid-template-columns:repeat(3,1fr);}}
+        @media(max-width:768px){.stat-cards{grid-template-columns:1fr 1fr;}}
+        @media(max-width:480px){.stat-cards{grid-template-columns:1fr;}}
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
-        }
+        .stat-card{background:var(--surface);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;}
+        .stat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;transition:all .3s ease;}
+        .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);}
+        .stat-card-blue::before{background:var(--icon-blue);}
+        .stat-card-green::before{background:var(--icon-green);}
+        .stat-card-purple::before{background:var(--icon-purple);}
+        .stat-card-orange::before{background:#F59E0B;}
+        .stat-card-red::before{background:var(--danger);}
 
-        .stat-card {
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+        .stat-card-content{flex:1;}
+        .stat-card-label{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px;}
+        .stat-card-value{font-size:32px;font-weight:700;color:var(--text-primary);line-height:1;}
+        .stat-card-icon{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .stat-card-icon svg{width:24px;height:24px;}
+        .stat-card-blue .stat-card-icon{background:var(--info-bg);color:var(--icon-blue);}
+        .stat-card-green .stat-card-icon{background:var(--success-bg);color:var(--icon-green);}
+        .stat-card-purple .stat-card-icon{background:var(--purple-bg);color:var(--icon-purple);}
+        .stat-card-orange .stat-card-icon{background:#FFF7ED;color:#F59E0B;}
+        .stat-card-red .stat-card-icon{background:var(--danger-bg);color:var(--danger);}
 
-        .stat-content {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+        /* Analytics Card */
+        .analytics-card{background:var(--surface);border-radius:16px;padding:24px;box-shadow:var(--shadow);border:1px solid var(--border);min-height:420px;animation:fadeInUp .6s ease-out .1s backwards;}
+        .analytics-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:20px;}
 
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            flex-shrink: 0;
-        }
+        /* Activity Card */
+        .activity-card{background:var(--surface);border-radius:16px;padding:24px;box-shadow:var(--shadow);border:1px solid var(--border);min-height:420px;animation:fadeInUp .6s ease-out .2s backwards;}
+        .activity-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:20px;}
+        .activity-feed{max-height:340px;overflow-y:auto;padding-right:8px;}
+        .activity-feed::-webkit-scrollbar{width:6px;}
+        .activity-feed::-webkit-scrollbar-track{background:var(--background);border-radius:3px;}
+        .activity-feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+        .activity-feed::-webkit-scrollbar-thumb:hover{background:var(--text-muted);}
 
-        .stat-icon.primary { background-color: rgba(37, 99, 235, 0.1); color: var(--primary); }
-        .stat-icon.warning { background-color: rgba(245, 158, 11, 0.1); color: var(--accent); }
-        .stat-icon.success { background-color: rgba(20, 184, 166, 0.1); color: var(--secondary); }
-        .stat-icon.info { background-color: rgba(37, 99, 235, 0.1); color: var(--primary); }
+        .activity-item{display:flex;gap:14px;padding:14px;border-radius:12px;background:var(--background);margin-bottom:10px;transition:all .2s ease;}
+        .activity-item:last-child{margin-bottom:0;}
+        .activity-item:hover{transform:translateX(4px);background:var(--surface);box-shadow:0 2px 8px rgba(0,0,0,.04);}
+        .activity-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .activity-icon svg{width:18px;height:18px;}
+        .activity-content{flex:1;min-width:0;}
+        .activity-text{font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:2px;line-height:1.4;}
+        .activity-time{font-size:11px;color:var(--text-muted);}
 
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            margin: 0;
-            line-height: 1;
-        }
-
-        .stat-label {
-            color: var(--text-muted);
-            font-size: 0.875rem;
-            margin: 0 0 0.5rem 0;
-            font-weight: 500;
-        }
-
-        /* Table */
-        .table {
-            margin-bottom: 0;
-        }
-
-        .table th {
-            background-color: #E2E8F0;
-            font-weight: 700;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 1rem;
-            color: var(--text);
-            border-bottom: 2px solid var(--border);
-        }
-
-        .table td {
-            padding: 1rem;
-            vertical-align: middle;
-            color: var(--text);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .badge {
-            padding: 0.35rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .badge-active { background-color: rgba(20, 184, 166, 0.15); color: #0D9488; }
-        .badge-pending { background-color: rgba(245, 158, 11, 0.15); color: #D97706; }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.show {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-            }
-        }
+        /* Table Card */
+        .table-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;animation:fadeInUp .6s ease-out .3s backwards;}
+        .table-card-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);}
+        .table-scroll{flex:1;overflow-y:auto;}
+        .table-scroll table{width:100%;border-collapse:collapse;}
+        .table-scroll thead{position:sticky;top:0;z-index:1;background:var(--surface);}
+        .table-scroll th{padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary);text-align:left;border-bottom:2px solid var(--border);}
+        .table-scroll td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid var(--border);vertical-align:middle;}
+        .table-scroll tr:hover td{background:var(--background);}
+        .table-scroll tr:last-child td{border-bottom:none;}
+        .badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;}
+        .badge-blue{background:var(--info-bg);color:var(--icon-blue);}
+        .badge-green{background:var(--success-bg);color:var(--success);}
 
         /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+        .animate-fade-in{animation:fadeIn .5s ease forwards;}
+        .delay-1{animation-delay:.1s;}
+        .delay-2{animation-delay:.2s;}
+        .delay-3{animation-delay:.3s;}
 
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease forwards;
+        /* Responsive */
+        @media(max-width:768px){
+            .sidebar{transform:translateX(-100%);}
+            .sidebar.show{transform:translateX(0);}
+            .main{margin-left:0;max-width:100%;}
         }
-
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
     </style>
 </head>
 <body>
-    <!-- ======================== SIDEBAR ======================== -->
+<div class="app">
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <i class="fas fa-user-friends"></i>
+            <i data-lucide="users" style="width:24px;height:24px"></i>
             <span>Senior Citizen</span>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="/admin/senior" class="active"><i class="fas fa-user-friends"></i> Dashboard</a></li>
-            <li><a href="/admin/senior/registration"><i class="fas fa-user-plus"></i> Registration</a></li>
-            <li><a href="/admin/senior/masterlist"><i class="fas fa-list"></i> Masterlist</a></li>
-            <li><a href="/admin/senior/birthdays"><i class="fas fa-birthday-cake"></i> Birthday Beneficiaries</a></li>
-            <li><a href="/admin/senior/birthday-payouts"><i class="fas fa-money-bill-wave"></i> Birthday Payouts</a></li>
-            <li><a href="/admin/senior/birthday-payouts/history"><i class="fas fa-history"></i> Payout History</a></li>
-            <li><a href="/admin/senior/statistics"><i class="fas fa-chart-bar"></i> Statistics</a></li>
-            <li><a href="/admin/senior/reports"><i class="fas fa-file-alt"></i> Reports</a></li>
-            <li><a href="/admin/senior/archive"><i class="fas fa-archive"></i> Archive</a></li>
-            <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <li><a href="/admin/senior" class="active"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i> Dashboard</a></li>
+            <li><a href="/admin/senior/registration"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
+            <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
+            <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
+            <li><a href="/admin/senior/birthday-payouts"><i data-lucide="banknote" style="width:20px;height:20px"></i> Birthday Payouts</a></li>
+            <li><a href="/admin/senior/birthday-payouts/history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
+            <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
+            <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
+            <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
+            <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
         </ul>
     </div>
 
     <!-- Main Content -->
-    <div class="main-content">
-        <!-- Top Navigation -->
-        <nav class="top-navbar">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    <button class="btn btn-link d-md-none me-3" onclick="toggleSidebar()">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h5 class="mb-0 me-4">Senior Citizen Dashboard</h5>
-                </div>
-                <div class="d-flex align-items-center">
-                    <div class="me-4 text-muted small" id="currentDateTime"></div>
-                    <div class="activity-avatar" style="width: 35px; height: 35px; font-size: 0.875rem; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; border-radius: 50%;">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
+    <div class="main">
+        @php
+            $userName = session('admin_user_name') ?? 'Admin User';
+            $words = explode(' ', $userName);
+            $initials = '';
+            if (count($words) >= 2) {
+                $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+            } else {
+                $initials = strtoupper(substr($userName, 0, 2));
+            }
+            use App\Models\Senior\SeniorCitizenRecord;
+            $bdayToday = SeniorCitizenRecord::on('mswdo_senior')->where('status','active')->whereNotNull('birth_date')->whereRaw("MONTH(birth_date) = ? AND DAY(birth_date) = ?", [now()->format('n'), now()->format('j')])->count();
+            $bdayWeek = SeniorCitizenRecord::on('mswdo_senior')->where('status','active')->whereNotNull('birth_date')->where(function($q){ $s=now();$e=now()->addDays(7);$sMD=$s->format('m-d');$eMD=$e->format('m-d');if($sMD<=$eMD){$q->whereRaw("DATE_FORMAT(birth_date,'%m-%d') BETWEEN ? AND ?",[$sMD,$eMD]);}else{$q->whereRaw("DATE_FORMAT(birth_date,'%m-%d') >= ?",[$sMD])->orWhereRaw("DATE_FORMAT(birth_date,'%m-%d') <= ?",[$eMD]);}})->count();
+            $bdayNextMonth = SeniorCitizenRecord::on('mswdo_senior')->where('status','active')->whereNotNull('birth_date')->whereRaw("MONTH(birth_date) = ?", [now()->addMonth()->format('n')])->count();
+        @endphp
+
+        <!-- Page Header -->
+        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8"
+                style="margin-top: calc(-1 * var(--content-padding)); margin-left: calc(-1 * var(--content-padding)); margin-right: calc(-1 * var(--content-padding));">
+            <div class="flex items-center">
+                <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Senior Citizen Dashboard</h1>
+            </div>
+            <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
+                <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime"></div>
+                <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
+                    {{ $initials }}
                 </div>
             </div>
-        </nav>
+        </header>
 
-        <!-- Dashboard Content -->
-        <div class="p-4" style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
-            <!-- Summary Cards -->
-            @php
-                use App\Models\Senior\SeniorCitizenRecord;
-                $bdayToday = SeniorCitizenRecord::on('mswdo_senior')->where('status','active')->whereNotNull('birth_date')->whereRaw("MONTH(birth_date) = ? AND DAY(birth_date) = ?", [now()->format('n'), now()->format('j')])->count();
-                $bdayWeek = SeniorCitizenRecord::on('mswdo_senior')->where('status','active')->whereNotNull('birth_date')->where(function($q){ $s=now();$e=now()->addDays(7);$sMD=$s->format('m-d');$eMD=$e->format('m-d');if($sMD<=$eMD){$q->whereRaw("DATE_FORMAT(birth_date,'%m-%d') BETWEEN ? AND ?",[$sMD,$eMD]);}else{$q->whereRaw("DATE_FORMAT(birth_date,'%m-%d') >= ?",[$sMD])->orWhereRaw("DATE_FORMAT(birth_date,'%m-%d') <= ?",[$eMD]);}})->count();
-                $bdayNextMonth = SeniorCitizenRecord::on('mswdo_senior')->where('status','active')->whereNotNull('birth_date')->whereRaw("MONTH(birth_date) = ?", [now()->addMonth()->format('n')])->count();
-            @endphp
-            <div class="row g-3 mb-4">
-                <div class="col-6 col-xl col-lg-3 col-md-4">
-                    <div class="card animate-fade-in" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                        <div style="display: flex; align-items: center;">
-                            <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(37, 99, 235, 0.1); color: #1A237E; flex-shrink: 0; margin-right: 0.75rem;">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div style="flex: 1;">
-                                <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Total Seniors</p>
-                                <h3 class="counter" data-target="{{ $totalSeniors }}" style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $totalSeniors }}</h3>
-                            </div>
-                        </div>
+        <!-- Stat Cards -->
+        <div class="stat-cards">
+            <a href="/admin/senior/masterlist" style="text-decoration:none">
+                <div class="stat-card stat-card-blue">
+                    <div class="stat-card-content">
+                        <div class="stat-card-label">TOTAL SENIORS</div>
+                        <div class="stat-card-value counter" data-target="{{ $totalSeniors }}">{{ $totalSeniors }}</div>
                     </div>
+                    <div class="stat-card-icon"><i data-lucide="users"></i></div>
                 </div>
-                <div class="col-6 col-xl col-lg-3 col-md-4">
-                    <div class="card animate-fade-in delay-1" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                        <div style="display: flex; align-items: center;">
-                            <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(16, 185, 129, 0.1); color: #10B981; flex-shrink: 0; margin-right: 0.75rem;">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div style="flex: 1;">
-                                <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Active Seniors</p>
-                                <h3 class="counter" data-target="{{ $activeSeniors }}" style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $activeSeniors }}</h3>
-                            </div>
-                        </div>
+            </a>
+            <a href="/admin/senior/masterlist" style="text-decoration:none">
+                <div class="stat-card stat-card-green">
+                    <div class="stat-card-content">
+                        <div class="stat-card-label">ACTIVE SENIORS</div>
+                        <div class="stat-card-value counter" data-target="{{ $activeSeniors }}">{{ $activeSeniors }}</div>
                     </div>
+                    <div class="stat-card-icon"><i data-lucide="check-circle"></i></div>
                 </div>
-                <div class="col-6 col-xl col-lg-3 col-md-4">
-                    <a href="/admin/senior/birthdays" style="text-decoration: none;">
-                        <div class="card animate-fade-in delay-2" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
-                            <div style="display: flex; align-items: center;">
-                                <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(220, 38, 38, 0.1); color: #DC2626; flex-shrink: 0; margin-right: 0.75rem;">
-                                    <i class="fas fa-birthday-cake"></i>
-                                </div>
-                                <div style="flex: 1;">
-                                    <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Today's Birthdays</p>
-                                    <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $bdayToday }}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+            </a>
+            <a href="/admin/senior/birthdays" style="text-decoration:none">
+                <div class="stat-card stat-card-red">
+                    <div class="stat-card-content">
+                        <div class="stat-card-label">TODAY'S BIRTHDAYS</div>
+                        <div class="stat-card-value">{{ $bdayToday }}</div>
+                    </div>
+                    <div class="stat-card-icon"><i data-lucide="cake"></i></div>
                 </div>
-                <div class="col-6 col-xl col-lg-3 col-md-4">
-                    <a href="/admin/senior/birthdays" style="text-decoration: none;">
-                        <div class="card animate-fade-in delay-3" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
-                            <div style="display: flex; align-items: center;">
-                                <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(245, 158, 11, 0.1); color: #F59E0B; flex-shrink: 0; margin-right: 0.75rem;">
-                                    <i class="fas fa-calendar-week"></i>
-                                </div>
-                                <div style="flex: 1;">
-                                    <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Next 7 Days</p>
-                                    <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $bdayWeek }}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+            </a>
+            <a href="/admin/senior/birthdays" style="text-decoration:none">
+                <div class="stat-card stat-card-orange">
+                    <div class="stat-card-content">
+                        <div class="stat-card-label">NEXT 7 DAYS</div>
+                        <div class="stat-card-value">{{ $bdayWeek }}</div>
+                    </div>
+                    <div class="stat-card-icon"><i data-lucide="calendar-days"></i></div>
                 </div>
-                <div class="col-6 col-xl col-lg-3 col-md-4">
-                    <a href="/admin/senior/birthdays" style="text-decoration: none;">
-                        <div class="card animate-fade-in delay-4" style="padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
-                            <div style="display: flex; align-items: center;">
-                                <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background-color: rgba(26, 35, 126, 0.1); color: #1A237E; flex-shrink: 0; margin-right: 0.75rem;">
-                                    <i class="fas fa-calendar-alt"></i>
-                                </div>
-                                <div style="flex: 1;">
-                                    <p style="color: #6B7280; font-size: 0.75rem; margin: 0 0 0.15rem 0; font-weight: 500;">Next Month</p>
-                                    <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--text);">{{ $bdayNextMonth }}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+            </a>
+            <a href="/admin/senior/birthdays" style="text-decoration:none">
+                <div class="stat-card stat-card-purple">
+                    <div class="stat-card-content">
+                        <div class="stat-card-label">NEXT MONTH</div>
+                        <div class="stat-card-value">{{ $bdayNextMonth }}</div>
+                    </div>
+                    <div class="stat-card-icon"><i data-lucide="calendar"></i></div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Top Barangays -->
+            <div class="analytics-card">
+                <div class="flex items-center justify-between mb-5">
+                    <h3><i data-lucide="map-pin" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px;color:var(--icon-blue)"></i>Top Barangays</h3>
+                    <button class="text-xs font-semibold px-3 py-1 rounded-lg" style="background:var(--info-bg);color:var(--icon-blue);border:none" onclick="document.getElementById('barangayModal').style.display='flex'">View All</button>
+                </div>
+                <div style="display:flex;align-items:center;gap:24px">
+                    <div style="width:280px;height:280px;flex-shrink:0"><canvas id="barangayDonut"></canvas></div>
+                    <div id="barangayLegend" style="flex:1;min-width:0;max-height:220px;overflow-y:auto"></div>
                 </div>
             </div>
 
-            <!-- Dashboard Insights -->
-            <div class="row g-4 mb-4">
-                <!-- Top Barangays -->
-                <div class="col-lg-6">
-                    <div class="card animate-fade-in" style="padding: 1.25rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 style="font-weight: 700; font-size: 0.875rem; color: var(--text); margin: 0;">
-                                <i class="fas fa-building me-2" style="color: var(--primary);"></i>Top Barangays
-                            </h6>
-                            <button class="btn btn-sm" style="background: rgba(26, 35, 126, 0.1); color: var(--primary); border: none; border-radius: 6px; font-size: 0.7rem; padding: 0.25rem 0.5rem;" data-bs-toggle="modal" data-bs-target="#barangayModal">
-                                View All
-                            </button>
-                        </div>
-                        <div id="topBarangaysList" style="max-height: 280px; overflow-y: auto;">
-                            <!-- Top barangays will be rendered here -->
-                        </div>
-                    </div>
+            <!-- Recent Activities -->
+            <div class="activity-card">
+                <div class="flex items-center justify-between mb-5">
+                    <h3><i data-lucide="activity" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px;color:var(--icon-blue)"></i>Recent Activities</h3>
+                    <button class="text-xs font-semibold px-3 py-1 rounded-lg" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="confirmClearActivities()">Clear</button>
                 </div>
-
-                <!-- Recent Activities -->
-                <div class="col-lg-6">
-                    <div class="card animate-fade-in delay-1" style="padding: 1.25rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 style="font-weight: 700; font-size: 0.875rem; color: var(--text); margin: 0;">
-                                <i class="fas fa-history me-2" style="color: var(--primary);"></i>Recent Activities
-                            </h6>
-                            <button type="button" class="btn btn-sm" style="background: rgba(220, 38, 38, 0.1); color: #DC2626; border: none; border-radius: 6px; font-size: 0.7rem; padding: 0.25rem 0.5rem;" onclick="confirmClearActivities()">
-                                Clear
-                            </button>
-                        </div>
-                        <div style="max-height: 280px; overflow-y: auto;">
-                            @if(count($recentActivities) > 0)
-                                @foreach($recentActivities as $activity)
-                                <div class="d-flex align-items-start mb-3 pb-3" style="border-bottom: 1px solid var(--border);">
-                                    <div style="width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; background: rgba(26, 35, 126, 0.1); color: var(--primary); flex-shrink: 0; margin-right: 0.75rem;">
-                                        <i class="fas fa-{{ $activity['action'] == 'registered' ? 'user-plus' : ($activity['action'] == 'archived' ? 'archive' : ($activity['action'] == 'restored' ? 'undo' : 'id-card')) }}"></i>
-                                    </div>
-                                    <div style="flex: 1;">
-                                        <div style="font-weight: 600; font-size: 0.8rem; color: var(--text);">
-                                            {{ ucfirst($activity['action']) }} <strong>{{ $activity['name'] }}</strong>
-                                        </div>
-                                        <div class="text-muted" style="font-size: 0.7rem;">
-                                            <span>{{ $activity['identifier'] }}</span> • {{ $activity['timestamp'] }}
-                                        </div>
-                                    </div>
-                                </div>
-                                @endforeach
-                            @else
-                                <div class="text-center text-muted py-4">
-                                    <i class="fas fa-inbox" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem; color: #D1D5DB;"></i>
-                                    <span style="font-size: 0.8rem;">No recent activities</span>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Senior Citizen Records -->
-            <div class="row mb-4" style="flex: 1; min-height: 0;">
-                <div class="col-12" style="height: 100%; display: flex; flex-direction: column;">
-                    <div class="card p-0 animate-fade-in" style="overflow: hidden; flex: 1; display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                        <div class="d-flex justify-content-between align-items-center p-3" style="flex-shrink: 0;">
-                            <div>
-                                <h6 style="font-weight: 700; font-size: 0.875rem; color: var(--text); margin: 0;">Recent Senior Citizen Records</h6>
-                                <span class="text-muted" style="font-size: 0.75rem;">Latest {{ $recentSeniors->count() }} registered seniors</span>
+                <div class="activity-feed">
+                    @if(count($recentActivities) > 0)
+                        @foreach($recentActivities as $activity)
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background:var(--info-bg);color:var(--icon-blue)">
+                                <i data-lucide="{{ $activity['action'] == 'registered' ? 'user-plus' : ($activity['action'] == 'archived' ? 'archive' : ($activity['action'] == 'restored' ? 'undo-2' : 'id-card')) }}"></i>
                             </div>
-                            <div class="d-flex gap-2 align-items-center">
-                                <div class="input-group" style="width: 200px;">
-                                    <span class="input-group-text bg-white border-end-0" style="border-color: var(--border); padding: 0.5rem;">
-                                        <i class="fas fa-search text-muted" style="font-size: 0.875rem;"></i>
-                                    </span>
-                                    <input type="text" class="form-control border-start-0 ps-0" placeholder="Search..." style="border-color: var(--border); font-size: 0.875rem; box-shadow: none; padding: 0.5rem; height: 44px;" onkeyup="filterSeniorTable(this.value)" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
-                                </div>
-                                <button class="btn" style="background-color: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 0.875rem; padding: 0 1rem; height: 44px;" onclick="window.location.href='/admin/senior/registration'">
-                                    <i class="fas fa-plus me-2"></i> Add New
-                                </button>
+                            <div class="activity-content">
+                                <div class="activity-text">{{ ucfirst($activity['action']) }} <strong>{{ $activity['name'] }}</strong></div>
+                                <div class="activity-time">{{ $activity['identifier'] }} &middot; {{ $activity['timestamp'] }}</div>
                             </div>
                         </div>
-                        <div class="p-0" style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
-                            <div class="table-responsive" style="flex: 1; overflow-y: auto; min-height: 0;">
-                                <table class="table table-hover" id="seniorTable" style="margin-bottom: 0; font-size: 0.8rem;">
-                                    <thead style="position: sticky; top: 0; z-index: 1; background: var(--cards);">
-                                        <tr>
-                                            <th style="font-size: 0.75rem; font-weight: 600;">#</th>
-                                            <th style="font-size: 0.75rem; font-weight: 600;">Control No.</th>
-                                            <th style="font-size: 0.75rem; font-weight: 600;">Full Name</th>
-                                            <th style="font-size: 0.75rem; font-weight: 600;">Barangay</th>
-                                            <th style="font-size: 0.75rem; font-weight: 600;">Sex / Age</th>
-                                            <th style="font-size: 0.75rem; font-weight: 600;">Birth Date</th>
-                                            <th style="font-size: 0.75rem; font-weight: 600;">Contact</th>
-                                            <th style="font-size: 0.75rem; font-weight: 600;">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($recentSeniors as $index => $senior)
-                                        <tr>
-                                            <td style="color: #9CA3AF; font-weight: 600;">{{ $index + 1 }}</td>
-                                            <td><strong>{{ $senior->control_number ?? $senior->record_number ?? '-' }}</strong></td>
-                                            <td>
-                                                <div style="font-weight: 600;">{{ $senior->full_name ?? '-' }}</div>
-                                                <div class="text-muted" style="font-size: 0.8rem;">{{ $senior->address ? \Illuminate\Support\Str::limit($senior->address, 30) : '' }}</div>
-                                            </td>
-                                            <td>
-                                                @if($senior->barangay)
-                                                    <span class="badge" style="background: rgba(26, 35, 126, 0.1); color: var(--primary); font-weight: 500; padding: 0.35rem 0.65rem; font-size: 0.8rem;">{{ $senior->barangay }}</span>
-                                                @else
-                                                    <span class="text-muted">-</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if($senior->sex)
-                                                    <span class="badge" style="background: var(--primary); color: white; border-radius: 50%; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; padding: 0; font-size: 0.7rem; font-weight: 700; margin-right: 0.3rem;">{{ $senior->sex == 'Male' ? 'M' : 'F' }}</span>
-                                                @endif
-                                                <strong>{{ $senior->age ?? '-' }}</strong>
-                                            </td>
-                                            <td>
-                                                @if($senior->birth_date)
-                                                    {{ \Carbon\Carbon::parse($senior->birth_date)->format('M d, Y') }}
-                                                @else
-                                                    <span class="text-muted">-</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if($senior->contact_number)
-                                                    <a href="tel:{{ $senior->contact_number }}" style="color: var(--primary); text-decoration: none; font-weight: 500;">{{ $senior->contact_number }}</a>
-                                                @else
-                                                    <span class="text-muted">-</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <a href="{{ route('admin.senior.id-card', $senior->id) }}" class="btn btn-sm" style="background-color: var(--accent); color: var(--primary-dark); border: none; border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.8rem;" title="ID Card">
-                                                    <i class="fas fa-id-card"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        @empty
-                                        <tr>
-                                            <td colspan="8" class="text-center text-muted py-5">
-                                                <i class="fas fa-inbox" style="font-size: 2rem; display: block; margin-bottom: 0.75rem; color: #D1D5DB;"></i>
-                                                No senior citizen records found.
-                                            </td>
-                                        </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
+                        @endforeach
+                    @else
+                        <div class="text-center py-8" style="color:var(--text-muted)">
+                            <i data-lucide="inbox" style="width:32px;height:32px;margin:0 auto 8px;display:block;color:#D1D5DB"></i>
+                            <span class="text-sm">No recent activities</span>
                         </div>
-                        @if($recentSeniors->count() > 0)
-                        <div style="border-top: 1px solid var(--border); padding: 0.75rem 1.5rem; background: #F9FAFB; text-align: right;">
-                            <a href="/admin/senior/masterlist" style="text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.85rem; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-                                View All Records <i class="fas fa-arrow-right ms-1" style="font-size: 0.7rem;"></i>
-                            </a>
-                        </div>
-                        @endif
-                    </div>
+                    @endif
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Barangay Distribution Modal -->
-    <div class="modal fade" id="barangayModal" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,.12);">
-                <div class="modal-header" style="border-bottom: 1px solid var(--border); background: var(--accent); color: var(--primary-dark); border-radius: 16px 16px 0 0;">
-                    <h5 class="modal-title"><i class="fas fa-building me-2"></i>All Barangays Distribution</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div id="barangayModalCards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; max-height: 600px; overflow-y: auto;">
-                        <!-- All barangay cards will be rendered here -->
-                    </div>
-                </div>
-            </div>
+    </div>
+</div>
+
+<!-- Barangay Distribution Modal -->
+<div id="barangayModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.style.display='none'">
+    <div style="background:var(--surface);border-radius:16px;width:100%;max-width:800px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15)">
+        <div class="flex items-center justify-between px-6 py-4" style="background:var(--accent-yellow);color:var(--primary)">
+            <h4 class="font-bold flex items-center gap-2 m-0"><i data-lucide="map-pin" style="width:20px;height:20px"></i> All Barangays Distribution</h4>
+            <button onclick="document.getElementById('barangayModal').style.display='none'" class="w-8 h-8 rounded-full flex items-center justify-center" style="background:rgba(0,0,0,.1);border:none;color:var(--primary)"><i data-lucide="x" style="width:16px;height:16px"></i></button>
+        </div>
+        <div class="p-6 overflow-auto" style="max-height:60vh">
+            <div id="barangayModalCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px"></div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Senior table filter
-        function filterSeniorTable(value) {
-            const filter = value.toLowerCase();
-            const rows = document.querySelectorAll('#seniorTable tbody tr');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(filter) ? '' : 'none';
+<!-- Hidden form for secure POST logout -->
+<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display:none">@csrf</form>
+
+<script>
+    // Date time
+    function updateDateTime(){
+        const now=new Date();
+        const opts={weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true};
+        document.getElementById('currentDateTime').textContent=now.toLocaleDateString('en-US',opts).replace(',',' at');
+    }
+    updateDateTime();
+    setInterval(updateDateTime,60000);
+
+    // Counter animation
+    document.querySelectorAll('.counter').forEach(counter=>{
+        const target=parseInt(counter.getAttribute('data-target'));
+        if(!target)return;
+        const duration=2000;
+        const step=target/(duration/16);
+        let current=0;
+        const update=()=>{current+=step;if(current<target){counter.textContent=Math.floor(current);requestAnimationFrame(update);}else{counter.textContent=target;}};
+        update();
+    });
+
+        // Toggle sidebar
+    function toggleSidebar(){document.getElementById('sidebar').classList.toggle('show');}
+
+    // Welcome popup
+    document.addEventListener('DOMContentLoaded',function(){
+        @if($justLoggedIn ?? false)
+            Swal.fire({
+                title:'Welcome Admin!',
+                text:'{{ session("admin_user_name") ?? "Admin" }}',
+                icon:'success',
+                confirmButtonColor:'#1A237E',
+                confirmButtonText:'Continue',
+                background:'#ffffff',
+                customClass:{popup:'rounded-4 shadow-lg'},
+                timer:3000,
+                timerProgressBar:true
             });
-        }
+        @endif
+        initBarangayChart();
+    });
 
-        // Toggle Sidebar
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('show');
-        }
+    // Barangay Distribution
+    function initBarangayChart(){
+        const barangayData=@json($barangayDistribution);
+        const sortedData=[...barangayData].sort((a,b)=>b.count-a.count);
+        renderTopBarangaysList(sortedData);
+    }
 
-        // Update Date Time
-        function updateDateTime() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
-        }
-        updateDateTime();
-        setInterval(updateDateTime, 60000);
+    let barangayDonutChart = null;
 
-        // Counter Animation
-        const counters = document.querySelectorAll('.counter');
-        counters.forEach(counter => {
-            const target = parseInt(counter.getAttribute('data-target'));
-            const duration = 2000;
-            const step = target / (duration / 16);
-            let current = 0;
+    function renderTopBarangaysList(data){
+        const legendContainer=document.getElementById('barangayLegend');
+        const canvas=document.getElementById('barangayDonut');
+        if(!canvas)return;
 
-            const updateCounter = () => {
-                current += step;
-                if (current < target) {
-                    counter.textContent = Math.floor(current);
-                    requestAnimationFrame(updateCounter);
-                } else {
-                    counter.textContent = target;
+        const totalCount=data.reduce((sum,item)=>sum+item.count,0);
+        const colors=data.map((_,i)=>{
+            const hue=(i*137.508)%360;
+            return `hsl(${hue},65%,50%)`;
+        });
+
+        // Donut chart
+        if(barangayDonutChart) barangayDonutChart.destroy();
+        barangayDonutChart=new Chart(canvas,{
+            type:'doughnut',
+            data:{
+                labels:data.map(d=>d.barangay),
+                datasets:[{
+                    data:data.map(d=>d.count),
+                    backgroundColor:colors.slice(0,data.length),
+                    borderWidth:0,
+                    hoverOffset:4
+                }]
+            },
+            options:{
+                responsive:true,
+                maintainAspectRatio:true,
+                cutout:'65%',
+                plugins:{
+                    legend:{display:false},
+                    tooltip:{
+                        backgroundColor:'#111827',
+                        titleFont:{family:'Public Sans',size:13,weight:'600'},
+                        bodyFont:{family:'Public Sans',size:12},
+                        padding:10,
+                        cornerRadius:8,
+                        callbacks:{
+                            label:function(ctx){
+                                const pct=((ctx.parsed/totalCount)*100).toFixed(1);
+                                return ` ${ctx.label}: ${ctx.parsed} (${pct}%)`;
+                            }
+                        }
+                    }
                 }
-            };
-            updateCounter();
+            },
+            plugins:[{
+                id:'centerText',
+                afterDraw(chart){
+                    const {ctx,chartArea:{left,right,top,bottom}}=chart;
+                    const cx=(left+right)/2;
+                    const cy=(top+bottom)/2;
+                    ctx.save();
+                    ctx.textAlign='center';ctx.textBaseline='middle';
+                    ctx.font='bold 22px Public Sans';ctx.fillStyle='#111827';
+                    ctx.fillText(totalCount,cx,cy-6);
+                    ctx.font='500 11px Public Sans';ctx.fillStyle='#6B7280';
+                    ctx.fillText('Total',cx,cy+14);
+                    ctx.restore();
+                }
+            }]
         });
 
-        // Welcome popup on page load - only show if just logged in
-        document.addEventListener('DOMContentLoaded', function() {
-            @if($justLoggedIn ?? false)
-                const adminName = '{{ session('admin_user_name') ?? 'Admin' }}';
-                Swal.fire({
-                    title: 'Welcome Admin!',
-                    text: adminName,
-                    icon: 'success',
-                    confirmButtonColor: '#1A237E',
-                    confirmButtonText: 'Continue',
-                    background: '#ffffff',
-                    customClass: {
-                        popup: 'rounded-4 shadow-lg'
-                    },
-                    timer: 3000,
-                    timerProgressBar: true
-                });
-            @endif
-
-            // Initialize Barangay Distribution Chart
-            initBarangayChart();
-        });
-
-        // Barangay Distribution Chart
-        let barangayChart = null;
-        let showingAll = false;
-
-        function initBarangayChart() {
-            const barangayData = @json($barangayDistribution);
-
-            // Sort by count (highest to lowest)
-            const sortedData = [...barangayData].sort((a, b) => b.count - a.count);
-
-            renderTopBarangaysList(sortedData.slice(0, 10));
-        }
-
-        function renderTopBarangaysList(data) {
-            const container = document.getElementById('topBarangaysList');
-            if (!container) return;
-
-            const totalCount = data.reduce((sum, item) => sum + item.count, 0);
-
-            container.innerHTML = data.map((item, index) => {
-                const percentage = totalCount > 0 ? ((item.count / totalCount) * 100).toFixed(1) : 0;
-                const barColor = index === 0 ? '#1A237E' :
-                               index === 1 ? '#3B82F6' :
-                               index === 2 ? '#6366F1' :
-                               '#9CA3AF';
-
-                return `
-                    <div style="display: flex; align-items: center; margin-bottom: 0.75rem;">
-                        <div style="width: 24px; font-size: 0.75rem; color: #6B7280; font-weight: 600; flex-shrink: 0;">${index + 1}.</div>
-                        <div style="flex: 1; margin-left: 0.5rem;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                                <span style="font-size: 0.8rem; font-weight: 500; color: var(--text);">${item.barangay}</span>
-                                <span style="font-size: 0.8rem; font-weight: 600; color: var(--primary);">${item.count}</span>
-                            </div>
-                            <div style="height: 4px; background: #E5E7EB; border-radius: 2px; overflow: hidden;">
-                                <div style="height: 100%; background: ${barColor}; border-radius: 2px; width: ${percentage}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+        // Legend
+        if(legendContainer){
+            legendContainer.innerHTML=data.map((item,i)=>{
+                const pct=totalCount>0?((item.count/totalCount)*100).toFixed(1):0;
+                const color=colors[i]||'#9CA3AF';
+                return `<div class="flex items-center gap-3 py-2 px-2 rounded-lg" style="transition:background .2s" onmouseover="this.style.background='var(--background)'" onmouseout="this.style.background=''">
+                    <div class="rounded-sm flex-shrink-0" style="width:10px;height:10px;background:${color}"></div>
+                    <span class="text-sm flex-1 truncate">${item.barangay}</span>
+                    <span class="text-sm font-semibold" style="color:var(--primary)">${item.count}</span>
+                    <span class="text-xs font-medium" style="color:var(--text-muted);width:42px;text-align:right">${pct}%</span>
+                </div>`;
             }).join('');
         }
+    }
 
-        // Render all barangay cards in modal
-        function renderModalCards() {
-            const container = document.getElementById('barangayModalCards');
-            if (!container) return;
+    function renderModalCards(){
+        const container=document.getElementById('barangayModalCards');
+        if(!container)return;
+        const barangayData=@json($barangayDistribution);
+        const sortedData=[...barangayData].sort((a,b)=>b.count-a.count);
+        container.innerHTML=sortedData.map((item,index)=>{
+            const bgColor=index===0?'rgba(26,35,126,.1)':index===1?'rgba(59,130,246,.1)':index===2?'rgba(99,102,241,.1)':'rgba(107,114,128,.05)';
+            const textColor=index<3?'var(--primary)':'var(--text-primary)';
+            const borderColor=index<3?'var(--primary)':'var(--border)';
+            return `<div style="background:${bgColor};border:1px solid ${borderColor};border-radius:8px;padding:1rem;transition:transform .2s,box-shadow .2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(0,0,0,.1)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div class="text-xs font-medium mb-1" style="color:var(--text-secondary)">${item.barangay}</div>
+                <div class="text-xl font-bold" style="color:${textColor}">${item.count}</div>
+            </div>`;
+        }).join('');
+    }
 
-            const barangayData = @json($barangayDistribution);
-            const sortedData = [...barangayData].sort((a, b) => b.count - a.count);
-
-            container.innerHTML = sortedData.map((item, index) => {
-                const bgColor = index === 0 ? 'rgba(26, 35, 126, 0.1)' :
-                               index === 1 ? 'rgba(59, 130, 246, 0.1)' :
-                               index === 2 ? 'rgba(99, 102, 241, 0.1)' :
-                               'rgba(107, 114, 128, 0.05)';
-                const textColor = index < 3 ? 'var(--primary)' : 'var(--text)';
-                const borderColor = index < 3 ? 'var(--primary)' : 'var(--border)';
-
-                return `
-                    <div style="background: ${bgColor}; border: 1px solid ${borderColor}; border-radius: 8px; padding: 1rem; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
-                        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-bottom: 0.25rem;">${item.barangay}</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: ${textColor};">${item.count}</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Initialize modal cards when modal is shown
-        document.addEventListener('DOMContentLoaded', function() {
-            const barangayModal = document.getElementById('barangayModal');
-            if (barangayModal) {
-                barangayModal.addEventListener('shown.bs.modal', function() {
-                    renderModalCards();
-                });
+    // Confirm clear activities
+    function confirmClearActivities(){
+        Swal.fire({
+            title:'Clear Recent Activities?',
+            text:'This will remove all recent activity logs. This action cannot be undone.',
+            icon:'warning',
+            showCancelButton:true,
+            confirmButtonColor:'#DC2626',
+            cancelButtonColor:'#6B7280',
+            confirmButtonText:'Yes, clear all',
+            cancelButtonText:'Cancel',
+            background:'#ffffff',
+            customClass:{popup:'rounded-4 shadow-lg'}
+        }).then(result=>{
+            if(result.isConfirmed){
+                const form=document.createElement('form');
+                form.method='POST';
+                form.action='{{ route("admin.senior.clear-activities") }}';
+                const csrf=document.createElement('input');
+                csrf.type='hidden';csrf.name='_token';csrf.value='{{ csrf_token() }}';
+                form.appendChild(csrf);document.body.appendChild(form);form.submit();
             }
         });
-    </script>
+    }
 
-    <!-- Hidden form for secure POST logout -->
-    <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
-        @csrf
-    </form>
+    // Confirm logout
+    function confirmLogout(e){
+        e.preventDefault();
+        Swal.fire({
+            title:'Are you sure?',
+            text:'Do you really want to log out?',
+            icon:'warning',
+            showCancelButton:true,
+            confirmButtonColor:'#1A237E',
+            cancelButtonColor:'#6B7280',
+            confirmButtonText:'Yes, log out',
+            cancelButtonText:'Cancel',
+            background:'#ffffff',
+            customClass:{popup:'rounded-4 shadow-lg'}
+        }).then(result=>{
+            if(result.isConfirmed) document.getElementById('logout-form').submit();
+        });
+    }
 
-    <script>
-        function confirmClearActivities() {
-            Swal.fire({
-                title: 'Clear Recent Activities?',
-                text: 'This will remove all recent activity logs. This action cannot be undone.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#DC2626',
-                cancelButtonColor: '#6B7280',
-                confirmButtonText: 'Yes, clear all',
-                cancelButtonText: 'Cancel',
-                background: '#ffffff',
-                customClass: {
-                    popup: 'rounded-4 shadow-lg'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Submit the form via AJAX
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = '{{ route('admin.senior.clear-activities') }}';
-                    
-                    const csrfToken = document.createElement('input');
-                    csrfToken.type = 'hidden';
-                    csrfToken.name = '_token';
-                    csrfToken.value = '{{ csrf_token() }}';
-                    form.appendChild(csrfToken);
-                    
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        }
-
-        function confirmLogout(event) {
-            event.preventDefault();
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'Do you really want to log out?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#1A237E',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, log out',
-                cancelButtonText: 'Cancel',
-                background: '#ffffff',
-                customClass: {
-                    popup: 'rounded-4 shadow-lg'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
-                }
-            });
-        }
-    </script>
+    lucide.createIcons();
+</script>
 </body>
 </html>

@@ -66,7 +66,7 @@ class BirthdayPayoutController extends Controller
             });
         }
 
-        $existingPayouts = $query->get();
+        $existingPayouts = $query->paginate(25)->appends($request->query());
 
         // Calculate summary
         $totalBeneficiaries = $existingPayouts->count();

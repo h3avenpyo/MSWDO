@@ -4,319 +4,285 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Birthday Payout History</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            corePlugins: { preflight: false },
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Public Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Helvetica', 'Arial', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary: #1A237E;
-            --primary-dark: #121858;
-            --secondary: #6B7280;
-            --accent: #FBC02D;
-            --danger: #D32F2F;
-            --success: #059669;
-            --warning: #F59E0B;
-            --background: #F8FAFC;
-            --cards: #FFFFFF;
-            --text: #1F2937;
+            --primary-hover: #121858;
             --sidebar-bg: #1A237E;
+            --accent-yellow: #FBC02D;
+            --background: #F5F7FB;
+            --surface: #FFFFFF;
             --border: #E5E7EB;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --text-muted: #9CA3AF;
+            --success: #16A34A;
+            --success-bg: #ECFDF5;
+            --danger: #DC2626;
+            --danger-bg: #FEF2F2;
+            --info: #3B82F6;
+            --info-bg: #EEF2FF;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,.05);
+            --font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
 
-        body {
-            background-color: var(--background);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text);
-            margin: 0;
-            padding: 0;
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; height: 100vh; overflow: hidden; background: var(--background); color: var(--text-primary); font-family: var(--font-family); }
+        body { font-size: 14px; line-height: 1.5; }
+
+        /* ── Sidebar ── */
+        .sidebar{width:260px;flex-shrink:0;background:var(--primary);color:#FFFFFF;position:fixed;left:0;top:0;height:100vh;z-index:1000;display:flex;flex-direction:column;transition:transform .3s ease;}
+        .sidebar-brand{height:72px;padding:0 1.5rem;border-bottom:1px solid rgba(255,255,255,.1);color:#fff;font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:.65rem;}
+        .sidebar-brand i,.sidebar-brand [data-lucide]{width:24px;height:24px;color:var(--accent-yellow);}
+        .sidebar-menu{list-style:none;margin:0;padding:1rem 0;flex:1;}
+        .sidebar-menu li{margin-bottom:.2rem;}
+        .sidebar-menu a{color:rgba(255,255,255,.75);padding:.75rem 1.5rem;display:flex;align-items:center;gap:.75rem;text-decoration:none;font-size:.9rem;border-left:3px solid transparent;transition:all .2s ease;}
+        .sidebar-menu a:hover{background:rgba(255,255,255,.1);color:var(--accent-yellow);}
+        .sidebar-menu a.active{background:rgba(255,255,255,.1);color:var(--accent-yellow);border-left-color:var(--accent-yellow);}
+        .sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
+
+        /* ── Main Content ── */
+        .main-content {
+            flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
+            max-width: calc(100% - 260px); height: 100vh;
+            display: flex; flex-direction: column; overflow: hidden;
+            animation: fadeIn .3s ease;
         }
 
-        .sidebar {
-            background: var(--sidebar-bg);
-            width: 260px;
-            min-height: 100vh;
-            position: fixed;
-            left: 0; top: 0;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transition: transform .3s ease;
-        }
-
-        .sidebar-brand {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,.1);
-            color: #fff;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-        }
-
-        .sidebar-brand i { font-size: 1.3rem; color: var(--accent); }
-
-        .sidebar-menu {
-            list-style: none;
-            margin: 0;
-            padding: 1rem 0;
-            flex: 1;
-        }
-
-        .sidebar-menu li { margin-bottom: .2rem; }
-
-        .sidebar-menu a {
-            color: rgba(255,255,255,.75);
-            padding: .75rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            text-decoration: none;
-            font-size: .9rem;
-            border-left: 3px solid transparent;
-            transition: all .2s ease;
-        }
-
-        .sidebar-menu a:hover { 
-            background: rgba(255,255,255,.1); 
-            color: var(--accent); 
-        }
-
-        .sidebar-menu a.active {
-            background: rgba(255,255,255,.1);
-            color: var(--accent);
-            border-left-color: var(--accent);
-        }
-
-        .sidebar-menu a i { width: 20px; text-align: center; }
-
-        .main-content { margin-left: 260px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-
-        .top-navbar {
-            background: var(--cards);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .page-title { margin: 0; font-size: 1.25rem; font-weight: 600; color: var(--primary); }
-
-        .page-body { padding: 2rem; flex: 1; overflow: hidden; display: flex; flex-direction: column; }
-
-        .main-card {
-            background: var(--cards);
+        /* ── Custom Table ── */
+        .custom-table-wrapper {
+            background: var(--surface);
             border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,.1);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            flex-shrink: 0;
-        }
-
-        .filter-section {
-            background: #f9fafb;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-
-        .table-card {
-            background: var(--cards);
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,.1);
+            box-shadow: var(--shadow);
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            border: 1px solid var(--border);
         }
-
-        .table-responsive { flex: 1; overflow-y: auto; min-height: 0; }
-
-        .table { margin-bottom: 0; }
-
-        .table th {
+        .custom-table-scroll {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-family);
+        }
+        .custom-table thead { position: sticky; top: 0; z-index: 10; }
+        .custom-table thead th {
             background: var(--primary);
-            color: white;
+            color: #fff;
             font-weight: 600;
+            font-size: .8rem;
             text-transform: uppercase;
-            font-size: .85rem;
-            padding: .75rem;
+            letter-spacing: .05em;
+            padding: .85rem 1rem;
+            text-align: left;
+            white-space: nowrap;
+            border: none;
+        }
+        .custom-table tbody td {
+            padding: .75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: .875rem;
+            color: var(--text-primary);
+            vertical-align: middle;
+        }
+        .custom-table tbody tr:hover { background: #F9FAFB; }
+        .custom-table tbody tr:last-child td { border-bottom: none; }
+
+        /* ── Badges ── */
+        .badge-generated { background: var(--info-bg); color: var(--info); font-weight: 600; }
+        .badge-released { background: var(--success-bg); color: var(--success); font-weight: 600; }
+        .badge-cancelled { background: var(--danger-bg); color: var(--danger); font-weight: 600; }
+        .badge-reset { background: #FEF3C7; color: #D97706; font-weight: 600; }
+        .badge-span { padding: .3rem .7rem; border-radius: 999px; font-size: .78rem; display: inline-block; }
+
+        /* ── Form Controls ── */
+        .ctrl-select, .ctrl-input {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: .55rem .85rem;
+            font-size: .875rem;
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            width: 100%;
+            transition: border-color .2s, box-shadow .2s;
+            outline: none;
+        }
+        .ctrl-select:focus, .ctrl-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26,35,126,.08);
         }
 
-        .table td { padding: .75rem; vertical-align: middle; }
-
-        .badge-generated { background: rgba(26,35,126,0.1); color: var(--primary); }
-        .badge-released { background: rgba(5,150,105,0.1); color: var(--success); }
-        .badge-cancelled { background: rgba(220,38,38,0.1); color: var(--danger); }
-        .badge-reset { background: rgba(245,158,11,0.1); color: var(--warning); }
-
-        .avatar-circle {
-            width: 35px; height: 35px;
-            font-size: 0.875rem;
-            background-color: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            border-radius: 50%;
-        }
-
+        /* ── Responsive ── */
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.show { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-            .page-body { padding: 1rem; }
+            .main-content { margin-left: 0; padding: 1rem; height: 100vh; }
         }
+        @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
     </style>
 </head>
 <body>
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <i class="fas fa-user-friends"></i>
+            <i data-lucide="users" style="width:24px;height:24px"></i>
             <span>Senior Citizen</span>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="{{ route('admin.senior') }}"><i class="fas fa-user-friends"></i> Dashboard</a></li>
-            <li><a href="{{ route('admin.senior.registration') }}"><i class="fas fa-user-plus"></i> Registration</a></li>
-            <li><a href="{{ route('admin.senior.masterlist') }}"><i class="fas fa-list"></i> Masterlist</a></li>
-            <li><a href="{{ route('admin.senior.birthdays') }}"><i class="fas fa-birthday-cake"></i> Birthday Beneficiaries</a></li>
-            <li><a href="{{ route('admin.senior.birthday-payouts') }}"><i class="fas fa-money-bill-wave"></i> Birthday Payouts</a></li>
-            <li><a href="{{ route('admin.senior.birthday-payouts.history') }}" class="active"><i class="fas fa-history"></i> Payout History</a></li>
-            <li><a href="{{ route('admin.senior.analytics') }}"><i class="fas fa-chart-bar"></i> Statistics</a></li>
-            <li><a href="{{ route('admin.senior.reports') }}"><i class="fas fa-file-alt"></i> Reports</a></li>
-            <li><a href="{{ route('admin.senior.archive.list') }}"><i class="fas fa-archive"></i> Archive</a></li>
-            <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <li><a href="/admin/senior"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i> Dashboard</a></li>
+            <li><a href="/admin/senior/registration"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
+            <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
+            <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
+            <li><a href="/admin/senior/birthday-payouts"><i data-lucide="banknote" style="width:20px;height:20px"></i> Birthday Payouts</a></li>
+            <li><a href="/admin/senior/birthday-payouts/history" class="active"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
+            <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
+            <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
+            <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
+            <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
         </ul>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Top Navbar -->
-        <nav class="top-navbar">
-            <div class="d-flex align-items-center">
-                <button class="btn btn-link d-md-none me-3" onclick="toggleSidebar()">
-                    <i class="fas fa-bars"></i>
+        <!-- Header -->
+        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none flex-shrink-0"
+                style="margin-top:-32px;margin-left:-32px;margin-right:-32px;margin-bottom:24px">
+            <div class="flex items-center">
+                <button class="md:hidden mr-3 p-1 text-[var(--text-secondary)] hover:text-[var(--primary)]" onclick="toggleSidebar()">
+                    <i data-lucide="menu" style="width:22px;height:22px"></i>
                 </button>
-                <h5 class="page-title mb-0">Birthday Payout History</h5>
+                <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Payout History</h1>
             </div>
-            <div class="d-flex align-items-center">
-                <div class="me-3 text-muted small" id="currentDateTime"></div>
-                <div class="avatar-circle">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin'), 0, 2)) }}</div>
+            <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
+                <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime"></div>
+                <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ session('admin_user_name') ?? 'Admin' }}">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin'), 0, 2)) }}</div>
             </div>
-        </nav>
+        </header>
 
         <!-- Page Body -->
-        <div class="page-body">
+        <div class="flex-1 overflow-hidden flex flex-col">
             <!-- Filter Section -->
-            <div class="main-card">
-                <div class="filter-section py-2">
-                    <form method="GET" action="{{ route('admin.senior.birthday-payouts.history') }}">
-                        <div class="row g-2 align-items-end">
-                            <div class="col-md-3">
-                                <label class="form-label small fw-bold mb-1">Barangay</label>
-                                <select class="form-select form-select-sm" name="barangay">
-                                    <option value="">All Barangays</option>
-                                    <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
-                                    <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
-                                    <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
-                                    <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
-                                    <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
-                                    <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
-                                    <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
-                                    <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
-                                    <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
-                                    <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
-                                    <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
-                                    <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
-                                    <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
-                                    <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
-                                    <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
-                                    <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
-                                    <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
-                                    <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
-                                    <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
-                                    <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
-                                    <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
-                                    <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
-                                    <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
-                                    <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
-                                    <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
-                                    <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
-                                    <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
-                                    <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
-                                    <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
-                                    <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
-                                    <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
-                                    <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
-                                    <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
-                                    <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
-                                    <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
-                                    <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
-                                    <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
-                                    <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
-                                    <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
-                                    <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
-                                    <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
-                                    <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
-                                    <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
-                                    <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
-                                    <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
-                                    <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
-                                    <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
-                                    <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
-                                    <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
-                                    <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
-                                    <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
-                                    <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
-                                    <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
-                                    <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
-                                    <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
-                                    <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
-                                    <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
-                                    <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
-                                    <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
-                                    <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
-                                    <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
-                                    <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
-                                    <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
-                                    <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label small fw-bold mb-1">Date From</label>
-                                <input type="date" class="form-control form-control-sm" name="date_from" value="{{ $dateFrom }}">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label small fw-bold mb-1">Date To</label>
-                                <input type="date" class="form-control form-control-sm" name="date_to" value="{{ $dateTo }}">
-                            </div>
-                            <div class="col-md-3">
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary btn-sm flex-grow-1">
-                                        <i class="fas fa-filter me-1"></i> Filter
-                                    </button>
-                                    @if(request('barangay') || request('date_from') || request('date_to'))
-                                        <a href="{{ route('admin.senior.birthday-payouts.history') }}" class="btn" style="background-color: #6B7280; color: white; border: none; border-radius: 8px; padding: 0 1rem; font-size: .875rem; height: 31px; display: flex; align-items: center;">
-                                            <i class="fas fa-times me-1"></i> Clear
-                                        </a>
-                                    @endif
-                                </div>
-                            </div>
+            <div class="bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,.1)] p-5 mb-6 border border-[#E5E7EB] flex-shrink-0">
+                <form method="GET" action="{{ route('admin.senior.birthday-payouts.history') }}">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div>
+                            <label class="block text-[13px] font-semibold text-[var(--text-primary)] mb-1">Barangay</label>
+                            <select class="ctrl-select" name="barangay">
+                                <option value="">All Barangays</option>
+                                <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
+                                <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
+                                <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
+                                <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
+                                <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
+                                <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
+                                <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
+                                <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
+                                <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
+                                <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
+                                <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
+                                <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
+                                <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
+                                <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
+                                <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
+                                <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
+                                <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
+                                <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
+                                <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
+                                <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
+                                <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
+                                <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
+                                <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
+                                <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
+                                <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
+                                <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
+                                <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
+                                <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
+                                <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
+                                <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
+                                <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
+                                <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
+                                <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
+                                <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
+                                <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
+                                <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
+                                <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
+                                <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
+                                <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
+                                <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
+                                <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
+                                <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
+                                <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
+                                <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
+                                <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
+                                <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
+                                <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
+                                <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
+                                <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
+                                <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
+                                <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
+                                <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
+                                <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
+                                <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
+                                <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
+                                <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
+                                <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
+                                <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
+                                <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
+                                <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
+                                <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
+                                <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
+                                <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
+                                <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
+                            </select>
                         </div>
-                    </form>
-                </div>
+                        <div>
+                            <label class="block text-[13px] font-semibold text-[var(--text-primary)] mb-1">Date From</label>
+                            <input type="date" class="ctrl-input" name="date_from" value="{{ $dateFrom }}">
+                        </div>
+                        <div>
+                            <label class="block text-[13px] font-semibold text-[var(--text-primary)] mb-1">Date To</label>
+                            <input type="date" class="ctrl-input" name="date_to" value="{{ $dateTo }}">
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-sm font-semibold rounded-lg transition-colors duration-200 cursor-pointer border-0" style="font-family:var(--font-family)">
+                                <i data-lucide="filter" style="width:16px;height:16px"></i> Filter
+                            </button>
+                            @if(request('barangay') || request('date_from') || request('date_to'))
+                                <a href="{{ route('admin.senior.birthday-payouts.history') }}" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#6B7280] hover:bg-[#4B5563] text-white text-sm font-medium rounded-lg transition-colors duration-200 no-underline" style="font-family:var(--font-family);white-space:nowrap">
+                                    <i data-lucide="x" style="width:15px;height:15px"></i> Clear
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </form>
             </div>
 
             <!-- History Table -->
-            <div class="table-card">
-                <div class="table-responsive">
-                    <table class="table">
+            <div class="custom-table-wrapper">
+                <div class="custom-table-scroll">
+                    <table class="custom-table">
                         <thead>
                             <tr>
                                 <th>Date & Time</th>
@@ -331,7 +297,7 @@
                                 <tr>
                                     <td>{{ $record->created_at->format('M d, Y g:i A') }}</td>
                                     <td>
-                                        <span class="badge badge-{{ $record->action }}">
+                                        <span class="badge-span badge-{{ $record->action }}">
                                             {{ ucfirst(str_replace('_', ' ', $record->action)) }}
                                         </span>
                                     </td>
@@ -339,9 +305,9 @@
                                         @if($record->senior)
                                             <strong>{{ $record->senior->full_name }}</strong>
                                             <br>
-                                            <small class="text-muted">{{ $record->senior->control_number ?? '-' }}</small>
+                                            <small class="text-[var(--text-muted)] text-xs">{{ $record->senior->control_number ?? '-' }}</small>
                                         @else
-                                            <span class="text-muted">System-wide action</span>
+                                            <span class="text-[var(--text-muted)]">System-wide action</span>
                                         @endif
                                     </td>
                                     <td>{{ $record->details ?? '-' }}</td>
@@ -349,15 +315,17 @@
                                         @if($record->performedBy)
                                             {{ $record->performedBy->name ?? 'Admin' }}
                                         @else
-                                            <span class="text-muted">System</span>
+                                            <span class="text-[var(--text-muted)]">System</span>
                                         @endif
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-5">
-                                        <i class="fas fa-history fa-3x text-muted mb-3"></i>
-                                        <p class="text-muted mb-0">No payout history found.</p>
+                                    <td colspan="5" class="text-center py-12">
+                                        <div class="flex flex-col items-center text-[var(--text-muted)]">
+                                            <i data-lucide="history" style="width:48px;height:48px;opacity:.4" class="mb-3"></i>
+                                            <p class="text-sm m-0">No payout history found.</p>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforelse
@@ -367,7 +335,7 @@
 
                 <!-- Pagination -->
                 @if($history->hasPages())
-                    <div class="d-flex justify-content-center mt-4 pb-3">
+                    <div class="flex justify-center py-5 border-t border-[var(--border)]">
                         {{ $history->appends(['barangay' => request('barangay'), 'date_from' => request('date_from'), 'date_to' => request('date_to')])->links('vendor.pagination.custom') }}
                     </div>
                 @endif
@@ -408,6 +376,9 @@
                 }
             });
         }
+
+        // Initialize Lucide icons
+        lucide.createIcons();
     </script>
 </body>
 </html>

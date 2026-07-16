@@ -5,219 +5,254 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Senior Citizen Masterlist</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- SweetAlert2 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { corePlugins: { preflight: false } }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary: #1A237E;
-            --primary-dark: #121858;
-            --secondary: #6B7280;
-            --accent: #FBC02D;
-            --danger: #D32F2F;
-            --background: #F8FAFC;
-            --cards: #FFFFFF;
-            --text: #1F2937;
-            --muted: #6B7280;
+            --primary-hover: #121858;
             --sidebar-bg: #1A237E;
+            --accent-yellow: #FBC02D;
+            --background: #F5F7FB;
+            --surface: #FFFFFF;
             --border: #E5E7EB;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --text-muted: #9CA3AF;
+            --success: #16A34A;
+            --success-bg: #ECFDF5;
+            --danger: #DC2626;
+            --danger-bg: #FEF2F2;
+            --info: #3B82F6;
+            --info-bg: #EEF2FF;
+            --purple: #7C3AED;
+            --purple-bg: #F3E8FF;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,.05);
+            --font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
 
         *, *::before, *::after { box-sizing: border-box; }
-        body {
-            margin: 0;
-            padding: 0;
-            background: var(--background);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text);
-            overflow: hidden;
-        }
+        html, body { margin: 0; padding: 0; height: 100%; background: var(--background); color: var(--text-primary); font-family: var(--font-family); }
+        body { font-size: 14px; line-height: 1.5; }
+        h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+        button { font-family: inherit; cursor: pointer; }
+        input, select, textarea { font-family: inherit; font-size: 14px; }
+        .app { display: flex; min-height: 100vh; }
 
-        /* Sidebar */
+        /* ---------- Sidebar ---------- */
         .sidebar {
-            background: var(--sidebar-bg);
-            width: 260px;
-            min-height: 100vh;
-            position: fixed;
-            left: 0; top: 0;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transition: transform .3s ease;
+            width: 260px; flex-shrink: 0; background: var(--primary); color: #FFFFFF;
+            position: fixed; left: 0; top: 0; height: 100vh; z-index: 1000;
+            display: flex; flex-direction: column; transition: transform .3s ease;
         }
         .sidebar-brand {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,.1);
-            color: #fff;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: .65rem;
+            height: 72px; padding: 0 1.5rem; border-bottom: 1px solid rgba(255,255,255,.1);
+            color: #fff; font-weight: 700; font-size: 1.1rem;
+            display: flex; align-items: center; gap: .65rem;
         }
-        .sidebar-brand i { font-size: 1.3rem; color: var(--accent); }
-        .sidebar-menu {
-            list-style: none;
-            margin: 0;
-            padding: 1rem 0;
-            flex: 1;
-        }
+        .sidebar-brand i, .sidebar-brand [data-lucide] { width: 24px; height: 24px; color: var(--accent-yellow); }
+        .sidebar-menu { list-style: none; margin: 0; padding: 1rem 0; flex: 1; }
         .sidebar-menu li { margin-bottom: .2rem; }
         .sidebar-menu a {
-            color: rgba(255,255,255,.75);
-            padding: .75rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            text-decoration: none;
-            font-size: .9rem;
-            border-left: 3px solid transparent;
-            transition: all .2s ease;
+            color: rgba(255,255,255,.75); padding: .75rem 1.5rem;
+            display: flex; align-items: center; gap: .75rem;
+            text-decoration: none; font-size: .9rem;
+            border-left: 3px solid transparent; transition: all .2s ease;
         }
-        .sidebar-menu a:hover { 
-            background: rgba(255,255,255,.1); 
-            color: var(--accent); 
-        }
-        .sidebar-menu a.active {
-            background: rgba(255,255,255,.1);
-            color: var(--accent);
-            border-left-color: var(--accent);
-        }
-        .sidebar-menu a i { width: 20px; text-align: center; font-size: .95rem; }
+        .sidebar-menu a:hover { background: rgba(255,255,255,.1); color: var(--accent-yellow); }
+        .sidebar-menu a.active { background: rgba(255,255,255,.1); color: var(--accent-yellow); border-left-color: var(--accent-yellow); }
+        .sidebar-menu a i, .sidebar-menu a [data-lucide] { width: 20px; height: 20px; text-align: center; }
 
-        /* Main content */
-        .main-content {
-            margin-left: 260px;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+        /* ---------- Main ---------- */
+        html, body { overflow: hidden; height: 100vh; }
+        .main {
+            flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
+            max-width: calc(100% - 260px); height: 100vh;
+            display: flex; flex-direction: column; overflow: hidden;
+            animation: fadeIn .3s ease;
         }
 
-        /* Top-bar */
-        .top-navbar {
-            background-color: var(--cards);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
+        /* ---------- Buttons ---------- */
+        .btn {
+            border: 1px solid var(--border); background: var(--surface);
+            color: var(--text-primary); padding: 10px 20px; border-radius: 10px;
+            font-size: 14px; font-weight: 500; display: inline-flex;
+            align-items: center; gap: 8px; box-shadow: var(--shadow);
+            transition: all 0.2s ease; height: 42px; cursor: pointer; text-decoration: none;
         }
-        .page-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
-        .breadcrumb-nav { font-size: .8rem; color: var(--muted); margin: 0; }
-        .breadcrumb-nav a { color: var(--primary); text-decoration: none; }
+        .btn:hover { border-color: var(--primary); transform: translateY(-1px); }
+        .btn.primary { background: var(--primary); color: #FFFFFF; border-color: var(--primary); }
+        .btn.primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+        .btn.danger { background: var(--danger); color: #FFFFFF; border-color: var(--danger); }
+        .btn.danger:hover { background: #B91C1C; border-color: #B91C1C; }
+        .btn.success { background: var(--success); color: #FFFFFF; border-color: var(--success); }
+        .btn.success:hover { background: #15803D; border-color: #15803D; }
+        .btn.warning { background: #F59E0B; color: #FFFFFF; border-color: #F59E0B; }
+        .btn.warning:hover { background: #D97706; border-color: #D97706; }
+        .btn.ghost { background: transparent; box-shadow: none; border-color: transparent; color: var(--text-secondary); }
+        .btn.ghost:hover { background: var(--background); color: var(--text-primary); }
+        .btn:disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+        .btn-sm { padding: 6px 12px; font-size: 13px; height: 36px; }
 
-        /* Page body */
-        .page-body { padding: 2rem; flex: 1; overflow: hidden; display: flex; flex-direction: column; }
-
-        /* Table Card */
+        /* ---------- Table Card ---------- */
         .table-card {
-            background: var(--cards);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,.05);
-            padding: 2rem;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            background: var(--surface); border-radius: 16px;
+            border: 1px solid var(--border); box-shadow: var(--shadow);
+            padding: 2rem; display: flex; flex-direction: column;
+            overflow: hidden; flex: 1; min-height: 0;
+        }
+        .table-card-title {
+            font-size: 1.25rem; font-weight: 700; color: var(--text-primary);
+            margin-top: 0; margin-bottom: 1.5rem; flex-shrink: 0;
         }
 
-        .table {
-            margin-bottom: 0;
-        }
-        .table thead th {
-            background-color: var(--background);
-            border-bottom: 2px solid var(--border);
-            font-weight:600;
-            font-size: .85rem;
-            color: var(--text);
-            padding: .75rem;
-        }
-        .table tbody td {
-            border-bottom: 1px solid var(--border);
-            padding: .75rem;
-            font-size: .875rem;
-            color: var(--text);
-        }
-        .table tbody tr:hover {
-            background-color: var(--background);
-        }
+        /* ---------- Filter Section ---------- */
+        .filter-section { margin-bottom: 1.5rem; flex-shrink: 0; }
+        .filter-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+        .filter-left { display: flex; gap: 12px; flex: 1; min-width: 0; flex-wrap: wrap; }
+        .filter-right { display: flex; gap: 12px; flex-shrink: 0; }
+        .filter-group { display: flex; flex-direction: column; gap: 4px; }
+        .filter-group.search-group { flex: 1; min-width: 250px; }
+        .filter-group.select-group { min-width: 200px; }
+        .filter-label { font-size: 0.75rem; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; }
 
-        .badge {
-            padding: .35rem .65rem;
-            font-size: .75rem;
-            font-weight: 600;
-            border-radius: 6px;
+        /* ---------- Search Input ---------- */
+        .input-group { display: flex; align-items: center; height: 44px; }
+        .input-group input {
+            flex: 1; height: 44px; border: 1px solid var(--border); border-right: none;
+            border-radius: 6px 0 0 6px; padding: 0 1rem; font-size: 0.875rem;
+            color: var(--text-primary); background: var(--surface); transition: all 0.2s ease;
         }
-        .badge-active {
-            background-color: #DCFCE7;
-            color: #166534;
+        .input-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,58,138,0.15); }
+        .input-group .search-btn {
+            background-color: var(--primary); color: #ffffff; border: none;
+            padding: 0 1.25rem; border-radius: 0 6px 6px 0; cursor: pointer;
+            height: 44px; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
         }
-        .badge-pending {
-            background-color: #FEF3C7;
-            color: #92400E;
-        }
+        .input-group .search-btn:hover { background-color: var(--primary-hover); }
 
-        /* Pagination styling */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 0.25rem;
-            margin: 0;
-            list-style: none;
-            padding: 0;
+        /* ---------- Select ---------- */
+        .filter-select {
+            height: 44px; border: 1px solid var(--border); border-radius: 6px;
+            padding: 0 2.25rem 0 1rem; font-size: 0.875rem; color: var(--text-primary);
+            background: var(--surface); cursor: pointer; width: 100%;
+            appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 16px 12px;
+            transition: all 0.2s ease;
         }
-        .pagination .page-item {
-            margin: 0;
+        .filter-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,58,138,0.15); }
+
+        /* ---------- Table Scroll ---------- */
+        .table-scroll { flex: 1; overflow-y: auto; min-height: 0; border-radius: 8px; border: 1px solid var(--border); }
+        .table-scroll table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .table-scroll thead { position: sticky; top: 0; z-index: 1; background: var(--surface); }
+        .table-scroll th {
+            padding: 12px 16px; font-size: 11px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            color: var(--text-secondary); text-align: left; border-bottom: 2px solid var(--border);
         }
+        .table-scroll td {
+            padding: 14px 16px; font-size: 13px; color: var(--text-primary);
+            border-bottom: 1px solid var(--border); vertical-align: middle;
+        }
+        .table-scroll tr:hover td { background: var(--background); }
+
+        /* ---------- Badge ---------- */
+        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+        .badge-active { background: var(--success-bg); color: var(--success); }
+        .badge-pending { background: #FEF3C7; color: #92400E; }
+
+        /* ---------- Pagination ---------- */
+        .pagination { display: flex; justify-content: center; gap: 4px; margin: 0; list-style: none; padding: 0; }
+        .pagination .page-item { margin: 0; }
         .pagination .page-link,
         .pagination .page-item span {
-            display: inline-block;
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 0.375rem 0.75rem;
-            border-radius: 6px;
-            text-decoration: none;
-            background: var(--cards);
-            transition: all 0.2s;
-            min-width: 40px;
-            text-align: center;
+            display: inline-flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border); color: var(--text-primary); padding: 0.375rem 0.75rem;
+            border-radius: 6px; text-decoration: none; background: var(--surface);
+            transition: all 0.2s; min-width: 40px; text-align: center; font-size: 13px; font-weight: 500;
         }
         .pagination .page-link:hover,
-        .pagination .page-item span:hover {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
+        .pagination .page-item span:hover { background-color: var(--primary); color: white; border-color: var(--primary); }
         .pagination .page-item.active .page-link,
-        .pagination .page-item.active span {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
+        .pagination .page-item.active span { background-color: var(--primary); color: white; border-color: var(--primary); }
         .pagination .page-item.disabled .page-link,
-        .pagination .page-item.disabled span {
-            color: var(--muted);
-            background-color: var(--background);
-            border-color: var(--border);
-            cursor: not-allowed;
-        }
+        .pagination .page-item.disabled span { color: var(--text-muted); background-color: var(--background); border-color: var(--border); cursor: not-allowed; }
 
-        /* Responsive */
+        /* ---------- Dropdown ---------- */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-menu {
+            position: absolute; top: 100%; right: 0; z-index: 50;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12); min-width: 200px;
+            padding: 6px; display: none; margin-top: 4px;
+        }
+        .dropdown-menu.show { display: block; }
+        .dropdown-item {
+            display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+            font-size: 13px; color: var(--text-primary); border-radius: 6px;
+            text-decoration: none; cursor: pointer; transition: background 0.15s;
+        }
+        .dropdown-item:hover { background: var(--background); }
+
+        /* ---------- Modal ---------- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            display: none; align-items: center; justify-content: center;
+            padding: 24px; z-index: 2000;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-card {
+            background: var(--surface); border-radius: 16px; max-width: 800px; width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 24px; border-bottom: 1px solid var(--border);
+        }
+        .modal-header h3 { font-size: 16px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .modal-close {
+            background: none; border: none; font-size: 24px; color: var(--text-muted);
+            padding: 4px 8px; cursor: pointer; transition: color 0.2s; line-height: 1;
+        }
+        .modal-close:hover { color: var(--text-primary); }
+        .modal-body { padding: 24px; background: var(--background); }
+        .modal-footer {
+            display: flex; justify-content: flex-end; gap: 8px;
+            padding: 16px 24px; border-top: 1px solid var(--border);
+        }
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .modal-field label { display: block; font-weight: 600; color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 4px; }
+        .modal-field p { font-weight: 500; color: var(--text-primary); margin: 0; background: var(--surface); padding: 10px 12px; border-radius: 8px; font-size: 14px; border: 1px solid var(--border); }
+        .modal-field.full { grid-column: 1 / -1; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 1200px) {
+            .main { padding: 24px; }
+        }
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.show { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-            .page-body { padding: 1rem; }
-            .table-responsive {
-                font-size: .75rem;
-            }
+            .main { margin-left: 0; max-width: 100%; padding: 20px; }
+            .modal-grid { grid-template-columns: 1fr; }
+            .filter-row { flex-direction: column; align-items: stretch; }
+            .filter-left { flex-direction: column; }
+            .filter-group.search-group, .filter-group.select-group { min-width: auto; width: 100%; }
+            .filter-right { flex-wrap: wrap; }
         }
+
+        /* ---------- Animations ---------- */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -225,312 +260,304 @@
 <!-- ======================== SIDEBAR ======================== -->
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <i class="fas fa-user-friends"></i>
+        <i data-lucide="users" style="width:24px;height:24px"></i>
         <span>Senior Citizen</span>
     </div>
     <ul class="sidebar-menu">
-        <!-- <li><a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a></li> -->
-        <li><a href="/admin/senior"><i class="fas fa-user-friends"></i> Dashboard</a></li>
-        <li><a href="/admin/senior/registration"><i class="fas fa-user-plus"></i> Registration</a></li>
-        <li><a href="/admin/senior/masterlist" class="active"><i class="fas fa-list"></i> Masterlist</a></li>
-        <li><a href="/admin/senior/birthdays"><i class="fas fa-birthday-cake"></i> Birthday Beneficiaries</a></li>
-        <li><a href="/admin/senior/birthday-payouts"><i class="fas fa-money-bill-wave"></i> Birthday Payouts</a></li>
-        <li><a href="/admin/senior/birthday-payouts/history"><i class="fas fa-history"></i> Payout History</a></li>
-        <li><a href="/admin/senior/statistics"><i class="fas fa-chart-bar"></i> Statistics</a></li>
-        <li><a href="/admin/senior/reports"><i class="fas fa-file-alt"></i> Reports</a></li>
-        <li><a href="/admin/senior/archive"><i class="fas fa-archive"></i> Archive</a></li>
-        
-        <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        <li><a href="/admin/senior"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i> Dashboard</a></li>
+        <li><a href="/admin/senior/registration"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
+        <li><a href="/admin/senior/masterlist" class="active"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
+        <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
+        <li><a href="/admin/senior/birthday-payouts"><i data-lucide="banknote" style="width:20px;height:20px"></i> Birthday Payouts</a></li>
+        <li><a href="/admin/senior/birthday-payouts/history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
+        <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
+        <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
+        <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
+        <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
     </ul>
 </div>
 
 <!-- ======================== MAIN ======================== -->
-<div class="main-content">
+<div class="main">
+    @php
+        $userName = session('admin_user_name') ?? 'Admin User';
+        $words = explode(' ', $userName);
+        $initials = '';
+        if (count($words) >= 2) {
+            $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+        } else {
+            $initials = strtoupper(substr($userName, 0, 2));
+        }
+    @endphp
 
-    <!-- Top-bar -->
-    <nav class="top-navbar">
-        <div class="d-flex align-items-center gap-3">
-            <button class="btn btn-link d-md-none" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div>
-                <p class="page-title">Senior Citizen Masterlist</p>
-                <p class="breadcrumb-nav">
-                    <a href="/admin/senior">Dashboard</a> / Masterlist
-                </p>
-            </div>
+    <!-- Modern Page Header -->
+    <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8 flex-shrink-0"
+            style="margin-top:-32px;margin-left:-32px;margin-right:-32px;margin-bottom:24px">
+        <div class="flex items-center">
+            <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Senior Citizen Masterlist</h1>
         </div>
-        <div class="d-flex align-items-center">
-            <div id="currentDateTime" class="text-muted small d-none d-md-block"></div>
-            <div style="width: 35px; height: 35px; font-size: 0.875rem; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; border-radius: 50%; margin-left: 1rem;">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
+        <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
+            <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime"></div>
+            <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">{{ $initials }}</div>
         </div>
-    </nav>
+    </header>
 
-    <!-- Page Body -->
-    <div class="page-body">
+    <!-- Table Card -->
+    <div class="table-card" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden">
+        <h2 class="table-card-title">Registered Senior Citizens</h2>
 
-        <!-- Table Card -->
-        <div class="table-card">
-            <h2 class="h5 fw-bold mb-3">Registered Senior Citizens</h2>
-
-            <!-- Filter Section -->
-            <div class="mb-4">
-                <form method="GET" action="{{ route('admin.senior.masterlist') }}" id="filterForm">
-                    <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-                        <!-- Left Section: Search and Filter -->
-                        <div style="display: flex; gap: 12px; flex: 1; min-width: 0;">
-                            <div style="flex: 1; min-width: 250px;">
-                                <label class="form-label small text-muted fw-semibold mb-1">Search by Name</label>
-                                <div class="input-group">
-                                    <input type="text" name="search" class="form-control" placeholder="Search by name..." value="{{ request('search') }}" style="height: 44px; border-right: none;">
-                                    <button type="submit" style="background-color: var(--primary); color: white; border: none; padding: 0 1rem; border-radius: 0 6px 6px 0; cursor: pointer; height: 44px;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div style="min-width: 200px;">
-                                <label class="form-label small text-muted fw-semibold mb-1">Filter by Barangay</label>
-                                <select class="form-select" name="barangay" onchange="this.form.submit()" style="height: 44px;">
-                                    <option value="">All Barangays</option>
-                                    <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
-                                    <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
-                                    <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
-                                    <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
-                                    <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
-                                    <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
-                                    <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
-                                    <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
-                                    <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
-                                    <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
-                                    <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
-                                    <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
-                                    <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
-                                    <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
-                                    <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
-                                    <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
-                                    <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
-                                    <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
-                                    <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
-                                    <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
-                                    <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
-                                    <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
-                                    <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
-                                    <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
-                                    <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
-                                    <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
-                                    <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
-                                    <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
-                                    <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
-                                    <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
-                                    <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
-                                    <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
-                                    <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
-                                    <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
-                                    <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
-                                    <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
-                                    <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
-                                    <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
-                                    <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
-                                    <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
-                                    <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
-                                    <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
-                                    <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
-                                    <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
-                                    <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
-                                    <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
-                                    <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
-                                    <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
-                                    <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
-                                    <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
-                                    <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
-                                    <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
-                                    <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
-                                    <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
-                                    <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
-                                    <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
-                                    <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
-                                    <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
-                                    <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
-                                    <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
-                                    <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
-                                    <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
-                                    <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
-                                    <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Right Section: Action Buttons -->
-                        <div style="display: flex; gap: 12px; flex-shrink: 0;">
-                            <a href="/admin/senior/registration" class="btn" style="background-color: var(--primary); color: white; border: none; border-radius: 8px; padding: 0 1rem; font-size: .875rem; height: 44px; display: flex; align-items: center;">
-                                <i class="fas fa-plus me-2"></i>Add New
-                            </a>
-                            <a href="{{ route('admin.senior.export-pdf') }}?barangay={{ request('barangay') }}&search={{ request('search') }}" class="btn" style="background-color: #DC2626; color: white; border: none; border-radius: 8px; padding: 0 1rem; font-size: .875rem; height: 44px; display: flex; align-items: center;">
-                                <i class="fas fa-file-pdf me-2"></i>Export PDF
-                            </a>
-                            <div class="dropdown" id="bulkActionDropdown">
-                                <button class="btn dropdown-toggle" style="background-color: var(--accent); color: var(--primary-dark); border: none; border-radius: 8px; font-weight: 600; font-size: 0.8rem; padding: 0 1rem; height: 44px; display: flex; align-items: center;" data-bs-toggle="dropdown" id="bulkActionButton" disabled>
-                                    <i class="fas fa-tasks me-1"></i> Bulk Actions <span id="selectedCount" style="background: var(--primary-dark); color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; margin-left: 5px;">0</span>
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <form method="GET" action="{{ route('admin.senior.masterlist') }}" id="filterForm">
+                <div class="filter-row">
+                    <div class="filter-left">
+                        <div class="filter-group search-group">
+                            <label class="filter-label">Search by Name</label>
+                            <div class="input-group">
+                                <input type="text" name="search" placeholder="Search by name..." value="{{ request('search') }}">
+                                <button type="submit" class="search-btn">
+                                    <i data-lucide="search" style="width:16px;height:16px"></i>
                                 </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" onclick="bulkArchive()"><i class="fas fa-archive me-2"></i>Archive Selected</a></li>
-                                    <li><a class="dropdown-item" href="#" onclick="bulkExport()"><i class="fas fa-download me-2"></i>Export Selected</a></li>
-                                </ul>
                             </div>
-                            @if(request('search') || request('barangay'))
-                                <a href="{{ route('admin.senior.masterlist') }}" class="btn" style="background-color: #6B7280; color: white; border: none; border-radius: 8px; padding: 0 1rem; font-size: .875rem; height: 44px; display: flex; align-items: center;">
-                                    <i class="fas fa-times me-1"></i> Clear
-                                </a>
-                            @endif
+                        </div>
+                        <div class="filter-group select-group">
+                            <label class="filter-label">Filter by Barangay</label>
+                            <select class="filter-select" name="barangay" onchange="this.form.submit()">
+                                <option value="">All Barangays</option>
+                                <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
+                                <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
+                                <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
+                                <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
+                                <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
+                                <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
+                                <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
+                                <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
+                                <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
+                                <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
+                                <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
+                                <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
+                                <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
+                                <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
+                                <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
+                                <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
+                                <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
+                                <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
+                                <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
+                                <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
+                                <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
+                                <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
+                                <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
+                                <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
+                                <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
+                                <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
+                                <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
+                                <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
+                                <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
+                                <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
+                                <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
+                                <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
+                                <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
+                                <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
+                                <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
+                                <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
+                                <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
+                                <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
+                                <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
+                                <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
+                                <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
+                                <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
+                                <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
+                                <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
+                                <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
+                                <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
+                                <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
+                                <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
+                                <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
+                                <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
+                                <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
+                                <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
+                                <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
+                                <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
+                                <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
+                                <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
+                                <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
+                                <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
+                                <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
+                                <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
+                                <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
+                                <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
+                                <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
+                                <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
+                            </select>
                         </div>
                     </div>
-                </form>
-            </div>
 
-            @if($seniors->count() > 0)
-                <div class="table-responsive" style="flex: 1; overflow-y: auto; min-height: 0;">
-                    <table class="table table-hover" style="table-layout: fixed;">
-                        <thead style="position: sticky; top: 0; z-index: 1; background: var(--cards);">
-                            <tr>
-                                <th style="width: 5%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="cursor: pointer;"></th>
-                                <th style="width: 12%;">Control No</th>
-                                <th style="width: 18%;">Full Name</th>
-                                <th style="width: 15%;">Barangay</th>
-                                <th style="width: 12%;">Status</th>
-                                <th style="width: 20%;">Address</th>
-                                <th style="width: 8%;">Age</th>
-                                <th style="width: 15%;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($seniors as $senior)
-                                <tr>
-                                    <td><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="cursor: pointer;"></td>
-                                    <td style="word-wrap: break-word;"><strong>{{ $senior->control_number ?? '-' }}</strong></td>
-                                    <td style="word-wrap: break-word;">{{ $senior->full_name ?? '-' }}</td>
-                                    <td style="word-wrap: break-word;">{{ $senior->barangay ?? '-' }}</td>
-                                    <td>
-                                        <span class="badge {{ $senior->status == 'active' ? 'badge-active' : 'badge-pending' }}">
-                                            {{ ucfirst($senior->status ?? 'pending') }}
-                                        </span>
-                                    </td>
-                                    <td style="word-wrap: break-word;">{{ $senior->address ?? '-' }}</td>
-                                    <td style="word-wrap: break-word;">{{ $senior->age ?? '-' }}</td>
-                                    <td>
-                                        <div class="d-flex gap-1">
-                                            <button class="btn btn-sm" style="background-color: var(--primary); color: white; border: none; border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.8rem;" onclick="viewProfile({{ $senior->id }})">
-                                                <i class="fas fa-eye" style="pointer-events: none;"></i>
-                                            </button>
-                                            <a href="{{ route('admin.senior.id-card', $senior->id) }}" class="btn btn-sm" style="background-color: var(--accent); color: var(--primary-dark); border: none; border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.8rem;" title="ID Card">
-                                                <i class="fas fa-id-card" style="pointer-events: none;"></i>
-                                            </a>
-                                            <button class="btn btn-sm archive-senior-btn" style="background-color: #dc3545; color: white; border: none; border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.8rem;"
-                                                data-id="{{ $senior->id }}"
-                                                data-name="{{ $senior->full_name }}">
-                                                <i class="fas fa-archive" style="pointer-events: none;"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div class="filter-right">
+                        <a href="/admin/senior/registration" class="btn primary" style="height:44px;">
+                            <i data-lucide="plus" style="width:16px;height:16px"></i> Add New
+                        </a>
+                        <a href="{{ route('admin.senior.export-pdf') }}?barangay={{ request('barangay') }}&search={{ request('search') }}" class="btn danger" style="height:44px;">
+                            <i data-lucide="file-output" style="width:16px;height:16px"></i> Export PDF
+                        </a>
+                        <div class="dropdown" id="bulkActionDropdown">
+                            <button class="btn warning" id="bulkActionButton" onclick="toggleDropdown()" disabled style="height:44px;font-weight:600;">
+                                <i data-lucide="archive" style="width:14px;height:14px"></i> Bulk Actions <span id="selectedCount" style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: 4px;">0</span>
+                            </button>
+                            <div class="dropdown-menu" id="bulkDropdownMenu">
+                                <a class="dropdown-item" href="#" onclick="bulkArchive()"><i data-lucide="archive" style="width:14px;height:14px"></i> Archive Selected</a>
+                                <a class="dropdown-item" href="#" onclick="bulkExport()"><i data-lucide="download" style="width:14px;height:14px"></i> Export Selected</a>
+                            </div>
+                        </div>
+                        @if(request('search') || request('barangay'))
+                            <a href="{{ route('admin.senior.masterlist') }}" class="btn ghost" style="height:44px;">
+                                <i data-lucide="x" style="width:14px;height:14px"></i> Clear
+                            </a>
+                        @endif
+                    </div>
                 </div>
-
-                <!-- Pagination -->
-                <div class="d-flex justify-content-center mt-4">
-                    {{ $seniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
-                </div>
-            @else
-                <div class="text-center py-5">
-                    <i class="fas fa-users text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
-                    <p class="text-muted mt-3">No senior citizens registered yet.</p>
-                    <a href="/admin/senior/registration" class="btn btn-primary" style="background-color: var(--primary); border: none; border-radius: 8px; padding: .5rem 1rem; font-size: .875rem;">
-                        <i class="fas fa-plus me-2"></i>Register First Senior Citizen
-                    </a>
-                </div>
-            @endif
+            </form>
         </div>
 
-    </div><!-- /page-body -->
-</div><!-- /main-content -->
-
-<!-- Senior Citizen Details Modal -->
-<div class="modal fade" id="seniorModal" tabindex="-1" aria-labelledby="seniorModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,.12);">
-            <div class="modal-header" style="border-bottom: 1px solid var(--border); background: var(--primary); color: white; border-radius: 16px 16px 0 0;">
-                <h5 class="modal-title" id="seniorModalLabel"><i class="fas fa-user-circle me-2"></i>Senior Citizen Details</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        @if($seniors->count() > 0)
+            <div class="table-scroll" style="flex:1;overflow-y:auto;min-height:0;border-radius:8px;border:1px solid var(--border);">
+                <table style="table-layout:fixed;">
+                    <thead>
+                        <tr>
+                            <th style="width:5%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="cursor:pointer;accent-color:var(--primary);"></th>
+                            <th style="width:12%;">Control No</th>
+                            <th style="width:18%;">Full Name</th>
+                            <th style="width:15%;">Barangay</th>
+                            <th style="width:12%;">Status</th>
+                            <th style="width:20%;">Address</th>
+                            <th style="width:8%;">Age</th>
+                            <th style="width:15%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($seniors as $senior)
+                            <tr>
+                                <td><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="cursor:pointer;accent-color:var(--primary);"></td>
+                                <td style="word-wrap:break-word;font-weight:600;">{{ $senior->control_number ?? '-' }}</td>
+                                <td style="word-wrap:break-word;">{{ $senior->full_name ?? '-' }}</td>
+                                <td style="word-wrap:break-word;">{{ $senior->barangay ?? '-' }}</td>
+                                <td>
+                                    <span class="badge {{ $senior->status == 'active' ? 'badge-active' : 'badge-pending' }}">
+                                        {{ ucfirst($senior->status ?? 'pending') }}
+                                    </span>
+                                </td>
+                                <td style="word-wrap:break-word;">{{ $senior->address ?? '-' }}</td>
+                                <td style="word-wrap:break-word;">{{ $senior->age ?? '-' }}</td>
+                                <td>
+                                    <div style="display:flex;gap:4px;">
+                                        <button class="btn btn-sm primary" style="padding:6px 10px;height:34px;" onclick="viewProfile({{ $senior->id }})">
+                                            <i data-lucide="eye" style="width:14px;height:14px"></i>
+                                        </button>
+                                        <a href="{{ route('admin.senior.id-card', $senior->id) }}" class="btn btn-sm warning" style="padding:6px 10px;height:34px;" title="ID Card">
+                                            <i data-lucide="id-card" style="width:14px;height:14px"></i>
+                                        </a>
+                                        <button class="btn btn-sm danger archive-senior-btn"
+                                            data-id="{{ $senior->id }}"
+                                            data-name="{{ $senior->full_name }}"
+                                            style="padding:6px 10px;height:34px;">
+                                            <i data-lucide="archive" style="width:14px;height:14px"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
-            <div class="modal-body" style="background: var(--background);">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label style="font-weight: 600; color: var(--muted); font-size: 0.8rem;">Control Number</label>
-                        <p id="modalControlNumber" style="font-weight: 500; color: var(--text); margin-bottom: 0.5rem; background: var(--cards); padding: 0.4rem; border-radius: 6px; font-size: 0.9rem;">-</p>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label style="font-weight: 600; color: var(--muted); font-size: 0.8rem;">Year Applied</label>
-                        <p id="modalYearApplied" style="font-weight: 500; color: var(--text); margin-bottom: 0.5rem; background: var(--cards); padding: 0.4rem; border-radius: 6px; font-size: 0.9rem;">-</p>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label style="font-weight: 600; color: var(--muted); font-size: 0.8rem;">Status</label>
-                        <p id="modalStatus" style="font-weight: 500; color: var(--text); margin-bottom: 0.5rem; background: var(--cards); padding: 0.4rem; border-radius: 6px; font-size: 0.9rem;">-</p>
-                    </div>
-                    <div class="col-md-12 mb-3">
-                        <label style="font-weight: 600; color: var(--muted); font-size: 0.8rem;">Full Name</label>
-                        <p id="modalFullName" style="font-weight: 500; color: var(--text); margin-bottom: 0.5rem; background: var(--cards); padding: 0.4rem; border-radius: 6px; font-size: 0.9rem;">-</p>
-                    </div>
-                    <div class="col-md-8 mb-3">
-                        <label style="font-weight: 600; color: var(--muted); font-size: 0.8rem;">Address</label>
-                        <p id="modalAddress" style="font-weight: 500; color: var(--text); margin-bottom: 0.5rem; background: var(--cards); padding: 0.4rem; border-radius: 6px; font-size: 0.9rem;">-</p>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label style="font-weight: 600; color: var(--muted); font-size: 0.8rem;">Barangay</label>
-                        <p id="modalBarangay" style="font-weight: 500; color: var(--text); margin-bottom: 0.5rem; background: var(--cards); padding: 0.4rem; border-radius: 6px; font-size: 0.9rem;">-</p>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label style="font-weight: 600; color: var(--muted); font-size: 0.8rem;">Birth Date</label>
-                        <p id="modalBirthDate" style="font-weight: 500; color: var(--text); margin-bottom: 0.5rem; background: var(--cards); padding: 0.4rem; border-radius: 6px; font-size: 0.9rem;">-</p>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label style="font-weight: 600; color: var(--muted); font-size: 0.8rem;">Month</label>
-                        <p id="modalMonth" style="font-weight: 500; color: var(--text); margin-bottom: 0.5rem; background: var(--cards); padding: 0.4rem; border-radius: 6px; font-size: 0.9rem;">-</p>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label style="font-weight: 600; color: var(--muted); font-size: 0.8rem;">Age</label>
-                        <p id="modalAge" style="font-weight: 500; color: var(--text); margin-bottom: 0.5rem; background: var(--cards); padding: 0.4rem; border-radius: 6px; font-size: 0.9rem;">-</p>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label style="font-weight: 600; color: var(--muted); font-size: 0.8rem;">Sex</label>
-                        <p id="modalSex" style="font-weight: 500; color: var(--text); margin-bottom: 0.5rem; background: var(--cards); padding: 0.4rem; border-radius: 6px; font-size: 0.9rem;">-</p>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label style="font-weight: 600; color: var(--muted); font-size: 0.8rem;">Contact Number</label>
-                        <p id="modalContactNumber" style="font-weight: 500; color: var(--text); margin-bottom: 0.5rem; background: var(--cards); padding: 0.4rem; border-radius: 6px; font-size: 0.9rem;">-</p>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label style="font-weight: 600; color: var(--muted); font-size: 0.8rem;">PhilSys Number</label>
-                        <p id="modalPhilsysNumber" style="font-weight: 500; color: var(--text); margin-bottom: 0.5rem; background: var(--cards); padding: 0.4rem; border-radius: 6px; font-size: 0.9rem;">-</p>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label style="font-weight: 600; color: var(--muted); font-size: 0.8rem;">RRN Number</label>
-                        <p id="modalRrnNumber" style="font-weight: 500; color: var(--text); margin-bottom: 0.5rem; background: var(--cards); padding: 0.4rem; border-radius: 6px; font-size: 0.9rem;">-</p>
-                    </div>
-                    <div class="col-md-12 mb-3">
-                        <label style="font-weight: 600; color: var(--muted); font-size: 0.8rem;">Remarks</label>
-                        <p id="modalRemarks" style="font-weight: 500; color: var(--text); margin-bottom: 0.5rem; background: var(--cards); padding: 0.4rem; border-radius: 6px; font-size: 0.9rem;">-</p>
-                    </div>
+
+            <!-- Pagination -->
+            <div style="display:flex;justify-content:center;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);">
+                {{ $seniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
+            </div>
+        @else
+            <div style="text-align:center;padding:60px 20px;color:var(--text-secondary);">
+                <i data-lucide="users" style="width:56px;height:56px;color:#D1D5DB;margin:0 auto 12px;display:block"></i>
+                <p style="margin:8px 0 16px;font-size:14px;color:var(--text-muted);">No senior citizens registered yet.</p>
+                <a href="/admin/senior/registration" class="btn primary">
+                    <i data-lucide="plus" style="width:16px;height:16px"></i> Register First Senior Citizen
+                </a>
+            </div>
+        @endif
+    </div>
+</div>
+
+<!-- ======================== MODAL ======================== -->
+<div class="modal-overlay" id="seniorModal" onclick="if(event.target===this)closeModal()">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3><i data-lucide="user" style="width:20px;height:20px"></i> Senior Citizen Details</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-grid">
+                <div class="modal-field">
+                    <label>Control Number</label>
+                    <p id="modalControlNumber">-</p>
+                </div>
+                <div class="modal-field">
+                    <label>Year Applied</label>
+                    <p id="modalYearApplied">-</p>
+                </div>
+                <div class="modal-field">
+                    <label>Status</label>
+                    <p id="modalStatus">-</p>
+                </div>
+                <div class="modal-field full">
+                    <label>Full Name</label>
+                    <p id="modalFullName">-</p>
+                </div>
+                <div class="modal-field" style="grid-column:span 2;">
+                    <label>Address</label>
+                    <p id="modalAddress">-</p>
+                </div>
+                <div class="modal-field">
+                    <label>Barangay</label>
+                    <p id="modalBarangay">-</p>
+                </div>
+                <div class="modal-field">
+                    <label>Birth Date</label>
+                    <p id="modalBirthDate">-</p>
+                </div>
+                <div class="modal-field">
+                    <label>Month</label>
+                    <p id="modalMonth">-</p>
+                </div>
+                <div class="modal-field">
+                    <label>Age</label>
+                    <p id="modalAge">-</p>
+                </div>
+                <div class="modal-field">
+                    <label>Sex</label>
+                    <p id="modalSex">-</p>
+                </div>
+                <div class="modal-field">
+                    <label>Contact Number</label>
+                    <p id="modalContactNumber">-</p>
+                </div>
+                <div class="modal-field">
+                    <label>PhilSys Number</label>
+                    <p id="modalPhilsysNumber">-</p>
+                </div>
+                <div class="modal-field">
+                    <label>RRN Number</label>
+                    <p id="modalRrnNumber">-</p>
+                </div>
+                <div class="modal-field full">
+                    <label>Remarks</label>
+                    <p id="modalRemarks">-</p>
                 </div>
             </div>
-            <div class="modal-footer" style="border-top: 1px solid var(--border); background: var(--cards);">
-                <button type="button" class="btn" style="background-color: var(--primary); color: white; border: none; border-radius: 6px; padding: 0.5rem 1rem;" data-bs-dismiss="modal">Close</button>
-            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" onclick="closeModal()">Close</button>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('show');
@@ -538,34 +565,45 @@
 
     function updateDateTime() {
         const now = new Date();
-        const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' };
+        const options = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'2-digit', hour12: true };
         const el = document.getElementById('currentDateTime');
-        if (el) el.textContent = now.toLocaleDateString('en-PH', opts);
+        if (el) {
+            const dateTimeStr = now.toLocaleDateString('en-US', options).replace(',', ' at');
+            el.textContent = dateTimeStr;
+        }
     }
     updateDateTime();
+    setInterval(updateDateTime, 60000);
+
+    // Custom Dropdown
+    function toggleDropdown() {
+        const menu = document.getElementById('bulkDropdownMenu');
+        menu.classList.toggle('show');
+    }
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('bulkActionDropdown');
+        const menu = document.getElementById('bulkDropdownMenu');
+        if (dropdown && !dropdown.contains(e.target)) {
+            menu.classList.remove('show');
+        }
+    });
+
+    // Custom Modal
+    function openModal() {
+        document.getElementById('seniorModal').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+        document.getElementById('seniorModal').classList.remove('show');
+        document.body.style.overflow = '';
+    }
 
     // View senior profile function
     function viewProfile(id) {
-        const modal = new bootstrap.Modal(document.getElementById('seniorModal'));
-        const content = document.getElementById('seniorModal');
-        
-        // Show loading state
-        document.getElementById('modalControlNumber').textContent = 'Loading...';
-        document.getElementById('modalFullName').textContent = 'Loading...';
-        document.getElementById('modalAddress').textContent = 'Loading...';
-        document.getElementById('modalBarangay').textContent = 'Loading...';
-        document.getElementById('modalBirthDate').textContent = 'Loading...';
-        document.getElementById('modalMonth').textContent = 'Loading...';
-        document.getElementById('modalAge').textContent = 'Loading...';
-        document.getElementById('modalSex').textContent = 'Loading...';
-        document.getElementById('modalContactNumber').textContent = 'Loading...';
-        document.getElementById('modalPhilsysNumber').textContent = 'Loading...';
-        document.getElementById('modalRrnNumber').textContent = 'Loading...';
-        document.getElementById('modalRemarks').textContent = 'Loading...';
-        document.getElementById('modalStatus').textContent = 'Loading...';
-        document.getElementById('modalYearApplied').textContent = 'Loading...';
-        
-        modal.show();
+        const fields = ['modalControlNumber','modalFullName','modalAddress','modalBarangay','modalBirthDate','modalMonth','modalAge','modalSex','modalContactNumber','modalPhilsysNumber','modalRrnNumber','modalRemarks','modalStatus','modalYearApplied'];
+        fields.forEach(f => document.getElementById(f).textContent = 'Loading...');
+
+        openModal();
 
         fetch(`{{ route('admin.senior.profile.json', 0) }}`.replace('/0', `/${id}`))
             .then(r => r.json())
@@ -593,8 +631,8 @@
 
     // Event delegation for Archive buttons
     document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('archive-senior-btn')) {
-            const button = e.target;
+        if (e.target.classList.contains('archive-senior-btn') || e.target.closest('.archive-senior-btn')) {
+            const button = e.target.classList.contains('archive-senior-btn') ? e.target : e.target.closest('.archive-senior-btn');
             const seniorId = button.dataset.id;
             const seniorName = button.dataset.name;
 
@@ -613,11 +651,10 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Submit form to archive
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = `/admin/senior/archive/${seniorId}`;
-                    
+
                     const csrfToken = document.querySelector('meta[name="csrf-token"]');
                     if (csrfToken) {
                         const csrfInput = document.createElement('input');
@@ -626,15 +663,13 @@
                         csrfInput.value = csrfToken.getAttribute('content');
                         form.appendChild(csrfInput);
                     }
-                    
+
                     document.body.appendChild(form);
                     form.submit();
                 }
             });
         }
     });
-
-    setInterval(updateDateTime, 60000);
 
     // Bulk Actions Functions
     function toggleSelectAll() {
@@ -650,9 +685,9 @@
         const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
         const button = document.getElementById('bulkActionButton');
         const countSpan = document.getElementById('selectedCount');
-        
+
         countSpan.textContent = checkboxes.length;
-        
+
         if (checkboxes.length > 0) {
             button.disabled = false;
             button.style.opacity = '1';
@@ -665,7 +700,7 @@
     function bulkArchive() {
         const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
         const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
-        
+
         if (ids.length === 0) {
             Swal.fire('No Selection', 'Please select at least one record.', 'warning');
             return;
@@ -682,7 +717,6 @@
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Send AJAX request to bulk archive
                 fetch('/admin/senior/bulk-archive', {
                     method: 'POST',
                     headers: {
@@ -710,7 +744,7 @@
     function bulkExport() {
         const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
         const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
-        
+
         if (ids.length === 0) {
             Swal.fire('No Selection', 'Please select at least one record.', 'warning');
             return;
@@ -727,7 +761,6 @@
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Redirect to export with IDs
                 window.location.href = `/admin/senior/export?ids=${ids.join(',')}`;
             }
         });
@@ -735,6 +768,8 @@
 
     // Show popup for archive success/error
     document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+
         @if(session('success'))
             Swal.fire({
                 title: 'Success!',
