@@ -6,6 +6,7 @@
     <title>Portal Gateway - MSWDO Silang</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         *, *::before, *::after {
@@ -588,6 +589,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Hide loading overlay when page is fully loaded
         window.addEventListener('load', function() {
@@ -595,6 +597,33 @@
                 document.getElementById('loadingOverlay').classList.add('hidden');
             }, 1000);
         });
+
+        // Welcome popup — shows once ever per browser
+        (function showWelcomeOnce() {
+            if (localStorage.getItem('mswdo_welcome_seen')) return;
+            function tryPopup() {
+                if (typeof Swal === 'undefined') { setTimeout(tryPopup, 100); return; }
+                localStorage.setItem('mswdo_welcome_seen', '1');
+                Swal.fire({
+                    title: 'Welcome to MSWDO Silang Portal!',
+                    html: '<div style="text-align:center;line-height:1.7;color:#475569;font-size:15px">' +
+                          '<p style="margin:0 0 8px">Your centralized platform for social welfare management.</p>' +
+                          '<p style="margin:0;font-size:13px;color:#94A3B8">Select your role below to get started.</p>' +
+                          '</div>',
+                    icon: 'info',
+                    confirmButtonColor: '#1A237E',
+                    confirmButtonText: 'Get Started',
+                    background: '#ffffff',
+                    customClass: { popup: 'rounded-4 shadow-lg' },
+                    allowOutsideClick: false
+                });
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() { setTimeout(tryPopup, 800); });
+            } else {
+                setTimeout(tryPopup, 800);
+            }
+        })();
 
         // Add form submission debugging
         document.getElementById('loginForm').addEventListener('submit', function(e) {

@@ -78,7 +78,7 @@ const DEFAULT_REQUIREMENTS = ["Valid government-issued ID","Barangay Certificate
 const ELIGIBILITY_DAYS = 180;
 
 let cases = [];
-let view = {tab:"dashboard", caseId:null, docAgency:null, newCaseStep:"search", eligClientName:"", eligOverride:false, eligMatch:null, caseListPage:1, archivePage:1};
+let view = {tab:"dashboard", caseId:null, docAgency:null, newCaseStep:"search", eligClientName:"", eligOverride:false, eligMatch:null, caseListPage:1, archivePage:1, archiveSearch:"", archiveFilter:"", archiveBarangay:""};
 let draftIntake = null;
 
 /* ---- Naming-convention helpers (camelCase <-> snake_case) ---- */
@@ -550,19 +550,46 @@ function renderSidebar(activeTab){
 /* ---------------- Rendering: Dashboard ---------------- */
 async function loadArchive(){
   await loadCases();
+  populateArchiveBarangays();
   renderArchive();
   lucide.createIcons();
 }
 
+function populateArchiveBarangays(){
+  const menu = document.getElementById('archiveBrgyMenu');
+  if(!menu) return;
+  menu.innerHTML = '<div class="archive-brgy-opt" data-value="" onclick="selectArchiveBrgy(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Barangays</div>' +
+    BARANGAYS.map(b => `<div class="archive-brgy-opt" data-value="${escapeHtml(b)}" onclick="selectArchiveBrgy(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">${escapeHtml(b)}</div>`).join('');
+  highlightArchiveBrgyOpt();
+}
+
 function renderArchive(){
-  const archivedCases = cases.filter(c => c.status === 'Archived');
+  let archivedCases = cases.filter(c => c.status === 'Archived');
+
+  const q = (view.archiveSearch || '').toLowerCase();
+  if(q){
+    archivedCases = archivedCases.filter(c =>
+      (c.client.name || '').toLowerCase().includes(q) ||
+      (c.controlNo || '').toLowerCase().includes(q)
+    );
+  }
+  const f = view.archiveFilter || '';
+  if(f){
+    archivedCases = archivedCases.filter(c => c.purpose === f);
+  }
+  const b = view.archiveBarangay || '';
+  if(b){
+    archivedCases = archivedCases.filter(c => c.client.address === b);
+  }
+
   const table = document.getElementById('archiveTable');
   
   if(archivedCases.length === 0){
+    const hasFilters = q || f || b;
     table.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted)">
-      <i data-lucide="archive" style="width:32px;height:32px;margin-bottom:8px"></i>
-      <div>No archived cases</div>
-      <div style="font-size:12px;margin-top:4px">Archived cases will appear here</div>
+      <i data-lucide="${hasFilters ? 'search-x' : 'archive'}" style="width:32px;height:32px;margin-bottom:8px"></i>
+      <div>${hasFilters ? 'No matching archived cases' : 'No archived cases'}</div>
+      <div style="font-size:12px;margin-top:4px">${hasFilters ? 'Try adjusting your search or filter' : 'Archived cases will appear here'}</div>
     </td></tr>`;
     const pagInfo = document.getElementById('archivePaginationInfo');
     if(pagInfo) pagInfo.textContent = 'Showing 0 of 0 Archived Cases';

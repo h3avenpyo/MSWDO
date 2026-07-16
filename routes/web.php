@@ -13,6 +13,7 @@ Route::get('/', function () {
 Route::get('/admin', [AuthController::class, 'showLogin'])->name('admin.login.form');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login');
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
+Route::post('/admin/clear-welcome', [AuthController::class, 'clearWelcome'])->name('admin.clear-welcome');
 
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 Route::prefix('admin/social-case')->name('admin.social-case.')->group(function () {

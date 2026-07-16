@@ -6,6 +6,9 @@
     html,body{overflow:hidden!important;height:100vh!important}
     .app{min-height:auto!important;height:100vh!important;overflow:hidden!important}
     .main{display:flex!important;flex-direction:column!important;overflow:hidden!important}
+    #archiveSearch:focus{border-color:#1A237E;box-shadow:0 0 0 3px rgba(26,35,126,.08)}
+    .archive-type-opt.selected,.archive-brgy-opt.selected{background:#F3F4F6;font-weight:600}
+    .archive-type-opt:not(.selected):hover,.archive-brgy-opt:not(.selected):hover{background:#F3F4F6}
 </style>
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
@@ -51,6 +54,43 @@
         <p class="text-[#6B7280] text-sm m-0">View and manage archived social case study records.</p>
     </div>
 
+    <!-- Search and Filter Bar -->
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+        <div style="position:relative;width:280px;flex-shrink:0">
+            <i data-lucide="search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:#9CA3AF;pointer-events:none"></i>
+            <input type="text" id="archiveSearch" placeholder="Search by client name or control no."
+                   oninput="view.archiveSearch=this.value;view.archivePage=1;renderArchive()"
+                   style="width:100%;padding:10px 12px 10px 40px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;background:#fff">
+        </div>
+        <div style="position:relative;min-width:180px" id="archiveBrgyDropdown">
+            <div onclick="toggleArchiveBrgyMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="archiveBrgyBtn">
+                <i data-lucide="map-pin" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
+                <span id="archiveBrgyLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Barangays</span>
+                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
+            </div>
+            <div id="archiveBrgyMenu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;max-height:260px;overflow-y:auto;padding:4px">
+                <div class="archive-brgy-opt" data-value="" onclick="selectArchiveBrgy(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Barangays</div>
+            </div>
+        </div>
+        <div style="position:relative;min-width:180px" id="archiveTypeDropdown">
+            <div onclick="toggleArchiveTypeMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="archiveTypeBtn">
+                <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
+                <span id="archiveTypeLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Types</span>
+                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
+            </div>
+            <div id="archiveTypeMenu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;max-height:260px;overflow-y:auto;padding:4px">
+                <div class="archive-type-opt" data-value="" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Types</div>
+                <div class="archive-type-opt" data-value="Medical Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Medical Assistance</div>
+                <div class="archive-type-opt" data-value="Burial Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Burial Assistance</div>
+                <div class="archive-type-opt" data-value="Educational Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Educational Assistance</div>
+                <div class="archive-type-opt" data-value="Financial Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Financial Assistance</div>
+                <div class="archive-type-opt" data-value="Food / Relief Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Food / Relief Assistance</div>
+                <div class="archive-type-opt" data-value="Livelihood Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Livelihood Assistance</div>
+                <div class="archive-type-opt" data-value="Other" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Other</div>
+            </div>
+        </div>
+    </div>
+
     <div class="panel" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;margin-bottom:0">
         <div style="flex:1;overflow:auto;min-height:0;border-radius:8px">
             <table>
@@ -70,6 +110,84 @@
 @push('scripts')
 <script src="{{ asset('js/social-case.js') }}"></script>
 <script>
+    function toggleArchiveTypeMenu(){
+        var menu=document.getElementById('archiveTypeMenu');
+        var btn=document.getElementById('archiveTypeBtn');
+        var arrow=btn.querySelector('[data-lucide="chevron-down"]');
+        if(menu.style.display==='none'||!menu.style.display){
+            menu.style.display='block';
+            if(arrow) arrow.style.transform='rotate(180deg)';
+            highlightArchiveTypeOpt();
+        }else{
+            menu.style.display='none';
+            if(arrow) arrow.style.transform='';
+        }
+    }
+    function selectArchiveType(el){
+        var val=el.getAttribute('data-value');
+        view.archiveFilter=val;
+        view.archivePage=1;
+        document.getElementById('archiveTypeLabel').textContent=el.textContent;
+        document.getElementById('archiveTypeMenu').style.display='none';
+        var arrow=document.querySelector('#archiveTypeBtn [data-lucide="chevron-down"]');
+        if(arrow) arrow.style.transform='';
+        highlightArchiveTypeOpt();
+        renderArchive();
+    }
+    function highlightArchiveTypeOpt(){
+        var opts=document.querySelectorAll('.archive-type-opt');
+        opts.forEach(function(o){
+            if(o.getAttribute('data-value')===view.archiveFilter) o.classList.add('selected');
+            else o.classList.remove('selected');
+        });
+    }
+    function toggleArchiveBrgyMenu(){
+        var menu=document.getElementById('archiveBrgyMenu');
+        var arrow=document.querySelector('#archiveBrgyBtn [data-lucide="chevron-down"]');
+        if(menu.style.display==='none'||!menu.style.display){
+            menu.style.display='block';
+            if(arrow) arrow.style.transform='rotate(180deg)';
+            highlightArchiveBrgyOpt();
+        }else{
+            menu.style.display='none';
+            if(arrow) arrow.style.transform='';
+        }
+    }
+    function selectArchiveBrgy(el){
+        var val=el.getAttribute('data-value');
+        view.archiveBarangay=val;
+        view.archivePage=1;
+        document.getElementById('archiveBrgyLabel').textContent=el.textContent;
+        document.getElementById('archiveBrgyMenu').style.display='none';
+        var arrow=document.querySelector('#archiveBrgyBtn [data-lucide="chevron-down"]');
+        if(arrow) arrow.style.transform='';
+        highlightArchiveBrgyOpt();
+        renderArchive();
+    }
+    function highlightArchiveBrgyOpt(){
+        var opts=document.querySelectorAll('.archive-brgy-opt');
+        opts.forEach(function(o){
+            if(o.getAttribute('data-value')===view.archiveBarangay) o.classList.add('selected');
+            else o.classList.remove('selected');
+        });
+    }
+    document.addEventListener('click',function(e){
+        var typeDD=document.getElementById('archiveTypeDropdown');
+        var brgyDD=document.getElementById('archiveBrgyDropdown');
+        if(typeDD && !typeDD.contains(e.target)){
+            var menu=document.getElementById('archiveTypeMenu');
+            var arrow=document.querySelector('#archiveTypeBtn [data-lucide="chevron-down"]');
+            if(menu) menu.style.display='none';
+            if(arrow) arrow.style.transform='';
+        }
+        if(brgyDD && !brgyDD.contains(e.target)){
+            var menu=document.getElementById('archiveBrgyMenu');
+            var arrow=document.querySelector('#archiveBrgyBtn [data-lucide="chevron-down"]');
+            if(menu) menu.style.display='none';
+            if(arrow) arrow.style.transform='';
+        }
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
         loadArchive();

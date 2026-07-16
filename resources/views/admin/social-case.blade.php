@@ -8,6 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         :root {
             --primary: #1A237E;
@@ -447,6 +448,25 @@
         }
         updateDateTime();
         setInterval(updateDateTime, 60000);
+
+        // Welcome popup
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                Swal.fire({
+                    title: 'Welcome to Social Case Study System!',
+                    html: '<div style="text-align:center;line-height:1.7;color:#475569;font-size:15px">' +
+                          '<p style="margin:0 0 8px">Track and manage social case study reports for Silang residents.</p>' +
+                          '<p style="margin:0;font-size:13px;color:#94A3B8">Use the sidebar to navigate between eligibility checks, case studies, and more.</p>' +
+                          '</div>',
+                    icon: 'info',
+                    confirmButtonColor: '#1A237E',
+                    confirmButtonText: 'Get Started',
+                    background: '#ffffff',
+                    customClass: { popup: 'rounded-4 shadow-lg' },
+                    allowOutsideClick: false
+                });
+            }, 500);
+        });
     </script>
 </body>
 </html>

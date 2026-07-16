@@ -72,4 +72,10 @@ class AuthController extends Controller
 
         return redirect()->route('admin.login.form');
     }
+
+    public function clearWelcome(Request $request)
+    {
+        $request->session()->forget('admin_just_logged_in');
+        return response()->json(['ok' => true]);
+    }
 }
