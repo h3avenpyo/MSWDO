@@ -159,12 +159,12 @@ function showCaseDetailsModal(caseId){
 
           <div style="margin-bottom:8px;grid-column:1/-1;">
             <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Client Name</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client.name)||"—"}</div>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client?.name)||"—"}</div>
           </div>
           
           <div style="margin-bottom:8px;grid-column:1/-1;">
             <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Address</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client.address)||"—"}</div>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client?.address)||"—"}</div>
           </div>
           
           <div style="margin-bottom:8px;">
@@ -174,17 +174,17 @@ function showCaseDetailsModal(caseId){
           
           <div style="margin-bottom:8px;">
             <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Age</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client.age)||"—"}</div>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client?.age)||"—"}</div>
           </div>
           
           <div style="margin-bottom:8px;">
             <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Civil Status</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client.civilStatus)||"—"}</div>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client?.civilStatus)||"—"}</div>
           </div>
 
           <div style="margin-bottom:8px;grid-column:1/-1;">
             <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Problem Presented</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);white-space:pre-wrap;">${escapeHtml(caseRec.interview.problemPresented)||"—"}</div>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);white-space:pre-wrap;">${escapeHtml(caseRec.interview?.problemPresented)||"—"}</div>
           </div>
         </div>
       </div>
@@ -229,7 +229,7 @@ function fmtDate(iso){
   }
 }
 function daysBetween(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
-function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function escapeHtml(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
 function rewriteProblemPresented(rawProblem, purpose, clientFullName) {
   if (!rawProblem || !rawProblem.trim()) return "";
@@ -627,7 +627,7 @@ function renderArchive(){
   const q = (view.archiveSearch || '').toLowerCase();
   if(q){
     archivedCases = archivedCases.filter(c =>
-      (c.client.name || '').toLowerCase().includes(q) ||
+      ((c.client?.name) || '').toLowerCase().includes(q) ||
       (c.controlNo || '').toLowerCase().includes(q)
     );
   }
@@ -637,7 +637,7 @@ function renderArchive(){
   }
   const b = view.archiveBarangay || '';
   if(b){
-    archivedCases = archivedCases.filter(c => c.client.address === b);
+    archivedCases = archivedCases.filter(c => (c.client?.address) === b);
   }
 
   const table = document.getElementById('archiveTable');
@@ -667,7 +667,7 @@ function renderArchive(){
     table.innerHTML = paginatedCases.map(c => `
       <tr class="row-click" onclick="showCaseDetailsModal('${c.id}')">
         <td><span style="font-family:monospace;font-weight:600">${escapeHtml(c.controlNo)||"—"}</span></td>
-        <td>${escapeHtml(c.client.name)||"<span class=muted>Unnamed</span>"}</td>
+        <td>${escapeHtml(c.client?.name)||"<span class=muted>Unnamed</span>"}</td>
         <td>${escapeHtml(c.purpose)}</td>
         <td><span class="badge b-archived">${c.status}</span></td>
         <td>${fmtDate(c.updatedAt)}</td>
@@ -733,6 +733,7 @@ function restoreCase(id){
       if(caseRec){
         caseRec.status = 'Draft';
         caseRec.updatedAt = todayISO();
+        if(!caseRec.statusHistory) caseRec.statusHistory = [];
         caseRec.statusHistory.push({status: 'Restored to Draft', date: todayISO()});
 
         const payload = convertKeys(caseRec, camelToSnake);
@@ -1668,7 +1669,7 @@ function renderCaseList(){
   let filtered = cases.filter(c => {
     if(c.status === 'Archived') return false;
     const matchesSearch = !searchQuery || 
-      c.client.name.toLowerCase().includes(searchQuery) || 
+      (c.client?.name || '').toLowerCase().includes(searchQuery) || 
       c.controlNo.toLowerCase().includes(searchQuery) ||
       c.purpose.toLowerCase().includes(searchQuery);
     const matchesStatus = statusFilter === "All" || c.status === statusFilter;
@@ -1704,7 +1705,7 @@ function renderCaseList(){
     tableBody.innerHTML = paginatedCases.map(c => `
       <tr class="row-click" onclick="showCaseDetailsModal('${c.id}')">
         <td><span class="control-no">${escapeHtml(c.controlNo)||"—"}</span></td>
-        <td>${escapeHtml(c.client.name)||"<span class=muted>Unnamed</span>"}</td>
+        <td>${escapeHtml(c.client?.name)||"<span class=muted>Unnamed</span>"}</td>
         <td>${escapeHtml(c.purpose)}</td>
         <td>Biluso</td>
         <td><span class="badge ${STATUS_CLASS[c.status]}">${c.status}</span></td>

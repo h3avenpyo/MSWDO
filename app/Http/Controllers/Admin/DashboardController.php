@@ -1024,21 +1024,16 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Case not found'], 404);
         }
 
-        $validated = $request->validate([
-            'control_no' => 'sometimes|unique:social_case_studies,control_no,' . $id,
+        $request->validate([
+            'control_no' => 'sometimes|unique:social_case_studies,case_number,' . $id,
             'status' => 'sometimes',
-            'client' => 'sometimes|array',
-            'household' => 'sometimes|array',
-            'interview' => 'sometimes|array',
-            'signers' => 'sometimes|array',
             'purpose' => 'sometimes',
-            'agencies' => 'sometimes|array',
-            'requirements' => 'sometimes|array',
-            'status_history' => 'sometimes|array',
-            'released_date' => 'sometimes|nullable|date',
         ]);
 
-        $case->update($validated);
+        $fillable = $case->getFillable();
+        $data = collect($request->only($fillable))->filter()->toArray();
+        $case->update($data);
+
         return response()->json($case);
     }
 
