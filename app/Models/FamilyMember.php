@@ -13,6 +13,7 @@ class FamilyMember extends Model
         'relationship',
         'age',
         'sex',
+        'education',
         'occupation',
         'monthly_income',
         'is_dependent',

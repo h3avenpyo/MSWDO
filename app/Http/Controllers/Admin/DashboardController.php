@@ -881,7 +881,7 @@ class DashboardController extends Controller
 
     public function getCases()
     {
-        $cases = SocialCaseStudy::with('client', 'officer', 'encoder', 'releasedByUser')
+        $cases = SocialCaseStudy::with('client', 'officer', 'encoder', 'releasedByUser', 'interview', 'familyMembers')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -917,7 +917,7 @@ class DashboardController extends Controller
             'requirements' => 'required|array',
         ]);
 
-        $clientId = $this->findOrCreateClient($data['client']);
+        $clientId = $this->findOrCreateClient($request->input('client'));
 
         $agencies = $data['agencies'] ?? [];
 
@@ -933,6 +933,7 @@ class DashboardController extends Controller
             'summary'            => $data['interview']['problem_presented'] ?? null,
             'workflow_step'       => 'requirements_verification',
             'requirements_complete' => !empty($data['requirements']),
+            'signers'            => $data['signers'] ?? [],
         ]);
 
         $interview = $data['interview'];
@@ -956,6 +957,7 @@ class DashboardController extends Controller
                 'full_name'            => $member['name'] ?? '',
                 'relationship'         => $member['relationship'] ?? '',
                 'age'                  => is_numeric($member['age'] ?? null) ? (int) $member['age'] : null,
+                'education'            => $member['education'] ?? null,
                 'occupation'           => $member['occupation'] ?? null,
                 'monthly_income'       => is_numeric($member['income'] ?? null) ? $member['income'] : null,
             ]);
@@ -984,9 +986,31 @@ class DashboardController extends Controller
                 'last_name'      => $lastName,
                 'birthdate'      => $clientData['birthdate'] ?? null,
                 'gender'         => $clientData['sex'] ?? null,
+                'age'            => is_numeric($clientData['age'] ?? null) ? (int) $clientData['age'] : null,
                 'address'        => $clientData['address'] ?? null,
                 'barangay'       => $clientData['address'] ?? null,
                 'contact_number' => $clientData['contact'] ?? null,
+                'birthplace'     => $clientData['birthplace'] ?? null,
+                'religion'       => $clientData['religion'] ?? null,
+                'education'      => $clientData['education'] ?? null,
+                'civil_status'   => $clientData['civil_status'] ?? null,
+                'occupation'     => $clientData['occupation'] ?? null,
+                'income'         => $clientData['income'] ?? null,
+            ]);
+        } else {
+            $client->update([
+                'birthdate'      => $clientData['birthdate'] ?? $client->birthdate,
+                'gender'         => $clientData['sex'] ?? $client->gender,
+                'age'            => is_numeric($clientData['age'] ?? null) ? (int) $clientData['age'] : $client->age,
+                'address'        => $clientData['address'] ?? $client->address,
+                'barangay'       => $clientData['address'] ?? $client->barangay,
+                'contact_number' => $clientData['contact'] ?? $client->contact_number,
+                'birthplace'     => $clientData['birthplace'] ?? $client->birthplace,
+                'religion'       => $clientData['religion'] ?? $client->religion,
+                'education'      => $clientData['education'] ?? $client->education,
+                'civil_status'   => $clientData['civil_status'] ?? $client->civil_status,
+                'occupation'     => $clientData['occupation'] ?? $client->occupation,
+                'income'         => $clientData['income'] ?? $client->income,
             ]);
         }
 

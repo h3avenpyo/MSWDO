@@ -230,6 +230,43 @@ function fmtDate(iso){
 }
 function daysBetween(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
 function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+function rewriteProblemPresented(rawProblem, purpose, clientFullName) {
+  if (!rawProblem || !rawProblem.trim()) return "";
+  const p = rawProblem.trim();
+  const purposeLower = (purpose || "").toLowerCase();
+  const clientRef = clientFullName || "The client";
+
+  const hasPatientMention = /\b(patient| client| beneficiary)\b/i.test(p);
+  const hasAssistanceMention = /\b(assistance| aid | help| support)/i.test(p);
+  const hasVisitMention = /\b(visited| went to| came to| approached)/i.test(p);
+  const hasRequestMention = /\b(request| ask| seeking| needed| need)/i.test(p);
+  const hasSocialCaseMention = /\b(social case study| scsr)/i.test(p);
+  const hasMedicalMention = /\b(medical| hemodialysis| dialysis| surgery| hospital| medicine| prescription| treatment| illness| disease| condition| ckd| cancer)/i.test(p);
+  const hasBurialMention = /\b(burial| funeral| death| deceased| died| passed away)/i.test(p);
+  const hasEducationalMention = /\b(education| tuition| school| college| university| enrollment| studying)/i.test(p);
+  const hasFinancialMention = /\b(financial| monetary| cash| fund| expenses| cost| payment)/i.test(p);
+  const hasFoodMention = /\b(food| relief| hunger| feeding| livelihood)/i.test(p);
+
+  let sentence1 = "";
+  if (hasVisitMention || hasRequestMention || hasAssistanceMention || hasSocialCaseMention) {
+    sentence1 = p;
+  } else {
+    let purposeDesc = purpose || "financial/medical";
+    if (hasBurialMention) purposeDesc = "burial";
+    else if (hasEducationalMention) purposeDesc = "educational";
+    else if (hasFoodMention) purposeDesc = "food/relief";
+    sentence1 = `${clientRef} is seeking ${purposeDesc} assistance.`;
+    sentence1 += " " + p;
+  }
+
+  const alreadyHasClosing = /\b(please see| attached| supporting documents| for your (reference|review)| supporting this request)/i.test(p);
+  if (!alreadyHasClosing) {
+    sentence1 += " Please see the attached documents for your reference.";
+  }
+
+  return sentence1;
+}
 function findLatestByName(name){
   const n = name.trim().toLowerCase();
   if(!n) return null;
@@ -480,6 +517,7 @@ function deleteCase(id, fromList = false){
       if(caseRec){
         caseRec.status = 'Archived';
         caseRec.updatedAt = todayISO();
+        if(!caseRec.statusHistory) caseRec.statusHistory = [];
         caseRec.statusHistory.push({status: 'Archived', date: todayISO()});
 
         const payload = convertKeys(caseRec, camelToSnake);
@@ -492,7 +530,21 @@ function deleteCase(id, fromList = false){
           },
           body: JSON.stringify(payload)
         })
-        .then(response => response.json())
+        .then(response => {
+          console.log('Archive response status:', response.status);
+          return response.text().then(text => {
+            console.log('Archive response text:', text);
+            if(!response.ok){
+              throw new Error('Server error: ' + response.status);
+            }
+            try {
+              return JSON.parse(text);
+            } catch(e) {
+              console.error('Failed to parse JSON:', e);
+              throw new Error('Invalid JSON response');
+            }
+          });
+        })
         .then(async data => {
           console.log('Case archived:', data);
           await Swal.fire({
@@ -524,7 +576,13 @@ function deleteCase(id, fromList = false){
     }
   });
 }
-function getCase(id){ return cases.find(c=>String(c.id) === String(id)); }
+function getCase(id){ 
+  console.log('getCase called with id:', id, 'type:', typeof id);
+  console.log('Looking through cases:', cases.map(c => ({id: c.id, idType: typeof c.id, stringId: String(c.id)})));
+  const found = cases.find(c=>String(c.id) === String(id));
+  console.log('Found case:', found);
+  return found;
+}
 
 /* ---------------- Rendering: Sidebar ---------------- */
 function renderSidebar(activeTab){
@@ -1337,10 +1395,6 @@ function renderIntakeForm(){
   <div class="panel">
     <h3>Narrative sections</h3>
     <div class="field"><label>III. Problem presented</label><textarea oninput="draftIntake.interview.problemPresented=this.value">${escapeHtml(d.interview.problemPresented)}</textarea></div>
-    <div class="field"><label>IV. Home condition</label><textarea oninput="draftIntake.interview.homeCondition=this.value">${escapeHtml(d.interview.homeCondition)}</textarea></div>
-    <div class="field"><label>V. Socio-economic condition</label><textarea oninput="draftIntake.interview.socioEconomic=this.value">${escapeHtml(d.interview.socioEconomic)}</textarea></div>
-    <div class="field"><label>VI. Evaluation</label><textarea oninput="draftIntake.interview.evaluation=this.value">${escapeHtml(d.interview.evaluation)}</textarea></div>
-    <div class="field"><label>VII. Recommendation</label><textarea oninput="draftIntake.interview.recommendation=this.value">${escapeHtml(d.interview.recommendation)}</textarea></div>
   </div>
 
   <div class="panel">
@@ -1798,27 +1852,82 @@ function printDocument(caseId){
 
 /* ---------------- Rendering: Case detail ---------------- */
 async function loadCaseDetail(caseId){
-  await loadCases();
-  view = {tab:"caseDetail", caseId:caseId};
-  renderCaseDetail();
-  lucide.createIcons();
+  console.log('loadCaseDetail called with caseId:', caseId);
+  // Fetch individual case with interview and family members
+  try {
+    const response = await fetch(`/admin/social-case/api/cases/${caseId}`);
+    if (!response.ok) throw new Error('Failed to load case');
+    const caseData = await response.json();
+    console.log('Case data from API:', caseData);
+    
+    // Convert snake_case to camelCase
+    const convertedCase = convertKeys(caseData, snakeToCamel);
+    
+    // Update cases array with this case data
+    const existingIndex = cases.findIndex(c => c.id == caseId);
+    if (existingIndex >= 0) {
+      cases[existingIndex] = convertedCase;
+    } else {
+      cases.push(convertedCase);
+    }
+    
+    view = {tab:"caseDetail", caseId:caseId};
+    renderCaseDetail();
+    lucide.createIcons();
+  } catch (error) {
+    console.error('Error loading case:', error);
+    const container = document.getElementById('caseDetailContent');
+    if (container) {
+      container.innerHTML = `<div style="padding:40px;text-align:center;color:#DC2626;">
+        <p style="font-size:16px;font-weight:600;">Error loading case</p>
+        <p style="font-size:14px;margin-top:8px;">${error.message}</p>
+      </div>`;
+    }
+  }
 }
 
 function renderCaseDetail(){
+  console.log('renderCaseDetail called');
   const container = document.getElementById('caseDetailContent');
-  if(!container) return;
+  if(!container){
+    console.error('caseDetailContent container not found');
+    return;
+  }
+  console.log('Container found, caseId:', view.caseId);
 
   const c = getCase(view.caseId);
+  console.log('getCase result:', c);
   if(!c){
+    console.error('Case not found for ID:', view.caseId);
     container.innerHTML = `
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;color:#6B7280;">
         <i data-lucide="alert-triangle" style="width:48px;height:48px;margin-bottom:16px;color:#D1D5DB;"></i>
         <p style="font-size:1rem;font-weight:600;">Case not found.</p>
+        <p style="font-size:14px;margin-top:8px;">Case ID: ${view.caseId}</p>
         <button onclick="window.location.href='/admin/social-case/cases'" style="margin-top:16px;padding:8px 20px;background:#1A237E;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;">← Back to Cases</button>
       </div>`;
+    lucide.createIcons();
     return;
   }
 
+  if (!c.requirements) c.requirements = [];
+  if (!c.signers) c.signers = {};
+  if (!c.agencies) {
+    c.agencies = c.submittedTo ? c.submittedTo.split(',').map(s => s.trim()).filter(Boolean) : [];
+  }
+  if (!c.statusHistory) c.statusHistory = [];
+  if (!c.household) c.household = [];
+
+  console.log('Case data normalized, agencies:', c.agencies);
+
+  const interview = c.interview || {};
+  const ip = interview.interviewSituation || interview.interview_situation || interview.problemPresented || '';
+  const ih = interview.interviewHousehold || interview.interview_household || interview.homeCondition || '';
+  const ie = interview.interviewNotes || interview.interview_notes || interview.socioEconomic || '';
+  const iw = interview.socialWorkerAssessment || interview.social_worker_assessment || interview.evaluation || '';
+  const ir = interview.recommendation || '';
+
+  const client = c.client || {};
   const missingReqs = c.requirements.filter(r=>!r.submitted);
 
   function row(label, value){
@@ -1858,91 +1967,667 @@ function renderCaseDetail(){
     document.head.appendChild(s);
   }
 
-  container.innerHTML = `
-    <!-- Case Header Bar -->
-    <div class="detail-topbar">
-      <div>
-        <button class="btn ghost btn-sm" onclick="window.location.href='/admin/social-case/cases'" style="margin-bottom:12px;">
-          <i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Back to Cases
-        </button>
-        <h1 style="margin:0;font-size:1.5rem;font-weight:700;color:#111827;">${escapeHtml(c.client.name)||'Unnamed Client'}</h1>
-        <div style="display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap;">
-          <span class="badge ${STATUS_CLASS[c.status]||'b-draft'}">${c.status}</span>
-          <span style="font-size:13px;color:#6B7280;font-family:monospace;font-weight:600;">${escapeHtml(c.controlNo)}</span>
-          <span style="font-size:13px;color:#9CA3AF;">·</span>
-          <span style="font-size:13px;color:#6B7280;">Created ${fmtDate(c.createdAt)}</span>
+  console.log('Generating HTML for detail page...');
+  try {
+    const html = `
+    <style>
+      @media print {
+        body {
+          background: white !important;
+        }
+        .sidebar, header, .doc-toolbar, .no-print {
+          display: none !important;
+        }
+        .main {
+          padding: 0 !important;
+          max-width: none !important;
+          margin: 0 !important;
+        }
+        #documentPreviewContainer {
+          max-height: none !important;
+          overflow: visible !important;
+          border: none !important;
+          border-radius: 0 !important;
+          background: white !important;
+        }
+        .page {
+          margin: 0 !important;
+          box-shadow: none !important;
+          page-break-after: always;
+        }
+        .page:last-child {
+          page-break-after: avoid;
+        }
+      }
+      .detail-header {
+        background: white;
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      }
+      .detail-header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+      }
+      .case-info h1 {
+        margin: 0 0 8px 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: #1E3A8A;
+        letter-spacing: -0.5px;
+      }
+      .case-info .client-name {
+        font-size: 15px;
+        color: #64748B;
+        font-weight: 500;
+        margin-bottom: 12px;
+      }
+      .case-meta {
+        display: flex;
+        gap: 24px;
+        font-size: 13px;
+        color: #64748B;
+      }
+      .case-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .status-completed {
+        background: #D1FAE5;
+        color: #065F46;
+      }
+      .header-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .header-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border: 1px solid #E2E8F0;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        color: #475569;
+        transition: all 0.2s;
+      }
+      .header-btn:hover {
+        background: #F8FAFC;
+        border-color: #CBD5E1;
+      }
+      .header-btn.primary {
+        background: #1E3A8A;
+        color: white;
+        border-color: #1E3A8A;
+      }
+      .header-btn.primary:hover {
+        background: #1E40AF;
+      }
+      .template-tabs {
+        display: flex;
+        gap: 4px;
+        padding: 4px;
+        background: #F1F5F9;
+        border-radius: 10px;
+        margin-bottom: 24px;
+      }
+      .template-tab {
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        color: #64748B;
+        transition: all 0.2s;
+        border: none;
+        background: transparent;
+      }
+      .template-tab:hover {
+        color: #475569;
+      }
+      .template-tab.active {
+        background: white;
+        color: #1E3A8A;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      }
+      .detail-content {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+      .right-panel {
+        background: #F8FAFC;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      }
+      .preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .preview-header h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        color: #1E293B;
+      }
+      .preview-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .preview-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #E2E8F0;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #64748B;
+        transition: all 0.2s;
+      }
+      .preview-btn:hover {
+        background: #F8FAFC;
+        color: #475569;
+      }
+      .zoom-level {
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748B;
+        min-width: 60px;
+        text-align: center;
+      }
+      .page-indicator {
+        font-size: 13px;
+        color: #64748B;
+        font-weight: 500;
+      }
+      .document-viewer {
+        background: #E2E8F0;
+        border-radius: 8px;
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+        min-height: 600px;
+      }
+      .document-viewer .page {
+        margin-bottom: 24px;
+      }
+      .document-viewer .page:last-child {
+        margin-bottom: 0;
+      }
+      .info-banner {
+        margin-top: 24px;
+        padding: 16px 20px;
+        background: #FEF3C7;
+        border: 1px solid #FCD34D;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .info-banner i {
+        color: #D97706;
+        flex-shrink: 0;
+      }
+      .info-banner p {
+        margin: 0;
+        font-size: 13px;
+        color: #92400E;
+        font-weight: 500;
+      }
+      @media (max-width: 1200px) {
+        .detail-content {
+          grid-template-columns: 1fr;
+        }
+        .left-panel {
+          position: static;
+        }
+      }
+    </style>
+    
+    <!-- Header -->
+    <div class="detail-header">
+      <div class="detail-header-top">
+        <div class="case-info">
+          <h1>${escapeHtml(c.controlNo)}</h1>
+          <div class="client-name">${escapeHtml(client.fullName || client.full_name || client.name || 'Unnamed Client')}</div>
+          <div class="case-meta">
+            <div class="case-meta-item">
+              <i data-lucide="calendar" style="width:16px;height:16px;"></i>
+              <span>${c.createdAt ? fmtDate(c.createdAt) : 'N/A'}</span>
+            </div>
+            <div class="case-meta-item">
+              <i data-lucide="user" style="width:16px;height:16px;"></i>
+              <span>${c.officer?.name || 'Not Assigned'}</span>
+            </div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button class="header-btn">
+            <i data-lucide="eye" style="width:16px;height:16px;"></i>
+            Preview
+          </button>
+          <button class="header-btn">
+            <i data-lucide="printer" style="width:16px;height:16px;"></i>
+            Print
+          </button>
+          <button class="header-btn">
+            <i data-lucide="file-down" style="width:16px;height:16px;"></i>
+            Download PDF
+          </button>
+          <button class="header-btn">
+            <i data-lucide="file-text" style="width:16px;height:16px;"></i>
+            Download Word
+          </button>
+          <button class="header-btn">
+            <i data-lucide="more-horizontal" style="width:16px;height:16px;"></i>
+          </button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="status-badge status-completed">
+          <i data-lucide="check-circle" style="width:14px;height:14px;margin-right:4px;"></i>
+          ${c.status || 'Draft'}
+        </span>
+      </div>
+    </div>
+
+    <!-- Template Tabs -->
+    <div class="template-tabs">
+      <button class="template-tab active">PCSO</button>
+      <button class="template-tab">DSWD</button>
+      <button class="template-tab">Office of the President (AKAP)</button>
+      <button class="template-tab">DOH</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="detail-content">
+      <!-- Right Panel -->
+      <div class="right-panel">
+        <div class="preview-header">
+          <h3>Report Preview</h3>
+          <div class="preview-controls">
+            <button class="preview-btn">
+              <i data-lucide="zoom-out" style="width:18px;height:18px;"></i>
+            </button>
+            <span class="zoom-level">100%</span>
+            <button class="preview-btn">
+              <i data-lucide="zoom-in" style="width:18px;height:18px;"></i>
+            </button>
+            <div style="width:1px;height:24px;background:#E2E8F0;margin:0 8px;"></div>
+            <span class="page-indicator">Page 1 of 1</span>
+            <button class="preview-btn">
+              <i data-lucide="chevron-left" style="width:18px;height:18px;"></i>
+            </button>
+            <button class="preview-btn">
+              <i data-lucide="chevron-right" style="width:18px;height:18px;"></i>
+            </button>
+            <div style="width:1px;height:24px;background:#E2E8F0;margin:0 8px;"></div>
+            <button class="preview-btn">
+              <i data-lucide="maximize" style="width:18px;height:18px;"></i>
+            </button>
+            <button class="preview-btn">
+              <i data-lucide="download" style="width:18px;height:18px;"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="documentPreviewContainer" class="document-viewer"></div>
+
+        <div class="info-banner">
+          <i data-lucide="info" style="width:20px;height:20px;"></i>
+          <p>This is a system-generated report. Any updates to the case information will automatically reflect in the generated document.</p>
         </div>
       </div>
     </div>
-
-    <!-- Two Column Layout -->
-    <div class="detail-two-col" style="display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:start;">
-
-      <!-- Left Column -->
-      <div class="detail-col-left">
-        ${card('Client Information',
-          row('Control No.', `<span style="font-family:monospace;">${escapeHtml(c.controlNo)}</span>`) +
-          row('Age / Sex', (escapeHtml(String(c.client.age))||'—') + ' / ' + (escapeHtml(c.client.sex)||'—')) +
-          row('Birthdate', c.client.birthdate ? fmtDate(c.client.birthdate) : '—') +
-          row('Birthplace', escapeHtml(c.client.birthplace)) +
-          row('Civil Status', escapeHtml(c.client.civilStatus)) +
-          row('Religion', escapeHtml(c.client.religion)) +
-          row('Education', escapeHtml(c.client.education)) +
-          row('Occupation', escapeHtml(c.client.occupation)||'N/A') +
-          row('Income', escapeHtml(c.client.income)||'N/A') +
-          row('Contact', escapeHtml(c.client.contact)) +
-          row('Address', escapeHtml(c.client.address))
-        )}
-
-        ${card('Interview Summary',
-          row('Problem Presented', `<span style="white-space:pre-wrap;">${escapeHtml(c.interview.problemPresented)}</span>`) +
-          row('Home Condition', `<span style="white-space:pre-wrap;">${escapeHtml(c.interview.homeCondition)}</span>`) +
-          row('Socio-Economic', `<span style="white-space:pre-wrap;">${escapeHtml(c.interview.socioEconomic)}</span>`) +
-          row('Evaluation', `<span style="white-space:pre-wrap;">${escapeHtml(c.interview.evaluation)}</span>`) +
-          row('Recommendation', `<span style="white-space:pre-wrap;">${escapeHtml(c.interview.recommendation)}</span>`)
-        )}
-      </div>
-
-      <!-- Right Column -->
-      <div class="detail-col-right">
-        ${card('Signatories',
-          row('Prepared By', escapeHtml(c.signers.preparedByName) + (c.signers.preparedByTitle ? `<br><span style="color:#6B7280;font-size:12px;">${escapeHtml(c.signers.preparedByTitle)}</span>` : '')) +
-          row('Noted By', escapeHtml(c.signers.notedByName) + (c.signers.notedByTitle ? `<br><span style="color:#6B7280;font-size:12px;">${escapeHtml(c.signers.notedByTitle)}${c.signers.notedByLicense ? ', Lic. No. '+escapeHtml(c.signers.notedByLicense) : ''}</span>` : ''))
-        )}
-
-        ${card('Requirements',
-          c.requirements.map(r => `
-            <div class="req-check${r.submitted?'':' missing'}">
-              <i data-lucide="${r.submitted?'check-circle':'x-circle'}" style="width:16px;height:16px;color:${r.submitted?'#16A34A':'#DC2626'};flex-shrink:0;"></i>
-              <span style="font-size:13px;color:#374151;">${escapeHtml(r.name)}</span>
-            </div>`).join('') +
-          (missingReqs.length ? `<p style="margin:10px 0 0;font-size:12px;color:#DC2626;font-weight:500;"><i data-lucide="alert-circle" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"></i>${missingReqs.length} requirement(s) still missing.</p>` : `<p style="margin:10px 0 0;font-size:12px;color:#16A34A;font-weight:500;"><i data-lucide="check-circle" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"></i>All requirements submitted.</p>`)
-        )}
-
-        ${card('Status History',
-          c.statusHistory.slice().reverse().map(h => `
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F3F4F6;">
-              <span style="font-size:13px;font-weight:600;color:#374151;">${h.status}</span>
-              <span style="font-size:12px;color:#6B7280;">${fmtDate(h.date)}</span>
-            </div>`).join('') || '<p style="font-size:13px;color:#9CA3AF;">No status history.</p>'
-        )}
-
-        ${c.agencies.length ? card('Generate Documents',
-          c.agencies.map(a => {
-            const ag = AGENCIES.find(x=>x.key===a);
-            return `<button onclick="window.location.href='/admin/social-case/document/${c.id}/${a}'"
-              style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#F8FAFC;border:1px solid #E5E7EB;border-radius:8px;cursor:pointer;margin-bottom:8px;font-size:13px;color:#1E3A8A;font-weight:600;transition:all 0.2s ease;"
-              onmouseover="this.style.background='#EEF2FF';this.style.borderColor='#1E3A8A'" onmouseout="this.style.background='#F8FAFC';this.style.borderColor='#E5E7EB'">
-              <span style="display:flex;align-items:center;gap:8px;"><i data-lucide="file-text" style="width:15px;height:15px;"></i> ${ag ? ag.name : a}</span>
-              <i data-lucide="chevron-right" style="width:15px;height:15px;color:#9CA3AF;"></i>
-            </button>`;
-          }).join('')
-        ) : ''}
-      </div>
-    </div>
   `;
+  
+  console.log('HTML generated, setting innerHTML');
+  container.innerHTML = html;
+  console.log('innerHTML set successfully, calling loadDocumentPreview');
+  
+  // Call loadDocumentPreview directly instead of using script tag
+  setTimeout(() => loadDocumentPreview(c.id), 100);
+  } catch (error) {
+    console.error('Error generating HTML:', error);
+    container.innerHTML = `<div style="padding:40px;text-align:center;color:#DC2626;">
+      <p>Error generating page: ${error.message}</p>
+    </div>`;
+  }
 
   lucide.createIcons();
+}
+
+async function loadDocumentPreview(caseId){
+  console.log('loadDocumentPreview called with caseId:', caseId);
+  const container = document.getElementById('documentPreviewContainer');
+  if(!container){
+    console.error('documentPreviewContainer not found');
+    return;
+  }
+
+  container.innerHTML = `<div style="padding:40px;text-align:center;color:#6B7280;">
+    <i data-lucide="loader-2" style="width:32px;height:32px;margin-bottom:16px;animation:spin 1s linear infinite;"></i>
+    <p>Loading document preview...</p>
+  </div>`;
+  lucide.createIcons();
+
+  const c = getCase(caseId);
+  console.log('Case data:', c);
+  if(!c){
+    container.innerHTML = `<div style="padding:40px;text-align:center;color:#DC2626;">
+      <i data-lucide="alert-triangle" style="width:48px;height:48px;margin-bottom:16px;"></i>
+      <p style="font-size:16px;font-weight:600;">Case not found</p>
+      <p style="font-size:14px;margin-top:8px;">Case ID: ${caseId}</p>
+      <button onclick="window.location.href='/admin/social-case/cases'" style="margin-top:20px;padding:10px 20px;background:#1E3A8A;color:white;border:none;border-radius:6px;cursor:pointer;">Back to Cases</button>
+    </div>`;
+    lucide.createIcons();
+    return;
+  }
+
+  const famRows = (c.familyMembers || c.household || []).filter(m=>m.fullName || m.name || m.full_name);
+
+  const notProvided = "Not Provided";
+  const homeConditionDefault = "The client resides in a modest home with his/her family. The home of the family in modest circumstances is simple but functional. While the house may not have the latest appliances or decor, it is clean and maintained to the best of the family's ability. The family may prioritize practicality over style, and although they may face financial challenges, their home remains a place of warmth, care, and togetherness.";
+  const socioEconomicDefault = "The family is indigent, and the client depends on their family's income to cover daily expenses and household needs. Unfortunately, there is insufficient funds to sustain the medical expenses of the patient.";
+  const evaluationDefault = "This case concerns a client in need of financial/medical assistance for urgent medical expenses. Due to the patient's socio-economic condition, the client is unable to support the medical expenses, prompting her to seek help from your good office, as reflected in the attached documents. The incurred expenses have placed a heavy burden on the family, depleting their financial resources. Consequently, they are earnestly requesting assistance from your office to alleviate their situation.";
+  const recommendationDefault = "Due to the lack of sufficient income and the absence of alternative financial resources to meet the patient's needs, the undersigned worker respectfully recommends that the patient be considered for assistance from your office to cover the urgent medical expenses required.";
+
+  const clientName = escapeHtml((c.client?.fullName || c.client?.full_name || c.client?.name || c.clientName || c.client_name || "")).toUpperCase() || notProvided;
+  const clientAge = escapeHtml(String(c.client?.age || "")) || notProvided;
+  const clientSex = escapeHtml((c.client?.sex || c.client?.gender || "")).toUpperCase() || notProvided;
+  const clientAddress = escapeHtml((c.client?.address || "")).toUpperCase() || notProvided;
+  const clientBirthdate = c.client?.birthdate ? fmtDate(c.client.birthdate).toUpperCase() : notProvided;
+  const clientBirthplace = escapeHtml((c.client?.birthplace || "")).toUpperCase() || notProvided;
+  const clientReligion = escapeHtml((c.client?.religion || "")).toUpperCase() || notProvided;
+  const clientEducation = escapeHtml((c.client?.education || "")).toUpperCase() || notProvided;
+  const clientCivilStatus = escapeHtml((c.client?.civilStatus || c.client?.civil_status || "")).toUpperCase() || notProvided;
+  const clientOccupation = escapeHtml((c.client?.occupation || "")) || notProvided;
+  const clientIncome = escapeHtml((c.client?.income || "")) || notProvided;
+  const clientContact = escapeHtml((c.client?.contact || c.client?.contactNumber || c.client?.contact_number || "")) || notProvided;
+
+  const reportDate = fmtDate(c.interviewDate || c.interview?.reportDate || c.createdAt).toUpperCase();
+
+  const rawProblem = c.interview?.interviewSituation || c.interview?.interview_situation || c.interview?.problemPresented || "";
+  const purpose = c.purpose || "";
+  const clientFirstName = (c.client?.firstName || c.client?.first_name || "").trim();
+  const clientLastName = (c.client?.lastName || c.client?.last_name || "").trim();
+  const clientFullName = (c.client?.fullName || c.client?.full_name || clientFirstName + " " + clientLastName).trim();
+  const ip = escapeHtml(rewriteProblemPresented(rawProblem, purpose, clientFullName)) || notProvided;
+  const ih = escapeHtml(c.interview?.interviewHousehold || c.interview?.interview_household || c.interview?.homeCondition || "") || homeConditionDefault;
+  const ie = escapeHtml(c.interview?.interviewNotes || c.interview?.interview_notes || c.interview?.socioEconomic || "") || socioEconomicDefault;
+  const iw = escapeHtml(c.interview?.socialWorkerAssessment || c.interview?.social_worker_assessment || c.interview?.evaluation || "") || evaluationDefault;
+  const ir = escapeHtml(c.interview?.recommendation || "") || recommendationDefault;
+
+  const preparedName = escapeHtml(c.signers?.preparedByName || c.officer?.name || "") || notProvided;
+  const preparedTitle = escapeHtml(c.signers?.preparedByTitle || c.officer?.position || "");
+  const notedName = escapeHtml(c.signers?.notedByName || c.encoder?.name || "") || notProvided;
+  const notedTitle = escapeHtml(c.signers?.notedByTitle || c.encoder?.position || "");
+  const notedLicense = escapeHtml(c.signers?.notedByLicense || "");
+
+  try {
+    console.log('Fetching template...');
+    const response = await fetch('/templates/social-case-report.html');
+    if (!response.ok) throw new Error('Failed to load template');
+    let template = await response.text();
+    console.log('Template loaded, length:', template.length);
+
+    const familyTable = famRows.length ? `
+      <table style="border-radius: 0;">
+        <thead>
+          <tr>
+            <th style="border-radius: 0;">RELATIVES</th>
+            <th style="border-radius: 0;">RELATIONSHIP</th>
+            <th style="border-radius: 0;">AGE</th>
+            <th style="border-radius: 0;">EDUCATIONAL<br>ATTAINMENT</th>
+            <th style="border-radius: 0;">OCCUPATION</th>
+            <th style="border-radius: 0;">INCOME</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${famRows.map(m=>`<tr>
+            <td style="border-radius: 0;">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
+            <td style="border-radius: 0;">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
+            <td align="center" style="border-radius: 0;">${escapeHtml(String(m.age || "")) || "—"}</td>
+            <td style="border-radius: 0;">${escapeHtml((m.education || "—").toUpperCase())}</td>
+            <td style="border-radius: 0;">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
+            <td style="border-radius: 0;">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
+          </tr>`).join("")}
+        </tbody>
+      </table>` : `<div style="color:#999;margin-top:8px;font-style:italic;">None listed.</div>`;
+
+    let pageTemplate = template;
+    
+    pageTemplate = pageTemplate.replace(/{{REPORT_DATE}}/g, reportDate);
+    pageTemplate = pageTemplate.replace(/{{CONTROL_NUMBER}}/g, escapeHtml(c.controlNo || c.caseNumber || ""));
+    pageTemplate = pageTemplate.replace(/{{PURPOSE}}/g, escapeHtml(c.purpose || "Financial / Medical"));
+    pageTemplate = pageTemplate.replace(/{{CLIENT_NAME}}/g, clientName);
+    pageTemplate = pageTemplate.replace(/{{CLIENT_AGE}}/g, clientAge);
+    pageTemplate = pageTemplate.replace(/{{CLIENT_SEX}}/g, clientSex);
+    pageTemplate = pageTemplate.replace(/{{CLIENT_ADDRESS}}/g, clientAddress);
+    pageTemplate = pageTemplate.replace(/{{CLIENT_BIRTHDATE}}/g, clientBirthdate);
+    pageTemplate = pageTemplate.replace(/{{CLIENT_BIRTHPLACE}}/g, clientBirthplace);
+    pageTemplate = pageTemplate.replace(/{{CLIENT_RELIGION}}/g, clientReligion);
+    pageTemplate = pageTemplate.replace(/{{CLIENT_EDUCATION}}/g, clientEducation);
+    pageTemplate = pageTemplate.replace(/{{CLIENT_CIVIL_STATUS}}/g, clientCivilStatus);
+    pageTemplate = pageTemplate.replace(/{{CLIENT_OCCUPATION}}/g, clientOccupation);
+    pageTemplate = pageTemplate.replace(/{{CLIENT_INCOME}}/g, clientIncome);
+    pageTemplate = pageTemplate.replace(/{{CLIENT_CONTACT}}/g, clientContact);
+    pageTemplate = pageTemplate.replace(/{{FAMILY_TABLE}}/g, familyTable);
+    pageTemplate = pageTemplate.replace(/{{PROBLEM_PRESENTED}}/g, ip);
+    pageTemplate = pageTemplate.replace(/{{HOME_CONDITION}}/g, ih);
+    pageTemplate = pageTemplate.replace(/{{SOCIO_ECONOMIC}}/g, ie);
+    pageTemplate = pageTemplate.replace(/{{EVALUATION}}/g, iw);
+    pageTemplate = pageTemplate.replace(/{{RECOMMENDATION}}/g, ir);
+    pageTemplate = pageTemplate.replace(/{{PREPARED_NAME}}/g, preparedName);
+    pageTemplate = pageTemplate.replace(/{{PREPARED_TITLE}}/g, preparedTitle);
+    pageTemplate = pageTemplate.replace(/{{NOTED_NAME}}/g, notedName);
+    pageTemplate = pageTemplate.replace(/{{NOTED_TITLE}}/g, notedTitle);
+    pageTemplate = pageTemplate.replace(/{{NOTED_LICENSE}}/g, notedLicense ? 'License No. ' + notedLicense : '');
+    const agencyName = c.agencies && c.agencies.length ? AGENCIES.find(a => a.key === c.agencies[0])?.name || c.agencies[0] : '';
+    pageTemplate = pageTemplate.replace(/{{AGENCY_NAME}}/g, escapeHtml(agencyName));
+    const parts = pageTemplate.split('<!--PAGE_BREAK-->');
+    const totalPages = parts.length;
+    
+    // Add document-specific CSS
+    const docStyles = `
+      <style>
+        .page {
+          width: 210mm;
+          min-height: 297mm;
+          margin: 20px auto;
+          background: white;
+          position: relative;
+          padding: 18mm 18mm 30mm;
+          box-shadow: 0 0 12px rgba(0,0,0,.25);
+        }
+        .watermark {
+          position: absolute;
+          width: 135mm;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          opacity: .06;
+          z-index: 1;
+          pointer-events: none;
+        }
+        .content {
+          position: relative;
+          z-index: 2;
+        }
+        .header {
+          display: grid;
+          grid-template-columns: 85px 1fr 85px;
+          align-items: center;
+        }
+        .header img {
+          width: 75px;
+          height: 75px;
+          object-fit: contain;
+        }
+        .gov {
+          text-align: center;
+          line-height: 1.2;
+        }
+        .gov div {
+          font-size: 14px;
+        }
+        .gov h2 {
+          margin: 6px 0 0;
+          font-size: 21px;
+          font-weight: bold;
+          letter-spacing: .5px;
+        }
+        .line {
+          border-top: 2px solid black;
+          margin: 8px 0 2px;
+        }
+        .line2 {
+          border-top: 1px solid black;
+          margin-bottom: 12px;
+        }
+        .top-info {
+          display: flex;
+          justify-content: space-between;
+          font-size: 12px;
+        }
+        .right {
+          text-align: right;
+        }
+        .title {
+          text-align: center;
+          margin: 18px 0;
+        }
+        .title h3 {
+          margin: 0;
+          font-size: 22px;
+          text-transform: uppercase;
+        }
+        .title small {
+          display: block;
+          margin-top: 5px;
+          font-size: 15px;
+        }
+        .section {
+          margin-top: 18px;
+          font-size: 14px;
+        }
+        .section-title {
+          font-weight: bold;
+          margin-bottom: 10px;
+        }
+        .row {
+          display: grid;
+          grid-template-columns: 180px 15px 1fr;
+          margin-bottom: 5px;
+        }
+        .row span:first-child {
+          font-weight: bold;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 8px;
+          font-size: 13px;
+        }
+        th {
+          border: 1px solid black;
+          padding: 6px;
+          text-align: center;
+          background-color: #ebdcdb;
+        }
+        td {
+          border: 1px solid black;
+          padding: 6px;
+        }
+        .paragraph {
+          margin-top: 5px;
+          text-align: justify;
+          line-height: 1.6;
+          text-indent: 45px;
+        }
+        .footer {
+          margin-top: 50px;
+          display: flex;
+          justify-content: space-between;
+        }
+        .signature {
+          width: 45%;
+          text-align: center;
+        }
+        .signature b {
+          display: block;
+          margin-top: 50px;
+          font-size: 15px;
+        }
+        .signature small {
+          font-size: 12px;
+        }
+        .document-footer {
+          position: absolute;
+          bottom: 12mm;
+          left: 18mm;
+          right: 18mm;
+          border-top: 1px solid #7f7f7f;
+          padding-top: 5px;
+          font-size: 12px;
+          color: #555555;
+        }
+        .doc-address {
+          text-align: center;
+          font-style: italic;
+          line-height: 1.4;
+          margin-bottom: 8px;
+        }
+        .doc-meta {
+          display: flex;
+          justify-content: space-between;
+          font-style: italic;
+        }
+      </style>
+    `;
+    
+    container.innerHTML = docStyles + parts.map((part, i) => {
+      const pn = i + 1;
+      return `<div class="page">${part.replace(/{{PAGE_NUMBER}}/g, String(pn)).replace(/{{TOTAL_PAGES}}/g, String(totalPages))}</div>`;
+    }).join('');
+    console.log('Document preview rendered successfully');
+  } catch (error) {
+    console.error('Error loading template:', error);
+    container.innerHTML = `<div style="padding:40px;text-align:center;color:#DC2626;">
+      <i data-lucide="alert-triangle" style="width:48px;height:48px;margin-bottom:16px;"></i>
+      <p style="font-size:16px;font-weight:600;">Error loading document template</p>
+      <p style="font-size:14px;margin-top:8px;">${error.message}</p>
+      <button onclick="loadDocumentPreview('${caseId}')" style="margin-top:20px;padding:10px 20px;background:#1E3A8A;color:white;border:none;border-radius:6px;cursor:pointer;">Retry</button>
+    </div>`;
+    lucide.createIcons();
+  }
 }
 
 function renderEligibilityCard(c){
@@ -1969,36 +2654,235 @@ function renderEligibilityCard(c){
 
 /* ---------------- Rendering: Document view ---------------- */
 async function loadDocument(caseId, agency){
+  console.log('loadDocument called with caseId:', caseId, 'agency:', agency);
   await loadCases();
+  console.log('loadCases completed, cases loaded:', cases.length);
   view = {tab:"document", caseId:caseId, docAgency:agency};
+  console.log('View set:', view);
   renderDocument();
   lucide.createIcons();
 }
 
-function renderDocument(){
+async function renderDocument(){
   const container = document.getElementById('documentContent');
   if(!container) return;
 
   const c = getCase(view.caseId);
-  if(!c){ container.innerHTML = `<div class="empty">Case not found.</div>`; return; }
-  
+  console.log('Case object:', c);
+  console.log('Client object:', c.client);
+  console.log('Client fields:', c.client ? Object.keys(c.client) : 'No client');
+  console.log('Client name:', c.client?.name);
+  console.log('Client full_name:', c.client?.full_name);
+  console.log('Client age:', c.client?.age);
+  console.log('Client sex:', c.client?.sex);
+  if(!c){ container.innerHTML = `<div class="empty">Case not found. Case ID: ${view.caseId}</div>`; return; }
+
   const agenciesToPrint = view.docAgency === 'all'
     ? (c.agencies && c.agencies.length ? c.agencies : ['PCSO'])
     : [view.docAgency];
 
-  const famRows = c.household.filter(m=>m.name);
+  const famRows = (c.familyMembers || c.household || []).filter(m=>m.fullName || m.name);
 
-  let selectOptions = c.agencies.map(a => {
+  const notProvided = "Not Provided";
+  const homeConditionDefault = "The client resides in a modest home with his/her family. The home of the family in modest circumstances is simple but functional. While the house may not have the latest appliances or decor, it is clean and maintained to the best of the family's ability. The family may prioritize practicality over style, and although they may face financial challenges, their home remains a place of warmth, care, and togetherness.";
+  const socioEconomicDefault = "The family is indigent, and the client depends on their family's income to cover daily expenses and household needs. Unfortunately, there is insufficient funds to sustain the medical expenses of the patient.";
+  const evaluationDefault = "This case concerns a client in need of financial/medical assistance for urgent medical expenses. Due to the patient's socio-economic condition, the client is unable to support the medical expenses, prompting her to seek help from your good office, as reflected in the attached documents. The incurred expenses have placed a heavy burden on the family, depleting their financial resources. Consequently, they are earnestly requesting assistance from your office to alleviate their situation.";
+  const recommendationDefault = "Due to the lack of sufficient income and the absence of alternative financial resources to meet the patient's needs, the undersigned worker respectfully recommends that the patient be considered for assistance from your office to cover the urgent medical expenses required.";
+
+  let selectOptions = (c.agencies || []).map(a => {
     const agObj = AGENCIES.find(x => x.key === a);
     return `<option value="${a}" ${a === view.docAgency ? 'selected' : ''}>${agObj ? agObj.name : a}</option>`;
   }).join("");
-
-  if (c.agencies.length > 1) {
+  if (c.agencies && c.agencies.length > 1) {
     selectOptions += `<option value="all" ${view.docAgency === 'all' ? 'selected' : ''}>All Selected Agencies (${c.agencies.length} copies)</option>`;
   }
 
+  const clientName = escapeHtml((c.client?.fullName || c.client?.full_name || c.client?.name || c.clientName || c.client_name || "")).toUpperCase() || notProvided;
+  const clientAge = escapeHtml(String(c.client?.age || "")) || notProvided;
+  const clientSex = escapeHtml((c.client?.sex || c.client?.gender || "")).toUpperCase() || notProvided;
+  const clientAddress = escapeHtml((c.client?.address || "")).toUpperCase() || notProvided;
+  const clientBirthdate = c.client?.birthdate ? fmtDate(c.client.birthdate).toUpperCase() : notProvided;
+  const clientBirthplace = escapeHtml((c.client?.birthplace || "")).toUpperCase() || notProvided;
+  const clientReligion = escapeHtml((c.client?.religion || "")).toUpperCase() || notProvided;
+  const clientEducation = escapeHtml((c.client?.education || "")).toUpperCase() || notProvided;
+  const clientCivilStatus = escapeHtml((c.client?.civilStatus || c.client?.civil_status || "")).toUpperCase() || notProvided;
+  const clientOccupation = escapeHtml((c.client?.occupation || "")) || notProvided;
+  const clientIncome = escapeHtml((c.client?.income || "")) || notProvided;
+  const clientContact = escapeHtml((c.client?.contact || c.client?.contactNumber || c.client?.contact_number || "")) || notProvided;
+
+  const reportDate = fmtDate(c.interviewDate || c.interview?.reportDate || c.createdAt).toUpperCase();
+
+  const rawProblem = c.interview?.interviewSituation || c.interview?.interview_situation || c.interview?.problemPresented || "";
+  const purpose = c.purpose || "";
+  const clientFirstName = (c.client?.firstName || c.client?.first_name || "").trim();
+  const clientLastName = (c.client?.lastName || c.client?.last_name || "").trim();
+  const clientFullName = (c.client?.fullName || c.client?.full_name || clientFirstName + " " + clientLastName).trim();
+  const ip = escapeHtml(rewriteProblemPresented(rawProblem, purpose, clientFullName)) || notProvided;
+  const ih = escapeHtml(c.interview?.interviewHousehold || c.interview?.interview_household || c.interview?.homeCondition || "") || homeConditionDefault;
+  const ie = escapeHtml(c.interview?.interviewNotes || c.interview?.interview_notes || c.interview?.socioEconomic || "") || socioEconomicDefault;
+  const iw = escapeHtml(c.interview?.socialWorkerAssessment || c.interview?.social_worker_assessment || c.interview?.evaluation || "") || evaluationDefault;
+  const ir = escapeHtml(c.interview?.recommendation || "") || recommendationDefault;
+
+  const preparedName = escapeHtml(c.signers?.preparedByName || c.officer?.name || "") || notProvided;
+  const preparedTitle = escapeHtml(c.signers?.preparedByTitle || c.officer?.position || "");
+  const notedName = escapeHtml(c.signers?.notedByName || c.encoder?.name || "") || notProvided;
+  const notedTitle = escapeHtml(c.signers?.notedByTitle || c.encoder?.position || "");
+  const notedLicense = escapeHtml(c.signers?.notedByLicense || "");
+
   const toolbarHtml = `
-  <div class="doc-toolbar no-print" style="box-shadow:var(--shadow);">
+  <style>
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 20px auto;
+      background: white;
+      position: relative;
+      padding: 18mm 18mm 30mm;
+      box-shadow: 0 0 12px rgba(0,0,0,.25);
+    }
+    .watermark {
+      position: absolute;
+      width: 135mm;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      opacity: .06;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .content { position: relative; z-index: 2; }
+    .header {
+      display: grid;
+      grid-template-columns: 85px 1fr 85px;
+      align-items: center;
+    }
+    .header img {
+      width: 75px;
+      height: 75px;
+      object-fit: contain;
+    }
+    .gov {
+      text-align: center;
+      line-height: 1.2;
+    }
+    .gov div { font-size: 14px; }
+    .gov h2 {
+      margin: 6px 0 0;
+      font-size: 21px;
+      font-weight: bold;
+      letter-spacing: .5px;
+    }
+    .line {
+      border-top: 2px solid black;
+      margin: 8px 0 2px;
+    }
+    .line2 {
+      border-top: 1px solid black;
+      margin-bottom: 12px;
+    }
+    .top-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    .right { text-align: right; }
+    .title {
+      text-align: center;
+      margin: 18px 0;
+    }
+    .title h3 {
+      margin: 0;
+      font-size: 22px;
+      text-transform: uppercase;
+    }
+    .title small {
+      display: block;
+      margin-top: 5px;
+      font-size: 15px;
+    }
+    .section {
+      margin-top: 18px;
+      font-size: 14px;
+    }
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 180px 15px 1fr;
+      margin-bottom: 5px;
+    }
+    .row span:first-child { font-weight: bold; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+    th {
+      border: 1px solid black;
+      padding: 6px;
+      text-align: center;
+      background-color: #ebdcdb;
+    }
+    td {
+      border: 1px solid black;
+      padding: 6px;
+    }
+    .paragraph {
+      margin-top: 5px;
+      text-align: justify;
+      line-height: 1.6;
+      text-indent: 45px;
+    }
+    .footer {
+      margin-top: 50px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .signature {
+      width: 45%;
+      text-align: center;
+    }
+    .signature b {
+      display: block;
+      margin-top: 50px;
+      font-size: 15px;
+    }
+    .signature small { font-size: 12px; }
+    .document-footer {
+      position: absolute;
+      bottom: 12mm;
+      left: 18mm;
+      right: 18mm;
+      border-top: 1px solid #7f7f7f;
+      padding-top: 5px;
+      font-size: 12px;
+      color: #555555;
+    }
+    .doc-address {
+      text-align: center;
+      font-style: italic;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+    .doc-meta {
+      display: flex;
+      justify-content: space-between;
+      font-style: italic;
+    }
+    @media print {
+      html, body, .app, .main { overflow: visible !important; height: auto !important; }
+      .no-print { display: none !important; }
+      .sidebar, .page-head, .toolbar-row { display: none !important; }
+      .main { padding: 0; max-width: none; margin: 0; }
+      body { background: #fff; }
+      .page { margin: 0 !important; box-shadow: none !important; page-break-after: always; break-after: page; }
+      .page:last-child { page-break-after: avoid; break-after: avoid; }
+    }
+  </style>
+  <div class="doc-toolbar no-print" style="box-shadow:var(--shadow);max-width:210mm;margin:0 auto 20px;">
     <button class="btn ghost btn-sm" onclick="window.location.href='/admin/social-case/detail/${c.id}'"><i data-lucide="arrow-left" style="width:16px;height:16px"></i> Back to case</button>
     <div style="display:flex;gap:10px;align-items:center;">
       <span style="font-size:13px;font-weight:500;color:var(--text-secondary);white-space:nowrap;">Print Copy:</span>
@@ -2009,64 +2893,79 @@ function renderDocument(){
     </div>
   </div>`;
 
-  const pagesHtml = agenciesToPrint.map(agencyKey => {
-    const ag = AGENCIES.find(a => a.key === agencyKey) || AGENCIES[0];
-    return `
-    <div class="doc-page" style="margin-bottom: 20px;">
-      <div style="text-align:right;font-size:13px;margin-bottom:18px">${fmtDate(c.interview.reportDate)}</div>
-      <div style="font-size:12.5px;margin-bottom:16px">CONTROL NO. ${escapeHtml(c.controlNo)}</div>
-      <div class="doc-title" style="font-weight:700;">Social Case Study Report</div>
-      <div class="doc-sub" style="margin-bottom:24px;">(For: ${escapeHtml(c.purpose)})</div>
+  try {
+    const response = await fetch('/templates/social-case-report.html');
+    if (!response.ok) throw new Error('Failed to load template');
+    let template = await response.text();
 
-      <!-- Addressee Block (Very important for official files) -->
-      <div style="margin: 20px 0; font-size: 14px; line-height: 1.5; border-left: 3px solid var(--primary); padding-left: 12px; font-style: italic;">
-        <strong>To:</strong><br>
-        ${escapeHtml(ag.addressee).replace(/\n/g, '<br>')}
-      </div>
-
-      <div class="doc-section">
-        <h4>I. Identifying information</h4>
-        <div class="doc-row"><div class="l">Name</div><div>${escapeHtml(c.client.name)}</div></div>
-        <div class="doc-row"><div class="l">Age</div><div>${escapeHtml(String(c.client.age))||"—"} yrs. old</div></div>
-        <div class="doc-row"><div class="l">Sex</div><div>${escapeHtml(c.client.sex)||"—"}</div></div>
-        <div class="doc-row"><div class="l">Address</div><div>${escapeHtml(c.client.address)||"—"}</div></div>
-        <div class="doc-row"><div class="l">Birthdate</div><div>${c.client.birthdate?fmtDate(c.client.birthdate):"—"}</div></div>
-        <div class="doc-row"><div class="l">Birthplace</div><div>${escapeHtml(c.client.birthplace)||"—"}</div></div>
-        <div class="doc-row"><div class="l">Religion</div><div>${escapeHtml(c.client.religion)||"—"}</div></div>
-        <div class="doc-row"><div class="l">Educ. att.</div><div>${escapeHtml(c.client.education)||"—"}</div></div>
-        <div class="doc-row"><div class="l">Civil status</div><div>${escapeHtml(c.client.civilStatus)||"—"}</div></div>
-        <div class="doc-row"><div class="l">Occupation</div><div>${escapeHtml(c.client.occupation)||"N/A"}</div></div>
-        <div class="doc-row"><div class="l">Income</div><div>${escapeHtml(c.client.income)||"N/A"}</div></div>
-        <div class="doc-row"><div class="l">Contact no.</div><div>${escapeHtml(c.client.contact)||"—"}</div></div>
-      </div>
-
-      <div class="doc-section">
-        <h4>II. Family composition</h4>
-        ${famRows.length ? `<table style="width:100%;font-size:12.5px;border-collapse:collapse">
-          <tr>${["Relatives","Relationship","Age","Educ. attainment","Occupation","Income"].map(h=>`<th style="border-bottom:1px solid #999;text-align:left;padding:4px 6px;font-weight:600">${h}</th>`).join("")}</tr>
+    const familyTable = famRows.length ? `
+      <table style="border-radius: 0;">
+        <thead>
+          <tr>
+            <th style="border-radius: 0;">RELATIVES</th>
+            <th style="border-radius: 0;">RELATIONSHIP</th>
+            <th style="border-radius: 0;">AGE</th>
+            <th style="border-radius: 0;">EDUCATIONAL<br>ATTAINMENT</th>
+            <th style="border-radius: 0;">OCCUPATION</th>
+            <th style="border-radius: 0;">INCOME</th>
+          </tr>
+        </thead>
+        <tbody>
           ${famRows.map(m=>`<tr>
-            <td style="padding:4px 6px;border-bottom:1px solid #ddd">${escapeHtml(m.name)}</td>
-            <td style="padding:4px 6px;border-bottom:1px solid #ddd">${escapeHtml(m.relationship)||"—"}</td>
-            <td style="padding:4px 6px;border-bottom:1px solid #ddd">${escapeHtml(String(m.age))||"—"}</td>
-            <td style="padding:4px 6px;border-bottom:1px solid #ddd">${escapeHtml(m.education)||"—"}</td>
-            <td style="padding:4px 6px;border-bottom:1px solid #ddd">${escapeHtml(m.occupation)||"N/A"}</td>
-            <td style="padding:4px 6px;border-bottom:1px solid #ddd">${escapeHtml(m.income)||"N/A"}</td>
+            <td style="border-radius: 0;">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
+            <td style="border-radius: 0;">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
+            <td align="center" style="border-radius: 0;">${escapeHtml(String(m.age || "")) || "—"}</td>
+            <td style="border-radius: 0;">${escapeHtml((m.education || "—").toUpperCase())}</td>
+            <td style="border-radius: 0;">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
+            <td style="border-radius: 0;">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
           </tr>`).join("")}
-        </table>` : `<div class="doc-body-text muted">None listed.</div>`}
-      </div>
+        </tbody>
+      </table>` : `<div style="color:#999;margin-top:8px;font-style:italic;">None listed.</div>`;
 
-      <div class="doc-section"><h4>III. Problem presented</h4><div class="doc-body-text">${escapeHtml(c.interview.problemPresented)||"—"}</div></div>
-      <div class="doc-section"><h4>IV. Home condition</h4><div class="doc-body-text">${escapeHtml(c.interview.homeCondition)||"—"}</div></div>
-      <div class="doc-section"><h4>V. Socio economic condition</h4><div class="doc-body-text">${escapeHtml(c.interview.socioEconomic)||"—"}</div></div>
-      <div class="doc-section"><h4>VI. Evaluation</h4><div class="doc-body-text">${escapeHtml(c.interview.evaluation)||"—"}</div></div>
-      <div class="doc-section"><h4>VII. Recommendation</h4><div class="doc-body-text">${escapeHtml(c.interview.recommendation)||"—"}</div></div>
+    const pageParts = agenciesToPrint.map((agencyKey, pageIndex) => {
+      const ag = AGENCIES.find(a => a.key === agencyKey) || { name: agencyKey };
+      let pageTemplate = template;
+      
+      pageTemplate = pageTemplate.replace(/{{REPORT_DATE}}/g, reportDate);
+      pageTemplate = pageTemplate.replace(/{{CONTROL_NUMBER}}/g, escapeHtml(c.controlNo || c.caseNumber || ""));
+      pageTemplate = pageTemplate.replace(/{{PURPOSE}}/g, escapeHtml(c.purpose || "Financial / Medical"));
+      pageTemplate = pageTemplate.replace(/{{CLIENT_NAME}}/g, clientName);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_AGE}}/g, clientAge);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_SEX}}/g, clientSex);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_ADDRESS}}/g, clientAddress);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_BIRTHDATE}}/g, clientBirthdate);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_BIRTHPLACE}}/g, clientBirthplace);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_RELIGION}}/g, clientReligion);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_EDUCATION}}/g, clientEducation);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_CIVIL_STATUS}}/g, clientCivilStatus);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_OCCUPATION}}/g, clientOccupation);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_INCOME}}/g, clientIncome);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_CONTACT}}/g, clientContact);
+      pageTemplate = pageTemplate.replace(/{{FAMILY_TABLE}}/g, familyTable);
+      pageTemplate = pageTemplate.replace(/{{PROBLEM_PRESENTED}}/g, ip);
+      pageTemplate = pageTemplate.replace(/{{HOME_CONDITION}}/g, ih);
+      pageTemplate = pageTemplate.replace(/{{SOCIO_ECONOMIC}}/g, ie);
+      pageTemplate = pageTemplate.replace(/{{EVALUATION}}/g, iw);
+      pageTemplate = pageTemplate.replace(/{{RECOMMENDATION}}/g, ir);
+      pageTemplate = pageTemplate.replace(/{{PREPARED_NAME}}/g, preparedName);
+      pageTemplate = pageTemplate.replace(/{{PREPARED_TITLE}}/g, preparedTitle);
+      pageTemplate = pageTemplate.replace(/{{NOTED_NAME}}/g, notedName);
+      pageTemplate = pageTemplate.replace(/{{NOTED_TITLE}}/g, notedTitle);
+      pageTemplate = pageTemplate.replace(/{{NOTED_LICENSE}}/g, notedLicense ? 'License No. ' + notedLicense : '');
+      pageTemplate = pageTemplate.replace(/{{AGENCY_NAME}}/g, escapeHtml(ag.name || agencyKey));
 
-      <div class="doc-sign">
-        <div class="line">${escapeHtml(c.signers.preparedByName)||"—"}<br><span style="font-size:11px;color:#777">${escapeHtml(c.signers.preparedByTitle)}</span></div>
-        <div class="line">${escapeHtml(c.signers.notedByName)||"—"}<br><span style="font-size:11px;color:#777">${escapeHtml(c.signers.notedByTitle)}${c.signers.notedByLicense?", License No. "+escapeHtml(c.signers.notedByLicense):""}</span></div>
-      </div>
-    </div>`;
-  }).join("");
+      return pageTemplate.split('<!--PAGE_BREAK-->');
+    }).flat();
 
-  container.innerHTML = toolbarHtml + pagesHtml;
+    const totalPhysicalPages = pageParts.length;
+    const pagesHtml = pageParts.map((part, i) => {
+      const pn = i + 1;
+      return `<div class="page">${part.replace(/{{PAGE_NUMBER}}/g, String(pn)).replace(/{{TOTAL_PAGES}}/g, String(totalPhysicalPages))}</div>`;
+    }).join("");
+
+    container.innerHTML = toolbarHtml + pagesHtml;
+  } catch (error) {
+    console.error('Error loading template:', error);
+    container.innerHTML = `<div class="empty">Error loading document template. Please try again.</div>`;
+  }
 }

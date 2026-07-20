@@ -17,9 +17,16 @@ class Client extends Model
         'last_name',
         'birthdate',
         'gender',
+        'age',
         'address',
         'barangay',
         'contact_number',
+        'birthplace',
+        'religion',
+        'education',
+        'civil_status',
+        'occupation',
+        'income',
     ];
 
     protected $casts = [
@@ -80,6 +87,6 @@ class Client extends Model
 
     public function getCivilStatusAttribute(): ?string
     {
-        return null;
+        return $this->attributes['civil_status'] ?? null;
     }
 }
