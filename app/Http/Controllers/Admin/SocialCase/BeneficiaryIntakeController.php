@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\SocialCase;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreBeneficiaryIntakeRequest;
-use App\Models\BeneficiaryIntake;
+use App\Http\Requests\SocialCase\StoreBeneficiaryIntakeRequest;
+use App\Models\SocialCase\BeneficiaryIntake;
 use App\Models\Client;
 use App\Services\SocialCase\EligibilityChecker;
 use Illuminate\Http\Request;

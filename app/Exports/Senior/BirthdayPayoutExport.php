@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports;
+namespace App\Exports\Senior;
 
 use App\Models\Senior\BirthdayPayout;
 use Maatwebsite\Excel\Concerns\FromCollection;

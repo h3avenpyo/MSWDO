@@ -27,7 +27,7 @@ class SocialCaseReport extends Model
 
     public function socialCaseStudy(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\SocialCaseStudy::class);
+        return $this->belongsTo(\App\Models\SocialCase\SocialCaseStudy::class);
     }
 
     public function generator(): BelongsTo

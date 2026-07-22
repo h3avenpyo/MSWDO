@@ -154,7 +154,7 @@ function showCaseDetailsModal(caseId){
 
 /* ---------------- Helpers ---------------- */
 function uid(){ return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
-function todayISO(){ return new Date().toISOString().slice(0,10); }
+function todayISO(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
 function fmtDate(iso){
   if(!iso || iso === 'null' || iso === '') return "—";
   try {
@@ -861,7 +861,7 @@ function renderDashboard(){
     const caseDate = new Date(c.createdAt);
     return caseDate.getMonth() === currentMonth && caseDate.getFullYear() === currentYear;
   }).length;
-  const today = new Date().toISOString().slice(0,10);
+  const today = todayISO();
   const releasedToday = cases.filter(c => c.status === 'Released' && c.releasedDate === today).length;
   const successRate = cases.length > 0 ? Math.round(((byStatus['Released'] || 0) / cases.length) * 100) : 0;
 
@@ -874,6 +874,7 @@ function renderDashboard(){
   updateElement('totalClients', uniqueClients);
   updateElement('casesThisMonth', casesThisMonth);
   updateElement('releasedToday', releasedToday);
+  updateElement('totalReleased', byStatus['Released'] || 0);
 
   // Recent activity feed
   renderActivityFeed(recent);
@@ -895,7 +896,7 @@ function updateTrend(elementId, count, isMonthly = false){
 
 function renderTodayActivities(byStatus){
   const container = document.getElementById('todayActivities');
-  const today = new Date().toISOString().slice(0,10);
+  const today = todayISO();
   
   // Calculate actual today's activities
   const newToday = cases.filter(c => c.createdAt && c.createdAt.startsWith(today)).length;

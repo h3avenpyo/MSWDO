@@ -70,6 +70,15 @@
                 <i data-lucide="check-circle"></i>
             </div>
         </div>
+        <div class="stat-card stat-card-teal">
+            <div class="stat-card-content">
+                <div class="stat-card-label">TOTAL RELEASED</div>
+                <div class="stat-card-value" id="totalReleased">0</div>
+            </div>
+            <div class="stat-card-icon">
+                <i data-lucide="send"></i>
+            </div>
+        </div>
     </div>
 
     <!-- Dashboard Grid -->

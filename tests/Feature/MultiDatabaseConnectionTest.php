@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\Client;
 use App\Models\Financial\FinancialAssistanceApplication;
 use App\Models\Senior\SeniorCitizenRecord;
-use App\Models\SocialCaseStudy;
+use App\Models\SocialCase\SocialCaseStudy;
 use App\Models\User;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;

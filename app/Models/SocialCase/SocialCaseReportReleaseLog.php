@@ -24,7 +24,7 @@ class SocialCaseReportReleaseLog extends Model
 
     public function socialCaseStudy(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\SocialCaseStudy::class);
+        return $this->belongsTo(\App\Models\SocialCase\SocialCaseStudy::class);
     }
 
     public function report(): BelongsTo

@@ -35,27 +35,27 @@ class Client extends Model
 
     public function socialCaseStudies(): HasMany
     {
-        return $this->hasMany(SocialCaseStudy::class);
+        return $this->hasMany(\App\Models\SocialCase\SocialCaseStudy::class);
     }
 
     public function assistanceRecords(): HasMany
     {
-        return $this->hasMany(AssistanceRecord::class);
+        return $this->hasMany(\App\Models\SocialCase\AssistanceRecord::class);
     }
 
     public function beneficiaryIntakes(): HasMany
     {
-        return $this->hasMany(BeneficiaryIntake::class);
+        return $this->hasMany(\App\Models\SocialCase\BeneficiaryIntake::class);
     }
 
     public function caseRejections(): HasMany
     {
-        return $this->hasMany(CaseRejection::class);
+        return $this->hasMany(\App\Models\SocialCase\CaseRejection::class);
     }
 
     public function eligibilityLogs(): HasMany
     {
-        return $this->hasMany(EligibilityAuditLog::class);
+        return $this->hasMany(\App\Models\SocialCase\EligibilityAuditLog::class);
     }
 
     public function financialApplications(): HasMany

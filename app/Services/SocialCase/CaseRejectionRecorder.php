@@ -2,7 +2,7 @@
 
 namespace App\Services\SocialCase;
 
-use App\Models\CaseRejection;
+use App\Models\SocialCase\CaseRejection;
 use App\Models\Client;
 
 class CaseRejectionRecorder

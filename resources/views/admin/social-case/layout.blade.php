@@ -52,6 +52,7 @@
             --icon-blue: #3B82F6;
             --icon-green: #16A34A;
             --icon-purple: #7C3AED;
+            --icon-teal: #0D9488;
             
             /* Dimensions */
             --sidebar-width: 260px;
@@ -144,7 +145,7 @@
         /* ---------- Modern Stat Cards ---------- */
         .stat-cards{
             display:grid;
-            grid-template-columns:repeat(3,1fr);
+            grid-template-columns:repeat(4,1fr);
             gap:24px;
             margin-bottom:32px;
             animation:fadeInUp 0.6s ease-out;
@@ -154,7 +155,7 @@
         .stat-card{
             background:var(--surface);
             border-radius:16px;
-            padding:24px;
+            padding:16px;
             display:flex;
             align-items:center;
             justify-content:space-between;
@@ -180,6 +181,7 @@
         .stat-card-blue::before{background:var(--icon-blue);}
         .stat-card-green::before{background:var(--icon-green);}
         .stat-card-purple::before{background:var(--icon-purple);}
+        .stat-card-teal::before{background:var(--icon-teal);}
         
         .stat-card-content{
             flex:1;
@@ -193,14 +195,14 @@
             margin-bottom:8px;
         }
         .stat-card-value{
-            font-size:42px;
+            font-size:32px;
             font-weight:700;
             color:var(--text-primary);
             line-height:1;
         }
         .stat-card-icon{
-            width:64px;
-            height:64px;
+            width:52px;
+            height:52px;
             border-radius:50%;
             display:flex;
             align-items:center;
@@ -219,9 +221,13 @@
             background:var(--purple-bg);
             color:var(--icon-purple);
         }
+        .stat-card-teal .stat-card-icon{
+            background:#CCFBF1;
+            color:var(--icon-teal);
+        }
         .stat-card-icon svg{
-            width:32px;
-            height:32px;
+            width:24px;
+            height:24px;
         }
 
         /* ---------- Workflow Cards ---------- */

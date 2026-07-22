@@ -2,7 +2,7 @@
 
 namespace App\Services\SocialCase;
 
-use App\Models\AssistanceRecord;
+use App\Models\SocialCase\AssistanceRecord;
 use App\Models\Client;
 use Carbon\Carbon;
 

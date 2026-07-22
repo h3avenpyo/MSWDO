@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\SocialCase;
 
+use App\Models\Client;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -58,7 +60,7 @@ class SocialCaseStudy extends Model
 
     public function getReleasedDateAttribute(): ?string
     {
-        return $this->assistance_date ? $this->assistance_date->format('Y-m-d') : null;
+        return $this->released_at ? $this->released_at->format('Y-m-d') : null;
     }
 
     public function client(): BelongsTo

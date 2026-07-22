@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Senior;
 
 use App\Http\Controllers\Controller;
 use App\Models\Senior\SeniorCitizenRecord;
@@ -62,7 +62,7 @@ class BirthdayController extends Controller
             9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December',
         ];
 
-        return view('admin.senior-birthdays', compact(
+        return view('admin.senior.birthdays', compact(
             'todayCount', 'weekCount', 'nextMonthCount', 'total',
             'barangays', 'months'
         ));
@@ -269,7 +269,7 @@ class BirthdayController extends Controller
             return ['barangay' => $barangay, 'count' => $group->count()];
         })->sortByDesc('count');
 
-        $pdf = Pdf::loadView('admin.birthday-pdf', compact(
+        $pdf = Pdf::loadView('admin.senior.birthday-pdf', compact(
             'seniors', 'dateGenerated', 'total', 'barangaySummary'
         ));
         $pdf->setPaper('A4', 'landscape');
@@ -316,7 +316,7 @@ class BirthdayController extends Controller
             return ['barangay' => $barangay, 'count' => $group->count()];
         })->sortByDesc('count');
 
-        return view('admin.birthday-print', compact(
+        return view('admin.senior.birthday-print', compact(
             'seniors', 'dateGenerated', 'total', 'barangaySummary'
         ));
     }

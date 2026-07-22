@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Senior;
 
 use App\Http\Controllers\Controller;
 use App\Models\Senior\BirthdayPayout;
@@ -84,7 +84,7 @@ class BirthdayPayoutController extends Controller
         $payoutAmount = 500.00; // Default payout amount
         $totalBudget = $totalBeneficiaries * $payoutAmount;
 
-        return view('admin.birthday-payouts', compact(
+        return view('admin.senior.birthday-payouts', compact(
             'months',
             'currentYear',
             'currentMonth',
@@ -135,7 +135,7 @@ class BirthdayPayoutController extends Controller
 
         $actions = ['released'];
 
-        return view('admin.birthday-payout-history', compact(
+        return view('admin.senior.birthday-payout-history', compact(
             'history',
             'actions',
             'dateFrom',
@@ -412,7 +412,7 @@ class BirthdayPayoutController extends Controller
         // Log to recent activities
         $this->logActivity('printed birthday payout list', "{$month} {$year}", count($payouts) . ' payout(s)');
 
-        return view('admin.birthday-payout-print', compact(
+        return view('admin.senior.birthday-payout-print', compact(
             'payouts',
             'month',
             'year',
@@ -449,7 +449,7 @@ class BirthdayPayoutController extends Controller
             });
         }
 
-        $pdf = Pdf::loadView('admin.birthday-payout-pdf', compact(
+        $pdf = Pdf::loadView('admin.senior.birthday-payout-pdf', compact(
             'payouts',
             'month',
             'year',
@@ -491,7 +491,7 @@ class BirthdayPayoutController extends Controller
         // Log to recent activities
         $this->logActivity('printed birthday payout receipt', $payout->senior->full_name ?? 'Unknown', $payout->senior->control_number ?? 'N/A');
 
-        return view('admin.birthday-payout-receipt', compact('payout'));
+        return view('admin.senior.birthday-payout-receipt', compact('payout'));
     }
 
     /**

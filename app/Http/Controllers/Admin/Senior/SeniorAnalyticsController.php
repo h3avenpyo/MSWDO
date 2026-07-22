@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Senior;
 
 use App\Http\Controllers\Controller;
 use App\Models\Senior\SeniorCitizenRecord;
@@ -138,7 +138,7 @@ class SeniorAnalyticsController extends Controller
             ->orderBy('month')
             ->get();
 
-        return view('admin.senior-analytics', compact(
+        return view('admin.senior.analytics', compact(
             'barangayStats', 'totalSeniors', 'totalBarangays',
             'activeSeniors', 'inactiveSeniors', 'avgPerBarangay', 'topBarangay', 'topBarangayCount',
             'genderStats', 'ageGroups', 'monthlyRegistrations',

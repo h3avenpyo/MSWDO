@@ -48,12 +48,12 @@ class User extends Authenticatable
 
     public function socialCaseStudies(): HasMany
     {
-        return $this->hasMany(SocialCaseStudy::class, 'officer_id');
+        return $this->hasMany(\App\Models\SocialCase\SocialCaseStudy::class, 'officer_id');
     }
 
     public function encodedCases(): HasMany
     {
-        return $this->hasMany(SocialCaseStudy::class, 'encoded_by');
+        return $this->hasMany(\App\Models\SocialCase\SocialCaseStudy::class, 'encoded_by');
     }
 
     public function releasedPayouts(): HasMany
