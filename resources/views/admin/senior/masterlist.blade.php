@@ -204,36 +204,7 @@
         }
         .dropdown-item:hover { background: var(--background); }
 
-        /* ---------- Modal ---------- */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-            display: none; align-items: center; justify-content: center;
-            padding: 24px; z-index: 2000;
-        }
-        .modal-overlay.show { display: flex; }
-        .modal-card {
-            background: var(--surface); border-radius: 16px; max-width: 800px; width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;
-        }
-        .modal-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 24px; border-bottom: 1px solid var(--border);
-        }
-        .modal-header h3 { font-size: 16px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
-        .modal-close {
-            background: none; border: none; font-size: 24px; color: var(--text-muted);
-            padding: 4px 8px; cursor: pointer; transition: color 0.2s; line-height: 1;
-        }
-        .modal-close:hover { color: var(--text-primary); }
-        .modal-body { padding: 24px; background: var(--background); }
-        .modal-footer {
-            display: flex; justify-content: flex-end; gap: 8px;
-            padding: 16px 24px; border-top: 1px solid var(--border);
-        }
-        .modal-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-        .modal-field label { display: block; font-weight: 600; color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 4px; }
-        .modal-field p { font-weight: 500; color: var(--text-primary); margin: 0; background: var(--surface); padding: 10px 12px; border-radius: 8px; font-size: 14px; border: 1px solid var(--border); }
-        .modal-field.full { grid-column: 1 / -1; }
+        #seniorModal { transition: opacity 0.2s ease; }
 
         /* ---------- Responsive ---------- */
         @media (max-width: 1200px) {
@@ -243,7 +214,6 @@
             .sidebar { transform: translateX(-100%); }
             .sidebar.show { transform: translateX(0); }
             .main { margin-left: 0; max-width: 100%; padding: 20px; }
-            .modal-grid { grid-template-columns: 1fr; }
             .filter-row { flex-direction: column; align-items: stretch; }
             .filter-left { flex-direction: column; }
             .filter-group.search-group, .filter-group.select-group { min-width: auto; width: 100%; }
@@ -393,15 +363,15 @@
                     </div>
 
                     <div class="filter-right">
-                        <a href="/admin/senior/registration" class="btn primary" style="height:44px;">
+                        <a href="/admin/senior/registration" style="height:44px;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:#0f766e;color:white;border:none;cursor:pointer;text-decoration:none;transition:all 0.2s ease;font-family:inherit;">
                             <i data-lucide="plus" style="width:16px;height:16px"></i> Add New
                         </a>
-                        <a href="{{ route('admin.senior.export-pdf') }}?barangay={{ request('barangay') }}&search={{ request('search') }}" class="btn danger" style="height:44px;">
+                        <a href="#" style="height:44px;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:#1A237E;color:white;border:none;cursor:pointer;text-decoration:none;transition:all 0.2s ease;font-family:inherit;" onclick="exportPdf(event)">
                             <i data-lucide="file-output" style="width:16px;height:16px"></i> Export PDF
                         </a>
                         <div class="dropdown" id="bulkActionDropdown">
-                            <button class="btn warning" id="bulkActionButton" onclick="toggleDropdown()" disabled style="height:44px;font-weight:600;">
-                                <i data-lucide="archive" style="width:14px;height:14px"></i> Bulk Actions <span id="selectedCount" style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: 4px;">0</span>
+                            <button id="bulkActionButton" onclick="toggleDropdown()" disabled style="height:44px;font-weight:600;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE;cursor:pointer;transition:all 0.2s ease;font-family:inherit;opacity:0.45;">
+                                <i data-lucide="archive" style="width:14px;height:14px"></i> Bulk Actions <span id="selectedCount" style="background: #3730A3; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: 4px;">0</span>
                             </button>
                             <div class="dropdown-menu" id="bulkDropdownMenu">
                                 <a class="dropdown-item" href="#" onclick="bulkArchive()"><i data-lucide="archive" style="width:14px;height:14px"></i> Archive Selected</a>
@@ -409,8 +379,8 @@
                             </div>
                         </div>
                         @if(request('search') || request('barangay'))
-                            <a href="{{ route('admin.senior.masterlist') }}" class="btn ghost" style="height:44px;">
-                                <i data-lucide="x" style="width:14px;height:14px"></i> Clear
+                            <a href="{{ route('admin.senior.masterlist') }}" style="height:44px;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:white;color:#DC2626;border:1px solid #FECACA;cursor:pointer;text-decoration:none;transition:all 0.2s ease;font-family:inherit;">
+                                <i data-lucide="x" style="width:16px;height:16px"></i> Clear Filters
                             </a>
                         @endif
                     </div>
@@ -486,74 +456,82 @@
 </div>
 
 <!-- ======================== MODAL ======================== -->
-<div class="modal-overlay" id="seniorModal" onclick="if(event.target===this)closeModal()">
-    <div class="modal-card">
-        <div class="modal-header">
-            <h3><i data-lucide="user" style="width:20px;height:20px"></i> Senior Citizen Details</h3>
-            <button class="modal-close" onclick="closeModal()">&times;</button>
+<div id="seniorModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;padding:16px;z-index:9999;backdrop-filter:blur(4px);">
+    <div style="background:var(--background);border-radius:16px;width:100%;max-width:800px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.12);overflow:hidden;">
+        <div style="background:#1A237E;color:white;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
+            <h5 style="margin:0;font-size:1.1rem;font-weight:600;display:flex;align-items:center;gap:8px;">
+                <i data-lucide="user-circle" style="width:20px;height:20px;"></i>
+                Senior Citizen Details
+            </h5>
+            <button onclick="closeModal()" style="background:none;border:none;color:white;cursor:pointer;opacity:0.8;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                <i data-lucide="x" style="width:24px;height:24px;"></i>
+            </button>
         </div>
-        <div class="modal-body">
-            <div class="modal-grid">
-                <div class="modal-field">
-                    <label>Control Number</label>
-                    <p id="modalControlNumber">-</p>
+        <div style="padding:24px;overflow-y:auto;flex:1;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;margin-bottom:16px;">
+                <div style="margin-bottom:8px;">
+                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Control Number</label>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalControlNumber">—</div>
                 </div>
-                <div class="modal-field">
-                    <label>Year Applied</label>
-                    <p id="modalYearApplied">-</p>
+                <div style="margin-bottom:8px;">
+                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Year Applied</label>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalYearApplied">—</div>
                 </div>
-                <div class="modal-field">
-                    <label>Status</label>
-                    <p id="modalStatus">-</p>
+                <div style="margin-bottom:8px;">
+                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Status</label>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalStatus">—</div>
                 </div>
-                <div class="modal-field full">
-                    <label>Full Name</label>
-                    <p id="modalFullName">-</p>
+                <div style="margin-bottom:8px;grid-column:1/-1;">
+                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Full Name</label>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalFullName">—</div>
                 </div>
-                <div class="modal-field" style="grid-column:span 2;">
-                    <label>Address</label>
-                    <p id="modalAddress">-</p>
+                <div style="margin-bottom:8px;grid-column:1/-1;">
+                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Address</label>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalAddress">—</div>
                 </div>
-                <div class="modal-field">
-                    <label>Barangay</label>
-                    <p id="modalBarangay">-</p>
+                <div style="margin-bottom:8px;">
+                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Barangay</label>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalBarangay">—</div>
                 </div>
-                <div class="modal-field">
-                    <label>Birth Date</label>
-                    <p id="modalBirthDate">-</p>
+                <div style="margin-bottom:8px;">
+                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Birth Date</label>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalBirthDate">—</div>
                 </div>
-                <div class="modal-field">
-                    <label>Month</label>
-                    <p id="modalMonth">-</p>
+                <div style="margin-bottom:8px;">
+                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Month</label>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalMonth">—</div>
                 </div>
-                <div class="modal-field">
-                    <label>Age</label>
-                    <p id="modalAge">-</p>
+                <div style="margin-bottom:8px;">
+                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Age</label>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalAge">—</div>
                 </div>
-                <div class="modal-field">
-                    <label>Sex</label>
-                    <p id="modalSex">-</p>
+                <div style="margin-bottom:8px;">
+                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Sex</label>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalSex">—</div>
                 </div>
-                <div class="modal-field">
-                    <label>Contact Number</label>
-                    <p id="modalContactNumber">-</p>
+                <div style="margin-bottom:8px;">
+                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Contact Number</label>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalContactNumber">—</div>
                 </div>
-                <div class="modal-field">
-                    <label>PhilSys Number</label>
-                    <p id="modalPhilsysNumber">-</p>
+                <div style="margin-bottom:8px;">
+                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">PhilSys Number</label>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalPhilsysNumber">—</div>
                 </div>
-                <div class="modal-field">
-                    <label>RRN Number</label>
-                    <p id="modalRrnNumber">-</p>
+                <div style="margin-bottom:8px;">
+                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">RRN Number</label>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalRrnNumber">—</div>
                 </div>
-                <div class="modal-field full">
-                    <label>Remarks</label>
-                    <p id="modalRemarks">-</p>
+                <div style="margin-bottom:8px;grid-column:1/-1;">
+                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Remarks</label>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);white-space:pre-wrap;" id="modalRemarks">—</div>
                 </div>
             </div>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn" onclick="closeModal()">Close</button>
+        <div style="padding:16px 24px;border-top:1px solid var(--border);background:var(--surface);display:flex;justify-content:flex-end;gap:12px;">
+            <button onclick="closeModal()" style="padding:8px 16px;background:var(--background);border:1px solid var(--border);border-radius:6px;font-weight:500;color:var(--text-primary);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='var(--background)'">Close</button>
+            <button onclick="window.location.href='/admin/senior/profile/' + currentSeniorId" style="padding:8px 16px;background:#1A237E;border:none;border-radius:6px;font-weight:500;color:white;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.2s;" onmouseover="this.style.background='#3730A3'" onmouseout="this.style.background='#1A237E'">
+                <i data-lucide="user" style="width:16px;height:16px;"></i> Full Profile
+            </button>
         </div>
     </div>
 </div>
@@ -589,19 +567,28 @@
     });
 
     // Custom Modal
+    let currentSeniorId = null;
+
     function openModal() {
-        document.getElementById('seniorModal').classList.add('show');
+        const modal = document.getElementById('seniorModal');
+        modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
+        setTimeout(() => modal.style.opacity = '1', 10);
     }
     function closeModal() {
-        document.getElementById('seniorModal').classList.remove('show');
-        document.body.style.overflow = '';
+        const modal = document.getElementById('seniorModal');
+        modal.style.opacity = '0';
+        setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = ''; }, 200);
     }
+    document.getElementById('seniorModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
 
     // View senior profile function
     function viewProfile(id) {
+        currentSeniorId = id;
         const fields = ['modalControlNumber','modalFullName','modalAddress','modalBarangay','modalBirthDate','modalMonth','modalAge','modalSex','modalContactNumber','modalPhilsysNumber','modalRrnNumber','modalRemarks','modalStatus','modalYearApplied'];
-        fields.forEach(f => document.getElementById(f).textContent = 'Loading...');
+        fields.forEach(f => { const el = document.getElementById(f); if(el) el.textContent = 'Loading...'; });
 
         openModal();
 
@@ -638,17 +625,15 @@
 
             Swal.fire({
                 title: 'Archive Senior Citizen',
-                text: `Are you sure you want to archive ${seniorName}?`,
+                text: `Are you sure you want to archive ${seniorName}? This can be undone from the archive page.`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#dc3545',
-                cancelButtonColor: '#6c757d',
+                confirmButtonColor: '#1A237E',
+                cancelButtonColor: '#6B7280',
                 confirmButtonText: 'Yes, Archive',
                 cancelButtonText: 'Cancel',
                 background: '#ffffff',
-                customClass: {
-                    popup: 'rounded-4 shadow-lg'
-                }
+                customClass: { popup: 'rounded-4 shadow-lg' }
             }).then((result) => {
                 if (result.isConfirmed) {
                     const form = document.createElement('form');
@@ -691,9 +676,15 @@
         if (checkboxes.length > 0) {
             button.disabled = false;
             button.style.opacity = '1';
+            button.style.background = '#3730A3';
+            button.style.color = 'white';
+            button.style.borderColor = '#312E81';
         } else {
             button.disabled = true;
-            button.style.opacity = '0.5';
+            button.style.opacity = '0.45';
+            button.style.background = '#E0E7FF';
+            button.style.color = '#3730A3';
+            button.style.borderColor = '#C7D2FE';
         }
     }
 
@@ -708,13 +699,15 @@
 
         Swal.fire({
             title: 'Archive Selected Records?',
-            text: `You are about to archive ${ids.length} record(s). This action can be undone.`,
+            text: `You are about to archive ${ids.length} record(s). This action can be undone from the archive page.`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#1A237E',
-            cancelButtonColor: '#d33',
+            cancelButtonColor: '#6B7280',
             confirmButtonText: 'Yes, Archive',
-            cancelButtonText: 'Cancel'
+            cancelButtonText: 'Cancel',
+            background: '#ffffff',
+            customClass: { popup: 'rounded-4 shadow-lg' }
         }).then((result) => {
             if (result.isConfirmed) {
                 fetch('/admin/senior/bulk-archive', {
@@ -741,6 +734,50 @@
         });
     }
 
+    function exportPdf(e) {
+        e.preventDefault();
+        const url = `{{ route('admin.senior.export-pdf') }}?barangay={{ request('barangay') }}&search={{ request('search') }}`;
+        Swal.fire({
+            title: 'Generating PDF...',
+            text: 'Please wait while the file is being prepared.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
+        fetch(url)
+            .then(r => {
+                if (!r.ok) throw new Error('Download failed');
+                return r.blob();
+            })
+            .then(blob => {
+                const disposition = '';
+                const filename = 'senior_citizens.pdf';
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 100);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Download Complete',
+                    text: 'The PDF file has been saved to your device.',
+                    confirmButtonColor: '#1A237E',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            })
+            .catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Download Failed',
+                    text: 'Something went wrong. Please try again.',
+                    confirmButtonColor: '#1A237E'
+                });
+            });
+    }
+
     function bulkExport() {
         const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
         const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
@@ -756,7 +793,7 @@
             icon: 'info',
             showCancelButton: true,
             confirmButtonColor: '#1A237E',
-            cancelButtonColor: '#d33',
+            cancelButtonColor: '#EF4444',
             confirmButtonText: 'Yes, Export',
             cancelButtonText: 'Cancel'
         }).then((result) => {
@@ -811,7 +848,7 @@
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#1A237E',
-            cancelButtonColor: '#d33',
+            cancelButtonColor: '#EF4444',
             confirmButtonText: 'Yes, log out',
             cancelButtonText: 'Cancel',
             background: '#ffffff',

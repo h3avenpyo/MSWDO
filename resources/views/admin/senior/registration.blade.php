@@ -330,7 +330,7 @@
             confirmButtonText:'<i data-lucide="check-circle" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px"></i> Confirm & Register',
             cancelButtonText:'<i data-lucide="arrow-left" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px"></i> Go Back',
             confirmButtonColor:'#1A237E',
-            cancelButtonColor:'#6B7280',
+            cancelButtonColor:'#EF4444',
             background:'#ffffff',
             width:1200,
             customClass:{popup:'rounded-4 shadow-lg'},
@@ -355,7 +355,7 @@
 
     function confirmLogout(e){
         e.preventDefault();
-        Swal.fire({title:'Are you sure?',text:'Do you really want to log out?',icon:'warning',showCancelButton:true,confirmButtonColor:'#1A237E',cancelButtonColor:'#6B7280',confirmButtonText:'Yes, log out',cancelButtonText:'Cancel',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}}).then(r=>{if(r.isConfirmed)document.getElementById('logout-form').submit();});
+        Swal.fire({title:'Are you sure?',text:'Do you really want to log out?',icon:'warning',showCancelButton:true,confirmButtonColor:'#1A237E',cancelButtonColor:'#EF4444',confirmButtonText:'Yes, log out',cancelButtonText:'Cancel',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}}).then(r=>{if(r.isConfirmed)document.getElementById('logout-form').submit();});
     }
 
     lucide.createIcons();

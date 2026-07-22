@@ -563,10 +563,12 @@ function deleteCase(id, fromList = false){
     text: 'This will move the case to the archive. You can still view it but it will be removed from the active cases list.',
     icon: 'warning',
     showCancelButton: true,
+    confirmButtonColor: '#1A237E',
+    cancelButtonColor: '#6B7280',
     confirmButtonText: 'Yes, Archive',
     cancelButtonText: 'Cancel',
-    confirmButtonColor: '#DC2626',
-    cancelButtonColor: '#6B7280'
+    background: '#ffffff',
+    customClass: { popup: 'rounded-4 shadow-lg' }
   }).then((result) => {
     if (result.isConfirmed) {
       const caseRec = getCase(id);
@@ -732,8 +734,8 @@ function renderArchive(){
             <button style="background-color: #1A237E; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); showCaseDetailsModal('${c.id}')" title="View">
               <i data-lucide="eye" style="width:16px;height:16px; color:#ffffff;"></i>
             </button>
-            <button style="background-color: #198754; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); restoreCase('${c.id}')" title="Restore">
-              <i data-lucide="rotate-ccw" style="width:16px;height:16px; color:#ffffff;"></i>
+            <button style="background-color: rgba(20,184,166,0.1); color: #0f766e; border: 1px solid rgba(20,184,166,0.3); border-radius: 6px; padding: 6px 10px; cursor:pointer; transition: background 0.2s;" onmouseover="this.style.backgroundColor='rgba(20,184,166,0.2)'" onmouseout="this.style.backgroundColor='rgba(20,184,166,0.1)'" onclick="event.stopPropagation(); restoreCase('${c.id}')" title="Restore">
+              <i data-lucide="rotate-ccw" style="width:16px;height:16px;"></i>
             </button>
           </div>
         </td>
@@ -776,13 +778,15 @@ function goToArchivePage(page){
 function restoreCase(id){
   Swal.fire({
     title: 'Restore this case?',
-    text: 'This will move the case back to the active cases list with Draft status.',
+    html: 'Are you sure you want to restore this case back to <strong>active status</strong>?',
     icon: 'question',
     showCancelButton: true,
+    confirmButtonColor: '#0f766e',
+    cancelButtonColor: '#EF4444',
     confirmButtonText: 'Yes, Restore',
     cancelButtonText: 'Cancel',
-    confirmButtonColor: '#4338CA',
-    cancelButtonColor: '#6B7280'
+    background: '#ffffff',
+    customClass: { popup: 'rounded-4 shadow-lg' }
   }).then((result) => {
     if (result.isConfirmed) {
       const caseRec = getCase(id);
@@ -932,36 +936,60 @@ function renderTodayActivities(byStatus){
 function renderActivityFeed(recent){
   const container = document.getElementById('activityFeed');
   if(!recent.length){
-    container.innerHTML = `<div class="empty" style="padding:40px 20px;text-align:center;color:var(--text-muted)">
-      <i data-lucide="bell-off" style="width:48px;height:48px;margin-bottom:12px;opacity:0.5"></i>
-      <div style="font-size:14px;font-weight:500">No recent activity</div>
+    container.innerHTML = `<div style="text-align:center;padding:32px 20px;color:var(--text-muted)">
+      <i data-lucide="inbox" style="width:32px;height:32px;margin:0 auto 8px;display:block;color:#D1D5DB"></i>
+      <span style="font-size:13px">No recent activities</span>
     </div>`;
     return;
   }
   
-  const statusColors = {
-    'Draft': {bg:'var(--background)', color:'var(--text-muted)'},
-    'Review': {bg:'var(--warning-bg)', color:'var(--warning)'},
-    'Approved': {bg:'var(--success-bg)', color:'var(--success)'},
-    'Printed': {bg:'var(--info-bg)', color:'var(--info)'},
-    'Released': {bg:'var(--purple-bg)', color:'var(--purple)'}
+  const statusConfig = {
+    'Draft':    {icon:'file-edit', bg:'var(--background)', color:'var(--text-muted)'},
+    'Review':   {icon:'clock',     bg:'var(--warning-bg, #FEF3C7)', color:'var(--warning, #D97706)'},
+    'Approved': {icon:'check-circle', bg:'var(--success-bg)', color:'var(--success)'},
+    'Printed':  {icon:'printer',   bg:'var(--info-bg)', color:'var(--info)'},
+    'Released': {icon:'send',      bg:'var(--purple-bg)', color:'var(--purple)'}
   };
   
   container.innerHTML = recent.slice(0,10).map(c=>{
-    const colors = statusColors[c.status] || statusColors['Draft'];
-    const timeAgo = getTimeAgo(c.updatedAt);
+    const cfg = statusConfig[c.status] || statusConfig['Draft'];
     const clientName = escapeHtml(c.client.name) || 'Unnamed client';
+    const controlNo = escapeHtml(c.controlNo) || '—';
+    const timeAgo = getTimeAgo(c.updatedAt);
     return `
     <div class="activity-item">
-      <div class="activity-icon" style="background:${colors.bg};color:${colors.color}">
-        <i data-lucide="file-text"></i>
+      <div class="activity-icon" style="background:${cfg.bg};color:${cfg.color}">
+        <i data-lucide="${cfg.icon}"></i>
       </div>
       <div class="activity-content">
-        <div class="activity-text">${clientName}'s case is ${c.status.toLowerCase()}</div>
-        <div class="activity-time">${timeAgo}</div>
+        <div class="activity-text"><strong>${clientName}</strong>'s case is ${c.status.toLowerCase()}</div>
+        <div class="activity-time">${controlNo} &middot; ${timeAgo}</div>
       </div>
     </div>`;
   }).join("");
+}
+
+function confirmClearActivities(){
+  Swal.fire({
+    title: 'Clear Recent Activities?',
+    text: 'This will remove all recent activity logs. This action cannot be undone.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#DC2626',
+    cancelButtonColor: '#6B7280',
+    confirmButtonText: 'Yes, clear all',
+    cancelButtonText: 'Cancel',
+    background: '#ffffff',
+    customClass: { popup: 'rounded-4 shadow-lg' }
+  }).then((result) => {
+    if(result.isConfirmed){
+      document.getElementById('activityFeed').innerHTML = `<div style="text-align:center;padding:32px 20px;color:var(--text-muted)">
+        <i data-lucide="inbox" style="width:32px;height:32px;margin:0 auto 8px;display:block;color:#D1D5DB"></i>
+        <span style="font-size:13px">No recent activities</span>
+      </div>`;
+      lucide.createIcons();
+    }
+  });
 }
 
 function getTimeAgo(dateStr){

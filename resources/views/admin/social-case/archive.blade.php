@@ -90,14 +90,20 @@
     </div>
 
     <!-- Search and Filter Bar -->
-    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding:14px 16px;background:linear-gradient(135deg,#F5F3FF 0%,#EEF2FF 50%,#F0FDFA 100%);border:1px solid #E5E7EB;border-radius:12px">
-        <div style="position:relative;width:280px;flex-shrink:0">
-            <i data-lucide="search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:#9CA3AF;pointer-events:none"></i>
-            <input type="text" id="archiveSearch" placeholder="Search by client name or control no."
-                   oninput="view.archiveSearch=this.value;view.archivePage=1;renderArchive()"
-                   style="width:100%;padding:10px 12px 10px 40px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;background:#fff">
+    <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px">
+        <div style="width:280px;flex-shrink:0">
+            <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Search by Name</label>
+            <div style="display:flex;align-items:center;height:44px;">
+                <input type="text" id="archiveSearch" placeholder="Search by name..."
+                       oninput="view.archiveSearch=this.value;view.archivePage=1;renderArchive()"
+                       style="flex:1;height:44px;border:1px solid #E5E7EB;border-right:none;border-radius:6px 0 0 6px;padding:0 1rem;font-size:0.875rem;color:#111827;background:#fff;transition:all .2s ease;outline:none;">
+                <button type="button" onclick="renderArchive()" style="background:#1A237E;color:#fff;border:none;padding:0 1.25rem;border-radius:0 6px 6px 0;cursor:pointer;height:44px;display:flex;align-items:center;justify-content:center;transition:background .2s;">
+                    <i data-lucide="search" style="width:16px;height:16px"></i>
+                </button>
+            </div>
         </div>
         <div style="position:relative;min-width:180px" id="archiveBrgyDropdown">
+            <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Filter by Barangay</label>
             <div onclick="toggleArchiveBrgyMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="archiveBrgyBtn">
                 <i data-lucide="map-pin" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
                 <span id="archiveBrgyLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Barangays</span>
@@ -108,6 +114,7 @@
             </div>
         </div>
         <div style="position:relative;min-width:180px" id="archiveTypeDropdown">
+            <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Filter by Type</label>
             <div onclick="toggleArchiveTypeMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="archiveTypeBtn">
                 <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
                 <span id="archiveTypeLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Types</span>

@@ -419,7 +419,7 @@
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#1A237E',
-                cancelButtonColor: '#d33',
+                cancelButtonColor: '#EF4444',
                 confirmButtonText: 'Yes, log out',
                 cancelButtonText: 'Cancel',
                 background: '#ffffff',

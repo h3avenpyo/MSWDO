@@ -99,7 +99,10 @@
         <!-- Right Column - Recent Activity -->
         <div class="activity-section">
             <div class="activity-card">
-                <h3>Recent Activity</h3>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+                    <h3 style="margin:0"><i data-lucide="activity" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px;color:var(--icon-blue)"></i>Recent Activities</h3>
+                    <button class="text-xs font-semibold px-3 py-1 rounded-lg" style="background:var(--danger-bg);color:var(--danger);border:none;cursor:pointer" onclick="confirmClearActivities()">Clear</button>
+                </div>
                 <div class="activity-feed" id="activityFeed"></div>
             </div>
         </div>
@@ -136,7 +139,7 @@
         @if(session('admin_just_logged_in'))
         setTimeout(function() {
             Swal.fire({
-                title: 'Welcome, {{ $userName }}!',
+                title: 'Welcome Admin!',
                 html: '<div style="text-align:center;line-height:1.7;color:#475569;font-size:15px">' +
                       '<p style="margin:0 0 8px;font-weight:500">Social Case Study Officer</p>' +
                       '</div>',

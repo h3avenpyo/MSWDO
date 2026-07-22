@@ -334,7 +334,7 @@
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#1A237E',
-            cancelButtonColor: '#6B7280',
+            cancelButtonColor: '#EF4444',
             confirmButtonText: 'Yes, log out',
             cancelButtonText: 'Cancel',
             background: '#ffffff',
@@ -417,6 +417,13 @@
     // Age Groups Chart
     const ageLabels = {!! json_encode($ageGroups->pluck('age_group')) !!};
     const ageValues = {!! json_encode($ageGroups->pluck('total')) !!};
+    const ageColors = ageLabels.map(label => {
+        if (label === '60-69') return 'rgba(26, 35, 126, 0.85)';
+        if (label === '70-79') return 'rgba(63, 81, 181, 0.85)';
+        if (label === '80-89') return 'rgba(92, 107, 192, 0.85)';
+        if (label === '90-99') return 'rgba(121, 134, 203, 0.85)';
+        return 'rgba(159, 168, 218, 0.85)';
+    });
 
     new Chart(document.getElementById('ageChart'), {
         type: 'bar',
@@ -425,7 +432,7 @@
             datasets: [{
                 label: 'Seniors',
                 data: ageValues,
-                backgroundColor: 'rgba(26, 35, 126, 0.8)',
+                backgroundColor: ageColors,
                 borderRadius: 8,
                 barPercentage: 0.6,
                 categoryPercentage: 0.8

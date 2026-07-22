@@ -573,7 +573,7 @@
                 confirmButtonText: 'Reset Selected Month',
                 cancelButtonText: 'Cancel',
                 confirmButtonColor: '#DC2626',
-                cancelButtonColor: '#6B7280',
+                cancelButtonColor: '#EF4444',
                 showDenyButton: true,
                 denyButtonText: 'Reset All Records',
                 denyButtonColor: '#DC2626'
@@ -615,7 +615,7 @@
                         confirmButtonText: 'Yes, Delete All',
                         cancelButtonText: 'Cancel',
                         confirmButtonColor: '#DC2626',
-                        cancelButtonColor: '#6B7280'
+                        cancelButtonColor: '#EF4444'
                     }).then((confirmResult) => {
                         if (confirmResult.isConfirmed) {
                             fetch('{{ route("admin.senior.birthday-payouts.reset") }}', {
@@ -692,19 +692,23 @@
         function confirmLogout(e) {
             e.preventDefault();
             Swal.fire({
-                title: 'Logout',
-                text: 'Are you sure you want to logout?',
+                title: 'Are you sure?',
+                text: 'Do you really want to log out?',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Logout',
+                confirmButtonColor: '#1A237E',
+                cancelButtonColor: '#EF4444',
+                confirmButtonText: 'Yes, log out',
                 cancelButtonText: 'Cancel',
-                confirmButtonColor: '#DC2626'
+                background: '#ffffff',
+                customClass: { popup: 'rounded-4 shadow-lg' }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = '{{ route('admin.logout') }}';
+                    document.getElementById('logout-form').submit();
                 }
             });
         }
     </script>
+    <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">@csrf</form>
 </body>
 </html>

@@ -20,11 +20,13 @@ class SeniorController extends Controller
             session()->forget('admin_just_logged_in');
         }
 
-        $totalSeniors = SeniorCitizenRecord::count();
-        $activeSeniors = SeniorCitizenRecord::where('status', 'active')->count();
-        $pendingSeniors = SeniorCitizenRecord::where('status', 'pending')->count();
+        $totalSeniors = SeniorCitizenRecord::whereNotNull('birth_date')->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')->count();
+        $activeSeniors = SeniorCitizenRecord::where('status', 'active')->whereNotNull('birth_date')->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')->count();
+        $pendingSeniors = SeniorCitizenRecord::where('status', 'pending')->whereNotNull('birth_date')->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')->count();
         $recentSeniors = SeniorCitizenRecord::
-            orderByDesc('created_at')
+            whereNotNull('birth_date')
+            ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')
+            ->orderByDesc('created_at')
             ->limit(5)
             ->get();
 
@@ -32,6 +34,8 @@ class SeniorController extends Controller
 
         $barangayDistribution = SeniorCitizenRecord::
             where('status', 'active')
+            ->whereNotNull('birth_date')
+            ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')
             ->whereNotNull('barangay')
             ->selectRaw('barangay, COUNT(*) as count')
             ->groupBy('barangay')
@@ -188,6 +192,8 @@ class SeniorController extends Controller
     {
         $query = SeniorCitizenRecord::
             where('status', '!=', 'archived')
+            ->whereNotNull('birth_date')
+            ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')
             ->select('id', 'control_number', 'first_name', 'middle_name', 'last_name', 'address', 'barangay', 'birth_date', 'sex', 'status');
 
         if ($request->filled('barangay') && $request->barangay !== '') {
@@ -506,6 +512,8 @@ class SeniorController extends Controller
         } else {
             $seniors = SeniorCitizenRecord::
                 where('status', 'active')
+                ->whereNotNull('birth_date')
+                ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')
                 ->get();
         }
 
@@ -555,7 +563,9 @@ class SeniorController extends Controller
         $barangay = $request->get('barangay');
         $search = $request->get('search');
 
-        $query = SeniorCitizenRecord::where('status', 'active');
+        $query = SeniorCitizenRecord::where('status', 'active')
+            ->whereNotNull('birth_date')
+            ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60');
 
         if ($ids) {
             $idsArray = explode(',', $ids);

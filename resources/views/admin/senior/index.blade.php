@@ -341,14 +341,13 @@
         @if($justLoggedIn ?? false)
             Swal.fire({
                 title:'Welcome Admin!',
-                text:'{{ session("admin_user_name") ?? "Admin" }}',
-                icon:'success',
+                html:'<div style="text-align:center;line-height:1.7;color:#475569;font-size:15px"><p style="margin:0 0 8px;font-weight:500">Senior Citizen Officer</p></div>',
+                icon:'info',
                 confirmButtonColor:'#1A237E',
                 confirmButtonText:'Continue',
                 background:'#ffffff',
                 customClass:{popup:'rounded-4 shadow-lg'},
-                timer:3000,
-                timerProgressBar:true
+                allowOutsideClick:false
             });
         @endif
         initBarangayChart();
@@ -490,7 +489,7 @@
             icon:'warning',
             showCancelButton:true,
             confirmButtonColor:'#1A237E',
-            cancelButtonColor:'#6B7280',
+            cancelButtonColor:'#EF4444',
             confirmButtonText:'Yes, log out',
             cancelButtonText:'Cancel',
             background:'#ffffff',

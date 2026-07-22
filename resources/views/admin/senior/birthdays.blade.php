@@ -556,7 +556,7 @@
         Swal.fire({
             title: 'Are you sure?', text: 'Do you really want to log out?',
             icon: 'warning', showCancelButton: true,
-            confirmButtonColor: '#1A237E', cancelButtonColor: '#d33',
+            confirmButtonColor: '#1A237E', cancelButtonColor: '#EF4444',
             confirmButtonText: 'Yes, log out', cancelButtonText: 'Cancel',
             background: '#ffffff', customClass: { popup: 'rounded-4 shadow-lg' }
         }).then(r => { if (r.isConfirmed) document.getElementById('logout-form').submit(); });

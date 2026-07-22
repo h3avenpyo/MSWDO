@@ -362,17 +362,19 @@
         function confirmLogout(event) {
             event.preventDefault();
             Swal.fire({
-                title: 'Logout',
-                text: 'Are you sure you want to logout?',
+                title: 'Are you sure?',
+                text: 'Do you really want to log out?',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Yes, Logout',
+                confirmButtonColor: '#1A237E',
+                cancelButtonColor: '#EF4444',
+                confirmButtonText: 'Yes, log out',
                 cancelButtonText: 'Cancel',
-                confirmButtonColor: '#D32F2F',
-                cancelButtonColor: '#6B7280'
+                background: '#ffffff',
+                customClass: { popup: 'rounded-4 shadow-lg' }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = '/admin/logout';
+                    document.getElementById('logout-form').submit();
                 }
             });
         }
@@ -380,5 +382,6 @@
         // Initialize Lucide icons
         lucide.createIcons();
     </script>
+    <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">@csrf</form>
 </body>
 </html>

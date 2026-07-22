@@ -22,7 +22,9 @@ class SeniorAnalyticsController extends Controller
         $ageGroup = $request->get('age_group');
 
         // Build base query with filters
-        $baseQuery = SeniorCitizenRecord::where('status', 'active');
+        $baseQuery = SeniorCitizenRecord::where('status', 'active')
+            ->whereNotNull('birth_date')
+            ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60');
 
         if ($barangay) {
             $baseQuery->where('barangay', $barangay);
@@ -90,10 +92,13 @@ class SeniorAnalyticsController extends Controller
         $barangayStats = collect($completeStats);
 
         // Total statistics
-        $totalSeniors = $baseQuery->count();
+        $totalSeniors = $baseQuery->clone()->count();
         $totalBarangays = count($allBarangays);
-        $activeSeniors = $baseQuery->count();
-        $inactiveSeniors = SeniorCitizenRecord::where('status', '!=', 'active')->count();
+        $activeSeniors = $totalSeniors;
+        $inactiveSeniors = SeniorCitizenRecord::where('status', '!=', 'active')
+            ->whereNotNull('birth_date')
+            ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')
+            ->count();
         $avgPerBarangay = $totalBarangays > 0 ? round($totalSeniors / $totalBarangays) : 0;
 
         $topBarangay = $barangayStats->first()?->barangay ?? 'N/A';
@@ -120,13 +125,11 @@ class SeniorAnalyticsController extends Controller
                     WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 80 AND TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) <= 89 THEN "80-89"
                     WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 90 AND TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) <= 99 THEN "90-99"
                     WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 100 THEN "100+"
-                    ELSE "Unknown"
                 END as age_group,
                 count(*) as total
             '))
-            ->whereNotNull('birth_date')
             ->groupBy('age_group')
-            ->orderByRaw('FIELD(age_group, "60-69", "70-79", "80-89", "90-99", "100+", "Unknown")')
+            ->orderByRaw('FIELD(age_group, "60-69", "70-79", "80-89", "90-99", "100+")')
             ->get();
 
         // Monthly registrations for selected year

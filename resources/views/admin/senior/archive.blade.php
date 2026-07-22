@@ -66,6 +66,92 @@
             overflow-y: auto;
         }
 
+        /* ---------- Stat Cards ---------- */
+        .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:24px;animation:fadeInUp .6s ease-out;}
+        @media(max-width:1024px){.stat-cards{grid-template-columns:repeat(3,1fr);}}
+        @media(max-width:768px){.stat-cards{grid-template-columns:1fr 1fr;}}
+        @media(max-width:480px){.stat-cards{grid-template-columns:1fr;}}
+
+        .stat-card{background:var(--surface);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;}
+        .stat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;transition:all .3s ease;}
+        .stat-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,0.08);}
+
+        .stat-card-content{flex:1;}
+        .stat-card-label{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px;}
+        .stat-card-value{font-size:32px;font-weight:700;color:var(--text-primary);line-height:1;}
+        .stat-card-icon{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .stat-card-icon svg{width:24px;height:24px;}
+
+        .stat-card-purple::before{background:var(--purple);}
+        .stat-card-purple .stat-card-icon{background:var(--purple-bg);color:var(--purple);}
+
+        /* ---------- Table Card ---------- */
+        .table-card {
+            background: var(--surface); border-radius: 16px;
+            border: 1px solid var(--border); box-shadow: var(--shadow);
+            padding: 2rem; display: flex; flex-direction: column;
+            overflow: hidden; flex: 1; min-height: 0; margin-bottom: 1.5rem;
+        }
+        .table-card-title {
+            font-size: 1.25rem; font-weight: 700; color: var(--text-primary);
+            margin-top: 0; margin-bottom: 1.5rem; flex-shrink: 0;
+        }
+
+        /* ---------- Filter Section ---------- */
+        .filter-section { margin-bottom: 1.5rem; flex-shrink: 0; background: var(--surface); border-radius: 16px; border: 1px solid var(--border); padding: 20px; box-shadow: var(--shadow); }
+        .filter-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+        .filter-left { display: flex; gap: 12px; flex: 1; min-width: 0; flex-wrap: wrap; }
+        .filter-right { display: flex; gap: 12px; flex-shrink: 0; }
+        .filter-group { display: flex; flex-direction: column; gap: 4px; }
+        .filter-group.search-group { width: 280px; flex-shrink: 0; }
+        .filter-group.select-group { min-width: 200px; }
+        .filter-label { font-size: 0.75rem; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; }
+
+        /* ---------- Search Input ---------- */
+        .input-group { display: flex; align-items: center; height: 44px; }
+        .input-group input {
+            flex: 1; height: 44px; border: 1px solid var(--border); border-right: none;
+            border-radius: 6px 0 0 6px; padding: 0 1rem; font-size: 0.875rem;
+            color: var(--text-primary); background: var(--surface); transition: all 0.2s ease;
+        }
+        .input-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,58,138,0.15); }
+        .input-group .search-btn {
+            background-color: var(--primary); color: #ffffff; border: none;
+            padding: 0 1.25rem; border-radius: 0 6px 6px 0; cursor: pointer;
+            height: 44px; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .input-group .search-btn:hover { background-color: var(--primary-hover); }
+
+        /* ---------- Select ---------- */
+        .filter-select {
+            height: 44px; border: 1px solid var(--border); border-radius: 6px;
+            padding: 0 2.25rem 0 1rem; font-size: 0.875rem; color: var(--text-primary);
+            background: var(--surface); cursor: pointer; width: 100%;
+            appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 16px 12px;
+            transition: all 0.2s ease;
+        }
+        .filter-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,58,138,0.15); }
+
+        /* ---------- Buttons ---------- */
+        .btn {
+            border: 1px solid var(--border); background: var(--surface);
+            color: var(--text-primary); padding: 10px 20px; border-radius: 10px;
+            font-size: 14px; font-weight: 500; display: inline-flex;
+            align-items: center; gap: 8px; box-shadow: var(--shadow);
+            transition: all 0.2s ease; height: 42px; cursor: pointer; text-decoration: none;
+        }
+        .btn:hover { border-color: var(--primary); transform: translateY(-1px); }
+        .btn.primary { background: var(--primary); color: #FFFFFF; border-color: var(--primary); }
+        .btn.primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+        .btn.warning { background: #F59E0B; color: #FFFFFF; border-color: #F59E0B; }
+        .btn.warning:hover { background: #D97706; border-color: #D97706; }
+        .btn.ghost { background: transparent; box-shadow: none; border-color: transparent; color: var(--text-secondary); }
+        .btn.ghost:hover { background: var(--background); color: var(--text-primary); }
+        .btn:disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+
         /* Custom Table */
         .custom-table {
             width: 100%;
@@ -74,18 +160,18 @@
             font-family: var(--font-family);
         }
         .custom-table thead th {
-            background-color: var(--background);
-            font-weight: 600;
-            font-size: 0.75rem;
+            background-color: var(--surface);
+            font-weight: 700;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--text-secondary);
-            padding: 0.875rem 1rem;
-            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+            border-bottom: 2px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 1;
-            white-space: nowrap;
+            text-align: left;
         }
         .custom-table tbody td {
             padding: 0.875rem 1rem;
@@ -93,6 +179,9 @@
             vertical-align: middle;
             font-size: 0.875rem;
             color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .custom-table tbody tr:hover {
             background-color: #F9FAFB;
@@ -326,42 +415,35 @@
             @endif
 
             <!-- Summary Card -->
-            <div class="animate-fade-in bg-white rounded-2xl border border-[#E5E7EB] shadow-[0_4px_6px_-1px_rgba(0,0,0,.05)] p-4 mb-5">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-[10px] flex items-center justify-center bg-[rgba(107,114,128,0.1)] flex-shrink-0">
-                        <i data-lucide="archive" class="w-5 h-5 text-[#6B7280]"></i>
+            <div class="stat-cards">
+                <div class="stat-card stat-card-purple">
+                    <div class="stat-card-content">
+                        <div class="stat-card-label">TOTAL ARCHIVED</div>
+                        <div class="stat-card-value">{{ $archivedSeniors->total() }}</div>
                     </div>
-                    <div>
-                        <p class="text-[#6B7280] text-[13px] font-medium m-0 leading-tight">Total Archived</p>
-                        <h4 class="text-[1.4rem] font-bold m-0 leading-none text-[#111827]">{{ $archivedSeniors->total() }}</h4>
+                    <div class="stat-card-icon">
+                        <i data-lucide="archive"></i>
                     </div>
                 </div>
             </div>
 
             <!-- Filter & Search -->
-            <div class="animate-fade-in bg-white rounded-2xl border border-[#E5E7EB] shadow-[0_4px_6px_-1px_rgba(0,0,0,.05)] p-5 mb-5">
+            <div class="filter-section">
                 <form method="GET" action="{{ route('admin.senior.archive.list') }}">
-                    <div class="flex items-end justify-between gap-3 flex-wrap">
-                        <!-- Left: Search + Filter -->
-                        <div class="flex gap-3 flex-1 min-w-0">
-                            <div class="flex-1 min-w-[250px]">
-                                <label class="block text-xs text-[var(--text-primary)] font-semibold mb-1">Search by Name</label>
-                                <div class="flex">
-                                    <input type="text" name="search" placeholder="Search by name..." value="{{ request('search') }}"
-                                           class="flex-1 border border-[#E5E7EB] border-r-0 rounded-l-lg px-3 text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#1A237E] focus:border-transparent"
-                                           style="height:42px;font-family:var(--font-family)">
-                                    <button type="submit"
-                                            class="bg-[#1A237E] hover:bg-[#121858] text-white border-none rounded-r-lg px-3 cursor-pointer transition-colors flex items-center justify-center"
-                                            style="height:42px;width:42px">
-                                        <i data-lucide="search" class="w-4 h-4"></i>
+                    <div class="filter-row">
+                        <div class="filter-left">
+                            <div class="filter-group search-group">
+                                <label class="filter-label">Search by Name</label>
+                                <div class="input-group">
+                                    <input type="text" name="search" placeholder="Search by name..." value="{{ request('search') }}">
+                                    <button type="submit" class="search-btn">
+                                        <i data-lucide="search" style="width:16px;height:16px"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="min-w-[200px]">
-                                <label class="block text-xs text-[var(--text-primary)] font-semibold mb-1">Filter by Barangay</label>
-                                <select name="barangay" onchange="this.form.submit()"
-                                        class="custom-select w-full border border-[#E5E7EB] rounded-lg px-3 text-sm text-[#111827] bg-white focus:outline-none focus:ring-2 focus:ring-[#1A237E] focus:border-transparent cursor-pointer"
-                                        style="height:42px;font-family:var(--font-family)">
+                            <div class="filter-group select-group">
+                                <label class="filter-label">Filter by Barangay</label>
+                                <select class="filter-select" name="barangay" onchange="this.form.submit()">
                                     <option value="">All Barangays</option>
                                     <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
                                     <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
@@ -429,25 +511,18 @@
                                     <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
                                 </select>
                             </div>
+                            <div class="filter-group" style="justify-content:flex-end;">
+                                <label class="filter-label">&nbsp;</label>
+                                <button type="button" id="bulkActionButton" onclick="showBulkActionPopup()" disabled
+                                        style="height:44px;font-weight:600;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE;cursor:pointer;transition:all 0.2s ease;font-family:inherit;opacity:0.45;">
+                                    <i data-lucide="list-checks" style="width:14px;height:14px"></i> Bulk Actions <span id="selectedCount" style="background:#3730A3;color:white;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:4px;">0</span>
+                                </button>
+                            </div>
                         </div>
-
-                        <!-- Right: Action Buttons -->
-                        <div class="flex gap-3 flex-shrink-0">
-                            <a href="/admin/senior/masterlist"
-                               class="inline-flex items-center gap-1.5 bg-[#1A237E] hover:bg-[#121858] text-white rounded-lg font-semibold text-[13px] px-3.5 transition-colors no-underline"
-                               style="height:38px;font-family:var(--font-family)">
-                                <i data-lucide="list" class="w-4 h-4"></i> Back to Masterlist
-                            </a>
-                            <button type="button" id="bulkActionButton" disabled onclick="showBulkActionPopup()"
-                                    class="inline-flex items-center gap-1.5 bg-[#FBC02D] hover:bg-[#F9A825] text-[#121858] rounded-lg font-semibold text-[13px] px-3.5 transition-colors border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                    style="height:38px;font-family:var(--font-family)">
-                                <i data-lucide="list-checks" class="w-4 h-4"></i> Bulk Actions <span id="selectedCount" class="bg-[#121858] text-white px-1.5 py-0.5 rounded-[10px] text-[11px] ml-1 font-bold">0</span>
-                            </button>
+                        <div class="filter-right">
                             @if(request('search') || request('barangay'))
-                                <a href="{{ route('admin.senior.archive.list') }}"
-                                   class="inline-flex items-center gap-1.5 bg-[#6B7280] hover:bg-[#4B5563] text-white rounded-lg px-3.5 transition-colors no-underline"
-                                   style="height:38px;font-size:13px;font-family:var(--font-family)">
-                                    <i data-lucide="x" class="w-4 h-4"></i> Clear
+                                <a href="{{ route('admin.senior.archive.list') }}" class="btn ghost" style="height:44px;">
+                                    <i data-lucide="x" style="width:14px;height:14px"></i> Clear
                                 </a>
                             @endif
                         </div>
@@ -456,27 +531,22 @@
             </div>
 
             <!-- Archive Table Card -->
-            <div class="animate-fade-in bg-white rounded-2xl border border-[#E5E7EB] shadow-[0_4px_6px_-1px_rgba(0,0,0,.05)] flex flex-col overflow-hidden mb-6">
-                <div class="flex justify-between items-center px-5 pt-5 pb-3">
-                    <div>
-                        <h6 class="font-bold text-[15px] text-[#111827] m-0">Archived Records</h6>
-                        <span class="text-[#9CA3AF] text-xs">Showing {{ $archivedSeniors->firstItem() ?? 0 }}–{{ $archivedSeniors->lastItem() ?? 0 }} of {{ $archivedSeniors->total() }} records</span>
-                    </div>
-                </div>
-                <div class="flex-1">
-                    <table class="custom-table" id="archiveTable">
+            <div class="table-card">
+                <h2 class="table-card-title">Archived Records</h2>
+                <div style="flex:1;overflow-y:auto;min-height:0;border-radius:8px;">
+                    <table class="custom-table" id="archiveTable" style="table-layout:fixed;">
                         <thead>
                             <tr>
-                                <th class="w-[40px]"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px"></th>
-                                <th>#</th>
-                                <th>Control No.</th>
-                                <th>Full Name</th>
-                                <th>Barangay</th>
-                                <th>Sex / Age</th>
-                                <th>Birth Date</th>
-                                <th>Archived On</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <th style="width:3%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px"></th>
+                                <th style="width:4%;">#</th>
+                                <th style="width:11%;">Control No.</th>
+                                <th style="width:18%;">Full Name</th>
+                                <th style="width:12%;">Barangay</th>
+                                <th style="width:8%;">Sex / Age</th>
+                                <th style="width:11%;">Birth Date</th>
+                                <th style="width:11%;">Archived On</th>
+                                <th style="width:9%;">Status</th>
+                                <th style="width:7%;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -525,7 +595,7 @@
                                                 class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-[rgba(20,184,166,0.1)] text-[#0f766e] border border-[rgba(20,184,166,0.3)] cursor-pointer hover:bg-[rgba(20,184,166,0.2)] transition-colors"
                                                 onclick="confirmRestore({{ $senior->id }}, '{{ addslashes($senior->full_name) }}')"
                                                 title="Restore to Active">
-                                            <i data-lucide="undo-2" class="w-4 h-4"></i>
+                                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                                         </button>
                                     </form>
                                 </td>
@@ -619,9 +689,15 @@
             if (checkboxes.length > 0) {
                 button.disabled = false;
                 button.style.opacity = '1';
+                button.style.background = '#3730A3';
+                button.style.color = 'white';
+                button.style.borderColor = '#312E81';
             } else {
                 button.disabled = true;
-                button.style.opacity = '0.5';
+                button.style.opacity = '0.45';
+                button.style.background = '#E0E7FF';
+                button.style.color = '#3730A3';
+                button.style.borderColor = '#C7D2FE';
             }
         }
 
@@ -663,7 +739,7 @@
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#0f766e',
-                cancelButtonColor: '#6B7280',
+                cancelButtonColor: '#EF4444',
                 confirmButtonText: 'Yes, Restore',
                 cancelButtonText: 'Cancel'
             }).then((result) => {
@@ -709,7 +785,7 @@
                 icon: 'info',
                 showCancelButton: true,
                 confirmButtonColor: '#1A237E',
-                cancelButtonColor: '#d33',
+                cancelButtonColor: '#EF4444',
                 confirmButtonText: 'Yes, Export',
                 cancelButtonText: 'Cancel'
             }).then((result) => {
@@ -726,7 +802,7 @@
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#0f766e',
-                cancelButtonColor: '#6B7280',
+                cancelButtonColor: '#EF4444',
                 confirmButtonText: 'Yes, Restore',
                 cancelButtonText: 'Cancel',
                 background: '#ffffff',
@@ -783,7 +859,7 @@
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#1A237E',
-                cancelButtonColor: '#d33',
+                cancelButtonColor: '#EF4444',
                 confirmButtonText: 'Yes, log out',
                 cancelButtonText: 'Cancel',
                 background: '#ffffff',

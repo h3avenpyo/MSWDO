@@ -1111,11 +1111,9 @@
             padding:24px;
             box-shadow:var(--shadow);
             border:1px solid var(--border);
-            flex:1;
+            min-height:420px;
             display:flex;
             flex-direction:column;
-            min-height:0;
-            overflow:hidden;
             animation:fadeInUp 0.6s ease-out 0.2s backwards;
         }
         .activity-card h3{
@@ -1125,11 +1123,14 @@
             margin-bottom:20px;
         }
         .activity-feed{
-            flex:1;
-            min-height:0;
+            max-height:340px;
             overflow-y:auto;
-            overflow-x:hidden;
+            padding-right:8px;
         }
+        .activity-feed::-webkit-scrollbar{width:6px;}
+        .activity-feed::-webkit-scrollbar-track{background:var(--background);border-radius:3px;}
+        .activity-feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+        .activity-feed::-webkit-scrollbar-thumb:hover{background:var(--text-muted);}
         
         /* ---------- Modern Activity Item ---------- */
         .activity-item{
@@ -1845,13 +1846,15 @@
         event.preventDefault();
         Swal.fire({
             title: 'Are you sure?',
-            text: 'You will be logged out of the system.',
+            text: 'Do you really want to log out?',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#EF4444',
-            cancelButtonColor: '#6B7280',
-            confirmButtonText: 'Yes, logout',
-            cancelButtonText: 'Cancel'
+            confirmButtonColor: '#1A237E',
+            cancelButtonColor: '#EF4444',
+            confirmButtonText: 'Yes, log out',
+            cancelButtonText: 'Cancel',
+            background: '#ffffff',
+            customClass: { popup: 'rounded-4 shadow-lg' }
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById('logout-form').submit();
