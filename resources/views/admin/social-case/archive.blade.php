@@ -9,6 +9,41 @@
     #archiveSearch:focus{border-color:#1A237E;box-shadow:0 0 0 3px rgba(26,35,126,.08)}
     .archive-type-opt.selected,.archive-brgy-opt.selected{background:#F3F4F6;font-weight:600}
     .archive-type-opt:not(.selected):hover,.archive-brgy-opt:not(.selected):hover{background:#F3F4F6}
+    
+    /* Color-coded filter buttons when active */
+    #archiveBrgyBtn.active {
+        border-color: #059669;
+        background: #ECFDF5;
+        color: #065F46;
+    }
+    #archiveBrgyBtn.active i[data-lucide="map-pin"] { color: #059669; }
+    
+    #archiveTypeBtn.active {
+        border-color: #1A237E;
+        background: #EEF2FF;
+    }
+    #archiveTypeBtn.active i[data-lucide="filter"] { color: #1A237E; }
+    
+    /* Type-specific button colors when active */
+    #archiveTypeBtn.active[data-filter="Medical Assistance"]      { border-color:#2563EB; background:#DBEAFE; color:#1E40AF; }
+    #archiveTypeBtn.active[data-filter="Burial Assistance"]       { border-color:#DC2626; background:#FEE2E2; color:#991B1B; }
+    #archiveTypeBtn.active[data-filter="Educational Assistance"]  { border-color:#D97706; background:#FEF3C7; color:#92400E; }
+    #archiveTypeBtn.active[data-filter="Financial Assistance"]    { border-color:#059669; background:#D1FAE5; color:#065F46; }
+    #archiveTypeBtn.active[data-filter="Food / Relief Assistance"]{ border-color:#4F46E5; background:#E0E7FF; color:#3730A3; }
+    #archiveTypeBtn.active[data-filter="Livelihood Assistance"]   { border-color:#DB2777; background:#FCE7F3; color:#9D174D; }
+    #archiveTypeBtn.active[data-filter="Other"]                   { border-color:#6B7280; background:#F3F4F6; color:#374151; }
+    
+    #archiveTypeBtn.active[data-filter] i[data-lucide="filter"]   { color: inherit; }
+    #archiveTypeBtn.active[data-filter] #archiveTypeLabel         { color: inherit; }
+    
+    /* Color-coded filter dropdown options */
+    .archive-type-opt[data-value="Medical Assistance"].selected { background:#DBEAFE; color:#1E40AF; }
+    .archive-type-opt[data-value="Burial Assistance"].selected { background:#FEE2E2; color:#991B1B; }
+    .archive-type-opt[data-value="Educational Assistance"].selected { background:#FEF3C7; color:#92400E; }
+    .archive-type-opt[data-value="Financial Assistance"].selected { background:#D1FAE5; color:#065F46; }
+    .archive-type-opt[data-value="Food / Relief Assistance"].selected { background:#E0E7FF; color:#3730A3; }
+    .archive-type-opt[data-value="Livelihood Assistance"].selected { background:#FCE7F3; color:#9D174D; }
+    .archive-type-opt[data-value="Other"].selected { background:#F3F4F6; color:#374151; }
 </style>
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
@@ -55,7 +90,7 @@
     </div>
 
     <!-- Search and Filter Bar -->
-    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding:14px 16px;background:linear-gradient(135deg,#F5F3FF 0%,#EEF2FF 50%,#F0FDFA 100%);border:1px solid #E5E7EB;border-radius:12px">
         <div style="position:relative;width:280px;flex-shrink:0">
             <i data-lucide="search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:#9CA3AF;pointer-events:none"></i>
             <input type="text" id="archiveSearch" placeholder="Search by client name or control no."
@@ -132,6 +167,17 @@
         var arrow=document.querySelector('#archiveTypeBtn [data-lucide="chevron-down"]');
         if(arrow) arrow.style.transform='';
         highlightArchiveTypeOpt();
+        
+        // Add active class and data-filter color to button
+        var btn=document.getElementById('archiveTypeBtn');
+        if(val){
+            btn.classList.add('active');
+            btn.setAttribute('data-filter', val);
+        } else {
+            btn.classList.remove('active');
+            btn.removeAttribute('data-filter');
+        }
+        
         renderArchive();
     }
     function highlightArchiveTypeOpt(){
@@ -162,6 +208,12 @@
         var arrow=document.querySelector('#archiveBrgyBtn [data-lucide="chevron-down"]');
         if(arrow) arrow.style.transform='';
         highlightArchiveBrgyOpt();
+        
+        // Add active class to button if filter is selected
+        var btn=document.getElementById('archiveBrgyBtn');
+        if(val) btn.classList.add('active');
+        else btn.classList.remove('active');
+        
         renderArchive();
     }
     function highlightArchiveBrgyOpt(){

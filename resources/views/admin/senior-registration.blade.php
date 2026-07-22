@@ -202,15 +202,15 @@
                     </div>
                     <div>
                         <label class="form-label">Contact Number <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-                        <input type="text" name="contact_number" class="form-input" placeholder="e.g. 0917XXXXXXX" value="{{ old('contact_number') }}" required>
+                        <input type="text" name="contact_number" class="form-input" placeholder="e.g. 09171234567" pattern="[0-9]{11}" maxlength="11" value="{{ old('contact_number') }}" required>
                     </div>
                     <div>
                         <label class="form-label">PhilSys Number <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-                        <input type="text" name="philsys_number" class="form-input" placeholder="Enter PhilSys number" value="{{ old('philsys_number') }}">
+                        <input type="text" name="philsys_number" class="form-input" placeholder="Enter 12-digit PhilSys number" pattern="[0-9]{12}" maxlength="12" value="{{ old('philsys_number') }}">
                     </div>
                     <div>
                         <label class="form-label">RRN Number <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-                        <input type="text" name="rrn_number" class="form-input" placeholder="Enter RRN number" value="{{ old('rrn_number') }}">
+                        <input type="text" name="rrn_number" class="form-input" placeholder="Enter 29-digit RRN number" pattern="[0-9]{29}" maxlength="29" value="{{ old('rrn_number') }}">
                     </div>
                     <div class="md:col-span-2 lg:col-span-3">
                         <label class="form-label">Remarks</label>
@@ -237,6 +237,32 @@
         document.getElementById('currentDateTime').textContent=now.toLocaleDateString('en-US',opts).replace(',',' at');
     }
     updateDateTime();setInterval(updateDateTime,60000);
+
+    // Input validation - prevent invalid characters
+    document.addEventListener('DOMContentLoaded', function() {
+        const contactNumberInput = document.querySelector('[name="contact_number"]');
+        const philsysNumberInput = document.querySelector('[name="philsys_number"]');
+        const rrnNumberInput = document.querySelector('[name="rrn_number"]');
+
+        function restrictToDigits(input, maxLength) {
+            input.addEventListener('input', function(e) {
+                // Remove non-digit characters
+                let value = this.value.replace(/[^0-9]/g, '');
+                // Truncate to max length
+                if (value.length > maxLength) {
+                    value = value.substring(0, maxLength);
+                }
+                // Update value only if changed
+                if (this.value !== value) {
+                    this.value = value;
+                }
+            });
+        }
+
+        restrictToDigits(contactNumberInput, 11);
+        restrictToDigits(philsysNumberInput, 12);
+        restrictToDigits(rrnNumberInput, 29);
+    });
 
     @if($seniorCreated ?? false)
         Swal.fire({title:'Success!',text:'Senior citizen registered successfully.',icon:'success',confirmButtonColor:'#1A237E',confirmButtonText:'OK',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}});

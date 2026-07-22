@@ -3,70 +3,14 @@ const STATUSES = ["Draft","Review","Approved","Released","Archived"];
 const STATUS_CLASS = {Draft:"b-draft",Review:"b-review",Approved:"b-approved",Released:"b-released",Archived:"b-archived"};
 const PURPOSES = ["Medical Assistance","Burial Assistance","Educational Assistance","Financial Assistance","Food / Relief Assistance","Livelihood Assistance","Other"];
 const BARANGAYS = [
-  "ACACIA",
-  "ADLAS",
-  "ANAHAW I",
-  "ANAHAW 2",
-  "BALITE I",
-  "BALITE II",
-  "BALUBAD",
-  "BANABA",
-  "BATAS",
-  "BIGA 1",
-  "BIGA 2",
-  "BILUSO",
-  "BUCAL",
-  "BUHO",
-  "BULIHAN",
-  "CABANGAAN",
-  "CARMEN",
-  "HOYO",
-  "HUKAY",
-  "IBA",
-  "INCHICAN",
-  "IPIL I",
-  "IPIL 2",
-  "KALUBKOB",
-  "KAONG",
-  "LALAAN I",
-  "LALAAN II",
-  "LITLIT",
-  "LUCSUHIN",
-  "LUMIL",
-  "MAGUYAM",
-  "MALABAG",
-  "MALAKING TATIAO",
-  "MATAAS NA BUROL",
-  "MUNTING ILOG",
-  "NARRA I",
-  "NARRA II",
-  "NARRA III",
-  "PALIGAWAN",
-  "PASONG LANGKA",
-  "POBLACION 1",
-  "POBLACION 2",
-  "POBLACION 3",
-  "POBLACION 4",
-  "POBLACION 5",
-  "POOC I",
-  "POOC II",
-  "PULONG BUNGA",
-  "PULONG SAGING",
-  "PUTING KAHOY",
-  "SABUTAN",
-  "SAN MIGUEL I",
-  "SAN MIGUEL II",
-  "SAN VICENTE I",
-  "SAN VICENTE II",
-  "SANTOL",
-  "TARTARIA",
-  "TIBIG",
-  "TOLEDO",
-  "TUBUAN 1",
-  "TUBUAN 2",
-  "TUBUAN 3",
-  "ULAT",
-  "YAKAL"
+  "Acacia","Adlas","Anahaw I","Anahaw II","Balite I","Balite II","Balubad","Banaba","Batas",
+  "Biga I","Biga II","Biluso","Bucal","Buho","Bulihan","Cabangaan","Carmen","Hoyo","Hukay","Iba",
+  "Inchican","Ipil I","Ipil II","Kalubkob","Kaong","Lalaan I","Lalaan II","Litlit","Lucsuhin","Lumil",
+  "Maguyam","Malabag","Malaking Tatyao","Mataas na Burol","Munting Ilog","Narra I","Narra II","Narra III",
+  "Paligawan","Pasong Langka","Barangay I (Poblacion)","Barangay II (Poblacion)","Barangay III (Poblacion)",
+  "Barangay IV (Poblacion)","Barangay V (Poblacion)","Pooc I","Pooc II","Pulong Bunga","Pulong Saging",
+  "Puting Kahoy","Sabutan","San Miguel I","San Miguel II","San Vicente I","San Vicente II","Santol",
+  "Tartaria","Tibig","Toledo","Tubuan I","Tubuan II","Tubuan III","Ulat","Yakal"
 ];
 const AGENCIES = [
   {key:"PCSO", name:"Philippine Charity Sweepstakes Office", addressee:"The Officer-in-Charge\nPCSO Provincial/District Office"},
@@ -186,7 +130,7 @@ function showCaseDetailsModal(caseId){
 
           <div style="margin-bottom:8px;grid-column:1/-1;">
             <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Problem Presented</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);white-space:pre-wrap;">${escapeHtml(caseRec.interview?.problemPresented)||"—"}</div>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);white-space:pre-wrap;">${escapeHtml(rewriteProblemPresented(caseRec.interview?.interviewSituation || caseRec.interview?.problemPresented || caseRec.summary || "", caseRec.purpose || "", (caseRec.client?.fullName || caseRec.client?.full_name || caseRec.client?.name || ""), caseRec.client))||"—"}</div>
           </div>
         </div>
       </div>
@@ -233,41 +177,141 @@ function fmtDate(iso){
 function daysBetween(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
 function escapeHtml(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
-function rewriteProblemPresented(rawProblem, purpose, clientFullName) {
+function rewriteProblemPresented(rawProblem, purpose, clientFullName, clientData = {}) {
   if (!rawProblem || !rawProblem.trim()) return "";
-  const p = rawProblem.trim();
+  let p = rawProblem.trim();
   const purposeLower = (purpose || "").toLowerCase();
   const clientRef = clientFullName || "The client";
+  const clientSex = (clientData.sex || "").toLowerCase();
+  const clientAge = clientData.age || "";
+  
+  // Fix medical terminology (do this FIRST before other replacements)
+  p = p.replace(/\bchemo\s*therapy\b/gi, "chemotherapy");
+  p = p.replace(/\bNEPHOROSCLEROSIS\b/g, "nephrosclerosis");
+  p = p.replace(/\bNEPHROSCLEROSIS\b/g, "nephrosclerosis");
 
+  // Fix "Social Case Study" — should be "Social Case Study Report"
+  p = p.replace(/\ba\s+Social Case Study Report\b/gi, "a Social Case Study Report");
+  p = p.replace(/\bSocial Case Study Report\b/gi, "a Social Case Study Report");
+  p = p.replace(/\ba\s+Social Case Study\b(?!\s+Report)/gi, "a Social Case Study Report");
+  p = p.replace(/\bSocial Case Study\b(?!\s+Report)/gi, "a Social Case Study Report");
+  p = p.replace(/\bA Social Case Study\b/gi, "a Social Case Study Report");
+
+  // Fix assistance type casing — keep proper case, don't lowercase
+  p = p.replace(/\bfinancial assistance\b/gi, "Financial Assistance");
+  p = p.replace(/\bmedical assistance\b/gi, "Medical Assistance");
+  p = p.replace(/\bburial assistance\b/gi, "Burial Assistance");
+  p = p.replace(/\beducational assistance\b/gi, "Educational Assistance");
+  p = p.replace(/\bfood\s*\/?\s*relief assistance\b/gi, "Food / Relief Assistance");
+  p = p.replace(/\blivelihood assistance\b/gi, "Livelihood Assistance");
+  p = p.replace(/\ba\s+(Financial|Medical|Burial|Educational|Food|Livelihood) Assistance\b/g, "a $1 Assistance");
+
+  // Fix prepositions
+  p = p.replace(/\bneeded in\b/g, "needed for");
+  p = p.replace(/\bneeded due to\b/g, "needed for");
+  p = p.replace(/\bfor her mother maintenance\b/g, "for her mother's maintenance");
+  p = p.replace(/\bfor his mother maintenance\b/g, "for his mother's maintenance");
+  p = p.replace(/\bfor their mother maintenance\b/g, "for their mother's maintenance");
+  p = p.replace(/\bher mother maintenance\b/g, "her mother's maintenance");
+  p = p.replace(/\bhis mother maintenance\b/g, "his mother's maintenance");
+  p = p.replace(/\btheir mother maintenance\b/g, "their mother's maintenance");
+  p = p.replace(/\bfor her father maintenance\b/g, "for her father's maintenance");
+  p = p.replace(/\bfor his father maintenance\b/g, "for his father's maintenance");
+  p = p.replace(/\bher father maintenance\b/g, "her father's maintenance");
+  p = p.replace(/\bhis father maintenance\b/g, "his father's maintenance");
+
+  // Fix "Please see" grammar
+  p = p.replace(/\bPlease see attachment\b/g, "Please see the attached documents");
+  p = p.replace(/\bPlease see the attachment for\b/g, "Please see the attached documents for");
+  p = p.replace(/\bPlease see attachment for\b/g, "Please see the attached documents for");
+
+  // Ensure proper punctuation before "Please see" — add period if missing
+  p = p.replace(/([^\.\!])\s+Please see/g, '$1. Please see');
+  p = p.replace(/\.\.\./g, '...'); // Fix triple dots from double period
+
+  // Fix double spaces
+  p = p.replace(/\s+/g, ' ').trim();
+
+  // Smart paraphrasing based on input patterns
   const hasPatientMention = /\b(patient| client| beneficiary)\b/i.test(p);
   const hasAssistanceMention = /\b(assistance| aid | help| support)/i.test(p);
-  const hasVisitMention = /\b(visited| went to| came to| approached)/i.test(p);
-  const hasRequestMention = /\b(request| ask| seeking| needed| need)/i.test(p);
-  const hasSocialCaseMention = /\b(social case study| scsr)/i.test(p);
-  const hasMedicalMention = /\b(medical| hemodialysis| dialysis| surgery| hospital| medicine| prescription| treatment| illness| disease| condition| ckd| cancer)/i.test(p);
+  const hasVisitMention = /\b(visited| went to| came to| approached| personally visited)/i.test(p);
+  const hasRequestMention = /\b(request| ask| seeking| needed| need| requesting)/i.test(p);
+  const hasSocialCaseMention = /\b(social case study report| social case study| scsr)/i.test(p);
+  const hasMedicalMention = /\b(medical| hemodialysis| dialysis| surgery| hospital| medicine| prescription| treatment| illness| disease| condition| ckd| cancer| chemotherapy)/i.test(p);
   const hasBurialMention = /\b(burial| funeral| death| deceased| died| passed away)/i.test(p);
   const hasEducationalMention = /\b(education| tuition| school| college| university| enrollment| studying)/i.test(p);
   const hasFinancialMention = /\b(financial| monetary| cash| fund| expenses| cost| payment)/i.test(p);
   const hasFoodMention = /\b(food| relief| hunger| feeding| livelihood)/i.test(p);
+  
+  // Extract key information for intelligent paraphrasing
+  const relationshipMatch = p.match(/\b(patient's|his|her|their|the client's)\s+(daughter|son|wife|husband|mother|father|sister|brother|relative|friend)\b/i)
+    || p.match(/\b(daughter|son|wife|husband|mother|father|sister|brother|relative|friend)\b/i);
+  let relationship = "";
+  let possessive = clientSex === 'male' ? 'his' : 'her';
+  if (relationshipMatch) {
+    relationship = relationshipMatch[relationshipMatch.length - 1];
+    // Determine possessive from the context
+    if (/patient's|his|her|their|the client's/i.test(relationshipMatch[0])) {
+      possessive = relationshipMatch[1].toLowerCase().replace("'s", "").replace("the client", "the client");
+      if (possessive === "patient" || possessive === "the client") possessive = clientSex === 'male' ? 'his' : 'her';
+    }
+  }
+  
+  const conditionMatch = p.match(/(?:due to|for|because of)\s+([^,.]+?)(?:\.|,|$)/i);
+  const medicalCondition = conditionMatch ? conditionMatch[1].trim() : "";
 
-  let sentence1 = "";
-  if (hasVisitMention || hasRequestMention || hasAssistanceMention || hasSocialCaseMention) {
-    sentence1 = p;
+  // Generate intelligent paraphrase if the input is brief or needs enhancement
+  let paraphrased = "";
+  
+  if (!hasVisitMention && !hasRequestMention) {
+    // Generate opening sentence about the visit
+    const possessiveCap = possessive.charAt(0).toUpperCase() + possessive.slice(1);
+    
+    if (relationship && medicalCondition) {
+      paraphrased = `The patient's ${relationship} personally visited our office to request assistance in obtaining a Social Case Study Report. This report is necessary for ${purpose || 'Financial Assistance'} needed for ${possessive} ${medicalCondition.toLowerCase()}. `;
+    } else if (medicalCondition) {
+      paraphrased = `The patient personally visited our office to request assistance in obtaining a Social Case Study Report. This report is necessary for ${purpose || 'Financial Assistance'} needed for ${medicalCondition.toLowerCase()}. `;
+    } else {
+      paraphrased = `${clientRef} personally visited our office to request assistance in obtaining a Social Case Study Report. This report is necessary for ${purpose || 'Financial Assistance'}. `;
+    }
+    
+    paraphrased += p;
   } else {
-    let purposeDesc = purpose || "financial/medical";
-    if (hasBurialMention) purposeDesc = "burial";
-    else if (hasEducationalMention) purposeDesc = "educational";
-    else if (hasFoodMention) purposeDesc = "food/relief";
-    sentence1 = `${clientRef} is seeking ${purposeDesc} assistance.`;
-    sentence1 += " " + p;
+    paraphrased = p;
   }
 
-  const alreadyHasClosing = /\b(please see| attached| supporting documents| for your (reference|review)| supporting this request)/i.test(p);
+  const alreadyHasClosing = /\b(please see| attached| supporting documents| for your (reference|review)| supporting this request)/i.test(paraphrased);
   if (!alreadyHasClosing) {
-    sentence1 += " Please see the attached documents for your reference.";
+    // Ensure proper punctuation before adding closing sentence
+    paraphrased = paraphrased.replace(/([^\.\!])\s*$/, '$1. ');
+    paraphrased += "Please see the attached documents for your reference.";
   }
 
-  return sentence1;
+  // Final cleanup — ensure single spaces and proper sentence spacing
+  paraphrased = paraphrased.replace(/\s+/g, ' ').trim();
+  paraphrased = paraphrased.replace(/\.\./g, '.');
+
+  return paraphrased;
+}
+function boldProblemText(text) {
+  if (!text) return text;
+  const purposes = ['Medical Assistance','Burial Assistance','Educational Assistance','Financial Assistance','Food / Relief Assistance','Livelihood Assistance'];
+  let t = text;
+  // Bold "Social Case Study" and "Social Case Study Report"
+  t = t.replace(/\b(Social Case Study Report)\b/g, '<b>$1</b>');
+  t = t.replace(/(?<!<b>)\b(Social Case Study)\b(?!<\/b>)/g, '<b>$1</b>');
+  // Bold assistance type names
+  purposes.forEach(p => {
+    const re = new RegExp('\\b(' + p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')\\b', 'g');
+    t = t.replace(re, '<b>$1</b>');
+  });
+  // Bold consecutive ALL-CAPS words (medical conditions, diagnoses)
+  t = t.replace(/\b([A-Z][A-Z0-9]+(?:\s+[A-Z][A-Z0-9]+)+)\b/g, function(match) {
+    if (/<b>/.test(match)) return match;
+    return '<b>' + match + '</b>';
+  });
+  return t;
 }
 function findLatestByName(name){
   const n = name.trim().toLowerCase();
@@ -282,56 +326,76 @@ function checkEligibility(clientName){
   const n = clientName.trim().toLowerCase();
   if(!n) return {eligible: true, reason: ''};
   
-  // Find all cases for this client
-  const clientCases = cases.filter(c => c.client.name.toLowerCase().includes(n));
+  // Find all cases for this client (exact name match)
+  const exactMatches = cases.filter(c => c.client.name.toLowerCase().trim() === n);
   
-  // Check for any approved/released cases within the last 6 months
-  const sixMonthsAgo = new Date();
-  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  // Also find partial matches (similar names)
+  const partialMatches = cases.filter(c => 
+    c.client.name.toLowerCase().includes(n) && 
+    c.client.name.toLowerCase().trim() !== n
+  );
   
-  const recentApproved = clientCases.filter(c => {
-    return (c.status === 'Approved' || c.status === 'Printed' || c.status === 'Released') &&
-           new Date(c.createdAt) > sixMonthsAgo;
-  });
+  // Combine both for eligibility check
+  const allMatches = [...exactMatches, ...partialMatches];
   
-  if(recentApproved.length > 0){
-    const latest = recentApproved.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
-    const daysSince = Math.floor((new Date() - new Date(latest.createdAt)) / (1000 * 60 * 60 * 24));
-    const daysRemaining = 180 - daysSince;
+  if(allMatches.length === 0) {
+    return {eligible: true, reason: ''};
+  }
+  
+  // Find the latest case (by releasedDate or createdAt)
+  const latest = allMatches.sort((a,b) => {
+    const dateA = new Date(a.releasedDate || a.createdAt);
+    const dateB = new Date(b.releasedDate || b.createdAt);
+    return dateB - dateA;
+  })[0];
+  
+  const caseDate = latest.releasedDate || latest.createdAt;
+  const daysSince = Math.floor((new Date() - new Date(caseDate)) / (1000 * 60 * 60 * 24));
+  const daysRemaining = 180 - daysSince;
+  
+  // Check if the case is within the 6-month restriction period
+  if(daysRemaining > 0) {
     return {
       eligible: false,
-      reason: `Client received assistance on ${fmtDate(latest.createdAt)}. Must wait ${daysRemaining} more days (6-month rule).`,
+      reason: `Client received assistance on ${fmtDate(caseDate)}. Must wait ${daysRemaining} more days (6-month rule).`,
       latestCase: latest,
       daysRemaining: daysRemaining
     };
   }
   
-  return {eligible: true, reason: ''};
+  // If past the 6-month period, they are eligible
+  return {
+    eligible: true,
+    reason: `Last case was on ${fmtDate(caseDate)} (${daysSince} days ago). Eligible for new case.`,
+    latestCase: latest
+  };
 }
 
 function eligibilityInfo(caseRec){
-  console.log('eligibilityInfo called with:', caseRec.releasedDate);
-  if(!caseRec || !caseRec.releasedDate) {
-    console.log('No releasedDate, returning eligible');
+  console.log('eligibilityInfo called with:', caseRec.releasedDate, caseRec.createdAt);
+  const caseDate = caseRec.releasedDate || caseRec.createdAt;
+  
+  if(!caseRec || !caseDate) {
+    console.log('No case date, returning eligible');
     return {eligible:true, daysSince:0, daysLeft:0, nextEligibleDate:null, pct:0};
   }
   
-  // Validate the releasedDate before processing
+  // Validate the case date before processing
   try {
-    const testDate = new Date(caseRec.releasedDate);
+    const testDate = new Date(caseDate);
     console.log('Test date:', testDate, 'getTime:', testDate.getTime(), 'isNaN:', isNaN(testDate.getTime()));
     if(isNaN(testDate.getTime())) {
-      console.warn('Invalid releasedDate:', caseRec.releasedDate);
+      console.warn('Invalid case date:', caseDate);
       return {eligible:true, daysSince:0, daysLeft:0, nextEligibleDate:null, pct:0};
     }
   } catch(e) {
-    console.warn('Error parsing releasedDate:', caseRec.releasedDate, e);
+    console.warn('Error parsing case date:', caseDate, e);
     return {eligible:true, daysSince:0, daysLeft:0, nextEligibleDate:null, pct:0};
   }
   
-  const daysSince = daysBetween(caseRec.releasedDate, todayISO());
+  const daysSince = daysBetween(caseDate, todayISO());
   const daysLeft = ELIGIBILITY_DAYS - daysSince;
-  const nextDate = new Date(caseRec.releasedDate);
+  const nextDate = new Date(caseDate);
   nextDate.setDate(nextDate.getDate()+ELIGIBILITY_DAYS);
   
   console.log('daysSince:', daysSince, 'daysLeft:', daysLeft, 'nextDate:', nextDate);
@@ -396,31 +460,10 @@ function blankIntake(name){
   };
 }
 
-function startEligibilityCheck(){
-  const name = view.eligClientName;
-  
-  // Check eligibility using the new function
-  const eligibility = checkEligibility(name);
-  
-  if(!eligibility.eligible){
-    // Client is ineligible - show error
-    alert(eligibility.reason);
-    return;
-  }
-  
-  const match = findLatestByName(name);
-  setView({eligMatch: match, eligOverride:false});
-  renderNewCase();
-  updateWorkflowStep(2);
-  lucide.createIcons();
-}
-
 function proceedToIntake(){
-  draftIntake = blankIntake(view.eligClientName);
-  setView({newCaseStep:"intake"});
-  renderNewCase();
-  updateWorkflowStep(3);
-  lucide.createIcons();
+  draftIntake = blankIntake(view.eligClientName || '');
+  sessionStorage.setItem('intake_clientName', view.eligClientName || '');
+  window.location.href = '/admin/social-case/intake';
 }
 
 function updateWorkflowStep(stepNumber){
@@ -459,6 +502,15 @@ function saveNewCase(){
     return response.text().then(text => {
       console.log('Response text:', text);
       if(!response.ok){
+        if(response.status === 422){
+          try {
+            const json = JSON.parse(text);
+            const msgs = Object.values(json.errors || {}).flat();
+            throw new Error('Validation failed:\n' + msgs.join('\n'));
+          } catch(e) {
+            if(e.message.startsWith('Validation')) throw e;
+          }
+        }
         console.error('Server returned error:', response.status, text);
         throw new Error('Server error: ' + response.status);
       }
@@ -473,15 +525,8 @@ function saveNewCase(){
   .then(data => {
     console.log('Case saved:', data);
     updateWorkflowStep(4);
-    const savedAgencies = data.agencies || [];
     draftIntake = null;
-    if (savedAgencies.length > 1) {
-      window.location.href = `/admin/social-case/document/${data.id}/all`;
-    } else if (savedAgencies.length === 1) {
-      window.location.href = `/admin/social-case/document/${data.id}/${savedAgencies[0]}`;
-    } else {
-      window.location.href = `/admin/social-case/detail/${data.id}`;
-    }
+    window.location.href = `/admin/social-case/detail/${data.id}`;
   })
   .catch(error => {
     console.error('Error saving case:', error);
@@ -1064,60 +1109,110 @@ function renderSearchResults(query){
   console.log('Searching for:', query);
   console.log('Total cases:', cases.length);
   
-  // Find matching clients (mock search for now)
-  const matches = cases.filter(c => 
-    c.client.name.toLowerCase().includes(query.toLowerCase())
+  // Find exact matches first
+  const exactMatches = cases.filter(c => 
+    c.client.name.toLowerCase().trim() === query.toLowerCase().trim()
+  );
+  
+  // Find partial matches (names that contain the query)
+  const partialMatches = cases.filter(c => 
+    c.client.name.toLowerCase().includes(query.toLowerCase()) &&
+    c.client.name.toLowerCase().trim() !== query.toLowerCase().trim()
   ).slice(0,5);
   
-  console.log('Matches found:', matches.length);
+  console.log('Exact matches found:', exactMatches.length);
+  console.log('Partial matches found:', partialMatches.length);
   
   // Check eligibility for the searched client
   const eligibility = checkEligibility(query);
   
-  if(matches.length === 0){
-    const escapedQuery = escapeHtml(query);
+  // If there are exact matches, show them
+  if(exactMatches.length > 0){
     container.style.display = 'block';
-    
-    if(!eligibility.eligible){
-      // Client is ineligible
-      container.innerHTML = `
-        <div style="padding:16px;text-align:center;color:var(--danger)">
-          <i data-lucide="alert-triangle" style="width:32px;height:32px;margin-bottom:8px"></i>
-          <div style="font-weight:600">Client Not Eligible</div>
-          <div style="font-size:12px;margin-top:4px;margin-bottom:16px">${escapeHtml(eligibility.reason)}</div>
-          <button class="btn ghost" onclick="document.getElementById('searchResults').style.display='none'">
-            <i data-lucide="x" style="width:16px;height:16px"></i> Close
-          </button>
+    container.innerHTML = exactMatches.map(c => {
+      const eligibility = eligibilityInfo(c);
+      const statusBadge = !eligibility.eligible 
+        ? `<span style="background:#FEF2F2;color:#DC2626;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">Not Eligible until ${fmtDate(eligibility.nextEligibleDate)}</span>`
+        : `<span style="background:#ECFDF5;color:#059669;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">Eligible</span>`;
+      
+      return `
+        <div class="search-result-item" onclick="selectClient('${c.id}')">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="search-result-name">${escapeHtml(c.client.name)}</div>
+            ${statusBadge}
+          </div>
+          <div class="search-result-details">
+            ${escapeHtml(c.client.sex || '')} • ${escapeHtml(String(c.client.age) || '')} • ${escapeHtml(c.purpose || '')}
+          </div>
         </div>
       `;
-    } else {
-      // Client is eligible - show popup
-      container.style.display = 'none';
-      Swal.fire({
-        title: 'No clients found',
-        text: `No clients found matching "${escapedQuery}". This appears to be a new client. You can proceed with the interview.`,
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Proceed with New Client',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: '#1E3A8A',
-        cancelButtonColor: '#6B7280'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          proceedWithNewClient(escapedQuery);
-        }
-      });
-    }
-  }else{
+    }).join('');
+  }
+  // If there are partial matches but no exact matches, warn user
+  else if(partialMatches.length > 0){
+    container.style.display = 'none';
+    Swal.fire({
+      title: 'Similar Names Found',
+      html: `We found clients with similar names:<br><br>${partialMatches.map(c => `<strong>${escapeHtml(c.client.name)}</strong>`).join('<br>')}<br><br>Please verify if this is the same person or continue as a new client.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Proceed with New Client',
+      cancelButtonText: 'Select Existing',
+      confirmButtonColor: '#1A237E',
+      cancelButtonColor: '#6B7280',
+      background: '#ffffff',
+      customClass: { popup: 'rounded-4 shadow-lg' }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        proceedWithNewClient(query);
+      } else {
+        // Show the partial matches for selection
+        container.style.display = 'block';
+        container.innerHTML = partialMatches.map(c => `
+          <div class="search-result-item" onclick="selectClient('${c.id}')">
+            <div class="search-result-name">${escapeHtml(c.client.name)}</div>
+            <div class="search-result-details">
+              ${escapeHtml(c.client.sex || '')} • ${escapeHtml(String(c.client.age) || '')} • ${escapeHtml(c.purpose || '')}
+            </div>
+          </div>
+        `).join('');
+        lucide.createIcons();
+      }
+    });
+  }
+  // No matches at all
+  else if(!eligibility.eligible){
+    // Client is ineligible
     container.style.display = 'block';
-    container.innerHTML = matches.map(c => `
-      <div class="search-result-item" onclick="selectClient('${c.id}')">
-        <div class="search-result-name">${escapeHtml(c.client.name)}</div>
-        <div class="search-result-details">
-          ${escapeHtml(c.client.sex || '')} • ${escapeHtml(String(c.client.age) || '')} • ${escapeHtml(c.purpose || '')}
-        </div>
+    container.innerHTML = `
+      <div style="padding:16px;text-align:center;color:var(--danger)">
+        <i data-lucide="alert-triangle" style="width:32px;height:32px;margin-bottom:8px"></i>
+        <div style="font-weight:600">Client Not Eligible</div>
+        <div style="font-size:12px;margin-top:4px;margin-bottom:16px">${escapeHtml(eligibility.reason)}</div>
+        <button class="btn ghost" onclick="document.getElementById('searchResults').style.display='none'">
+          <i data-lucide="x" style="width:16px;height:16px"></i> Close
+        </button>
       </div>
-    `).join('');
+    `;
+  } else {
+    // Client is eligible - show popup
+    container.style.display = 'none';
+    Swal.fire({
+      title: 'No clients found',
+      text: `No clients found matching "${escapeHtml(query)}". This appears to be a new client. You can proceed with the interview.`,
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Proceed with New Client',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#1A237E',
+      cancelButtonColor: '#6B7280',
+      background: '#ffffff',
+      customClass: { popup: 'rounded-4 shadow-lg' }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        proceedWithNewClient(query);
+      }
+    });
   }
   lucide.createIcons();
 }
@@ -1137,11 +1232,19 @@ function selectClient(caseId){
   const searchResults = document.getElementById('searchResults');
   if(searchResults) searchResults.style.display = 'none';
   
-  // Show client summary
-  renderClientSummary(c);
+  // Hide client summary
+  const clientSummary = document.getElementById('clientSummary');
+  if(clientSummary) clientSummary.style.display = 'none';
   
-  // Check eligibility
-  const match = findLatestByName(c.client.name);
+  // Check eligibility for this client name
+  const eligibility = checkEligibility(c.client.name);
+  
+  // Use the latest case from eligibility check if not eligible, otherwise use selected case
+  let match = c;
+  if(!eligibility.eligible) {
+    match = eligibility.latestCase || c;
+  }
+  
   setView({eligMatch: match, eligOverride:false});
   renderEligibilityStatus(match);
   
@@ -1162,8 +1265,8 @@ function renderClientSummary(client){
   document.getElementById('clientNameDisplay').textContent = name;
   document.getElementById('clientAge').textContent = client.client.age || '—';
   document.getElementById('clientSex').textContent = client.client.sex || '—';
-  document.getElementById('clientBarangay').textContent = 'Biluso'; // Mock data
-  document.getElementById('clientLastCase').textContent = 'None'; // Will be updated by eligibility check
+  document.getElementById('clientBarangay').textContent = client.client.address || client.client.barangay || '—';
+  document.getElementById('clientLastCase').textContent = fmtDate(client.releasedDate || client.createdAt) || '—';
 }
 
 function renderEligibilityStatus(match){
@@ -1225,7 +1328,7 @@ function renderEligibilityStatus(match){
             </div>
             <div>
               <div style="font-size: 12px; color: #6B7280; font-weight: 500;">Last Case Study</div>
-              <div style="font-size: 15px; font-weight: 600; color: #111827;">${fmtDate(match.releasedDate)}</div>
+              <div style="font-size: 15px; font-weight: 600; color: #111827;">${fmtDate(match.releasedDate || match.createdAt)}</div>
             </div>
           </div>
           
@@ -1237,7 +1340,7 @@ function renderEligibilityStatus(match){
               <strong style="color: #DC2626; font-size: 16px;">Not Eligible</strong>
             </div>
             <div style="font-size: 14px; color: #374151; line-height: 1.5;">
-              Previous Social Case Study was released on ${fmtDate(match.releasedDate)}.
+              Previous Social Case Study was released on ${fmtDate(match.releasedDate || match.createdAt)}.
               <br><br>
               <strong>Eligible Again:</strong> ${fmtDate(e.nextEligibleDate)} (${e.daysLeft} days from now)
             </div>
@@ -1252,7 +1355,7 @@ function renderEligibilityStatus(match){
               <div style="background: #DC2626; height: 100%; width: ${e.pct}%"></div>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 11px; color: #9CA3AF; margin-top: 4px;">
-              <span>${fmtDate(match.releasedDate)}</span>
+              <span>${fmtDate(match.releasedDate || match.createdAt)}</span>
               <span>${fmtDate(e.nextEligibleDate)}</span>
             </div>
           </div>
@@ -1313,12 +1416,39 @@ function renderEligibilityStatus(match){
   lucide.createIcons();
 }
 
-function startEligibilityCheck(){
+async function startEligibilityCheck(){
   const name = document.getElementById('elig-name').value;
   if(!name || name.trim().length < 2){
-    Swal.fire({ icon:'warning', title:'Input Required', text:'Please enter at least 2 characters to search.', confirmButtonColor:'#1E3A8A' });
+    Swal.fire({
+      icon: 'warning',
+      title: 'Input Required',
+      text: 'Please enter at least 2 characters to search.',
+      confirmButtonColor: '#1A237E',
+      confirmButtonText: 'OK',
+      background: '#ffffff',
+      customClass: { popup: 'rounded-4 shadow-lg' }
+    });
     return;
   }
+  
+  // Validate that name contains only letters, spaces, and common name characters
+  const validNameRegex = /^[a-zA-Z\s\-\.']+$/;
+  if (!validNameRegex.test(name.trim())) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Invalid Name',
+      text: 'Please enter a valid name (letters, spaces, hyphens, and apostrophes only).',
+      confirmButtonColor: '#1A237E',
+      confirmButtonText: 'OK',
+      background: '#ffffff',
+      customClass: { popup: 'rounded-4 shadow-lg' }
+    });
+    return;
+  }
+  
+  // Reload cases from server to get latest data before checking eligibility
+  await loadCases();
+  
   view.eligClientName = name;
   renderSearchResults(name);
   lucide.createIcons();
@@ -1326,6 +1456,9 @@ function startEligibilityCheck(){
 
 function proceedWithNewClient(clientName){
   console.log('proceedWithNewClient called with:', clientName);
+  
+  // Store client name in sessionStorage for the intake page
+  sessionStorage.setItem('intake_clientName', clientName);
   
   // Redirect to the intake page
   window.location.href = '/admin/social-case/intake';
@@ -1337,7 +1470,9 @@ window.proceedWithNewClient = proceedWithNewClient;
 /* ---------------- Rendering: Intake form ---------------- */
 async function loadIntakeForm(){
   await loadCases();
-  draftIntake = blankIntake(""); // Initialize with empty form
+  const savedName = sessionStorage.getItem('intake_clientName') || '';
+  sessionStorage.removeItem('intake_clientName');
+  draftIntake = blankIntake(savedName);
   renderIntakeForm();
   lucide.createIcons();
 }
@@ -1351,39 +1486,39 @@ function renderIntakeForm(){
   <div class="panel">
     <h3>Report details</h3>
     <div class="grid2">
-      <div class="field"><label>Control no.</label><input type="text" value="${escapeHtml(d.controlNo)}" oninput="draftIntake.controlNo=this.value"></div>
-      <div class="field"><label>Report date</label><input type="date" value="${d.interview.reportDate}" oninput="draftIntake.interview.reportDate=this.value"></div>
+      <div class="field"><label>Control no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.controlNo)}" oninput="draftIntake.controlNo=this.value"></div>
+      <div class="field"><label>Report date <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.interview.reportDate}" oninput="draftIntake.interview.reportDate=this.value"></div>
     </div>
   </div>
 
   <div class="panel">
     <h3>I. Identifying information</h3>
     <div class="grid3">
-      <div class="field"><label>Name</label><input type="text" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value"></div>
-      <div class="field"><label>Age</label><input type="number" value="${escapeHtml(String(d.client.age))}" oninput="draftIntake.client.age=this.value"></div>
-      <div class="field"><label>Sex</label>
-        <select oninput="draftIntake.client.sex=this.value">
+      <div class="field"><label>Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value" required maxlength="255" placeholder="Enter full name"></div>
+      <div class="field"><label>Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="number" value="${escapeHtml(String(d.client.age))}" oninput="draftIntake.client.age=this.value" min="0" max="150" placeholder="Enter age"></div>
+      <div class="field"><label>Sex <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+        <select oninput="draftIntake.client.sex=this.value" required>
           ${["","Male","Female"].map(o=>`<option ${d.client.sex===o?'selected':''}>${o}</option>`).join("")}
         </select>
       </div>
-      <div class="field" style="grid-column:span 2"><label>Address (Barangay)</label>
-        <select oninput="draftIntake.client.address=this.value">
+      <div class="field" style="grid-column:span 2"><label>Address (Barangay) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+        <select oninput="draftIntake.client.address=this.value" required>
           <option value="">Select Barangay</option>
           ${BARANGAYS.map(b=>`<option ${d.client.address===b?'selected':''}>${b}</option>`).join("")}
         </select>
       </div>
-      <div class="field"><label>Birthdate</label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value"></div>
-      <div class="field"><label>Birthplace</label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value"></div>
-      <div class="field"><label>Religion</label><input type="text" value="${escapeHtml(d.client.religion)}" oninput="draftIntake.client.religion=this.value"></div>
-      <div class="field"><label>Educational attainment</label><input type="text" value="${escapeHtml(d.client.education)}" oninput="draftIntake.client.education=this.value"></div>
-      <div class="field"><label>Civil status</label>
+      <div class="field"><label>Birthdate <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value"></div>
+      <div class="field"><label>Birthplace <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value" placeholder="Enter birthplace"></div>
+      <div class="field"><label>Religion <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.religion)}" oninput="draftIntake.client.religion=this.value" placeholder="Enter religion"></div>
+      <div class="field"><label>Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.education)}" oninput="draftIntake.client.education=this.value" placeholder="Enter educational attainment"></div>
+      <div class="field"><label>Civil status <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
         <select oninput="draftIntake.client.civilStatus=this.value">
           ${["","Single","Married","Widowed","Separated"].map(o=>`<option ${d.client.civilStatus===o?'selected':''}>${o}</option>`).join("")}
         </select>
       </div>
-      <div class="field"><label>Occupation</label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="N/A"></div>
-      <div class="field"><label>Income</label><input type="text" value="${escapeHtml(d.client.income)}" oninput="draftIntake.client.income=this.value" placeholder="N/A"></div>
-      <div class="field"><label>Contact no.</label><input type="tel" value="${escapeHtml(d.client.contact)}" oninput="draftIntake.client.contact=this.value"></div>
+      <div class="field"><label>Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="Enter occupation (N/A if none)"></div>
+      <div class="field"><label>Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.income)}" oninput="draftIntake.client.income=this.value" placeholder="Enter income (N/A if none)"></div>
+      <div class="field"><label>Contact no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="tel" value="${escapeHtml(d.client.contact)}" oninput="draftIntake.client.contact=this.value" pattern="09[0-9]{9}" maxlength="11" placeholder="e.g. 09171234567" title="Must be a valid PH mobile number (09xxxxxxxxx)"></div>
     </div>
   </div>
 
@@ -1391,13 +1526,13 @@ function renderIntakeForm(){
     <h3>II. Family composition</h3>
     ${d.household.map((m,i)=>`
       <div class="grid3" style="margin-bottom:8px;align-items:end;padding-bottom:8px;border-bottom:1px solid var(--surface-sunken)">
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Name':''}</label><input type="text" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Relationship':''}</label><input type="text" value="${escapeHtml(m.relationship)}" oninput="draftIntake.household[${i}].relationship=this.value"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Age':''}</label><input type="number" value="${escapeHtml(String(m.age))}" oninput="draftIntake.household[${i}].age=this.value"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Educational attainment':''}</label><input type="text" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Occupation':''}</label><input type="text" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="N/A"></div>
+        <div class="field" style="margin-bottom:0"><label>${i===0?'Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value" placeholder="Enter name"></div>
+        <div class="field" style="margin-bottom:0"><label>${i===0?'Relationship <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.relationship)}" oninput="draftIntake.household[${i}].relationship=this.value" placeholder="Enter relationship"></div>
+        <div class="field" style="margin-bottom:0"><label>${i===0?'Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="number" value="${escapeHtml(String(m.age))}" oninput="draftIntake.household[${i}].age=this.value" min="0" max="150" placeholder="Enter age"></div>
+        <div class="field" style="margin-bottom:0"><label>${i===0?'Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value" placeholder="Enter educational attainment"></div>
+        <div class="field" style="margin-bottom:0"><label>${i===0?'Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="Enter occupation (N/A if none)"></div>
         <div class="field" style="margin-bottom:0;display:flex;gap:6px">
-          <div style="flex:1"><label>${i===0?'Income':''}</label><input type="text" value="${escapeHtml(m.income)}" oninput="draftIntake.household[${i}].income=this.value" placeholder="N/A"></div>
+          <div style="flex:1"><label>${i===0?'Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.income)}" oninput="draftIntake.household[${i}].income=this.value" placeholder="Enter income (N/A if none)"></div>
           ${i>0?`<button class="btn ghost btn-sm" style="align-self:flex-end" onclick="draftIntake.household.splice(${i},1); renderIntakeForm();"><i data-lucide="x" style="width:16px;height:16px"></i></button>`:""}
         </div>
       </div>`).join("")}
@@ -1406,27 +1541,27 @@ function renderIntakeForm(){
 
   <div class="panel">
     <h3>Narrative sections</h3>
-    <div class="field"><label>III. Problem presented</label><textarea oninput="draftIntake.interview.problemPresented=this.value">${escapeHtml(d.interview.problemPresented)}</textarea></div>
+    <div class="field"><label>III. Problem presented <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><textarea oninput="draftIntake.interview.problemPresented=this.value">${escapeHtml(d.interview.problemPresented)}</textarea></div>
   </div>
 
   <div class="panel">
     <h3>Signatories</h3>
     <div class="grid2">
-      <div class="field"><label>Prepared by (name)</label><input type="text" value="${escapeHtml(d.signers.preparedByName)}" oninput="draftIntake.signers.preparedByName=this.value"></div>
-      <div class="field"><label>Prepared by (title)</label><input type="text" value="${escapeHtml(d.signers.preparedByTitle)}" oninput="draftIntake.signers.preparedByTitle=this.value"></div>
-      <div class="field"><label>Noted by (name)</label><input type="text" value="${escapeHtml(d.signers.notedByName)}" oninput="draftIntake.signers.notedByName=this.value"></div>
-      <div class="field"><label>Noted by (title)</label><input type="text" value="${escapeHtml(d.signers.notedByTitle)}" oninput="draftIntake.signers.notedByTitle=this.value"></div>
+      <div class="field"><label>Prepared by (name) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.preparedByName)}" oninput="draftIntake.signers.preparedByName=this.value" required maxlength="255" placeholder="Enter prepared by name"></div>
+      <div class="field"><label>Prepared by (title) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.preparedByTitle)}" oninput="draftIntake.signers.preparedByTitle=this.value" placeholder="Enter prepared by title"></div>
+      <div class="field"><label>Noted by (name) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.notedByName)}" oninput="draftIntake.signers.notedByName=this.value" required maxlength="255" placeholder="Enter noted by name"></div>
+      <div class="field"><label>Noted by (title) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.notedByTitle)}" oninput="draftIntake.signers.notedByTitle=this.value" placeholder="Enter noted by title"></div>
     </div>
   </div>
 
   <div class="panel">
     <h3>Agencies & Purpose</h3>
-    <div class="field"><label>Purpose</label>
+    <div class="field"><label>Purpose <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
       <select oninput="draftIntake.purpose=this.value">
         ${PURPOSES.map(p=>`<option ${d.purpose===p?'selected':''}>${p}</option>`).join("")}
       </select>
     </div>
-    <div class="field"><label>Agencies (select all that apply)</label>
+    <div class="field"><label>Agencies (select all that apply) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
       <div style="display:flex;flex-wrap:wrap;gap:8px">
         ${AGENCIES.map(a=>`<label class="pill-check ${d.agencies.includes(a.key)?'on':''}" onclick="toggleAgency('${a.key}')">${a.name}</label>`).join("")}
       </div>
@@ -1442,11 +1577,51 @@ function renderIntakeForm(){
     `).join("")}
   </div>
 
-  <div style="display:flex;gap:12px;margin-top:20px">
-    <button class="btn primary" onclick="showIntakeSummaryModal()"><i data-lucide="eye" style="width:16px;height:16px"></i> Review & Save</button>
+  <div style="display:flex;gap:12px;margin-top:20px;justify-content:flex-end">
+    <button class="btn primary" onclick="reviewIntake()"><i data-lucide="eye" style="width:16px;height:16px"></i> Review & Save</button>
     <button class="btn" style="background-color: #dc3545; color: white; border: 1px solid #dc3545;" onclick="window.location.href='/admin/social-case/new'"><i data-lucide="x" style="width:16px;height:16px"></i> Cancel</button>
   </div>
   `;
+  
+  // Add real-time input validation after form renders
+  setTimeout(() => {
+    const contactInput = document.querySelector('input[oninput*="draftIntake.client.contact"]');
+    const clientAgeInput = document.querySelector('input[oninput*="draftIntake.client.age"]');
+    
+    // Contact number validation - PH format (09xxxxxxxxx)
+    if (contactInput) {
+      contactInput.addEventListener('input', function(e) {
+        let value = this.value.replace(/[^0-9]/g, '');
+        if (value.length > 11) value = value.substring(0, 11);
+        if (this.value !== value) {
+          this.value = value;
+        }
+      });
+    }
+    
+    // Client age validation - digits only, 0-150
+    if (clientAgeInput) {
+      clientAgeInput.addEventListener('input', function(e) {
+        let value = this.value.replace(/[^0-9]/g, '');
+        if (value !== '' && parseInt(value) > 150) value = '150';
+        if (this.value !== value) {
+          this.value = value;
+        }
+      });
+    }
+    
+    // Household age validation
+    const householdAgeInputs = document.querySelectorAll('input[oninput*="draftIntake.household"][type="number"]');
+    householdAgeInputs.forEach(input => {
+      input.addEventListener('input', function(e) {
+        let value = this.value.replace(/[^0-9]/g, '');
+        if (value !== '' && parseInt(value) > 150) value = '150';
+        if (this.value !== value) {
+          this.value = value;
+        }
+      });
+    });
+  }, 0);
 }
 
 function toggleAgency(key){
@@ -1460,6 +1635,63 @@ function toggleRequirement(index){
   draftIntake.requirements[index].submitted = !draftIntake.requirements[index].submitted;
   renderIntakeForm();
   lucide.createIcons();
+}
+
+function validateIntake() {
+  const d = draftIntake;
+  const errors = [];
+  
+  // Required fields
+  if (!d.client.name || !d.client.name.trim()) errors.push('Please enter the <strong>client name</strong>');
+  if (!d.client.sex) errors.push('Please select the <strong>client sex</strong>');
+  if (!d.client.address) errors.push('Please enter the <strong>client barangay</strong>');
+  if (!d.signers.preparedByName || !d.signers.preparedByName.trim()) errors.push('Please enter the <strong>prepared by name</strong>');
+  if (!d.signers.notedByName || !d.signers.notedByName.trim()) errors.push('Please enter the <strong>noted by name</strong>');
+  if (!d.purpose) errors.push('Please select the <strong>purpose</strong>');
+
+  // Must have at least 1 named household member
+  const namedMembers = d.household.filter(m => m.name && m.name.trim());
+  if (namedMembers.length === 0) errors.push('Please add at least <strong>one family member name</strong>');
+  
+  // Format checks
+  const age = parseInt(d.client.age);
+  if (d.client.age !== '' && d.client.age !== undefined && (isNaN(age) || age < 0 || age > 150))
+    errors.push('<strong>Age</strong> must be between 0 and 150');
+  
+  if (d.client.contact && d.client.contact.trim() && !/^09\d{9}$/.test(d.client.contact.trim()))
+    errors.push('Please enter a valid <strong>contact number</strong> (09xxxxxxxxx)');
+  
+  if (d.client.birthdate && d.client.birthdate.trim()) {
+    const bd = new Date(d.client.birthdate + 'T00:00:00');
+    if (isNaN(bd.getTime()) || bd >= new Date()) errors.push('<strong>Birthdate</strong> must be a valid past date');
+  }
+  
+  // Household age validation
+  d.household.forEach((m, i) => {
+    if (m.age !== '' && m.age !== undefined) {
+      const a = parseInt(m.age);
+      if (isNaN(a) || a < 0 || a > 150) errors.push(`Family member ${i + 1} <strong>age</strong> must be between 0 and 150`);
+    }
+  });
+  
+  return errors;
+}
+
+function reviewIntake() {
+  const errs = validateIntake();
+  if (errs.length) {
+    Swal.fire({
+      title: 'Validation Error',
+      html: 'Please fix the following:<br><br>' + errs.join('<br>'),
+      icon: 'error',
+      confirmButtonColor: '#1A237E',
+      confirmButtonText: 'OK',
+      background: '#ffffff',
+      customClass: { popup: 'rounded-4 shadow-lg' }
+    });
+    return;
+  }
+  showIntakeSummaryModal();
 }
 
 /* ---------------- Intake Summary Modal ---------------- */
@@ -1518,6 +1750,10 @@ function showIntakeSummaryModal(){
       @keyframes fadeIn { from{opacity:0} to{opacity:1} }
       @keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
       #intakeSummaryModal .modal-box { animation: slideUp 0.25s ease; }
+      .field-error input, .field-error select, .field-error textarea {
+        border-color: #DC2626 !important;
+        box-shadow: 0 0 0 1px #DC2626;
+      }
     </style>
     <div class="modal-box" style="background:#FFFFFF;border-radius:16px;width:100%;max-width:780px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(15,23,42,0.18);overflow:hidden">
 
@@ -1685,7 +1921,7 @@ function renderCaseList(){
       c.purpose.toLowerCase().includes(searchQuery);
     const matchesStatus = statusFilter === "All" || c.status === statusFilter;
     const matchesAssistance = assistanceFilter === "All" || c.purpose === assistanceFilter;
-    const matchesBarangay = barangayFilter === "All" || true;
+    const matchesBarangay = barangayFilter === "All" || c.client?.barangay === barangayFilter || c.client?.address === barangayFilter;
     return matchesSearch && matchesStatus && matchesAssistance && matchesBarangay;
   });
 
@@ -1817,9 +2053,10 @@ function exportPDF(){
 
 function printReport(){
   window.print();
+  setTimeout(() => location.reload(), 1000);
 }
 
-function markAsPrinted(caseId){
+async function markAsPrinted(caseId){
   const caseRec = getCase(caseId);
   if(!caseRec) return;
   
@@ -1838,7 +2075,7 @@ function markAsPrinted(caseId){
     
     // Update in database
     const payload = convertKeys(caseRec, camelToSnake);
-    fetch(`/admin/social-case/api/cases/${caseId}`, {
+    await fetch(`/admin/social-case/api/cases/${caseId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -1848,8 +2085,10 @@ function markAsPrinted(caseId){
       body: JSON.stringify(payload)
     })
     .then(response => response.json())
-    .then(data => {
+    .then(async data => {
       console.log('Case marked as approved and released:', data);
+      // Reload cases from server to get latest data
+      await loadCases();
     })
     .catch(error => {
       console.error('Error updating case status:', error);
@@ -1857,9 +2096,268 @@ function markAsPrinted(caseId){
   }
 }
 
-function printDocument(){
-  markAsPrinted(view.caseId);
-  window.print();
+async function printDocument(){
+  const c = getCase(view.caseId);
+  if(!c) return;
+  
+  // Get the list of agencies from the case
+  const agencies = c.agencies || (c.submittedTo ? c.submittedTo.split(',').map(s => s.trim()).filter(Boolean) : []);
+  
+  if(agencies.length === 0) {
+    // If no agencies selected, just print the current preview
+    await markAsPrinted(view.caseId);
+    window.print();
+    setTimeout(() => location.reload(), 2000);
+    return;
+  }
+  
+  // Generate document pages for all agencies by manually replacing agency names
+  const container = document.getElementById('documentPreviewContainer');
+  if(!container) return;
+  
+  let allPages = '';
+  
+  try {
+    // Fetch template once
+    const response = await fetch('/templates/social-case-report.html');
+    if (!response.ok) throw new Error('Failed to load template');
+    const template = await response.text();
+    
+    // Get case data once
+    const famRows = (c.familyMembers || c.household || []).filter(m=>m.fullName || m.name || m.full_name);
+    const notProvided = "Not Provided";
+    const clientSexLower = (c.client?.sex || c.client?.gender || "").toLowerCase();
+    const pronoun = clientSexLower === 'male' ? 'his' : 'her';
+    const pronounCap = clientSexLower === 'male' ? 'His' : 'Her';
+    const clientPronoun = clientSexLower === 'male' ? 'him' : 'her';
+    
+    const homeConditionDefault = "The client resides in a modest home with his/her family. The home of the family in modest circumstances is simple but functional. While the house may not have the latest appliances or decor, it is clean and maintained to the best of the family's ability. The family may prioritize practicality over style, and although they may face financial challenges, their home remains a place of warmth, care, and togetherness.";
+    const socioEconomicDefault = "The family is indigent, and the client depends on their family's income to cover daily expenses and household needs. Unfortunately, there is insufficient funds to sustain the medical expenses of the patient.";
+    const evaluationDefault = `This case concerns a client in need of financial/medical assistance for urgent medical expenses. Due to the patient's socio-economic condition, the client is unable to support the medical expenses, prompting ${pronoun} to seek help from your good office, as reflected in the attached documents. The incurred expenses have placed a heavy burden on the family, depleting their financial resources. Consequently, they are earnestly requesting assistance from your office to alleviate their situation.`;
+    const recommendationDefault = "Due to the lack of sufficient income and the absence of alternative financial resources to meet the patient's needs, the undersigned worker respectfully recommends that the patient be considered for assistance from your office to cover the urgent medical expenses required.";
+
+    const clientName = escapeHtml((c.client?.fullName || c.client?.full_name || c.client?.name || c.clientName || c.client_name || "")).toUpperCase() || notProvided;
+    const clientAge = escapeHtml(String(c.client?.age || "")) || notProvided;
+    const clientSex = escapeHtml((c.client?.sex || c.client?.gender || "")).toUpperCase() || notProvided;
+    const clientAddress = escapeHtml((c.client?.address || "")).toUpperCase() || notProvided;
+    const clientBirthdate = c.client?.birthdate ? fmtDate(c.client.birthdate).toUpperCase() : notProvided;
+    const clientBirthplace = escapeHtml((c.client?.birthplace || "")).toUpperCase() || notProvided;
+    const clientReligion = escapeHtml((c.client?.religion || "")).toUpperCase() || notProvided;
+    const clientEducation = escapeHtml((c.client?.education || "")).toUpperCase() || notProvided;
+    const clientCivilStatus = escapeHtml((c.client?.civilStatus || c.client?.civil_status || "")).toUpperCase() || notProvided;
+    const clientOccupation = escapeHtml((c.client?.occupation || "")) || notProvided;
+    const clientIncome = escapeHtml((c.client?.income || "")) || notProvided;
+    const clientContact = escapeHtml((c.client?.contact || c.client?.contactNumber || c.client?.contact_number || "")) || notProvided;
+    const reportDate = fmtDate(c.interviewDate || c.interview?.reportDate || c.createdAt).toUpperCase();
+    const rawProblem = c.interview?.interviewSituation || c.interview?.interview_situation || c.interview?.problemPresented || "";
+    const purpose = c.purpose || "";
+    const clientFirstName = (c.client?.firstName || c.client?.first_name || "").trim();
+    const clientLastName = (c.client?.lastName || c.client?.last_name || "").trim();
+    const clientFullName = (c.client?.fullName || c.client?.full_name || clientFirstName + " " + clientLastName).trim();
+    const ip = boldProblemText(escapeHtml(rewriteProblemPresented(rawProblem, purpose, clientFullName, c.client))) || notProvided;
+    const ih = escapeHtml(c.interview?.interviewHousehold || c.interview?.interview_household || c.interview?.homeCondition || "") || homeConditionDefault;
+    const ie = escapeHtml(c.interview?.interviewNotes || c.interview?.interview_notes || c.interview?.socioEconomic || "") || socioEconomicDefault;
+    const iw = escapeHtml(c.interview?.socialWorkerAssessment || c.interview?.social_worker_assessment || c.interview?.evaluation || "") || evaluationDefault;
+    const ir = escapeHtml(c.interview?.recommendation || "") || recommendationDefault;
+    const preparedName = escapeHtml(c.signers?.preparedByName || c.officer?.name || "") || notProvided;
+    const preparedTitle = escapeHtml(c.signers?.preparedByTitle || c.officer?.position || "");
+    const notedName = escapeHtml(c.signers?.notedByName || c.encoder?.name || "") || notProvided;
+    const notedTitle = escapeHtml(c.signers?.notedByTitle || c.encoder?.position || "");
+    const notedLicense = escapeHtml(c.signers?.notedByLicense || "");
+
+    const familyTable = famRows.length ? `
+      <table style="border-radius: 0;">
+        <thead>
+          <tr>
+            <th style="border-radius: 0;">RELATIVES</th>
+            <th style="border-radius: 0;">RELATIONSHIP</th>
+            <th style="border-radius: 0;">AGE</th>
+            <th style="border-radius: 0;">EDUCATIONAL<br>ATTAINMENT</th>
+            <th style="border-radius: 0;">OCCUPATION</th>
+            <th style="border-radius: 0;">INCOME</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${famRows.map(m=>`<tr>
+            <td style="border-radius: 0;">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
+            <td style="border-radius: 0;">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
+            <td align="center" style="border-radius: 0;">${escapeHtml(String(m.age || "")) || "—"}</td>
+            <td style="border-radius: 0;">${escapeHtml((m.education || "—").toUpperCase())}</td>
+            <td style="border-radius: 0;">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
+            <td style="border-radius: 0;">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
+          </tr>`).join("")}
+        </tbody>
+      </table>` : `<div style="color:#999;margin-top:8px;font-style:italic;">None listed.</div>`;
+
+    // Generate pages for each agency
+    let totalPages = 0;
+    const agencyPageCounts = [];
+    
+    for(const agency of agencies) {
+      const agencyKey = agency.toUpperCase();
+      const agencyInfo = AGENCIES.find(a => a.key === agencyKey) || AGENCIES[0];
+      const agencyName = agencyInfo.name;
+      
+      let pageTemplate = template;
+      pageTemplate = pageTemplate.replace(/{{REPORT_DATE}}/g, reportDate);
+      pageTemplate = pageTemplate.replace(/{{CONTROL_NUMBER}}/g, escapeHtml(c.controlNo || c.caseNumber || ""));
+      pageTemplate = pageTemplate.replace(/{{PURPOSE}}/g, escapeHtml(c.purpose || "Financial / Medical"));
+      pageTemplate = pageTemplate.replace(/{{CLIENT_NAME}}/g, clientName);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_AGE}}/g, clientAge);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_SEX}}/g, clientSex);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_ADDRESS}}/g, clientAddress);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_BIRTHDATE}}/g, clientBirthdate);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_BIRTHPLACE}}/g, clientBirthplace);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_RELIGION}}/g, clientReligion);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_EDUCATION}}/g, clientEducation);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_CIVIL_STATUS}}/g, clientCivilStatus);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_OCCUPATION}}/g, clientOccupation);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_INCOME}}/g, clientIncome);
+      pageTemplate = pageTemplate.replace(/{{CLIENT_CONTACT}}/g, clientContact);
+      pageTemplate = pageTemplate.replace(/{{FAMILY_TABLE}}/g, familyTable);
+      pageTemplate = pageTemplate.replace(/{{PROBLEM_PRESENTED}}/g, ip);
+      pageTemplate = pageTemplate.replace(/{{HOME_CONDITION}}/g, ih);
+      pageTemplate = pageTemplate.replace(/{{SOCIO_ECONOMIC}}/g, ie);
+      pageTemplate = pageTemplate.replace(/{{EVALUATION}}/g, iw);
+      pageTemplate = pageTemplate.replace(/{{RECOMMENDATION}}/g, ir);
+      pageTemplate = pageTemplate.replace(/{{PREPARED_NAME}}/g, preparedName);
+      pageTemplate = pageTemplate.replace(/{{PREPARED_TITLE}}/g, preparedTitle);
+      pageTemplate = pageTemplate.replace(/{{NOTED_NAME}}/g, notedName);
+      pageTemplate = pageTemplate.replace(/{{NOTED_TITLE}}/g, notedTitle);
+      pageTemplate = pageTemplate.replace(/{{NOTED_LICENSE}}/g, notedLicense ? 'License No. ' + notedLicense : '');
+      pageTemplate = pageTemplate.replace(/{{AGENCY_NAME}}/g, escapeHtml(agencyName));
+      
+      // Split by PAGE_BREAK to get individual pages
+      const parts = pageTemplate.split('<!--PAGE_BREAK-->');
+      parts.forEach((part, index) => {
+        allPages += `<div class="page">${part}</div>`;
+      });
+    }
+    
+    // Create a print-only container
+    const printContainer = document.createElement('div');
+    printContainer.id = 'printOnlyContainer';
+    printContainer.style.position = 'fixed';
+    printContainer.style.top = '0';
+    printContainer.style.left = '0';
+    printContainer.style.width = '210mm';
+    printContainer.style.height = 'auto';
+    printContainer.style.zIndex = '999999';
+    printContainer.style.background = 'white';
+    printContainer.style.display = 'none';
+    printContainer.innerHTML = allPages;
+    document.body.appendChild(printContainer);
+    
+    // Show print container only during print with proper page styling
+    const printStyle = document.createElement('style');
+    printStyle.id = 'printStyle';
+    printStyle.textContent = `
+      @media print {
+        @page {
+          size: 210mm 297mm;
+          margin: 0;
+        }
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        html, body {
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 210mm !important;
+          height: auto !important;
+          background: white !important;
+          overflow: visible !important;
+        }
+        body > *:not(#printOnlyContainer) { display: none !important; }
+        #printOnlyContainer { 
+          display: block !important; 
+          position: relative !important;
+          width: 210mm !important;
+          height: auto !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          background: white !important;
+          overflow: visible !important;
+        }
+        .page {
+          width: 210mm !important;
+          height: 297mm !important;
+          margin: 0 !important;
+          padding: 10mm 25.4mm 32.5mm 25.4mm !important;
+          background: white !important;
+          position: relative !important;
+          box-shadow: none !important;
+          overflow: hidden !important;
+          border: none !important;
+        }
+      }
+    `;
+    document.head.appendChild(printStyle);
+    
+    await markAsPrinted(view.caseId);
+    window.print();
+    
+    // Clean up after printing
+    setTimeout(() => {
+      document.head.removeChild(printStyle);
+      document.body.removeChild(printContainer);
+      location.reload();
+    }, 2000);
+    
+  } catch(error) {
+    console.error('Error generating print document:', error);
+    alert('Failed to generate print document. Please try again.');
+  }
+}
+
+async function reprintCase(caseId){
+  const caseRec = getCase(caseId);
+  if(!caseRec) return;
+  
+  // Update the releasedDate to today to show it was reprinted
+  caseRec.releasedDate = todayISO();
+  caseRec.updatedAt = todayISO();
+  
+  // Update in database
+  const payload = convertKeys(caseRec, camelToSnake);
+  await fetch(`/admin/social-case/api/cases/${caseId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(response => response.json())
+  .then(async data => {
+    console.log('Case updated for reprint:', data);
+    // Reload case data from server to get latest data
+    await loadCaseDetail(caseId);
+    // Show success message
+    Swal.fire({
+      title: 'Reprint Successful',
+      text: `Case ${caseRec.controlNo} has been updated with today's date (${todayISO()}). You can now print the document.`,
+      icon: 'success',
+      confirmButtonColor: '#1A237E',
+      confirmButtonText: 'OK',
+      background: '#ffffff',
+      customClass: { popup: 'rounded-4 shadow-lg' }
+    });
+  })
+  .catch(error => {
+    console.error('Error updating case for reprint:', error);
+    Swal.fire({
+      title: 'Error',
+      text: 'Failed to update case. Please try again.',
+      icon: 'error',
+      confirmButtonColor: '#DC2626',
+      confirmButtonText: 'OK',
+      background: '#ffffff',
+      customClass: { popup: 'rounded-4 shadow-lg' }
+    });
+  });
 }
 
 function downloadPDF(){
@@ -1869,6 +2367,7 @@ function downloadPDF(){
   // Create a simple print-to-PDF by triggering print dialog
   // For actual PDF generation, you would need a library like html2pdf or jsPDF
   window.print();
+  setTimeout(() => location.reload(), 1000);
 }
 
 function downloadWord(){
@@ -2024,7 +2523,14 @@ function renderCaseDetail(){
   if (!c.statusHistory) c.statusHistory = [];
   if (!c.household) c.household = [];
 
-  console.log('Case data normalized, agencies:', c.agencies);
+  // Set selectedAgency to the first available agency from the case
+  if (c.agencies && c.agencies.length > 0) {
+    if (!selectedAgency || !c.agencies.includes(selectedAgency)) {
+      selectedAgency = c.agencies[0];
+    }
+  }
+
+  console.log('Case data normalized, agencies:', c.agencies, 'selectedAgency:', selectedAgency);
 
   const interview = c.interview || {};
   const ip = interview.interviewSituation || interview.interview_situation || interview.problemPresented || '';
@@ -2359,15 +2865,21 @@ function renderCaseDetail(){
           </div>
         </div>
         <div class="header-actions">
-          <button class="header-btn" onclick="printDocument()">
+          ${(c.status === 'Approved' || c.status === 'Released' || c.status === 'Printed') ? `
+            <button class="header-btn primary" onclick="reprintCase('${c.id}')">
+              <i data-lucide="printer" style="width:16px;height:16px;"></i>
+              Reprint
+            </button>
+          ` : ''}
+          <button class="header-btn" style="background:#059669;color:white;border-color:#059669;" onclick="printDocument()">
             <i data-lucide="printer" style="width:16px;height:16px;"></i>
             Print
           </button>
-          <button class="header-btn" onclick="downloadPDF()">
+          <button class="header-btn" style="background:#DC2626;color:white;border-color:#DC2626;" onclick="downloadPDF()">
             <i data-lucide="file-down" style="width:16px;height:16px;"></i>
             Download PDF
           </button>
-          <button class="header-btn" onclick="downloadWord()">
+          <button class="header-btn" style="background:#7C3AED;color:white;border-color:#7C3AED;" onclick="downloadWord()">
             <i data-lucide="file-text" style="width:16px;height:16px;"></i>
             Download Word
           </button>
@@ -2383,10 +2895,17 @@ function renderCaseDetail(){
 
     <!-- Template Tabs -->
     <div class="template-tabs">
-      <button class="template-tab active" onclick="selectTemplateTab('PCSO', this)">PCSO</button>
-      <button class="template-tab" onclick="selectTemplateTab('DSWD', this)">DSWD</button>
-      <button class="template-tab" onclick="selectTemplateTab('OP', this)">Office of the President (AKAP)</button>
-      <button class="template-tab" onclick="selectTemplateTab('DOH', this)">DOH</button>
+      ${c.agencies && c.agencies.length > 0 
+        ? AGENCIES.filter(a => c.agencies.includes(a.key)).map(a => 
+            `<button class="template-tab ${a.key === selectedAgency ? 'active' : ''}" onclick="selectTemplateTab('${a.key}', this)">${a.key === 'OP' ? 'Office of the President (AKAP)' : a.key}</button>`
+          ).join('')
+        : `
+          <button class="template-tab active" onclick="selectTemplateTab('PCSO', this)">PCSO</button>
+          <button class="template-tab" onclick="selectTemplateTab('DSWD', this)">DSWD</button>
+          <button class="template-tab" onclick="selectTemplateTab('OP', this)">Office of the President (AKAP)</button>
+          <button class="template-tab" onclick="selectTemplateTab('DOH', this)">DOH</button>
+        `
+      }
     </div>
 
     <!-- Main Content -->
@@ -2478,7 +2997,7 @@ async function loadDocumentPreview(caseId){
   const clientFirstName = (c.client?.firstName || c.client?.first_name || "").trim();
   const clientLastName = (c.client?.lastName || c.client?.last_name || "").trim();
   const clientFullName = (c.client?.fullName || c.client?.full_name || clientFirstName + " " + clientLastName).trim();
-  const ip = escapeHtml(rewriteProblemPresented(rawProblem, purpose, clientFullName)) || notProvided;
+  const ip = boldProblemText(escapeHtml(rewriteProblemPresented(rawProblem, purpose, clientFullName, c.client))) || notProvided;
   const ih = escapeHtml(c.interview?.interviewHousehold || c.interview?.interview_household || c.interview?.homeCondition || "") || homeConditionDefault;
   const ie = escapeHtml(c.interview?.interviewNotes || c.interview?.interview_notes || c.interview?.socioEconomic || "") || socioEconomicDefault;
   const iw = escapeHtml(c.interview?.socialWorkerAssessment || c.interview?.social_worker_assessment || c.interview?.evaluation || "") || evaluationDefault;
@@ -2828,7 +3347,7 @@ async function renderDocument(){
   const clientFirstName = (c.client?.firstName || c.client?.first_name || "").trim();
   const clientLastName = (c.client?.lastName || c.client?.last_name || "").trim();
   const clientFullName = (c.client?.fullName || c.client?.full_name || clientFirstName + " " + clientLastName).trim();
-  const ip = escapeHtml(rewriteProblemPresented(rawProblem, purpose, clientFullName)) || notProvided;
+  const ip = boldProblemText(escapeHtml(rewriteProblemPresented(rawProblem, purpose, clientFullName, c.client))) || notProvided;
   const ih = escapeHtml(c.interview?.interviewHousehold || c.interview?.interview_household || c.interview?.homeCondition || "") || homeConditionDefault;
   const ie = escapeHtml(c.interview?.interviewNotes || c.interview?.interview_notes || c.interview?.socioEconomic || "") || socioEconomicDefault;
   const iw = escapeHtml(c.interview?.socialWorkerAssessment || c.interview?.social_worker_assessment || c.interview?.evaluation || "") || evaluationDefault;
@@ -2995,7 +3514,7 @@ async function renderDocument(){
       .sidebar, .page-head, .toolbar-row, header { display: none !important; }
       .main { padding: 0; max-width: none; margin: 0; }
       body { background: #fff; }
-      .page { margin: 0 !important; box-shadow: none !important; page-break-after: always; break-after: page; }
+      .page { height: 297mm !important; min-height: 0 !important; margin: 0 !important; box-shadow: none !important; page-break-after: always; break-after: page; }
       .page:last-child { page-break-after: avoid; break-after: avoid; }
     }
   </style>
@@ -3086,3 +3605,4 @@ async function renderDocument(){
     container.innerHTML = `<div class="empty">Error loading document template. Please try again.</div>`;
   }
 }
+

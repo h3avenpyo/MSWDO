@@ -9,6 +9,7 @@ use App\Models\Senior\SeniorCitizenRecord;
 use App\Models\SocialCaseStudy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -337,9 +338,9 @@ class DashboardController extends Controller
             'barangay' => ['required', 'string', 'max:255'],
             'birth_date' => ['required', 'date'],
             'sex' => ['required', 'in:Male,Female'],
-            'contact_number' => ['required', 'string', 'max:20'],
-            'philsys_number' => ['nullable', 'string', 'max:255'],
-            'rrn_number' => ['nullable', 'string', 'max:255'],
+            'contact_number' => ['required', 'string', 'regex:/^[0-9]{11}$/', 'max:11'],
+            'philsys_number' => ['nullable', 'string', 'regex:/^[0-9]{12}$/', 'max:12'],
+            'rrn_number' => ['nullable', 'string', 'regex:/^[0-9]{29}$/', 'max:29'],
             'remarks' => ['nullable', 'string', 'max:1000'],
         ]);
 
@@ -905,63 +906,99 @@ class DashboardController extends Controller
     public function storeCase(Request $request)
     {
         $data = $request->validate([
-            'control_no'   => 'required|string|unique:social_case_studies,case_number',
-            'status'       => 'required|string',
-            'client'       => 'required|array',
-            'client.name'  => 'required|string',
-            'household'    => 'required|array',
-            'interview'    => 'required|array',
-            'signers'      => 'required|array',
-            'purpose'      => 'required|string',
-            'agencies'     => 'nullable|array',
-            'requirements' => 'required|array',
+            'control_no'                      => 'nullable|string|max:50',
+            'status'                          => 'required|string|max:50',
+            'client'                          => 'required|array',
+            'client.name'                     => 'required|string|max:255',
+            'client.age'                      => 'nullable|integer|min:0|max:150',
+            'client.sex'                      => 'nullable|in:Male,Female',
+            'client.address'                  => 'nullable|string|max:500',
+            'client.birthdate'                => 'nullable|date_format:Y-m-d',
+            'client.birthplace'               => 'nullable|string|max:255',
+            'client.religion'                 => 'nullable|string|max:100',
+            'client.education'                => 'nullable|string|max:100',
+            'client.civil_status'             => 'nullable|in:Single,Married,Widowed,Separated',
+            'client.occupation'               => 'nullable|string|max:255',
+            'client.income'                   => 'nullable|string|max:100',
+            'client.contact'                  => 'nullable|string|max:20',
+            'household'                       => 'required|array|min:1',
+            'household.*.name'                => 'nullable|string|max:255',
+            'household.*.relationship'        => 'nullable|string|max:100',
+            'household.*.age'                 => 'nullable|integer|min:0|max:150',
+            'household.*.education'           => 'nullable|string|max:100',
+            'household.*.occupation'          => 'nullable|string|max:255',
+            'household.*.income'              => 'nullable|string|max:100',
+            'interview'                       => 'required|array',
+            'interview.problem_presented'     => 'nullable|string|max:10000',
+            'interview.home_condition'       => 'nullable|string|max:10000',
+            'interview.socio_economic'       => 'nullable|string|max:10000',
+            'interview.evaluation'           => 'nullable|string|max:10000',
+            'interview.recommendation'       => 'nullable|string|max:10000',
+            'interview.report_date'          => 'nullable|date',
+            'signers'                         => 'required|array',
+            'signers.prepared_by_name'        => 'nullable|string|max:255',
+            'signers.prepared_by_title'       => 'nullable|string|max:255',
+            'signers.noted_by_name'           => 'nullable|string|max:255',
+            'signers.noted_by_title'          => 'nullable|string|max:255',
+            'purpose'                         => 'required|string|in:Medical Assistance,Burial Assistance,Educational Assistance,Financial Assistance,Food / Relief Assistance,Livelihood Assistance,Other',
+            'agencies'                        => 'nullable|array',
+            'agencies.*'                      => 'string|in:PCSO,DSWD,OP,DOH,MSWDO',
+            'requirements'                    => 'required|array',
+            'requirements.*.name'             => 'required|string',
+            'requirements.*.submitted'        => 'required|boolean',
         ]);
 
         $clientId = $this->findOrCreateClient($request->input('client'));
 
         $agencies = $data['agencies'] ?? [];
+        $caseNumber = $this->generateCaseNumber();
 
-        $case = SocialCaseStudy::create([
-            'client_id'          => $clientId,
-            'officer_id'         => session('admin_user_id'),
-            'case_number'        => $data['control_no'],
-            'date_processed'     => now()->toDateString(),
-            'purpose'            => $data['purpose'],
-            'submitted_to'       => implode(', ', $agencies),
-            'encoded_by'         => session('admin_user_id'),
-            'status'             => $data['status'],
-            'summary'            => $data['interview']['problem_presented'] ?? null,
-            'workflow_step'       => 'requirements_verification',
-            'requirements_complete' => !empty($data['requirements']),
-            'signers'            => $data['signers'] ?? [],
-        ]);
-
-        $interview = $data['interview'];
-        \App\Models\CaseInterview::create([
-            'social_case_study_id'    => $case->id,
-            'interview_reason'        => $data['purpose'],
-            'interview_situation'     => $interview['problem_presented'] ?? null,
-            'interview_household'     => $interview['home_condition'] ?? null,
-            'monthly_income'          => null,
-            'monthly_expenses'        => null,
-            'interview_notes'         => $interview['socio_economic'] ?? null,
-            'social_worker_assessment' => $interview['evaluation'] ?? null,
-            'recommendation'          => $interview['recommendation'] ?? null,
-        ]);
-
-        $household = $data['household'] ?? [];
-        foreach ($household as $member) {
-            if (empty($member['name'])) continue;
-            \App\Models\FamilyMember::create([
-                'social_case_study_id' => $case->id,
-                'full_name'            => $member['name'] ?? '',
-                'relationship'         => $member['relationship'] ?? '',
-                'age'                  => is_numeric($member['age'] ?? null) ? (int) $member['age'] : null,
-                'education'            => $member['education'] ?? null,
-                'occupation'           => $member['occupation'] ?? null,
-                'monthly_income'       => is_numeric($member['income'] ?? null) ? $member['income'] : null,
+        $case = DB::transaction(function () use ($data, $clientId, $agencies, $caseNumber) {
+            $case = SocialCaseStudy::create([
+                'client_id'          => $clientId,
+                'officer_id'         => session('admin_user_id'),
+                'case_number'        => $caseNumber,
+                'date_processed'     => now()->toDateString(),
+                'interview_date'     => $data['interview']['report_date'] ?? null,
+                'purpose'            => $data['purpose'],
+                'submitted_to'       => implode(', ', $agencies),
+                'encoded_by'         => session('admin_user_id'),
+                'status'             => $data['status'],
+                'summary'            => $data['interview']['problem_presented'] ?? null,
+                'workflow_step'       => 'requirements_verification',
+                'requirements_complete' => !empty($data['requirements']),
+                'signers'            => $data['signers'] ?? [],
             ]);
-        }
+
+            $interview = $data['interview'];
+            \App\Models\CaseInterview::create([
+                'social_case_study_id'    => $case->id,
+                'interview_reason'        => $data['purpose'],
+                'interview_situation'     => $interview['problem_presented'] ?? null,
+                'interview_household'     => $interview['home_condition'] ?: null,
+                'monthly_income'          => null,
+                'monthly_expenses'        => null,
+                'interview_notes'         => $interview['socio_economic'] ?: null,
+                'social_worker_assessment' => $interview['evaluation'] ?: null,
+                'recommendation'          => $interview['recommendation'] ?: null,
+            ]);
+
+            $household = $data['household'] ?? [];
+            foreach ($household as $member) {
+                if (empty($member['name'])) continue;
+                \App\Models\FamilyMember::create([
+                    'social_case_study_id' => $case->id,
+                    'full_name'            => $member['name'] ?? '',
+                    'relationship'         => $member['relationship'] ?? '',
+                    'age'                  => is_numeric($member['age'] ?? null) ? (int) $member['age'] : null,
+                    'education'            => $member['education'] ?: null,
+                    'occupation'           => $member['occupation'] ?: null,
+                    'monthly_income'       => is_numeric($member['income'] ?? null) ? $member['income'] : null,
+                ]);
+            }
+
+            return $case;
+        });
 
         return response()->json($case->load('client'), 201);
     }
@@ -998,23 +1035,38 @@ class DashboardController extends Controller
                 'income'         => $clientData['income'] ?? null,
             ]);
         } else {
-            $client->update([
-                'birthdate'      => $clientData['birthdate'] ?? $client->birthdate,
-                'gender'         => $clientData['sex'] ?? $client->gender,
-                'age'            => is_numeric($clientData['age'] ?? null) ? (int) $clientData['age'] : $client->age,
-                'address'        => $clientData['address'] ?? $client->address,
-                'barangay'       => $clientData['address'] ?? $client->barangay,
-                'contact_number' => $clientData['contact'] ?? $client->contact_number,
-                'birthplace'     => $clientData['birthplace'] ?? $client->birthplace,
-                'religion'       => $clientData['religion'] ?? $client->religion,
-                'education'      => $clientData['education'] ?? $client->education,
-                'civil_status'   => $clientData['civil_status'] ?? $client->civil_status,
-                'occupation'     => $clientData['occupation'] ?? $client->occupation,
-                'income'         => $clientData['income'] ?? $client->income,
-            ]);
+            $updates = [];
+            if (!empty($clientData['birthdate'])) $updates['birthdate'] = $clientData['birthdate'];
+            if (!empty($clientData['sex'])) $updates['gender'] = $clientData['sex'];
+            if (isset($clientData['age']) && is_numeric($clientData['age'])) $updates['age'] = (int) $clientData['age'];
+            if (!empty($clientData['address'])) {
+                $updates['address'] = $clientData['address'];
+                $updates['barangay'] = $clientData['address'];
+            }
+            if (!empty($clientData['contact'])) $updates['contact_number'] = $clientData['contact'];
+            if (!empty($clientData['birthplace'])) $updates['birthplace'] = $clientData['birthplace'];
+            if (!empty($clientData['religion'])) $updates['religion'] = $clientData['religion'];
+            if (!empty($clientData['education'])) $updates['education'] = $clientData['education'];
+            if (!empty($clientData['civil_status'])) $updates['civil_status'] = $clientData['civil_status'];
+            if (!empty($clientData['occupation'])) $updates['occupation'] = $clientData['occupation'];
+            if (!empty($clientData['income'])) $updates['income'] = $clientData['income'];
+            if ($updates) $client->update($updates);
         }
 
         return $client->id;
+    }
+
+    private static function generateCaseNumber(): string
+    {
+        $now = now();
+        $prefix = 'MSWD-O-' . $now->format('Y-m') . '-';
+        $last = SocialCaseStudy::where('case_number', 'LIKE', $prefix . '%')
+            ->orderByDesc('case_number')->value('case_number');
+        $seq = 1;
+        if ($last && preg_match('/-(\d{4})$/', $last, $m)) {
+            $seq = (int) $m[1] + 1;
+        }
+        return $prefix . str_pad($seq, 4, '0', STR_PAD_LEFT);
     }
 
     public function updateCase(Request $request, $id)

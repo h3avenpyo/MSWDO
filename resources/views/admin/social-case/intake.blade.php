@@ -44,7 +44,7 @@
     <!-- Page Sub-Header -->
     <div class="flex justify-between items-center mb-6">
         <p class="text-[#6B7280] text-sm m-0">Step 2 of 2 — Complete the intake form for the social case study.</p>
-        <button class="btn ghost m-0" onclick="window.location.href='/admin/social-case/new'">
+        <button class="btn m-0" style="border: 2px solid #E5E7EB; background: white; font-weight: 600;" onclick="window.location.href='/admin/social-case/new'">
             <i data-lucide="arrow-left" style="width:16px;height:16px"></i> Back
         </button>
     </div>
