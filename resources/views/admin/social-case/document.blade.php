@@ -16,7 +16,7 @@
     </ul>
 </div>
 
-<div class="main no-print" style="padding-bottom:0;">
+<div class="main" style="padding-bottom:0;">
     @php
         $userName = session('admin_user_name') ?? 'Admin User';
         $words = explode(' ', $userName);

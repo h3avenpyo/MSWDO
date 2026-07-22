@@ -72,6 +72,7 @@ const AGENCIES = [
   {key:"PCSO", name:"Philippine Charity Sweepstakes Office", addressee:"The Officer-in-Charge\nPCSO Provincial/District Office"},
   {key:"DSWD", name:"Department of Social Welfare and Development", addressee:"The Regional Director\nDSWD Field Office"},
   {key:"OP", name:"Office of the President (AKAP)", addressee:"The Head, AKAP Program\nOffice of the President"},
+  {key:"DOH", name:"Department of Health", addressee:"The Regional Director\nDepartment of Health"},
   {key:"MSWDO", name:"MSWDO File Copy", addressee:"FILE COPY"}
 ];
 const DEFAULT_REQUIREMENTS = ["Valid government-issued ID","Barangay Certificate of Residency / Indigency","Medical certificate or prescription (if medical)","Certificate of No Property / No Income","Death certificate (if burial assistance)"];
@@ -79,6 +80,7 @@ const ELIGIBILITY_DAYS = 180;
 
 let cases = [];
 let view = {tab:"dashboard", caseId:null, docAgency:null, newCaseStep:"search", eligClientName:"", eligOverride:false, eligMatch:null, caseListPage:1, archivePage:1, archiveSearch:"", archiveFilter:"", archiveBarangay:""};
+let selectedAgency = "PCSO";
 let draftIntake = null;
 
 /* ---- Naming-convention helpers (camelCase <-> snake_case) ---- */
@@ -356,6 +358,15 @@ function eligibilityInfo(caseRec){
   };
 }
 function setView(patch){ view = {...view, ...patch}; }
+
+function selectTemplateTab(agencyKey, tabElement){
+  selectedAgency = agencyKey;
+  // Update active state
+  document.querySelectorAll('.template-tab').forEach(tab => tab.classList.remove('active'));
+  tabElement.classList.add('active');
+  // Reload preview with new agency
+  loadDocumentPreview(view.caseId);
+}
 
 /* ---------------- New case flow ---------------- */
 function generateControlNo(dateISO){
@@ -1846,9 +1857,103 @@ function markAsPrinted(caseId){
   }
 }
 
-function printDocument(caseId){
-  markAsPrinted(caseId);
+function printDocument(){
+  markAsPrinted(view.caseId);
   window.print();
+}
+
+function downloadPDF(){
+  const container = document.getElementById('documentPreviewContainer');
+  if(!container) return;
+  
+  // Create a simple print-to-PDF by triggering print dialog
+  // For actual PDF generation, you would need a library like html2pdf or jsPDF
+  window.print();
+}
+
+function downloadWord(){
+  const container = document.getElementById('documentPreviewContainer');
+  if(!container) return;
+  
+  // Clone the container to avoid modifying the original
+  const clone = container.cloneNode(true);
+  
+  // Remove any non-page elements that might be in the container
+  const pages = clone.querySelectorAll('.page');
+  let cleanContent = '';
+  pages.forEach(page => {
+    cleanContent += page.outerHTML;
+  });
+  
+  // Create a simple HTML document with Word-compatible MIME type
+  const htmlDocument = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
+    <head>
+      <meta charset="utf-8">
+      <title>Social Case Study Report</title>
+      <style>
+        body { margin: 0; padding: 0; }
+        .page { 
+          width: 210mm; 
+          min-height: 297mm; 
+          margin: 0; 
+          padding: 10mm 25.4mm 32.5mm 25.4mm; 
+          background: white; 
+          position: relative; 
+          page-break-after: always; 
+        }
+        .page:last-child { page-break-after: avoid; }
+        .watermark {
+          position: absolute;
+          width: 135mm;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          opacity: .06;
+          z-index: 1;
+          pointer-events: none;
+        }
+        .content { position: relative; z-index: 2; }
+        .header { display: grid; grid-template-columns: 85px 1fr 85px; align-items: start; }
+        .header img { width: 75px; height: 75px; object-fit: contain; }
+        .gov { text-align: center; line-height: 1.2; padding-top: 12px; }
+        .gov div { font-size: 14px; }
+        .gov h2 { margin: 6px 0 0; font-family: Arial; font-size: 14px; font-weight: bold; letter-spacing: .5px; white-space: nowrap; }
+        .line { border-top: 2px solid black; margin: 8px 0 2px; }
+        .line2 { border-top: 1px solid black; margin-bottom: 12px; }
+        .top-info { display: flex; justify-content: space-between; font-family: Arial; font-size: 11px; }
+        .section { margin-top: 16px; }
+        .section-title { font-weight: bold; border-bottom: 2px solid #1E3A8A; padding-bottom: 4px; margin-bottom: 8px; }
+        .row { display: flex; padding: 4px 0; }
+        .row span:first-child { width: 180px; font-weight: bold; }
+        .row span:nth-child(2) { margin: 0 8px; }
+        .paragraph { margin-top: 8px; line-height: 1.6; text-align: justify; }
+        .footer { display: flex; justify-content: space-between; margin-top: 32px; }
+        .signature { text-align: center; }
+        .signature b { display: block; margin-top: 32px; }
+        .document-footer { position: absolute; bottom: 15mm; left: 18mm; right: 18mm; display: flex; justify-content: space-between; font-size: 11px; }
+        .doc-address { text-align: center; }
+      </style>
+    </head>
+    <body>
+      ${cleanContent}
+    </body>
+    </html>
+  `;
+  
+  // Create blob and download
+  const blob = new Blob(['\ufeff', htmlDocument], {
+    type: 'application/msword'
+  });
+  
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `Social_Case_Study_${view.caseId}.doc`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 /* ---------------- Rendering: Case detail ---------------- */
@@ -1973,10 +2078,18 @@ function renderCaseDetail(){
     const html = `
     <style>
       @media print {
+        @page {
+          margin: 0;
+          size: auto;
+        }
         body {
           background: white !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
-        .sidebar, header, .doc-toolbar, .no-print {
+        .sidebar, header, .doc-toolbar, .no-print,
+        .detail-header, .header-actions, .template-tabs,
+        .preview-header, .info-banner, .status-badge {
           display: none !important;
         }
         .main {
@@ -1984,20 +2097,36 @@ function renderCaseDetail(){
           max-width: none !important;
           margin: 0 !important;
         }
+        .detail-content, .right-panel {
+          margin: 0 !important;
+          padding: 0 !important;
+        }
         #documentPreviewContainer {
           max-height: none !important;
           overflow: visible !important;
           border: none !important;
           border-radius: 0 !important;
           background: white !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          display: block !important;
+          gap: 0 !important;
+          min-height: auto !important;
         }
         .page {
+          height: 297mm !important;
+          min-height: 0 !important;
           margin: 0 !important;
           box-shadow: none !important;
           page-break-after: always;
         }
         .page:last-child {
           page-break-after: avoid;
+        }
+        th {
+          background-color: #ebdcdb !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
       }
       .detail-header {
@@ -2230,24 +2359,17 @@ function renderCaseDetail(){
           </div>
         </div>
         <div class="header-actions">
-          <button class="header-btn">
-            <i data-lucide="eye" style="width:16px;height:16px;"></i>
-            Preview
-          </button>
-          <button class="header-btn">
+          <button class="header-btn" onclick="printDocument()">
             <i data-lucide="printer" style="width:16px;height:16px;"></i>
             Print
           </button>
-          <button class="header-btn">
+          <button class="header-btn" onclick="downloadPDF()">
             <i data-lucide="file-down" style="width:16px;height:16px;"></i>
             Download PDF
           </button>
-          <button class="header-btn">
+          <button class="header-btn" onclick="downloadWord()">
             <i data-lucide="file-text" style="width:16px;height:16px;"></i>
             Download Word
-          </button>
-          <button class="header-btn">
-            <i data-lucide="more-horizontal" style="width:16px;height:16px;"></i>
           </button>
         </div>
       </div>
@@ -2261,10 +2383,10 @@ function renderCaseDetail(){
 
     <!-- Template Tabs -->
     <div class="template-tabs">
-      <button class="template-tab active">PCSO</button>
-      <button class="template-tab">DSWD</button>
-      <button class="template-tab">Office of the President (AKAP)</button>
-      <button class="template-tab">DOH</button>
+      <button class="template-tab active" onclick="selectTemplateTab('PCSO', this)">PCSO</button>
+      <button class="template-tab" onclick="selectTemplateTab('DSWD', this)">DSWD</button>
+      <button class="template-tab" onclick="selectTemplateTab('OP', this)">Office of the President (AKAP)</button>
+      <button class="template-tab" onclick="selectTemplateTab('DOH', this)">DOH</button>
     </div>
 
     <!-- Main Content -->
@@ -2273,30 +2395,6 @@ function renderCaseDetail(){
       <div class="right-panel">
         <div class="preview-header">
           <h3>Report Preview</h3>
-          <div class="preview-controls">
-            <button class="preview-btn">
-              <i data-lucide="zoom-out" style="width:18px;height:18px;"></i>
-            </button>
-            <span class="zoom-level">100%</span>
-            <button class="preview-btn">
-              <i data-lucide="zoom-in" style="width:18px;height:18px;"></i>
-            </button>
-            <div style="width:1px;height:24px;background:#E2E8F0;margin:0 8px;"></div>
-            <span class="page-indicator">Page 1 of 1</span>
-            <button class="preview-btn">
-              <i data-lucide="chevron-left" style="width:18px;height:18px;"></i>
-            </button>
-            <button class="preview-btn">
-              <i data-lucide="chevron-right" style="width:18px;height:18px;"></i>
-            </button>
-            <div style="width:1px;height:24px;background:#E2E8F0;margin:0 8px;"></div>
-            <button class="preview-btn">
-              <i data-lucide="maximize" style="width:18px;height:18px;"></i>
-            </button>
-            <button class="preview-btn">
-              <i data-lucide="download" style="width:18px;height:18px;"></i>
-            </button>
-          </div>
         </div>
 
         <div id="documentPreviewContainer" class="document-viewer"></div>
@@ -2451,7 +2549,8 @@ async function loadDocumentPreview(caseId){
     pageTemplate = pageTemplate.replace(/{{NOTED_NAME}}/g, notedName);
     pageTemplate = pageTemplate.replace(/{{NOTED_TITLE}}/g, notedTitle);
     pageTemplate = pageTemplate.replace(/{{NOTED_LICENSE}}/g, notedLicense ? 'License No. ' + notedLicense : '');
-    const agencyName = c.agencies && c.agencies.length ? AGENCIES.find(a => a.key === c.agencies[0])?.name || c.agencies[0] : '';
+    const agencyInfo = AGENCIES.find(a => a.key === selectedAgency) || AGENCIES[0];
+    const agencyName = agencyInfo.name;
     pageTemplate = pageTemplate.replace(/{{AGENCY_NAME}}/g, escapeHtml(agencyName));
     const parts = pageTemplate.split('<!--PAGE_BREAK-->');
     const totalPages = parts.length;
@@ -2465,7 +2564,7 @@ async function loadDocumentPreview(caseId){
           margin: 20px auto;
           background: white;
           position: relative;
-          padding: 18mm 18mm 30mm;
+          padding: 10mm 25.4mm 32.5mm 25.4mm;
           box-shadow: 0 0 12px rgba(0,0,0,.25);
         }
         .watermark {
@@ -2485,7 +2584,7 @@ async function loadDocumentPreview(caseId){
         .header {
           display: grid;
           grid-template-columns: 85px 1fr 85px;
-          align-items: center;
+          align-items: start;
         }
         .header img {
           width: 75px;
@@ -2495,15 +2594,17 @@ async function loadDocumentPreview(caseId){
         .gov {
           text-align: center;
           line-height: 1.2;
+          padding-top: 12px;
         }
         .gov div {
           font-size: 14px;
         }
         .gov h2 {
           margin: 6px 0 0;
-          font-size: 21px;
+          font-size: 13px;
           font-weight: bold;
           letter-spacing: .5px;
+          white-space: nowrap;
         }
         .line {
           border-top: 2px solid black;
@@ -2516,10 +2617,14 @@ async function loadDocumentPreview(caseId){
         .top-info {
           display: flex;
           justify-content: space-between;
-          font-size: 12px;
+          font-family: Arial;
+          font-size: 11px;
         }
         .right {
           text-align: right;
+          font-family: Arial;
+          font-size: 11px;
+          font-weight: bold;
         }
         .title {
           text-align: center;
@@ -2527,13 +2632,16 @@ async function loadDocumentPreview(caseId){
         }
         .title h3 {
           margin: 0;
-          font-size: 22px;
+          font-family: Arial;
+          font-size: 14px;
+          font-weight: bold;
           text-transform: uppercase;
         }
         .title small {
           display: block;
           margin-top: 5px;
-          font-size: 15px;
+          font-family: Cambria;
+          font-size: 11px;
         }
         .section {
           margin-top: 18px;
@@ -2562,6 +2670,8 @@ async function loadDocumentPreview(caseId){
           padding: 6px;
           text-align: center;
           background-color: #ebdcdb;
+          font-weight: bold;
+          color: black;
         }
         td {
           border: 1px solid black;
@@ -2592,9 +2702,9 @@ async function loadDocumentPreview(caseId){
         }
         .document-footer {
           position: absolute;
-          bottom: 12mm;
-          left: 18mm;
-          right: 18mm;
+          bottom: 32.5mm;
+          left: 25.4mm;
+          right: 25.4mm;
           border-top: 1px solid #7f7f7f;
           padding-top: 5px;
           font-size: 12px;
@@ -2738,7 +2848,7 @@ async function renderDocument(){
       margin: 20px auto;
       background: white;
       position: relative;
-      padding: 18mm 18mm 30mm;
+      padding: 31.5mm 25.4mm 32.5mm 25.4mm;
       box-shadow: 0 0 12px rgba(0,0,0,.25);
     }
     .watermark {
@@ -2755,7 +2865,7 @@ async function renderDocument(){
     .header {
       display: grid;
       grid-template-columns: 85px 1fr 85px;
-      align-items: center;
+      align-items: start;
     }
     .header img {
       width: 75px;
@@ -2765,6 +2875,7 @@ async function renderDocument(){
     .gov {
       text-align: center;
       line-height: 1.2;
+      padding-top: 12px;
     }
     .gov div { font-size: 14px; }
     .gov h2 {
@@ -2784,7 +2895,8 @@ async function renderDocument(){
     .top-info {
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
+      font-family: Arial;
+      font-size: 11px;
     }
     .right { text-align: right; }
     .title {
@@ -2793,13 +2905,16 @@ async function renderDocument(){
     }
     .title h3 {
       margin: 0;
-      font-size: 22px;
+      font-family: Arial;
+      font-size: 14px;
+      font-weight: bold;
       text-transform: uppercase;
     }
     .title small {
       display: block;
       margin-top: 5px;
-      font-size: 15px;
+      font-family: Cambria;
+      font-size: 11px;
     }
     .section {
       margin-top: 18px;
@@ -2874,9 +2989,10 @@ async function renderDocument(){
       font-style: italic;
     }
     @media print {
+      @page { margin: 0; size: auto; }
       html, body, .app, .main { overflow: visible !important; height: auto !important; }
       .no-print { display: none !important; }
-      .sidebar, .page-head, .toolbar-row { display: none !important; }
+      .sidebar, .page-head, .toolbar-row, header { display: none !important; }
       .main { padding: 0; max-width: none; margin: 0; }
       body { background: #fff; }
       .page { margin: 0 !important; box-shadow: none !important; page-break-after: always; break-after: page; }
