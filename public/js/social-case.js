@@ -72,9 +72,29 @@ function showCaseDetailsModal(caseId){
   modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9999;animation:fadeIn 0.2s ease;backdrop-filter:blur(4px);';
   
   modal.innerHTML = `
-    <div style="background:var(--background);border-radius:16px;width:100%;max-width:800px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.12);overflow:hidden;animation:slideUp 0.25s ease;">
+    <style>
+      #caseDetailsModal *{box-sizing:border-box}
+      #caseDetailsModal .cs-modal-box{animation:csSlideUp .25s ease}
+      @keyframes csSlideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+      @media(max-width:768px){
+        #caseDetailsModal .cs-modal-box{max-height:100vh!important;border-radius:0!important;height:100%!important;max-width:100%!important}
+        #caseDetailsModal .cs-modal-header{padding:12px 16px!important}
+        #caseDetailsModal .cs-modal-header h5{font-size:.95rem!important}
+        #caseDetailsModal .cs-modal-body{padding:16px!important}
+        #caseDetailsModal .cs-grid{grid-template-columns:1fr!important;gap:12px!important}
+        #caseDetailsModal .cs-modal-footer{flex-direction:column!important;gap:10px!important;padding:14px 16px!important}
+        #caseDetailsModal .cs-footer-btns{width:100%!important;justify-content:stretch!important}
+        #caseDetailsModal .cs-footer-btns button{flex:1!important;justify-content:center!important}
+      }
+      @media(max-width:480px){
+        #caseDetailsModal .cs-modal-header{padding:10px 12px!important}
+        #caseDetailsModal .cs-modal-header h5{font-size:.85rem!important}
+        #caseDetailsModal .cs-modal-body{padding:12px!important}
+      }
+    </style>
+    <div class="cs-modal-box" style="background:var(--background);border-radius:16px;width:100%;max-width:800px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.12);overflow:hidden;">
       <!-- Header -->
-      <div style="background:#1A237E;color:white;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
+      <div class="cs-modal-header" style="background:#1A237E;color:white;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
         <h5 style="margin:0;font-size:1.1rem;font-weight:600;display:flex;align-items:center;gap:8px;">
           <i data-lucide="user-circle" style="width:20px;height:20px;"></i>
           Social Case Study Details
@@ -85,8 +105,8 @@ function showCaseDetailsModal(caseId){
       </div>
       
       <!-- Body -->
-      <div style="padding:24px;overflow-y:auto;flex:1;">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;margin-bottom:16px;">
+      <div class="cs-modal-body" style="padding:24px;overflow-y:auto;flex:1;">
+        <div class="cs-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;margin-bottom:16px;">
           
           <div style="margin-bottom:8px;">
             <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Control Number</label>
@@ -136,11 +156,13 @@ function showCaseDetailsModal(caseId){
       </div>
       
       <!-- Footer -->
-      <div style="padding:16px 24px;border-top:1px solid var(--border);background:var(--surface);display:flex;justify-content:flex-end;gap:12px;">
-        <button onclick="document.getElementById('caseDetailsModal').remove()" style="padding:8px 16px;background:var(--background);border:1px solid var(--border);border-radius:6px;font-weight:500;color:var(--text-primary);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='var(--background)'">Close</button>
-        <button onclick="window.location.href='/admin/social-case/detail/${caseRec.id}'" style="padding:8px 16px;background:var(--primary);border:none;border-radius:6px;font-weight:500;color:white;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.2s;" onmouseover="this.style.background='#3730A3'" onmouseout="this.style.background='var(--primary)'">
-           <i data-lucide="edit" style="width:16px;height:16px;"></i> Full Details / Edit
-        </button>
+      <div class="cs-modal-footer" style="padding:16px 24px;border-top:1px solid var(--border);background:var(--surface);display:flex;justify-content:flex-end;gap:12px;flex-shrink:0;">
+        <div class="cs-footer-btns" style="display:flex;gap:12px;justify-content:flex-end;">
+          <button onclick="document.getElementById('caseDetailsModal').remove()" style="padding:8px 16px;background:var(--background);border:1px solid var(--border);border-radius:6px;font-weight:500;color:var(--text-primary);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='var(--background)'">Close</button>
+          <button onclick="window.location.href='/admin/social-case/detail/${caseRec.id}'" style="padding:8px 16px;background:var(--primary);border:none;border-radius:6px;font-weight:500;color:white;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.2s;" onmouseover="this.style.background='#3730A3'" onmouseout="this.style.background='var(--primary)'">
+            <i data-lucide="edit" style="width:16px;height:16px;"></i> Full Details / Edit
+          </button>
+        </div>
       </div>
     </div>
   `;
@@ -1514,7 +1536,7 @@ function renderIntakeForm(){
   container.innerHTML = `
   <div class="panel">
     <h3>Report details</h3>
-    <div class="grid2">
+    <div class="field-row">
       <div class="field"><label>Control no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.controlNo)}" oninput="draftIntake.controlNo=this.value"></div>
       <div class="field"><label>Report date <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.interview.reportDate}" oninput="draftIntake.interview.reportDate=this.value"></div>
     </div>
@@ -1522,33 +1544,42 @@ function renderIntakeForm(){
 
   <div class="panel">
     <h3>I. Identifying information</h3>
-    <div class="grid3">
       <div class="field"><label>Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value" required maxlength="255" placeholder="Enter full name"></div>
-      <div class="field"><label>Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="number" value="${escapeHtml(String(d.client.age))}" oninput="draftIntake.client.age=this.value" min="0" max="150" placeholder="Enter age"></div>
-      <div class="field"><label>Sex <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-        <select oninput="draftIntake.client.sex=this.value" required>
-          ${["","Male","Female"].map(o=>`<option ${d.client.sex===o?'selected':''}>${o}</option>`).join("")}
-        </select>
+      <div class="field-row">
+        <div class="field"><label>Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="number" value="${escapeHtml(String(d.client.age))}" oninput="draftIntake.client.age=this.value" min="0" max="150" placeholder="Enter age"></div>
+        <div class="field"><label>Sex <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <select oninput="draftIntake.client.sex=this.value" required>
+            ${["","Male","Female"].map(o=>`<option ${d.client.sex===o?'selected':''}>${o}</option>`).join("")}
+          </select>
+        </div>
       </div>
-      <div class="field" style="grid-column:span 2"><label>Address (Barangay) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+      <div class="field-sep"></div>
+      <div class="field"><label>Address (Barangay) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
         <select oninput="draftIntake.client.address=this.value" required>
           <option value="">Select Barangay</option>
           ${BARANGAYS.map(b=>`<option ${d.client.address===b?'selected':''}>${b}</option>`).join("")}
         </select>
       </div>
-      <div class="field"><label>Birthdate <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value"></div>
-      <div class="field"><label>Birthplace <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value" placeholder="Enter birthplace"></div>
+      <div class="field-sep"></div>
+      <div class="field-row">
+        <div class="field"><label>Birthdate <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value"></div>
+        <div class="field"><label>Birthplace <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value" placeholder="Enter birthplace"></div>
+      </div>
       <div class="field"><label>Religion <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.religion)}" oninput="draftIntake.client.religion=this.value" placeholder="Enter religion"></div>
       <div class="field"><label>Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.education)}" oninput="draftIntake.client.education=this.value" placeholder="Enter educational attainment"></div>
-      <div class="field"><label>Civil status <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-        <select oninput="draftIntake.client.civilStatus=this.value">
-          ${["","Single","Married","Widowed","Separated"].map(o=>`<option ${d.client.civilStatus===o?'selected':''}>${o}</option>`).join("")}
-        </select>
+      <div class="field-sep"></div>
+      <div class="field-row">
+        <div class="field"><label>Civil status <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <select oninput="draftIntake.client.civilStatus=this.value">
+            ${["","Single","Married","Widowed","Separated"].map(o=>`<option ${d.client.civilStatus===o?'selected':''}>${o}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field"><label>Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="Enter occupation (N/A if none)"></div>
       </div>
-      <div class="field"><label>Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="Enter occupation (N/A if none)"></div>
-      <div class="field"><label>Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.income)}" oninput="draftIntake.client.income=this.value" placeholder="Enter income (N/A if none)"></div>
-      <div class="field"><label>Contact no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="tel" value="${escapeHtml(d.client.contact)}" oninput="draftIntake.client.contact=this.value" pattern="09[0-9]{9}" maxlength="11" placeholder="e.g. 09171234567" title="Must be a valid PH mobile number (09xxxxxxxxx)"></div>
-    </div>
+      <div class="field-row">
+        <div class="field"><label>Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.income)}" oninput="draftIntake.client.income=this.value" placeholder="Enter income (N/A if none)"></div>
+        <div class="field"><label>Contact no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="tel" value="${escapeHtml(d.client.contact)}" oninput="draftIntake.client.contact=this.value" pattern="09[0-9]{9}" maxlength="11" placeholder="e.g. 09171234567" title="Must be a valid PH mobile number (09xxxxxxxxx)"></div>
+      </div>
   </div>
 
   <div class="panel">
@@ -1575,12 +1606,11 @@ function renderIntakeForm(){
 
   <div class="panel">
     <h3>Signatories</h3>
-    <div class="grid2">
       <div class="field"><label>Prepared by (name) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.preparedByName)}" oninput="draftIntake.signers.preparedByName=this.value" required maxlength="255" placeholder="Enter prepared by name"></div>
       <div class="field"><label>Prepared by (title) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.preparedByTitle)}" oninput="draftIntake.signers.preparedByTitle=this.value" placeholder="Enter prepared by title"></div>
+      <div class="field-sep"></div>
       <div class="field"><label>Noted by (name) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.notedByName)}" oninput="draftIntake.signers.notedByName=this.value" required maxlength="255" placeholder="Enter noted by name"></div>
       <div class="field"><label>Noted by (title) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.notedByTitle)}" oninput="draftIntake.signers.notedByTitle=this.value" placeholder="Enter noted by title"></div>
-    </div>
   </div>
 
   <div class="panel">
@@ -1606,7 +1636,7 @@ function renderIntakeForm(){
     `).join("")}
   </div>
 
-  <div style="display:flex;gap:12px;margin-top:20px;justify-content:flex-end">
+  <div class="intake-actions" style="display:flex;gap:12px;margin-top:20px;justify-content:flex-end">
     <button class="btn primary" onclick="reviewIntake()"><i data-lucide="eye" style="width:16px;height:16px"></i> Review & Save</button>
     <button class="btn" style="background-color: #dc3545; color: white; border: 1px solid #dc3545;" onclick="window.location.href='/admin/social-case/new'"><i data-lucide="x" style="width:16px;height:16px"></i> Cancel</button>
   </div>
@@ -1783,18 +1813,38 @@ function showIntakeSummaryModal(){
         border-color: #DC2626 !important;
         box-shadow: 0 0 0 1px #DC2626;
       }
+      @media (max-width:768px) {
+        #intakeSummaryModal .modal-box { max-height:100vh; border-radius:0; height:100%; }
+        #intakeSummaryModal .modal-header { padding:14px 16px !important; }
+        #intakeSummaryModal .modal-body { padding:16px !important; }
+        #intakeSummaryModal .modal-footer { padding:14px 16px !important; flex-direction:column !important; }
+        #intakeSummaryModal .modal-footer .footer-actions { width:100%; }
+        #intakeSummaryModal .modal-footer .footer-actions .btn-edit,
+        #intakeSummaryModal .modal-footer .footer-actions .btn-save { flex:1; justify-content:center; }
+        #intakeSummaryModal .info-grid { grid-template-columns:1fr 1fr !important; gap:12px !important; }
+        #intakeSummaryModal .signatories-grid { grid-template-columns:1fr !important; gap:12px !important; }
+        #intakeSummaryModal .agencies-grid { grid-template-columns:1fr !important; gap:12px !important; }
+        #intakeSummaryModal .reqs-grid { grid-template-columns:1fr !important; gap:6px !important; }
+        #intakeSummaryModal .control-banner { flex-direction:column !important; align-items:flex-start !important; gap:4px !important; padding:12px 14px !important; }
+        #intakeSummaryModal .modal-title { font-size:15px !important; }
+        #intakeSummaryModal .modal-subtitle { font-size:11px !important; }
+        #intakeSummaryModal .footer-info { display:none !important; }
+      }
+      @media (max-width:480px) {
+        #intakeSummaryModal .info-grid { grid-template-columns:1fr !important; }
+      }
     </style>
     <div class="modal-box" style="background:#FFFFFF;border-radius:16px;width:100%;max-width:780px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(15,23,42,0.18);overflow:hidden">
 
       <!-- Modal Header -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #E5E7EB;background:#FAFAFA;flex-shrink:0">
+      <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #E5E7EB;background:#FAFAFA;flex-shrink:0">
         <div style="display:flex;align-items:center;gap:12px">
           <div style="width:36px;height:36px;background:#4338CA;border-radius:8px;display:flex;align-items:center;justify-content:center">
             <i data-lucide="file-check" style="width:18px;height:18px;color:#fff"></i>
           </div>
           <div>
-            <div style="font-size:17px;font-weight:700;color:#111827;font-family:Inter,sans-serif">Review Case Summary</div>
-            <div style="font-size:12px;color:#6B7280;margin-top:1px">Please verify all information before saving</div>
+            <div class="modal-title" style="font-size:17px;font-weight:700;color:#111827;font-family:Inter,sans-serif">Review Case Summary</div>
+            <div class="modal-subtitle" style="font-size:12px;color:#6B7280;margin-top:1px">Please verify all information before saving</div>
           </div>
         </div>
         <button onclick="closeIntakeSummaryModal()" style="width:32px;height:32px;border:none;background:#F3F4F6;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-size:18px;color:#6B7280;line-height:1" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='#F3F4F6'">
@@ -1803,10 +1853,10 @@ function showIntakeSummaryModal(){
       </div>
 
       <!-- Modal Body -->
-      <div style="overflow-y:auto;padding:24px;flex:1">
+      <div class="modal-body" style="overflow-y:auto;padding:24px;flex:1">
 
         <!-- Control No + Date Banner -->
-        <div style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:8px">
+        <div class="control-banner" style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:8px">
           <div style="font-size:13px;color:#4338CA">
             <span style="font-weight:600;text-transform:uppercase;letter-spacing:0.04em">Control No.&nbsp;</span>
             <span style="font-family:monospace;font-size:15px;font-weight:700">${val(d.controlNo)}</span>
@@ -1819,7 +1869,7 @@ function showIntakeSummaryModal(){
 
         <!-- Client Info -->
         ${sectionTitle('I. Client Information', 'user')}
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px">
+        <div class="info-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px">
           ${infoRow('Full Name', val(d.client.name))}
           ${infoRow('Age', val(d.client.age))}
           ${infoRow('Sex', val(d.client.sex))}
@@ -1867,7 +1917,7 @@ function showIntakeSummaryModal(){
 
         <!-- Signatories -->
         ${sectionTitle('Signatories', 'pen-line')}
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="signatories-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
           ${infoRow('Prepared By (Name)', val(d.signers.preparedByName))}
           ${infoRow('Prepared By (Title)', val(d.signers.preparedByTitle))}
           ${infoRow('Noted By (Name)', val(d.signers.notedByName))}
@@ -1876,14 +1926,14 @@ function showIntakeSummaryModal(){
 
         <!-- Agencies & Purpose -->
         ${sectionTitle('Agencies & Purpose', 'building-2')}
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
+        <div class="agencies-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
           ${infoRow('Purpose / Type of Assistance', val(d.purpose))}
           ${infoRow('Agencies Selected', selectedAgencies.length ? selectedAgencies.map(a => `<span style="display:inline-block;background:#EEF2FF;color:#4338CA;font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;margin:1px">${escapeHtml(a.name)}</span>`).join(' ') : '<span style="color:#9CA3AF;font-style:italic">None selected</span>')}
         </div>
 
         <!-- Requirements -->
         ${sectionTitle('Requirements', 'clipboard-list')}
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px">
+        <div class="reqs-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px">
           ${d.requirements.map(r => `
             <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;border:1px solid ${r.submitted ? '#BBF7D0' : '#FEE2E2'};background:${r.submitted ? '#F0FDF4' : '#FFF5F5'}">
               <div style="width:18px;height:18px;border-radius:50%;background:${r.submitted ? '#16A34A' : '#EF4444'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
@@ -1895,16 +1945,16 @@ function showIntakeSummaryModal(){
       </div>
 
       <!-- Modal Footer -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-top:1px solid #E5E7EB;background:#FAFAFA;flex-shrink:0;gap:12px;flex-wrap:wrap">
-        <div style="font-size:12px;color:#6B7280">
+      <div class="modal-footer" style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-top:1px solid #E5E7EB;background:#FAFAFA;flex-shrink:0;gap:12px;flex-wrap:wrap">
+        <div class="footer-info" style="font-size:12px;color:#6B7280">
           <i data-lucide="info" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;color:#9CA3AF"></i>
           Review all fields before saving. This action cannot be undone easily.
         </div>
-        <div style="display:flex;gap:10px">
-          <button onclick="closeIntakeSummaryModal()" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:1.5px solid #D1D5DB;background:#FFFFFF;color:#374151;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;transition:all 0.15s;font-family:Inter,sans-serif" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='#FFFFFF'">
+        <div class="footer-actions" style="display:flex;gap:10px">
+          <button class="btn-edit" onclick="closeIntakeSummaryModal()" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:1.5px solid #D1D5DB;background:#FFFFFF;color:#374151;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;transition:all 0.15s;font-family:Inter,sans-serif" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='#FFFFFF'">
             <i data-lucide="pencil" style="width:15px;height:15px"></i> Edit
           </button>
-          <button onclick="closeIntakeSummaryModal(); saveNewCase();" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border:none;background:#4338CA;color:#FFFFFF;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;transition:all 0.15s;font-family:Inter,sans-serif" onmouseover="this.style.background='#3730A3'" onmouseout="this.style.background='#4338CA'">
+          <button class="btn-save" onclick="closeIntakeSummaryModal(); saveNewCase();" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border:none;background:#4338CA;color:#FFFFFF;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;transition:all 0.15s;font-family:Inter,sans-serif" onmouseover="this.style.background='#3730A3'" onmouseout="this.style.background='#4338CA'">
             <i data-lucide="save" style="width:15px;height:15px"></i> Save Case
           </button>
         </div>
@@ -2623,6 +2673,7 @@ function renderCaseDetail(){
           print-color-adjust: exact !important;
         }
         .sidebar, header, .doc-toolbar, .no-print,
+        .hamburger-btn, .sidebar-overlay,
         .detail-header, .header-actions, .template-tabs,
         .preview-header, .info-banner, .status-badge {
           display: none !important;
@@ -2648,15 +2699,31 @@ function renderCaseDetail(){
           gap: 0 !important;
           min-height: auto !important;
         }
+        .page-wrap {
+          margin: 0 !important;
+          height: auto !important;
+          overflow: visible !important;
+          padding: 0 !important;
+        }
         .page {
           height: 297mm !important;
           min-height: 0 !important;
           margin: 0 !important;
           box-shadow: none !important;
+          transform: none !important;
+          overflow: hidden !important;
           page-break-after: always;
         }
         .page:last-child {
           page-break-after: avoid;
+        }
+        .document-footer {
+          position: absolute !important;
+          bottom: 32.5mm !important;
+          page-break-inside: avoid !important;
+        }
+        .footer {
+          page-break-inside: avoid !important;
         }
         th {
           background-color: #ebdcdb !important;
@@ -2840,10 +2907,12 @@ function renderCaseDetail(){
         gap: 24px;
         min-height: 600px;
       }
-      .document-viewer .page {
+      .document-viewer .page-wrap {
         margin-bottom: 24px;
+        overflow: hidden;
+        padding: 0 16px;
       }
-      .document-viewer .page:last-child {
+      .document-viewer .page-wrap:last-child {
         margin-bottom: 0;
       }
       .info-banner {
@@ -2873,6 +2942,37 @@ function renderCaseDetail(){
         .left-panel {
           position: static;
         }
+      }
+      #caseDetailContent,.detail-content,.right-panel,#documentPreviewContainer,.document-viewer{overflow-x:hidden;max-width:100%}
+      @media(max-width:900px){
+        .detail-header-top{flex-direction:column;gap:16px}
+        .header-actions{flex-wrap:wrap}
+        .case-meta{flex-wrap:wrap;gap:12px}
+        .template-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+        .template-tabs::-webkit-scrollbar{height:4px}
+        .right-panel{padding:16px}
+        .document-viewer{padding:24px}
+      }
+      @media(max-width:768px){
+        .detail-header{padding:16px}
+        .case-info h1{font-size:18px}
+        .header-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+        .info-banner{padding:12px 14px}
+        .info-banner p{font-size:12px}
+        .preview-header h3{font-size:14px}
+        .right-panel{padding:12px}
+        .document-viewer{padding:20px}
+        .template-tab{padding:8px 14px;font-size:13px}
+      }
+      @media(max-width:480px){
+        .detail-header{padding:12px}
+        .case-info h1{font-size:16px;word-break:break-word}
+        .header-actions{display:flex;gap:8px}
+        .header-actions .header-btn{flex:1;justify-content:center;font-size:13px;padding:8px 12px}
+        .case-meta{font-size:12px;gap:8px}
+        .status-badge{font-size:11px;padding:5px 10px}
+        .document-viewer{padding:12px;min-height:auto}
+        .document-viewer .page-wrap{padding:0 8px}
       }
     </style>
     
@@ -2904,14 +3004,7 @@ function renderCaseDetail(){
             <i data-lucide="printer" style="width:16px;height:16px;"></i>
             Print
           </button>
-          <button class="header-btn" style="background:#DC2626;color:white;border-color:#DC2626;" onclick="downloadPDF()">
-            <i data-lucide="file-down" style="width:16px;height:16px;"></i>
-            Download PDF
-          </button>
-          <button class="header-btn" style="background:#7C3AED;color:white;border-color:#7C3AED;" onclick="downloadWord()">
-            <i data-lucide="file-text" style="width:16px;height:16px;"></i>
-            Download Word
-          </button>
+
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:12px;">
@@ -3108,14 +3201,15 @@ async function loadDocumentPreview(caseId){
       <style>
         .page {
           width: 210mm;
-          min-height: 297mm;
+          height: 297mm;
           margin: 20px auto;
           background: white;
           position: relative;
           padding: 10mm 25.4mm 32.5mm 25.4mm;
           box-shadow: 0 0 12px rgba(0,0,0,.25);
+          overflow: hidden;
         }
-        .watermark {
+        .page .watermark {
           position: absolute;
           width: 135mm;
           left: 50%;
@@ -3125,130 +3219,135 @@ async function loadDocumentPreview(caseId){
           z-index: 1;
           pointer-events: none;
         }
-        .content {
+        .page .content {
           position: relative;
           z-index: 2;
         }
-        .header {
+        .page .header {
           display: grid;
           grid-template-columns: 85px 1fr 85px;
           align-items: start;
         }
-        .header img {
+        .page .header img {
           width: 75px;
           height: 75px;
           object-fit: contain;
         }
-        .gov {
+        .page .gov {
           text-align: center;
           line-height: 1.2;
           padding-top: 12px;
         }
-        .gov div {
+        .page .gov div {
           font-size: 14px;
         }
-        .gov h2 {
+        .page .gov h2 {
           margin: 6px 0 0;
           font-size: 13px;
           font-weight: bold;
           letter-spacing: .5px;
           white-space: nowrap;
         }
-        .line {
+        .page .line {
           border-top: 2px solid black;
           margin: 8px 0 2px;
         }
-        .line2 {
+        .page .line2 {
           border-top: 1px solid black;
           margin-bottom: 12px;
         }
-        .top-info {
+        .page .top-info {
           display: flex;
           justify-content: space-between;
           font-family: Arial;
           font-size: 11px;
         }
-        .right {
+        .page .right {
           text-align: right;
           font-family: Arial;
           font-size: 11px;
           font-weight: bold;
         }
-        .title {
+        .page .title {
           text-align: center;
           margin: 18px 0;
         }
-        .title h3 {
+        .page .title h3 {
           margin: 0;
           font-family: Arial;
           font-size: 14px;
           font-weight: bold;
           text-transform: uppercase;
         }
-        .title small {
+        .page .title small {
           display: block;
           margin-top: 5px;
           font-family: Cambria;
           font-size: 11px;
         }
-        .section {
+        .page .section {
           margin-top: 18px;
           font-size: 14px;
         }
-        .section-title {
+        .page .section-title {
           font-weight: bold;
           margin-bottom: 10px;
         }
-        .row {
+        .page .row {
           display: grid;
           grid-template-columns: 180px 15px 1fr;
           margin-bottom: 5px;
         }
-        .row span:first-child {
+        .page .row span:first-child {
           font-weight: bold;
         }
-        table {
+        .page table {
           width: 100%;
           border-collapse: collapse;
           margin-top: 8px;
           font-size: 13px;
+          border-radius: 0;
+          overflow: visible;
         }
-        th {
+        .page th {
           border: 1px solid black;
           padding: 6px;
           text-align: center;
           background-color: #ebdcdb;
           font-weight: bold;
           color: black;
+          text-transform: none;
+          letter-spacing: normal;
         }
-        td {
+        .page td {
           border: 1px solid black;
           padding: 6px;
+          color: inherit;
         }
-        .paragraph {
+        .page .paragraph {
           margin-top: 5px;
           text-align: justify;
           line-height: 1.6;
           text-indent: 45px;
         }
-        .footer {
+        .page .footer {
           margin-top: 50px;
           display: flex;
           justify-content: space-between;
         }
-        .signature {
+        .page .signature {
           width: 45%;
           text-align: center;
         }
-        .signature b {
+        .page .signature b {
           display: block;
           margin-top: 50px;
           font-size: 15px;
         }
-        .signature small {
+        .page .signature small {
           font-size: 12px;
         }
-        .document-footer {
+        .page .document-footer {
           position: absolute;
           bottom: 32.5mm;
           left: 25.4mm;
@@ -3258,24 +3357,58 @@ async function loadDocumentPreview(caseId){
           font-size: 12px;
           color: #555555;
         }
-        .doc-address {
+        .page .doc-address {
           text-align: center;
           font-style: italic;
           line-height: 1.4;
           margin-bottom: 8px;
         }
-        .doc-meta {
+        .page .doc-meta {
           display: flex;
           justify-content: space-between;
           font-style: italic;
         }
+        @media(max-width:800px){
+          .document-viewer .page-wrap{overflow:hidden}
+        }
+        @media(max-width:480px){
+          .document-viewer .page-wrap{overflow:hidden}
+        }
       </style>
     `;
     
-    container.innerHTML = docStyles + parts.map((part, i) => {
+    let pagesHtml = parts.map((part, i) => {
       const pn = i + 1;
-      return `<div class="page">${part.replace(/{{PAGE_NUMBER}}/g, String(pn)).replace(/{{TOTAL_PAGES}}/g, String(totalPages))}</div>`;
+      return `<div class="page-wrap"><div class="page">${part.replace(/{{PAGE_NUMBER}}/g, String(pn)).replace(/{{TOTAL_PAGES}}/g, String(totalPages))}</div></div>`;
     }).join('');
+    container.innerHTML = docStyles + pagesHtml;
+
+    function scaleDocumentPages(){
+      const vw = window.innerWidth;
+      let scale = 1;
+      if(vw <= 480) scale = 0.35;
+      else if(vw <= 768) scale = 0.50;
+      else if(vw <= 1024) scale = 0.65;
+      else scale = 1;
+      const pages = container.querySelectorAll('.page');
+      pages.forEach(p => {
+        if(scale < 1){
+          const naturalHeight = p.offsetHeight;
+          p.style.transform = 'scale(' + scale + ')';
+          p.style.transformOrigin = 'top center';
+          p.style.marginBottom = '-' + (naturalHeight * (1 - scale)) + 'px';
+          p.parentElement.style.height = (naturalHeight * scale) + 'px';
+        } else {
+          p.style.transform = '';
+          p.style.transformOrigin = '';
+          p.style.marginBottom = '';
+          p.parentElement.style.height = '';
+        }
+      });
+    }
+    scaleDocumentPages();
+    window.addEventListener('resize', scaleDocumentPages);
+
     console.log('Document preview rendered successfully');
   } catch (error) {
     console.error('Error loading template:', error);
@@ -3543,7 +3676,7 @@ async function renderDocument(){
       .sidebar, .page-head, .toolbar-row, header { display: none !important; }
       .main { padding: 0; max-width: none; margin: 0; }
       body { background: #fff; }
-      .page { height: 297mm !important; min-height: 0 !important; margin: 0 !important; box-shadow: none !important; page-break-after: always; break-after: page; }
+      .page { height: 297mm !important; min-height: 0 !important; margin: 0 !important; padding: 10mm 25.4mm 32.5mm 25.4mm !important; box-shadow: none !important; overflow: hidden !important; page-break-after: always; break-after: page; }
       .page:last-child { page-break-after: avoid; break-after: avoid; }
     }
   </style>

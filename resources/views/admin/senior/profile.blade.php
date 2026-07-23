@@ -76,14 +76,15 @@
 
         .photo-wrapper {
             position: relative;
-            width: 130px;
-            height: 130px;
+            max-width: 130px;
+            width: 100%;
+            aspect-ratio: 1/1;
             margin: 0 auto;
         }
 
         .senior-photo {
-            width: 130px;
-            height: 130px;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             border-radius: 50%;
             border: 4px solid #ffffff;
@@ -104,7 +105,8 @@
         .detail-label {
             font-weight: 700;
             color: #4B5563;
-            width: 140px;
+            min-width: 100px;
+            max-width: 140px;
             text-transform: uppercase;
             font-size: 0.75rem;
             align-self: center;
@@ -123,6 +125,40 @@
             font-size: 0.75rem;
             background-color: #F9FAFB;
             border-top: 1px solid #E5E7EB;
+        }
+
+        /* ── Sidebar Overlay ── */
+        .sidebar-overlay.active { display: block !important; }
+
+        /* ── Responsive: Tablet (< 1024px) ── */
+        @media (max-width: 1023px) {
+            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; }
+            .main, .main-content { padding: 16px !important; }
+            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
+            .dashboard-grid { grid-template-columns: 1fr !important; }
+        }
+
+        /* ── Responsive: Mobile (< 768px) ── */
+        @media (max-width: 767px) {
+            .main, .main-content { padding: 12px !important; }
+            .stat-cards { grid-template-columns: 1fr !important; }
+            .topnav, .top-navbar { padding: 10px 12px !important; }
+            .topnav-datetime, .navbar-datetime { display: none !important; }
+            .filter-bar, .filter-group { flex-wrap: wrap; }
+            .filter-bar > div, .filter-group > div { min-width: 0 !important; }
+            .verify-container { padding: 0 8px; overflow-x: auto; }
+            .detail-row { flex-direction: column; gap: 4px; }
+            .detail-label { width: auto; max-width: none; }
+        }
+
+        /* ── Responsive: Small Mobile (< 480px) ── */
+        @media (max-width: 479px) {
+            .stat-card-icon { width: 40px !important; height: 40px !important; }
+            .stat-card-value { font-size: 24px !important; }
+            .stat-cards { gap: 12px !important; }
+            .senior-photo { width: 100px; height: 100px; }
         }
     </style>
 </head>

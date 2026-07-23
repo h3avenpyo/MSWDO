@@ -15,7 +15,7 @@
     <style>
         :root{--primary:#1A237E;--primary-hover:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--shadow:0 4px 6px -1px rgba(0,0,0,.05);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
         *,*::before,*::after{box-sizing:border-box;}
-        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100vh;overflow:hidden;}
+        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100vh;overflow-x: hidden;overflow-y:auto;}
         body{font-size:14px;line-height:1.5;}
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
         .app{display:flex;min-height:100vh;}
@@ -28,7 +28,7 @@
         .sidebar-menu a:hover{background:rgba(255,255,255,.1);color:var(--accent-yellow);}
         .sidebar-menu a.active{background:rgba(255,255,255,.1);color:var(--accent-yellow);border-left-color:var(--accent-yellow);}
         .sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
-        .main{flex:1;min-width:0;margin-left:260px;padding:32px;max-width:calc(100% - 260px);display:flex;flex-direction:column;height:100vh;overflow:hidden;animation:fadeIn .3s ease;}
+        .main{flex:1;min-width:0;margin-left:260px;padding:32px;max-width:calc(100% - 260px);display:flex;flex-direction:column;min-height:100vh;overflow-y:auto;animation:fadeIn .3s ease;}
         .form-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:32px;flex:1;overflow-y:auto;min-height:0;}
         .form-label{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.3px;}
         .form-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text-primary);outline:none;transition:border-color .2s,box-shadow .2s;font-family:var(--font-family);}
@@ -41,6 +41,36 @@
         .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary);}
         .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);}
         @media(max-width:768px){.sidebar{transform:translateX(-100%);}.sidebar.show{transform:translateX(0);}.main{margin-left:0;max-width:100%;}}
+
+        /* ── Sidebar Overlay ── */
+        .sidebar-overlay.active { display: block !important; }
+
+        /* ── Responsive: Tablet (< 1024px) ── */
+        @media (max-width: 1023px) {
+            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; }
+            .main, .main-content { padding: 16px !important; }
+            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
+            .dashboard-grid { grid-template-columns: 1fr !important; }
+        }
+
+        /* ── Responsive: Mobile (< 768px) ── */
+        @media (max-width: 767px) {
+            .main, .main-content { padding: 12px !important; }
+            .stat-cards { grid-template-columns: 1fr !important; }
+            .topnav, .top-navbar { padding: 10px 12px !important; }
+            .topnav-datetime, .navbar-datetime { display: none !important; }
+            .filter-bar, .filter-group { flex-wrap: wrap; }
+            .filter-bar > div, .filter-group > div { min-width: 0 !important; }
+        }
+
+        /* ── Responsive: Small Mobile (< 480px) ── */
+        @media (max-width: 479px) {
+            .stat-card-icon { width: 40px !important; height: 40px !important; }
+            .stat-card-value { font-size: 24px !important; }
+            .stat-cards { gap: 12px !important; }
+        }
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
     </style>
 </head>
@@ -65,6 +95,7 @@
             <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
         </ul>
     </div>
+ <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
     <!-- Main Content -->
     <div class="main">
@@ -237,6 +268,50 @@
         document.getElementById('currentDateTime').textContent=now.toLocaleDateString('en-US',opts).replace(',',' at');
     }
     updateDateTime();setInterval(updateDateTime,60000);
+
+    function toggleSidebar() {
+        var sidebar = document.getElementById('sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        } else {
+            sidebar.classList.add('show');
+            if (overlay) overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    (function() {
+        var overlay = document.getElementById('sidebarOverlay');
+        if (overlay) overlay.addEventListener('click', function() {
+            var sidebar = document.getElementById('sidebar');
+            if (sidebar) sidebar.classList.remove('show');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var sidebar = document.getElementById('sidebar');
+                if (sidebar && sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                    if (overlay) overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 1024) {
+                var sidebar = document.getElementById('sidebar');
+                var ov = document.getElementById('sidebarOverlay');
+                if (sidebar && sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                    if (ov) ov.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+    })();
 
     // Input validation - prevent invalid characters
     document.addEventListener('DOMContentLoaded', function() {

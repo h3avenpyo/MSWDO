@@ -26,8 +26,8 @@
         }
         body.login-mode-active {
             height: 100vh;
-            overflow: hidden;
-            padding: 0 1.5rem;
+            overflow-y: auto;
+            padding: 1.5rem;
         }
         .portal-container {
             width: 100%;
@@ -41,6 +41,7 @@
             flex-direction: row;
             align-items: center;
             gap: 4rem;
+            width: 100%;
         }
         .logo-wrapper {
             display: flex;
@@ -118,6 +119,14 @@
             }
             .portal-container.login-mode {
                 flex-direction: column;
+                gap: 1.5rem;
+            }
+            .portal-container.login-mode .logo-wrapper {
+                min-width: 0;
+            }
+            .login-panel {
+                max-width: 100%;
+                padding: 1.5rem;
             }
         }
         .role-card {
@@ -185,6 +194,7 @@
             animation: slideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             flex: 1;
             max-width: 28rem;
+            width: 100%;
         }
         @keyframes slideIn {
             from {
@@ -413,6 +423,20 @@
         }
         .portal-container.login-mode #backToHomepage {
             display: none !important;
+        }
+
+        /* ── Responsive: Small Mobile (< 480px) ── */
+        @media (max-width: 479px) {
+            body { padding: 1rem; }
+            body.login-mode-active { padding: 1rem; }
+            .welcome-title { font-size: 1.75rem; }
+            .welcome-subtitle { font-size: 0.9rem; }
+            .login-panel { padding: 1.25rem; }
+            .logo-img { width: 4rem; height: 4rem; }
+            .portal-container.login-mode .logo-img { width: 5rem; height: 5rem; }
+            .portal-container.login-mode { gap: 1rem; }
+            .skeleton-logo { width: 4rem; height: 4rem; }
+            .skeleton-title { width: 16rem; max-width: 80%; }
         }
     </style>
 </head>

@@ -3,9 +3,9 @@
 
 @section('content')
 <style>
-    html,body{overflow:hidden!important;height:100vh!important}
-    .app{min-height:auto!important;height:100vh!important;overflow:hidden!important}
-    .main{display:flex!important;flex-direction:column!important;overflow:hidden!important}
+    html,body{overflow-x:hidden!important;overflow-y:auto!important}
+    .app{min-height:auto!important}
+    .main{display:flex!important;flex-direction:column!important;overflow-x:hidden!important;overflow-y:auto!important}
 </style>
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">

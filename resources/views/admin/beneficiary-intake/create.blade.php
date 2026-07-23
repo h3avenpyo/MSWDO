@@ -105,6 +105,21 @@
             font-weight: 500;
             border-radius: 8px;
         }
+
+        @media (max-width: 767px) {
+            .step-wizard {
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+            .step-label {
+                font-size: 0.65rem;
+            }
+            .step-circle {
+                width: 28px;
+                height: 28px;
+                font-size: 0.75rem;
+            }
+        }
     </style>
 @endsection
 

@@ -3,9 +3,9 @@
 
 @section('content')
 <style>
-    html,body{overflow:hidden!important;height:100vh!important}
-    .app{min-height:auto!important;height:100vh!important;overflow:hidden!important}
-    .main{display:flex!important;flex-direction:column!important;overflow:hidden!important}
+    html,body{overflow-x:hidden!important;overflow-y:auto!important}
+    .app{min-height:auto!important}
+    .main{display:flex!important;flex-direction:column!important;overflow-x:hidden!important;overflow-y:auto!important}
     #archiveSearch:focus{border-color:#1A237E;box-shadow:0 0 0 3px rgba(26,35,126,.08)}
     .archive-type-opt.selected,.archive-brgy-opt.selected{background:#F3F4F6;font-weight:600}
     .archive-type-opt:not(.selected):hover,.archive-brgy-opt:not(.selected):hover{background:#F3F4F6}
@@ -91,7 +91,7 @@
 
     <!-- Search and Filter Bar -->
     <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px">
-        <div style="width:280px;flex-shrink:0">
+        <div style="max-width:280px;width:100%;flex-shrink:0">
             <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Search by Name</label>
             <div style="display:flex;align-items:center;height:44px;">
                 <input type="text" id="archiveSearch" placeholder="Search by name..."

@@ -67,8 +67,7 @@
                 <h3><i data-lucide="search" style="width:18px;height:18px"></i> Search Client</h3>
                 
                 <div class="search-box-large">
-                    <input type="text" id="elig-name" placeholder="Search by Full Name, Client ID, or Contact Number" value="{{ $clientName ?? '' }}">
-                    <i data-lucide="search" class="search-icon" style="width:20px;height:20px"></i>
+                    <input type="text" id="elig-name" placeholder="Search by Full Name" value="{{ $clientName ?? '' }}">
                 </div>
                 
                 <div class="hint" style="margin-bottom:16px">We'll check if this client received a social case study in the last 6 months.</div>

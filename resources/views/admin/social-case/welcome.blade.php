@@ -190,6 +190,30 @@
   .banner i{margin-top:1px;flex-shrink:0;}
   .muted{color:var(--ink-soft);}
   .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;}
+
+  /* ── Topnav / Hamburger ── */
+  .topnav{display:none;}
+
+  /* ── Sidebar Overlay ── */
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;}
+  .sidebar-overlay.active{display:block;}
+
+  /* ── Responsive: Tablet (< 1024px) ── */
+  @media (max-width:1023px){
+    .topnav{display:flex !important;align-items:center;gap:8px;padding:12px 16px;margin-bottom:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;transform:translateX(-100%) !important;z-index:1001 !important;transition:transform .25s ease;}
+    .sidebar.show{transform:translateX(0) !important;}
+    .main{margin-left:0 !important;max-width:100% !important;padding:16px !important;}
+  }
+
+  /* ── Responsive: Mobile (< 768px) ── */
+  @media (max-width:767px){
+    .main{padding:12px !important;}
+    .topnav{padding:10px 12px !important;}
+    .doc-page{padding:24px !important;}
+    .doc-row .l{width:120px !important;min-width:120px !important;}
+    .doc-sign .line{width:160px !important;}
+  }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
 </head>
@@ -354,7 +378,7 @@ function renderSidebar(){
         <i class="ti ${it.icon}" style="font-size:16px" aria-hidden="true"></i> ${it.label}
       </button>`).join("")}
     <div class="sidebar-foot">Data is stored on this device only.</div>
-  </div>`;
+  </div><div class="sidebar-overlay" id="sidebarOverlay"></div>`;
 }
 
 /* ---------------- Rendering: Dashboard ---------------- */
@@ -382,6 +406,7 @@ function renderDashboard(){
   ${nearingEligible.length ? `
   <div class="panel">
     <h3>Nearing re-eligibility (within 30 days)</h3>
+    <div style="overflow-x:auto">
     <table>
       <tr><th>Client</th><th>Released</th><th>Eligible again</th><th>Days left</th><th></th></tr>
       ${nearingEligible.map(c=>{
@@ -392,18 +417,19 @@ function renderDashboard(){
           <td style="text-align:right"><i class="ti ti-chevron-right muted" aria-hidden="true"></i></td></tr>`;
       }).join("")}
     </table>
+    </div>
   </div>` : ``}
 
   <div class="panel">
     <h3>Recently updated</h3>
-    ${recent.length ? `<table>
+    ${recent.length ? `<div style="overflow-x:auto"><table>
       <tr><th>Client</th><th>Purpose</th><th>Status</th><th>Updated</th></tr>
       ${recent.map(c=>`<tr class="row-click" onclick="setView({tab:'caseDetail', caseId:'${c.id}'})">
         <td>${escapeHtml(c.client.name)||"<span class=muted>Unnamed</span>"}</td>
         <td>${escapeHtml(c.purpose)}</td>
         <td><span class="badge ${STATUS_CLASS[c.status]}">${c.status}</span></td>
         <td>${fmtDate(c.updatedAt)}</td></tr>`).join("")}
-    </table>` : `<div class="empty"><i class="ti ti-folder-open" aria-hidden="true"></i>No cases yet. Create your first one.</div>`}
+    </table></div>` : `<div class="empty"><i class="ti ti-folder-open" aria-hidden="true"></i>No cases yet. Create your first one.</div>`}
   </div>`;
 }
 
@@ -596,7 +622,7 @@ function renderCaseList(){
     </select>
   </div>
   <div class="panel" style="padding:0">
-    ${list.length ? `<table>
+    ${list.length ? `<div style="overflow-x:auto"><table>
       <tr><th>Client</th><th>Purpose</th><th>Agencies</th><th>Status</th><th>Updated</th></tr>
       ${list.map(c=>`<tr class="row-click" onclick="setView({tab:'caseDetail', caseId:'${c.id}'})">
         <td>${escapeHtml(c.client.name)||"<span class=muted>Unnamed</span>"}</td>
@@ -604,7 +630,7 @@ function renderCaseList(){
         <td>${c.agencies.map(a=>`<span class="agency-tag">${a}</span>`).join("")||'<span class="muted">—</span>'}</td>
         <td><span class="badge ${STATUS_CLASS[c.status]}">${c.status}</span></td>
         <td>${fmtDate(c.updatedAt)}</td></tr>`).join("")}
-    </table>` : `<div class="empty"><i class="ti ti-search-off" aria-hidden="true"></i>No cases match.</div>`}
+    </table></div>` : `<div class="empty"><i class="ti ti-search-off" aria-hidden="true"></i>No cases match.</div>`}
   </div>`;
 }
 
@@ -766,6 +792,21 @@ function renderDocument(){
   </div>`;
 }
 
+/* ---------------- Sidebar toggle ---------------- */
+function toggleSidebar(){
+  var sidebar = document.querySelector('.sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  if(sidebar.classList.contains('show')){
+    sidebar.classList.remove('show');
+    if(overlay) overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  } else {
+    sidebar.classList.add('show');
+    if(overlay) overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
 /* ---------------- Main render ---------------- */
 function render(){
   let body;
@@ -776,10 +817,42 @@ function render(){
   else if(view.tab==="document") body = renderDocument();
   else body = renderDashboard();
 
-  document.getElementById('app').innerHTML = renderSidebar() + `<div class="main">${body}</div>`;
+  document.getElementById('app').innerHTML = renderSidebar() + `<div class="main"><div class="topnav no-print"><button class="btn" onclick="toggleSidebar()" aria-label="Toggle navigation"><i class="ti ti-menu-2" aria-hidden="true"></i> Menu</button></div>${body}</div>`;
 }
 
 loadCases();
+
+/* ---------------- Responsive handlers ---------------- */
+(function(){
+  var overlay = document.getElementById('sidebarOverlay');
+  if(overlay) overlay.addEventListener('click', function(){
+    var sidebar = document.querySelector('.sidebar');
+    if(sidebar) sidebar.classList.remove('show');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      var sidebar = document.querySelector('.sidebar');
+      if(sidebar && sidebar.classList.contains('show')){
+        sidebar.classList.remove('show');
+        if(overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+  });
+  window.addEventListener('resize', function(){
+    if(window.innerWidth >= 1024){
+      var sidebar = document.querySelector('.sidebar');
+      var ov = document.getElementById('sidebarOverlay');
+      if(sidebar && sidebar.classList.contains('show')){
+        sidebar.classList.remove('show');
+        if(ov) ov.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+  });
+})();
 </script>
 </body>
 </html>

@@ -1097,6 +1097,19 @@ View Services
     font-weight: 700;
     font-family: monospace;
 }
+@media (max-width: 639px) {
+    .contact-card {
+        padding: 2rem;
+    }
+    .emergency-card {
+        padding: 2rem;
+    }
+    .hotline-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
 </style>
 
 <section id="contact" class="contact-section">
@@ -1228,7 +1241,7 @@ View Services
 
     <iframe
         src="https://www.google.com/maps?q=Silang%20Municipal%20Hall&t=&z=15&ie=UTF8&iwloc=&output=embed"
-        class="w-full h-[450px]"
+        class="w-full h-[50vh] sm:h-[400px] lg:h-[450px]"
         loading="lazy">
     </iframe>
 

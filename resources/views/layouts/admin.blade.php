@@ -12,6 +12,7 @@
 </head>
 <body>
     @include('partials.admin-sidebar')
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <div class="main-content">
         @include('partials.admin-navbar')

@@ -45,7 +45,7 @@
             --font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
         }
         *,*::before,*::after{box-sizing:border-box;}
-        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100vh;overflow:hidden;}
+        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100vh;overflow-x:hidden;}
         body{font-size:14px;line-height:1.5;}
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
         button{font-family:inherit;cursor:pointer;}
@@ -64,7 +64,7 @@
         .sidebar-foot{padding:1rem 1.5rem;font-size:11px;color:rgba(255,255,255,.4);border-top:1px solid rgba(255,255,255,.1);}
 
         /* Main */
-        .main{flex:1;min-width:0;margin-left:var(--sidebar-width);padding:var(--content-padding);max-width:calc(100% - var(--sidebar-width));height:100vh;display:flex;flex-direction:column;overflow:hidden;animation:fadeIn .3s ease;}
+        .main{flex:1;min-width:0;margin-left:var(--sidebar-width);padding:var(--content-padding);max-width:calc(100% - var(--sidebar-width));min-height:100vh;display:flex;flex-direction:column;overflow-y:auto;animation:fadeIn .3s ease;}
 
         /* Dashboard Grid */
         .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px;}
@@ -140,11 +140,34 @@
         .delay-2{animation-delay:.2s;}
         .delay-3{animation-delay:.3s;}
 
-        /* Responsive */
-        @media(max-width:768px){
-            .sidebar{transform:translateX(-100%);}
-            .sidebar.show{transform:translateX(0);}
-            .main{margin-left:0;max-width:100%;}
+        /* ── Sidebar Overlay ── */
+        .sidebar-overlay.active { display: block !important; }
+
+        /* ── Responsive: Tablet (< 1024px) ── */
+        @media (max-width: 1023px) {
+            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; }
+            .main { padding: 16px !important; }
+            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
+            .dashboard-grid { grid-template-columns: 1fr !important; }
+        }
+
+        /* ── Responsive: Mobile (< 768px) ── */
+        @media (max-width: 767px) {
+            .main, .main-content { padding: 12px !important; }
+            .stat-cards { grid-template-columns: 1fr !important; }
+            .topnav, .top-navbar { padding: 10px 12px !important; }
+            .topnav-datetime, .navbar-datetime { display: none !important; }
+            .filter-bar, .filter-group { flex-direction: column; }
+            .filter-bar > div, .filter-group > div { width: 100% !important; min-width: 0 !important; }
+        }
+
+        /* ── Responsive: Small Mobile (< 480px) ── */
+        @media (max-width: 479px) {
+            .stat-card-icon { width: 40px !important; height: 40px !important; }
+            .stat-card-value { font-size: 24px !important; }
+            .stat-cards { gap: 12px !important; }
         }
     </style>
 </head>
@@ -169,6 +192,9 @@
             <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
         </ul>
     </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
     <!-- Main Content -->
     <div class="main">
@@ -334,7 +360,19 @@
     });
 
         // Toggle sidebar
-    function toggleSidebar(){document.getElementById('sidebar').classList.toggle('show');}
+    function toggleSidebar() {
+        var sidebar = document.getElementById('sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        } else {
+            sidebar.classList.add('show');
+            if (overlay) overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
 
     // Welcome popup
     document.addEventListener('DOMContentLoaded',function(){
@@ -500,6 +538,38 @@
     }
 
     lucide.createIcons();
+
+    (function() {
+        var overlay = document.getElementById('sidebarOverlay');
+        if (overlay) overlay.addEventListener('click', function() {
+            var sidebar = document.getElementById('sidebar');
+            if (sidebar) sidebar.classList.remove('show');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var sidebar = document.getElementById('sidebar');
+                if (sidebar && sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                    var ov = document.getElementById('sidebarOverlay');
+                    if (ov) ov.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 1024) {
+                var sidebar = document.getElementById('sidebar');
+                var ov = document.getElementById('sidebarOverlay');
+                if (sidebar && sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                    if (ov) ov.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+    })();
 </script>
 </body>
 </html>

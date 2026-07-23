@@ -803,8 +803,119 @@ body {
     box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
 }
 
-@media (max-width: 768px) {
-    .main-content { margin-left: 0; width: 100%; }
-    .sidebar { transform: translateX(-100%); }
-    .sidebar.show { transform: translateX(0); }
+/* ── Sidebar Overlay ── */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    transition: opacity 0.3s ease;
+}
+.sidebar-overlay.active {
+    display: block;
+}
+
+/* ── Responsive: Tablet (< 1024px) ── */
+@media (max-width: 1023px) {
+    .sidebar {
+        transform: translateX(-100%);
+        z-index: 1001;
+    }
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    .top-navbar {
+        padding: 1rem 1.25rem;
+    }
+}
+
+/* ── Responsive: Mobile (< 768px) ── */
+@media (max-width: 767px) {
+    .top-navbar {
+        padding: 0.75rem 1rem;
+    }
+    .navbar-title {
+        font-size: 0.95rem;
+    }
+    .navbar-datetime {
+        display: none;
+    }
+    .navbar-right {
+        gap: 0.75rem;
+    }
+    .stat-card {
+        padding: 1rem;
+    }
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    .stat-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+    .card-body {
+        padding: 1rem;
+    }
+    .card-header {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+    .table th,
+    .table td {
+        padding: 0.625rem 0.75rem;
+        font-size: 0.8125rem;
+    }
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.8125rem;
+    }
+    .step-circle {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+    .step-label {
+        font-size: 0.65rem;
+    }
+    .empty-state {
+        padding: 1.5rem;
+    }
+    .empty-state-icon {
+        font-size: 2rem;
+    }
+}
+
+/* ── Responsive: Small Mobile (< 480px) ── */
+@media (max-width: 479px) {
+    .top-navbar {
+        padding: 0.625rem 0.75rem;
+    }
+    .navbar-avatar {
+        width: 34px;
+        height: 34px;
+        font-size: 0.8rem;
+    }
+    .stat-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    .card-body {
+        padding: 0.75rem;
+    }
+}
+
+/* ── Responsive: Large Desktop (≥ 1536px) ── */
+@media (min-width: 1536px) {
+    .card-body {
+        padding: 2rem;
+    }
 }

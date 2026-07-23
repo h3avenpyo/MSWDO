@@ -387,13 +387,36 @@
         }
         .fade-up { animation: fadeUp .5s ease both; }
 
+        /* ── Sidebar Overlay ── */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            -webkit-backdrop-filter: blur(2px);
+            backdrop-filter: blur(2px);
+        }
+        .sidebar-overlay.active { display: block; }
+
         /* ── Responsive ── */
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
+        @media (max-width: 1023px) {
+            .sidebar { transform: translateX(-100%); z-index: 1001; }
             .sidebar.show { transform: translateX(0); }
             .main-content { margin-left: 0; }
+            .top-navbar { padding: 0.75rem 1.25rem; }
+        }
+        @media (max-width: 767px) {
             .page-body { padding: 1rem; }
             .pw-checklist { grid-template-columns: 1fr; }
+            .top-navbar .d-none.d-md-block { display: none !important; }
+            .gov-table th, .gov-table td { padding: 0.5rem; font-size: 0.8rem; }
+        }
+        @media (max-width: 479px) {
+            .page-body { padding: 0.75rem; }
+            .form-card { padding: 1rem; }
+            .officers-table-wrap { padding: 1rem; }
+            .gov-table th, .gov-table td { font-size: 0.75rem; padding: 0.4rem; }
         }
     </style>
 </head>
@@ -414,6 +437,7 @@
         <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
     </ul>
 </div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <!-- ======================== MAIN ======================== -->
 <div class="main-content">
@@ -421,7 +445,7 @@
     <!-- Top-bar -->
     <nav class="top-navbar">
         <div class="d-flex align-items-center gap-3">
-            <button class="btn-icon d-md-none" onclick="toggleSidebar()">
+            <button class="btn-icon d-lg-none" onclick="toggleSidebar()" aria-label="Toggle sidebar">
                 <i class="fas fa-bars"></i>
             </button>
             <div>
@@ -542,20 +566,20 @@
                     <p class="text-muted small mb-0">Registered system accounts and status indicators.</p>
                 </div>
                 <div style="position:relative;">
-                    <input type="text" class="form-control form-control-sm" placeholder="Search officer..." style="width:200px; padding-left: 2rem;" oninput="filterTable(this.value)">
+                    <input type="text" class="form-control form-control-sm" placeholder="Search officer..." style="max-width:200px; width:100%; padding-left: 2rem;" oninput="filterTable(this.value)">
                     <i class="fas fa-search text-muted" style="position:absolute; left: .7rem; top:50%; transform:translateY(-50%); font-size: .8rem;"></i>
                 </div>
             </div>
 
-            <div class="gov-table-wrap">
+            <div class="gov-table-wrap" style="overflow-x: auto;">
                 <table class="gov-table" id="officersTable">
                     <thead>
                         <tr class="official-header">
                             <th>Officer</th>
-                            <th>Email</th>
+                            <th class="d-none d-md-table-cell">Email</th>
                             <th>Role</th>
-                            <th>Contact</th>
-                            <th>Status</th>
+                            <th class="d-none d-lg-table-cell">Contact</th>
+                            <th class="d-none d-sm-table-cell">Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -568,10 +592,10 @@
                                         <span class="fw-semibold">{{ $officer->name ?? 'Officer' }}</span>
                                     </div>
                                 </td>
-                                <td>{{ $officer->email ?? '-' }}</td>
+                                <td class="d-none d-md-table-cell">{{ $officer->email ?? '-' }}</td>
                                 <td>{{ $officer->role ?? '-' }}</td>
-                                <td>{{ $officer->phone ?? '-' }}</td>
-                                <td><span class="status-badge badge-active">Active</span></td>
+                                <td class="d-none d-lg-table-cell">{{ $officer->phone ?? '-' }}</td>
+                                <td class="d-none d-sm-table-cell"><span class="status-badge badge-active">Active</span></td>
                                 <td>
                                     <button class="btn btn-sm btn-link text-primary p-0 me-2" type="button"><i class="fas fa-edit"></i></button>
                                     <button class="btn btn-sm btn-link text-danger p-0" type="button"><i class="fas fa-ban"></i></button>
@@ -594,8 +618,45 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('show');
+        var sidebar = document.getElementById('sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        } else {
+            sidebar.classList.add('show');
+            if (overlay) overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var overlay = document.getElementById('sidebarOverlay');
+        if (overlay) overlay.addEventListener('click', toggleSidebar);
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var sb = document.getElementById('sidebar');
+                if (sb && sb.classList.contains('show')) toggleSidebar();
+            }
+        });
+        document.querySelectorAll('.sidebar-menu a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (window.innerWidth < 1024) toggleSidebar();
+            });
+        });
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 1024) {
+                var sb = document.getElementById('sidebar');
+                var ov = document.getElementById('sidebarOverlay');
+                if (sb && sb.classList.contains('show')) {
+                    sb.classList.remove('show');
+                    if (ov) ov.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+    });
 
     function updateDateTime() {
         const now = new Date();

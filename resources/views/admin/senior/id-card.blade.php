@@ -414,6 +414,38 @@
             gap: 0.5rem;
             transition: all 0.2s;
         }
+
+        .id-card-container { overflow-x: auto; }
+
+        /* ── Sidebar Overlay ── */
+        .sidebar-overlay.active { display: block !important; }
+
+        /* ── Responsive: Tablet (< 1024px) ── */
+        @media (max-width: 1023px) {
+            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; }
+            .main, .main-content { padding: 16px !important; }
+            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
+            .dashboard-grid { grid-template-columns: 1fr !important; }
+        }
+
+        /* ── Responsive: Mobile (< 768px) ── */
+        @media (max-width: 767px) {
+            .main, .main-content { padding: 12px !important; }
+            .stat-cards { grid-template-columns: 1fr !important; }
+            .topnav, .top-navbar { padding: 10px 12px !important; }
+            .topnav-datetime, .navbar-datetime { display: none !important; }
+            .filter-bar, .filter-group { flex-wrap: wrap; }
+            .filter-bar > div, .filter-group > div { min-width: 0 !important; }
+        }
+
+        /* ── Responsive: Small Mobile (< 480px) ── */
+        @media (max-width: 479px) {
+            .stat-card-icon { width: 40px !important; height: 40px !important; }
+            .stat-card-value { font-size: 24px !important; }
+            .stat-cards { gap: 12px !important; }
+        }
     </style>
 </head>
 <body>
@@ -434,6 +466,7 @@
         <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
     </ul>
 </div>
+<div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
 <!-- ======================== MAIN ======================== -->
 <div class="main-content">
@@ -442,7 +475,7 @@
     <nav class="top-navbar">
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
-                <button class="btn btn-link d-md-none me-3" onclick="toggleSidebar()">
+                <button class="btn btn-link d-lg-none me-3" onclick="toggleSidebar()">
                     <i class="fas fa-bars"></i>
                 </button>
                 <div>
@@ -811,8 +844,49 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('show');
+        var sidebar = document.getElementById('sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        } else {
+            sidebar.classList.add('show');
+            if (overlay) overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
     }
+
+    (function() {
+        var overlay = document.getElementById('sidebarOverlay');
+        if (overlay) overlay.addEventListener('click', function() {
+            var sidebar = document.getElementById('sidebar');
+            if (sidebar) sidebar.classList.remove('show');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var sidebar = document.getElementById('sidebar');
+                if (sidebar && sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                    if (overlay) overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 1024) {
+                var sidebar = document.getElementById('sidebar');
+                var ov = document.getElementById('sidebarOverlay');
+                if (sidebar && sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                    if (ov) ov.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+    })();
 
     function updateDateTime() {
         const now = new Date();

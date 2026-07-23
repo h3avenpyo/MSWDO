@@ -62,7 +62,7 @@
         </div>
     </div>
 
-    <div id="intakeFormContent" style="overflow-y: auto; max-height: calc(100vh - 250px); padding-right: 10px;"></div>
+    <div id="intakeFormContent" style="overflow-y: auto; max-height: calc(100vh - 250px); padding-right: 10px;" class="intake-scroll"></div>
 </div>
 @endsection
 

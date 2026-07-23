@@ -43,7 +43,7 @@
         }
 
         *, *::before, *::after { box-sizing: border-box; }
-        html, body { margin: 0; padding: 0; height: 100vh; overflow: hidden; background: var(--background); color: var(--text-primary); font-family: var(--font-family); }
+        html, body { margin: 0; padding: 0; height: 100vh; overflow-x: hidden; overflow-y: auto; background: var(--background); color: var(--text-primary); font-family: var(--font-family); }
         body { font-size: 14px; line-height: 1.5; }
 
         /* ── Sidebar ── */
@@ -58,12 +58,12 @@
         .sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
 
         /* ── Main Content ── */
-        .main-content {
-            flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
-            max-width: calc(100% - 260px); height: 100vh;
-            display: flex; flex-direction: column; overflow: hidden;
-            animation: fadeIn .3s ease;
-        }
+.main-content {
+    flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
+    max-width: calc(100% - 260px); min-height: 100vh;
+    display: flex; flex-direction: column; overflow-y: auto;
+    animation: fadeIn .3s ease;
+}
 
         /* ── Custom Table ── */
         .custom-table-wrapper {
@@ -140,6 +140,36 @@
             .sidebar.show { transform: translateX(0); }
             .main-content { margin-left: 0; padding: 1rem; height: 100vh; }
         }
+
+        /* ── Sidebar Overlay ── */
+        .sidebar-overlay.active { display: block !important; }
+
+        /* ── Responsive: Tablet (< 1024px) ── */
+        @media (max-width: 1023px) {
+            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; }
+            .main, .main-content { padding: 16px !important; }
+            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
+            .dashboard-grid { grid-template-columns: 1fr !important; }
+        }
+
+        /* ── Responsive: Mobile (< 768px) ── */
+        @media (max-width: 767px) {
+            .main, .main-content { padding: 12px !important; }
+            .stat-cards { grid-template-columns: 1fr !important; }
+            .topnav, .top-navbar { padding: 10px 12px !important; }
+            .topnav-datetime, .navbar-datetime { display: none !important; }
+            .filter-bar, .filter-group { flex-wrap: wrap; }
+            .filter-bar > div, .filter-group > div { min-width: 0 !important; }
+        }
+
+        /* ── Responsive: Small Mobile (< 480px) ── */
+        @media (max-width: 479px) {
+            .stat-card-icon { width: 40px !important; height: 40px !important; }
+            .stat-card-value { font-size: 24px !important; }
+            .stat-cards { gap: 12px !important; }
+        }
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
     </style>
 </head>
@@ -163,6 +193,7 @@
             <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
         </ul>
     </div>
+ <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
     <!-- Main Content -->
     <div class="main-content">
@@ -170,7 +201,7 @@
         <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none flex-shrink-0"
                 style="margin-top:-32px;margin-left:-32px;margin-right:-32px;margin-bottom:24px">
             <div class="flex items-center">
-                <button class="md:hidden mr-3 p-1 text-[var(--text-secondary)] hover:text-[var(--primary)]" onclick="toggleSidebar()">
+                <button class="lg:hidden mr-3 p-1 text-[var(--text-secondary)] hover:text-[var(--primary)]" onclick="toggleSidebar()">
                     <i data-lucide="menu" style="width:22px;height:22px"></i>
                 </button>
                 <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Payout History</h1>
@@ -355,8 +386,48 @@
 
         // Toggle sidebar
         function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('show');
+            var sidebar = document.getElementById('sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            if (sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            } else {
+                sidebar.classList.add('show');
+                if (overlay) overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
         }
+        (function() {
+            var overlay = document.getElementById('sidebarOverlay');
+            if (overlay) overlay.addEventListener('click', function() {
+                var sidebar = document.getElementById('sidebar');
+                if (sidebar) sidebar.classList.remove('show');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    var sidebar = document.getElementById('sidebar');
+                    if (sidebar && sidebar.classList.contains('show')) {
+                        sidebar.classList.remove('show');
+                        if (overlay) overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1024) {
+                    var sidebar = document.getElementById('sidebar');
+                    var ov = document.getElementById('sidebarOverlay');
+                    if (sidebar && sidebar.classList.contains('show')) {
+                        sidebar.classList.remove('show');
+                        if (ov) ov.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+        })();
 
         // Confirm logout
         function confirmLogout(event) {

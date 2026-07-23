@@ -71,13 +71,13 @@
         .sidebar-menu a i, .sidebar-menu a [data-lucide] { width: 20px; height: 20px; text-align: center; }
 
         /* ---------- Main ---------- */
-        html, body { overflow: hidden; height: 100vh; }
-        .main {
-            flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
-            max-width: calc(100% - 260px); height: 100vh;
-            display: flex; flex-direction: column; overflow: hidden;
-            animation: fadeIn .3s ease;
-        }
+        html, body { overflow-x: hidden; overflow-y: auto; }
+.main {
+    flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
+    max-width: calc(100% - 260px); min-height: 100vh;
+    display: flex; flex-direction: column; overflow-y: auto;
+    animation: fadeIn .3s ease;
+}
 
         /* ---------- Buttons ---------- */
         .btn {
@@ -223,6 +223,37 @@
         /* ---------- Animations ---------- */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* ── Sidebar Overlay ── */
+        .sidebar-overlay.active { display: block !important; }
+
+        /* ── Responsive: Tablet (< 1024px) ── */
+        @media (max-width: 1023px) {
+            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; }
+            .main, .main-content { padding: 16px !important; }
+            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
+            .dashboard-grid { grid-template-columns: 1fr !important; }
+        }
+
+        /* ── Responsive: Mobile (< 768px) ── */
+        @media (max-width: 767px) {
+            .main, .main-content { padding: 12px !important; }
+            .stat-cards { grid-template-columns: 1fr !important; }
+            .topnav, .top-navbar { padding: 10px 12px !important; }
+            .topnav-datetime, .navbar-datetime { display: none !important; }
+            .filter-bar, .filter-group { flex-wrap: wrap; }
+            .filter-bar > div, .filter-group > div { min-width: 0 !important; }
+            .filter-group.search-group { width: 100% !important; }
+        }
+
+        /* ── Responsive: Small Mobile (< 480px) ── */
+        @media (max-width: 479px) {
+            .stat-card-icon { width: 40px !important; height: 40px !important; }
+            .stat-card-value { font-size: 24px !important; }
+            .stat-cards { gap: 12px !important; }
+        }
     </style>
 </head>
 <body>
@@ -246,6 +277,7 @@
         <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
     </ul>
 </div>
+<div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
 <!-- ======================== MAIN ======================== -->
 <div class="main">
@@ -538,7 +570,17 @@
 
 <script>
     function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('show');
+        var sidebar = document.getElementById('sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        } else {
+            sidebar.classList.add('show');
+            if (overlay) overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
     }
 
     function updateDateTime() {
@@ -861,6 +903,38 @@
             }
         });
     }
+</script>
+<script>
+(function() {
+    var overlay = document.getElementById('sidebarOverlay');
+    if (overlay) overlay.addEventListener('click', function() {
+        var sidebar = document.getElementById('sidebar');
+        if (sidebar) sidebar.classList.remove('show');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var sidebar = document.getElementById('sidebar');
+            if (sidebar && sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+    });
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 1024) {
+            var sidebar = document.getElementById('sidebar');
+            var ov = document.getElementById('sidebarOverlay');
+            if (sidebar && sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+                if (ov) ov.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+    });
+})();
 </script>
 </body>
 </html>
