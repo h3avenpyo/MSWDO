@@ -1894,17 +1894,72 @@
             .topnav { padding: 12px 16px !important; }
             .topnav-title { font-size: 14px !important; }
             .topnav-datetime { display: none; }
-            .data-table, .sc-data-table { font-size: 12px; }
-            .data-table th, .data-table td, .sc-data-table th, .sc-data-table td { padding: 8px; }
             .analytics-card { min-height:0 !important; }
             .activity-card { min-height:240px !important; }
             .activity-feed { max-height:50vh !important; }
+
+            /* ── Cases page: card layout ── */
+            .sc-table-card { padding: 1rem; margin-bottom: 1rem; }
+            .sc-table-card-title { font-size: 1rem; margin-bottom: 1rem; }
+            .sc-filter-row { flex-direction: column; gap: 10px; }
+            .sc-filter-left { flex-direction: column; gap: 10px; width: 100%; }
+            .sc-search-group { min-width: 0; width: 100%; }
+            .sc-select-group { min-width: 0; width: 100%; }
+            .sc-filter-right { width: 100%; }
+            .sc-filter-right .sc-action-btn { width: 100%; justify-content: center; }
+            .sc-table-responsive { border: none; overflow: visible; }
+            .sc-data-table { table-layout: auto; width: 100%; }
+            .sc-data-table thead { display: none; }
+            .sc-data-table tbody tr {
+                display: block;
+                background: var(--surface);
+                border: 1px solid #D1D5DB;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            }
+            .sc-data-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 6px 0;
+                border: none;
+                font-size: 0.82rem;
+                gap: 8px;
+            }
+            .sc-data-table tbody td:not(:last-child) {
+                border-bottom: 1px solid var(--border);
+            }
+            .sc-data-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--text-secondary);
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                flex-shrink: 0;
+                min-width: 70px;
+            }
+            .sc-data-table tbody td[data-label="Action"] {
+                justify-content: flex-end;
+                padding-top: 8px;
+                border-bottom: none;
+            }
+            .sc-data-table tbody td[data-label="Action"]::before { display: none; }
+            .sc-data-table tbody td .actions { justify-content: flex-end; }
+            .sc-data-table tbody td .badge { font-size: 0.7rem; }
+            .sc-pagination { gap: 8px; margin-top: 1rem; }
+            .sc-page-btn { height: 34px; min-width: 34px; font-size: 0.8rem; padding: 0 0.5rem; }
         }
 
         /* ── Responsive: Small Mobile (< 480px) ── */
         @media (max-width: 479px) {
             .stat-card-icon { width: 40px !important; height: 40px !important; }
             .stat-card-icon svg { width: 18px !important; height: 18px !important; }
+            .sc-table-card { padding: 0.75rem; }
+            .sc-data-table tbody td::before { min-width: 60px; font-size: 0.68rem; }
+            .sc-data-table tbody td { font-size: 0.78rem; }
         }
     </style>
 </head>

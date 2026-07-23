@@ -43,7 +43,7 @@
         }
 
         *, *::before, *::after { box-sizing: border-box; }
-        html, body { margin: 0; padding: 0; height: 100vh; overflow-x: hidden; overflow-y: auto; background: var(--background); color: var(--text-primary); font-family: var(--font-family); }
+        html, body { margin: 0; padding: 0; height: 100%; overflow-x: hidden; overflow-y: auto; background: var(--background); color: var(--text-primary); font-family: var(--font-family); }
         body { font-size: 14px; line-height: 1.5; }
 
         /* ── Sidebar ── */
@@ -134,41 +134,96 @@
             box-shadow: 0 0 0 3px rgba(26,35,126,.08);
         }
 
-        /* ── Responsive ── */
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.show { transform: translateX(0); }
-            .main-content { margin-left: 0; padding: 1rem; height: 100vh; }
-        }
-
         /* ── Sidebar Overlay ── */
         .sidebar-overlay.active { display: block !important; }
 
+        /* ── Hamburger Button ── */
+        .hamburger-btn {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 1002;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: background 0.2s;
+        }
+        .hamburger-btn:hover { background: var(--primary-hover); }
+
         /* ── Responsive: Tablet (< 1024px) ── */
         @media (max-width: 1023px) {
+            .hamburger-btn { display: flex; }
             .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
             .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; }
-            .main, .main-content { padding: 16px !important; }
-            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
-            .dashboard-grid { grid-template-columns: 1fr !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
         }
 
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
-            .main, .main-content { padding: 12px !important; }
-            .stat-cards { grid-template-columns: 1fr !important; }
-            .topnav, .top-navbar { padding: 10px 12px !important; }
-            .topnav-datetime, .navbar-datetime { display: none !important; }
-            .filter-bar, .filter-group { flex-wrap: wrap; }
-            .filter-bar > div, .filter-group > div { min-width: 0 !important; }
+            .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
+
+            /* ── Filter → stack ── */
+            .filter-grid { grid-template-columns: 1fr !important; }
+            .filter-grid .flex { width: 100% !important; }
+            .filter-grid .flex > * { flex: 1 !important; }
+
+            /* ── Table → Card layout ── */
+            .custom-table-scroll { border: none !important; overflow: visible !important; }
+            .custom-table { table-layout: auto !important; width: 100%; }
+            .custom-table thead { display: none !important; }
+            .custom-table tbody tr {
+                display: block;
+                background: var(--surface);
+                border: 1px solid #D1D5DB;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            }
+            .custom-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border: none;
+                font-size: 0.82rem;
+                gap: 8px;
+            }
+            .custom-table tbody td:not(:last-child) {
+                border-bottom: 1px solid var(--border);
+            }
+            .custom-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--text-secondary);
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                flex-shrink: 0;
+                min-width: 80px;
+            }
+
+            /* ── Empty state ── */
+            .custom-table tbody td.empty-state-cell { display: flex !important; justify-content: center !important; text-align: center !important; padding: 40px 12px !important; }
+            .custom-table tbody td.empty-state-cell::before { display: none !important; }
+
+            /* ── Pagination ── */
+            .custom-table-wrapper > div:last-child { padding: 12px !important; }
         }
 
         /* ── Responsive: Small Mobile (< 480px) ── */
         @media (max-width: 479px) {
-            .stat-card-icon { width: 40px !important; height: 40px !important; }
-            .stat-card-value { font-size: 24px !important; }
-            .stat-cards { gap: 12px !important; }
+            .custom-table tbody td { font-size: 0.78rem !important; }
+            .custom-table tbody td::before { min-width: 65px !important; font-size: 0.68rem !important; }
+            .badge-span { font-size: 0.7rem !important; padding: 0.2rem 0.5rem !important; }
         }
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
     </style>
@@ -195,15 +250,16 @@
     </div>
  <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
+    <!-- Hamburger Button (fixed position) -->
+    <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+        <i data-lucide="menu" style="width:24px;height:24px"></i>
+    </button>
+
     <!-- Main Content -->
     <div class="main-content">
         <!-- Header -->
-        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none flex-shrink-0"
-                style="margin-top:-32px;margin-left:-32px;margin-right:-32px;margin-bottom:24px">
+        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
             <div class="flex items-center">
-                <button class="lg:hidden mr-3 p-1 text-[var(--text-secondary)] hover:text-[var(--primary)]" onclick="toggleSidebar()">
-                    <i data-lucide="menu" style="width:22px;height:22px"></i>
-                </button>
                 <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Payout History</h1>
             </div>
             <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
@@ -217,7 +273,7 @@
             <!-- Filter Section -->
             <div class="bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,.1)] p-5 mb-6 border border-[#E5E7EB] flex-shrink-0">
                 <form method="GET" action="{{ route('admin.senior.birthday-payouts.history') }}">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end filter-grid">
                         <div>
                             <label class="block text-[13px] font-semibold text-[var(--text-primary)] mb-1">Barangay</label>
                             <select class="ctrl-select" name="barangay">
@@ -326,13 +382,13 @@
                         <tbody>
                             @forelse($history as $record)
                                 <tr>
-                                    <td>{{ $record->created_at->format('M d, Y g:i A') }}</td>
-                                    <td>
+                                    <td data-label="Date & Time">{{ $record->created_at->format('M d, Y g:i A') }}</td>
+                                    <td data-label="Action">
                                         <span class="badge-span badge-{{ $record->action }}">
                                             {{ ucfirst(str_replace('_', ' ', $record->action)) }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td data-label="Senior">
                                         @if($record->senior)
                                             <strong>{{ $record->senior->full_name }}</strong>
                                             <br>
@@ -341,8 +397,8 @@
                                             <span class="text-[var(--text-muted)]">System-wide action</span>
                                         @endif
                                     </td>
-                                    <td>{{ $record->details ?? '-' }}</td>
-                                    <td>
+                                    <td data-label="Details">{{ $record->details ?? '-' }}</td>
+                                    <td data-label="Performed By">
                                         @if($record->performedBy)
                                             {{ $record->performedBy->name ?? 'Admin' }}
                                         @else
@@ -352,7 +408,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-12">
+                                    <td colspan="5" class="empty-state-cell text-center py-12">
                                         <div class="flex flex-col items-center text-[var(--text-muted)]">
                                             <i data-lucide="history" style="width:48px;height:48px;opacity:.4" class="mb-3"></i>
                                             <p class="text-sm m-0">No payout history found.</p>

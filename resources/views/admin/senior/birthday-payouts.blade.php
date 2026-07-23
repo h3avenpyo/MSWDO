@@ -40,11 +40,11 @@
             --info: #3B82F6;
             --info-bg: #EEF2FF;
             --purple: #7C3AED;
-            --shadow: 0 4px 6px -1px rgba(0,0,0,.05);
+            --shadow: 0 10px 30px rgba(15,23,42,.08);
             --font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
         *, *::before, *::after { box-sizing: border-box; }
-        html, body { margin: 0; padding: 0; height: 100vh; overflow-x: hidden; overflow-y: auto; background: var(--background); color: var(--text-primary); font-family: var(--font-family); }
+        html, body { margin: 0; padding: 0; height: 100%; overflow-x: hidden; overflow-y: auto; background: var(--background); color: var(--text-primary); font-family: var(--font-family); }
         body { font-size: 14px; line-height: 1.5; }
 
         /* Sidebar */
@@ -63,7 +63,7 @@
     flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
     max-width: calc(100% - 260px); min-height: 100vh;
     display: flex; flex-direction: column; overflow-y: auto;
-    animation: fadeIn .3s ease;
+    overflow-x: hidden;
 }
 
         /* ---------- Buttons ---------- */
@@ -212,40 +212,123 @@
         .summary-card-label { font-size: 12px; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
         .summary-card-value { font-size: 1.75rem; font-weight: 700; color: var(--text-primary); line-height: 1; }
 
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.show { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-        }
-
         /* ── Sidebar Overlay ── */
         .sidebar-overlay.active { display: block !important; }
 
+        /* ── Hamburger Button ── */
+        .hamburger-btn {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 1002;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: background 0.2s;
+        }
+        .hamburger-btn:hover { background: var(--primary-hover); }
+
         /* ── Responsive: Tablet (< 1024px) ── */
         @media (max-width: 1023px) {
+            .hamburger-btn { display: flex; }
             .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
             .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; }
-            .main, .main-content { padding: 16px !important; }
-            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
-            .dashboard-grid { grid-template-columns: 1fr !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
         }
 
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
-            .main, .main-content { padding: 12px !important; }
-            .stat-cards { grid-template-columns: 1fr !important; }
+            .mobile-select-all { display: flex !important; }
+            .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
             .topnav, .top-navbar { padding: 10px 12px !important; }
             .topnav-datetime, .navbar-datetime { display: none !important; }
-            .filter-bar, .filter-group { flex-wrap: wrap; }
-            .filter-bar > div, .filter-group > div { min-width: 0 !important; }
+
+            /* ── Filter → stack ── */
+            .filter-row { flex-direction: column !important; align-items: stretch !important; gap: 10px !important; }
+            .filter-left { flex-direction: column !important; gap: 10px !important; width: 100% !important; }
+            .filter-left .filter-group { width: 100% !important; min-width: 0 !important; }
+            .filter-left .filter-group.select-group { min-width: 0 !important; }
+            .filter-left .input-group { width: 100% !important; }
+            .filter-right { flex-wrap: wrap; width: 100% !important; justify-content: stretch; }
+            .filter-right .btn { flex: 1; justify-content: center; }
+
+            /* ── Summary cards → compact ── */
+            .summary-cards { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+            .summary-card { padding: 14px !important; border-radius: 12px !important; gap: 10px !important; }
+            .summary-card-icon { display: none !important; }
+            .summary-card-value { font-size: 1.25rem !important; }
+            .summary-card-label { font-size: 10px !important; }
+
+            /* ── Table Card ── */
+            .table-card { padding: 1rem !important; border-radius: 12px !important; }
+
+            /* ── Action buttons → wrap ── */
+            .action-buttons-row { flex-wrap: wrap !important; gap: 8px !important; }
+            .action-buttons-row .btn { flex: 1 1 calc(50% - 4px) !important; min-width: 0 !important; justify-content: center !important; }
+
+            /* ── Table → Card layout ── */
+            .table-scroll { border: none !important; overflow: visible !important; border-radius: 0 !important; }
+            .custom-table { table-layout: auto !important; width: 100%; font-size: 0.82rem !important; }
+            .custom-table thead { display: none !important; }
+            .custom-table tbody tr {
+                display: block;
+                background: var(--surface);
+                border: 1px solid #D1D5DB;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            }
+            .custom-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border: none;
+                font-size: 0.82rem;
+                gap: 8px;
+            }
+            .custom-table tbody td:not(:last-child) {
+                border-bottom: 1px solid var(--border);
+            }
+            .custom-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--text-secondary);
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                flex-shrink: 0;
+                min-width: 70px;
+            }
+            .custom-table tbody td.col-check {
+                justify-content: flex-end;
+                padding: 8px 0 4px;
+                border-bottom: none;
+            }
+            .custom-table tbody td.col-check::before { display: none; }
+            .custom-table tbody td[data-label="#"] { display: none !important; }
+            .custom-table tbody td[data-label="OSCA ID"] { display: none !important; }
+            .custom-table tbody td.empty-state-cell { display: flex !important; justify-content: center !important; text-align: center !important; padding: 40px 12px !important; }
+            .custom-table tbody td.empty-state-cell::before { display: none !important; }
         }
 
         /* ── Responsive: Small Mobile (< 480px) ── */
         @media (max-width: 479px) {
-            .stat-card-icon { width: 40px !important; height: 40px !important; }
-            .stat-card-value { font-size: 24px !important; }
-            .stat-cards { gap: 12px !important; }
+            .summary-card-value { font-size: 1.1rem !important; }
+            .summary-card { padding: 12px !important; }
+            .filter-section { margin-bottom: 1rem !important; }
+            .custom-table tbody td { font-size: 0.78rem !important; }
+            .custom-table tbody td::before { min-width: 60px !important; font-size: 0.68rem !important; }
+            .action-buttons-row .btn { flex: 1 1 100% !important; }
         }
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
     </style>
@@ -272,11 +355,15 @@
     </div>
  <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
+    <!-- Hamburger Button (fixed position) -->
+    <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+        <i data-lucide="menu" style="width:24px;height:24px"></i>
+    </button>
+
     <!-- Main Content -->
     <div class="main-content">
         <!-- Modern Header -->
-        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none flex-shrink-0"
-                style="margin-top:-32px;margin-left:-32px;margin-right:-32px;margin-bottom:24px">
+        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
             <div class="flex items-center">
                 <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Birthday Payouts</h1>
             </div>
@@ -362,7 +449,7 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="filter-right" style="margin-bottom:1.5rem;flex-shrink:0">
+            <div class="filter-right action-buttons-row" style="margin-bottom:1.5rem;flex-shrink:0;flex-wrap:wrap;gap:8px">
                 <button type="button" class="btn success" style="height:44px;" onclick="bulkRelease()">
                     <i data-lucide="check" style="width:16px;height:16px"></i> Release
                 </button>
@@ -378,11 +465,17 @@
             </div>
 
             <!-- Table Scroll -->
+            <!-- Mobile Select All (shown only on mobile since thead is hidden) -->
+            <div class="mobile-select-all" style="display:none;align-items:center;gap:8px;padding:8px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-secondary);">
+                <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px">
+                <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
+                <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
+            </div>
             <div class="table-scroll" style="border:1px solid var(--border);border-radius:8px;">
                 <table class="custom-table" id="payoutTable">
                     <thead>
                         <tr>
-                            <th style="width:40px;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="w-4 h-4 rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)] cursor-pointer"></th>
+                            <th class="col-check" style="width:40px;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="w-4 h-4 rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)] cursor-pointer"></th>
                             <th style="width:50px;">#</th>
                             <th>Control No.</th>
                             <th>OSCA ID</th>
@@ -401,22 +494,22 @@
                                 $age = $senior->birth_date ? \Carbon\Carbon::parse($senior->birth_date)->age : '-';
                             @endphp
                             <tr>
-                                <td><input type="checkbox" class="payout-checkbox w-4 h-4 rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)] cursor-pointer" value="{{ $payout->id }}"></td>
-                                <td>{{ $existingPayouts->firstItem() + $index }}</td>
-                                <td>{{ $senior->control_number ?? '-' }}</td>
-                                <td>{{ $senior->osca_id ?? '-' }}</td>
-                                <td>
+                                <td class="col-check"><input type="checkbox" class="payout-checkbox w-4 h-4 rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)] cursor-pointer" value="{{ $payout->id }}"></td>
+                                <td data-label="#">{{ $existingPayouts->firstItem() + $index }}</td>
+                                <td data-label="Control No.">{{ $senior->control_number ?? '-' }}</td>
+                                <td data-label="OSCA ID">{{ $senior->osca_id ?? '-' }}</td>
+                                <td data-label="Full Name">
                                     <div class="font-semibold">{{ $senior->full_name }}</div>
                                 </td>
-                                <td>{{ $senior->birth_date ? \Carbon\Carbon::parse($senior->birth_date)->format('F d, Y') : '-' }}</td>
-                                <td>{{ $age }}</td>
-                                <td>{{ $senior->barangay }}</td>
-                                <td>{{ $senior->contact_number ?? '-' }}</td>
-                                <td>₱{{ number_format($payout->amount, 2) }}</td>
+                                <td data-label="Birthday">{{ $senior->birth_date ? \Carbon\Carbon::parse($senior->birth_date)->format('F d, Y') : '-' }}</td>
+                                <td data-label="Age">{{ $age }}</td>
+                                <td data-label="Barangay">{{ $senior->barangay }}</td>
+                                <td data-label="Contact">{{ $senior->contact_number ?? '-' }}</td>
+                                <td data-label="Amount">₱{{ number_format($payout->amount, 2) }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="text-center py-12">
+                                <td colspan="10" class="empty-state-cell text-center py-12">
                                     <div class="flex flex-col items-center justify-center">
                                         <i data-lucide="inbox" style="width:48px;height:48px" class="text-[var(--text-muted)] mb-3"></i>
                                         <p class="text-[var(--text-secondary)] mb-0 text-sm">No payout records found. Click "Generate List" to create payout records.</p>
@@ -499,6 +592,26 @@
             const selectAll = document.getElementById('selectAll');
             const checkboxes = document.querySelectorAll('.payout-checkbox:not(:disabled)');
             checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            var mobileAll = document.getElementById('mobileSelectAll');
+            if (mobileAll) mobileAll.checked = selectAll.checked;
+            updateMobileSelectedCount();
+        }
+
+        function toggleSelectAllMobile(checked) {
+            var selectAll = document.getElementById('selectAll');
+            var checkboxes = document.querySelectorAll('.payout-checkbox:not(:disabled)');
+            checkboxes.forEach(cb => cb.checked = checked);
+            if (selectAll) selectAll.checked = checked;
+            updateMobileSelectedCount();
+        }
+
+        function updateMobileSelectedCount() {
+            var selected = document.querySelectorAll('.payout-checkbox:checked').length;
+            var total = document.querySelectorAll('.payout-checkbox:not(:disabled)').length;
+            var mobileCount = document.getElementById('mobileSelectedCount');
+            var mobileAll = document.getElementById('mobileSelectAll');
+            if (mobileCount) mobileCount.textContent = selected > 0 ? selected + ' / ' + total + ' selected' : '';
+            if (mobileAll) mobileAll.checked = selected === total && total > 0;
         }
 
         // Generate payout list
@@ -647,8 +760,8 @@
                 showCancelButton: true,
                 confirmButtonText: 'Reset Selected Month',
                 cancelButtonText: 'Cancel',
-                confirmButtonColor: '#DC2626',
-                cancelButtonColor: '#EF4444',
+                confirmButtonColor: '#1A237E',
+                cancelButtonColor: '#6B7280',
                 showDenyButton: true,
                 denyButtonText: 'Reset All Records',
                 denyButtonColor: '#DC2626'
@@ -690,7 +803,7 @@
                         confirmButtonText: 'Yes, Delete All',
                         cancelButtonText: 'Cancel',
                         confirmButtonColor: '#DC2626',
-                        cancelButtonColor: '#EF4444'
+                        cancelButtonColor: '#6B7280'
                     }).then((confirmResult) => {
                         if (confirmResult.isConfirmed) {
                             fetch('{{ route("admin.senior.birthday-payouts.reset") }}', {

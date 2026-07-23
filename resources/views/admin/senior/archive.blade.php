@@ -34,12 +34,12 @@
             --info-bg: #EEF2FF;
             --purple: #7C3AED;
             --purple-bg: #F3E8FF;
-            --shadow: 0 4px 6px -1px rgba(0,0,0,.05);
+            --shadow: 0 10px 30px rgba(15,23,42,.08);
             --font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
 
         *, *::before, *::after { box-sizing: border-box; }
-        html, body { margin: 0; padding: 0; height: 100vh; overflow-x: hidden; background: var(--background); color: var(--text-primary); font-family: var(--font-family); }
+        html, body { margin: 0; padding: 0; height: 100%; overflow-x: hidden; overflow-y: auto; background: var(--background); color: var(--text-primary); font-family: var(--font-family); }
         body { font-size: 14px; line-height: 1.5; }
 
         /* Sidebar */
@@ -58,7 +58,7 @@
     flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
     max-width: calc(100% - 260px); min-height: 100vh;
     display: flex; flex-direction: column; overflow-y: auto;
-    animation: fadeIn .3s ease;
+    overflow-x: hidden;
 }
 
         .main-content-scroll {
@@ -364,25 +364,114 @@
         /* ── Sidebar Overlay ── */
         .sidebar-overlay.active { display: block !important; }
 
+        /* ── Hamburger Button ── */
+        .hamburger-btn {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 1002;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: background 0.2s;
+        }
+        .hamburger-btn:hover { background: var(--primary-hover); }
+
         /* ── Responsive: Tablet (< 1024px) ── */
         @media (max-width: 1023px) {
+            .hamburger-btn { display: flex; }
             .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
             .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; }
-            .main, .main-content { padding: 16px !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
             .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
             .dashboard-grid { grid-template-columns: 1fr !important; }
         }
 
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
-            .main, .main-content { padding: 12px !important; }
+            .mobile-select-all { display: flex !important; }
+            .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
             .stat-cards { grid-template-columns: 1fr !important; }
             .topnav, .top-navbar { padding: 10px 12px !important; }
             .topnav-datetime, .navbar-datetime { display: none !important; }
-            .filter-bar, .filter-group { flex-wrap: wrap; }
-            .filter-bar > div, .filter-group > div { min-width: 0 !important; }
-            .filter-group.search-group { width: 100% !important; }
+
+            /* ── Filter → stack ── */
+            .filter-section { margin-bottom: 1rem; }
+            .filter-row { flex-direction: column !important; gap: 10px !important; }
+            .filter-left { flex-direction: column !important; gap: 10px !important; width: 100% !important; }
+            .filter-group.search-group, .filter-group.select-group { min-width: 0 !important; width: 100% !important; }
+            .filter-left .input-group { width: 100% !important; }
+            .filter-right { width: 100% !important; flex-wrap: wrap !important; gap: 8px !important; display: flex !important; }
+            .filter-right > * { flex: 1 1 calc(50% - 4px) !important; min-width: 0 !important; }
+            .filter-right > a, .filter-right > button, .filter-right .btn, .filter-right > div { width: 100% !important; justify-content: center !important; text-align: center !important; }
+            .filter-right > a { display: inline-flex !important; align-items: center !important; justify-content: center !important; }
+
+            /* ── Table Card ── */
+            .table-card { padding: 1rem !important; border-radius: 12px !important; }
+            .table-card-title { font-size: 1rem !important; margin-bottom: 1rem !important; }
+
+            /* ── Table → Card layout ── */
+            .archive-table-wrap { border: none !important; overflow: visible !important; border-radius: 0 !important; }
+            .archive-table-wrap table { table-layout: auto !important; width: 100%; }
+            .archive-table-wrap thead { display: none !important; }
+            .archive-table-wrap tbody tr {
+                display: block;
+                background: var(--surface);
+                border: 1px solid #D1D5DB;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            }
+            .archive-table-wrap tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border: none;
+                font-size: 0.82rem;
+                gap: 8px;
+            }
+            .archive-table-wrap tbody td:not(:last-child) {
+                border-bottom: 1px solid var(--border);
+            }
+            .archive-table-wrap tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--text-secondary);
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                flex-shrink: 0;
+                min-width: 70px;
+            }
+            .archive-table-wrap tbody td.col-check {
+                justify-content: flex-end;
+                padding: 8px 0 4px;
+                border-bottom: none;
+            }
+            .archive-table-wrap tbody td.col-check::before { display: none; }
+            .archive-table-wrap tbody td[data-label="#"] {
+                display: none !important;
+            }
+            .archive-table-wrap tbody td[data-label="Action"] {
+                justify-content: flex-end;
+                padding-top: 8px;
+                border-bottom: none;
+            }
+            .archive-table-wrap tbody td[data-label="Action"]::before { display: none; }
+            .archive-table-wrap tbody td .badge-archived { font-size: 0.7rem; }
+
+            /* ── Pagination ── */
+            .pagination-custom { flex-wrap: wrap; justify-content: center; }
         }
 
         /* ── Responsive: Small Mobile (< 480px) ── */
@@ -390,6 +479,8 @@
             .stat-card-icon { width: 40px !important; height: 40px !important; }
             .stat-card-value { font-size: 24px !important; }
             .stat-cards { gap: 12px !important; }
+            .archive-table-wrap tbody td { font-size: 0.78rem !important; }
+            .archive-table-wrap tbody td::before { min-width: 60px !important; font-size: 0.68rem !important; }
         }
     </style>
 </head>
@@ -415,12 +506,17 @@
     </div>
     <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
+    <!-- Hamburger Button (fixed position) -->
+    <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+        <i data-lucide="menu" style="width:24px;height:24px"></i>
+    </button>
+
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Header -->
-        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8"
-                style="margin-top:-32px;margin-left:-32px;margin-right:-32px">
-            <div class="flex items-center"><h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Archived Seniors</h1></div>
+        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
+            <div class="flex items-center">
+                <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Archived Seniors</h1></div>
             <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
                 <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime"></div>
                 <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ session('admin_user_name') ?? 'Admin User' }}">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
@@ -565,11 +661,17 @@
             <!-- Archive Table Card -->
             <div class="table-card">
                 <h2 class="table-card-title">Archived Records</h2>
-                <div style="flex:1;overflow-y:auto;overflow-x:auto;min-height:0;border-radius:8px;">
+                <!-- Mobile Select All (shown only on mobile since thead is hidden) -->
+                <div class="mobile-select-all" style="display:none;align-items:center;gap:8px;padding:8px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-secondary);">
+                    <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px">
+                    <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
+                    <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
+                </div>
+                <div style="flex:1;overflow-y:auto;overflow-x:auto;min-height:0;border-radius:8px;" class="archive-table-wrap">
                     <table class="custom-table" id="archiveTable" style="table-layout:fixed;">
                         <thead>
                             <tr>
-                                <th style="width:3%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px"></th>
+                                <th class="col-check" style="width:3%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px"></th>
                                 <th style="width:4%;">#</th>
                                 <th style="width:11%;">Control No.</th>
                                 <th style="width:18%;">Full Name</th>
@@ -584,43 +686,42 @@
                         <tbody>
                             @forelse($archivedSeniors as $index => $senior)
                             <tr>
-                                <td><input type="checkbox" class="senior-checkbox cursor-pointer accent-[#1A237E]" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="width:16px;height:16px"></td>
-                                <td class="text-[#9CA3AF] font-semibold">{{ $archivedSeniors->firstItem() + $index }}</td>
-                                <td class="font-semibold">{{ $senior->control_number ?? '-' }}</td>
-                                <td>
+                                <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox cursor-pointer accent-[#1A237E]" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="width:16px;height:16px"></td>
+                                <td data-label="#">{{ $archivedSeniors->firstItem() + $index }}</td>
+                                <td data-label="Control No.">{{ $senior->control_number ?? '-' }}</td>
+                                <td data-label="Full Name">
                                     <div class="font-semibold">{{ $senior->full_name ?? '-' }}</div>
                                     <div class="text-[#9CA3AF] text-[12px]">{{ $senior->address ? \Illuminate\Support\Str::limit($senior->address, 35) : '' }}</div>
                                 </td>
-                                <td>
+                                <td data-label="Barangay">
                                     @if($senior->barangay)
                                         <span class="inline-block bg-[rgba(107,114,128,0.1)] text-[#6B7280] font-medium px-2.5 py-1 rounded-md text-[13px]">{{ $senior->barangay }}</span>
                                     @else
                                         <span class="text-[#9CA3AF]">-</span>
                                     @endif
                                 </td>
-                                <td>
+                                <td data-label="Sex / Age">
                                     @if($senior->sex)
                                         <span class="inline-flex items-center justify-center w-[26px] h-[26px] rounded-full bg-[#6B7280] text-white text-[11px] font-bold mr-1">{{ $senior->sex == 'Male' ? 'M' : 'F' }}</span>
                                     @endif
                                     <strong>{{ $senior->age ?? '-' }}</strong>
                                 </td>
-                                <td>
+                                <td data-label="Birth Date">
                                     @if($senior->birth_date)
                                         {{ \Carbon\Carbon::parse($senior->birth_date)->format('M d, Y') }}
                                     @else
                                         <span class="text-[#9CA3AF]">-</span>
                                     @endif
                                 </td>
-                                <td>
+                                <td data-label="Archived On">
                                     <span class="text-[#9CA3AF] text-[13px]">
                                         {{ $senior->updated_at ? \Carbon\Carbon::parse($senior->updated_at)->format('M d, Y') : '-' }}
                                     </span>
                                 </td>
-                                <td class="text-center">
+                                <td data-label="Status">
                                     <span class="badge-archived">Archived</span>
                                 </td>
-                                <td>
-                                    <!-- Restore Button -->
+                                <td data-label="Action">
                                     <form method="POST" action="{{ route('admin.senior.unarchive', $senior->id) }}" id="restore-form-{{ $senior->id }}" style="display: inline;">
                                         @csrf
                                         <button type="button"
@@ -718,6 +819,16 @@
             checkboxes.forEach(checkbox => {
                 checkbox.checked = selectAll.checked;
             });
+            var mobileAll = document.getElementById('mobileSelectAll');
+            if (mobileAll) mobileAll.checked = selectAll.checked;
+            updateBulkActions();
+        }
+
+        function toggleSelectAllMobile(checked) {
+            var selectAll = document.getElementById('selectAll');
+            var checkboxes = document.querySelectorAll('.senior-checkbox');
+            checkboxes.forEach(cb => cb.checked = checked);
+            if (selectAll) selectAll.checked = checked;
             updateBulkActions();
         }
 
@@ -725,8 +836,13 @@
             const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
             const button = document.getElementById('bulkActionButton');
             const countSpan = document.getElementById('selectedCount');
+            const mobileCount = document.getElementById('mobileSelectedCount');
+            const mobileAll = document.getElementById('mobileSelectAll');
+            const total = document.querySelectorAll('.senior-checkbox').length;
 
             countSpan.textContent = checkboxes.length;
+            if (mobileCount) mobileCount.textContent = checkboxes.length > 0 ? checkboxes.length + ' / ' + total + ' selected' : '';
+            if (mobileAll) mobileAll.checked = checkboxes.length === total && total > 0;
 
             if (checkboxes.length > 0) {
                 button.disabled = false;

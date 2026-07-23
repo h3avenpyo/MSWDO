@@ -13,9 +13,9 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root{--primary:#1A237E;--primary-hover:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--shadow:0 4px 6px -1px rgba(0,0,0,.05);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+        :root{--primary:#1A237E;--primary-hover:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
         *,*::before,*::after{box-sizing:border-box;}
-        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100vh;overflow-x: hidden;overflow-y:auto;}
+        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100%;overflow-x:hidden;overflow-y:auto;}
         body{font-size:14px;line-height:1.5;}
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
         .app{display:flex;min-height:100vh;}
@@ -28,7 +28,7 @@
         .sidebar-menu a:hover{background:rgba(255,255,255,.1);color:var(--accent-yellow);}
         .sidebar-menu a.active{background:rgba(255,255,255,.1);color:var(--accent-yellow);border-left-color:var(--accent-yellow);}
         .sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
-        .main{flex:1;min-width:0;margin-left:260px;padding:32px;max-width:calc(100% - 260px);display:flex;flex-direction:column;min-height:100vh;overflow-y:auto;animation:fadeIn .3s ease;}
+        .main{flex:1;min-width:0;margin-left:260px;padding:32px;max-width:calc(100% - 260px);display:flex;flex-direction:column;min-height:100vh;overflow-y:auto;overflow-x:hidden;}
         .form-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:32px;flex:1;overflow-y:auto;min-height:0;}
         .form-label{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.3px;}
         .form-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text-primary);outline:none;transition:border-color .2s,box-shadow .2s;font-family:var(--font-family);}
@@ -40,24 +40,44 @@
         .btn:hover{border-color:var(--primary);transform:translateY(-1px);}
         .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary);}
         .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);}
-        @media(max-width:768px){.sidebar{transform:translateX(-100%);}.sidebar.show{transform:translateX(0);}.main{margin-left:0;max-width:100%;}}
 
         /* ── Sidebar Overlay ── */
         .sidebar-overlay.active { display: block !important; }
 
+        /* ── Hamburger Button ── */
+        .hamburger-btn {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 1002;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: background 0.2s;
+        }
+        .hamburger-btn:hover { background: var(--primary-hover); }
+
         /* ── Responsive: Tablet (< 1024px) ── */
         @media (max-width: 1023px) {
+            .hamburger-btn { display: flex; }
             .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
             .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; }
-            .main, .main-content { padding: 16px !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
             .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
             .dashboard-grid { grid-template-columns: 1fr !important; }
         }
 
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
-            .main, .main-content { padding: 12px !important; }
+            .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
             .stat-cards { grid-template-columns: 1fr !important; }
             .topnav, .top-navbar { padding: 10px 12px !important; }
             .topnav-datetime, .navbar-datetime { display: none !important; }
@@ -97,6 +117,11 @@
     </div>
  <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
+    <!-- Hamburger Button (fixed position) -->
+    <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+        <i data-lucide="menu" style="width:24px;height:24px"></i>
+    </button>
+
     <!-- Main Content -->
     <div class="main">
         @php
@@ -105,8 +130,7 @@
             $initials = count($words) >= 2 ? strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1)) : strtoupper(substr($userName, 0, 2));
         @endphp
 
-        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none flex-shrink-0"
-                style="margin-top:-32px;margin-left:-32px;margin-right:-32px;margin-bottom:24px">
+        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
             <div class="flex items-center">
                 <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Senior Citizen Registration</h1>
             </div>

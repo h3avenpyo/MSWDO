@@ -35,7 +35,7 @@
     
     #archiveTypeBtn.active[data-filter] i[data-lucide="filter"]   { color: inherit; }
     #archiveTypeBtn.active[data-filter] #archiveTypeLabel         { color: inherit; }
-    
+
     /* Color-coded filter dropdown options */
     .archive-type-opt[data-value="Medical Assistance"].selected { background:#DBEAFE; color:#1E40AF; }
     .archive-type-opt[data-value="Burial Assistance"].selected { background:#FEE2E2; color:#991B1B; }
@@ -44,6 +44,64 @@
     .archive-type-opt[data-value="Food / Relief Assistance"].selected { background:#E0E7FF; color:#3730A3; }
     .archive-type-opt[data-value="Livelihood Assistance"].selected { background:#FCE7F3; color:#9D174D; }
     .archive-type-opt[data-value="Other"].selected { background:#F3F4F6; color:#374151; }
+
+    @media (max-width: 767px) {
+        /* Archive: card layout for table */
+        .archive-panel-wrap { padding: 1rem !important; margin-bottom: 1rem !important; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); }
+        .archive-filter-bar { flex-direction: column !important; gap: 10px !important; padding: 12px !important; }
+        .archive-filter-bar > div { min-width: 0 !important; max-width: none !important; width: 100% !important; }
+        .archive-table-wrap { border: none !important; overflow: visible !important; }
+        .archive-table { width: 100%; }
+        .archive-table thead { display: none; }
+        .archive-table tbody tr {
+            display: block;
+            background: var(--surface);
+            border: 1px solid #D1D5DB;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .archive-table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border: none;
+            font-size: 0.82rem;
+            gap: 8px;
+        }
+        .archive-table tbody td:not(:last-child) {
+            border-bottom: 1px solid var(--border);
+        }
+        .archive-table tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            flex-shrink: 0;
+            min-width: 70px;
+        }
+        .archive-table tbody td[data-label="Action"] {
+            justify-content: flex-end;
+            padding-top: 8px;
+            border-bottom: none;
+        }
+        .archive-table tbody td[data-label="Action"]::before { display: none; }
+        .archive-table tbody td:not([data-label]) { justify-content: center; text-align: center; }
+        .archive-table tbody td:not([data-label])::before { display: none; }
+        .archive-table tbody td .actions { justify-content: flex-end; }
+        .archive-table tbody td .badge { font-size: 0.7rem; }
+        .sc-pagination { gap: 8px; margin-top: 1rem; }
+        .sc-page-btn { height: 34px; min-width: 34px; font-size: 0.8rem; padding: 0 0.5rem; }
+    }
+    @media (max-width: 479px) {
+        .archive-panel-wrap { padding: 0.75rem !important; }
+        .archive-table tbody td::before { min-width: 60px; font-size: 0.68rem; }
+        .archive-table tbody td { font-size: 0.78rem; }
+    }
 </style>
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
@@ -71,8 +129,7 @@
             $initials = strtoupper(substr($userName, 0, 2));
         }
     @endphp
-    <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8"
-            style="margin-top: calc(-1 * var(--content-padding)); margin-left: calc(-1 * var(--content-padding)); margin-right: calc(-1 * var(--content-padding));">
+    <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
         <div class="flex items-center">
             <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Archived Cases</h1>
         </div>
@@ -90,7 +147,7 @@
     </div>
 
     <!-- Search and Filter Bar -->
-    <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px">
+    <div class="archive-filter-bar" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px">
         <div style="max-width:280px;width:100%;flex-shrink:0">
             <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Search by Name</label>
             <div style="display:flex;align-items:center;height:44px;">
@@ -133,9 +190,9 @@
         </div>
     </div>
 
-    <div class="panel" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;margin-bottom:0">
-        <div style="flex:1;overflow:auto;min-height:0;border-radius:8px">
-            <table>
+    <div class="panel archive-panel-wrap" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;margin-bottom:0">
+        <div class="archive-table-wrap" style="flex:1;overflow:auto;min-height:0;border-radius:8px">
+            <table class="archive-table">
                 <thead><tr><th>Control No</th><th>Client</th><th>Assistance Type</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
                 <tbody id="archiveTable"></tbody>
             </table>

@@ -150,7 +150,7 @@ function showCaseDetailsModal(caseId){
 
           <div style="margin-bottom:8px;grid-column:1/-1;">
             <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Problem Presented</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);white-space:pre-wrap;">${escapeHtml(rewriteProblemPresented(caseRec.interview?.interviewSituation || caseRec.interview?.problemPresented || caseRec.summary || "", caseRec.purpose || "", (caseRec.client?.fullName || caseRec.client?.full_name || caseRec.client?.name || ""), caseRec.client))||"—"}</div>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);white-space:pre-wrap;">${escapeHtml(rewriteProblemPresented(caseRec.interview?.interviewSituation || caseRec.interview?.problemPresented || caseRec.summary || "", caseRec.purpose || "", (caseRec.client?.fullName || caseRec.client?.full_name || caseRec.client?.name || ""), caseRec.client, caseRec.household || caseRec.familyMembers || []))||"—"}</div>
           </div>
         </div>
       </div>
@@ -199,120 +199,155 @@ function fmtDate(iso){
 function daysBetween(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
 function escapeHtml(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
-function rewriteProblemPresented(rawProblem, purpose, clientFullName, clientData = {}) {
+function extractSpecificNeed(rawText, purposeLabel) {
+  if (!rawText || !purposeLabel) return '';
+  const t = rawText.toLowerCase();
+  const purpose = purposeLabel.toLowerCase();
+
+  if (purpose.includes('medical')) {
+    const needs = ['hemodialysis','chemotherapy','dialysis','surgery','hospitalization',
+                   'medication','treatment','operation','therapy','check-up','checkup',
+                   'medicine','maintenance','session','cebu doctors','treatment plan'];
+    for (const n of needs) { if (t.includes(n)) return n; }
+  }
+  if (purpose.includes('burial')) {
+    const needs = ['burial','funeral','interment','cremation'];
+    for (const n of needs) { if (t.includes(n)) return n; }
+  }
+  if (purpose.includes('educational')) {
+    const needs = ['tuition','school fees','enrollment','books','uniform'];
+    for (const n of needs) { if (t.includes(n)) return n; }
+  }
+  if (purpose.includes('food') || purpose.includes('relief')) {
+    const needs = ['food','relief','groceries','medicine'];
+    for (const n of needs) { if (t.includes(n)) return n; }
+  }
+  if (purpose.includes('livelihood')) {
+    const needs = ['livelihood','capital','equipment','business'];
+    for (const n of needs) { if (t.includes(n)) return n; }
+  }
+  return '';
+}
+function rewriteProblemPresented(rawProblem, purpose, clientFullName, clientData = {}, household = []) {
   if (!rawProblem || !rawProblem.trim()) return "";
   let p = rawProblem.trim();
-  const purposeLower = (purpose || "").toLowerCase();
   const clientRef = clientFullName || "The client";
   const clientSex = (clientData.sex || "").toLowerCase();
-  const clientAge = clientData.age || "";
-  
-  // Fix medical terminology (do this FIRST before other replacements)
+  const purposeLabel = purpose || "Financial Assistance";
+
+  // Use first household member as the visitor
+  const visitor = (household || [])[0] || {};
+  const visitorRelationship = (visitor.relationship || "").trim().toLowerCase();
+
+  const possessive = clientSex === 'male' ? 'his' : 'her';
+
+  // Map purpose to the correct subject term
+  const subjectMap = {
+    'medical assistance': { subject: 'patient', possessive: "patient's" },
+    'burial assistance':  { subject: 'deceased', possessive: "deceased's" },
+  };
+  const defaultSubject = { subject: 'client', possessive: "client's" };
+  const subjectInfo = subjectMap[purposeLabel.toLowerCase()] || defaultSubject;
+
+  // --- Phase 1: Fix terminology ---
+
+  // Medical terminology
   p = p.replace(/\bchemo\s*therapy\b/gi, "chemotherapy");
-  p = p.replace(/\bNEPHOROSCLEROSIS\b/g, "nephrosclerosis");
-  p = p.replace(/\bNEPHROSCLEROSIS\b/g, "nephrosclerosis");
+  p = p.replace(/\bNEPHRO?S?CLEROSIS\b/gi, "nephrosclerosis");
 
-  // Fix "Social Case Study" — should be "Social Case Study Report"
-  p = p.replace(/\ba\s+Social Case Study Report\b/gi, "a Social Case Study Report");
-  p = p.replace(/\bSocial Case Study Report\b/gi, "a Social Case Study Report");
-  p = p.replace(/\ba\s+Social Case Study\b(?!\s+Report)/gi, "a Social Case Study Report");
-  p = p.replace(/\bSocial Case Study\b(?!\s+Report)/gi, "a Social Case Study Report");
-  p = p.replace(/\bA Social Case Study\b/gi, "a Social Case Study Report");
+  // Fix "Social Case Study" → "Social Case Study Report"
+  p = p.replace(/\bSocial Case Study\b(?!\s+Report)/gi, "Social Case Study Report");
 
-  // Fix assistance type casing — keep proper case, don't lowercase
-  p = p.replace(/\bfinancial assistance\b/gi, "Financial Assistance");
-  p = p.replace(/\bmedical assistance\b/gi, "Medical Assistance");
-  p = p.replace(/\bburial assistance\b/gi, "Burial Assistance");
-  p = p.replace(/\beducational assistance\b/gi, "Educational Assistance");
-  p = p.replace(/\bfood\s*\/?\s*relief assistance\b/gi, "Food / Relief Assistance");
-  p = p.replace(/\blivelihood assistance\b/gi, "Livelihood Assistance");
-  p = p.replace(/\ba\s+(Financial|Medical|Burial|Educational|Food|Livelihood) Assistance\b/g, "a $1 Assistance");
+  // Fix assistance type casing
+  p = p.replace(/\b(financial|medical|burial|educational|food\s*\/?\s*relief|livelihood)\s+assistance\b/gi, function(m) {
+    return m.replace(/\b\w/g, c => c.toUpperCase());
+  });
+  p = p.replace(/\bAssistance\s*\/?\s*Support\b/gi, "Assistance");
 
-  // Fix prepositions
-  p = p.replace(/\bneeded in\b/g, "needed for");
-  p = p.replace(/\bneeded due to\b/g, "needed for");
-  p = p.replace(/\bfor her mother maintenance\b/g, "for her mother's maintenance");
-  p = p.replace(/\bfor his mother maintenance\b/g, "for his mother's maintenance");
-  p = p.replace(/\bfor their mother maintenance\b/g, "for their mother's maintenance");
-  p = p.replace(/\bher mother maintenance\b/g, "her mother's maintenance");
-  p = p.replace(/\bhis mother maintenance\b/g, "his mother's maintenance");
-  p = p.replace(/\btheir mother maintenance\b/g, "their mother's maintenance");
-  p = p.replace(/\bfor her father maintenance\b/g, "for her father's maintenance");
-  p = p.replace(/\bfor his father maintenance\b/g, "for his father's maintenance");
-  p = p.replace(/\bher father maintenance\b/g, "her father's maintenance");
-  p = p.replace(/\bhis father maintenance\b/g, "his father's maintenance");
+  // Generic possessive fix for any family member + medical term
+  p = p.replace(/\b(her|his|their|my)\s+(mother|father|sister|brother|wife|husband|son|daughter|spouse|parent)\s+(maintenance|treatment|medication|hemodialysis|dialysis|surgery|therapy|operation|hospitalization|care|chemotherapy|session|checkup|check-up|medicine)\b/gi,
+    "$1 $2's $3");
+
+  // Fix "needed in" / "needed due to"
+  p = p.replace(/\bneeded\s+in\b/gi, "needed for");
+  p = p.replace(/\bneeded\s+due\s+to\b/gi, "needed for");
 
   // Fix "Please see" grammar
-  p = p.replace(/\bPlease see attachment\b/g, "Please see the attached documents");
-  p = p.replace(/\bPlease see the attachment for\b/g, "Please see the attached documents for");
-  p = p.replace(/\bPlease see attachment for\b/g, "Please see the attached documents for");
+  p = p.replace(/\bPlease\s+see\s+(the\s+)?attachments?\b/gi, "Please see the attached documents");
+  p = p.replace(/\bPlease\s+see\s+the\s+attachments?\s+for\b/gi, "Please see the attached documents for");
+  p = p.replace(/\bPlease\s+see\s+attachments?\s+for\b/gi, "Please see the attached documents for");
 
-  // Ensure proper punctuation before "Please see" — add period if missing
+  // Ensure proper punctuation before "Please see"
   p = p.replace(/([^\.\!])\s+Please see/g, '$1. Please see');
-  p = p.replace(/\.\.\./g, '...'); // Fix triple dots from double period
+  p = p.replace(/\.\.\./g, '...');
 
   // Fix double spaces
   p = p.replace(/\s+/g, ' ').trim();
 
-  // Smart paraphrasing based on input patterns
-  const hasPatientMention = /\b(patient| client| beneficiary)\b/i.test(p);
-  const hasAssistanceMention = /\b(assistance| aid | help| support)/i.test(p);
-  const hasVisitMention = /\b(visited| went to| came to| approached| personally visited)/i.test(p);
-  const hasRequestMention = /\b(request| ask| seeking| needed| need| requesting)/i.test(p);
-  const hasSocialCaseMention = /\b(social case study report| social case study| scsr)/i.test(p);
-  const hasMedicalMention = /\b(medical| hemodialysis| dialysis| surgery| hospital| medicine| prescription| treatment| illness| disease| condition| ckd| cancer| chemotherapy)/i.test(p);
-  const hasBurialMention = /\b(burial| funeral| death| deceased| died| passed away)/i.test(p);
-  const hasEducationalMention = /\b(education| tuition| school| college| university| enrollment| studying)/i.test(p);
-  const hasFinancialMention = /\b(financial| monetary| cash| fund| expenses| cost| payment)/i.test(p);
-  const hasFoodMention = /\b(food| relief| hunger| feeding| livelihood)/i.test(p);
-  
-  // Extract key information for intelligent paraphrasing
-  const relationshipMatch = p.match(/\b(patient's|his|her|their|the client's)\s+(daughter|son|wife|husband|mother|father|sister|brother|relative|friend)\b/i)
-    || p.match(/\b(daughter|son|wife|husband|mother|father|sister|brother|relative|friend)\b/i);
-  let relationship = "";
-  let possessive = clientSex === 'male' ? 'his' : 'her';
-  if (relationshipMatch) {
-    relationship = relationshipMatch[relationshipMatch.length - 1];
-    // Determine possessive from the context
-    if (/patient's|his|her|their|the client's/i.test(relationshipMatch[0])) {
-      possessive = relationshipMatch[1].toLowerCase().replace("'s", "").replace("the client", "the client");
-      if (possessive === "patient" || possessive === "the client") possessive = clientSex === 'male' ? 'his' : 'her';
-    }
-  }
-  
-  const conditionMatch = p.match(/(?:due to|for|because of)\s+([^,.]+?)(?:\.|,|$)/i);
-  const medicalCondition = conditionMatch ? conditionMatch[1].trim() : "";
+  // --- Phase 2: Detect patterns ---
 
-  // Generate intelligent paraphrase if the input is brief or needs enhancement
+  const hasVisitMention = /\b(visited|went to|came to|approached|personally visited|goes to|went personally)\b/i.test(p);
+  const hasRequestMention = /\b(request|ask|asking|seeking|requesting|to obtain|in obtaining|for)\b/i.test(p);
+  const hasSocialCaseMention = /\b(social case study report|social case study)\b/i.test(p);
+
+  // Check if raw text starts with a person's name (no relationship words before "visited")
+  const nameBeforeVisit = p.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\s+(?:personally\s+)?(?:visited|went to|came to|approached)/i);
+  const typedName = nameBeforeVisit ? nameBeforeVisit[1].trim() : "";
+
+  // --- Phase 3: Remove redundant sentences ---
+
+  // Remove standalone "Need X Assistance/ Support" that duplicates the purpose
+  const assistTypes = ["Financial", "Medical", "Burial", "Educational", "Food / Relief", "Food/Relief", "Livelihood"];
+  const purposeType = assistTypes.find(t => purposeLabel.toLowerCase().includes(t.toLowerCase())) || "";
+  if (purposeType) {
+    const redundantPattern = new RegExp("(?:^|\\.\\s*)\\b(?:Need|Needs|Needed|I need|We need)\\s+" + purposeType.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "(?:\\s*\\/\\s*Support)?\\.?\\s*", "gi");
+    p = p.replace(redundantPattern, '');
+  }
+  // Also catch "Need X Assistance" with extra words
+  p = p.replace(/(?:^|\.\\s*)\b(?:Need|Needs|Needed)\s+(?:a\s+)?(?:Financial|Medical|Burial|Educational|Food\s*\/?\s*Relief|Livelihood)\s+Assistance(?:\s*\/?\s*Support)?\.?\s*/gi, '');
+  // Remove orphaned "Need Support" / "Need Help"
+  p = p.replace(/(?:^|\.\s*)\b(?:Need|Needs|Needed)\s+(?:a\s+)?(?:Support|Help)\.?\s*/gi, '');
+  p = p.replace(/\s+/g, ' ').trim();
+
+  // --- Phase 4: Build final output ---
+
   let paraphrased = "";
-  
-  if (!hasVisitMention && !hasRequestMention) {
-    // Generate opening sentence about the visit
-    const possessiveCap = possessive.charAt(0).toUpperCase() + possessive.slice(1);
-    
-    if (relationship && medicalCondition) {
-      paraphrased = `The patient's ${relationship} personally visited our office to request assistance in obtaining a Social Case Study Report. This report is necessary for ${purpose || 'Financial Assistance'} needed for ${possessive} ${medicalCondition.toLowerCase()}. `;
-    } else if (medicalCondition) {
-      paraphrased = `The patient personally visited our office to request assistance in obtaining a Social Case Study Report. This report is necessary for ${purpose || 'Financial Assistance'} needed for ${medicalCondition.toLowerCase()}. `;
+  const need = extractSpecificNeed(rawProblem, purposeLabel);
+  const needPhrase = need ? ` for ${purposeLabel} for ${need}` : ` for ${purposeLabel}`;
+
+  if (hasVisitMention || hasRequestMention) {
+    if (visitorRelationship) {
+      if (typedName) {
+        paraphrased = `The ${subjectInfo.possessive} ${visitorRelationship} personally visited our office to request assistance in obtaining a Social Case Study Report${needPhrase}.`;
+      } else {
+        paraphrased = `The ${subjectInfo.possessive} ${visitorRelationship} personally visited our office to request assistance in obtaining a Social Case Study Report${needPhrase}.`;
+      }
     } else {
-      paraphrased = `${clientRef} personally visited our office to request assistance in obtaining a Social Case Study Report. This report is necessary for ${purpose || 'Financial Assistance'}. `;
+      paraphrased = p;
     }
-    
-    paraphrased += p;
   } else {
-    paraphrased = p;
+    if (visitorRelationship) {
+      paraphrased = `The ${subjectInfo.possessive} ${visitorRelationship} personally visited our office to request assistance in obtaining a Social Case Study Report${needPhrase}.`;
+    } else {
+      paraphrased = `${clientRef} personally visited our office to request assistance in obtaining a Social Case Study Report for ${purposeLabel}.`;
+    }
   }
 
-  const alreadyHasClosing = /\b(please see| attached| supporting documents| for your (reference|review)| supporting this request)/i.test(paraphrased);
+  // --- Phase 5: Ensure closing sentence ---
+
+  const alreadyHasClosing = /\b(please see|attached documents|supporting documents|for your (reference|review)|supporting this request)\b/i.test(paraphrased);
   if (!alreadyHasClosing) {
-    // Ensure proper punctuation before adding closing sentence
-    paraphrased = paraphrased.replace(/([^\.\!])\s*$/, '$1. ');
-    paraphrased += "Please see the attached documents for your reference.";
+    paraphrased = paraphrased.replace(/\.?\s*$/, '') + '. Please see the attached documents for your reference.';
   }
 
-  // Final cleanup — ensure single spaces and proper sentence spacing
+  // --- Phase 6: Final cleanup ---
+
   paraphrased = paraphrased.replace(/\s+/g, ' ').trim();
   paraphrased = paraphrased.replace(/\.\./g, '.');
+  paraphrased = paraphrased.replace(/,\s*\./g, '.');
+  paraphrased = paraphrased.replace(/\.\s*\./g, '.');
+  // Capitalize first letter
+  if (paraphrased) paraphrased = paraphrased.charAt(0).toUpperCase() + paraphrased.slice(1);
 
   return paraphrased;
 }
@@ -745,13 +780,13 @@ function renderArchive(){
     const paginatedCases = archivedCases.slice(startIndex, endIndex);
 
     table.innerHTML = paginatedCases.map(c => `
-      <tr class="row-click" onclick="showCaseDetailsModal('${c.id}')">
-        <td><span style="font-family:monospace;font-weight:600">${escapeHtml(c.controlNo)||"—"}</span></td>
-        <td>${escapeHtml(c.client?.name)||"<span class=muted>Unnamed</span>"}</td>
-        <td>${escapeHtml(c.purpose)}</td>
-        <td><span class="badge b-archived">${c.status}</span></td>
-        <td>${fmtDate(c.updatedAt)}</td>
-        <td>
+      <tr>
+        <td data-label="Control No"><span style="font-family:monospace;font-weight:600">${escapeHtml(c.controlNo)||"—"}</span></td>
+        <td data-label="Client">${escapeHtml(c.client?.name)||"<span class=muted>Unnamed</span>"}</td>
+        <td data-label="Type">${escapeHtml(c.purpose)}</td>
+        <td data-label="Status"><span class="badge b-archived">${c.status}</span></td>
+        <td data-label="Date">${fmtDate(c.updatedAt)}</td>
+        <td data-label="Action">
           <div class="actions" style="display:flex; gap: 4px;">
             <button style="background-color: #1A237E; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); showCaseDetailsModal('${c.id}')" title="View">
               <i data-lucide="eye" style="width:16px;height:16px; color:#ffffff;"></i>
@@ -889,7 +924,8 @@ function renderDashboard(){
   }).length;
   const today = todayISO();
   const releasedToday = cases.filter(c => c.status === 'Released' && c.releasedDate === today).length;
-  const successRate = cases.length > 0 ? Math.round(((byStatus['Released'] || 0) / cases.length) * 100) : 0;
+  const totalPrintedOrReleased = cases.filter(c => c.status === 'Released' || c.status === 'Printed' || c.releasedDate).length;
+  const successRate = cases.length > 0 ? Math.round((totalPrintedOrReleased / cases.length) * 100) : 0;
 
   // Update KPIs with null checks
   const updateElement = (id, value) => {
@@ -900,7 +936,7 @@ function renderDashboard(){
   updateElement('totalClients', uniqueClients);
   updateElement('casesThisMonth', casesThisMonth);
   updateElement('releasedToday', releasedToday);
-  updateElement('totalReleased', byStatus['Released'] || 0);
+  updateElement('totalReleased', totalPrintedOrReleased);
 
   // Recent activity feed
   renderActivityFeed(recent);
@@ -2029,14 +2065,14 @@ function renderCaseList(){
     table.style.display = 'table';
     emptyState.style.display = 'none';
     tableBody.innerHTML = paginatedCases.map(c => `
-      <tr class="row-click" onclick="showCaseDetailsModal('${c.id}')">
-        <td><span class="control-no">${escapeHtml(c.controlNo)||"—"}</span></td>
-        <td>${escapeHtml(c.client?.name)||"<span class=muted>Unnamed</span>"}</td>
-        <td>${escapeHtml(c.purpose)}</td>
-        <td>Biluso</td>
-        <td><span class="badge ${STATUS_CLASS[c.status]}">${c.status}</span></td>
-        <td>${fmtDate(c.createdAt)}</td>
-        <td>
+      <tr>
+        <td data-label="Control No."><span class="control-no">${escapeHtml(c.controlNo)||"—"}</span></td>
+        <td data-label="Client">${escapeHtml(c.client?.name)||"<span class=muted>Unnamed</span>"}</td>
+        <td data-label="Type">${escapeHtml(c.purpose)}</td>
+        <td data-label="Barangay">Biluso</td>
+        <td data-label="Status"><span class="badge ${STATUS_CLASS[c.status]}">${c.status}</span></td>
+        <td data-label="Created">${fmtDate(c.createdAt)}</td>
+        <td data-label="Action">
           <div class="actions" style="display:flex; gap: 4px;">
             <button style="background-color: #1A237E; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); showCaseDetailsModal('${c.id}')" title="View">
               <i data-lucide="eye" style="width:16px;height:16px; color:#ffffff;"></i>
@@ -2210,10 +2246,15 @@ async function printDocument(){
     const pronounCap = clientSexLower === 'male' ? 'His' : 'Her';
     const clientPronoun = clientSexLower === 'male' ? 'him' : 'her';
     
-    const homeConditionDefault = "The client resides in a modest home with his/her family. The home of the family in modest circumstances is simple but functional. While the house may not have the latest appliances or decor, it is clean and maintained to the best of the family's ability. The family may prioritize practicality over style, and although they may face financial challenges, their home remains a place of warmth, care, and togetherness.";
-    const socioEconomicDefault = "The family is indigent, and the client depends on their family's income to cover daily expenses and household needs. Unfortunately, there is insufficient funds to sustain the medical expenses of the patient.";
-    const evaluationDefault = `This case concerns a client in need of financial/medical assistance for urgent medical expenses. Due to the patient's socio-economic condition, the client is unable to support the medical expenses, prompting ${pronoun} to seek help from your good office, as reflected in the attached documents. The incurred expenses have placed a heavy burden on the family, depleting their financial resources. Consequently, they are earnestly requesting assistance from your office to alleviate their situation.`;
-    const recommendationDefault = "Due to the lack of sufficient income and the absence of alternative financial resources to meet the patient's needs, the undersigned worker respectfully recommends that the patient be considered for assistance from your office to cover the urgent medical expenses required.";
+    const homeConditionDefault = `The client resides in a modest home with ${pronoun} family. The home of the family in modest circumstances is simple but functional. While the house may not have the latest appliances or decor, it is clean and maintained to the best of the family's ability. The family may prioritize practicality over style, and although they may face financial challenges, their home remains a place of warmth, care, and togetherness.`;
+    const _purposeForDefault = (c.purpose || "").toLowerCase();
+    const _defaultSubject = _purposeForDefault.includes('medical') ? 'patient' : _purposeForDefault.includes('burial') ? 'deceased' : 'client';
+    const _defaultPossessive = _defaultSubject + "'s";
+    const _assistanceType = _purposeForDefault.includes('medical') ? 'medical' : _purposeForDefault.includes('burial') ? 'burial' : _purposeForDefault.includes('educational') ? 'educational' : 'financial';
+    const _expenseType = _assistanceType === 'medical' ? 'medical expenses' : _assistanceType === 'burial' ? 'burial expenses' : _assistanceType === 'educational' ? 'educational expenses' : 'urgent expenses';
+    const socioEconomicDefault = `The family is indigent, and the client depends on their family's income to cover daily expenses and household needs. Unfortunately, there is insufficient funds to sustain the ${_expenseType} of the ${_defaultSubject}.`;
+    const evaluationDefault = `This case concerns a client in need of ${_assistanceType} assistance for ${_expenseType}. Due to the ${_defaultPossessive} socio-economic condition, the client is unable to support the ${_expenseType}, prompting ${pronoun} to seek help from your good office, as reflected in the attached documents. The incurred expenses have placed a heavy burden on the family, depleting their financial resources. Consequently, they are earnestly requesting assistance from your office to alleviate their situation.`;
+    const recommendationDefault = `Due to the lack of sufficient income and the absence of alternative financial resources to meet the ${_defaultPossessive} needs, the undersigned worker respectfully recommends that the ${_defaultSubject} be considered for assistance from your office to cover the ${_expenseType} required.`;
 
     const clientName = escapeHtml((c.client?.fullName || c.client?.full_name || c.client?.name || c.clientName || c.client_name || "")).toUpperCase() || notProvided;
     const clientAge = escapeHtml(String(c.client?.age || "")) || notProvided;
@@ -2233,7 +2274,7 @@ async function printDocument(){
     const clientFirstName = (c.client?.firstName || c.client?.first_name || "").trim();
     const clientLastName = (c.client?.lastName || c.client?.last_name || "").trim();
     const clientFullName = (c.client?.fullName || c.client?.full_name || clientFirstName + " " + clientLastName).trim();
-    const ip = boldProblemText(escapeHtml(rewriteProblemPresented(rawProblem, purpose, clientFullName, c.client))) || notProvided;
+    const ip = boldProblemText(escapeHtml(rewriteProblemPresented(rawProblem, purpose, clientFullName, c.client, c.household || c.familyMembers || []))) || notProvided;
     const ih = escapeHtml(c.interview?.interviewHousehold || c.interview?.interview_household || c.interview?.homeCondition || "") || homeConditionDefault;
     const ie = escapeHtml(c.interview?.interviewNotes || c.interview?.interview_notes || c.interview?.socioEconomic || "") || socioEconomicDefault;
     const iw = escapeHtml(c.interview?.socialWorkerAssessment || c.interview?.social_worker_assessment || c.interview?.evaluation || "") || evaluationDefault;
@@ -2600,7 +2641,7 @@ function renderCaseDetail(){
     c.agencies = c.submittedTo ? c.submittedTo.split(',').map(s => s.trim()).filter(Boolean) : [];
   }
   if (!c.statusHistory) c.statusHistory = [];
-  if (!c.household) c.household = [];
+  if (!c.household) c.household = c.familyMembers || [];
 
   // Set selectedAgency to the first available agency from the case
   if (c.agencies && c.agencies.length > 0) {
@@ -3094,10 +3135,17 @@ async function loadDocumentPreview(caseId){
   const famRows = (c.familyMembers || c.household || []).filter(m=>m.fullName || m.name || m.full_name);
 
   const notProvided = "Not Provided";
-  const homeConditionDefault = "The client resides in a modest home with his/her family. The home of the family in modest circumstances is simple but functional. While the house may not have the latest appliances or decor, it is clean and maintained to the best of the family's ability. The family may prioritize practicality over style, and although they may face financial challenges, their home remains a place of warmth, care, and togetherness.";
-  const socioEconomicDefault = "The family is indigent, and the client depends on their family's income to cover daily expenses and household needs. Unfortunately, there is insufficient funds to sustain the medical expenses of the patient.";
-  const evaluationDefault = "This case concerns a client in need of financial/medical assistance for urgent medical expenses. Due to the patient's socio-economic condition, the client is unable to support the medical expenses, prompting her to seek help from your good office, as reflected in the attached documents. The incurred expenses have placed a heavy burden on the family, depleting their financial resources. Consequently, they are earnestly requesting assistance from your office to alleviate their situation.";
-  const recommendationDefault = "Due to the lack of sufficient income and the absence of alternative financial resources to meet the patient's needs, the undersigned worker respectfully recommends that the patient be considered for assistance from your office to cover the urgent medical expenses required.";
+  const _clientSexForDefault2 = (c.client?.sex || c.client?.gender || "").toLowerCase();
+  const _pronoun2 = _clientSexForDefault2 === 'male' ? 'his' : 'her';
+  const _purposeForDefault2 = (c.purpose || "").toLowerCase();
+  const _defaultSubject2 = _purposeForDefault2.includes('medical') ? 'patient' : _purposeForDefault2.includes('burial') ? 'deceased' : 'client';
+  const _defaultPossessive2 = _defaultSubject2 + "'s";
+  const _assistanceType2 = _purposeForDefault2.includes('medical') ? 'medical' : _purposeForDefault2.includes('burial') ? 'burial' : _purposeForDefault2.includes('educational') ? 'educational' : 'financial';
+  const _expenseType2 = _assistanceType2 === 'medical' ? 'medical expenses' : _assistanceType2 === 'burial' ? 'burial expenses' : _assistanceType2 === 'educational' ? 'educational expenses' : 'urgent expenses';
+  const homeConditionDefault = `The client resides in a modest home with ${_pronoun2} family. The home of the family in modest circumstances is simple but functional. While the house may not have the latest appliances or decor, it is clean and maintained to the best of the family's ability. The family may prioritize practicality over style, and although they may face financial challenges, their home remains a place of warmth, care, and togetherness.`;
+  const socioEconomicDefault = `The family is indigent, and the client depends on their family's income to cover daily expenses and household needs. Unfortunately, there is insufficient funds to sustain the ${_expenseType2} of the ${_defaultSubject2}.`;
+  const evaluationDefault = `This case concerns a client in need of ${_assistanceType2} assistance for ${_expenseType2}. Due to the ${_defaultPossessive2} socio-economic condition, the client is unable to support the ${_expenseType2}, prompting ${_pronoun2} to seek help from your good office, as reflected in the attached documents. The incurred expenses have placed a heavy burden on the family, depleting their financial resources. Consequently, they are earnestly requesting assistance from your office to alleviate their situation.`;
+  const recommendationDefault = `Due to the lack of sufficient income and the absence of alternative financial resources to meet the ${_defaultPossessive2} needs, the undersigned worker respectfully recommends that the ${_defaultSubject2} be considered for assistance from your office to cover the ${_expenseType2} required.`;
 
   const clientName = escapeHtml((c.client?.fullName || c.client?.full_name || c.client?.name || c.clientName || c.client_name || "")).toUpperCase() || notProvided;
   const clientAge = escapeHtml(String(c.client?.age || "")) || notProvided;
@@ -3119,7 +3167,7 @@ async function loadDocumentPreview(caseId){
   const clientFirstName = (c.client?.firstName || c.client?.first_name || "").trim();
   const clientLastName = (c.client?.lastName || c.client?.last_name || "").trim();
   const clientFullName = (c.client?.fullName || c.client?.full_name || clientFirstName + " " + clientLastName).trim();
-  const ip = boldProblemText(escapeHtml(rewriteProblemPresented(rawProblem, purpose, clientFullName, c.client))) || notProvided;
+  const ip = boldProblemText(escapeHtml(rewriteProblemPresented(rawProblem, purpose, clientFullName, c.client, c.household || c.familyMembers || []))) || notProvided;
   const ih = escapeHtml(c.interview?.interviewHousehold || c.interview?.interview_household || c.interview?.homeCondition || "") || homeConditionDefault;
   const ie = escapeHtml(c.interview?.interviewNotes || c.interview?.interview_notes || c.interview?.socioEconomic || "") || socioEconomicDefault;
   const iw = escapeHtml(c.interview?.socialWorkerAssessment || c.interview?.social_worker_assessment || c.interview?.evaluation || "") || evaluationDefault;
@@ -3476,10 +3524,17 @@ async function renderDocument(){
   const famRows = (c.familyMembers || c.household || []).filter(m=>m.fullName || m.name);
 
   const notProvided = "Not Provided";
-  const homeConditionDefault = "The client resides in a modest home with his/her family. The home of the family in modest circumstances is simple but functional. While the house may not have the latest appliances or decor, it is clean and maintained to the best of the family's ability. The family may prioritize practicality over style, and although they may face financial challenges, their home remains a place of warmth, care, and togetherness.";
-  const socioEconomicDefault = "The family is indigent, and the client depends on their family's income to cover daily expenses and household needs. Unfortunately, there is insufficient funds to sustain the medical expenses of the patient.";
-  const evaluationDefault = "This case concerns a client in need of financial/medical assistance for urgent medical expenses. Due to the patient's socio-economic condition, the client is unable to support the medical expenses, prompting her to seek help from your good office, as reflected in the attached documents. The incurred expenses have placed a heavy burden on the family, depleting their financial resources. Consequently, they are earnestly requesting assistance from your office to alleviate their situation.";
-  const recommendationDefault = "Due to the lack of sufficient income and the absence of alternative financial resources to meet the patient's needs, the undersigned worker respectfully recommends that the patient be considered for assistance from your office to cover the urgent medical expenses required.";
+  const _clientSexForDefault3 = (c.client?.sex || c.client?.gender || "").toLowerCase();
+  const _pronoun3 = _clientSexForDefault3 === 'male' ? 'his' : 'her';
+  const _purposeForDefault3 = (c.purpose || "").toLowerCase();
+  const _defaultSubject3 = _purposeForDefault3.includes('medical') ? 'patient' : _purposeForDefault3.includes('burial') ? 'deceased' : 'client';
+  const _defaultPossessive3 = _defaultSubject3 + "'s";
+  const _assistanceType3 = _purposeForDefault3.includes('medical') ? 'medical' : _purposeForDefault3.includes('burial') ? 'burial' : _purposeForDefault3.includes('educational') ? 'educational' : 'financial';
+  const _expenseType3 = _assistanceType3 === 'medical' ? 'medical expenses' : _assistanceType3 === 'burial' ? 'burial expenses' : _assistanceType3 === 'educational' ? 'educational expenses' : 'urgent expenses';
+  const homeConditionDefault = `The client resides in a modest home with ${_pronoun3} family. The home of the family in modest circumstances is simple but functional. While the house may not have the latest appliances or decor, it is clean and maintained to the best of the family's ability. The family may prioritize practicality over style, and although they may face financial challenges, their home remains a place of warmth, care, and togetherness.`;
+  const socioEconomicDefault = `The family is indigent, and the client depends on their family's income to cover daily expenses and household needs. Unfortunately, there is insufficient funds to sustain the ${_expenseType3} of the ${_defaultSubject3}.`;
+  const evaluationDefault = `This case concerns a client in need of ${_assistanceType3} assistance for ${_expenseType3}. Due to the ${_defaultPossessive3} socio-economic condition, the client is unable to support the ${_expenseType3}, prompting ${_pronoun3} to seek help from your good office, as reflected in the attached documents. The incurred expenses have placed a heavy burden on the family, depleting their financial resources. Consequently, they are earnestly requesting assistance from your office to alleviate their situation.`;
+  const recommendationDefault = `Due to the lack of sufficient income and the absence of alternative financial resources to meet the ${_defaultPossessive3} needs, the undersigned worker respectfully recommends that the ${_defaultSubject3} be considered for assistance from your office to cover the ${_expenseType3} required.`;
 
   let selectOptions = (c.agencies || []).map(a => {
     const agObj = AGENCIES.find(x => x.key === a);
@@ -3509,7 +3564,7 @@ async function renderDocument(){
   const clientFirstName = (c.client?.firstName || c.client?.first_name || "").trim();
   const clientLastName = (c.client?.lastName || c.client?.last_name || "").trim();
   const clientFullName = (c.client?.fullName || c.client?.full_name || clientFirstName + " " + clientLastName).trim();
-  const ip = boldProblemText(escapeHtml(rewriteProblemPresented(rawProblem, purpose, clientFullName, c.client))) || notProvided;
+  const ip = boldProblemText(escapeHtml(rewriteProblemPresented(rawProblem, purpose, clientFullName, c.client, c.household || c.familyMembers || []))) || notProvided;
   const ih = escapeHtml(c.interview?.interviewHousehold || c.interview?.interview_household || c.interview?.homeCondition || "") || homeConditionDefault;
   const ie = escapeHtml(c.interview?.interviewNotes || c.interview?.interview_notes || c.interview?.socioEconomic || "") || socioEconomicDefault;
   const iw = escapeHtml(c.interview?.socialWorkerAssessment || c.interview?.social_worker_assessment || c.interview?.evaluation || "") || evaluationDefault;

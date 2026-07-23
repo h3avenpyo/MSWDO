@@ -34,12 +34,12 @@
             --info-bg: #EEF2FF;
             --purple: #7C3AED;
             --purple-bg: #F3E8FF;
-            --shadow: 0 4px 6px -1px rgba(0,0,0,.05);
+            --shadow: 0 10px 30px rgba(15,23,42,.08);
             --font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
 
         *, *::before, *::after { box-sizing: border-box; }
-        html, body { margin: 0; padding: 0; height: 100%; background: var(--background); color: var(--text-primary); font-family: var(--font-family); }
+        html, body { margin: 0; padding: 0; height: 100%; background: var(--background); color: var(--text-primary); font-family: var(--font-family); overflow-x: hidden; overflow-y: auto; }
         body { font-size: 14px; line-height: 1.5; }
         h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
         button { font-family: inherit; cursor: pointer; }
@@ -76,7 +76,7 @@
     flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
     max-width: calc(100% - 260px); min-height: 100vh;
     display: flex; flex-direction: column; overflow-y: auto;
-    animation: fadeIn .3s ease;
+    overflow-x: hidden;
 }
 
         /* ---------- Buttons ---------- */
@@ -152,7 +152,7 @@
         .filter-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,58,138,0.15); }
 
         /* ---------- Table Scroll ---------- */
-        .table-scroll { flex: 1; overflow-y: auto; min-height: 0; border-radius: 8px; border: 1px solid var(--border); }
+        .table-scroll { flex: 1; overflow-y: auto; min-height: 0; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; }
         .table-scroll table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         .table-scroll thead { position: sticky; top: 0; z-index: 1; background: var(--surface); }
         .table-scroll th {
@@ -170,23 +170,6 @@
         .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
         .badge-active { background: var(--success-bg); color: var(--success); }
         .badge-pending { background: #FEF3C7; color: #92400E; }
-
-        /* ---------- Pagination ---------- */
-        .pagination { display: flex; justify-content: center; gap: 4px; margin: 0; list-style: none; padding: 0; }
-        .pagination .page-item { margin: 0; }
-        .pagination .page-link,
-        .pagination .page-item span {
-            display: inline-flex; align-items: center; justify-content: center;
-            border: 1px solid var(--border); color: var(--text-primary); padding: 0.375rem 0.75rem;
-            border-radius: 6px; text-decoration: none; background: var(--surface);
-            transition: all 0.2s; min-width: 40px; text-align: center; font-size: 13px; font-weight: 500;
-        }
-        .pagination .page-link:hover,
-        .pagination .page-item span:hover { background-color: var(--primary); color: white; border-color: var(--primary); }
-        .pagination .page-item.active .page-link,
-        .pagination .page-item.active span { background-color: var(--primary); color: white; border-color: var(--primary); }
-        .pagination .page-item.disabled .page-link,
-        .pagination .page-item.disabled span { color: var(--text-muted); background-color: var(--background); border-color: var(--border); cursor: not-allowed; }
 
         /* ---------- Dropdown ---------- */
         .dropdown { position: relative; display: inline-block; }
@@ -210,15 +193,6 @@
         @media (max-width: 1200px) {
             .main { padding: 24px; }
         }
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.show { transform: translateX(0); }
-            .main { margin-left: 0; max-width: 100%; padding: 20px; }
-            .filter-row { flex-direction: column; align-items: stretch; }
-            .filter-left { flex-direction: column; }
-            .filter-group.search-group, .filter-group.select-group { min-width: auto; width: 100%; }
-            .filter-right { flex-wrap: wrap; }
-        }
 
         /* ---------- Animations ---------- */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -227,25 +201,130 @@
         /* ── Sidebar Overlay ── */
         .sidebar-overlay.active { display: block !important; }
 
+        /* ── Hamburger Button ── */
+        .hamburger-btn {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 1002;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: background 0.2s;
+        }
+        .hamburger-btn:hover { background: var(--primary-hover); }
+
         /* ── Responsive: Tablet (< 1024px) ── */
         @media (max-width: 1023px) {
+            .hamburger-btn { display: flex; }
             .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
             .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; }
-            .main, .main-content { padding: 16px !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
             .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
             .dashboard-grid { grid-template-columns: 1fr !important; }
         }
 
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
-            .main, .main-content { padding: 12px !important; }
-            .stat-cards { grid-template-columns: 1fr !important; }
+            .mobile-select-all { display: flex !important; }
+            .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
             .topnav, .top-navbar { padding: 10px 12px !important; }
             .topnav-datetime, .navbar-datetime { display: none !important; }
-            .filter-bar, .filter-group { flex-wrap: wrap; }
-            .filter-bar > div, .filter-group > div { min-width: 0 !important; }
-            .filter-group.search-group { width: 100% !important; }
+
+            /* ── Filter → stack ── */
+            .filter-section { margin-bottom: 1rem; }
+            .filter-row { flex-direction: column !important; gap: 10px !important; }
+            .filter-left { flex-direction: column !important; gap: 10px !important; width: 100% !important; }
+            .filter-group.search-group, .filter-group.select-group { min-width: 0 !important; width: 100% !important; }
+            .filter-right { width: 100% !important; flex-wrap: wrap !important; gap: 8px !important; display: flex !important; }
+            .filter-right > * { flex: 1 1 calc(50% - 4px) !important; min-width: 0 !important; }
+            .filter-right > a, .filter-right > button, .filter-right .btn, .filter-right > div { width: 100% !important; justify-content: center !important; text-align: center !important; padding: 8px 10px !important; font-size: 12px !important; }
+            .filter-right > a { display: inline-flex !important; align-items: center !important; justify-content: center !important; }
+
+            /* ── Table Card ── */
+            .table-card { padding: 1rem !important; border-radius: 12px !important; }
+            .table-card-title { font-size: 1rem !important; margin-bottom: 1rem !important; }
+
+            /* ── Table → Card layout ── */
+            .table-scroll { border: none !important; overflow: visible !important; border-radius: 0 !important; }
+            .table-scroll table { table-layout: auto !important; width: 100%; }
+            .table-scroll thead { display: none !important; }
+            .table-scroll tbody tr {
+                display: block;
+                background: var(--surface);
+                border: 1px solid #D1D5DB;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            }
+            .table-scroll tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border: none;
+                font-size: 0.82rem;
+                gap: 8px;
+            }
+            .table-scroll tbody td:not(:last-child) {
+                border-bottom: 1px solid var(--border);
+            }
+            .table-scroll tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--text-secondary);
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                flex-shrink: 0;
+                min-width: 70px;
+            }
+            .table-scroll tbody td.col-check {
+                justify-content: flex-end;
+                padding: 8px 0 4px;
+                border-bottom: none;
+            }
+            .table-scroll tbody td.col-check::before { display: none; }
+            .table-scroll tbody td[data-label="#"] {
+                display: none !important;
+            }
+            .table-scroll tbody td[data-label="Action"] {
+                justify-content: flex-end;
+                padding-top: 8px;
+                border-bottom: none;
+            }
+            .table-scroll tbody td[data-label="Action"]::before { display: none; }
+            .table-scroll tbody td .badge { font-size: 0.7rem; }
+
+            /* ── Action buttons → smaller for side-by-side ── */
+            .table-scroll tbody td[data-label="Action"] .actions { gap: 6px !important; }
+            .table-scroll tbody td[data-label="Action"] .actions > button,
+            .table-scroll tbody td[data-label="Action"] .actions > a { padding: 4px 8px !important; height: 32px !important; min-width: 32px !important; }
+            .table-scroll tbody td[data-label="Action"] .actions > button[style*="padding:6px 10px"],
+            .table-scroll tbody td[data-label="Action"] .actions > a[style*="padding:6px 10px"] { padding: 4px 8px !important; }
+            .table-scroll tbody td[data-label="Action"] .actions > button[style*="height:34px"],
+            .table-scroll tbody td[data-label="Action"] .actions > a[style*="height:34px"] { height: 32px !important; }
+            .table-scroll tbody td[data-label="Action"] .actions > button[style*="padding:6px 10px"][style*="height:34px"],
+            .table-scroll tbody td[data-label="Action"] .actions > a[style*="padding:6px 10px"][style*="height:34px"] { padding: 4px 8px !important; height: 32px !important; min-width: 32px !important; }
+            .table-scroll tbody td[data-label="Action"] .actions > button i,
+            .table-scroll tbody td[data-label="Action"] .actions > a i { width: 14px !important; height: 14px !important; }
+
+            /* ── Modal ── */
+            #seniorModal > div { max-width: 100% !important; border-radius: 12px !important; max-height: 85vh !important; }
+            #seniorModal > div > div:first-child { padding: 12px 16px !important; }
+            #seniorModal > div > div:first-child h5 { font-size: 0.95rem !important; }
+            #seniorModal > div > div:nth-child(2) { padding: 16px !important; }
+            #seniorModal > div > div:last-child { padding: 12px 16px !important; flex-wrap: wrap !important; gap: 8px !important; }
+            #seniorModal > div > div:last-child button { flex: 1; min-width: 0; justify-content: center; }
         }
 
         /* ── Responsive: Small Mobile (< 480px) ── */
@@ -253,6 +332,9 @@
             .stat-card-icon { width: 40px !important; height: 40px !important; }
             .stat-card-value { font-size: 24px !important; }
             .stat-cards { gap: 12px !important; }
+            .filter-right > * { flex: 1 1 100% !important; }
+            .table-scroll tbody td { font-size: 0.78rem !important; }
+            .table-scroll tbody td::before { min-width: 60px !important; font-size: 0.68rem !important; }
         }
     </style>
 </head>
@@ -279,6 +361,11 @@
 </div>
 <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
+<!-- Hamburger Button (fixed position) -->
+<button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+    <i data-lucide="menu" style="width:24px;height:24px"></i>
+</button>
+
 <!-- ======================== MAIN ======================== -->
 <div class="main">
     @php
@@ -293,10 +380,9 @@
     @endphp
 
     <!-- Modern Page Header -->
-    <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8 flex-shrink-0"
-            style="margin-top:-32px;margin-left:-32px;margin-right:-32px;margin-bottom:24px">
-        <div class="flex items-center">
-            <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Senior Citizen Masterlist</h1>
+    <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
+            <div class="flex items-center">
+                <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Senior Citizen Masterlist</h1>
         </div>
         <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
             <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime"></div>
@@ -421,11 +507,17 @@
         </div>
 
         @if($seniors->count() > 0)
+            <!-- Mobile Select All (shown only on mobile since thead is hidden) -->
+            <div class="mobile-select-all" style="display:none;align-items:center;gap:8px;padding:8px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-secondary);">
+                <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px">
+                <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
+                <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
+            </div>
             <div class="table-scroll" style="flex:1;overflow-y:auto;min-height:0;border-radius:8px;border:1px solid var(--border);">
                 <table style="table-layout:fixed;">
                     <thead>
                         <tr>
-                            <th style="width:5%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="cursor:pointer;accent-color:var(--primary);"></th>
+                            <th class="col-check" style="width:5%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="cursor:pointer;accent-color:var(--primary);"></th>
                             <th style="width:12%;">Control No</th>
                             <th style="width:18%;">Full Name</th>
                             <th style="width:15%;">Barangay</th>
@@ -438,29 +530,29 @@
                     <tbody>
                         @foreach($seniors as $senior)
                             <tr>
-                                <td><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="cursor:pointer;accent-color:var(--primary);"></td>
-                                <td style="word-wrap:break-word;font-weight:600;">{{ $senior->control_number ?? '-' }}</td>
-                                <td style="word-wrap:break-word;">{{ $senior->full_name ?? '-' }}</td>
-                                <td style="word-wrap:break-word;">{{ $senior->barangay ?? '-' }}</td>
-                                <td>
+                                <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="cursor:pointer;accent-color:var(--primary);"></td>
+                                <td data-label="Control No" style="word-wrap:break-word;font-weight:600;">{{ $senior->control_number ?? '-' }}</td>
+                                <td data-label="Full Name" style="word-wrap:break-word;">{{ $senior->full_name ?? '-' }}</td>
+                                <td data-label="Barangay" style="word-wrap:break-word;">{{ $senior->barangay ?? '-' }}</td>
+                                <td data-label="Status">
                                     <span class="badge {{ $senior->status->value == 'active' ? 'badge-active' : 'badge-pending' }}">
                                         {{ ucfirst($senior->status->value ?? 'pending') }}
                                     </span>
                                 </td>
-                                <td style="word-wrap:break-word;">{{ $senior->address ?? '-' }}</td>
-                                <td style="word-wrap:break-word;">{{ $senior->age ?? '-' }}</td>
-                                <td>
-                                    <div style="display:flex;gap:4px;">
-                                        <button class="btn btn-sm primary" style="padding:6px 10px;height:34px;" onclick="viewProfile({{ $senior->id }})">
+                                <td data-label="Address" style="word-wrap:break-word;">{{ $senior->address ?? '-' }}</td>
+                                <td data-label="Age" style="word-wrap:break-word;">{{ $senior->age ?? '-' }}</td>
+                                <td data-label="Action">
+                                    <div class="actions" style="display:flex;gap:6px;">
+                                        <button class="btn btn-sm primary" style="padding:4px 8px;height:32px;min-width:32px;" onclick="viewProfile({{ $senior->id }})">
                                             <i data-lucide="eye" style="width:14px;height:14px"></i>
                                         </button>
-                                        <a href="{{ route('admin.senior.id-card', $senior->id) }}" class="btn btn-sm warning" style="padding:6px 10px;height:34px;" title="ID Card">
+                                        <a href="{{ route('admin.senior.id-card', $senior->id) }}" class="btn btn-sm warning" style="padding:4px 8px;height:32px;min-width:32px;" title="ID Card">
                                             <i data-lucide="id-card" style="width:14px;height:14px"></i>
                                         </a>
                                         <button class="btn btn-sm danger archive-senior-btn"
                                             data-id="{{ $senior->id }}"
                                             data-name="{{ $senior->full_name }}"
-                                            style="padding:6px 10px;height:34px;">
+                                            style="padding:4px 8px;height:32px;min-width:32px;">
                                             <i data-lucide="archive" style="width:14px;height:14px"></i>
                                         </button>
                                     </div>
@@ -705,6 +797,16 @@
         checkboxes.forEach(checkbox => {
             checkbox.checked = selectAll.checked;
         });
+        var mobileAll = document.getElementById('mobileSelectAll');
+        if (mobileAll) mobileAll.checked = selectAll.checked;
+        updateBulkActions();
+    }
+
+    function toggleSelectAllMobile(checked) {
+        var selectAll = document.getElementById('selectAll');
+        var checkboxes = document.querySelectorAll('.senior-checkbox');
+        checkboxes.forEach(cb => cb.checked = checked);
+        if (selectAll) selectAll.checked = checked;
         updateBulkActions();
     }
 
@@ -712,8 +814,13 @@
         const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
         const button = document.getElementById('bulkActionButton');
         const countSpan = document.getElementById('selectedCount');
+        const mobileCount = document.getElementById('mobileSelectedCount');
+        const mobileAll = document.getElementById('mobileSelectAll');
+        const total = document.querySelectorAll('.senior-checkbox').length;
 
         countSpan.textContent = checkboxes.length;
+        if (mobileCount) mobileCount.textContent = checkboxes.length > 0 ? checkboxes.length + ' / ' + total + ' selected' : '';
+        if (mobileAll) mobileAll.checked = checkboxes.length === total && total > 0;
 
         if (checkboxes.length > 0) {
             button.disabled = false;

@@ -39,12 +39,12 @@
             --icon-purple:#7C3AED;
             --sidebar-width:260px;
             --content-padding:32px;
-            --shadow:0 4px 6px -1px rgba(0,0,0,.05);
-            --shadow-hover:0 10px 25px rgba(0,0,0,.1);
+            --shadow:0 10px 30px rgba(15,23,42,.08);
+            --shadow-hover:0 20px 40px rgba(15,23,42,.12);
             --font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
         }
         *,*::before,*::after{box-sizing:border-box;}
-        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100vh;overflow-x: hidden;}
+        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100%;overflow-x:hidden;overflow-y:auto;}
         body{font-size:14px;line-height:1.5;}
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
         button{font-family:inherit;cursor:pointer;}
@@ -62,7 +62,7 @@
         .sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
 
         /* Main */
-        .main{flex:1;min-width:0;margin-left:var(--sidebar-width);padding:var(--content-padding);max-width:calc(100% - var(--sidebar-width));display:flex;flex-direction:column;min-height:100vh;overflow-y:auto;animation:fadeIn .3s ease;}
+        .main{flex:1;min-width:0;margin-left:var(--sidebar-width);padding:var(--content-padding);max-width:calc(100% - var(--sidebar-width));display:flex;flex-direction:column;min-height:100vh;overflow-y:auto;overflow-x:hidden;}
 
         /* Analytics Card */
         .analytics-card{background:var(--surface);border-radius:16px;padding:24px;box-shadow:var(--shadow);border:1px solid var(--border);height:100%;animation:fadeInUp .6s ease-out .1s backwards;}
@@ -125,28 +125,52 @@
         /* ── Sidebar Overlay ── */
         .sidebar-overlay.active { display: block !important; }
 
+        /* ── Hamburger Button ── */
+        .hamburger-btn {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 1002;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: background 0.2s;
+        }
+        .hamburger-btn:hover { background: var(--primary-hover); }
+
         /* ── Responsive: Tablet (< 1024px) ── */
         @media (max-width: 1023px) {
+            .hamburger-btn { display: flex; }
             .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
             .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; }
-            .main, .main-content { padding: 16px !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
             .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
             .dashboard-grid { grid-template-columns: 1fr !important; }
-            #filterForm > div { grid-template-columns: repeat(3, 1fr) !important; }
+            #analyticsFilterGrid { grid-template-columns: repeat(3, 1fr) !important; }
             .chart-container { height: 280px !important; }
         }
 
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
-            .main, .main-content { padding: 12px !important; }
+            .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
             .stat-cards { grid-template-columns: 1fr !important; }
             .topnav, .top-navbar { padding: 10px 12px !important; }
             .topnav-datetime, .navbar-datetime { display: none !important; }
             .filter-bar, .filter-group { flex-wrap: wrap; }
             .filter-bar > div, .filter-group > div { min-width: 0 !important; }
-            #filterForm > div { grid-template-columns: 1fr 1fr !important; }
+            #analyticsFilterGrid { grid-template-columns: 1fr 1fr !important; }
+            #analyticsFilterGrid > div:last-child { grid-column: 1 / -1; }
             .chart-container { height: 250px !important; }
+            .filter-card { padding: 12px !important; }
+            .charts-grid { grid-template-columns: 1fr !important; }
         }
 
         /* ── Responsive: Small Mobile (< 480px) ── */
@@ -154,7 +178,7 @@
             .stat-card-icon { width: 40px !important; height: 40px !important; }
             .stat-card-value { font-size: 24px !important; }
             .stat-cards { gap: 12px !important; }
-            #filterForm > div { grid-template-columns: 1fr !important; }
+            #analyticsFilterGrid { grid-template-columns: 1fr 1fr !important; }
         }
     </style>
 </head>
@@ -181,6 +205,11 @@
     </div>
     <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
+    <!-- Hamburger Button (fixed position) -->
+    <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+        <i data-lucide="menu" style="width:24px;height:24px"></i>
+    </button>
+
     <!-- Main Content -->
     <div class="main">
         @php
@@ -195,8 +224,7 @@
         @endphp
 
         <!-- Page Header -->
-        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none flex-shrink-0"
-                style="margin-top:-32px;margin-left:-32px;margin-right:-32px;margin-bottom:24px">
+        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
             <div class="flex items-center">
                 <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Statistics</h1>
             </div>
@@ -210,7 +238,7 @@
         <div class="filter-card animate-fade-in">
             <h3><i data-lucide="filter" style="width:16px;height:16px;color:var(--primary)"></i> Statistics Filters</h3>
             <form id="filterForm" method="GET" action="{{ route('admin.senior.analytics') }}" autocomplete="off">
-                <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;align-items:end">
+                <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;align-items:end" id="analyticsFilterGrid">
                     <div class="filter-field">
                         <label>Year</label>
                         <select name="year">
@@ -318,7 +346,7 @@
 
         <!-- Charts Row -->
         <div style="flex:1;overflow-y:auto;min-height:0;padding-bottom:8px;">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px" class="charts-grid">
             <div class="analytics-card animate-fade-in">
                 <div class="flex items-center justify-between mb-5">
                     <h3><i data-lucide="pie-chart" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px;color:var(--icon-blue)"></i>Gender Distribution</h3>
