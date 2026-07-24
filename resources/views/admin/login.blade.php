@@ -7,6 +7,7 @@
      <link rel="icon" type="image/x-icon" href="{{ asset('IserveIcon.ico') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         *, *::before, *::after {
@@ -26,8 +27,8 @@
         }
         body.login-mode-active {
             height: 100vh;
-            overflow: hidden;
-            padding: 0 1.5rem;
+            overflow-y: auto;
+            padding: 1.5rem;
         }
         .portal-container {
             width: 100%;
@@ -41,6 +42,7 @@
             flex-direction: row;
             align-items: center;
             gap: 4rem;
+            width: 100%;
         }
         .logo-wrapper {
             display: flex;
@@ -118,6 +120,14 @@
             }
             .portal-container.login-mode {
                 flex-direction: column;
+                gap: 1.5rem;
+            }
+            .portal-container.login-mode .logo-wrapper {
+                min-width: 0;
+            }
+            .login-panel {
+                max-width: 100%;
+                padding: 1.5rem;
             }
         }
         .role-card {
@@ -185,6 +195,7 @@
             animation: slideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             flex: 1;
             max-width: 28rem;
+            width: 100%;
         }
         @keyframes slideIn {
             from {
@@ -411,6 +422,23 @@
             width: 70%;
             height: 0.875rem;
         }
+        .portal-container.login-mode #backToHomepage {
+            display: none !important;
+        }
+
+        /* ── Responsive: Small Mobile (< 480px) ── */
+        @media (max-width: 479px) {
+            body { padding: 1rem; }
+            body.login-mode-active { padding: 1rem; }
+            .welcome-title { font-size: 1.75rem; }
+            .welcome-subtitle { font-size: 0.9rem; }
+            .login-panel { padding: 1.25rem; }
+            .logo-img { width: 4rem; height: 4rem; }
+            .portal-container.login-mode .logo-img { width: 5rem; height: 5rem; }
+            .portal-container.login-mode { gap: 1rem; }
+            .skeleton-logo { width: 4rem; height: 4rem; }
+            .skeleton-title { width: 16rem; max-width: 80%; }
+        }
     </style>
 </head>
 <body>
@@ -521,7 +549,14 @@
             </div>
         </div>
 
-
+        <div id="backToHomepage" style="text-align: center; margin-top: 1.5rem;">
+            <a href="/" style="color: #64748B; text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: color 0.2s ease; display: inline-flex; align-items: center; gap: 0.375rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 1rem; height: 1rem;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                </svg>
+                Back to Homepage
+            </a>
+        </div>
 
         <!-- Login Form Panel (Hidden initially) -->
         <div id="loginPanel" class="login-panel">
@@ -537,9 +572,20 @@
                 <p class="login-subtitle">Please enter your credentials below.</p>
             </div>
 
-            <form id="loginForm" onsubmit="handleLogin(event)">
+            @if ($errors->any())
+                <div class="alert alert-danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 0.5rem; background-color: #FEE2E2; border: 1px solid #FECACA; color: #991B1B;">
+                    <ul style="margin: 0; padding-left: 1.25rem;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form id="loginForm" method="POST" action="{{ route('admin.login') }}">
                 @csrf
                 <input type="hidden" id="selectedRoleInput" name="role" value="">
+                <input type="hidden" name="_debug" value="1">
 
                 <div class="form-group">
                     <label for="email" class="form-label">Email Address</label>
@@ -568,6 +614,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Hide loading overlay when page is fully loaded
         window.addEventListener('load', function() {
@@ -576,12 +623,52 @@
             }, 1000);
         });
 
-        function handleLogin(event) {
-            event.preventDefault();
+        // Welcome popup — shows once ever per browser
+        (function showWelcomeOnce() {
+            if (localStorage.getItem('mswdo_welcome_seen')) return;
+            function tryPopup() {
+                if (typeof Swal === 'undefined') { setTimeout(tryPopup, 100); return; }
+                localStorage.setItem('mswdo_welcome_seen', '1');
+                Swal.fire({
+                    title: 'Welcome to MSWDO Silang Portal!',
+                    html: '<div style="text-align:center;line-height:1.7;color:#475569;font-size:15px">' +
+                          '<p style="margin:0 0 8px">Your centralized platform for social welfare management.</p>' +
+                          '<p style="margin:0;font-size:13px;color:#94A3B8">Select your role below to get started.</p>' +
+                          '</div>',
+                    icon: 'info',
+                    confirmButtonColor: '#1A237E',
+                    confirmButtonText: 'Get Started',
+                    background: '#ffffff',
+                    customClass: { popup: 'rounded-4 shadow-lg' },
+                    allowOutsideClick: false
+                });
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() { setTimeout(tryPopup, 800); });
+            } else {
+                setTimeout(tryPopup, 800);
+            }
+        })();
+
+        // Add form submission debugging
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
             const role = document.getElementById('selectedRoleInput').value;
-            // Bypass authentication and redirect to dashboard
-            window.location.href = '/admin/dashboard';
-        }
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            console.log('Form submitting...');
+            console.log('Role:', role);
+            console.log('Email:', email);
+            console.log('Password length:', password.length);
+            
+            if (!role) {
+                e.preventDefault();
+                alert('Please select a role first.');
+                return false;
+            }
+            
+            return true;
+        });
 
         function selectRole(roleName) {
             const container = document.getElementById('portalContainer');
