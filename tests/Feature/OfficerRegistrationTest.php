@@ -53,4 +53,42 @@ class OfficerRegistrationTest extends TestCase
         $this->assertSame(\App\Enums\UserRole::SeniorCitizenOfficer, $user->role);
         $this->assertSame('Senior Citizen Officer', $user->role->label());
     }
+
+    public function test_financial_step_roles_can_be_stored_and_cast(): void
+    {
+        $email1 = 'fin.step1.' . uniqid() . '@example.com';
+        $email2 = 'fin.step2.' . uniqid() . '@example.com';
+
+        // Test financialstep1
+        $this->post(route('admin.officers.store'), [
+            'name' => 'Fin Step 1 Officer ' . uniqid(),
+            'email' => $email1,
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
+            'role' => 'financialstep1',
+            'phone' => '09170000002',
+            'status' => 'active',
+        ])->assertRedirect(route('admin.add-officers'));
+
+        $user1 = User::where('email', $email1)->first();
+        $this->assertNotNull($user1);
+        $this->assertSame(\App\Enums\UserRole::FinancialStep1, $user1->role);
+        $this->assertSame('Financial Assistance Step 1', $user1->role->label());
+
+        // Test financialstep2
+        $this->post(route('admin.officers.store'), [
+            'name' => 'Fin Step 2 Officer ' . uniqid(),
+            'email' => $email2,
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
+            'role' => 'financialstep2',
+            'phone' => '09170000003',
+            'status' => 'active',
+        ])->assertRedirect(route('admin.add-officers'));
+
+        $user2 = User::where('email', $email2)->first();
+        $this->assertNotNull($user2);
+        $this->assertSame(\App\Enums\UserRole::FinancialStep2, $user2->role);
+        $this->assertSame('Financial Assistance Step 2', $user2->role->label());
+    }
 }

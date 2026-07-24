@@ -33,14 +33,18 @@ class AuthController extends Controller
         $moduleRoleMap = [
             'Social Case Study' => ['social_worker'],
             'Senior Citizen' => ['staff', 'Senior Citizen officer'],
-            'Financial Assistance Officer' => ['staff', 'Financial assistance officer'],
+            'Financial Assistance Officer' => ['staff', 'Financial assistance officer', 'financialstep1', 'financialstep2'],
+            'Financial Step 1' => ['staff', 'financialstep1', 'Financial assistance officer'],
+            'Financial Step 2' => ['staff', 'financialstep2', 'Financial assistance officer'],
             'Admin' => ['admin'],
         ];
 
         $moduleRedirects = [
             'Social Case Study' => 'admin.social-case.dashboard',
             'Senior Citizen' => 'admin.senior',
-            'Financial Assistance Officer' => 'admin.financial',
+            'Financial Assistance Officer' => 'admin.financial.step1',
+            'Financial Step 1' => 'admin.financial.step1',
+            'Financial Step 2' => 'admin.financial.step2',
             'Admin' => 'admin.dashboard',
         ];
 
@@ -59,6 +63,14 @@ class AuthController extends Controller
         ]);
 
         $redirectRoute = $moduleRedirects[$selectedModule] ?? 'admin.dashboard';
+
+        if (in_array($selectedModule, ['Financial Assistance Officer', 'Financial Step 1', 'Financial Step 2'], true)) {
+            if ($user->role->value === 'financialstep2') {
+                $redirectRoute = 'admin.financial.step2';
+            } else {
+                $redirectRoute = 'admin.financial.step1';
+            }
+        }
 
         return redirect()->route($redirectRoute);
     }

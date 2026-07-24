@@ -534,7 +534,7 @@
                     </svg>
                 </div>
                 <h3 class="role-title">Financial Assistance Officer</h3>
-                <p class="role-description">Process emergency cash grants, medical aid, and AICS distribution reviews.</p>
+                <p class="role-description">Process emergency cash grants, medical aid, financial step 1 & 2 reviews.</p>
             </div>
 
             <!-- Card 4: Admin -->

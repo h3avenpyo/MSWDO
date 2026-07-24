@@ -32,4 +32,45 @@ class AdminRoleLoginTest extends TestCase
         $this->assertSame($user->id, session('admin_user_id'));
         $this->assertSame('social_worker', session('admin_user_role'));
     }
+
+    public function test_financial_step_officers_can_login_via_single_financial_form(): void
+    {
+        $step1User = User::create([
+            'name' => 'Step 1 Officer',
+            'email' => 'step1.' . uniqid() . '@example.com',
+            'password' => Hash::make('Password123!'),
+            'role' => 'financialstep1',
+            'phone' => '09170000001',
+            'status' => 'active',
+        ]);
+
+        $step2User = User::create([
+            'name' => 'Step 2 Officer',
+            'email' => 'step2.' . uniqid() . '@example.com',
+            'password' => Hash::make('Password123!'),
+            'role' => 'financialstep2',
+            'phone' => '09170000002',
+            'status' => 'active',
+        ]);
+
+        // Login Step 1 user using single "Financial Assistance Officer" form option
+        $response1 = $this->post(route('admin.login'), [
+            'email' => $step1User->email,
+            'password' => 'Password123!',
+            'role' => 'Financial Assistance Officer',
+        ]);
+        $response1->assertRedirect(route('admin.financial.step1'));
+        $this->assertSame($step1User->id, session('admin_user_id'));
+        $this->assertSame('financialstep1', session('admin_user_role'));
+
+        // Login Step 2 user using single "Financial Assistance Officer" form option
+        $response2 = $this->post(route('admin.login'), [
+            'email' => $step2User->email,
+            'password' => 'Password123!',
+            'role' => 'Financial Assistance Officer',
+        ]);
+        $response2->assertRedirect(route('admin.financial.step2'));
+        $this->assertSame($step2User->id, session('admin_user_id'));
+        $this->assertSame('financialstep2', session('admin_user_role'));
+    }
 }

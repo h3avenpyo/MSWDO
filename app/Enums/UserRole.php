@@ -10,6 +10,8 @@ enum UserRole: string
     case Staff = 'staff';
     case SeniorCitizenOfficer = 'Senior Citizen officer';
     case FinancialAssistanceOfficer = 'Financial assistance officer';
+    case FinancialStep1 = 'financialstep1';
+    case FinancialStep2 = 'financialstep2';
 
     public function label(): string
     {
@@ -20,6 +22,8 @@ enum UserRole: string
             self::Staff => 'Staff',
             self::SeniorCitizenOfficer => 'Senior Citizen Officer',
             self::FinancialAssistanceOfficer => 'Financial Assistance Officer',
+            self::FinancialStep1 => 'Financial Assistance Step 1',
+            self::FinancialStep2 => 'Financial Assistance Step 2',
         };
     }
 }

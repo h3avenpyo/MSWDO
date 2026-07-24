@@ -44,7 +44,8 @@ Route::middleware(['admin.auth'])->group(function () {
 
 Route::get('/admin/add-officers', [OfficerController::class, 'addOfficers'])->name('admin.add-officers');
 Route::post('/admin/add-officers', [OfficerController::class, 'storeOfficer'])->name('admin.officers.store');
-Route::get('/admin/financial', [DashboardController::class, 'financial'])->name('admin.financial');
+Route::get('/admin/financial/step1', [DashboardController::class, 'financialStep1'])->name('admin.financial.step1');
+Route::get('/admin/financial/step2', [DashboardController::class, 'financialStep2'])->name('admin.financial.step2');
 Route::get('/admin/senior', [SeniorController::class, 'senior'])->name('admin.senior');
 Route::post('/admin/senior/clear-activities', [SeniorController::class, 'clearRecentActivities'])->name('admin.senior.clear-activities');
 Route::get('/admin/senior/registration', [SeniorController::class, 'seniorRegistration'])->name('admin.senior.registration');

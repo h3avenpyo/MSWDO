@@ -54,8 +54,13 @@ class DashboardController extends Controller
         return view('admin.dashboard', $data);
     }
 
-    public function financial()
+    public function financialStep1()
     {
-        return view('admin.financial');
+        return view('admin.financial.step1');
+    }
+
+    public function financialStep2()
+    {
+        return view('admin.financial.step2');
     }
 }
