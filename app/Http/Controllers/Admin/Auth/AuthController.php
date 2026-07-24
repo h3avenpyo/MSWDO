@@ -31,10 +31,10 @@ class AuthController extends Controller
         }
 
         $moduleRoleMap = [
-            'Social Case Study' => 'social_worker',
-            'Senior Citizen' => 'staff',
-            'Financial Assistance Officer' => 'staff',
-            'Admin' => 'admin',
+            'Social Case Study' => ['social_worker'],
+            'Senior Citizen' => ['staff', 'Senior Citizen officer'],
+            'Financial Assistance Officer' => ['staff', 'Financial assistance officer'],
+            'Admin' => ['admin'],
         ];
 
         $moduleRedirects = [
@@ -45,9 +45,9 @@ class AuthController extends Controller
         ];
 
         $selectedModule = $request->role;
-        $expectedRoleValue = $moduleRoleMap[$selectedModule] ?? null;
+        $allowedRoles = (array) ($moduleRoleMap[$selectedModule] ?? []);
 
-        if ($expectedRoleValue && $user->role->value !== $expectedRoleValue) {
+        if (! empty($allowedRoles) && ! in_array($user->role->value, $allowedRoles, true)) {
             return back()->withErrors(['role' => "This account is not authorized for the selected role."])->withInput();
         }
 

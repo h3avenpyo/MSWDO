@@ -501,8 +501,12 @@
                         <div class="select-dropdown-wrap">
                             <select class="form-select" name="role" id="roleSelect" required>
                                 <option value="" disabled selected>▼ Select Role / Assignment</option>
-                                <option value="Financial assistance officer" {{ old('role') == 'Financial assistance officer' ? 'selected' : '' }}>Financial assistance officer</option>
-                                <option value="Senior Citizen officer" {{ old('role') == 'Senior Citizen officer' ? 'selected' : '' }}>Senior Citizen officer</option>
+                                <option value="Senior Citizen officer" {{ old('role') == 'Senior Citizen officer' ? 'selected' : '' }}>Senior Citizen Officer</option>
+                                <option value="Financial assistance officer" {{ old('role') == 'Financial assistance officer' ? 'selected' : '' }}>Financial Assistance Officer</option>
+                                <option value="social_worker" {{ old('role') == 'social_worker' ? 'selected' : '' }}>Social Worker</option>
+                                <option value="encoder" {{ old('role') == 'encoder' ? 'selected' : '' }}>Encoder</option>
+                                <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Staff</option>
+                                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrator</option>
                             </select>
                         </div>
                         <p class="select-hint"><i class="fas fa-info-circle"></i> Click to open the dropdown and choose a role</p>
@@ -593,7 +597,7 @@
                                     </div>
                                 </td>
                                 <td class="d-none d-md-table-cell">{{ $officer->email ?? '-' }}</td>
-                                <td>{{ $officer->role ?? '-' }}</td>
+                                <td>{{ $officer->role?->label() ?? $officer->role ?? '-' }}</td>
                                 <td class="d-none d-lg-table-cell">{{ $officer->phone ?? '-' }}</td>
                                 <td class="d-none d-sm-table-cell"><span class="status-badge badge-active">Active</span></td>
                                 <td>

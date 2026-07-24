@@ -351,7 +351,7 @@
                                 <tr>
                                     <td>{{ $officer->name }}</td>
                                     <td class="d-none d-md-table-cell">{{ $officer->email }}</td>
-                                    <td>{{ $officer->role }}</td>
+                                    <td>{{ $officer->role?->label() ?? $officer->role }}</td>
                                     <td class="d-none d-lg-table-cell">{{ $officer->phone ?? '-' }}</td>
                                     <td>
                                         @if($officer->status == 'active')

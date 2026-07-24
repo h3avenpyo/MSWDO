@@ -31,4 +31,26 @@ class OfficerRegistrationTest extends TestCase
         $this->assertSame('encoder', $user->role->value);
         $this->assertSame('09170000000', $user->phone);
     }
+
+    public function test_senior_citizen_officer_role_can_be_stored_and_cast(): void
+    {
+        $email = 'senior.officer.' . uniqid() . '@example.com';
+
+        $response = $this->post(route('admin.officers.store'), [
+            'name' => 'Senior Officer ' . uniqid(),
+            'email' => $email,
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
+            'role' => 'Senior Citizen officer',
+            'phone' => '09170000001',
+            'status' => 'active',
+        ]);
+
+        $response->assertRedirect(route('admin.add-officers'));
+
+        $user = User::where('email', $email)->first();
+        $this->assertNotNull($user);
+        $this->assertSame(\App\Enums\UserRole::SeniorCitizenOfficer, $user->role);
+        $this->assertSame('Senior Citizen Officer', $user->role->label());
+    }
 }

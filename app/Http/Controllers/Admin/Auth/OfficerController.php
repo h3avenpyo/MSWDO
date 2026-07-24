@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin\Auth;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class OfficerController extends Controller
 {
@@ -37,7 +39,7 @@ class OfficerController extends Controller
             }],
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'min:8'],
-            'role' => ['required', 'string', 'max:255'],
+            'role' => ['required', Rule::enum(UserRole::class)],
             'phone' => ['nullable', 'string', 'max:20'],
             'status' => ['required', 'in:active,inactive'],
             'signature_position' => ['nullable', 'in:osca_head,mswdo_officer'],
