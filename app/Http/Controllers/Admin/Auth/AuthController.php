@@ -42,9 +42,9 @@ class AuthController extends Controller
         $moduleRedirects = [
             'Social Case Study' => 'admin.social-case.dashboard',
             'Senior Citizen' => 'admin.senior',
-            'Financial Assistance Officer' => 'admin.financial.step1',
-            'Financial Step 1' => 'admin.financial.step1',
-            'Financial Step 2' => 'admin.financial.step2',
+            'Financial Assistance Officer' => 'admin.financial.financialstep1',
+            'Financial Step 1' => 'admin.financial.financialstep1',
+            'Financial Step 2' => 'admin.financial.financialstep2',
             'Admin' => 'admin.dashboard',
         ];
 
@@ -66,9 +66,9 @@ class AuthController extends Controller
 
         if (in_array($selectedModule, ['Financial Assistance Officer', 'Financial Step 1', 'Financial Step 2'], true)) {
             if ($user->role->value === 'financialstep2') {
-                $redirectRoute = 'admin.financial.step2';
+                $redirectRoute = 'admin.financial.financialstep2';
             } else {
-                $redirectRoute = 'admin.financial.step1';
+                $redirectRoute = 'admin.financial.financialstep1';
             }
         }
 

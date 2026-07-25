@@ -11,7 +11,11 @@
     @yield('page-styles')
 </head>
 <body>
-    @include('partials.admin-sidebar')
+    @hasSection('sidebar')
+        @yield('sidebar')
+    @else
+        @include('partials.admin-sidebar')
+    @endif
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <div class="main-content">

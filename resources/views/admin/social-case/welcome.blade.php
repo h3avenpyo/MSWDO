@@ -1,373 +1,1313 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Social Case Study System</title>
-<style>
-  :root{
-    --bg:#F6F7F5;
-    --surface:#FFFFFF;
-    --surface-sunken:#EFF1EE;
-    --ink:#182422;
-    --ink-soft:#5B665F;
-    --ink-faint:#8A938C;
-    --border:#DDE1D9;
-    --navy:#1F3B3B;
-    --navy-ink:#0F2323;
-    --teal:#2F7D6B;
-    --teal-bg:#E4F1EB;
-    --teal-ink:#1C5346;
-    --amber:#B8791E;
-    --amber-bg:#FBF0DE;
-    --amber-ink:#7A4F0F;
-    --red:#A3403A;
-    --red-bg:#FAE9E7;
-    --red-ink:#6E2B27;
-    --blue:#3B6EA5;
-    --blue-bg:#E7EFF7;
-    --blue-ink:#274A70;
-    --gray:#767E76;
-    --gray-bg:#ECEDE9;
-    --gray-ink:#4B514B;
-    --radius:10px;
-    --shadow:0 1px 2px rgba(15,35,35,.06);
-    font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Helvetica,Arial,sans-serif;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);}
-  body{font-size:14px;line-height:1.5;}
-  h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
-  button{font-family:inherit;cursor:pointer;}
-  input,select,textarea{font-family:inherit;font-size:14px;}
-  .app{display:flex;min-height:100vh;}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Case Study System</title>
+    <style>
+        :root {
+            --bg: #F6F7F5;
+            --surface: #FFFFFF;
+            --surface-sunken: #EFF1EE;
+            --ink: #182422;
+            --ink-soft: #5B665F;
+            --ink-faint: #8A938C;
+            --border: #DDE1D9;
+            --navy: #1F3B3B;
+            --navy-ink: #0F2323;
+            --teal: #2F7D6B;
+            --teal-bg: #E4F1EB;
+            --teal-ink: #1C5346;
+            --amber: #B8791E;
+            --amber-bg: #FBF0DE;
+            --amber-ink: #7A4F0F;
+            --red: #A3403A;
+            --red-bg: #FAE9E7;
+            --red-ink: #6E2B27;
+            --blue: #3B6EA5;
+            --blue-bg: #E7EFF7;
+            --blue-ink: #274A70;
+            --gray: #767E76;
+            --gray-bg: #ECEDE9;
+            --gray-ink: #4B514B;
+            --radius: 10px;
+            --shadow: 0 1px 2px rgba(15, 35, 35, .06);
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Helvetica, Arial, sans-serif;
+        }
 
-  /* ---------- Sidebar ---------- */
-  .sidebar{width:220px;flex-shrink:0;background:var(--navy);color:#EAF0EE;padding:20px 14px;display:flex;flex-direction:column;gap:2px;}
-  .brand{display:flex;align-items:center;gap:10px;padding:4px 8px 20px;}
-  .brand-mark{width:30px;height:30px;border-radius:7px;background:var(--teal);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#0B2019;flex-shrink:0;}
-  .brand-text{font-size:13px;line-height:1.25;}
-  .brand-text b{display:block;font-size:13.5px;letter-spacing:0.01em;}
-  .brand-text span{color:#9FB3AC;font-size:11px;}
-  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#C7D6D1;font-size:13.5px;background:transparent;border:none;text-align:left;width:100%;transition:background .12s;}
-  .nav-item:hover{background:rgba(255,255,255,.06);}
-  .nav-item.active{background:rgba(255,255,255,.12);color:#fff;font-weight:500;}
-  .nav-dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.55;flex-shrink:0;}
-  .nav-section-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#77897F;padding:16px 10px 6px;}
-  .sidebar-foot{margin-top:auto;padding:10px 8px 2px;font-size:11px;color:#6E8079;border-top:1px solid rgba(255,255,255,.08);padding-top:12px;}
+        * {
+            box-sizing: border-box;
+        }
 
-  /* ---------- Main ---------- */
-  .main{flex:1;min-width:0;padding:28px 36px 60px;max-width:1180px;}
-  .page-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;gap:16px;flex-wrap:wrap;}
-  .page-head h1{font-size:21px;}
-  .page-head p{margin:4px 0 0;color:var(--ink-soft);font-size:13.5px;}
-  .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:8px;font-size:13.5px;font-weight:500;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow);}
-  .btn:hover{border-color:#C6CCC2;}
-  .btn.primary{background:var(--navy);color:#fff;border-color:var(--navy);}
-  .btn.primary:hover{background:var(--navy-ink);}
-  .btn.danger{color:var(--red-ink);border-color:#E7C6C3;}
-  .btn.ghost{background:transparent;box-shadow:none;border-color:transparent;color:var(--ink-soft);}
-  .btn.ghost:hover{background:var(--surface-sunken);}
-  .btn:disabled{opacity:.45;cursor:not-allowed;}
-  .btn-sm{padding:5px 10px;font-size:12.5px;}
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            color: var(--ink);
+        }
 
-  /* ---------- Cards / grid ---------- */
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px;}
-  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);}
-  .stat-card .num{font-size:24px;font-weight:600;line-height:1.1;}
-  .stat-card .label{color:var(--ink-soft);font-size:12.5px;margin-top:4px;}
-  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;margin-bottom:18px;}
-  .panel h3{font-size:14.5px;margin-bottom:12px;}
+        body {
+            font-size: 14px;
+            line-height: 1.5;
+        }
 
-  /* ---------- Table ---------- */
-  table{width:100%;border-collapse:collapse;font-size:13.5px;}
-  th{text-align:left;color:var(--ink-soft);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.03em;padding:8px 10px;border-bottom:1px solid var(--border);}
-  td{padding:10px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
-  tr.row-click{cursor:pointer;}
-  tr.row-click:hover td{background:var(--surface-sunken);}
-  .empty{padding:40px 20px;text-align:center;color:var(--ink-faint);}
-  .empty i{font-size:26px;display:block;margin-bottom:8px;opacity:.5;}
+        h1,
+        h2,
+        h3,
+        h4 {
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
 
-  /* ---------- Badges ---------- */
-  .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:100px;font-size:12px;font-weight:500;white-space:nowrap;}
-  .b-draft{background:var(--gray-bg);color:var(--gray-ink);}
-  .b-review{background:var(--amber-bg);color:var(--amber-ink);}
-  .b-approved{background:var(--teal-bg);color:var(--teal-ink);}
-  .b-printed{background:var(--blue-bg);color:var(--blue-ink);}
-  .b-released{background:#DCEEDC;color:#25542A;}
-  .b-blocked{background:var(--red-bg);color:var(--red-ink);}
+        button {
+            font-family: inherit;
+            cursor: pointer;
+        }
 
-  /* ---------- Forms ---------- */
-  .field{margin-bottom:14px;}
-  .field label{display:block;font-size:12.5px;font-weight:500;color:var(--ink-soft);margin-bottom:5px;}
-  .field .hint{font-size:11.5px;color:var(--ink-faint);margin-top:4px;}
-  input[type=text],input[type=date],input[type=number],input[type=tel],select,textarea{
-    width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:7px;background:var(--surface);color:var(--ink);
-  }
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(47,125,107,.12);}
-  textarea{resize:vertical;min-height:70px;}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
-  @media (max-width:720px){.grid2,.grid3{grid-template-columns:1fr;}}
-  .checkbox-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--surface-sunken);}
-  .checkbox-row input{width:auto;}
-  .checkbox-row span{flex:1;font-size:13.5px;}
-  .pill-check{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;cursor:pointer;background:var(--surface);}
-  .pill-check.on{background:var(--teal-bg);border-color:var(--teal);color:var(--teal-ink);}
-  .pill-check input{display:none;}
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+            font-size: 14px;
+        }
 
-  /* ---------- Stepper ---------- */
-  .stepper{display:flex;align-items:center;margin-bottom:6px;}
-  .step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;}
-  .step .dot{width:26px;height:26px;border-radius:50%;background:var(--gray-bg);color:var(--gray-ink);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;border:2px solid var(--surface);z-index:1;}
-  .step.done .dot{background:var(--teal);color:#fff;}
-  .step.current .dot{background:var(--navy);color:#fff;}
-  .step .lbl{font-size:11px;color:var(--ink-soft);margin-top:6px;text-align:center;}
-  .step.done .lbl,.step.current .lbl{color:var(--ink);font-weight:500;}
-  .step-line{position:absolute;top:13px;left:-50%;width:100%;height:2px;background:var(--border);z-index:0;}
-  .step.done .step-line{background:var(--teal);}
-  .step:first-child .step-line{display:none;}
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
 
-  /* ---------- Eligibility timeline (signature element) ---------- */
-  .elig-wrap{background:var(--surface-sunken);border-radius:8px;padding:14px 16px;}
-  .elig-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
-  .elig-top .status-text{font-size:13px;font-weight:500;}
-  .elig-track{position:relative;height:8px;background:#DFE4DB;border-radius:100px;overflow:hidden;}
-  .elig-fill{position:absolute;top:0;left:0;height:100%;border-radius:100px;}
-  .elig-marks{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-faint);margin-top:6px;}
+        /* ---------- Sidebar ---------- */
+        .sidebar {
+            width: 220px;
+            flex-shrink: 0;
+            background: var(--navy);
+            color: #EAF0EE;
+            padding: 20px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
 
-  /* ---------- Detail layout ---------- */
-  .detail-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start;}
-  @media (max-width:900px){.detail-grid{grid-template-columns:1fr;}}
-  .kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--surface-sunken);font-size:13px;}
-  .kv span:first-child{color:var(--ink-soft);}
-  .kv span:last-child{font-weight:500;text-align:right;}
-  .agency-tag{display:inline-block;background:var(--blue-bg);color:var(--blue-ink);font-size:11.5px;padding:3px 8px;border-radius:6px;margin:0 5px 5px 0;}
-  .req-check{display:flex;align-items:center;gap:8px;padding:6px 0;}
-  .req-check.missing{color:var(--red-ink);}
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 8px 20px;
+        }
 
-  /* ---------- Modal ---------- */
-  .modal-overlay{position:fixed;inset:0;background:rgba(15,25,22,.42);display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;z-index:100;}
-  .modal{background:var(--surface);border-radius:12px;max-width:640px;width:100%;padding:24px 26px;box-shadow:0 12px 40px rgba(0,0,0,.18);}
-  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
-  .modal-close{background:none;border:none;font-size:18px;color:var(--ink-faint);padding:4px 8px;}
+        .brand-mark {
+            width: 30px;
+            height: 30px;
+            border-radius: 7px;
+            background: var(--teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: #0B2019;
+            flex-shrink: 0;
+        }
 
-  /* ---------- Document / print view ---------- */
-  .doc-page{background:#fff;border:1px solid var(--border);border-radius:8px;padding:48px 54px;max-width:760px;margin:0 auto;font-family:Georgia,'Times New Roman',serif;color:#1a1a1a;line-height:1.6;}
-  .doc-letterhead{text-align:center;border-bottom:2px solid #1a1a1a;padding-bottom:14px;margin-bottom:22px;}
-  .doc-letterhead .office{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#555;}
-  .doc-letterhead h2{font-family:Georgia,serif;font-size:17px;margin-top:6px;}
-  .doc-letterhead .addr{font-size:11px;color:#666;margin-top:4px;}
-  .doc-title{text-align:center;font-size:15px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
-  .doc-sub{text-align:center;font-size:12px;color:#555;margin-bottom:24px;}
-  .doc-section{margin-bottom:18px;}
-  .doc-section h4{font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #ccc;padding-bottom:4px;margin-bottom:8px;}
-  .doc-row{display:flex;font-size:13px;margin-bottom:4px;}
-  .doc-row .l{width:180px;color:#555;flex-shrink:0;}
-  .doc-body-text{font-size:13.3px;white-space:pre-wrap;}
-  .doc-sign{margin-top:44px;display:flex;justify-content:space-between;font-size:12.5px;}
-  .doc-sign .line{border-top:1px solid #333;padding-top:6px;width:220px;text-align:center;}
-  .doc-toolbar{max-width:760px;margin:0 auto 14px;display:flex;justify-content:space-between;align-items:center;}
-  @media print{
-    .no-print{display:none !important;}
-    .sidebar,.page-head,.toolbar-row{display:none !important;}
-    .main{padding:0;max-width:none;}
-    .doc-page{border:none;padding:0;max-width:none;}
-    body{background:#fff;}
-  }
+        .brand-text {
+            font-size: 13px;
+            line-height: 1.25;
+        }
 
-  .toolbar-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-  .search-box{position:relative;flex:1;min-width:180px;}
-  .search-box input{padding-left:32px;}
-  .search-box i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-faint);font-size:15px;}
-  .tabs{display:flex;gap:4px;background:var(--surface-sunken);padding:3px;border-radius:9px;width:fit-content;margin-bottom:16px;}
-  .tab-btn{border:none;background:transparent;padding:6px 13px;border-radius:7px;font-size:13px;color:var(--ink-soft);font-weight:500;}
-  .tab-btn.active{background:var(--surface);color:var(--ink);box-shadow:var(--shadow);}
-  .banner{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;}
-  .banner.warn{background:var(--amber-bg);color:var(--amber-ink);}
-  .banner.block{background:var(--red-bg);color:var(--red-ink);}
-  .banner.ok{background:var(--teal-bg);color:var(--teal-ink);}
-  .banner i{margin-top:1px;flex-shrink:0;}
-  .muted{color:var(--ink-soft);}
-  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;}
+        .brand-text b {
+            display: block;
+            font-size: 13.5px;
+            letter-spacing: 0.01em;
+        }
 
-  /* ── Topnav / Hamburger ── */
-  .topnav{display:none;}
+        .brand-text span {
+            color: #9FB3AC;
+            font-size: 11px;
+        }
 
-  /* ── Sidebar Overlay ── */
-  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;}
-  .sidebar-overlay.active{display:block;}
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 10px;
+            border-radius: 8px;
+            color: #C7D6D1;
+            font-size: 13.5px;
+            background: transparent;
+            border: none;
+            text-align: left;
+            width: 100%;
+            transition: background .12s;
+        }
 
-  /* ── Responsive: Tablet (< 1024px) ── */
-  @media (max-width:1023px){
-    .topnav{display:flex !important;align-items:center;gap:8px;padding:12px 16px;margin-bottom:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);}
-    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;transform:translateX(-100%) !important;z-index:1001 !important;transition:transform .25s ease;}
-    .sidebar.show{transform:translateX(0) !important;}
-    .main{margin-left:0 !important;max-width:100% !important;padding:16px !important;}
-  }
+        .nav-item:hover {
+            background: rgba(255, 255, 255, .06);
+        }
 
-  /* ── Responsive: Mobile (< 768px) ── */
-  @media (max-width:767px){
-    .main{padding:12px !important;}
-    .topnav{padding:10px 12px !important;}
-    .doc-page{padding:24px !important;}
-    .doc-row .l{width:120px !important;min-width:120px !important;}
-    .doc-sign .line{width:160px !important;}
-  }
-</style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+        .nav-item.active {
+            background: rgba(255, 255, 255, .12);
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .nav-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: .55;
+            flex-shrink: 0;
+        }
+
+        .nav-section-label {
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: #77897F;
+            padding: 16px 10px 6px;
+        }
+
+        .sidebar-foot {
+            margin-top: auto;
+            padding: 10px 8px 2px;
+            font-size: 11px;
+            color: #6E8079;
+            border-top: 1px solid rgba(255, 255, 255, .08);
+            padding-top: 12px;
+        }
+
+        /* ---------- Main ---------- */
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 28px 36px 60px;
+            max-width: 1180px;
+        }
+
+        .page-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 22px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .page-head h1 {
+            font-size: 21px;
+        }
+
+        .page-head p {
+            margin: 4px 0 0;
+            color: var(--ink-soft);
+            font-size: 13.5px;
+        }
+
+        .btn {
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--ink);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow);
+        }
+
+        .btn:hover {
+            border-color: #C6CCC2;
+        }
+
+        .btn.primary {
+            background: var(--navy);
+            color: #fff;
+            border-color: var(--navy);
+        }
+
+        .btn.primary:hover {
+            background: var(--navy-ink);
+        }
+
+        .btn.danger {
+            color: var(--red-ink);
+            border-color: #E7C6C3;
+        }
+
+        .btn.ghost {
+            background: transparent;
+            box-shadow: none;
+            border-color: transparent;
+            color: var(--ink-soft);
+        }
+
+        .btn.ghost:hover {
+            background: var(--surface-sunken);
+        }
+
+        .btn:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12.5px;
+        }
+
+        /* ---------- Cards / grid ---------- */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card .num {
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.1;
+        }
+
+        .stat-card .label {
+            color: var(--ink-soft);
+            font-size: 12.5px;
+            margin-top: 4px;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px 20px;
+            margin-bottom: 18px;
+        }
+
+        .panel h3 {
+            font-size: 14.5px;
+            margin-bottom: 12px;
+        }
+
+        /* ---------- Table ---------- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+        }
+
+        th {
+            text-align: left;
+            color: var(--ink-soft);
+            font-weight: 500;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 10px 10px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr.row-click {
+            cursor: pointer;
+        }
+
+        tr.row-click:hover td {
+            background: var(--surface-sunken);
+        }
+
+        .empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--ink-faint);
+        }
+
+        .empty i {
+            font-size: 26px;
+            display: block;
+            margin-bottom: 8px;
+            opacity: .5;
+        }
+
+        /* ---------- Badges ---------- */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 9px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .b-draft {
+            background: var(--gray-bg);
+            color: var(--gray-ink);
+        }
+
+        .b-review {
+            background: var(--amber-bg);
+            color: var(--amber-ink);
+        }
+
+        .b-approved {
+            background: var(--teal-bg);
+            color: var(--teal-ink);
+        }
+
+        .b-printed {
+            background: var(--blue-bg);
+            color: var(--blue-ink);
+        }
+
+        .b-released {
+            background: #DCEEDC;
+            color: #25542A;
+        }
+
+        .b-blocked {
+            background: var(--red-bg);
+            color: var(--red-ink);
+        }
+
+        /* ---------- Forms ---------- */
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--ink-soft);
+            margin-bottom: 5px;
+        }
+
+        .field .hint {
+            font-size: 11.5px;
+            color: var(--ink-faint);
+            margin-top: 4px;
+        }
+
+        input[type=text],
+        input[type=date],
+        input[type=number],
+        input[type=tel],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            background: var(--surface);
+            color: var(--ink);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(47, 125, 107, .12);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .grid2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .grid3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+        }
+
+        @media (max-width:720px) {
+
+            .grid2,
+            .grid3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--surface-sunken);
+        }
+
+        .checkbox-row input {
+            width: auto;
+        }
+
+        .checkbox-row span {
+            flex: 1;
+            font-size: 13.5px;
+        }
+
+        .pill-check {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            background: var(--surface);
+        }
+
+        .pill-check.on {
+            background: var(--teal-bg);
+            border-color: var(--teal);
+            color: var(--teal-ink);
+        }
+
+        .pill-check input {
+            display: none;
+        }
+
+        /* ---------- Stepper ---------- */
+        .stepper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .step .dot {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--gray-bg);
+            color: var(--gray-ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            border: 2px solid var(--surface);
+            z-index: 1;
+        }
+
+        .step.done .dot {
+            background: var(--teal);
+            color: #fff;
+        }
+
+        .step.current .dot {
+            background: var(--navy);
+            color: #fff;
+        }
+
+        .step .lbl {
+            font-size: 11px;
+            color: var(--ink-soft);
+            margin-top: 6px;
+            text-align: center;
+        }
+
+        .step.done .lbl,
+        .step.current .lbl {
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        .step-line {
+            position: absolute;
+            top: 13px;
+            left: -50%;
+            width: 100%;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+
+        .step.done .step-line {
+            background: var(--teal);
+        }
+
+        .step:first-child .step-line {
+            display: none;
+        }
+
+        /* ---------- Eligibility timeline (signature element) ---------- */
+        .elig-wrap {
+            background: var(--surface-sunken);
+            border-radius: 8px;
+            padding: 14px 16px;
+        }
+
+        .elig-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+
+        .elig-top .status-text {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .elig-track {
+            position: relative;
+            height: 8px;
+            background: #DFE4DB;
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .elig-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            border-radius: 100px;
+        }
+
+        .elig-marks {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10.5px;
+            color: var(--ink-faint);
+            margin-top: 6px;
+        }
+
+        /* ---------- Detail layout ---------- */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 18px;
+            align-items: start;
+        }
+
+        @media (max-width:900px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .kv {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--surface-sunken);
+            font-size: 13px;
+        }
+
+        .kv span:first-child {
+            color: var(--ink-soft);
+        }
+
+        .kv span:last-child {
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .agency-tag {
+            display: inline-block;
+            background: var(--blue-bg);
+            color: var(--blue-ink);
+            font-size: 11.5px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin: 0 5px 5px 0;
+        }
+
+        .req-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+        }
+
+        .req-check.missing {
+            color: var(--red-ink);
+        }
+
+        /* ---------- Modal ---------- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 25, 22, .42);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 20px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .modal {
+            background: var(--surface);
+            border-radius: 12px;
+            max-width: 640px;
+            width: 100%;
+            padding: 24px 26px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, .18);
+        }
+
+        .modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: var(--ink-faint);
+            padding: 4px 8px;
+        }
+
+        /* ---------- Document / print view ---------- */
+        .doc-page {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 48px 54px;
+            max-width: 760px;
+            margin: 0 auto;
+            font-family: Georgia, 'Times New Roman', serif;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        .doc-letterhead {
+            text-align: center;
+            border-bottom: 2px solid #1a1a1a;
+            padding-bottom: 14px;
+            margin-bottom: 22px;
+        }
+
+        .doc-letterhead .office {
+            font-size: 11px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: #555;
+        }
+
+        .doc-letterhead h2 {
+            font-family: Georgia, serif;
+            font-size: 17px;
+            margin-top: 6px;
+        }
+
+        .doc-letterhead .addr {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .doc-title {
+            text-align: center;
+            font-size: 15px;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .doc-sub {
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 24px;
+        }
+
+        .doc-section {
+            margin-bottom: 18px;
+        }
+
+        .doc-section h4 {
+            font-size: 12.5px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+        }
+
+        .doc-row {
+            display: flex;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .doc-row .l {
+            width: 180px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .doc-body-text {
+            font-size: 13.3px;
+            white-space: pre-wrap;
+        }
+
+        .doc-sign {
+            margin-top: 44px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12.5px;
+        }
+
+        .doc-sign .line {
+            border-top: 1px solid #333;
+            padding-top: 6px;
+            width: 220px;
+            text-align: center;
+        }
+
+        .doc-toolbar {
+            max-width: 760px;
+            margin: 0 auto 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            .sidebar,
+            .page-head,
+            .toolbar-row {
+                display: none !important;
+            }
+
+            .main {
+                padding: 0;
+                max-width: none;
+            }
+
+            .doc-page {
+                border: none;
+                padding: 0;
+                max-width: none;
+            }
+
+            body {
+                background: #fff;
+            }
+        }
+
+        .toolbar-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .search-box input {
+            padding-left: 32px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--ink-faint);
+            font-size: 15px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--surface-sunken);
+            padding: 3px;
+            border-radius: 9px;
+            width: fit-content;
+            margin-bottom: 16px;
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            padding: 6px 13px;
+            border-radius: 7px;
+            font-size: 13px;
+            color: var(--ink-soft);
+            font-weight: 500;
+        }
+
+        .tab-btn.active {
+            background: var(--surface);
+            color: var(--ink);
+            box-shadow: var(--shadow);
+        }
+
+        .banner {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .banner.warn {
+            background: var(--amber-bg);
+            color: var(--amber-ink);
+        }
+
+        .banner.block {
+            background: var(--red-bg);
+            color: var(--red-ink);
+        }
+
+        .banner.ok {
+            background: var(--teal-bg);
+            color: var(--teal-ink);
+        }
+
+        .banner i {
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+
+        .muted {
+            color: var(--ink-soft);
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+        }
+
+        /* ── Topnav / Hamburger ── */
+        .topnav {
+            display: none;
+        }
+
+        /* ── Sidebar Overlay ── */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ── Responsive: Tablet (< 1024px) ── */
+        @media (max-width:1023px) {
+            .topnav {
+                display: flex !important;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 16px;
+                margin-bottom: 8px;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 220px;
+                transform: translateX(-100%) !important;
+                z-index: 1001 !important;
+                transition: transform .25s ease;
+            }
+
+            .sidebar.show {
+                transform: translateX(0) !important;
+            }
+
+            .main {
+                margin-left: 0 !important;
+                max-width: 100% !important;
+                padding: 16px !important;
+            }
+        }
+
+        /* ── Responsive: Mobile (< 768px) ── */
+        @media (max-width:767px) {
+            .main {
+                padding: 12px !important;
+            }
+
+            .topnav {
+                padding: 10px 12px !important;
+            }
+
+            .doc-page {
+                padding: 24px !important;
+            }
+
+            .doc-row .l {
+                width: 120px !important;
+                min-width: 120px !important;
+            }
+
+            .doc-sign .line {
+                width: 160px !important;
+            }
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
 </head>
+
 <body>
-<h1 class="sr-only">Social case study management system for tracking client eligibility, intake, workflow, and generating agency-specific reports</h1>
-<div id="app" class="app"></div>
+    <h1 class="sr-only">Social case study management system for tracking client eligibility, intake, workflow, and
+        generating agency-specific reports</h1>
+    <div id="app" class="app"></div>
 
-<script>
-/* ---------------- Constants ---------------- */
-const STATUSES = ["Draft","Review","Approved","Printed","Released"];
-const STATUS_CLASS = {Draft:"b-draft",Review:"b-review",Approved:"b-approved",Printed:"b-printed",Released:"b-released"};
-const PURPOSES = ["Medical Assistance","Burial Assistance","Educational Assistance","Financial Assistance","Food / Relief Assistance","Livelihood Assistance","Other"];
-const AGENCIES = [
-  {key:"PCSO", name:"Philippine Charity Sweepstakes Office", addressee:"The Officer-in-Charge\nPCSO Provincial/District Office"},
-  {key:"DSWD", name:"Department of Social Welfare and Development", addressee:"The Regional Director\nDSWD Field Office"},
-  {key:"OP", name:"Office of the President (AKAP)", addressee:"The Head, AKAP Program\nOffice of the President"},
-  {key:"MSWDO", name:"MSWDO File Copy", addressee:"FILE COPY"}
-];
-const DEFAULT_REQUIREMENTS = ["Valid government-issued ID","Barangay Certificate of Residency / Indigency","Medical certificate or prescription (if medical)","Certificate of No Property / No Income","Death certificate (if burial assistance)"];
-const ELIGIBILITY_DAYS = 180;
+    <script>
+        /* ---------------- Constants ---------------- */
+        const STATUSES = ["Draft", "Review", "Approved", "Printed", "Released"];
+        const STATUS_CLASS = {
+            Draft: "b-draft"
+            , Review: "b-review"
+            , Approved: "b-approved"
+            , Printed: "b-printed"
+            , Released: "b-released"
+        };
+        const PURPOSES = ["Medical Assistance", "Burial Assistance", "Educational Assistance", "Financial Assistance", "Food / Relief Assistance", "Livelihood Assistance", "Other"];
+        const AGENCIES = [{
+                key: "PCSO"
+                , name: "Philippine Charity Sweepstakes Office"
+                , addressee: "The Officer-in-Charge\nPCSO Provincial/District Office"
+            }
+            , {
+                key: "DSWD"
+                , name: "Department of Social Welfare and Development"
+                , addressee: "The Regional Director\nDSWD Field Office"
+            }
+            , {
+                key: "OP"
+                , name: "Office of the President (AKAP)"
+                , addressee: "The Head, AKAP Program\nOffice of the President"
+            }
+            , {
+                key: "MSWDO"
+                , name: "MSWDO File Copy"
+                , addressee: "FILE COPY"
+            }
+        ];
+        const DEFAULT_REQUIREMENTS = ["Valid government-issued ID", "Barangay Certificate of Residency / Indigency", "Medical certificate or prescription (if medical)", "Certificate of No Property / No Income", "Death certificate (if burial assistance)"];
+        const ELIGIBILITY_DAYS = 180;
 
-let cases = [];
-let view = {tab:"dashboard", caseId:null, docAgency:null, newCaseStep:"search", eligClientName:"", eligOverride:false, eligMatch:null};
-let draftIntake = null;
+        let cases = [];
+        let view = {
+            tab: "dashboard"
+            , caseId: null
+            , docAgency: null
+            , newCaseStep: "search"
+            , eligClientName: ""
+            , eligOverride: false
+            , eligMatch: null
+        };
+        let draftIntake = null;
 
-/* ---------------- Storage ---------------- */
-async function loadCases(){
-  try{
-    const r = await window.storage.get('scs-cases', false);
-    cases = r && r.value ? JSON.parse(r.value) : [];
-  }catch(e){ cases = []; }
-  render();
-}
-async function saveCases(){
-  try{ await window.storage.set('scs-cases', JSON.stringify(cases), false); }
-  catch(e){ console.error('Storage error', e); }
-}
+        /* ---------------- Storage ---------------- */
+        async function loadCases() {
+            try {
+                const r = await window.storage.get('scs-cases', false);
+                cases = r && r.value ? JSON.parse(r.value) : [];
+            } catch (e) {
+                cases = [];
+            }
+            render();
+        }
+        async function saveCases() {
+            try {
+                await window.storage.set('scs-cases', JSON.stringify(cases), false);
+            } catch (e) {
+                console.error('Storage error', e);
+            }
+        }
 
-/* ---------------- Helpers ---------------- */
-function uid(){ return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
-function todayISO(){ return new Date().toISOString().slice(0,10); }
-function fmtDate(iso){
-  if(!iso) return "—";
-  const d = new Date(iso+"T00:00:00");
-  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-}
-function daysBetween(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
-function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
-function findLatestByName(name){
-  const n = name.trim().toLowerCase();
-  if(!n) return null;
-  const matches = cases.filter(c => c.client.name.trim().toLowerCase() === n && c.releasedDate);
-  if(!matches.length) return null;
-  matches.sort((a,b)=> new Date(b.releasedDate) - new Date(a.releasedDate));
-  return matches[0];
-}
-function eligibilityInfo(caseRec){
-  if(!caseRec || !caseRec.releasedDate) return {eligible:true};
-  const daysSince = daysBetween(caseRec.releasedDate, todayISO());
-  const daysLeft = ELIGIBILITY_DAYS - daysSince;
-  const nextDate = new Date(caseRec.releasedDate+"T00:00:00");
-  nextDate.setDate(nextDate.getDate()+ELIGIBILITY_DAYS);
-  return {
-    eligible: daysLeft <= 0,
-    daysSince, daysLeft: Math.max(daysLeft,0),
-    nextEligibleDate: nextDate.toISOString().slice(0,10),
-    pct: Math.min(100, Math.round((daysSince/ELIGIBILITY_DAYS)*100))
-  };
-}
-function setView(patch){ view = {...view, ...patch}; render(); }
+        /* ---------------- Helpers ---------------- */
+        function uid() {
+            return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+        }
 
-/* ---------------- New case flow ---------------- */
-function generateControlNo(dateISO){
-  const d = new Date(dateISO+"T00:00:00");
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth()+1).padStart(2,'0');
-  const seq = String(cases.length+1).padStart(4,'0');
-  return `MSWD-O-${yyyy}-${mm}-${seq}`;
-}
-function blankIntake(name){
-  const today = todayISO();
-  return {
-    id: uid(),
-    status: "Draft",
-    createdAt: today,
-    updatedAt: today,
-    controlNo: generateControlNo(today),
-    client: {name: name||"", age:"", sex:"", address:"", birthdate:"", birthplace:"", religion:"", education:"", civilStatus:"", occupation:"", income:"", contact:""},
-    household: [{name:"", relationship:"", age:"", education:"", occupation:"", income:""}],
-    interview: {reportDate: today, problemPresented:"", homeCondition:"", socioEconomic:"", evaluation:"", recommendation:""},
-    signers: {preparedByName:"", preparedByTitle:"MSWDO Staff", notedByName:"", notedByTitle:"MSWDO Head", notedByLicense:""},
-    purpose: PURPOSES[0],
-    agencies: [],
-    requirements: DEFAULT_REQUIREMENTS.map(r=>({name:r, submitted:false})),
-    statusHistory: [{status:"Draft", date: today}],
-    releasedDate: null
-  };
-}
+        function todayISO() {
+            return new Date().toISOString().slice(0, 10);
+        }
 
-function startEligibilityCheck(){
-  const name = view.eligClientName;
-  const match = findLatestByName(name);
-  setView({eligMatch: match, eligOverride:false});
-}
+        function fmtDate(iso) {
+            if (!iso) return "—";
+            const d = new Date(iso + "T00:00:00");
+            return d.toLocaleDateString('en-US', {
+                month: 'short'
+                , day: 'numeric'
+                , year: 'numeric'
+            });
+        }
 
-function proceedToIntake(){
-  draftIntake = blankIntake(view.eligClientName);
-  setView({newCaseStep:"intake"});
-}
+        function daysBetween(a, b) {
+            return Math.round((new Date(b) - new Date(a)) / 86400000);
+        }
 
-function saveNewCase(){
-  cases.push(draftIntake);
-  saveCases();
-  const id = draftIntake.id;
-  draftIntake = null;
-  setView({tab:"caseDetail", caseId:id, newCaseStep:"search", eligClientName:"", eligMatch:null});
-}
+        function escapeHtml(s) {
+            return (s || "").replace(/[&<>"']/g, c => ({
+                "&": "&amp;"
+                , "<": "&lt;"
+                , ">": "&gt;"
+                , '"': "&quot;"
+                , "'": "&#39;"
+            } [c]));
+        }
 
-/* ---------------- Case actions ---------------- */
-function advanceStatus(caseRec){
-  const idx = STATUSES.indexOf(caseRec.status);
-  if(idx < STATUSES.length-1){
-    caseRec.status = STATUSES[idx+1];
-    caseRec.updatedAt = todayISO();
-    caseRec.statusHistory.push({status:caseRec.status, date: todayISO()});
-    if(caseRec.status === "Released"){ caseRec.releasedDate = todayISO(); }
-    saveCases(); render();
-  }
-}
-function revertStatus(caseRec){
-  const idx = STATUSES.indexOf(caseRec.status);
-  if(idx > 0){
-    caseRec.status = STATUSES[idx-1];
-    caseRec.updatedAt = todayISO();
-    caseRec.statusHistory.push({status:caseRec.status+" (reverted)", date: todayISO()});
-    if(caseRec.status !== "Released"){ caseRec.releasedDate = null; }
-    saveCases(); render();
-  }
-}
-function deleteCase(id){
-  cases = cases.filter(c=>c.id!==id);
-  saveCases();
-  setView({tab:"caseList", caseId:null});
-}
-function getCase(id){ return cases.find(c=>c.id===id); }
+        function findLatestByName(name) {
+            const n = name.trim().toLowerCase();
+            if (!n) return null;
+            const matches = cases.filter(c => c.client.name.trim().toLowerCase() === n && c.releasedDate);
+            if (!matches.length) return null;
+            matches.sort((a, b) => new Date(b.releasedDate) - new Date(a.releasedDate));
+            return matches[0];
+        }
 
-/* ---------------- Rendering: Sidebar ---------------- */
-function renderSidebar(){
-  const items = [
-    {tab:"dashboard", icon:"ti-layout-dashboard", label:"Dashboard"},
-    {tab:"newCase", icon:"ti-user-plus", label:"New case"},
-    {tab:"caseList", icon:"ti-list-details", label:"All cases"},
-  ];
-  return `
+        function eligibilityInfo(caseRec) {
+            if (!caseRec || !caseRec.releasedDate) return {
+                eligible: true
+            };
+            const daysSince = daysBetween(caseRec.releasedDate, todayISO());
+            const daysLeft = ELIGIBILITY_DAYS - daysSince;
+            const nextDate = new Date(caseRec.releasedDate + "T00:00:00");
+            nextDate.setDate(nextDate.getDate() + ELIGIBILITY_DAYS);
+            return {
+                eligible: daysLeft <= 0
+                , daysSince
+                , daysLeft: Math.max(daysLeft, 0)
+                , nextEligibleDate: nextDate.toISOString().slice(0, 10)
+                , pct: Math.min(100, Math.round((daysSince / ELIGIBILITY_DAYS) * 100))
+            };
+        }
+
+        function setView(patch) {
+            view = {
+                ...view
+                , ...patch
+            };
+            render();
+        }
+
+        /* ---------------- New case flow ---------------- */
+        function generateControlNo(dateISO) {
+            const d = new Date(dateISO + "T00:00:00");
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const seq = String(cases.length + 1).padStart(4, '0');
+            return `MSWD-O-${yyyy}-${mm}-${seq}`;
+        }
+
+        function blankIntake(name) {
+            const today = todayISO();
+            return {
+                id: uid()
+                , status: "Draft"
+                , createdAt: today
+                , updatedAt: today
+                , controlNo: generateControlNo(today)
+                , client: {
+                    name: name || ""
+                    , age: ""
+                    , sex: ""
+                    , address: ""
+                    , birthdate: ""
+                    , birthplace: ""
+                    , religion: ""
+                    , education: ""
+                    , civilStatus: ""
+                    , occupation: ""
+                    , income: ""
+                    , contact: ""
+                }
+                , household: [{
+                    name: ""
+                    , relationship: ""
+                    , age: ""
+                    , education: ""
+                    , occupation: ""
+                    , income: ""
+                }]
+                , interview: {
+                    reportDate: today
+                    , problemPresented: ""
+                    , homeCondition: ""
+                    , socioEconomic: ""
+                    , evaluation: ""
+                    , recommendation: ""
+                }
+                , signers: {
+                    preparedByName: ""
+                    , preparedByTitle: "MSWDO Staff"
+                    , notedByName: ""
+                    , notedByTitle: "MSWDO Head"
+                    , notedByLicense: ""
+                }
+                , purpose: PURPOSES[0]
+                , agencies: []
+                , requirements: DEFAULT_REQUIREMENTS.map(r => ({
+                    name: r
+                    , submitted: false
+                }))
+                , statusHistory: [{
+                    status: "Draft"
+                    , date: today
+                }]
+                , releasedDate: null
+            };
+        }
+
+        function startEligibilityCheck() {
+            const name = view.eligClientName;
+            const match = findLatestByName(name);
+            setView({
+                eligMatch: match
+                , eligOverride: false
+            });
+        }
+
+        function proceedToIntake() {
+            draftIntake = blankIntake(view.eligClientName);
+            setView({
+                newCaseStep: "intake"
+            });
+        }
+
+        function saveNewCase() {
+            cases.push(draftIntake);
+            saveCases();
+            const id = draftIntake.id;
+            draftIntake = null;
+            setView({
+                tab: "caseDetail"
+                , caseId: id
+                , newCaseStep: "search"
+                , eligClientName: ""
+                , eligMatch: null
+            });
+        }
+
+        /* ---------------- Case actions ---------------- */
+        function advanceStatus(caseRec) {
+            const idx = STATUSES.indexOf(caseRec.status);
+            if (idx < STATUSES.length - 1) {
+                caseRec.status = STATUSES[idx + 1];
+                caseRec.updatedAt = todayISO();
+                caseRec.statusHistory.push({
+                    status: caseRec.status
+                    , date: todayISO()
+                });
+                if (caseRec.status === "Released") {
+                    caseRec.releasedDate = todayISO();
+                }
+                saveCases();
+                render();
+            }
+        }
+
+        function revertStatus(caseRec) {
+            const idx = STATUSES.indexOf(caseRec.status);
+            if (idx > 0) {
+                caseRec.status = STATUSES[idx - 1];
+                caseRec.updatedAt = todayISO();
+                caseRec.statusHistory.push({
+                    status: caseRec.status + " (reverted)"
+                    , date: todayISO()
+                });
+                if (caseRec.status !== "Released") {
+                    caseRec.releasedDate = null;
+                }
+                saveCases();
+                render();
+            }
+        }
+
+        function deleteCase(id) {
+            cases = cases.filter(c => c.id !== id);
+            saveCases();
+            setView({
+                tab: "caseList"
+                , caseId: null
+            });
+        }
+
+        function getCase(id) {
+            return cases.find(c => c.id === id);
+        }
+
+        /* ---------------- Rendering: Sidebar ---------------- */
+        function renderSidebar() {
+            const items = [{
+                    tab: "dashboard"
+                    , icon: "ti-layout-dashboard"
+                    , label: "Dashboard"
+                }
+                , {
+                    tab: "newCase"
+                    , icon: "ti-user-plus"
+                    , label: "New case"
+                }
+                , {
+                    tab: "caseList"
+                    , icon: "ti-list-details"
+                    , label: "All cases"
+                }
+            , ];
+            return `
   <div class="sidebar">
     <div class="brand">
       <div class="brand-mark">SC</div>
@@ -379,21 +1319,21 @@ function renderSidebar(){
       </button>`).join("")}
     <div class="sidebar-foot">Data is stored on this device only.</div>
   </div><div class="sidebar-overlay" id="sidebarOverlay"></div>`;
-}
+        }
 
-/* ---------------- Rendering: Dashboard ---------------- */
-function renderDashboard(){
-  const byStatus = {};
-  STATUSES.forEach(s=> byStatus[s] = cases.filter(c=>c.status===s).length);
-  const nearingEligible = cases.filter(c=>{
-    if(!c.releasedDate) return false;
-    const e = eligibilityInfo(c);
-    return !e.eligible && e.daysLeft <= 30;
-  }).sort((a,b)=> eligibilityInfo(a).daysLeft - eligibilityInfo(b).daysLeft);
+        /* ---------------- Rendering: Dashboard ---------------- */
+        function renderDashboard() {
+            const byStatus = {};
+            STATUSES.forEach(s => byStatus[s] = cases.filter(c => c.status === s).length);
+            const nearingEligible = cases.filter(c => {
+                if (!c.releasedDate) return false;
+                const e = eligibilityInfo(c);
+                return !e.eligible && e.daysLeft <= 30;
+            }).sort((a, b) => eligibilityInfo(a).daysLeft - eligibilityInfo(b).daysLeft);
 
-  const recent = [...cases].sort((a,b)=> new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0,6);
+            const recent = [...cases].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 6);
 
-  return `
+            return `
   <div class="page-head">
     <div><h1>Dashboard</h1><p>Overview of all social case study requests.</p></div>
     <button class="btn primary" onclick="setView({tab:'newCase'})"><i class="ti ti-plus" aria-hidden="true"></i> New case</button>
@@ -431,12 +1371,12 @@ function renderDashboard(){
         <td>${fmtDate(c.updatedAt)}</td></tr>`).join("")}
     </table></div>` : `<div class="empty"><i class="ti ti-folder-open" aria-hidden="true"></i>No cases yet. Create your first one.</div>`}
   </div>`;
-}
+        }
 
-/* ---------------- Rendering: New case ---------------- */
-function renderNewCase(){
-  if(view.newCaseStep === "search"){
-    return `
+        /* ---------------- Rendering: New case ---------------- */
+        function renderNewCase() {
+            if (view.newCaseStep === "search") {
+                return `
     <div class="page-head"><div><h1>New case</h1><p>Step 1 of 2 — check eligibility before starting intake.</p></div></div>
     <div class="panel" style="max-width:520px">
       <h3>Search client</h3>
@@ -450,19 +1390,19 @@ function renderNewCase(){
 
       ${view.eligMatch !== undefined && view.eligMatch !== null ? renderEligResult(view.eligMatch) : (view.eligClientName && view.eligMatch===null ? renderEligClear() : "")}
     </div>`;
-  }
-  // intake step
-  return renderIntakeForm();
-}
+            }
+            // intake step
+            return renderIntakeForm();
+        }
 
-function renderEligResult(match){
-  const e = eligibilityInfo(match);
-  if(e.eligible){
-    return `<div class="banner ok" style="margin-top:16px"><i class="ti ti-circle-check" aria-hidden="true"></i>
+        function renderEligResult(match) {
+            const e = eligibilityInfo(match);
+            if (e.eligible) {
+                return `<div class="banner ok" style="margin-top:16px"><i class="ti ti-circle-check" aria-hidden="true"></i>
       <div>Client is eligible. Last case study was released ${fmtDate(match.releasedDate)} (more than 6 months ago).</div></div>
       <button class="btn primary" style="margin-top:6px" onclick="proceedToIntake()"><i class="ti ti-arrow-right" aria-hidden="true"></i> Continue to intake</button>`;
-  }
-  return `
+            }
+            return `
   <div class="banner block" style="margin-top:16px">
     <i class="ti ti-ban" aria-hidden="true"></i>
     <div>Not yet eligible. A case study for this client was released on ${fmtDate(match.releasedDate)}. Next eligible on <b>${fmtDate(e.nextEligibleDate)}</b> (${e.daysLeft} days from now).</div>
@@ -478,16 +1418,17 @@ function renderEligResult(match){
   <button class="btn ${view.eligOverride?'primary':''}" style="margin-top:10px" ${view.eligOverride?'':'disabled'} onclick="proceedToIntake()">
     <i class="ti ti-arrow-right" aria-hidden="true"></i> Continue to intake
   </button>`;
-}
-function renderEligClear(){
-  return `<div class="banner ok" style="margin-top:16px"><i class="ti ti-circle-check" aria-hidden="true"></i>
+        }
+
+        function renderEligClear() {
+            return `<div class="banner ok" style="margin-top:16px"><i class="ti ti-circle-check" aria-hidden="true"></i>
     <div>No prior case study found for this name. Client is eligible.</div></div>
     <button class="btn primary" style="margin-top:6px" onclick="proceedToIntake()"><i class="ti ti-arrow-right" aria-hidden="true"></i> Continue to intake</button>`;
-}
+        }
 
-function renderIntakeForm(){
-  const d = draftIntake;
-  return `
+        function renderIntakeForm() {
+            const d = draftIntake;
+            return `
   <div class="page-head"><div><h1>New case — intake</h1><p>Step 2 of 2 — one form, used to populate every agency template.</p></div>
     <button class="btn ghost" onclick="setView({newCaseStep:'search'})"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back</button>
   </div>
@@ -594,22 +1535,24 @@ function renderIntakeForm(){
     <button class="btn ghost" onclick="draftIntake=null; setView({tab:'dashboard'})">Cancel</button>
     <button class="btn primary" onclick="saveNewCase()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save as draft</button>
   </div>`;
-}
-function toggleAgency(key){
-  const i = draftIntake.agencies.indexOf(key);
-  if(i===-1) draftIntake.agencies.push(key); else draftIntake.agencies.splice(i,1);
-  render();
-}
+        }
 
-/* ---------------- Rendering: Case list ---------------- */
-function renderCaseList(){
-  const q = (view.listQuery||"").toLowerCase();
-  const statusFilter = view.listStatus || "All";
-  let list = cases.filter(c => !q || c.client.name.toLowerCase().includes(q) || c.purpose.toLowerCase().includes(q));
-  if(statusFilter !== "All") list = list.filter(c=>c.status===statusFilter);
-  list = [...list].sort((a,b)=> new Date(b.updatedAt)-new Date(a.updatedAt));
+        function toggleAgency(key) {
+            const i = draftIntake.agencies.indexOf(key);
+            if (i === -1) draftIntake.agencies.push(key);
+            else draftIntake.agencies.splice(i, 1);
+            render();
+        }
 
-  return `
+        /* ---------------- Rendering: Case list ---------------- */
+        function renderCaseList() {
+            const q = (view.listQuery || "").toLowerCase();
+            const statusFilter = view.listStatus || "All";
+            let list = cases.filter(c => !q || c.client.name.toLowerCase().includes(q) || c.purpose.toLowerCase().includes(q));
+            if (statusFilter !== "All") list = list.filter(c => c.status === statusFilter);
+            list = [...list].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+            return `
   <div class="page-head"><div><h1>All cases</h1><p>${cases.length} total records.</p></div>
     <button class="btn primary" onclick="setView({tab:'newCase'})"><i class="ti ti-plus" aria-hidden="true"></i> New case</button>
   </div>
@@ -632,17 +1575,17 @@ function renderCaseList(){
         <td>${fmtDate(c.updatedAt)}</td></tr>`).join("")}
     </table></div>` : `<div class="empty"><i class="ti ti-search-off" aria-hidden="true"></i>No cases match.</div>`}
   </div>`;
-}
+        }
 
-/* ---------------- Rendering: Case detail ---------------- */
-function renderCaseDetail(){
-  const c = getCase(view.caseId);
-  if(!c) return `<div class="empty"><i class="ti ti-alert-triangle" aria-hidden="true"></i>Case not found.</div>`;
-  const idx = STATUSES.indexOf(c.status);
-  const missingReqs = c.requirements.filter(r=>!r.submitted);
-  const canGenerate = c.agencies.length > 0;
+        /* ---------------- Rendering: Case detail ---------------- */
+        function renderCaseDetail() {
+            const c = getCase(view.caseId);
+            if (!c) return `<div class="empty"><i class="ti ti-alert-triangle" aria-hidden="true"></i>Case not found.</div>`;
+            const idx = STATUSES.indexOf(c.status);
+            const missingReqs = c.requirements.filter(r => !r.submitted);
+            const canGenerate = c.agencies.length > 0;
 
-  return `
+            return `
   <div class="page-head">
     <div><h1>${escapeHtml(c.client.name)||"Unnamed client"}</h1><p>${escapeHtml(c.purpose)} · Created ${fmtDate(c.createdAt)}</p></div>
     <div style="display:flex;gap:8px">
@@ -706,32 +1649,36 @@ function renderCaseDetail(){
           const ag = AGENCIES.find(x=>x.key===a);
           return `<button class="btn" style="width:100%;justify-content:space-between;margin-bottom:8px" onclick="setView({tab:'document', docAgency:'${a}'})">
             <span><i class="ti ti-file-description" aria-hidden="true"></i> ${ag.name}</span><i class="ti ti-chevron-right" aria-hidden="true"></i></button>`;
-        }).join("") : `<div class="muted" style="font-size:13px">No agencies selected for this case.</div>`}
-      </div>
-    </div>
-  </div>`;
-}
+        }).join("") : ` < div class = "muted"
+            style = "font-size:13px" > No agencies selected
+            for this
+            case. < /div>`} < /
+            div > <
+            /div> <
+            /div>`;
+        }
 
-function renderEligibilityCard(c){
-  const e = eligibilityInfo(c);
-  return `<div class="panel">
+        function renderEligibilityCard(c) {
+            const e = eligibilityInfo(c);
+            return `<div class="panel">
     <h3>Re-eligibility window</h3>
     <div class="elig-wrap">
       <div class="elig-top"><span class="status-text">${e.eligible?'Eligible now':'Restricted'}</span><span class="muted">${e.pct}% elapsed</span></div>
       <div class="elig-track"><div class="elig-fill" style="width:${e.pct}%; background:${e.eligible?'var(--teal)':'var(--amber)'}"></div></div>
       <div class="elig-marks"><span>Released ${fmtDate(c.releasedDate)}</span><span>Next eligible ${fmtDate(e.nextEligibleDate)}</span></div>
     </div>
-  </div>`;
-}
+  </div>
+            `;
+        }
 
-/* ---------------- Rendering: Document view ---------------- */
-function renderDocument(){
-  const c = getCase(view.caseId);
-  if(!c) return `<div class="empty">Case not found.</div>`;
-  const ag = AGENCIES.find(a=>a.key===view.docAgency) || AGENCIES[0];
-  const famRows = c.household.filter(m=>m.name);
+        /* ---------------- Rendering: Document view ---------------- */
+        function renderDocument() {
+            const c = getCase(view.caseId);
+            if (!c) return ` < div class = "empty" > Case not found. < /div>`;
+            const ag = AGENCIES.find(a => a.key === view.docAgency) || AGENCIES[0];
+            const famRows = c.household.filter(m => m.name);
 
-  return `
+            return `
   <div class="doc-toolbar no-print">
     <button class="btn ghost" onclick="setView({tab:'caseDetail'})"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back to case</button>
     <div style="display:flex;gap:8px">
@@ -790,69 +1737,71 @@ function renderDocument(){
       <div class="line">${escapeHtml(c.signers.notedByName)||"—"}<br><span style="font-size:11px;color:#777">${escapeHtml(c.signers.notedByTitle)}${c.signers.notedByLicense?", License No. "+escapeHtml(c.signers.notedByLicense):""}</span></div>
     </div>
   </div>`;
-}
+        }
 
-/* ---------------- Sidebar toggle ---------------- */
-function toggleSidebar(){
-  var sidebar = document.querySelector('.sidebar');
-  var overlay = document.getElementById('sidebarOverlay');
-  if(sidebar.classList.contains('show')){
-    sidebar.classList.remove('show');
-    if(overlay) overlay.classList.remove('active');
-    document.body.style.overflow = '';
-  } else {
-    sidebar.classList.add('show');
-    if(overlay) overlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-}
+        /* ---------------- Sidebar toggle ---------------- */
+        function toggleSidebar() {
+            var sidebar = document.querySelector('.sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            if (sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            } else {
+                sidebar.classList.add('show');
+                if (overlay) overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
 
-/* ---------------- Main render ---------------- */
-function render(){
-  let body;
-  if(view.tab==="dashboard") body = renderDashboard();
-  else if(view.tab==="newCase") body = renderNewCase();
-  else if(view.tab==="caseList") body = renderCaseList();
-  else if(view.tab==="caseDetail") body = renderCaseDetail();
-  else if(view.tab==="document") body = renderDocument();
-  else body = renderDashboard();
+        /* ---------------- Main render ---------------- */
+        function render() {
+            let body;
+            if (view.tab === "dashboard") body = renderDashboard();
+            else if (view.tab === "newCase") body = renderNewCase();
+            else if (view.tab === "caseList") body = renderCaseList();
+            else if (view.tab === "caseDetail") body = renderCaseDetail();
+            else if (view.tab === "document") body = renderDocument();
+            else body = renderDashboard();
 
-  document.getElementById('app').innerHTML = renderSidebar() + `<div class="main"><div class="topnav no-print"><button class="btn" onclick="toggleSidebar()" aria-label="Toggle navigation"><i class="ti ti-menu-2" aria-hidden="true"></i> Menu</button></div>${body}</div>`;
-}
+            document.getElementById('app').innerHTML = renderSidebar() + `<div class="main"><div class="topnav no-print"><button class="btn" onclick="toggleSidebar()" aria-label="Toggle navigation"><i class="ti ti-menu-2" aria-hidden="true"></i> Menu</button></div>${body}</div>`;
+        }
 
-loadCases();
+        loadCases();
 
-/* ---------------- Responsive handlers ---------------- */
-(function(){
-  var overlay = document.getElementById('sidebarOverlay');
-  if(overlay) overlay.addEventListener('click', function(){
-    var sidebar = document.querySelector('.sidebar');
-    if(sidebar) sidebar.classList.remove('show');
-    overlay.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape'){
-      var sidebar = document.querySelector('.sidebar');
-      if(sidebar && sidebar.classList.contains('show')){
-        sidebar.classList.remove('show');
-        if(overlay) overlay.classList.remove('active');
-        document.body.style.overflow = '';
-      }
-    }
-  });
-  window.addEventListener('resize', function(){
-    if(window.innerWidth >= 1024){
-      var sidebar = document.querySelector('.sidebar');
-      var ov = document.getElementById('sidebarOverlay');
-      if(sidebar && sidebar.classList.contains('show')){
-        sidebar.classList.remove('show');
-        if(ov) ov.classList.remove('active');
-        document.body.style.overflow = '';
-      }
-    }
-  });
-})();
-</script>
+        /* ---------------- Responsive handlers ---------------- */
+        (function() {
+            var overlay = document.getElementById('sidebarOverlay');
+            if (overlay) overlay.addEventListener('click', function() {
+                var sidebar = document.querySelector('.sidebar');
+                if (sidebar) sidebar.classList.remove('show');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    var sidebar = document.querySelector('.sidebar');
+                    if (sidebar && sidebar.classList.contains('show')) {
+                        sidebar.classList.remove('show');
+                        if (overlay) overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1024) {
+                    var sidebar = document.querySelector('.sidebar');
+                    var ov = document.getElementById('sidebarOverlay');
+                    if (sidebar && sidebar.classList.contains('show')) {
+                        sidebar.classList.remove('show');
+                        if (ov) ov.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+        })();
+
+    </script>
 </body>
+
 </html>
