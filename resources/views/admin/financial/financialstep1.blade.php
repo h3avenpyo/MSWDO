@@ -59,18 +59,52 @@ $userName = session('admin_user_name') ?? 'Officer';
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse($recentIntakes as $intake)
+                            <tr>
+                                <td>
+                                    <span class="fw-bold" style="color: var(--color-primary);">{{ $intake->control_number }}</span>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark">{{ $intake->beneficiary_full_name }}</div>
+                                    @if($intake->has_representative)
+                                        <div class="text-muted small"><i class="fas fa-user-friends me-1"></i>Rep: {{ $intake->representative_full_name }}</div>
+                                    @endif
+                                </td>
+                                <td>{{ $intake->date_processed ? $intake->date_processed->format('M d, Y') : 'N/A' }}</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border px-2 py-1">{{ $intake->display_category }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold" style="font-size: var(--text-xs);">Step 1 Completed</span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ route('admin.beneficiary-intake.show', $intake) }}" class="btn btn-sm btn-outline-primary me-1" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ route('admin.beneficiary-intake.edit', $intake) }}" class="btn btn-sm btn-outline-secondary" title="Edit Intake">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            @empty
                             <tr>
                                 <td colspan="6" class="p-4">
-                                    <div class="empty-state-box">
+                                    <div class="empty-state-box text-center">
                                         <i class="fas fa-inbox fa-3x mb-3 text-muted opacity-50 d-block"></i>
                                         <h4 class="fw-bold mb-1" style="font-size: var(--text-md); color: var(--color-text-primary);">No recent financial assistance intakes found</h4>
                                         <p class="text-muted mb-0" style="font-size: var(--text-sm);">Click "New Client Intake" to create an initial assessment record.</p>
                                     </div>
                                 </td>
                             </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
+                @if(method_exists($recentIntakes, 'hasPages') && $recentIntakes->hasPages())
+                <div class="pt-3 border-top d-flex justify-content-end">
+                    {{ $recentIntakes->links() }}
+                </div>
+                @endif
             </div>
         </div>
     </div>

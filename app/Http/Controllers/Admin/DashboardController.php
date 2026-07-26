@@ -72,7 +72,7 @@ class DashboardController extends Controller
             ? \App\Models\SocialCase\BeneficiaryIntake::count() 
             : 0;
         $recentIntakes = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class) 
-            ? \App\Models\SocialCase\BeneficiaryIntake::latest()->take(5)->get() 
+            ? \App\Models\SocialCase\BeneficiaryIntake::latest()->paginate(10)
             : collect();
 
         return view('admin.financial.financialstep1', compact('totalIntakes', 'recentIntakes'));
