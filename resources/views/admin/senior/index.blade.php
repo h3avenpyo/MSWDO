@@ -64,14 +64,16 @@
         .sidebar-foot{padding:1rem 1.5rem;font-size:11px;color:rgba(255,255,255,.4);border-top:1px solid rgba(255,255,255,.1);}
 
         /* Main */
-        .main{flex:1;min-width:0;margin-left:var(--sidebar-width);padding:var(--content-padding);max-width:calc(100% - var(--sidebar-width));min-height:100vh;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;}
+        .main{flex:1;min-width:0;margin-left:var(--sidebar-width);padding:var(--content-padding);max-width:calc(100% - var(--sidebar-width));height:100vh;overflow:hidden;display:flex;flex-direction:column;}
 
         /* Dashboard Grid */
         .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px;}
         @media(max-width:1024px){.dashboard-grid{grid-template-columns:1fr;}}
 
         /* Stat Cards */
-        .stat-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-bottom:32px;animation:fadeInUp .6s ease-out;}
+        .main-scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;}
+        .main-scroll::-webkit-scrollbar{display:none;}
+        .stat-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-bottom:32px;animation:fadeInUp .6s ease-out;flex-shrink:0;}
         @media(max-width:1024px){.stat-cards{grid-template-columns:repeat(3,1fr);}}
         @media(max-width:768px){.stat-cards{grid-template-columns:1fr 1fr;}}
         @media(max-width:480px){.stat-cards{grid-template-columns:1fr;}}
@@ -186,6 +188,15 @@
             .filter-bar > div, .filter-group > div { width: 100% !important; min-width: 0 !important; }
             #barangayChartWrap { flex-direction: column; align-items: center; }
             #barangayChartBox { width: 220px !important; height: 220px !important; }
+
+            /* ── Activity card → ensure content visible on mobile ── */
+            .activity-card { min-height: auto !important; padding: 16px !important; }
+            .activity-feed { max-height: none !important; overflow: visible !important; }
+            .activity-item { padding: 10px !important; }
+            .activity-icon { width: 32px !important; height: 32px !important; }
+            .activity-icon svg { width: 16px !important; height: 16px !important; }
+            .activity-text { font-size: 12px !important; }
+            .activity-time { font-size: 10px !important; }
         }
 
         /* ── Responsive: Small Mobile (< 480px) ── */
@@ -210,8 +221,7 @@
             <li><a href="/admin/senior/registration"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
             <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
             <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
-            <li><a href="/admin/senior/birthday-payouts"><i data-lucide="banknote" style="width:20px;height:20px"></i> Birthday Payouts</a></li>
-            <li><a href="/admin/senior/birthday-payouts/history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
+            <li><a href="/admin/senior/payouts-history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
             <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
             <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
             <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
@@ -257,6 +267,7 @@
             </div>
         </header>
 
+        <div class="main-scroll">
         <!-- Stat Cards -->
         <div class="stat-cards">
             <a href="/admin/senior/masterlist" style="text-decoration:none">
@@ -347,6 +358,7 @@
                     @endif
                 </div>
             </div>
+        </div>
         </div>
 
     </div>

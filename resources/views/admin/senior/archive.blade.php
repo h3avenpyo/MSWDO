@@ -34,6 +34,8 @@
             --info-bg: #EEF2FF;
             --purple: #7C3AED;
             --purple-bg: #F3E8FF;
+            --sidebar-width: 260px;
+            --content-padding: 32px;
             --shadow: 0 10px 30px rgba(15,23,42,.08);
             --font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
@@ -53,21 +55,14 @@
         .sidebar-menu a.active{background:rgba(255,255,255,.1);color:var(--accent-yellow);border-left-color:var(--accent-yellow);}
         .sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
 
-        /* Main Content */
-.main-content {
-    flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
-    max-width: calc(100% - 260px); min-height: 100vh;
-    display: flex; flex-direction: column; overflow-y: auto;
-    overflow-x: hidden;
-}
-
-        .main-content-scroll {
-            flex: 1;
-            overflow-y: auto;
-        }
-
+        /* Main */
+        .main{flex:1;min-width:0;margin-left:var(--sidebar-width);padding:var(--content-padding);max-width:calc(100% - var(--sidebar-width));height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+        .main-scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;border-radius:16px;}
+        .main-scroll::-webkit-scrollbar{display:none;}
+        .archive-table-wrap{scrollbar-width:none;-ms-overflow-style:none;}
+        .archive-table-wrap::-webkit-scrollbar{display:none;}
         /* ---------- Stat Cards ---------- */
-        .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:24px;animation:fadeInUp .6s ease-out;}
+        .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:24px;animation:fadeInUp .6s ease-out;flex-shrink:0;}
         @media(max-width:1024px){.stat-cards{grid-template-columns:repeat(3,1fr);}}
         @media(max-width:768px){.stat-cards{grid-template-columns:1fr 1fr;}}
         @media(max-width:480px){.stat-cards{grid-template-columns:1fr;}}
@@ -90,7 +85,7 @@
             background: var(--surface); border-radius: 16px;
             border: 1px solid var(--border); box-shadow: var(--shadow);
             padding: 2rem; display: flex; flex-direction: column;
-            overflow: hidden; flex: 1; min-height: 0; margin-bottom: 1.5rem;
+            overflow: hidden; flex: 1; min-height: 0;
         }
         .table-card-title {
             font-size: 1.25rem; font-weight: 700; color: var(--text-primary);
@@ -358,7 +353,7 @@
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.show { transform: translateX(0); }
-            .main-content { margin-left: 0; }
+            .main { margin-left: 0; }
         }
 
         /* ── Sidebar Overlay ── */
@@ -390,18 +385,23 @@
             .hamburger-btn { display: flex; }
             .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
             .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
+            .main { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
+            .table-card { overflow: visible !important; }
+            .archive-table-wrap { overflow: visible !important; min-height: 0; }
             .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
-            .dashboard-grid { grid-template-columns: 1fr !important; }
+            .filter-section { padding: 16px !important; }
+            .table-card { padding: 1rem !important; }
+            .archive-table-wrap tbody td { font-size: 0.78rem !important; }
+            .archive-table-wrap tbody td::before { min-width: 60px !important; font-size: 0.68rem !important; }
         }
 
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
             .mobile-select-all { display: flex !important; }
-            .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
+            .main { padding: 12px !important; padding-top: 64px !important; }
             .stat-cards { grid-template-columns: 1fr !important; }
-            .topnav, .top-navbar { padding: 10px 12px !important; }
-            .topnav-datetime, .navbar-datetime { display: none !important; }
+            .filter-section { padding: 12px !important; }
+            .table-card { padding: 0.75rem !important; }
 
             /* ── Filter → stack ── */
             .filter-section { margin-bottom: 1rem; }
@@ -420,7 +420,8 @@
 
             /* ── Table → Card layout ── */
             .archive-table-wrap { border: none !important; overflow: visible !important; border-radius: 0 !important; }
-            .archive-table-wrap table { table-layout: auto !important; width: 100%; }
+            .archive-table-wrap table { display: block !important; table-layout: auto !important; width: 100%; }
+            .archive-table-wrap tbody { display: block; }
             .archive-table-wrap thead { display: none !important; }
             .archive-table-wrap tbody tr {
                 display: block;
@@ -485,7 +486,8 @@
     </style>
 </head>
 <body>
-    <!-- ======================== SIDEBAR ======================== -->
+<div class="app">
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-brand">
             <i data-lucide="users" style="width:24px;height:24px"></i>
@@ -496,8 +498,7 @@
             <li><a href="/admin/senior/registration"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
             <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
             <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
-            <li><a href="/admin/senior/birthday-payouts"><i data-lucide="banknote" style="width:20px;height:20px"></i> Birthday Payouts</a></li>
-            <li><a href="/admin/senior/birthday-payouts/history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
+            <li><a href="/admin/senior/payouts-history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
             <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
             <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
             <li><a href="/admin/senior/archive" class="active"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
@@ -512,131 +513,143 @@
     </button>
 
     <!-- Main Content -->
-    <div class="main-content">
-        <!-- Top Header -->
+    <div class="main">
+        @php
+            $userName = session('admin_user_name') ?? 'Admin User';
+            $words = explode(' ', $userName);
+            $initials = '';
+            if (count($words) >= 2) {
+                $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+            } else {
+                $initials = strtoupper(substr($userName, 0, 2));
+            }
+        @endphp
+
+        <!-- Page Header -->
         <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
             <div class="flex items-center">
-                <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Archived Seniors</h1></div>
+                <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Archived Seniors</h1>
+            </div>
             <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
                 <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime"></div>
-                <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ session('admin_user_name') ?? 'Admin User' }}">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
+                <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
+                    {{ $initials }}
+                </div>
             </div>
         </header>
 
-        <!-- Scrollable Content -->
-        <div class="main-content-scroll">
+        <div class="main-scroll">
+        <!-- Flash Messages -->
+        @if(session('success'))
+            <div class="flash-message flash-success">
+                <i data-lucide="check-circle"></i>
+                <span>{{ session('success') }}</span>
+                <button type="button" class="flash-close" onclick="this.parentElement.remove()"><i data-lucide="x"></i></button>
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="flash-message flash-error">
+                <i data-lucide="alert-circle"></i>
+                <span>{{ session('error') }}</span>
+                <button type="button" class="flash-close" onclick="this.parentElement.remove()"><i data-lucide="x"></i></button>
+            </div>
+        @endif
 
-            <!-- Flash Messages -->
-            @if(session('success'))
-                <div class="flash-message flash-success">
-                    <i data-lucide="check-circle"></i>
-                    <span>{{ session('success') }}</span>
-                    <button type="button" class="flash-close" onclick="this.parentElement.remove()"><i data-lucide="x"></i></button>
+        <!-- Summary Card -->
+        <div class="stat-cards">
+            <div class="stat-card stat-card-purple">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">TOTAL ARCHIVED</div>
+                    <div class="stat-card-value">{{ $archivedSeniors->total() }}</div>
                 </div>
-            @endif
-            @if(session('error'))
-                <div class="flash-message flash-error">
-                    <i data-lucide="alert-circle"></i>
-                    <span>{{ session('error') }}</span>
-                    <button type="button" class="flash-close" onclick="this.parentElement.remove()"><i data-lucide="x"></i></button>
-                </div>
-            @endif
-
-            <!-- Summary Card -->
-            <div class="stat-cards">
-                <div class="stat-card stat-card-purple">
-                    <div class="stat-card-content">
-                        <div class="stat-card-label">TOTAL ARCHIVED</div>
-                        <div class="stat-card-value">{{ $archivedSeniors->total() }}</div>
-                    </div>
-                    <div class="stat-card-icon">
-                        <i data-lucide="archive"></i>
-                    </div>
+                <div class="stat-card-icon">
+                    <i data-lucide="archive"></i>
                 </div>
             </div>
+        </div>
 
-            <!-- Filter & Search -->
-            <div class="filter-section">
-                <form method="GET" action="{{ route('admin.senior.archive.list') }}">
-                    <div class="filter-row">
-                        <div class="filter-left">
-                            <div class="filter-group search-group">
-                                <label class="filter-label">Search by Name</label>
-                                <div class="input-group">
-                                    <input type="text" name="search" placeholder="Search by name..." value="{{ request('search') }}">
-                                    <button type="submit" class="search-btn">
-                                        <i data-lucide="search" style="width:16px;height:16px"></i>
-                                    </button>
-                                </div>
+        <!-- Filter & Search -->
+        <div class="filter-section">
+            <form method="GET" action="{{ route('admin.senior.archive.list') }}">
+                <div class="filter-row">
+                    <div class="filter-left">
+                        <div class="filter-group search-group">
+                            <label class="filter-label">Search by Name</label>
+                            <div class="input-group">
+                                <input type="text" name="search" placeholder="Search by name..." value="{{ request('search') }}">
+                                <button type="submit" class="search-btn">
+                                    <i data-lucide="search" style="width:16px;height:16px"></i>
+                                </button>
                             </div>
-                            <div class="filter-group select-group">
-                                <label class="filter-label">Filter by Barangay</label>
-                                <select class="filter-select" name="barangay" onchange="this.form.submit()">
-                                    <option value="">All Barangays</option>
-                                    <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
-                                    <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
-                                    <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
-                                    <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
-                                    <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
-                                    <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
-                                    <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
-                                    <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
-                                    <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
-                                    <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
-                                    <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
-                                    <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
-                                    <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
-                                    <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
-                                    <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
-                                    <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
-                                    <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
-                                    <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
-                                    <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
-                                    <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
-                                    <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
-                                    <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
-                                    <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
-                                    <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
-                                    <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
-                                    <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
-                                    <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
-                                    <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
-                                    <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
-                                    <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
-                                    <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
-                                    <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
-                                    <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
-                                    <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
-                                    <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
-                                    <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
-                                    <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
-                                    <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
-                                    <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
-                                    <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
-                                    <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
-                                    <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
-                                    <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
-                                    <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
-                                    <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
-                                    <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
-                                    <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
-                                    <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
-                                    <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
-                                    <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
-                                    <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
-                                    <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
-                                    <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
-                                    <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
-                                    <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
-                                    <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
-                                    <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
-                                    <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
-                                    <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
-                                    <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
-                                    <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
-                                    <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
-                                    <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
-                                    <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
+                        </div>
+                        <div class="filter-group select-group">
+                            <label class="filter-label">Filter by Barangay</label>
+                            <select class="filter-select" name="barangay" onchange="this.form.submit()">
+                                <option value="">All Barangays</option>
+                                <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
+                                <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
+                                <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
+                                <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
+                                <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
+                                <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
+                                <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
+                                <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
+                                <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
+                                <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
+                                <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
+                                <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
+                                <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
+                                <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
+                                <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
+                                <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
+                                <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
+                                <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
+                                <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
+                                <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
+                                <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
+                                <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
+                                <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
+                                <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
+                                <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
+                                <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
+                                <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
+                                <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
+                                <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
+                                <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
+                                <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
+                                <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
+                                <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
+                                <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
+                                <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
+                                <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
+                                <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
+                                <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
+                                <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
+                                <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
+                                <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
+                                <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
+                                <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
+                                <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
+                                <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
+                                <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
+                                <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
+                                <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
+                                <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
+                                <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
+                                <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
+                                <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
+                                <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
+                                <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
+                                <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
+                                <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
+                                <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
+                                <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
+                                <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
+                                <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
+                                <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
+                                <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
+                                <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
+                                <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
                                 </select>
                             </div>
                             <div class="filter-group" style="justify-content:flex-end;">
@@ -647,119 +660,119 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="filter-right">
-                            @if(request('search') || request('barangay'))
-                                <a href="{{ route('admin.senior.archive.list') }}" class="btn ghost" style="height:44px;">
-                                    <i data-lucide="x" style="width:14px;height:14px"></i> Clear
-                                </a>
-                            @endif
-                        </div>
+                    <div class="filter-right">
+                        @if(request('search') || request('barangay'))
+                            <a href="{{ route('admin.senior.archive.list') }}" class="btn ghost" style="height:44px;">
+                                <i data-lucide="x" style="width:14px;height:14px"></i> Clear
+                            </a>
+                        @endif
                     </div>
-                </form>
+                </div>
+            </form>
+        </div>
+
+        <!-- Archive Table Card -->
+        <div class="table-card">
+            <h2 class="table-card-title">Archived Records</h2>
+            <!-- Mobile Select All (shown only on mobile since thead is hidden) -->
+            <div class="mobile-select-all" style="display:none;align-items:center;gap:8px;padding:8px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-secondary);flex-shrink:0;">
+                <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px">
+                <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
+                <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
+            </div>
+            <div style="flex:1;overflow-y:auto;overflow-x:auto;min-height:0;border-radius:8px;" class="archive-table-wrap">
+                <table class="custom-table" id="archiveTable" style="table-layout:fixed;">
+                    <thead>
+                        <tr>
+                            <th class="col-check" style="width:3%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px"></th>
+                            <th style="width:4%;">#</th>
+                            <th style="width:11%;">Control No.</th>
+                            <th style="width:18%;">Full Name</th>
+                            <th style="width:12%;">Barangay</th>
+                            <th style="width:8%;">Sex / Age</th>
+                            <th style="width:11%;">Birth Date</th>
+                            <th style="width:11%;">Archived On</th>
+                            <th style="width:9%;">Status</th>
+                            <th style="width:7%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($archivedSeniors as $index => $senior)
+                        <tr>
+                            <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox cursor-pointer accent-[#1A237E]" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="width:16px;height:16px"></td>
+                            <td data-label="#">{{ $archivedSeniors->firstItem() + $index }}</td>
+                            <td data-label="Control No.">{{ $senior->control_number ?? '-' }}</td>
+                            <td data-label="Full Name">
+                                <div class="font-semibold">{{ $senior->full_name ?? '-' }}</div>
+                                <div class="text-[#9CA3AF] text-[12px]">{{ $senior->address ? \Illuminate\Support\Str::limit($senior->address, 35) : '' }}</div>
+                            </td>
+                            <td data-label="Barangay">
+                                @if($senior->barangay)
+                                    <span class="inline-block bg-[rgba(107,114,128,0.1)] text-[#6B7280] font-medium px-2.5 py-1 rounded-md text-[13px]">{{ $senior->barangay }}</span>
+                                @else
+                                    <span class="text-[#9CA3AF]">-</span>
+                                @endif
+                            </td>
+                            <td data-label="Sex / Age">
+                                @if($senior->sex)
+                                    <span class="inline-flex items-center justify-center w-[26px] h-[26px] rounded-full bg-[#6B7280] text-white text-[11px] font-bold mr-1">{{ $senior->sex == 'Male' ? 'M' : 'F' }}</span>
+                                @endif
+                                <strong>{{ $senior->age ?? '-' }}</strong>
+                            </td>
+                            <td data-label="Birth Date">
+                                @if($senior->birth_date)
+                                    {{ \Carbon\Carbon::parse($senior->birth_date)->format('M d, Y') }}
+                                @else
+                                    <span class="text-[#9CA3AF]">-</span>
+                                @endif
+                            </td>
+                            <td data-label="Archived On">
+                                <span class="text-[#9CA3AF] text-[13px]">
+                                    {{ $senior->updated_at ? \Carbon\Carbon::parse($senior->updated_at)->format('M d, Y') : '-' }}
+                                </span>
+                            </td>
+                            <td data-label="Status">
+                                <span class="badge-archived">Archived</span>
+                            </td>
+                            <td data-label="Action">
+                                <form method="POST" action="{{ route('admin.senior.unarchive', $senior->id) }}" id="restore-form-{{ $senior->id }}" style="display: inline;">
+                                    @csrf
+                                    <button type="button"
+                                            class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-[rgba(20,184,166,0.1)] text-[#0f766e] border border-[rgba(20,184,166,0.3)] cursor-pointer hover:bg-[rgba(20,184,166,0.2)] transition-colors"
+                                            onclick="confirmRestore({{ $senior->id }}, '{{ addslashes($senior->full_name) }}')"
+                                            title="Restore to Active">
+                                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="10">
+                            <div class="empty-state">
+                                <i data-lucide="archive"></i>
+                                <h5>No Archived Records</h5>
+                                <p>There are no archived senior citizens at the moment. Archived records from the masterlist will appear here.</p>
+                                <a href="/admin/senior/masterlist" class="inline-flex items-center gap-1.5 bg-[#1A237E] hover:bg-[#121858] text-white rounded-lg font-semibold text-[13px] px-4 py-2 mt-2 transition-colors no-underline" style="font-family:var(--font-family)">
+                                    <i data-lucide="list" class="w-4 h-4"></i> Go to Masterlist
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                    </tbody>
+                </table>
             </div>
 
-            <!-- Archive Table Card -->
-            <div class="table-card">
-                <h2 class="table-card-title">Archived Records</h2>
-                <!-- Mobile Select All (shown only on mobile since thead is hidden) -->
-                <div class="mobile-select-all" style="display:none;align-items:center;gap:8px;padding:8px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-secondary);">
-                    <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px">
-                    <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
-                    <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
-                </div>
-                <div style="flex:1;overflow-y:auto;overflow-x:auto;min-height:0;border-radius:8px;" class="archive-table-wrap">
-                    <table class="custom-table" id="archiveTable" style="table-layout:fixed;">
-                        <thead>
-                            <tr>
-                                <th class="col-check" style="width:3%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px"></th>
-                                <th style="width:4%;">#</th>
-                                <th style="width:11%;">Control No.</th>
-                                <th style="width:18%;">Full Name</th>
-                                <th style="width:12%;">Barangay</th>
-                                <th style="width:8%;">Sex / Age</th>
-                                <th style="width:11%;">Birth Date</th>
-                                <th style="width:11%;">Archived On</th>
-                                <th style="width:9%;">Status</th>
-                                <th style="width:7%;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($archivedSeniors as $index => $senior)
-                            <tr>
-                                <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox cursor-pointer accent-[#1A237E]" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="width:16px;height:16px"></td>
-                                <td data-label="#">{{ $archivedSeniors->firstItem() + $index }}</td>
-                                <td data-label="Control No.">{{ $senior->control_number ?? '-' }}</td>
-                                <td data-label="Full Name">
-                                    <div class="font-semibold">{{ $senior->full_name ?? '-' }}</div>
-                                    <div class="text-[#9CA3AF] text-[12px]">{{ $senior->address ? \Illuminate\Support\Str::limit($senior->address, 35) : '' }}</div>
-                                </td>
-                                <td data-label="Barangay">
-                                    @if($senior->barangay)
-                                        <span class="inline-block bg-[rgba(107,114,128,0.1)] text-[#6B7280] font-medium px-2.5 py-1 rounded-md text-[13px]">{{ $senior->barangay }}</span>
-                                    @else
-                                        <span class="text-[#9CA3AF]">-</span>
-                                    @endif
-                                </td>
-                                <td data-label="Sex / Age">
-                                    @if($senior->sex)
-                                        <span class="inline-flex items-center justify-center w-[26px] h-[26px] rounded-full bg-[#6B7280] text-white text-[11px] font-bold mr-1">{{ $senior->sex == 'Male' ? 'M' : 'F' }}</span>
-                                    @endif
-                                    <strong>{{ $senior->age ?? '-' }}</strong>
-                                </td>
-                                <td data-label="Birth Date">
-                                    @if($senior->birth_date)
-                                        {{ \Carbon\Carbon::parse($senior->birth_date)->format('M d, Y') }}
-                                    @else
-                                        <span class="text-[#9CA3AF]">-</span>
-                                    @endif
-                                </td>
-                                <td data-label="Archived On">
-                                    <span class="text-[#9CA3AF] text-[13px]">
-                                        {{ $senior->updated_at ? \Carbon\Carbon::parse($senior->updated_at)->format('M d, Y') : '-' }}
-                                    </span>
-                                </td>
-                                <td data-label="Status">
-                                    <span class="badge-archived">Archived</span>
-                                </td>
-                                <td data-label="Action">
-                                    <form method="POST" action="{{ route('admin.senior.unarchive', $senior->id) }}" id="restore-form-{{ $senior->id }}" style="display: inline;">
-                                        @csrf
-                                        <button type="button"
-                                                class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-[rgba(20,184,166,0.1)] text-[#0f766e] border border-[rgba(20,184,166,0.3)] cursor-pointer hover:bg-[rgba(20,184,166,0.2)] transition-colors"
-                                                onclick="confirmRestore({{ $senior->id }}, '{{ addslashes($senior->full_name) }}')"
-                                                title="Restore to Active">
-                                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="10">
-                                    <div class="empty-state">
-                                        <i data-lucide="archive"></i>
-                                        <h5>No Archived Records</h5>
-                                        <p>There are no archived senior citizens at the moment. Archived records from the masterlist will appear here.</p>
-                                        <a href="/admin/senior/masterlist" class="inline-flex items-center gap-1.5 bg-[#1A237E] hover:bg-[#121858] text-white rounded-lg font-semibold text-[13px] px-4 py-2 mt-2 transition-colors no-underline" style="font-family:var(--font-family)">
-                                            <i data-lucide="list" class="w-4 h-4"></i> Go to Masterlist
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination -->
-                @if($archivedSeniors->hasPages())
-                <div class="flex justify-center py-4 border-t border-[#F3F4F6]">
-                    {{ $archivedSeniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
-                </div>
-                @endif
+            <!-- Pagination -->
+            @if($archivedSeniors->hasPages())
+            <div class="flex justify-center py-4 border-t border-[#F3F4F6]" style="flex-shrink:0;">
+                {{ $archivedSeniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
             </div>
+            @endif
         </div>
     </div>
+</div>
 
     <!-- ======================== BULK ACTION MODAL ======================== -->
     <div class="modal-overlay" id="bulkActionModal">
@@ -787,7 +800,8 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>  <!-- close main-scroll -->
+</div>  <!-- close main -->
 
     <script>
         function toggleSidebar() {

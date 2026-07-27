@@ -33,7 +33,10 @@
         .sidebar-menu a.active{background:rgba(255,255,255,.1);color:var(--accent-yellow);border-left-color:var(--accent-yellow);}
         .sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
 
-        .main{flex:1;min-width:0;margin-left:260px;padding:32px;max-width:calc(100% - 260px);min-height:100vh;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;}
+        .main{flex:1;min-width:0;margin-left:260px;padding:32px;max-width:calc(100% - 260px);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+        .main-scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;border-radius:16px;}
+        .main-scroll::-webkit-scrollbar{display:none;}
+
 
         .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:32px;animation:fadeInUp .6s ease-out;flex-shrink:0;}
         @media(max-width:1024px){.stat-cards{grid-template-columns:repeat(2,1fr);}}
@@ -64,7 +67,8 @@
         .filter-chip svg{width:14px;height:14px;}
 
         .table-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;animation:fadeInUp .6s ease-out .3s backwards;}
-        .table-scroll{flex:1;overflow-y:auto;overflow-x:auto;}
+        .table-scroll{flex:1;overflow-y:auto;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;}
+        .table-scroll::-webkit-scrollbar{display:none;}
         .table-scroll table{width:100%;border-collapse:collapse;}
         .table-scroll thead{position:sticky;top:0;z-index:1;background:var(--surface);}
         .table-scroll th{padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary);text-align:left;border-bottom:2px solid var(--border);}
@@ -169,6 +173,8 @@
             .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
             .sidebar.show { transform: translateX(0) !important; }
             .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
+            .table-card { overflow: visible !important; }
+            .table-scroll { overflow: visible !important; min-height: 0; }
             .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
             .dashboard-grid { grid-template-columns: 1fr !important; }
         }
@@ -187,13 +193,31 @@
             .filter-bar > div, .filter-group > div { min-width: 0 !important; }
             #filterGrid { grid-template-columns: 1fr 1fr !important; }
 
+            /* ── Barangay breakdown cards → better spacing on mobile ── */
+            .barangay-cards-grid {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+
+            /* ── Month/Year filters → stack on mobile ── */
+            .filter-selects-row {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 10px !important;
+                width: 100% !important;
+            }
+            .filter-selects-row select {
+                width: 100% !important;
+            }
+
             /* ── Action bar → stack ── */
             .action-bar-row { flex-direction: column !important; gap: 10px !important; align-items: flex-start !important; }
             .action-bar-row > div { width: 100% !important; }
 
             /* ── Table → Card layout ── */
             .table-scroll { border: none !important; overflow: visible !important; border-radius: 0 !important; }
-            .table-scroll table { table-layout: auto !important; width: 100%; }
+            .table-scroll table { display: block !important; table-layout: auto !important; width: 100%; }
+            .table-scroll tbody { display: block; }
             .table-scroll thead { display: none !important; }
             .table-scroll tbody tr {
                 display: block;
@@ -247,6 +271,8 @@
             .barangay-group-header { padding: 10px 12px !important; }
             .barangay-group-header strong { font-size: 0.85rem !important; }
             #groupedContent { padding: 12px !important; }
+            #groupedContent table { display: block !important; width: 100% !important; }
+            #groupedContent table tbody { display: block; }
             #groupedContent table thead { display: none !important; }
             #groupedContent table tbody tr {
                 display: block; background: var(--surface); border: 1px solid #D1D5DB;
@@ -292,8 +318,7 @@
             <li><a href="/admin/senior/registration"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
             <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
             <li><a href="/admin/senior/birthdays" class="active"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
-            <li><a href="/admin/senior/birthday-payouts"><i data-lucide="banknote" style="width:20px;height:20px"></i> Birthday Payouts</a></li>
-            <li><a href="/admin/senior/birthday-payouts/history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
+            <li><a href="/admin/senior/payouts-history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
             <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
             <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
             <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
@@ -328,172 +353,123 @@
             </div>
         </header>
 
-        {{-- Stat Cards --}}
-        <div class="stat-cards">
-            <div class="stat-card stat-card-red" onclick="applyFilter('today')">
-                <div class="stat-card-content">
-                    <div class="stat-card-label">TODAY'S BIRTHDAYS</div>
-                    <div class="stat-card-value" id="statToday">{{ $todayCount }}</div>
+        <div class="main-scroll">
+        {{-- Budget Overview Card --}}
+        <div class="filter-section" style="background:linear-gradient(135deg,var(--primary) 0%,var(--primary-hover) 100%);color:white;margin-bottom:24px;padding:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+                <div>
+                    <h2 style="font-size:18px;font-weight:700;margin:0 0 4px 0">Budget Overview - {{ $months[$selectedMonth] }} {{ $selectedYear }}</h2>
+                    <p style="margin:0;font-size:13px;opacity:0.9">Total budget needed for all barangays</p>
                 </div>
-                <div class="stat-card-icon"><i data-lucide="cake"></i></div>
+                <div style="text-align:right">
+                    <div style="font-size:28px;font-weight:700;margin:0">₱{{ number_format($grandTotal, 2) }}</div>
+                    <div style="font-size:12px;opacity:0.9">Grand Total</div>
+                </div>
             </div>
-            <div class="stat-card stat-card-orange" onclick="applyFilter('week')">
-                <div class="stat-card-content">
-                    <div class="stat-card-label">THIS WEEK</div>
-                    <div class="stat-card-value" id="statWeek">{{ $weekCount }}</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.2)">
+                <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:10px">
+                    <div style="font-size:11px;opacity:0.9;margin-bottom:2px">Total Seniors</div>
+                    <div style="font-size:20px;font-weight:700">{{ $barangayBreakdown->sum('total_seniors') }}</div>
                 </div>
-                <div class="stat-card-icon"><i data-lucide="calendar-days"></i></div>
+                <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:10px">
+                    <div style="font-size:11px;opacity:0.9;margin-bottom:2px">Released</div>
+                    <div style="font-size:20px;font-weight:700">{{ $barangayBreakdown->sum('released_count') }}</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:10px">
+                    <div style="font-size:11px;opacity:0.9;margin-bottom:2px">Remaining</div>
+                    <div style="font-size:20px;font-weight:700">{{ $barangayBreakdown->sum('remaining_count') }}</div>
+                </div>
             </div>
-            <div class="stat-card stat-card-blue" onclick="applyFilter('nextmonth')">
-                <div class="stat-card-content">
-                    <div class="stat-card-label">NEXT MONTH</div>
-                    <div class="stat-card-value" id="statNextMonth">{{ $nextMonthCount }}</div>
-                </div>
-                <div class="stat-card-icon"><i data-lucide="calendar"></i></div>
-            </div>
-            <div class="stat-card stat-card-green" onclick="applyFilter('all')">
-                <div class="stat-card-content">
-                    <div class="stat-card-label">TOTAL (30 DAYS)</div>
-                    <div class="stat-card-value" id="statTotal">{{ $total }}</div>
-                </div>
-                <div class="stat-card-icon"><i data-lucide="users"></i></div>
+            <div style="display:flex;gap:10px;margin-top:12px">
+                <button class="btn" style="background:var(--success);color:white;padding:10px 18px;font-weight:600;font-size:13px" onclick="releaseAllPayouts()"><i data-lucide="check-circle" style="width:14px;height:14px"></i> Release All & Download</button>
             </div>
         </div>
 
-        {{-- Filter Section --}}
-        <div class="filter-section">
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px" id="filterChips">
-                <span class="filter-chip active" data-filter="all" onclick="applyFilter('all')"><i data-lucide="calendar"></i> This Month</span>
-                <span class="filter-chip" data-filter="today" onclick="applyFilter('today')"><i data-lucide="cake"></i> Today</span>
-                <span class="filter-chip" data-filter="week" onclick="applyFilter('week')"><i data-lucide="calendar-days"></i> This Week</span>
-                <span class="filter-chip" data-filter="nextmonth" onclick="applyFilter('nextmonth')"><i data-lucide="calendar-clock"></i> Next Month</span>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;align-items:end" id="filterGrid">
-                <div>
-                    <label class="form-label">Search</label>
-                    <input type="text" id="searchInput" class="form-input" placeholder="Name, control no., barangay..." onkeyup="debounceSearch()">
-                </div>
-                <div>
-                    <label class="form-label">Barangay</label>
-                    <select id="barangayFilter" class="form-select" onchange="loadData()">
-                        <option value="">All Barangays</option>
-                        @foreach($barangays as $b)
-                            <option value="{{ $b }}">{{ $b }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="form-label">Month</label>
-                    <select id="monthFilter" class="form-select" onchange="loadData()">
-                        <option value="">All Months</option>
+        {{-- Barangay Budget Breakdown --}}
+        <div class="filter-section" style="margin-bottom:24px">
+            <div style="margin-bottom:16px">
+                <h3 style="font-size:16px;font-weight:600;margin:0 0 12px 0;display:flex;align-items:center;gap:8px">
+                    <i data-lucide="landmark" style="width:20px;height:20px;color:var(--primary)"></i>
+                    Barangay Budget Breakdown
+                </h3>
+                <div class="filter-selects-row" style="display:flex;gap:12px;align-items:center">
+                    <select id="monthFilter" class="form-select" style="padding:8px 16px;font-size:14px;min-width:150px" onchange="filterByMonth()">
                         @foreach($months as $num => $name)
-                            <option value="{{ $num }}">{{ $name }}</option>
+                            <option value="{{ $num }}" {{ $selectedMonth == $num ? 'selected' : '' }}>{{ $name }}</option>
                         @endforeach
                     </select>
-                </div>
-                <div>
-                    <label class="form-label">Sort By</label>
-                    <select id="sortField" class="form-select" onchange="loadData()">
-                        <option value="birth_date">Birthday</option>
-                        <option value="full_name">Last Name</option>
-                        <option value="barangay">Barangay</option>
-                        <option value="control_number">Control No.</option>
-                        <option value="age">Age</option>
+                    <select id="yearFilter" class="form-select" style="padding:8px 16px;font-size:14px;min-width:100px" onchange="filterByMonth()">
+                        @for($year = now()->year; $year >= now()->year - 1; $year--)
+                            <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>{{ $year }}</option>
+                        @endfor
                     </select>
                 </div>
-                <div>
-                    <label class="form-label">Order</label>
-                    <select id="sortDir" class="form-select" onchange="loadData()">
-                        <option value="asc">Asc</option>
-                        <option value="desc">Desc</option>
-                    </select>
+            </div>
+            <div style="display:flex;gap:16px;font-size:13px;margin-bottom:16px">
+                <div><strong style="color:var(--text-primary)">Grand Total:</strong> <span style="color:var(--primary);font-weight:700">₱{{ number_format($grandTotal, 2) }}</span></div>
+            </div>
+            <div class="barangay-cards-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px">
+                @foreach($barangayBreakdown as $barangay)
+                <div style="background:var(--background);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;min-height:300px">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                        <strong style="font-size:18px;color:var(--text-primary)">{{ $barangay['barangay'] }}</strong>
+                        <span class="badge" style="background:var(--primary);color:white;font-size:14px;padding:6px 12px;border-radius:8px">{{ $barangay['total_seniors'] }}</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;flex:1">
+                        <div style="display:flex;justify-content:space-between">
+                            <span style="color:var(--text-secondary);font-weight:500">Total Budget:</span>
+                            <strong style="color:var(--text-primary);font-size:16px">₱{{ number_format($barangay['total_amount'], 2) }}</strong>
+                        </div>
+                        <div>
+                            <span style="color:var(--text-secondary);font-weight:500">Celebrants:</span>
+                            <div id="celebrants-{{ str_replace(' ', '-', $barangay['barangay']) }}" style="margin-top:8px;color:var(--text-primary);font-size:13px;line-height:1.8">
+                                @php
+                                    $displayLimit = 5;
+                                    $showAll = false;
+                                    $celebrantsList = $barangay['celebrants'];
+                                @endphp
+                                @foreach($celebrantsList as $celebrant)
+                                    @if($loop->index < $displayLimit)
+                                        <div style="padding:4px 0;border-bottom:1px solid var(--border)">
+                                            <span style="color:var(--text-secondary)">{{ $celebrant['control_number'] }}</span> - {{ $celebrant['full_name'] }}
+                                        </div>
+                                    @elseif($loop->index == $displayLimit)
+                                        @php $showAll = true; @endphp
+                                    @endif
+                                @endforeach
+                                @if($showAll && $celebrantsList->count() > $displayLimit)
+                                    <div id="more-{{ str_replace(' ', '-', $barangay['barangay']) }}" style="display:none">
+                                        @foreach($celebrantsList as $celebrant)
+                                            @if($loop->index >= $displayLimit)
+                                                <div style="padding:4px 0;border-bottom:1px solid var(--border)">
+                                                    <span style="color:var(--text-secondary)">{{ $celebrant['control_number'] }}</span> - {{ $celebrant['full_name'] }}
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                    <button onclick="toggleCelebrants('{{ str_replace(' ', '-', $barangay['barangay']) }}')" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:12px;margin-top:4px;padding:0">View All ({{ $celebrantsList->count() - $displayLimit }} more)</button>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @if($barangay['pending_count'] > 0 || $barangay['remaining_count'] > 0)
+                    <div style="display:flex;gap:10px;margin-top:16px">
+                        <button class="btn" style="flex:1;background:var(--success);color:white;padding:10px 16px;font-weight:600;font-size:13px" onclick="releaseBarangayPayouts('{{ $barangay['barangay'] }}')"><i data-lucide="check-circle" style="width:16px;height:16px"></i> Release & Download</button>
+                    </div>
+                    @else
+                    <div style="display:flex;gap:10px;margin-top:16px">
+                        <div style="flex:1;background:var(--text-muted);color:white;padding:10px 16px;font-weight:600;font-size:13px;text-align:center;border-radius:6px;opacity:0.5"><i data-lucide="check-circle" style="width:16px;height:16px"></i> Already Released</div>
+                    </div>
+                    @endif
                 </div>
-                <div style="display:flex;gap:8px">
-                    <button class="btn btn-primary" style="flex:1;height:42px" onclick="loadData()"><i data-lucide="search"></i> Search</button>
-                    <button class="btn btn-ghost" style="height:42px;width:42px;padding:0" onclick="resetFilters()"><i data-lucide="x"></i></button>
-                </div>
+                @endforeach
             </div>
         </div>
-
-        {{-- Action Bar --}}
-        <div class="action-bar-row" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-shrink:0">
-            <div style="display:flex;align-items:center;gap:12px">
-                <span style="font-size:13px;color:var(--text-secondary);font-weight:500" id="resultCount">Loading...</span>
-                <select class="form-select" style="width:auto;min-width:100px;height:34px;font-size:13px" onchange="loadData()" id="perPageSelect">
-                    <option value="15">15 / page</option>
-                    <option value="25">25 / page</option>
-                    <option value="50">50 / page</option>
-                    <option value="100">100 / page</option>
-                </select>
-            </div>
-            <div class="view-toggle">
-                <button class="active" id="viewTable" onclick="setView('table')"><i data-lucide="table-2"></i></button>
-                <button id="viewGrouped" onclick="setView('grouped')"><i data-lucide="layout-list"></i></button>
-            </div>
-        </div>
-
-        {{-- Table View --}}
-        <div class="table-card" id="tableView" style="flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden">
-            <div class="table-wrapper">
-                <div class="table-scroll" style="flex:1;overflow-y:auto;min-height:0">
-                    <table id="birthdayTable">
-                        <thead>
-                            <tr>
-                                <th style="width:4%">#</th>
-                                <th style="width:11%">Control No.</th>
-                                <th style="width:5%">ID</th>
-                                <th style="width:18%">Full Name</th>
-                                <th style="width:10%">Birth Date</th>
-                                <th style="width:7%">Age</th>
-                                <th style="width:7%">Turning</th>
-                                <th style="width:10%">Barangay</th>
-                                <th style="width:11%">Contact</th>
-                                <th style="width:10%">Countdown</th>
-                                <th style="width:7%">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            <tr><td colspan="11" style="text-align:center;padding:40px 0;color:var(--text-muted)">Loading...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div id="paginationWrapper" style="padding:16px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-                    <span style="font-size:13px;color:var(--text-muted)" id="paginationInfo"></span>
-                    <ul class="pagination" id="paginationLinks"></ul>
-                </div>
-            </div>
-        </div>
-
-        {{-- Barangay Grouped View --}}
-        <div class="table-card" id="groupedView" style="display:none;padding:0;flex:1;min-height:0;overflow:hidden">
-            <div id="groupedContent" style="padding:24px;overflow-y:auto;flex:1">
-                <div style="text-align:center;padding:40px 0;color:var(--text-muted)">Loading...</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- Profile Modal --}}
-<div class="modal-overlay" id="profileModal" onclick="if(event.target===this)this.classList.remove('show')">
-    <div class="modal-box" style="max-width:900px">
-        <div class="modal-header-bar">
-            <h4><i data-lucide="user-circle"></i> Beneficiary Profile</h4>
-            <button class="modal-close-btn" onclick="document.getElementById('profileModal').classList.remove('show')"><i data-lucide="x"></i></button>
-        </div>
-        <div class="modal-body-scroll">
-            <div id="profileContent" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-                <div style="text-align:center;padding:40px 0"><div class="spinner"></div></div>
-            </div>
         </div>
     </div>
 </div>
 
 <script>
-    let currentPage = 1;
-    let currentFilter = 'all';
-    let currentView = 'table';
-    let searchTimeout;
-
     function toggleSidebar() {
         var sidebar = document.getElementById('sidebar');
         var overlay = document.getElementById('sidebarOverlay');
@@ -545,6 +521,9 @@
     }
     updateDateTime();
     setInterval(updateDateTime, 60000);
+
+    // Initialize Lucide icons
+    lucide.createIcons();
 
     function debounceSearch() {
         clearTimeout(searchTimeout);
@@ -602,7 +581,7 @@
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
         if (!data || data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:40px 0;color:var(--text-muted)"><i data-lucide="calendar-check" style="width:40px;height:40px;display:block;margin:0 auto 12px;opacity:.3"></i>No birthday beneficiaries found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="13" style="text-align:center;padding:40px 0;color:var(--text-muted)"><i data-lucide="calendar-check" style="width:40px;height:40px;display:block;margin:0 auto 12px;opacity:.3"></i>No birthday beneficiaries found.</td></tr>`;
             lucide.createIcons();
             return;
         }
@@ -615,7 +594,28 @@
 
             const initial = s.full_name ? s.full_name.charAt(0).toUpperCase() : '?';
 
+            let payoutStatusHtml = '';
+            if (s.payout_status === 'released') {
+                payoutStatusHtml = `<span class="badge" style="background:var(--success-bg);color:var(--success)"><i data-lucide="check-circle" style="width:12px;height:12px;margin-right:4px"></i>Released</span>`;
+            } else if (s.payout_status === 'pending') {
+                payoutStatusHtml = `<span class="badge" style="background:var(--purple-bg);color:var(--purple)"><i data-lucide="clock" style="width:12px;height:12px;margin-right:4px"></i>Pending</span>`;
+            } else if (s.payout_status === 'cancelled') {
+                payoutStatusHtml = `<span class="badge" style="background:var(--danger-bg);color:var(--danger)"><i data-lucide="x-circle" style="width:12px;height:12px;margin-right:4px"></i>Cancelled</span>`;
+            } else {
+                payoutStatusHtml = `<span style="color:var(--text-muted);font-size:12px">Not Generated</span>`;
+            }
+
+            let actionButtons = `<button class="btn btn-primary btn-sm" style="padding:6px 10px" onclick="viewProfile(${s.id})"><i data-lucide="eye"></i></button>`;
+            if (s.payout_status === 'pending' && s.payout_id) {
+                actionButtons += ` <button class="btn btn-sm" style="padding:6px 10px;background:var(--success);color:white" onclick="releasePayout(${s.payout_id})"><i data-lucide="banknote"></i></button>`;
+            }
+
+            const checkboxHtml = s.payout_status === 'pending' && s.payout_id
+                ? `<input type="checkbox" class="row-checkbox" data-payout-id="${s.payout_id}" onchange="updateSelectedCount()" style="cursor:pointer">`
+                : `<span style="color:var(--text-muted)">-</span>`;
+
             return `<tr>
+                <td data-label="Select">${checkboxHtml}</td>
                 <td data-label="#" style="color:var(--text-muted);font-weight:600">${i + 1}</td>
                 <td data-label="Control No."><strong style="font-size:13px">${s.control_number}</strong></td>
                 <td data-label="ID"><span style="font-size:12px;color:var(--text-secondary)">${s.osca_id}</span></td>
@@ -626,10 +626,12 @@
                 <td data-label="Barangay">${s.barangay !== '-' ? `<span class="badge" style="background:var(--info-bg);color:var(--info);font-weight:500">${s.barangay}</span>` : `<span style="color:var(--text-muted)">-</span>`}</td>
                 <td data-label="Contact">${s.contact_number !== '-' ? `<a href="tel:${s.contact_number}" style="color:var(--primary);text-decoration:none;font-size:13px">${s.contact_number}</a>` : `<span style="color:var(--text-muted)">-</span>`}</td>
                 <td data-label="Countdown">${countdownHtml}</td>
-                <td data-label="Action"><button class="btn btn-primary btn-sm" style="padding:6px 10px" onclick="viewProfile(${s.id})"><i data-lucide="eye"></i></button></td>
+                <td data-label="Payout Status">${payoutStatusHtml}</td>
+                <td data-label="Action">${actionButtons}</td>
             </tr>`;
         }).join('');
         lucide.createIcons();
+        updateSelectedCount();
     }
 
     function renderPagination(res) {
@@ -742,6 +744,468 @@
             confirmButtonText: 'Yes, log out', cancelButtonText: 'Cancel',
             background: '#ffffff', customClass: { popup: 'rounded-4 shadow-lg' }
         }).then(r => { if (r.isConfirmed) document.getElementById('logout-form').submit(); });
+    }
+
+    function generatePayouts() {
+        const currentMonth = new Date().toLocaleString('default', { month: 'long' });
+        const currentYear = new Date().getFullYear();
+        const barangay = document.getElementById('barangayFilter').value;
+
+        Swal.fire({
+            title: 'Generate Payouts',
+            text: `Generate payouts for ${currentMonth} ${currentYear}${barangay ? ' in ' + barangay : ''}?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#1A237E',
+            cancelButtonColor: '#EF4444',
+            confirmButtonText: 'Generate',
+            cancelButtonText: 'Cancel',
+            background: '#ffffff',
+            customClass: { popup: 'rounded-4 shadow-lg' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('month', currentMonth);
+                formData.append('year', currentYear);
+                if (barangay) formData.append('barangay', barangay);
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+                fetch('{{ route("admin.senior.birthdays.generate-payouts") }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(res => {
+                    let html = `<div style="text-align:left">\n                        <p><strong>${res.message}</strong></p>\n                        <p style="margin:12px 0"><strong>Total Amount:</strong> ₱${res.total_amount.toLocaleString('en-PH', {minimumFractionDigits:2})}</p>`;
+                    
+                    if (res.barangay_summary && res.barangay_summary.length > 0) {
+                        html += `<div style="margin-top:12px;padding:12px;background:#f3f4f6;border-radius:8px">\n                            <strong style="display:block;margin-bottom:8px">Barangay Breakdown:</strong>`;
+                        res.barangay_summary.forEach(b => {
+                            html += `<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:13px">\n                                <span>${b.barangay}</span>\n                                <span>${b.new_payouts} payouts (₱${b.amount.toLocaleString('en-PH', {minimumFractionDigits:2})})</span>\n                            </div>`;
+                        });
+                        html += `</div>`;
+                    }
+                    
+                    html += `</div>`;
+
+                    Swal.fire({
+                        title: 'Success',
+                        html: html,
+                        icon: 'success',
+                        confirmButtonColor: '#1A237E',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    });
+                    loadData();
+                })
+                .catch(err => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to generate payouts',
+                        icon: 'error',
+                        confirmButtonColor: '#EF4444',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    });
+                });
+            }
+        });
+    }
+
+    function releasePayout(payoutId) {
+        Swal.fire({
+            title: 'Release Payout',
+            text: 'Mark this payout as released?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#16A34A',
+            cancelButtonColor: '#EF4444',
+            confirmButtonText: 'Release',
+            cancelButtonText: 'Cancel',
+            background: '#ffffff',
+            customClass: { popup: 'rounded-4 shadow-lg' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+                fetch(`{{ route("admin.senior.birthdays.release-payout", 0) }}`.replace('/0', `/${payoutId}`), {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(res => {
+                    Swal.fire({
+                        title: 'Success',
+                        text: res.message,
+                        icon: 'success',
+                        confirmButtonColor: '#16A34A',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    });
+                    loadData();
+                })
+                .catch(err => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to release payout',
+                        icon: 'error',
+                        confirmButtonColor: '#EF4444',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    });
+                });
+            }
+        });
+    }
+
+    function generateAllPayouts() {
+        Swal.fire({
+            title: 'Generate All Payouts',
+            text: 'Generate payouts for all barangays for current month?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#1A237E',
+            cancelButtonColor: '#EF4444',
+            confirmButtonText: 'Generate All',
+            cancelButtonText: 'Cancel',
+            background: '#ffffff',
+            customClass: { popup: 'rounded-4 shadow-lg' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('month', document.getElementById('monthFilter').value);
+                formData.append('year', document.getElementById('yearFilter').value);
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+                fetch('{{ route("admin.senior.birthdays.generate-all") }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(res => {
+                    Swal.fire({
+                        title: 'Success',
+                        text: res.message + ` Total: ₱${res.total_amount.toLocaleString('en-PH', {minimumFractionDigits:2})}`,
+                        icon: 'success',
+                        confirmButtonColor: '#1A237E',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    });
+                    location.reload();
+                })
+                .catch(err => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to generate payouts',
+                        icon: 'error',
+                        confirmButtonColor: '#EF4444',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    });
+                });
+            }
+        });
+    }
+
+    function releaseAllPayouts() {
+        Swal.fire({
+            title: 'Release All Payouts',
+            text: 'Release all pending payouts and download?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#16A34A',
+            cancelButtonColor: '#EF4444',
+            confirmButtonText: 'Release All & Download',
+            cancelButtonText: 'Cancel',
+            background: '#ffffff',
+            customClass: { popup: 'rounded-4 shadow-lg' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('month', document.getElementById('monthFilter').value);
+                formData.append('year', document.getElementById('yearFilter').value);
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+                fetch('{{ route("admin.senior.birthdays.release-all") }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success && res.released_payout_ids && res.released_payout_ids.length > 0) {
+                        // Create hidden form for PDF download
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '{{ route("admin.senior.birthdays.print-bulk") }}';
+                        form.target = '_blank';
+                        
+                        const token = document.createElement('input');
+                        token.type = 'hidden';
+                        token.name = '_token';
+                        token.value = document.querySelector('meta[name="csrf-token"]').content;
+                        form.appendChild(token);
+                        
+                        res.released_payout_ids.forEach(id => {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'payout_ids[]';
+                            input.value = id;
+                            form.appendChild(input);
+                        });
+                        
+                        document.body.appendChild(form);
+                        form.submit();
+                        document.body.removeChild(form);
+                    }
+
+                    Swal.fire({
+                        title: 'Success',
+                        text: res.message,
+                        icon: 'success',
+                        confirmButtonColor: '#16A34A',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    }).then(() => {
+                        const month = document.getElementById('monthFilter').value;
+                        const year = document.getElementById('yearFilter').value;
+                        window.location.href = `{{ route('admin.senior.birthdays') }}?month=${month}&year=${year}`;
+                    });
+                })
+                .catch(err => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to release payouts',
+                        icon: 'error',
+                        confirmButtonColor: '#EF4444',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    });
+                });
+            }
+        });
+    }
+
+    function generateBarangayPayouts(barangay) {
+        Swal.fire({
+            title: 'Generate Payouts',
+            text: `Generate payouts for ${barangay}?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#1A237E',
+            cancelButtonColor: '#EF4444',
+            confirmButtonText: 'Generate',
+            cancelButtonText: 'Cancel',
+            background: '#ffffff',
+            customClass: { popup: 'rounded-4 shadow-lg' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('barangay', barangay);
+                formData.append('month', document.getElementById('monthFilter').value);
+                formData.append('year', document.getElementById('yearFilter').value);
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+                fetch('{{ route("admin.senior.birthdays.generate-barangay") }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(res => {
+                    Swal.fire({
+                        title: 'Success',
+                        text: res.message + ` Total: ₱${res.total_amount.toLocaleString('en-PH', {minimumFractionDigits:2})}`,
+                        icon: 'success',
+                        confirmButtonColor: '#1A237E',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    });
+                    location.reload();
+                })
+                .catch(err => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to generate payouts',
+                        icon: 'error',
+                        confirmButtonColor: '#EF4444',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    });
+                });
+            }
+        });
+    }
+
+    function releaseBarangayPayouts(barangay) {
+        Swal.fire({
+            title: 'Release Payouts',
+            text: `Release pending payouts for ${barangay} and download?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#16A34A',
+            cancelButtonColor: '#EF4444',
+            confirmButtonText: 'Release & Download',
+            cancelButtonText: 'Cancel',
+            background: '#ffffff',
+            customClass: { popup: 'rounded-4 shadow-lg' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('barangay', barangay);
+                formData.append('month', document.getElementById('monthFilter').value);
+                formData.append('year', document.getElementById('yearFilter').value);
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+                fetch('{{ route("admin.senior.birthdays.release-barangay") }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success && res.released_payout_ids && res.released_payout_ids.length > 0) {
+                        // Create hidden form for PDF download
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '{{ route("admin.senior.birthdays.print-bulk") }}';
+                        form.target = '_blank';
+                        
+                        const token = document.createElement('input');
+                        token.type = 'hidden';
+                        token.name = '_token';
+                        token.value = document.querySelector('meta[name="csrf-token"]').content;
+                        form.appendChild(token);
+                        
+                        res.released_payout_ids.forEach(id => {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'payout_ids[]';
+                            input.value = id;
+                            form.appendChild(input);
+                        });
+                        
+                        document.body.appendChild(form);
+                        form.submit();
+                        document.body.removeChild(form);
+                    }
+
+                    Swal.fire({
+                        title: 'Success',
+                        text: res.message,
+                        icon: 'success',
+                        confirmButtonColor: '#16A34A',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    }).then(() => {
+                        const month = document.getElementById('monthFilter').value;
+                        const year = document.getElementById('yearFilter').value;
+                        window.location.href = `{{ route('admin.senior.birthdays') }}?month=${month}&year=${year}`;
+                    });
+                })
+                .catch(err => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to release payouts',
+                        icon: 'error',
+                        confirmButtonColor: '#EF4444',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    });
+                });
+            }
+        });
+    }
+
+    function toggleCelebrants(barangayId) {
+        const moreDiv = document.getElementById(`more-${barangayId}`);
+        if (moreDiv.style.display === 'none') {
+            moreDiv.style.display = 'block';
+            event.target.textContent = 'Show Less';
+        } else {
+            moreDiv.style.display = 'none';
+            event.target.textContent = 'View All';
+        }
+    }
+
+    function filterByMonth() {
+        const month = document.getElementById('monthFilter').value;
+        const year = document.getElementById('yearFilter').value;
+        window.location.href = `{{ route('admin.senior.birthdays') }}?month=${month}&year=${year}`;
+    }
+
+    function toggleSelectAll() {
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.row-checkbox');
+        checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+        const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+        const count = checkboxes.length;
+        document.getElementById('selectedCount').textContent = count;
+        const bulkBtn = document.getElementById('bulkReleaseBtn');
+        bulkBtn.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
+
+    function bulkReleaseAll() {
+        const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+        if (checkboxes.length === 0) return;
+
+        const payoutIds = Array.from(checkboxes).map(cb => cb.dataset.payoutId);
+
+        Swal.fire({
+            title: 'Release Selected Payouts',
+            text: `Release ${payoutIds.length} payout(s)?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#16A34A',
+            cancelButtonColor: '#EF4444',
+            confirmButtonText: 'Release & Print',
+            cancelButtonText: 'Cancel',
+            background: '#ffffff',
+            customClass: { popup: 'rounded-4 shadow-lg' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+                payoutIds.forEach(id => formData.append('payout_ids[]', id));
+
+                fetch('{{ route("admin.senior.birthdays.bulk-release") }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success && res.released_payout_ids && res.released_payout_ids.length > 0) {
+                        // Open print window with released payout IDs
+                        const printParams = new URLSearchParams();
+                        res.released_payout_ids.forEach(id => printParams.append('payout_ids[]', id));
+                        window.open(`{{ route("admin.senior.birthdays.print-bulk") }}?${printParams.toString()}`, '_blank');
+                    }
+
+                    Swal.fire({
+                        title: 'Success',
+                        text: res.message,
+                        icon: 'success',
+                        confirmButtonColor: '#16A34A',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    });
+                    document.getElementById('selectAll').checked = false;
+                    loadData();
+                })
+                .catch(err => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to release payouts',
+                        icon: 'error',
+                        confirmButtonColor: '#EF4444',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    });
+                });
+            }
+        });
     }
 
     loadData();

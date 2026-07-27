@@ -60,8 +60,8 @@
         /* ── Main Content ── */
 .main-content {
     flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
-    max-width: calc(100% - 260px); min-height: 100vh;
-    display: flex; flex-direction: column; overflow-y: auto;
+    max-width: calc(100% - 260px); height: 100vh;
+    display: flex; flex-direction: column; overflow: hidden;
     animation: fadeIn .3s ease;
 }
 
@@ -80,7 +80,10 @@
             flex: 1;
             overflow-y: auto;
             min-height: 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
+        .custom-table-scroll::-webkit-scrollbar { display: none; }
         .custom-table {
             width: 100%;
             border-collapse: collapse;
@@ -164,11 +167,16 @@
             .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
             .sidebar.show { transform: translateX(0) !important; }
             .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
+            .custom-table-wrapper { overflow: visible !important; }
+            .custom-table-scroll { overflow: visible !important; min-height: 0; }
         }
 
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
             .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
+            .main-content > .flex-1 { overflow: visible !important; overflow-y: auto !important; border-radius: 16px; scrollbar-width: none; -ms-overflow-style: none; }
+            .main-content > .flex-1::-webkit-scrollbar { display: none; }
+            .main-content .rounded-xl { border-radius: 16px !important; }
 
             /* ── Filter → stack ── */
             .filter-grid { grid-template-columns: 1fr !important; }
@@ -177,7 +185,8 @@
 
             /* ── Table → Card layout ── */
             .custom-table-scroll { border: none !important; overflow: visible !important; }
-            .custom-table { table-layout: auto !important; width: 100%; }
+            .custom-table { display: block !important; width: 100%; }
+            .custom-table tbody { display: block; }
             .custom-table thead { display: none !important; }
             .custom-table tbody tr {
                 display: block;
@@ -240,8 +249,7 @@
             <li><a href="/admin/senior/registration"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
             <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
             <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
-            <li><a href="/admin/senior/birthday-payouts"><i data-lucide="banknote" style="width:20px;height:20px"></i> Birthday Payouts</a></li>
-            <li><a href="/admin/senior/birthday-payouts/history" class="active"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
+            <li><a href="/admin/senior/payouts-history" class="active"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
             <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
             <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
             <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
@@ -272,7 +280,7 @@
         <div class="flex-1 overflow-hidden flex flex-col">
             <!-- Filter Section -->
             <div class="bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,.1)] p-5 mb-6 border border-[#E5E7EB] flex-shrink-0">
-                <form method="GET" action="{{ route('admin.senior.birthday-payouts.history') }}">
+                <form method="GET" action="{{ route('admin.senior.payouts-history') }}">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end filter-grid">
                         <div>
                             <label class="block text-[13px] font-semibold text-[var(--text-primary)] mb-1">Barangay</label>
@@ -357,7 +365,7 @@
                                 <i data-lucide="filter" style="width:16px;height:16px"></i> Filter
                             </button>
                             @if(request('barangay') || request('date_from') || request('date_to'))
-                                <a href="{{ route('admin.senior.birthday-payouts.history') }}" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#6B7280] hover:bg-[#4B5563] text-white text-sm font-medium rounded-lg transition-colors duration-200 no-underline" style="font-family:var(--font-family);white-space:nowrap">
+                                <a href="{{ route('admin.senior.payouts-history') }}" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#6B7280] hover:bg-[#4B5563] text-white text-sm font-medium rounded-lg transition-colors duration-200 no-underline" style="font-family:var(--font-family);white-space:nowrap">
                                     <i data-lucide="x" style="width:15px;height:15px"></i> Clear
                                 </a>
                             @endif

@@ -62,7 +62,9 @@
         .sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
 
         /* Main */
-        .main{flex:1;min-width:0;margin-left:var(--sidebar-width);padding:var(--content-padding);max-width:calc(100% - var(--sidebar-width));display:flex;flex-direction:column;min-height:100vh;overflow-y:auto;overflow-x:hidden;}
+        .main{flex:1;min-width:0;margin-left:var(--sidebar-width);padding:var(--content-padding);max-width:calc(100% - var(--sidebar-width));height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+        .main-scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;border-radius:16px;}
+        .main-scroll::-webkit-scrollbar{display:none;}
 
         /* Analytics Card */
         .analytics-card{background:var(--surface);border-radius:16px;padding:24px;box-shadow:var(--shadow);border:1px solid var(--border);height:100%;animation:fadeInUp .6s ease-out .1s backwards;}
@@ -195,8 +197,7 @@
             <li><a href="/admin/senior/registration"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
             <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
             <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
-            <li><a href="/admin/senior/birthday-payouts"><i data-lucide="banknote" style="width:20px;height:20px"></i> Birthday Payouts</a></li>
-            <li><a href="/admin/senior/birthday-payouts/history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
+            <li><a href="/admin/senior/payouts-history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
             <li><a href="/admin/senior/statistics" class="active"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
             <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
             <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
@@ -234,6 +235,7 @@
             </div>
         </header>
 
+        <div class="main-scroll">
         <!-- Filter Card -->
         <div class="filter-card animate-fade-in">
             <h3><i data-lucide="filter" style="width:16px;height:16px;color:var(--primary)"></i> Statistics Filters</h3>
@@ -345,7 +347,7 @@
         </div>
 
         <!-- Charts Row -->
-        <div style="flex:1;overflow-y:auto;min-height:0;padding-bottom:8px;">
+        <div style="padding-bottom:8px;">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px" class="charts-grid">
             <div class="analytics-card animate-fade-in">
                 <div class="flex items-center justify-between mb-5">
@@ -366,8 +368,9 @@
             </div>
         </div>
 
-    </div>
-</div>
+        </div>  <!-- close main-scroll -->
+    </div>  <!-- close main -->
+</div>  <!-- close app -->
 
 <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">@csrf</form>
 

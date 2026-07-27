@@ -28,8 +28,9 @@
         .sidebar-menu a:hover{background:rgba(255,255,255,.1);color:var(--accent-yellow);}
         .sidebar-menu a.active{background:rgba(255,255,255,.1);color:var(--accent-yellow);border-left-color:var(--accent-yellow);}
         .sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
-        .main{flex:1;min-width:0;margin-left:260px;padding:32px;max-width:calc(100% - 260px);display:flex;flex-direction:column;min-height:100vh;overflow-y:auto;overflow-x:hidden;}
-        .form-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:32px;flex:1;overflow-y:auto;min-height:0;}
+        .main{flex:1;min-width:0;margin-left:260px;padding:32px;max-width:calc(100% - 260px);display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+        .form-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:32px;flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;}
+        .form-card::-webkit-scrollbar{display:none;}
         .form-label{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.3px;}
         .form-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text-primary);outline:none;transition:border-color .2s,box-shadow .2s;font-family:var(--font-family);}
         .form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.1);}
@@ -107,8 +108,7 @@
             <li><a href="/admin/senior/registration" class="active"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
             <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
             <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
-            <li><a href="/admin/senior/birthday-payouts"><i data-lucide="banknote" style="width:20px;height:20px"></i> Birthday Payouts</a></li>
-            <li><a href="/admin/senior/birthday-payouts/history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
+            <li><a href="/admin/senior/payouts-history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
             <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
             <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
             <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>

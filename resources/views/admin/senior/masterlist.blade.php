@@ -71,13 +71,14 @@
         .sidebar-menu a i, .sidebar-menu a [data-lucide] { width: 20px; height: 20px; text-align: center; }
 
         /* ---------- Main ---------- */
-        html, body { overflow-x: hidden; overflow-y: auto; }
+html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
 .main {
     flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
-    max-width: calc(100% - 260px); min-height: 100vh;
-    display: flex; flex-direction: column; overflow-y: auto;
-    overflow-x: hidden;
+    max-width: calc(100% - 260px); height: 100vh;
+    display: flex; flex-direction: column; overflow: hidden;
 }
+.main-scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;border-radius:16px;}
+.main-scroll::-webkit-scrollbar{display:none;}
 
         /* ---------- Buttons ---------- */
         .btn {
@@ -152,7 +153,8 @@
         .filter-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,58,138,0.15); }
 
         /* ---------- Table Scroll ---------- */
-        .table-scroll { flex: 1; overflow-y: auto; min-height: 0; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; }
+        .table-scroll { flex: 1; overflow-y: auto; min-height: 0; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+        .table-scroll::-webkit-scrollbar { display: none; }
         .table-scroll table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         .table-scroll thead { position: sticky; top: 0; z-index: 1; background: var(--surface); }
         .table-scroll th {
@@ -250,12 +252,13 @@
             .filter-right > a { display: inline-flex !important; align-items: center !important; justify-content: center !important; }
 
             /* ── Table Card ── */
-            .table-card { padding: 1rem !important; border-radius: 12px !important; }
+            .table-card { padding: 1rem !important; border-radius: 12px !important; overflow: visible !important; }
             .table-card-title { font-size: 1rem !important; margin-bottom: 1rem !important; }
 
             /* ── Table → Card layout ── */
-            .table-scroll { border: none !important; overflow: visible !important; border-radius: 0 !important; }
-            .table-scroll table { table-layout: auto !important; width: 100%; }
+            .table-scroll { border: none !important; border-radius: 0 !important; overflow: visible !important; }
+            .table-scroll table { display: block !important; width: 100%; }
+            .table-scroll tbody { display: block; }
             .table-scroll thead { display: none !important; }
             .table-scroll tbody tr {
                 display: block;
@@ -339,9 +342,9 @@
     </style>
 </head>
 <body>
-
-<!-- ======================== SIDEBAR ======================== -->
-<div class="sidebar" id="sidebar">
+<div class="app">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <i data-lucide="users" style="width:24px;height:24px"></i>
         <span>Senior Citizen</span>
@@ -351,23 +354,22 @@
         <li><a href="/admin/senior/registration"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
         <li><a href="/admin/senior/masterlist" class="active"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
         <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
-        <li><a href="/admin/senior/birthday-payouts"><i data-lucide="banknote" style="width:20px;height:20px"></i> Birthday Payouts</a></li>
-        <li><a href="/admin/senior/birthday-payouts/history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
+        <li><a href="/admin/senior/payouts-history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
         <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
         <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
         <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
         <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
     </ul>
-</div>
-<div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
-<!-- Hamburger Button (fixed position) -->
-<button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
-    <i data-lucide="menu" style="width:24px;height:24px"></i>
-</button>
+    <!-- Hamburger Button (fixed position) -->
+    <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+        <i data-lucide="menu" style="width:24px;height:24px"></i>
+    </button>
 
-<!-- ======================== MAIN ======================== -->
-<div class="main">
+    <!-- Main Content -->
+    <div class="main">
     @php
         $userName = session('admin_user_name') ?? 'Admin User';
         $words = explode(' ', $userName);
@@ -390,6 +392,7 @@
         </div>
     </header>
 
+    <div class="main-scroll">
     <!-- Table Card -->
     <div class="table-card" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden">
         <h2 class="table-card-title">Registered Senior Citizens</h2>
@@ -530,7 +533,7 @@
                     <tbody>
                         @foreach($seniors as $senior)
                             <tr>
-                                <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="cursor:pointer;accent-color:var(--primary);"></td>
+                                <td data-label="#" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="cursor:pointer;accent-color:var(--primary);"></td>
                                 <td data-label="Control No" style="word-wrap:break-word;font-weight:600;">{{ $senior->control_number ?? '-' }}</td>
                                 <td data-label="Full Name" style="word-wrap:break-word;">{{ $senior->full_name ?? '-' }}</td>
                                 <td data-label="Barangay" style="word-wrap:break-word;">{{ $senior->barangay ?? '-' }}</td>
@@ -577,6 +580,7 @@
             </div>
         @endif
     </div>
+</div>
 </div>
 
 <!-- ======================== MODAL ======================== -->
