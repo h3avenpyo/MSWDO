@@ -106,6 +106,10 @@
         /* Chart containers */
         .chart-container{position:relative;height:300px;}
 
+        /* Charts grid */
+        .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;box-sizing:border-box;}
+        .charts-outer{padding-bottom:8px;width:100%;box-sizing:border-box;}
+
         /* Export buttons */
         .export-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s ease;font-family:inherit;}
         .export-btn:hover{transform:translateY(-1px);}
@@ -123,6 +127,41 @@
         .delay-1{animation-delay:.1s;}
         .delay-2{animation-delay:.2s;}
         .delay-3{animation-delay:.3s;}
+        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#fff;color:var(--text-primary);padding:10px 16px;border-bottom:1px solid var(--border);align-items:center;justify-content:space-between;height:56px;}
+        .mobile-header-title{font-size:17px;font-weight:700;color:var(--text-primary);letter-spacing:-0.2px;}
+        .mobile-header-sub{font-size:11px;color:var(--text-muted);font-weight:500;}
+        .mobile-avatar-hdr{width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;}
+        .mobile-bottom-nav{display:none !important;position:fixed;bottom:0;left:0;right:0;z-index:1000;background:#fff;border-top:1px solid #E5E7EB;padding:8px 4px;box-shadow:0 -2px 10px rgba(15,23,42,0.05);flex-direction:column;gap:6px;}
+        .mobile-bottom-nav-row{display:flex;align-items:center;justify-content:space-around;width:100%;}
+        .mobile-bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:#6B7280;font-size:10px;font-weight:500;padding:6px 0;transition:all 0.2s;background:none;border:none;cursor:pointer;font-family:inherit;}
+        .mobile-bottom-nav-item.active{color:#1A237E;font-weight:700;}
+        .mobile-bottom-nav-item [data-lucide]{width:20px;height:20px;}
+        .mobile-bottom-nav-item:hover{color:#1A237E;}
+        .mobile-nav-extra{padding-top:4px;margin-top:2px;}
+        @media(max-width:767px){
+            .app{flex-direction:column !important;min-height:100vh !important;}
+            .main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:66px !important;padding-bottom:140px !important;}
+            .main-scroll{overflow:visible !important;flex:none !important;height:auto !important;padding-bottom:140px !important;}
+            .charts-grid{grid-template-columns:1fr !important;gap:16px !important;width:100% !important;box-sizing:border-box !important;}
+            .charts-outer{padding:0 0 8px 0 !important;width:100% !important;box-sizing:border-box !important;}
+            .analytics-card{width:100% !important;box-sizing:border-box !important;margin-left:0 !important;margin-right:0 !important;margin-bottom:0 !important;padding:12px !important;border-radius:16px !important;min-height:auto !important;height:auto !important;}
+            .chart-container{height:200px !important;}
+            .chart-card,.stat-card,.card,.table-card{margin-bottom:16px !important;}
+            .dashboard-grid,.analytics-grid,.stats-grid{padding-bottom:40px !important;}
+            #analyticsFilterGrid{grid-template-columns:1fr 1fr !important;}
+            header{display:none !important;}
+            .hamburger-btn{display:none !important;}
+            .mobile-header{display:flex !important;}
+            .mobile-bottom-nav{display:flex !important;flex-direction:column !important;}
+        }
+        @media(max-width:479px){
+            .main,.main-content{padding:10px !important;padding-top:64px !important;padding-bottom:140px !important;}
+            .main-scroll{padding-bottom:140px !important;}
+            .charts-grid{grid-template-columns:1fr !important;width:100% !important;box-sizing:border-box !important;}
+            .analytics-card{width:100% !important;box-sizing:border-box !important;padding:10px !important;border-radius:14px !important;}
+            .chart-container{height:180px !important;}
+            #analyticsFilterGrid{grid-template-columns:1fr !important;}
+        }
 
         /* ── Sidebar Overlay ── */
         .sidebar-overlay.active { display: block !important; }
@@ -175,7 +214,8 @@
             .filter-bar > div, .filter-group > div { min-width: 0 !important; }
             #analyticsFilterGrid { grid-template-columns: 1fr 1fr !important; }
             #analyticsFilterGrid > div:last-child { grid-column: 1 / -1; }
-            .chart-container { height: 250px !important; }
+            .analytics-card { padding: 12px !important; border-radius: 16px !important; min-height: auto !important; height: auto !important; }
+            .chart-container { height: 200px !important; }
             .filter-card { padding: 12px !important; }
             .charts-grid { grid-template-columns: 1fr !important; }
         }
@@ -185,6 +225,8 @@
             .stat-card-icon { width: 40px !important; height: 40px !important; }
             .stat-card-value { font-size: 24px !important; }
             .stat-cards { gap: 12px !important; }
+            .analytics-card { padding: 10px !important; border-radius: 14px !important; }
+            .chart-container { height: 180px !important; }
             #analyticsFilterGrid { grid-template-columns: 1fr 1fr !important; }
         }
     </style>
@@ -215,6 +257,8 @@
     <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
         <i data-lucide="menu" style="width:24px;height:24px"></i>
     </button>
+    @php $mhUser=session('admin_user_name')??'Admin';$mhW=explode(' ',$mhUser);$mhI=count($mhW)>=2?strtoupper(substr($mhW[0],0,1).substr($mhW[1],0,1)):strtoupper(substr($mhUser,0,2)); @endphp
+    <div class="mobile-header"><div><div class="mobile-header-sub">Senior Citizen &rsaquo; Statistics</div><div class="mobile-header-title">Statistics</div></div><div class="mobile-avatar-hdr">{{ $mhI }}</div></div>
 
     <!-- Main Content -->
     <div class="main">
@@ -352,8 +396,8 @@
         </div>
 
         <!-- Charts Row -->
-        <div style="padding-bottom:8px;">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px" class="charts-grid">
+        <div class="charts-outer">
+            <div class="charts-grid">
             <div class="analytics-card animate-fade-in">
                 <div class="flex items-center justify-between mb-5">
                     <h3><i data-lucide="pie-chart" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px;color:var(--icon-blue)"></i>Gender Distribution</h3>
@@ -377,6 +421,7 @@
     </div>  <!-- close main -->
 </div>  <!-- close app -->
 
+<div class="mobile-bottom-nav"><div class="mobile-bottom-nav-row"><a href="/admin/senior" class="mobile-bottom-nav-item"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a><a href="/admin/senior/registration" class="mobile-bottom-nav-item"><i data-lucide="user-plus"></i><span>Register</span></a><a href="/admin/senior/masterlist" class="mobile-bottom-nav-item"><i data-lucide="list"></i><span>Masterlist</span></a><a href="/admin/senior/birthdays" class="mobile-bottom-nav-item"><i data-lucide="cake"></i><span>Birthdays</span></a><button type="button" class="mobile-bottom-nav-item" onclick="toggleMobileMoreNav()"><i data-lucide="chevron-up" id="mobileMoreIcon"></i><span>More</span></button></div><div class="mobile-bottom-nav-row mobile-nav-extra" id="mobileNavExtra" style="display:none;"><a href="/admin/senior/payouts-history" class="mobile-bottom-nav-item"><i data-lucide="history"></i><span>Payouts</span></a><a href="/admin/senior/statistics" class="mobile-bottom-nav-item active"><i data-lucide="bar-chart-3"></i><span>Stats</span></a><a href="/admin/senior/archive" class="mobile-bottom-nav-item"><i data-lucide="archive"></i><span>Archive</span></a><a href="#" onclick="confirmLogout(event)" class="mobile-bottom-nav-item"><i data-lucide="log-out"></i><span>Logout</span></a></div></div>
 <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">@csrf</form>
 
 <script>
@@ -573,6 +618,7 @@
         });
     })();
 
+    function toggleMobileMoreNav(){const extra=document.getElementById('mobileNavExtra');const icon=document.getElementById('mobileMoreIcon');if(!extra)return;if(extra.style.display==='none'||extra.style.display===''){extra.style.display='flex';if(icon){icon.setAttribute('data-lucide','chevron-down');lucide.createIcons();}}else{extra.style.display='none';if(icon){icon.setAttribute('data-lucide','chevron-up');lucide.createIcons();}}}
     lucide.createIcons();
 </script>
 </body>

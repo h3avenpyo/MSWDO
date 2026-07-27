@@ -49,7 +49,7 @@
         body{font-size:14px;line-height:1.5;}
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
         button{font-family:inherit;cursor:pointer;}
-        .app{display:flex;min-height:100vh;}
+        .app{display:flex;min-height:100vh;flex-direction:row;}
 
         /* Sidebar */
         .sidebar{width:var(--sidebar-width);flex-shrink:0;background:var(--primary);color:#FFF;position:fixed;left:0;top:0;height:100vh;z-index:1000;display:flex;flex-direction:column;transition:transform .3s ease;}
@@ -66,6 +66,10 @@
         /* Main */
         .main{flex:1;min-width:0;margin-left:var(--sidebar-width);padding:var(--content-padding);max-width:calc(100% - var(--sidebar-width));height:100vh;overflow:hidden;display:flex;flex-direction:column;}
 
+        @media(max-width:767px){
+            .main{height:auto;overflow:visible;}
+        }
+
         /* Dashboard Grid */
         .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px;}
         @media(max-width:1024px){.dashboard-grid{grid-template-columns:1fr;}}
@@ -78,7 +82,7 @@
         @media(max-width:768px){.stat-cards{grid-template-columns:1fr 1fr;}}
         @media(max-width:480px){.stat-cards{grid-template-columns:1fr;}}
 
-        .stat-card{background:var(--surface);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;}
+        .stat-card{background:var(--surface);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;min-height:0;}
         .stat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;transition:all .3s ease;}
         .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);}
         .stat-card-blue::before{background:var(--icon-blue);}
@@ -155,7 +159,7 @@
             background: var(--primary);
             color: #fff;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             width: 44px;
             height: 44px;
             align-items: center;
@@ -165,13 +169,142 @@
             transition: background 0.2s;
         }
         .hamburger-btn:hover { background: var(--primary-hover); }
+        
+        /* ── Mobile Header (hidden on desktop) ── */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
+            color: #ffffff;
+            padding: 10px 16px;
+            box-shadow: 0 2px 12px rgba(26, 35, 126, 0.2);
+            align-items: center;
+            justify-content: space-between;
+            height: 56px;
+        }
+        .mobile-header-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+        .mobile-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+            letter-spacing: -0.2px;
+        }
+        .mobile-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .mobile-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--accent-yellow);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* ── Mobile Search (hidden on desktop) ── */
+        .mobile-search {
+            display: none;
+            position: relative;
+        }
+        
+        /* ── Quick Actions (hidden on desktop) ── */
+        .quick-actions {
+            display: none;
+        }
+        
+        /* ── Mobile Barangay List (hidden on desktop) ── */
+        .mobile-barangay-list {
+            display: none;
+        }
+        
+        /* ── Mobile Bottom Navigation (hidden on desktop and laptop) ── */
+        .mobile-bottom-nav {
+            display: none !important;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 8px 4px;
+            box-shadow: 0 -2px 10px rgba(15, 23, 42, 0.05);
+            gap: 6px;
+        }
+        .mobile-bottom-nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            width: 100%;
+        }
+        .mobile-bottom-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 10px;
+            font-weight: 500;
+            padding: 6px 0;
+            transition: all 0.2s;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .mobile-bottom-nav-item.active {
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .mobile-bottom-nav-item [data-lucide] {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.2s ease;
+        }
+        .mobile-bottom-nav-item:hover {
+            color: var(--primary);
+        }
+        .mobile-nav-extra {
+            padding-top: 4px;
+            margin-top: 2px;
+        }
+        
+        /* ── Stat Card Trend (hidden on desktop) ── */
+        .stat-card-trend {
+            display: none;
+        }
 
         /* ── Responsive: Tablet (< 1024px) ── */
         @media (max-width: 1023px) {
             .hamburger-btn { display: flex; }
             .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
             .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 72px !important; }
             .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
             .dashboard-grid { grid-template-columns: 1fr !important; }
             #barangayChartWrap { justify-content: center; }
@@ -180,39 +313,259 @@
 
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
-            .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
-            .stat-cards { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-            .stat-card { width: 100% !important; height: 100px !important; padding: 12px !important; }
-            .stat-card-value { font-size: 20px !important; }
-            .stat-card-icon { width: 36px !important; height: 36px !important; }
-            .stat-card-icon svg { width: 18px !important; height: 18px !important; }
-            .stat-card-label { font-size: 9px !important; }
-            .topnav, .top-navbar { padding: 10px 12px !important; }
-            .topnav-datetime, .navbar-datetime { display: none !important; }
-            .filter-bar, .filter-group { flex-direction: column; }
-            .filter-bar > div, .filter-group > div { width: 100% !important; min-width: 0 !important; }
-            #barangayChartWrap { flex-direction: column; align-items: center; }
+            /* Mobile-specific background */
+            body { background: #F5F7FB; }
 
-            /* ── Analytics card → reduce height on mobile ── */
-            .analytics-card { min-height: auto !important; padding: 16px !important; }
-            #barangayChartBox { width: 180px !important; height: 180px !important; }
+            /* Fix main container for mobile - allow natural scrolling */
+            .app { flex-direction: column; }
+            .main, .main-content {
+                margin-left: 0 !important;
+                max-width: 100% !important;
+                padding: 12px 14px !important;
+                padding-top: 66px !important;
+                height: auto !important;
+                overflow: visible !important;
+                padding-bottom: 80px !important;
+            }
+            .main-scroll {
+                overflow: visible !important;
+                height: auto !important;
+                min-height: auto !important;
+            }
 
-            /* ── Activity card → ensure content visible on mobile ── */
-            .activity-card { min-height: auto !important; padding: 16px !important; opacity: 1 !important; animation: none !important; }
+            /* Hide desktop header & standalone hamburger button, show integrated mobile header */
+            header { display: none !important; }
+            .hamburger-btn { display: none !important; }
+            .mobile-header { display: flex !important; z-index: 998 !important; }
+
+            /* Stat cards - compact modern style */
+            .stat-cards {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 12px !important;
+                margin-bottom: 16px !important;
+            }
+            .stat-card {
+                width: 100% !important;
+                height: auto !important;
+                padding: 16px !important;
+                border-radius: 16px !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 8px !important;
+                position: relative !important;
+            }
+            .stat-card::before { display: none !important; }
+            .stat-card-content { width: 100%; }
+            .stat-card-label {
+                font-size: 11px !important;
+                font-weight: 600 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.3px !important;
+                color: var(--text-secondary) !important;
+                margin-bottom: 4px !important;
+            }
+            .stat-card-value { font-size: 28px !important; font-weight: 700 !important; }
+            .stat-card-icon {
+                width: 40px !important;
+                height: 40px !important;
+                border-radius: 50% !important;
+                position: absolute !important;
+                top: 14px !important;
+                right: 14px !important;
+            }
+            .stat-card-icon svg { width: 20px !important; height: 20px !important; }
+
+            /* Quick Actions section */
+            .quick-actions { display: flex !important; }
+            .quick-actions-grid {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 12px !important;
+                margin-bottom: 16px !important;
+            }
+            .quick-action-btn {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 8px !important;
+                padding: 18px 12px !important;
+                background: var(--surface) !important;
+                border: 1px solid var(--border) !important;
+                border-radius: 16px !important;
+                text-decoration: none !important;
+                color: var(--text-primary) !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                transition: all 0.2s ease !important;
+                box-shadow: var(--shadow) !important;
+            }
+            .quick-action-btn:active {
+                transform: scale(0.97) !important;
+            }
+            .quick-action-btn i, .quick-action-btn [data-lucide] {
+                width: 24px !important;
+                height: 24px !important;
+                color: var(--primary) !important;
+            }
+
+            /* Search field */
+            .mobile-search { display: block !important; margin-bottom: 16px !important; }
+            .mobile-search input {
+                width: 100% !important;
+                height: 46px !important;
+                padding: 0 16px 0 44px !important;
+                border: 1px solid var(--border) !important;
+                border-radius: 14px !important;
+                font-size: 14px !important;
+                background: var(--surface) !important;
+                box-shadow: var(--shadow) !important;
+                font-family: var(--font-family) !important;
+            }
+            .mobile-search input:focus {
+                outline: none !important;
+                border-color: var(--primary) !important;
+                box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1) !important;
+            }
+            .mobile-search-icon {
+                position: absolute !important;
+                left: 14px !important;
+                top: 50% !important;
+                transform: translateY(-50%) !important;
+                color: var(--text-muted) !important;
+                width: 20px !important;
+                height: 20px !important;
+            }
+
+            /* Top Barangays - display donut chart on mobile */
+            .analytics-card {
+                min-height: auto !important;
+                padding: 16px !important;
+                border-radius: 16px !important;
+            }
+            #barangayChartWrap { 
+                display: flex !important; 
+                flex-direction: column !important; 
+                align-items: center !important; 
+                gap: 16px !important;
+            }
+            #barangayChartBox { 
+                width: 220px !important; 
+                height: 220px !important; 
+            }
+            #barangayLegend { 
+                width: 100% !important; 
+                max-height: 180px !important; 
+            }
+            .mobile-barangay-list { display: none !important; }
+            .barangay-rank-item {
+                display: flex !important;
+                align-items: center !important;
+                gap: 12px !important;
+                padding: 12px !important;
+                background: var(--background) !important;
+                border-radius: 12px !important;
+                margin-bottom: 8px !important;
+                transition: background 0.15s !important;
+            }
+            .barangay-rank-item:last-child { margin-bottom: 0 !important; }
+            .barangay-rank-item:active { background: var(--border) !important; }
+            .barangay-rank {
+                width: 28px !important;
+                height: 28px !important;
+                border-radius: 50% !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                font-size: 12px !important;
+                font-weight: 700 !important;
+                flex-shrink: 0 !important;
+            }
+            .barangay-rank.gold { background: #FFF3CD; color: #856404; }
+            .barangay-rank.silver { background: #E2E8F0; color: #475569; }
+            .barangay-rank.bronze { background: #FED7AA; color: #9A3412; }
+            .barangay-rank.normal { background: var(--border); color: var(--text-secondary); }
+            .barangay-info { flex: 1 !important; min-width: 0 !important; }
+            .barangay-name { font-size: 14px !important; font-weight: 600 !important; color: var(--text-primary) !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .barangay-count { font-size: 12px !important; color: var(--text-secondary) !important; }
+
+            /* Recent Activities */
+            .activity-card {
+                min-height: auto !important;
+                padding: 16px !important;
+                border-radius: 16px !important;
+            }
             .activity-feed { max-height: none !important; overflow: visible !important; }
-            .activity-item { padding: 10px !important; }
-            .activity-icon { width: 32px !important; height: 32px !important; }
-            .activity-icon svg { width: 16px !important; height: 16px !important; }
-            .activity-text { font-size: 12px !important; }
-            .activity-time { font-size: 10px !important; }
+            .activity-item {
+                padding: 12px !important;
+                border-radius: 12px !important;
+                background: var(--background) !important;
+                gap: 12px !important;
+            }
+            .activity-icon {
+                width: 36px !important;
+                height: 36px !important;
+                border-radius: 10px !important;
+            }
+            .activity-icon svg { width: 18px !important; height: 18px !important; }
+            .activity-text { font-size: 13px !important; font-weight: 600 !important; }
+            .activity-text strong { font-weight: 700 !important; }
+            .activity-time { font-size: 11px !important; word-break: break-word !important; }
+
+            /* Dashboard grid - single column on mobile */
+            .dashboard-grid { grid-template-columns: 1fr !important; gap: 16px !important; margin-bottom: 16px !important; }
+
+            /* Hamburger button adjustments */
+            .hamburger-btn { top: 14px !important; left: 16px !important; z-index: 1002 !important; }
+
+            /* Bottom navigation - strictly visible on mobile screens (<768px) only */
+            .mobile-bottom-nav { 
+                display: flex !important; 
+                flex-direction: column !important; 
+            }
+
+            /* Hide trend indicators (fake data) */
+            .stat-card-trend { display: none !important; }
+
+            /* Barangay modal on mobile */
+            #barangayModal > div {
+                max-width: 100% !important;
+                max-height: 90vh !important;
+                border-radius: 16px !important;
+                margin: 0 8px !important;
+            }
+            #barangayModalCards {
+                grid-template-columns: 1fr 1fr !important;
+            }
         }
 
         /* ── Responsive: Small Mobile (< 480px) ── */
         @media (max-width: 479px) {
-            .stat-card-icon { width: 40px !important; height: 40px !important; }
+            .main, .main-content { padding: 10px !important; padding-top: 64px !important; padding-bottom: 76px !important; }
             .stat-card-value { font-size: 24px !important; }
-            .stat-cards { gap: 12px !important; }
-            #barangayChartBox { width: 180px !important; height: 180px !important; }
+            .stat-card-icon { width: 36px !important; height: 36px !important; top: 12px !important; right: 12px !important; }
+            .stat-card-icon svg { width: 16px !important; height: 16px !important; }
+            .stat-card { padding: 14px !important; }
+            .stat-cards { gap: 10px !important; }
+            .quick-actions-grid { gap: 10px !important; }
+            .quick-action-btn { padding: 14px 10px !important; font-size: 11px !important; }
+            .quick-action-btn i, .quick-action-btn [data-lucide] { width: 22px !important; height: 22px !important; }
+            .mobile-header { padding: 10px 12px !important; }
+            .mobile-header-content { margin-left: 48px !important; }
+            .mobile-title { font-size: 14px !important; }
+            .mobile-greeting { font-size: 11px !important; }
+            .mobile-subtitle { font-size: 10px !important; }
+            .mobile-avatar { width: 36px !important; height: 36px !important; font-size: 12px !important; }
+            .mobile-notification { width: 36px !important; height: 36px !important; }
+            .analytics-card, .activity-card { padding: 14px !important; }
+            .activity-item { padding: 10px !important; gap: 10px !important; }
+            .activity-icon { width: 32px !important; height: 32px !important; }
+            .activity-icon svg { width: 16px !important; height: 16px !important; }
+            .activity-text { font-size: 12px !important; }
+            .activity-time { font-size: 10px !important; }
+            .barangay-rank-item { padding: 10px !important; gap: 10px !important; }
+            .barangay-name { font-size: 13px !important; }
+            .barangay-count { font-size: 11px !important; }
         }
     </style>
 </head>
@@ -245,23 +598,34 @@
         <i data-lucide="menu" style="width:24px;height:24px"></i>
     </button>
 
+    @php
+        $userName = session('admin_user_name') ?? 'Admin User';
+        $words = explode(' ', $userName);
+        $initials = '';
+        if (count($words) >= 2) {
+            $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+        } else {
+            $initials = strtoupper(substr($userName, 0, 2));
+        }
+        use App\Models\Senior\SeniorCitizenRecord;
+        $bdayToday = SeniorCitizenRecord::where('status','active')->whereNotNull('birth_date')->whereRaw("MONTH(birth_date) = ? AND DAY(birth_date) = ?", [now()->format('n'), now()->format('j')])->count();
+        $bdayWeek = SeniorCitizenRecord::where('status','active')->whereNotNull('birth_date')->where(function($q){ $s=now();$e=now()->addDays(7);$sMD=$s->format('m-d');$eMD=$e->format('m-d');if($sMD<=$eMD){$q->whereRaw("DATE_FORMAT(birth_date,'%m-%d') BETWEEN ? AND ?",[$sMD,$eMD]);}else{$q->whereRaw("DATE_FORMAT(birth_date,'%m-%d') >= ?",[$sMD])->orWhereRaw("DATE_FORMAT(birth_date,'%m-%d') <= ?",[$eMD]);}})->count();
+        $bdayNextMonth = SeniorCitizenRecord::where('status','active')->whereNotNull('birth_date')->whereRaw("MONTH(birth_date) = ?", [now()->addMonth()->format('n')])->count();
+    @endphp
+
+    <!-- Mobile Header (visible only on mobile) -->
+    <div class="mobile-header">
+        <div class="mobile-header-info">
+            <div class="mobile-greeting">Dashboard</div>
+            <div class="mobile-title">Senior Citizen</div>
+        </div>
+        <div class="mobile-header-actions">
+            <div class="mobile-avatar" title="{{ $userName }}">{{ $initials }}</div>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <div class="main">
-        @php
-            $userName = session('admin_user_name') ?? 'Admin User';
-            $words = explode(' ', $userName);
-            $initials = '';
-            if (count($words) >= 2) {
-                $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
-            } else {
-                $initials = strtoupper(substr($userName, 0, 2));
-            }
-            use App\Models\Senior\SeniorCitizenRecord;
-            $bdayToday = SeniorCitizenRecord::where('status','active')->whereNotNull('birth_date')->whereRaw("MONTH(birth_date) = ? AND DAY(birth_date) = ?", [now()->format('n'), now()->format('j')])->count();
-            $bdayWeek = SeniorCitizenRecord::where('status','active')->whereNotNull('birth_date')->where(function($q){ $s=now();$e=now()->addDays(7);$sMD=$s->format('m-d');$eMD=$e->format('m-d');if($sMD<=$eMD){$q->whereRaw("DATE_FORMAT(birth_date,'%m-%d') BETWEEN ? AND ?",[$sMD,$eMD]);}else{$q->whereRaw("DATE_FORMAT(birth_date,'%m-%d') >= ?",[$sMD])->orWhereRaw("DATE_FORMAT(birth_date,'%m-%d') <= ?",[$eMD]);}})->count();
-            $bdayNextMonth = SeniorCitizenRecord::where('status','active')->whereNotNull('birth_date')->whereRaw("MONTH(birth_date) = ?", [now()->addMonth()->format('n')])->count();
-        @endphp
-
         <!-- Page Header -->
         <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
             <div class="flex items-center">
@@ -276,6 +640,8 @@
         </header>
 
         <div class="main-scroll">
+
+
         <!-- Stat Cards -->
         <div class="stat-cards">
             <a href="/admin/senior/masterlist" style="text-decoration:none">
@@ -325,25 +691,32 @@
             </a>
         </div>
 
+
+
+
         <!-- Dashboard Grid -->
         <div class="dashboard-grid">
             <!-- Top Barangays -->
             <div class="analytics-card">
                 <div class="flex items-center justify-between mb-5">
                     <h3><i data-lucide="map-pin" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px;color:var(--icon-blue)"></i>Top Barangays</h3>
-                    <button class="text-xs font-semibold px-3 py-1 rounded-lg" style="background:var(--info-bg);color:var(--icon-blue);border:none" onclick="document.getElementById('barangayModal').style.display='flex'">View All</button>
+                    <button class="text-xs font-semibold px-3 py-1 rounded-lg view-all-btn" style="background:var(--info-bg);color:var(--icon-blue);border:none" onclick="document.getElementById('barangayModal').style.display='flex'">View All <i data-lucide="arrow-right" style="width:14px;height:14px;margin-left:2px"></i></button>
                 </div>
                 <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap" id="barangayChartWrap">
                     <div id="barangayChartBox" style="width:280px;height:280px;flex-shrink:0"><canvas id="barangayDonut"></canvas></div>
                     <div id="barangayLegend" style="flex:1;min-width:0;max-height:220px;overflow-y:auto"></div>
                 </div>
+                <!-- Mobile Barangay List (visible only on mobile) -->
+                <div class="mobile-barangay-list" id="mobileBarangayList"></div>
             </div>
 
             <!-- Recent Activities -->
             <div class="activity-card">
                 <div class="flex items-center justify-between mb-5">
                     <h3><i data-lucide="activity" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px;color:var(--icon-blue)"></i>Recent Activities</h3>
-                    <button class="text-xs font-semibold px-3 py-1 rounded-lg" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="confirmClearActivities()">Clear</button>
+                    @if(count($recentActivities) > 0)
+                    <button class="text-xs font-semibold px-3 py-1 rounded-lg" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="confirmClearActivities()">Clear <i data-lucide="trash-2" style="width:12px;height:12px;margin-left:2px;vertical-align:middle"></i></button>
+                    @endif
                 </div>
                 <div class="activity-feed">
                     @if(count($recentActivities) > 0)
@@ -372,6 +745,50 @@
     </div>
 </div>
 
+<!-- Mobile Bottom Navigation (visible only on mobile) -->
+<div class="mobile-bottom-nav">
+    <div class="mobile-bottom-nav-row">
+        <a href="/admin/senior" class="mobile-bottom-nav-item active">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="/admin/senior/registration" class="mobile-bottom-nav-item">
+            <i data-lucide="user-plus"></i>
+            <span>Register</span>
+        </a>
+        <a href="/admin/senior/masterlist" class="mobile-bottom-nav-item">
+            <i data-lucide="list"></i>
+            <span>Masterlist</span>
+        </a>
+        <a href="/admin/senior/birthdays" class="mobile-bottom-nav-item">
+            <i data-lucide="cake"></i>
+            <span>Birthdays</span>
+        </a>
+        <button type="button" class="mobile-bottom-nav-item mobile-more-toggle" onclick="toggleMobileMoreNav()">
+            <i data-lucide="chevron-up" id="mobileMoreIcon"></i>
+            <span id="mobileMoreText">More</span>
+        </button>
+    </div>
+    <div class="mobile-bottom-nav-row mobile-nav-extra" id="mobileNavExtra" style="display:none;">
+        <a href="/admin/senior/payouts-history" class="mobile-bottom-nav-item">
+            <i data-lucide="history"></i>
+            <span>Payouts</span>
+        </a>
+        <a href="/admin/senior/statistics" class="mobile-bottom-nav-item">
+            <i data-lucide="bar-chart-3"></i>
+            <span>Stats</span>
+        </a>
+        <a href="/admin/senior/archive" class="mobile-bottom-nav-item">
+            <i data-lucide="archive"></i>
+            <span>Archive</span>
+        </a>
+        <a href="#" onclick="confirmLogout(event)" class="mobile-bottom-nav-item">
+            <i data-lucide="log-out"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</div>
+
 <!-- Barangay Distribution Modal -->
 <div id="barangayModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.style.display='none'">
     <div style="background:var(--surface);border-radius:16px;width:100%;max-width:800px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15)">
@@ -393,7 +810,16 @@
     function updateDateTime(){
         const now=new Date();
         const opts={weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true};
-        document.getElementById('currentDateTime').textContent=now.toLocaleDateString('en-US',opts).replace(',',' at');
+        const dtEl=document.getElementById('currentDateTime');
+        if(dtEl) dtEl.textContent=now.toLocaleDateString('en-US',opts).replace(',',' at');
+        
+        // Update mobile greeting based on time
+        const hour=now.getHours();
+        let greeting='Good Evening';
+        if(hour<12) greeting='Good Morning';
+        else if(hour<17) greeting='Good Afternoon';
+        const greetingEl=document.querySelector('.mobile-greeting');
+        if(greetingEl) greetingEl.textContent=greeting+', Administrator';
     }
     updateDateTime();
     setInterval(updateDateTime,60000);
@@ -446,6 +872,7 @@
         const barangayData=@json($barangayDistribution);
         const sortedData=[...barangayData].sort((a,b)=>b.count-a.count);
         renderTopBarangaysList(sortedData);
+        renderMobileBarangayList(sortedData);
     }
 
     let barangayDonutChart = null;
@@ -543,6 +970,27 @@
         }).join('');
     }
 
+    // Render mobile barangay list (ranked list instead of donut chart)
+    function renderMobileBarangayList(data){
+        const container=document.getElementById('mobileBarangayList');
+        if(!container)return;
+        const top5=data.slice(0,5);
+        container.innerHTML=top5.map((item,index)=>{
+            let rankClass='normal';
+            let rankEmoji=index+1;
+            if(index===0){rankClass='gold';rankEmoji='🥇';}
+            else if(index===1){rankClass='silver';rankEmoji='🥈';}
+            else if(index===2){rankClass='bronze';rankEmoji='🥉';}
+            return `<div class="barangay-rank-item">
+                <div class="barangay-rank ${rankClass}">${rankEmoji}</div>
+                <div class="barangay-info">
+                    <div class="barangay-name">${item.barangay}</div>
+                    <div class="barangay-count">${item.count} Seniors</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
     // Confirm clear activities
     function confirmClearActivities(){
         Swal.fire({
@@ -585,6 +1033,30 @@
         }).then(result=>{
             if(result.isConfirmed) document.getElementById('logout-form').submit();
         });
+    }
+
+    // Toggle mobile bottom nav extra row
+    function toggleMobileMoreNav(){
+        const extraRow = document.getElementById('mobileNavExtra');
+        const icon = document.getElementById('mobileMoreIcon');
+        const btn = document.querySelector('.mobile-more-toggle');
+        if(!extraRow) return;
+
+        if(extraRow.style.display === 'none' || extraRow.style.display === ''){
+            extraRow.style.display = 'flex';
+            if(btn) btn.classList.add('active');
+            if(icon) {
+                icon.setAttribute('data-lucide', 'chevron-down');
+                lucide.createIcons();
+            }
+        } else {
+            extraRow.style.display = 'none';
+            if(btn) btn.classList.remove('active');
+            if(icon) {
+                icon.setAttribute('data-lucide', 'chevron-up');
+                lucide.createIcons();
+            }
+        }
     }
 
     lucide.createIcons();

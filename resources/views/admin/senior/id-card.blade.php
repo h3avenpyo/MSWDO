@@ -446,6 +446,19 @@
             .stat-card-value { font-size: 24px !important; }
             .stat-cards { gap: 12px !important; }
         }
+        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:linear-gradient(135deg,#1A237E 0%,#283593 100%);color:#fff;padding:10px 16px;box-shadow:0 2px 12px rgba(26,35,126,0.2);align-items:center;justify-content:space-between;height:56px;}
+        .mobile-header-title{font-size:16px;font-weight:700;color:#fff;letter-spacing:-0.2px;}
+        .mobile-header-sub{font-size:11px;color:rgba(255,255,255,0.7);font-weight:500;}
+        .mobile-avatar-hdr{width:34px;height:34px;border-radius:50%;background:#FBC02D;color:#1A237E;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+        .mobile-bottom-nav{display:none !important;position:fixed;bottom:0;left:0;right:0;z-index:1000;background:#fff;border-top:1px solid #E5E7EB;padding:8px 4px;box-shadow:0 -2px 10px rgba(15,23,42,0.05);flex-direction:column;gap:6px;}
+        .mobile-bottom-nav-row{display:flex;align-items:center;justify-content:space-around;width:100%;}
+        .mobile-bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:#6B7280;font-size:10px;font-weight:500;padding:6px 0;transition:all 0.2s;background:none;border:none;cursor:pointer;font-family:inherit;}
+        .mobile-bottom-nav-item.active{color:#1A237E;font-weight:700;}
+        .mobile-bottom-nav-item [data-lucide],.mobile-bottom-nav-item i{width:20px;height:20px;}
+        .mobile-bottom-nav-item:hover{color:#1A237E;}
+        .mobile-nav-extra{padding-top:4px;margin-top:2px;}
+        @media(max-width:767px){.main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:66px !important;padding-bottom:140px !important;}.top-navbar{display:none !important;}.hamburger-btn{display:none !important;}.mobile-header{display:flex !important;}.mobile-bottom-nav{display:flex !important;flex-direction:column !important;}}
+        @media(max-width:479px){.main,.main-content{padding:10px !important;padding-top:64px !important;padding-bottom:140px !important;}}
     </style>
 </head>
 <body>
@@ -468,6 +481,8 @@
     </ul>
 </div>
 <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
+@php $mhUser=session('admin_user_name')??'Admin';$mhW=explode(' ',$mhUser);$mhI=count($mhW)>=2?strtoupper(substr($mhW[0],0,1).substr($mhW[1],0,1)):strtoupper(substr($mhUser,0,2)); @endphp
+<div class="mobile-header"><div><div class="mobile-header-sub">Senior Citizen</div><div class="mobile-header-title">ID Card</div></div><div class="mobile-avatar-hdr">{{ $mhI }}</div></div>
 
 <!-- ======================== MAIN ======================== -->
 <div class="main-content">
@@ -1001,12 +1016,13 @@
     @endif
 </script>
 
-<!-- Hidden form for secure POST logout -->
+<div class="mobile-bottom-nav"><div class="mobile-bottom-nav-row"><a href="/admin/senior" class="mobile-bottom-nav-item"><i class="fas fa-chart-line"></i><span>Dashboard</span></a><a href="/admin/senior/registration" class="mobile-bottom-nav-item"><i class="fas fa-user-plus"></i><span>Register</span></a><a href="/admin/senior/masterlist" class="mobile-bottom-nav-item active"><i class="fas fa-list"></i><span>Masterlist</span></a><a href="/admin/senior/birthdays" class="mobile-bottom-nav-item"><i class="fas fa-birthday-cake"></i><span>Birthdays</span></a><button type="button" class="mobile-bottom-nav-item" onclick="toggleMobileMoreNav()"><i class="fas fa-chevron-up" id="mobileMoreIcon"></i><span>More</span></button></div><div class="mobile-bottom-nav-row mobile-nav-extra" id="mobileNavExtra" style="display:none;"><a href="/admin/senior/payouts-history" class="mobile-bottom-nav-item"><i class="fas fa-history"></i><span>Payouts</span></a><a href="/admin/senior/statistics" class="mobile-bottom-nav-item"><i class="fas fa-chart-bar"></i><span>Stats</span></a><a href="/admin/senior/archive" class="mobile-bottom-nav-item"><i class="fas fa-archive"></i><span>Archive</span></a><a href="#" onclick="confirmLogout(event)" class="mobile-bottom-nav-item"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></div></div>
 <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
     @csrf
 </form>
 
 <script>
+    function toggleMobileMoreNav(){const extra=document.getElementById('mobileNavExtra');const icon=document.getElementById('mobileMoreIcon');if(!extra)return;if(extra.style.display==='none'||extra.style.display===''){extra.style.display='flex';if(icon){icon.className='fas fa-chevron-down';}}else{extra.style.display='none';if(icon){icon.className='fas fa-chevron-up';}}}
     function confirmLogout(event) {
         event.preventDefault();
         Swal.fire({
