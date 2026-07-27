@@ -77,7 +77,7 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
     max-width: calc(100% - 260px); height: 100vh;
     display: flex; flex-direction: column; overflow: hidden;
 }
-.main-scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;border-radius:16px;}
+.main-scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;border-radius:16px;display:flex;flex-direction:column;}
 .main-scroll::-webkit-scrollbar{display:none;}
 
         /* ---------- Buttons ---------- */
@@ -224,12 +224,19 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
         }
         .hamburger-btn:hover { background: var(--primary-hover); }
 
+        /* ── Desktop: no scroll ── */
+        @media (min-width: 768px) {
+            .main-scroll { overflow: hidden !important; }
+        }
+
         /* ── Responsive: Tablet (< 1024px) ── */
         @media (max-width: 1023px) {
             .hamburger-btn { display: flex; }
             .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
             .sidebar.show { transform: translateX(0) !important; }
             .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
+            .main { height: auto !important; overflow: visible !important; }
+            .main-scroll { overflow: visible !important; flex: none !important; }
             .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
             .dashboard-grid { grid-template-columns: 1fr !important; }
         }
@@ -252,11 +259,11 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
             .filter-right > a { display: inline-flex !important; align-items: center !important; justify-content: center !important; }
 
             /* ── Table Card ── */
-            .table-card { padding: 1rem !important; border-radius: 12px !important; overflow: visible !important; }
+            .table-card { padding: 1rem !important; border-radius: 12px !important; overflow: visible !important; flex: none !important; min-height: 0 !important; height: auto !important; }
             .table-card-title { font-size: 1rem !important; margin-bottom: 1rem !important; }
 
             /* ── Table → Card layout ── */
-            .table-scroll { border: none !important; border-radius: 0 !important; overflow: visible !important; }
+            .table-scroll { border: none !important; border-radius: 0 !important; overflow: visible !important; flex: none !important; min-height: 0 !important; height: auto !important; }
             .table-scroll table { display: block !important; width: 100%; }
             .table-scroll tbody { display: block; }
             .table-scroll thead { display: none !important; }

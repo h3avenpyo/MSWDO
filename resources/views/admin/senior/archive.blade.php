@@ -98,8 +98,8 @@
         .filter-left { display: flex; gap: 12px; flex: 1; min-width: 0; flex-wrap: wrap; }
         .filter-right { display: flex; gap: 12px; flex-shrink: 0; }
         .filter-group { display: flex; flex-direction: column; gap: 4px; }
-        .filter-group.search-group { max-width: 280px; width: 100%; flex-shrink: 0; }
-        .filter-group.select-group { min-width: 200px; }
+        .filter-group.search-group { flex: 1; min-width: 200px; }
+        .filter-group.select-group { flex: 1; min-width: 200px; }
         .filter-label { font-size: 0.75rem; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; }
 
         /* ---------- Search Input ---------- */
@@ -385,11 +385,14 @@
             .hamburger-btn { display: flex; }
             .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
             .sidebar.show { transform: translateX(0) !important; }
-            .main { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
-            .table-card { overflow: visible !important; }
-            .archive-table-wrap { overflow: visible !important; min-height: 0; }
+            .main { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; height: auto !important; overflow: visible !important; }
+            .main-scroll { overflow: visible !important; flex: none !important; }
+            .table-card { overflow: visible !important; flex: none !important; height: auto !important; }
+            .archive-table-wrap { overflow: visible !important; min-height: 0; flex: none !important; height: auto !important; }
             .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
             .filter-section { padding: 16px !important; }
+            .filter-left { flex-wrap: nowrap !important; }
+            .filter-group.search-group, .filter-group.select-group { flex: 1 1 0% !important; min-width: 0 !important; }
             .table-card { padding: 1rem !important; }
             .archive-table-wrap tbody td { font-size: 0.78rem !important; }
             .archive-table-wrap tbody td::before { min-width: 60px !important; font-size: 0.68rem !important; }
@@ -407,7 +410,7 @@
             .filter-section { margin-bottom: 1rem; }
             .filter-row { flex-direction: column !important; gap: 10px !important; }
             .filter-left { flex-direction: column !important; gap: 10px !important; width: 100% !important; }
-            .filter-group.search-group, .filter-group.select-group { min-width: 0 !important; width: 100% !important; }
+            .filter-group.search-group, .filter-group.select-group { flex: none !important; min-width: 0 !important; width: 100% !important; max-width: 100% !important; }
             .filter-left .input-group { width: 100% !important; }
             .filter-right { width: 100% !important; flex-wrap: wrap !important; gap: 8px !important; display: flex !important; }
             .filter-right > * { flex: 1 1 calc(50% - 4px) !important; min-width: 0 !important; }
@@ -415,11 +418,11 @@
             .filter-right > a { display: inline-flex !important; align-items: center !important; justify-content: center !important; }
 
             /* ── Table Card ── */
-            .table-card { padding: 1rem !important; border-radius: 12px !important; }
+            .table-card { padding: 1rem !important; border-radius: 12px !important; flex: none !important; min-height: 0 !important; height: auto !important; }
             .table-card-title { font-size: 1rem !important; margin-bottom: 1rem !important; }
 
             /* ── Table → Card layout ── */
-            .archive-table-wrap { border: none !important; overflow: visible !important; border-radius: 0 !important; }
+            .archive-table-wrap { border: none !important; overflow: visible !important; border-radius: 0 !important; flex: none !important; min-height: 0 !important; height: auto !important; }
             .archive-table-wrap table { display: block !important; table-layout: auto !important; width: 100%; }
             .archive-table-wrap tbody { display: block; }
             .archive-table-wrap thead { display: none !important; }

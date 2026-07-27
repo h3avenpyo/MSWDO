@@ -163,7 +163,12 @@
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
             .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
-            .stat-cards { grid-template-columns: 1fr !important; }
+            .stat-cards { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+            .stat-card { width: 100% !important; height: 100px !important; padding: 12px !important; }
+            .stat-card-value { font-size: 20px !important; }
+            .stat-card-icon { width: 36px !important; height: 36px !important; }
+            .stat-card-icon svg { width: 18px !important; height: 18px !important; }
+            .stat-card-label { font-size: 9px !important; }
             .topnav, .top-navbar { padding: 10px 12px !important; }
             .topnav-datetime, .navbar-datetime { display: none !important; }
             .filter-bar, .filter-group { flex-wrap: wrap; }

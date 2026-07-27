@@ -181,16 +181,24 @@
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
             .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
-            .stat-cards { grid-template-columns: 1fr !important; }
+            .stat-cards { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+            .stat-card { width: 100% !important; height: 100px !important; padding: 12px !important; }
+            .stat-card-value { font-size: 20px !important; }
+            .stat-card-icon { width: 36px !important; height: 36px !important; }
+            .stat-card-icon svg { width: 18px !important; height: 18px !important; }
+            .stat-card-label { font-size: 9px !important; }
             .topnav, .top-navbar { padding: 10px 12px !important; }
             .topnav-datetime, .navbar-datetime { display: none !important; }
             .filter-bar, .filter-group { flex-direction: column; }
             .filter-bar > div, .filter-group > div { width: 100% !important; min-width: 0 !important; }
             #barangayChartWrap { flex-direction: column; align-items: center; }
-            #barangayChartBox { width: 220px !important; height: 220px !important; }
+
+            /* ── Analytics card → reduce height on mobile ── */
+            .analytics-card { min-height: auto !important; padding: 16px !important; }
+            #barangayChartBox { width: 180px !important; height: 180px !important; }
 
             /* ── Activity card → ensure content visible on mobile ── */
-            .activity-card { min-height: auto !important; padding: 16px !important; }
+            .activity-card { min-height: auto !important; padding: 16px !important; opacity: 1 !important; animation: none !important; }
             .activity-feed { max-height: none !important; overflow: visible !important; }
             .activity-item { padding: 10px !important; }
             .activity-icon { width: 32px !important; height: 32px !important; }
@@ -342,11 +350,11 @@
                         @foreach($recentActivities as $activity)
                         <div class="activity-item">
                             <div class="activity-icon" style="background:var(--info-bg);color:var(--icon-blue)">
-                                <i data-lucide="{{ $activity['action'] == 'registered' ? 'user-plus' : ($activity['action'] == 'archived' ? 'archive' : ($activity['action'] == 'restored' ? 'undo-2' : 'id-card')) }}"></i>
+                                <i data-lucide="{{ $activity->action == 'registered' ? 'user-plus' : ($activity->action == 'archived' ? 'archive' : ($activity->action == 'restored' ? 'undo-2' : 'id-card')) }}"></i>
                             </div>
                             <div class="activity-content">
-                                <div class="activity-text">{{ ucfirst($activity['action']) }} <strong>{{ $activity['name'] }}</strong></div>
-                                <div class="activity-time">{{ $activity['identifier'] }} &middot; {{ $activity['timestamp'] }}</div>
+                                <div class="activity-text">{{ ucfirst($activity->action) }} <strong>{{ $activity->name }}</strong></div>
+                                <div class="activity-time">{{ $activity->identifier }} &middot; {{ $activity->created_at->format('M d, Y h:i A') }}</div>
                             </div>
                         </div>
                         @endforeach

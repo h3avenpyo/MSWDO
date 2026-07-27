@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Senior\BirthdayPayout;
 use App\Models\Senior\BirthdayPayoutHistory;
 use App\Models\Senior\SeniorCitizenRecord;
+use App\Models\Senior\SeniorActivityLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -499,22 +500,6 @@ class BirthdayPayoutController extends Controller
      */
     private function logActivity($action, $name, $identifier)
     {
-        $activities = session('recent_activities', []);
-
-        $newActivity = [
-            'action' => $action,
-            'name' => $name,
-            'identifier' => $identifier,
-            'timestamp' => now()->format('M d, Y h:i A'),
-            'admin' => session('admin_user_name') ?? 'Admin'
-        ];
-
-        // Add new activity to the beginning
-        array_unshift($activities, $newActivity);
-
-        // Keep only the last 10 activities
-        $activities = array_slice($activities, 0, 10);
-
-        session(['recent_activities' => $activities]);
+        SeniorActivityLog::log($action, $name, $identifier);
     }
 }

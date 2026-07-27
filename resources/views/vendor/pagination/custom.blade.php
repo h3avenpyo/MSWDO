@@ -1,6 +1,6 @@
 @if ($paginator->hasPages())
     <style>
-        .ssg-pagination { display:flex; justify-content:center; gap:0.5rem; margin-top:1rem; flex-wrap:wrap; }
+        .ssg-pagination { display:flex; justify-content:center; align-items:center; gap:0.5rem; margin-top:1rem; flex-wrap:wrap; }
         .ssg-pagination .pg-btn,
         .ssg-pagination .pg-active,
         .ssg-pagination .pg-dots {
@@ -12,21 +12,32 @@
         .ssg-pagination .pg-btn:hover { background:#F1F5F9; }
         .ssg-pagination .pg-dots { background:#F8FAFC; color:#6B7280; cursor:default; }
         .ssg-pagination .pg-disabled { background:#F8FAFC; color:#6B7280; cursor:not-allowed; }
+        .ssg-pagination .pg-mobile-info { display:none; }
         @media(max-width:640px){
-            .ssg-pagination { gap:0.35rem; }
+            .ssg-pagination { gap:0.5rem; flex-wrap:nowrap; }
             .ssg-pagination .pg-btn,
             .ssg-pagination .pg-active,
             .ssg-pagination .pg-dots {
-                padding:0.4rem 0.55rem; font-size:0.8rem; min-width:34px; text-align:center;
+                padding:0.5rem 0.75rem; font-size:0.85rem; min-width:40px; text-align:center;
             }
             .ssg-pagination .pg-prev-text,
             .ssg-pagination .pg-next-text { display:none; }
             .ssg-pagination .pg-prev-arrow,
             .ssg-pagination .pg-next-arrow { display:inline; }
+            /* Hide all page number buttons and dots on mobile */
+            .ssg-pagination .pg-page-num,
+            .ssg-pagination .pg-dots { display:none !important; }
+            /* Show the mobile page indicator */
+            .ssg-pagination .pg-mobile-info {
+                display:inline-flex; align-items:center;
+                padding:0.5rem 1rem; font-size:0.85rem; font-weight:500;
+                color:#4B5563; white-space:nowrap;
+            }
         }
         @media(min-width:641px){
             .ssg-pagination .pg-prev-arrow,
             .ssg-pagination .pg-next-arrow { display:none; }
+            .ssg-pagination .pg-mobile-info { display:none !important; }
         }
     </style>
     <div class="ssg-pagination">
@@ -43,7 +54,7 @@
             </a>
         @endif
 
-        {{-- Page Numbers --}}
+        {{-- Page Numbers (hidden on mobile) --}}
         @foreach ($elements as $element)
             @if (is_string($element))
                 <span class="pg-dots">{{ $element }}</span>
@@ -52,13 +63,16 @@
             @if (is_array($element))
                 @foreach ($element as $page => $url)
                     @if ($page == $paginator->currentPage())
-                        <span class="pg-active" aria-current="page">{{ $page }}</span>
+                        <span class="pg-active pg-page-num" aria-current="page">{{ $page }}</span>
                     @else
-                        <a href="{{ $url }}" class="pg-btn">{{ $page }}</a>
+                        <a href="{{ $url }}" class="pg-btn pg-page-num">{{ $page }}</a>
                     @endif
                 @endforeach
             @endif
         @endforeach
+
+        {{-- Mobile-only page indicator --}}
+        <span class="pg-mobile-info">Page {{ $paginator->currentPage() }} of {{ $paginator->lastPage() }}</span>
 
         {{-- Next --}}
         @if ($paginator->hasMorePages())

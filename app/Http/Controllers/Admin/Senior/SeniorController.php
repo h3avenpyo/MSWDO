@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Senior;
 
 use App\Http\Controllers\Controller;
 use App\Models\Senior\SeniorCitizenRecord;
+use App\Models\Senior\SeniorActivityLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -56,7 +57,7 @@ class SeniorController extends Controller
 
         $barangayDistribution = collect($completeDistribution);
 
-        $recentActivities = session('recent_activities', []);
+        $recentActivities = SeniorActivityLog::recent(10);
 
         $data = [
             'totalSeniors' => $totalSeniors,
@@ -440,7 +441,7 @@ class SeniorController extends Controller
 
     public function clearRecentActivities()
     {
-        session()->forget('recent_activities');
+        SeniorActivityLog::truncate();
         return redirect()->back()->with('success', 'Recent activities cleared successfully.');
     }
 
@@ -607,21 +608,7 @@ class SeniorController extends Controller
 
     private function logActivity($action, $name, $identifier)
     {
-        $activities = session('recent_activities', []);
-
-        $newActivity = [
-            'action' => $action,
-            'name' => $name,
-            'identifier' => $identifier,
-            'timestamp' => now()->format('M d, Y h:i A'),
-            'admin' => session('admin_user_name') ?? 'Admin'
-        ];
-
-        array_unshift($activities, $newActivity);
-
-        $activities = array_slice($activities, 0, 10);
-
-        session(['recent_activities' => $activities]);
+        SeniorActivityLog::log($action, $name, $identifier);
     }
 
     private function getAllBarangays(): array
