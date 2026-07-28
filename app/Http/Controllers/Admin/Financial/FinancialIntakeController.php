@@ -75,7 +75,7 @@ class FinancialIntakeController extends Controller
             'Other',
         ];
 
-        return view('admin.beneficiary-intake.index', compact('intakes', 'barangays', 'categories'));
+        return view('admin.financial.beneficiary-intake.index', compact('intakes', 'barangays', 'categories'));
     }
 
     /**
@@ -139,12 +139,10 @@ class FinancialIntakeController extends Controller
             'Surgical',
             'Trauma and Injury',
             'Hospital Bill / Medical Needs',
-            'Burial Assistance',
-            'Educational Assistance',
             'Other Medical Conditions',
         ];
 
-        return view('admin.beneficiary-intake.create', compact(
+        return view('admin.financial.beneficiary-intake.create', compact(
             'controlNumber',
             'encoder',
             'client',
@@ -225,7 +223,7 @@ class FinancialIntakeController extends Controller
      */
     public function show(BeneficiaryIntake $intake)
     {
-        return view('admin.beneficiary-intake.show', compact('intake'));
+        return view('admin.financial.beneficiary-intake.show', compact('intake'));
     }
 
     /**
@@ -286,7 +284,7 @@ class FinancialIntakeController extends Controller
             'Other Medical Conditions',
         ];
 
-        return view('admin.beneficiary-intake.edit', compact(
+        return view('admin.financial.beneficiary-intake.edit', compact(
             'intake',
             'barangays',
             'categories',

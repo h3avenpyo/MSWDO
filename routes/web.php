@@ -64,6 +64,7 @@ Route::post('/admin/add-officers', [OfficerController::class, 'storeOfficer'])->
 Route::get('/admin/financial/dashboard', [FinancialDashboardController::class, 'financialDashboard'])->name('admin.financial.dashboard');
 Route::get('/admin/financial/financialstep1', [FinancialDashboardController::class, 'financialStep1'])->name('admin.financial.financialstep1');
 Route::get('/admin/financial/financialstep2', [FinancialDashboardController::class, 'financialStep2'])->name('admin.financial.financialstep2');
+Route::get('/admin/financial/financialstep1statistics', [FinancialDashboardController::class, 'statistics'])->name('admin.financial.financialstep1statistics');
 
 // Senior Citizens Module Routes
 Route::get('/admin/senior', [SeniorController::class, 'senior'])->name('admin.senior');

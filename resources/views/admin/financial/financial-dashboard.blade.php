@@ -7,17 +7,65 @@
 @php
 $userName = session('admin_user_name') ?? 'Officer';
 @endphp
-<!-- Welcome Header Card -->
+<!-- Step Wizard Header Card -->
 <div class="step-wizard-card animate-fade-in mb-4">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <div>
-            <h2 class="wizard-heading mb-1"><i class="fas fa-hand-holding-usd me-2"></i>Financial Assistance Overview</h2>
-            <p class="mb-0 text-white-50" style="font-size: var(--text-sm);">Monitor client intakes, assessment approvals, and disbursement status</p>
+            <h2 class="wizard-heading mb-1"><i class="fas fa-clipboard-list me-2"></i>Financial Assistance: Step 1</h2>
+            <p class="mb-0 text-white-50" style="font-size: var(--text-sm);">Intake &amp; Initial Assessment Workflow</p>
         </div>
-        <span class="badge-user-welcome">
-            <i class="fas fa-user-check me-1"></i> Welcome: {{ $userName }}
-        </span>
+        <div class="d-flex align-items-center">
+            <div class="user-welcome">
+                <i class="fas fa-user-circle me-1"></i>
+                <span>Hello, {{ $userName }}</span>
+            </div>
+        </div>
     </div>
+
+    <!-- Step 1 Responsibilities Embedded Widget -->
+    <div class="wizard-responsibilities-box mb-3">
+        <div class="wizard-responsibility-title">
+            <i class="fas fa-info-circle"></i> Step 1 Responsibilities
+        </div>
+        <div class="row g-2">
+            <div class="col-md-6 col-xl-3">
+                <div class="d-flex align-items-start gap-2">
+                    <i class="fas fa-check-circle text-warning mt-1 flex-shrink-0" style="font-size: 0.85rem;"></i>
+                    <span class="text-white-50" style="font-size: var(--text-xs); line-height: 1.35;">Verify client identification &amp; basic documentary requirements.</span>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="d-flex align-items-start gap-2">
+                    <i class="fas fa-check-circle text-warning mt-1 flex-shrink-0" style="font-size: 0.85rem;"></i>
+                    <span class="text-white-50" style="font-size: var(--text-xs); line-height: 1.35;">Conduct initial intake assessment &amp; interview.</span>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="d-flex align-items-start gap-2">
+                    <i class="fas fa-check-circle text-warning mt-1 flex-shrink-0" style="font-size: 0.85rem;"></i>
+                    <span class="text-white-50" style="font-size: var(--text-xs); line-height: 1.35;">Encode beneficiary information in system.</span>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="d-flex align-items-start gap-2">
+                    <i class="fas fa-check-circle text-warning mt-1 flex-shrink-0" style="font-size: 0.85rem;"></i>
+                    <span class="text-white-50" style="font-size: var(--text-xs); line-height: 1.35;">Forward validated intake assessments for authorization &amp; disbursement.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="step-wizard-nav pt-2">
+        <div class="step-item-pill active">
+            <div class="step-circle"><i class="fas fa-clipboard-check"></i></div>
+            <div class="step-label">Step 1: Intake &amp; Initial Assessment</div>
+        </div>
+        <div class="step-item-pill active">
+            <div class="step-circle"><i class="fas fa-hand-holding-usd"></i></div>
+            <div class="step-label">Step 2: For Step 2 &amp; Process</div>
+        </div>
+    </div>
+
 </div>
 
 <!-- Transferred Metric Stat Cards Grid -->

@@ -229,14 +229,29 @@ button, a, [role="button"], .action-tile, .card {
     margin-bottom: 0.25rem;
 }
 
-.badge-user-welcome {
-    background-color: rgba(245, 158, 11, 0.18);
-    color: #FDE047;
-    border: 1px solid rgba(245, 158, 11, 0.4);
-    border-radius: var(--radius-full);
-    padding: 0.4rem 1rem;
+
+
+.wizard-responsibilities-box {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1.15rem;
+    transition: all var(--transition-base);
+}
+.wizard-responsibilities-box:hover {
+    background: rgba(255, 255, 255, 0.11);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+.wizard-responsibility-title {
     font-size: var(--text-xs);
-    font-weight: 600;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #FDE047;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
 }
 
 .step-wizard-nav {
@@ -288,6 +303,20 @@ button, a, [role="button"], .action-tile, .card {
     color: var(--color-brand-dark);
     border-color: #ffffff;
     box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.35);
+}
+
+.step-item-pill:hover .step-circle {
+    background-color: rgba(255, 255, 255, 0.28);
+    border-color: #ffffff;
+    transform: translateY(-2px);
+}
+.step-item-pill:hover .step-label {
+    opacity: 1;
+    color: #ffffff;
+}
+.step-item-pill.active:hover .step-circle {
+    background-color: var(--color-accent);
+    transform: translateY(-2px);
 }
 
 .step-item-pill.disabled .step-circle {

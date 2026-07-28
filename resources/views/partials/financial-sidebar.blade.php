@@ -20,6 +20,11 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('admin.financial.financialstep1statistics') }}" class="{{ request()->is('admin/financial/financialstep1statistics*') ? 'active' : '' }}">
+                <i class="fas fa-chart-pie"></i> Statistics &amp; Analytics
+            </a>
+        </li>
+        <li>
             <a href="#" onclick="confirmLogout(event)">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </a>

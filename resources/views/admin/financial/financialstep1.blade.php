@@ -7,34 +7,17 @@
 @php
 $userName = session('admin_user_name') ?? 'Officer';
 @endphp
-<!-- Step Wizard Header Card -->
-<div class="step-wizard-card animate-fade-in mb-4">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-        <div>
-            <h2 class="wizard-heading mb-1"><i class="fas fa-clipboard-list me-2"></i>Financial Assistance: Step 1</h2>
-            <p class="mb-0 text-white-50" style="font-size: var(--text-sm);">Intake &amp; Initial Assessment Workflow</p>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <a href="/admin/financial/dashboard" class="btn btn-sm btn-outline-light rounded-pill px-3">
-                <i class="fas fa-arrow-left me-1"></i> Dashboard
-            </a>
-            <span class="badge-user-welcome">
-                <i class="fas fa-user-check me-1"></i> Welcome: {{ $userName }}
-            </span>
-        </div>
-    </div>
 
-    <div class="step-wizard-nav pt-2">
-        <div class="step-item-pill active">
-            <div class="step-circle"><i class="fas fa-clipboard-check"></i></div>
-            <div class="step-label">Intake &amp; Initial Assessment</div>
-        </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1" style="color: #1A237E;">General Intake Form</h4>
+        <p class="text-muted small mb-0">Fill out the form below to create a new general intake record.</p>
     </div>
 </div>
 
 <!-- Content Workspace: Table Directory & Action Cards -->
 <div class="row g-4">
-    <div class="col-lg-8">
+    <div class="col-12">
         <div class="card animate-fade-in">
             <div class="card-header-clean">
                 <div>
@@ -53,7 +36,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                                 <th>Control No.</th>
                                 <th>Client Name</th>
                                 <th>Date Intake</th>
-                                <th>Assistance Type</th>
+                                <th>Category</th>
                                 <th>Status</th>
                                 <th class="text-end">Action</th>
                             </tr>
@@ -67,7 +50,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                                 <td>
                                     <div class="fw-semibold text-dark">{{ $intake->beneficiary_full_name }}</div>
                                     @if($intake->has_representative)
-                                        <div class="text-muted small"><i class="fas fa-user-friends me-1"></i>Rep: {{ $intake->representative_full_name }}</div>
+                                    <div class="text-muted small"><i class="fas fa-user-friends me-1"></i>Rep: {{ $intake->representative_full_name }}</div>
                                     @endif
                                 </td>
                                 <td>{{ $intake->date_processed ? $intake->date_processed->format('M d, Y') : 'N/A' }}</td>
@@ -105,35 +88,6 @@ $userName = session('admin_user_name') ?? 'Officer';
                     {{ $recentIntakes->links() }}
                 </div>
                 @endif
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-4">
-        <!-- Step 1 Responsibilities Widget -->
-        <div class="card animate-fade-in">
-            <div class="card-header-clean">
-                <h3 class="card-title-clean"><i class="fas fa-info-circle text-info me-2"></i>Step 1 Responsibilities</h3>
-            </div>
-            <div class="p-3">
-                <ul class="responsibility-list">
-                    <li class="responsibility-item">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Verify client identification &amp; basic documentary requirements.</span>
-                    </li>
-                    <li class="responsibility-item">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Conduct initial intake assessment &amp; interview.</span>
-                    </li>
-                    <li class="responsibility-item">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Encode beneficiary information in system.</span>
-                    </li>
-                    <li class="responsibility-item">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Forward validated intake assessments for authorization &amp; disbursement.</span>
-                    </li>
-                </ul>
             </div>
         </div>
     </div>
