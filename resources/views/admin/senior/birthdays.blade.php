@@ -96,21 +96,18 @@
         .pagination .page-item.disabled a,.pagination .page-item.disabled span{color:var(--text-muted);background:var(--background);border-color:var(--border);cursor:not-allowed;pointer-events:none;}
         .pagination .page-item a svg{width:16px;height:16px;}
 
-        .form-input{background:var(--background);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text-primary);font-size:14px;font-family:var(--font-family);transition:border-color .2s ease,box-shadow .2s ease;width:100%;height:42px;}
-        .form-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
-        .form-input::placeholder{color:var(--text-muted);}
+        .filter-select{width:100%;height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
+        .filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
 
-        .form-select{background:var(--background);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text-primary);font-size:14px;font-family:var(--font-family);transition:border-color .2s ease,box-shadow .2s ease;width:100%;height:42px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;}
-        .form-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
+        .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;display:block;text-transform:uppercase;letter-spacing:0.05em;}
 
-        .form-label{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:6px;display:block;}
-
-        .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:10px;font-family:var(--font-family);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s ease;padding:10px 20px;}
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border);border-radius:10px;font-family:var(--font-family);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s ease;padding:10px 20px;background:var(--surface);color:var(--text-primary);box-shadow:var(--shadow);height:42px;text-decoration:none;}
+        .btn:hover{border-color:var(--primary);transform:translateY(-1px);}
         .btn svg{width:16px;height:16px;}
-        .btn-primary{background:var(--primary);color:white;}
-        .btn-primary:hover{background:var(--primary-hover);}
-        .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-secondary);}
-        .btn-ghost:hover{border-color:var(--primary);color:var(--primary);}
+        .btn.primary{background:var(--primary);color:#FFFFFF;border-color:var(--primary);}
+        .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);transform:translateY(-1px);}
+        .btn.ghost{background:transparent;box-shadow:none;border-color:transparent;color:var(--text-secondary);}
+        .btn.ghost:hover{background:var(--background);color:var(--text-primary);border-color:var(--border);}
         .btn-sm{padding:6px 12px;font-size:13px;border-radius:8px;}
         .btn-sm svg{width:14px;height:14px;}
 
@@ -142,19 +139,17 @@
         @keyframes spin{to{transform:rotate(360deg);}}
         @keyframes fadeInUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
         @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:linear-gradient(135deg,#1A237E 0%,#283593 100%);color:#fff;padding:10px 16px;box-shadow:0 2px 12px rgba(26,35,126,0.2);align-items:center;justify-content:space-between;height:56px;}
-        .mobile-header-title{font-size:16px;font-weight:700;color:#fff;letter-spacing:-0.2px;}
-        .mobile-header-sub{font-size:11px;color:rgba(255,255,255,0.7);font-weight:500;}
-        .mobile-avatar-hdr{width:34px;height:34px;border-radius:50%;background:#FBC02D;color:#1A237E;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
-        .mobile-bottom-nav{display:none !important;position:fixed;bottom:0;left:0;right:0;z-index:1000;background:#fff;border-top:1px solid #E5E7EB;padding:8px 4px;box-shadow:0 -2px 10px rgba(15,23,42,0.05);flex-direction:column;gap:6px;}
-        .mobile-bottom-nav-row{display:flex;align-items:center;justify-content:space-around;width:100%;}
-        .mobile-bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:#6B7280;font-size:10px;font-weight:500;padding:6px 0;transition:all 0.2s;background:none;border:none;cursor:pointer;font-family:inherit;}
-        .mobile-bottom-nav-item.active{color:#1A237E;font-weight:700;}
-        .mobile-bottom-nav-item [data-lucide]{width:20px;height:20px;}
-        .mobile-bottom-nav-item:hover{color:#1A237E;}
-        .mobile-nav-extra{padding-top:4px;margin-top:2px;}
-        @media(max-width:767px){.app{flex-direction:column !important;}.main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:66px !important;padding-bottom:140px !important;}.main-scroll{overflow:visible !important;flex:none !important;}header{display:none !important;}.hamburger-btn{display:none !important;}.mobile-header{display:flex !important;}.mobile-bottom-nav{display:flex !important;flex-direction:column !important;}}
-        @media(max-width:479px){.main,.main-content{padding:10px !important;padding-top:64px !important;padding-bottom:140px !important;}}
+        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
+        .mobile-header-brand{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
+        .mobile-logo{width:56px;height:56px;border-radius:50%;background:#FBC02D;padding:4px;flex-shrink:0;}
+        .mobile-logo-img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+        .mobile-brand-text{flex:1;min-width:0;}
+        .mobile-brand-title{font-size:18px;font-weight:700;color:#ffffff;margin:0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .mobile-brand-subtitle{font-size:12px;color:rgba(255,255,255,0.8);margin:2px 0 0 0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .mobile-menu-btn{display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:#ffffff;cursor:pointer;padding:8px;flex-shrink:0;margin-right:24px;}
+        .mobile-menu-icon{width:32px;height:32px;}
+        @media(max-width:767px){.app{flex-direction:column !important;}.main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:90px !important;}.main-scroll{overflow:visible !important;flex:none !important;}header{display:none !important;}.hamburger-btn{display:none !important;}.mobile-header{display:flex !important;}}
+        @media(max-width:479px){.main,.main-content{padding:10px !important;padding-top:88px !important;}.mobile-header{height:72px !important;}.mobile-logo{width:48px !important;height:48px !important;}.mobile-brand-title{font-size:16px !important;}.mobile-brand-subtitle{font-size:11px !important;}.mobile-menu-icon{width:28px !important;height:28px !important;}}
 
         /* ── Sidebar Overlay ── */
         .sidebar-overlay.active { display: block !important; }
@@ -194,10 +189,10 @@
 
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
-            .main, .main-content { padding: 12px !important; padding-top: 64px !important; padding-bottom: 140px !important; }
+            .main, .main-content { padding: 12px !important; padding-top: 90px !important; }
             .table-card { margin-bottom: 40px !important; padding-bottom: 30px !important; }
             .table-scroll { overflow: visible !important; height: auto !important; }
-            .main-scroll { overflow: visible !important; flex: none !important; height: auto !important; padding-bottom: 140px !important; }
+            .main-scroll { overflow: visible !important; flex: none !important; height: auto !important; }
             .stat-cards { grid-template-columns: 1fr 1fr !important; gap: 10px !important; margin-bottom: 20px !important; }
             .stat-card { padding: 14px !important; border-radius: 12px !important; }
             .stat-card-icon { display: none !important; }
@@ -213,17 +208,6 @@
             .barangay-cards-grid {
                 grid-template-columns: 1fr !important;
                 gap: 20px !important;
-            }
-
-            /* ── Month/Year filters → stack on mobile ── */
-            .filter-selects-row {
-                flex-direction: column !important;
-                align-items: stretch !important;
-                gap: 10px !important;
-                width: 100% !important;
-            }
-            .filter-selects-row select {
-                width: 100% !important;
             }
 
             /* ── Action bar → stack ── */
@@ -319,8 +303,6 @@
             .table-scroll tbody td { font-size: 0.78rem !important; }
             .table-scroll tbody td::before { min-width: 60px !important; font-size: 0.68rem !important; }
             .view-toggle { display: none !important; }
-            .main, .main-content { padding-bottom: 140px !important; }
-            .main-scroll { padding-bottom: 140px !important; }
         }
     </style>
 </head>
@@ -349,8 +331,34 @@
     <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
         <i data-lucide="menu" style="width:24px;height:24px"></i>
     </button>
-    @php $mhUser=session('admin_user_name')??'Admin';$mhW=explode(' ',$mhUser);$mhI=count($mhW)>=2?strtoupper(substr($mhW[0],0,1).substr($mhW[1],0,1)):strtoupper(substr($mhUser,0,2)); @endphp
-    <div class="mobile-header"><div><div class="mobile-header-sub">Senior Citizen</div><div class="mobile-header-title">Birthdays</div></div><div class="mobile-avatar-hdr">{{ $mhI }}</div></div>
+    @php
+    $logo = null;
+    if(file_exists(public_path('images/mswdo-logo.png'))){
+        $logo='mswdo-logo.png';
+    }else{
+        $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+        if(!empty($files))
+        $logo=basename($files[0]);
+    }
+    @endphp
+    <div class="mobile-header">
+        <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+        <div class="mobile-header-brand">
+            <div class="mobile-brand-text">
+                <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+                <p class="mobile-brand-subtitle">Birthday Beneficiaries</p>
+            </div>
+            <div class="mobile-logo">
+                @if($logo)
+                <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+                @endif
+            </div>
+        </div>
+    </div>
 
     <div class="main">
         @php
@@ -412,17 +420,23 @@
                     <i data-lucide="landmark" style="width:20px;height:20px;color:var(--primary)"></i>
                     Barangay Budget Breakdown
                 </h3>
-                <div class="filter-selects-row" style="display:flex;gap:12px;align-items:center">
-                    <select id="monthFilter" class="form-select" style="padding:8px 16px;font-size:14px;min-width:150px" onchange="filterByMonth()">
-                        @foreach($months as $num => $name)
-                            <option value="{{ $num }}" {{ $selectedMonth == $num ? 'selected' : '' }}>{{ $name }}</option>
-                        @endforeach
-                    </select>
-                    <select id="yearFilter" class="form-select" style="padding:8px 16px;font-size:14px;min-width:100px" onchange="filterByMonth()">
-                        @for($year = now()->year; $year >= now()->year - 1; $year--)
-                            <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>{{ $year }}</option>
-                        @endfor
-                    </select>
+                <div id="filterGrid" style="display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:end">
+                    <div>
+                        <label class="filter-label">Month</label>
+                        <select id="monthFilter" class="filter-select" onchange="filterByMonth()">
+                            @foreach($months as $num => $name)
+                                <option value="{{ $num }}" {{ $selectedMonth == $num ? 'selected' : '' }}>{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="filter-label">Year</label>
+                        <select id="yearFilter" class="filter-select" onchange="filterByMonth()">
+                            @for($year = now()->year; $year >= now()->year - 1; $year--)
+                                <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>{{ $year }}</option>
+                            @endfor
+                        </select>
+                    </div>
                 </div>
             </div>
             <div style="display:flex;gap:16px;font-size:13px;margin-bottom:16px">
@@ -625,7 +639,7 @@
                 payoutStatusHtml = `<span style="color:var(--text-muted);font-size:12px">Not Generated</span>`;
             }
 
-            let actionButtons = `<button class="btn btn-primary btn-sm" style="padding:6px 10px" onclick="viewProfile(${s.id})"><i data-lucide="eye"></i></button>`;
+            let actionButtons = `<button class="btn primary btn-sm" style="padding:6px 10px" onclick="viewProfile(${s.id})"><i data-lucide="eye"></i></button>`;
             if (s.payout_status === 'pending' && s.payout_id) {
                 actionButtons += ` <button class="btn btn-sm" style="padding:6px 10px;background:var(--success);color:white" onclick="releasePayout(${s.payout_id})"><i data-lucide="banknote"></i></button>`;
             }
@@ -1230,10 +1244,8 @@
     loadData();
 </script>
 
-<div class="mobile-bottom-nav"><div class="mobile-bottom-nav-row"><a href="/admin/senior" class="mobile-bottom-nav-item"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a><a href="/admin/senior/registration" class="mobile-bottom-nav-item"><i data-lucide="user-plus"></i><span>Register</span></a><a href="/admin/senior/masterlist" class="mobile-bottom-nav-item"><i data-lucide="list"></i><span>Masterlist</span></a><a href="/admin/senior/birthdays" class="mobile-bottom-nav-item active"><i data-lucide="cake"></i><span>Birthdays</span></a><button type="button" class="mobile-bottom-nav-item" onclick="toggleMobileMoreNav()"><i data-lucide="chevron-up" id="mobileMoreIcon"></i><span>More</span></button></div><div class="mobile-bottom-nav-row mobile-nav-extra" id="mobileNavExtra" style="display:none;"><a href="/admin/senior/payouts-history" class="mobile-bottom-nav-item"><i data-lucide="history"></i><span>Payouts</span></a><a href="/admin/senior/statistics" class="mobile-bottom-nav-item"><i data-lucide="bar-chart-3"></i><span>Stats</span></a><a href="/admin/senior/archive" class="mobile-bottom-nav-item"><i data-lucide="archive"></i><span>Archive</span></a><a href="#" onclick="confirmLogout(event)" class="mobile-bottom-nav-item"><i data-lucide="log-out"></i><span>Logout</span></a></div></div>
 
 <script>
-    function toggleMobileMoreNav(){const extra=document.getElementById('mobileNavExtra');const icon=document.getElementById('mobileMoreIcon');if(!extra)return;if(extra.style.display==='none'||extra.style.display===''){extra.style.display='flex';if(icon){icon.setAttribute('data-lucide','chevron-down');lucide.createIcons();}}else{extra.style.display='none';if(icon){icon.setAttribute('data-lucide','chevron-up');lucide.createIcons();}}}
     document.addEventListener('DOMContentLoaded', function() { lucide.createIcons(); });
     lucide.createIcons();
 </script>

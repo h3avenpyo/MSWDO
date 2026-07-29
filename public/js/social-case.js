@@ -27,6 +27,78 @@ let view = {tab:"dashboard", caseId:null, docAgency:null, newCaseStep:"search", 
 let selectedAgency = "PCSO";
 let draftIntake = null;
 
+/* ---- Activity Tracking ---- */
+async function logActivity(action, details, caseInfo = null) {
+  try {
+    const response = await fetch('/admin/social-case/api/activities', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        action: action,
+        details: details,
+        case_info: caseInfo
+      })
+    });
+    const data = await response.json();
+    console.log('Activity logged to database:', data);
+  } catch(e) {
+    console.error('Error logging activity:', e);
+    // Fallback to localStorage if API fails
+    const activities = JSON.parse(localStorage.getItem('sc_activities') || '[]');
+    const activity = {
+      id: Date.now(),
+      action: action,
+      details: details,
+      caseInfo: caseInfo,
+      timestamp: new Date().toISOString(),
+      date: new Date().toISOString().split('T')[0]
+    };
+    activities.unshift(activity);
+    if(activities.length > 50) activities.pop();
+    localStorage.setItem('sc_activities', JSON.stringify(activities));
+  }
+}
+
+async function getActivities() {
+  try {
+    const response = await fetch('/admin/social-case/api/activities');
+    const activities = await response.json();
+    // Convert database format to frontend format
+    return activities.map(a => ({
+      id: a.id,
+      action: a.action,
+      details: a.details,
+      caseInfo: a.case_info,
+      timestamp: a.created_at,
+      date: a.created_at
+    }));
+  } catch(e) {
+    console.error('Error fetching activities:', e);
+    // Fallback to localStorage
+    return JSON.parse(localStorage.getItem('sc_activities') || '[]');
+  }
+}
+
+async function clearActivities() {
+  try {
+    await fetch('/admin/social-case/api/activities/clear', {
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        'Accept': 'application/json'
+      }
+    });
+  } catch(e) {
+    console.error('Error clearing activities:', e);
+    // Fallback to localStorage
+    localStorage.removeItem('sc_activities');
+  }
+}
+
 /* ---- Naming-convention helpers (camelCase <-> snake_case) ---- */
 function camelToSnake(str){ return str.replace(/[A-Z]/g, c => '_'+c.toLowerCase()); }
 function snakeToCamel(str){ return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase()); }
@@ -581,6 +653,10 @@ function saveNewCase(){
   })
   .then(data => {
     console.log('Case saved:', data);
+    logActivity('created', 'New case created', {
+      clientName: draftIntake.client?.name,
+      controlNo: draftIntake.controlNo
+    });
     updateWorkflowStep(4);
     draftIntake = null;
     window.location.href = `/admin/social-case/detail/${data.id}`;
@@ -595,22 +671,32 @@ function saveNewCase(){
 function advanceStatus(caseRec){
   const idx = STATUSES.indexOf(caseRec.status);
   if(idx < STATUSES.length-1){
+    const oldStatus = caseRec.status;
     caseRec.status = STATUSES[idx+1];
     caseRec.updatedAt = todayISO();
     caseRec.statusHistory.push({status:caseRec.status, date: todayISO()});
     if(caseRec.status === "Released"){ caseRec.releasedDate = todayISO(); }
     saveCases();
+    logActivity('updated', `Status changed from ${oldStatus} to ${caseRec.status}`, {
+      clientName: caseRec.client?.name,
+      controlNo: caseRec.controlNo
+    });
     renderCaseDetail();
   }
 }
 function revertStatus(caseRec){
   const idx = STATUSES.indexOf(caseRec.status);
   if(idx > 0){
+    const oldStatus = caseRec.status;
     caseRec.status = STATUSES[idx-1];
     caseRec.updatedAt = todayISO();
     caseRec.statusHistory.push({status:caseRec.status+" (reverted)", date: todayISO()});
     if(caseRec.status !== "Released"){ caseRec.releasedDate = null; }
     saveCases();
+    logActivity('updated', `Status reverted from ${oldStatus} to ${caseRec.status}`, {
+      clientName: caseRec.client?.name,
+      controlNo: caseRec.controlNo
+    });
     renderCaseDetail();
   }
 }
@@ -662,6 +748,10 @@ function deleteCase(id, fromList = false){
         })
         .then(async data => {
           console.log('Case archived:', data);
+          logActivity('archived', 'Case archived', {
+            clientName: caseRec.client?.name,
+            controlNo: caseRec.controlNo
+          });
           await Swal.fire({
             title: 'Archived!',
             text: 'The case has been archived successfully.',
@@ -866,6 +956,10 @@ function restoreCase(id){
         .then(response => response.json())
         .then(async data => {
           console.log('Case restored:', data);
+          logActivity('updated', 'Case restored from archive', {
+            clientName: caseRec.client?.name,
+            controlNo: caseRec.controlNo
+          });
           await Swal.fire({
             title: 'Restored!',
             text: 'The case has been restored and moved back to the active list.',
@@ -938,8 +1032,8 @@ function renderDashboard(){
   updateElement('releasedToday', releasedToday);
   updateElement('totalReleased', totalPrintedOrReleased);
 
-  // Recent activity feed
-  renderActivityFeed(recent);
+  // Recent activity feed - use localStorage activities
+  renderActivityFeed();
 }
 
 function updateTrend(elementId, count, isMonthly = false){
@@ -991,9 +1085,11 @@ function renderTodayActivities(byStatus){
     </div>`).join("");
 }
 
-function renderActivityFeed(recent){
+async function renderActivityFeed(recent = null){
   const container = document.getElementById('activityFeed');
-  if(!recent.length){
+  const activities = recent ? recent : await getActivities();
+  
+  if(!activities.length){
     container.innerHTML = `<div style="text-align:center;padding:32px 20px;color:var(--text-muted)">
       <i data-lucide="inbox" style="width:32px;height:32px;margin:0 auto 8px;display:block;color:#D1D5DB"></i>
       <span style="font-size:13px">No recent activities</span>
@@ -1001,30 +1097,64 @@ function renderActivityFeed(recent){
     return;
   }
   
-  const statusConfig = {
-    'Draft':    {icon:'file-edit', bg:'var(--background)', color:'var(--text-muted)'},
-    'Review':   {icon:'clock',     bg:'var(--warning-bg, #FEF3C7)', color:'var(--warning, #D97706)'},
-    'Approved': {icon:'check-circle', bg:'var(--success-bg)', color:'var(--success)'},
-    'Printed':  {icon:'printer',   bg:'var(--info-bg)', color:'var(--info)'},
-    'Released': {icon:'send',      bg:'var(--purple-bg)', color:'var(--purple)'}
+  // If recent is provided (old behavior from cases data), use old rendering
+  if(recent) {
+    const statusConfig = {
+      'Draft':    {icon:'file-edit', bg:'var(--background)', color:'var(--text-muted)'},
+      'Review':   {icon:'clock',     bg:'var(--warning-bg, #FEF3C7)', color:'var(--warning, #D97706)'},
+      'Approved': {icon:'check-circle', bg:'var(--success-bg)', color:'var(--success)'},
+      'Printed':  {icon:'printer',   bg:'var(--info-bg)', color:'var(--info)'},
+      'Released': {icon:'send',      bg:'var(--purple-bg)', color:'var(--purple)'}
+    };
+    
+    container.innerHTML = recent.slice(0,10).map(c=>{
+      const cfg = statusConfig[c.status] || statusConfig['Draft'];
+      const clientName = escapeHtml(c.client.name) || 'Unnamed client';
+      const controlNo = escapeHtml(c.controlNo) || '—';
+      const timeAgo = getTimeAgo(c.updatedAt);
+      return `
+      <div class="activity-item">
+        <div class="activity-icon" style="background:${cfg.bg};color:${cfg.color}">
+          <i data-lucide="${cfg.icon}"></i>
+        </div>
+        <div class="activity-content">
+          <div class="activity-text"><strong>${clientName}</strong>'s case is ${c.status.toLowerCase()}</div>
+          <div class="activity-time">${controlNo} &middot; ${timeAgo}</div>
+        </div>
+      </div>`;
+    }).join("");
+    return;
+  }
+  
+  // New behavior using database activities
+  const actionConfig = {
+    'created': {icon:'plus-circle', bg:'var(--success-bg)', color:'var(--success)'},
+    'updated': {icon:'edit', bg:'var(--info-bg)', color:'var(--info)'},
+    'viewed': {icon:'eye', bg:'var(--background)', color:'var(--text-muted)'},
+    'archived': {icon:'archive', bg:'var(--danger-bg)', color:'var(--danger)'},
+    'deleted': {icon:'trash-2', bg:'var(--danger-bg)', color:'var(--danger)'},
+    'printed': {icon:'printer', bg:'var(--purple-bg)', color:'var(--purple)'},
+    'released': {icon:'send', bg:'var(--success-bg)', color:'var(--success)'}
   };
   
-  container.innerHTML = recent.slice(0,10).map(c=>{
-    const cfg = statusConfig[c.status] || statusConfig['Draft'];
-    const clientName = escapeHtml(c.client.name) || 'Unnamed client';
-    const controlNo = escapeHtml(c.controlNo) || '—';
-    const timeAgo = getTimeAgo(c.updatedAt);
+  container.innerHTML = activities.slice(0,10).map(a=>{
+    const cfg = actionConfig[a.action] || actionConfig['updated'];
+    const timeAgo = getTimeAgo(a.timestamp);
+    const caseInfo = a.caseInfo ? `<strong>${escapeHtml(a.caseInfo.clientName || 'Unknown')}</strong> (${escapeHtml(a.caseInfo.controlNo || 'N/A')})` : '';
     return `
     <div class="activity-item">
       <div class="activity-icon" style="background:${cfg.bg};color:${cfg.color}">
         <i data-lucide="${cfg.icon}"></i>
       </div>
       <div class="activity-content">
-        <div class="activity-text"><strong>${clientName}</strong>'s case is ${c.status.toLowerCase()}</div>
-        <div class="activity-time">${controlNo} &middot; ${timeAgo}</div>
+        <div class="activity-text">${a.details}${caseInfo ? ' - ' + caseInfo : ''}</div>
+        <div class="activity-time">${timeAgo}</div>
       </div>
     </div>`;
   }).join("");
+  
+  // Create Lucide icons for the activity feed
+  lucide.createIcons();
 }
 
 function confirmClearActivities(){
@@ -1041,18 +1171,36 @@ function confirmClearActivities(){
     customClass: { popup: 'rounded-4 shadow-lg' }
   }).then((result) => {
     if(result.isConfirmed){
-      document.getElementById('activityFeed').innerHTML = `<div style="text-align:center;padding:32px 20px;color:var(--text-muted)">
-        <i data-lucide="inbox" style="width:32px;height:32px;margin:0 auto 8px;display:block;color:#D1D5DB"></i>
-        <span style="font-size:13px">No recent activities</span>
-      </div>`;
+      clearActivities();
+      renderActivityFeed();
       lucide.createIcons();
     }
   });
 }
 
 function getTimeAgo(dateStr){
+  if(!dateStr || dateStr === 'null' || dateStr === '') return 'Unknown';
   const now = new Date();
-  const date = new Date(dateStr+"T00:00:00");
+  let date;
+  
+  // Try parsing the date with different formats
+  try {
+    // Handle ISO datetime strings (with T) and date strings (without T)
+    if(dateStr.includes('T') || dateStr.includes('Z')) {
+      date = new Date(dateStr);
+    } else {
+      date = new Date(dateStr+"T00:00:00");
+    }
+    
+    if(isNaN(date.getTime())) {
+      console.warn('Invalid date format:', dateStr);
+      return 'Unknown';
+    }
+  } catch(e) {
+    console.warn('Error parsing date:', dateStr, e);
+    return 'Unknown';
+  }
+  
   const diff = Math.floor((now - date) / (1000 * 60));
   if(diff < 1) return 'Just now';
   if(diff < 60) return `${diff} minute${diff > 1 ? 's' : ''} ago`;
@@ -2202,6 +2350,10 @@ async function markAsPrinted(caseId){
     .then(response => response.json())
     .then(async data => {
       console.log('Case marked as approved and released:', data);
+      logActivity('printed', 'Case document printed', {
+        clientName: caseRec.client?.name,
+        controlNo: caseRec.controlNo
+      });
       // Reload cases from server to get latest data
       await loadCases();
     })
@@ -2453,6 +2605,10 @@ async function reprintCase(caseId){
   .then(response => response.json())
   .then(async data => {
     console.log('Case updated for reprint:', data);
+    logActivity('printed', 'Case document reprinted', {
+      clientName: caseRec.client?.name,
+      controlNo: caseRec.controlNo
+    });
     // Reload case data from server to get latest data
     await loadCaseDetail(caseId);
     // Show success message

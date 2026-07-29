@@ -57,60 +57,44 @@
         .sidebar-menu a.active{background:rgba(255,255,255,.1);color:var(--accent-yellow);border-left-color:var(--accent-yellow);}
         .sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
 
-        /* ── Main Content ── */
-.main-content {
-    flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
-    max-width: calc(100% - 260px); height: 100vh;
-    display: flex; flex-direction: column; overflow: hidden;
-    animation: fadeIn .3s ease;
-}
+/* ── Main Content ── */
+        .main-content {
+            flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
+            max-width: calc(100% - 260px); height: 100vh;
+            display: flex; flex-direction: column; overflow: hidden;
+            animation: fadeIn .3s ease;
+        }
+        .main-scroll {
+            flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden;
+        }
 
-        /* ── Custom Table ── */
-        .custom-table-wrapper {
-            background: var(--surface);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border: 1px solid var(--border);
+        /* ── Table Card ── */
+        .table-card {
+            background: var(--surface); border-radius: 16px;
+            border: 1px solid var(--border); box-shadow: var(--shadow);
+            padding: 2rem; display: flex; flex-direction: column;
+            overflow: hidden; flex: 1; min-height: 0;
         }
-        .custom-table-scroll {
-            flex: 1;
-            overflow-y: auto;
-            min-height: 0;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+        .table-card-title {
+            font-size: 1.25rem; font-weight: 700; color: var(--text-primary);
+            margin-top: 0; margin-bottom: 1.5rem; flex-shrink: 0;
         }
-        .custom-table-scroll::-webkit-scrollbar { display: none; }
-        .custom-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: var(--font-family);
+
+        /* ── Table Scroll ── */
+        .table-scroll { flex: 1; overflow-y: auto; min-height: 0; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+        .table-scroll::-webkit-scrollbar { display: none; }
+        .table-scroll table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .table-scroll thead { position: sticky; top: 0; z-index: 1; background: var(--surface); }
+        .table-scroll th {
+            padding: 12px 16px; font-size: 11px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            color: var(--text-secondary); text-align: left; border-bottom: 2px solid var(--border);
         }
-        .custom-table thead { position: sticky; top: 0; z-index: 10; }
-        .custom-table thead th {
-            background: var(--primary);
-            color: #fff;
-            font-weight: 600;
-            font-size: .8rem;
-            text-transform: uppercase;
-            letter-spacing: .05em;
-            padding: .85rem 1rem;
-            text-align: left;
-            white-space: nowrap;
-            border: none;
+        .table-scroll td {
+            padding: 14px 16px; font-size: 13px; color: var(--text-primary);
+            border-bottom: 1px solid var(--border); vertical-align: middle;
         }
-        .custom-table tbody td {
-            padding: .75rem 1rem;
-            border-bottom: 1px solid var(--border);
-            font-size: .875rem;
-            color: var(--text-primary);
-            vertical-align: middle;
-        }
-        .custom-table tbody tr:hover { background: #F9FAFB; }
-        .custom-table tbody tr:last-child td { border-bottom: none; }
+        .table-scroll tr:hover td { background: var(--background); }
 
         /* ── Badges ── */
         .badge-generated { background: var(--info-bg); color: var(--info); font-weight: 600; }
@@ -120,22 +104,21 @@
         .badge-span { padding: .3rem .7rem; border-radius: 999px; font-size: .78rem; display: inline-block; }
 
         /* ── Form Controls ── */
-        .ctrl-select, .ctrl-input {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: .55rem .85rem;
-            font-size: .875rem;
-            color: var(--text-primary);
-            font-family: var(--font-family);
-            width: 100%;
-            transition: border-color .2s, box-shadow .2s;
-            outline: none;
-        }
-        .ctrl-select:focus, .ctrl-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(26,35,126,.08);
-        }
+        .filter-select{width:100%;height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
+        .filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
+        input[type="date"].filter-select{cursor:text;appearance:none;-webkit-appearance:none;position:relative;background-image:none;padding-right:12px;}
+
+        .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;display:block;text-transform:uppercase;letter-spacing:0.05em;}
+
+        .filter-section{background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:20px;margin-bottom:24px;box-shadow:var(--shadow);flex-shrink:0;}
+
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border);border-radius:10px;font-family:var(--font-family);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s ease;padding:10px 20px;background:var(--surface);color:var(--text-primary);box-shadow:var(--shadow);height:42px;text-decoration:none;}
+        .btn:hover{border-color:var(--primary);transform:translateY(-1px);}
+        .btn svg{width:16px;height:16px;}
+        .btn.primary{background:var(--primary);color:#FFFFFF;border-color:var(--primary);}
+        .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);transform:translateY(-1px);}
+        .btn.ghost{background:transparent;box-shadow:none;border-color:transparent;color:var(--text-secondary);}
+        .btn.ghost:hover{background:var(--background);color:var(--text-primary);border-color:var(--border);}
 
         /* ── Sidebar Overlay ── */
         .sidebar-overlay.active { display: block !important; }
@@ -161,41 +144,38 @@
         }
         .hamburger-btn:hover { background: var(--primary-hover); }
 
-        /* ── Responsive: Tablet (< 1024px) ── */
+/* ── Responsive: Tablet (< 1024px) ── */
         @media (max-width: 1023px) {
             .hamburger-btn { display: flex; }
             .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
             .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
-            .custom-table-wrapper { overflow: visible !important; }
-            .custom-table-scroll { overflow: visible !important; min-height: 0; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; height: 100vh !important; }
+            .main-scroll { flex: 1 !important; min-height: 0 !important; overflow: hidden !important; }
+            .table-card { flex: 1 !important; min-height: 0 !important; overflow: hidden !important; }
+            .table-scroll { flex: 1 !important; min-height: 0 !important; overflow-y: auto !important; overflow-x: auto !important; }
         }
 
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
-            .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
-            .main-content > .flex-1 { overflow: visible !important; overflow-y: auto !important; border-radius: 16px; scrollbar-width: none; -ms-overflow-style: none; }
-            .main-content > .flex-1::-webkit-scrollbar { display: none; }
-            .main-content .rounded-xl { border-radius: 16px !important; }
+            .main, .main-content { padding: 12px !important; padding-top: 64px !important; height: auto !important; min-height: 100vh !important; }
+            .main-scroll { flex: none !important; min-height: 0 !important; height: auto !important; overflow: visible !important; }
+            input[type="date"].filter-select{background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3e%3cline x1='16' y1='2' x2='16' y2='6'/%3e%3cline x1='8' y1='2' x2='8' y2='6'/%3e%3cline x1='3' y1='10' x2='21' y2='10'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-right:36px;}
 
-            /* ── Filter card side spacing ── */
-            .main-content > .flex-1 > .bg-white,
-            .main-content > .flex-1 > div > .bg-white { width: 100% !important; box-sizing: border-box !important; margin-left: 0 !important; margin-right: 0 !important; }
+            /* ── Filter → 2 columns ── */
+            #filterGrid { grid-template-columns: 1fr 1fr !important; }
+            #filterGrid > div:last-child { grid-column: 1 / -1 !important; }
+            #filterGrid > div:last-child .btn { flex: 1 !important; }
 
-            /* ── Filter → stack ── */
-            .filter-grid { grid-template-columns: 1fr !important; }
-            .filter-grid .flex { width: 100% !important; }
-            .filter-grid .flex > * { flex: 1 !important; }
-
-            /* ── Table wrapper full width ── */
-            .custom-table-wrapper { width: 100% !important; box-sizing: border-box !important; margin-left: 0 !important; margin-right: 0 !important; }
+            /* ── Table Card ── */
+            .table-card { padding: 1rem !important; border-radius: 12px !important; flex: none !important; min-height: 0 !important; overflow: visible !important; height: auto !important; }
+            .table-card-title { font-size: 1rem !important; margin-bottom: 1rem !important; }
 
             /* ── Table → Card layout ── */
-            .custom-table-scroll { border: none !important; overflow: visible !important; }
-            .custom-table { display: block !important; width: 100%; }
-            .custom-table tbody { display: block; }
-            .custom-table thead { display: none !important; }
-            .custom-table tbody tr {
+            .table-scroll { border: none !important; border-radius: 0 !important; flex: none !important; min-height: 0 !important; overflow: visible !important; height: auto !important; }
+            .table-scroll table { display: block !important; width: 100%; }
+            .table-scroll tbody { display: block; }
+            .table-scroll thead { display: none !important; }
+            .table-scroll tbody tr {
                 display: block;
                 background: var(--surface);
                 border: 1px solid #D1D5DB;
@@ -204,19 +184,21 @@
                 padding: 12px;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             }
-            .custom-table tbody td {
+            .table-scroll tbody td {
                 display: flex;
                 justify-content: space-between;
-                align-items: center;
+                align-items: flex-start;
                 padding: 8px 0;
                 border: none;
                 font-size: 0.82rem;
                 gap: 8px;
+                word-break: break-word;
+                overflow-wrap: break-word;
             }
-            .custom-table tbody td:not(:last-child) {
+            .table-scroll tbody td:not(:last-child) {
                 border-bottom: 1px solid var(--border);
             }
-            .custom-table tbody td::before {
+            .table-scroll tbody td::before {
                 content: attr(data-label);
                 font-weight: 600;
                 color: var(--text-secondary);
@@ -224,50 +206,50 @@
                 text-transform: uppercase;
                 letter-spacing: 0.03em;
                 flex-shrink: 0;
-                min-width: 80px;
+                min-width: 70px;
             }
 
             /* ── Empty state ── */
-            .custom-table tbody td.empty-state-cell { display: flex !important; justify-content: center !important; text-align: center !important; padding: 40px 12px !important; }
-            .custom-table tbody td.empty-state-cell::before { display: none !important; }
-
-            /* ── Pagination ── */
-            .custom-table-wrapper > div:last-child { padding: 12px !important; }
+            .table-scroll tbody td.empty-state-cell { display: flex !important; justify-content: center !important; text-align: center !important; padding: 40px 12px !important; }
+            .table-scroll tbody td.empty-state-cell::before { display: none !important; }
         }
 
         /* ── Responsive: Small Mobile (< 480px) ── */
         @media (max-width: 479px) {
-            .custom-table tbody td { font-size: 0.78rem !important; }
-            .custom-table tbody td::before { min-width: 65px !important; font-size: 0.68rem !important; }
-            .badge-span { font-size: 0.7rem !important; padding: 0.2rem 0.5rem !important; }
-            .main, .main-content { padding: 10px !important; padding-top: 64px !important; padding-bottom: 140px !important; }
-            .main-content > .flex-1 > .bg-white,
-            .main-content > .flex-1 > div > .bg-white { width: 100% !important; box-sizing: border-box !important; }
-            .custom-table-wrapper { width: 100% !important; box-sizing: border-box !important; }
+            .table-scroll tbody td { font-size: 0.78rem !important; }
+            .table-scroll tbody td::before { min-width: 60px !important; font-size: 0.68rem !important; }
+            .main, .main-content { padding: 10px !important; padding-top: 88px !important; height: 100vh !important; }
+            #filterGrid { grid-template-columns: 1fr !important; }
+            #filterGrid > div:last-child { grid-column: 1 / -1 !important; }
+            #filterGrid > div:last-child .btn { flex: 1 !important; }
+            .filter-section { padding: 14px !important; }
         }
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:linear-gradient(135deg,#1A237E 0%,#283593 100%);color:#fff;padding:10px 16px;box-shadow:0 2px 12px rgba(26,35,126,0.2);align-items:center;justify-content:space-between;height:56px;}
-        .mobile-header-title{font-size:16px;font-weight:700;color:#fff;letter-spacing:-0.2px;}
-        .mobile-header-sub{font-size:11px;color:rgba(255,255,255,0.7);font-weight:500;}
-        .mobile-avatar-hdr{width:34px;height:34px;border-radius:50%;background:#FBC02D;color:#1A237E;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
-        .mobile-bottom-nav{display:none !important;position:fixed;bottom:0;left:0;right:0;z-index:1000;background:#fff;border-top:1px solid #E5E7EB;padding:8px 4px;box-shadow:0 -2px 10px rgba(15,23,42,0.05);flex-direction:column;gap:6px;}
-        .mobile-bottom-nav-row{display:flex;align-items:center;justify-content:space-around;width:100%;}
-        .mobile-bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:#6B7280;font-size:10px;font-weight:500;padding:6px 0;transition:all 0.2s;background:none;border:none;cursor:pointer;font-family:inherit;}
-        .mobile-bottom-nav-item.active{color:#1A237E;font-weight:700;}
-        .mobile-bottom-nav-item [data-lucide]{width:20px;height:20px;}
-        .mobile-bottom-nav-item:hover{color:#1A237E;}
-        .mobile-nav-extra{padding-top:4px;margin-top:2px;}
+        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
+        .mobile-header-brand{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
+        .mobile-logo{width:56px;height:56px;border-radius:50%;background:#FBC02D;padding:4px;flex-shrink:0;}
+        .mobile-logo-img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+        .mobile-brand-text{flex:1;min-width:0;}
+        .mobile-brand-title{font-size:18px;font-weight:700;color:#ffffff;margin:0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .mobile-brand-subtitle{font-size:12px;color:rgba(255,255,255,0.8);margin:2px 0 0 0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .mobile-menu-btn{display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:#ffffff;cursor:pointer;padding:8px;flex-shrink:0;margin-right:24px;}
+        .mobile-menu-icon{width:32px;height:32px;}
         @media(max-width:767px){
             .app{flex-direction:column !important;min-height:100vh !important;}
-            .main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:66px !important;padding-bottom:140px !important;}
-            .custom-table-wrapper{overflow:visible !important;flex:none !important;height:auto !important;margin-bottom:40px !important;padding-bottom:30px !important;}
+            .main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:90px !important;}
+            .main-scroll{overflow:visible !important;flex:none !important;height:auto !important;}
+            .table-card{margin-bottom:40px !important;padding-bottom:30px !important;}
             header,.top-navbar{display:none !important;}
             .hamburger-btn{display:none !important;}
             .mobile-header{display:flex !important;}
-            .mobile-bottom-nav{display:flex !important;flex-direction:column !important;}
         }
         @media(max-width:479px){
-            .main,.main-content{padding:10px !important;padding-top:64px !important;padding-bottom:140px !important;}
+            .main,.main-content{padding:10px !important;padding-top:88px !important;height:auto !important;}
+            .mobile-header{height:72px !important;}
+            .mobile-logo{width:48px !important;height:48px !important;}
+            .mobile-brand-title{font-size:16px !important;}
+            .mobile-brand-subtitle{font-size:11px !important;}
+            .mobile-menu-icon{width:28px !important;height:28px !important;}
         }
     </style>
 </head>
@@ -296,8 +278,34 @@
     <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
         <i data-lucide="menu" style="width:24px;height:24px"></i>
     </button>
-    @php $mhUser=session('admin_user_name')??'Admin';$mhW=explode(' ',$mhUser);$mhI=count($mhW)>=2?strtoupper(substr($mhW[0],0,1).substr($mhW[1],0,1)):strtoupper(substr($mhUser,0,2)); @endphp
-    <div class="mobile-header"><div><div class="mobile-header-sub">Senior Citizen</div><div class="mobile-header-title">Payout History</div></div><div class="mobile-avatar-hdr">{{ $mhI }}</div></div>
+    @php
+    $logo = null;
+    if(file_exists(public_path('images/mswdo-logo.png'))){
+        $logo='mswdo-logo.png';
+    }else{
+        $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+        if(!empty($files))
+        $logo=basename($files[0]);
+    }
+    @endphp
+    <div class="mobile-header">
+        <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+        <div class="mobile-header-brand">
+            <div class="mobile-brand-text">
+                <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+                <p class="mobile-brand-subtitle">Payout History</p>
+            </div>
+            <div class="mobile-logo">
+                @if($logo)
+                <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+                @endif
+            </div>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <div class="main-content">
@@ -313,112 +321,116 @@
         </header>
 
         <!-- Page Body -->
-        <div class="flex-1 overflow-hidden flex flex-col">
-            <!-- Filter Section -->
-            <div class="bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,.1)] p-5 mb-6 border border-[#E5E7EB] flex-shrink-0">
-                <form method="GET" action="{{ route('admin.senior.payouts-history') }}">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end filter-grid">
-                        <div>
-                            <label class="block text-[13px] font-semibold text-[var(--text-primary)] mb-1">Barangay</label>
-                            <select class="ctrl-select" name="barangay">
-                                <option value="">All Barangays</option>
-                                <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
-                                <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
-                                <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
-                                <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
-                                <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
-                                <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
-                                <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
-                                <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
-                                <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
-                                <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
-                                <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
-                                <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
-                                <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
-                                <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
-                                <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
-                                <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
-                                <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
-                                <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
-                                <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
-                                <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
-                                <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
-                                <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
-                                <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
-                                <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
-                                <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
-                                <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
-                                <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
-                                <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
-                                <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
-                                <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
-                                <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
-                                <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
-                                <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
-                                <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
-                                <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
-                                <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
-                                <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
-                                <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
-                                <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
-                                <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
-                                <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
-                                <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
-                                <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
-                                <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
-                                <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
-                                <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
-                                <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
-                                <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
-                                <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
-                                <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
-                                <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
-                                <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
-                                <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
-                                <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
-                                <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
-                                <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
-                                <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
-                                <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
-                                <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
-                                <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
-                                <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
-                                <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
-                                <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
-                                <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[13px] font-semibold text-[var(--text-primary)] mb-1">Date From</label>
-                            <input type="date" class="ctrl-input" name="date_from" value="{{ $dateFrom }}">
-                        </div>
-                        <div>
-                            <label class="block text-[13px] font-semibold text-[var(--text-primary)] mb-1">Date To</label>
-                            <input type="date" class="ctrl-input" name="date_to" value="{{ $dateTo }}">
-                        </div>
-                        <div class="flex gap-2">
-                            <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-sm font-semibold rounded-lg transition-colors duration-200 cursor-pointer border-0" style="font-family:var(--font-family)">
-                                <i data-lucide="filter" style="width:16px;height:16px"></i> Filter
-                            </button>
-                            @if(request('barangay') || request('date_from') || request('date_to'))
-                                <a href="{{ route('admin.senior.payouts-history') }}" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#6B7280] hover:bg-[#4B5563] text-white text-sm font-medium rounded-lg transition-colors duration-200 no-underline" style="font-family:var(--font-family);white-space:nowrap">
-                                    <i data-lucide="x" style="width:15px;height:15px"></i> Clear
-                                </a>
-                            @endif
-                        </div>
-                    </div>
-                </form>
-            </div>
+        <div class="main-scroll">
+            <!-- Table Card -->
+            <div class="table-card" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden">
+                <h2 class="table-card-title">Birthday Payout History Log</h2>
 
-            <!-- History Table -->
-            <div class="custom-table-wrapper">
-                <div class="custom-table-scroll">
-                    <table class="custom-table">
+                <!-- Filter Section -->
+                <div class="filter-section">
+                    <form method="GET" action="{{ route('admin.senior.payouts-history') }}">
+                        <div id="filterGrid" style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:12px;align-items:end">
+                            <div>
+                                <label class="filter-label">Barangay</label>
+                                <select class="filter-select" name="barangay">
+                                    <option value="">All Barangays</option>
+                                    <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
+                                    <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
+                                    <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
+                                    <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
+                                    <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
+                                    <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
+                                    <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
+                                    <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
+                                    <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
+                                    <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
+                                    <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
+                                    <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
+                                    <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
+                                    <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
+                                    <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
+                                    <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
+                                    <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
+                                    <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
+                                    <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
+                                    <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
+                                    <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
+                                    <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
+                                    <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
+                                    <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
+                                    <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
+                                    <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
+                                    <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
+                                    <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
+                                    <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
+                                    <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
+                                    <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
+                                    <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
+                                    <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
+                                    <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
+                                    <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
+                                    <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
+                                    <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
+                                    <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
+                                    <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
+                                    <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
+                                    <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
+                                    <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
+                                    <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
+                                    <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
+                                    <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
+                                    <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
+                                    <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
+                                    <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
+                                    <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
+                                    <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
+                                    <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
+                                    <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
+                                    <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
+                                    <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
+                                    <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
+                                    <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
+                                    <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
+                                    <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
+                                    <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
+                                    <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
+                                    <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
+                                    <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
+                                    <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
+                                    <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="filter-label">Date From</label>
+                                <input type="date" class="filter-select" name="date_from" value="{{ $dateFrom }}">
+                            </div>
+                            <div>
+                                <label class="filter-label">Date To</label>
+                                <input type="date" class="filter-select" name="date_to" value="{{ $dateTo }}">
+                            </div>
+                            <div style="display:flex;gap:8px">
+                                <button type="submit" class="btn primary">
+                                    <i data-lucide="filter" style="width:16px;height:16px"></i> Filter
+                                </button>
+                                @if(request('barangay') || request('date_from') || request('date_to'))
+                                    <a href="{{ route('admin.senior.payouts-history') }}" class="btn ghost">
+                                        <i data-lucide="x" style="width:16px;height:16px"></i> Clear
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- History Table -->
+                <div class="table-scroll" style="flex:1;overflow-y:auto;min-height:0;border-radius:8px;border:1px solid var(--border);">
+                    <table style="table-layout:fixed;">
                         <thead>
                             <tr>
                                 <th>Date & Time</th>
                                 <th>Action</th>
                                 <th>Senior</th>
+                                <th>Amount</th>
                                 <th>Details</th>
                                 <th>Performed By</th>
                             </tr>
@@ -434,25 +446,27 @@
                                     </td>
                                     <td data-label="Senior">
                                         @if($record->senior)
-                                            <strong>{{ $record->senior->full_name }}</strong>
-                                            <br>
-                                            <small class="text-[var(--text-muted)] text-xs">{{ $record->senior->control_number ?? '-' }}</small>
+                                            <div>
+                                                <strong>{{ $record->senior->full_name }}</strong>
+                                                <div class="text-[var(--text-muted)]" style="font-size:0.72rem;margin-top:2px">{{ $record->senior->control_number ?? '-' }}</div>
+                                            </div>
                                         @else
-                                            <span class="text-[var(--text-muted)]">System-wide action</span>
+                                            <span class="text-[var(--text-muted)] text-xs">System-wide action</span>
                                         @endif
                                     </td>
-                                    <td data-label="Details">{{ $record->details ?? '-' }}</td>
+                                    <td data-label="Amount">PHP {{ number_format($record->payout->amount ?? 0, 2) }}</td>
+                                    <td data-label="Details"><div style="min-width:0;text-align:right">{{ $record->details ?? '-' }}</div></td>
                                     <td data-label="Performed By">
                                         @if($record->performedBy)
                                             {{ $record->performedBy->name ?? 'Admin' }}
                                         @else
-                                            <span class="text-[var(--text-muted)]">System</span>
+                                            <span class="text-[var(--text-muted)] text-xs">System</span>
                                         @endif
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="empty-state-cell text-center py-12">
+                                    <td colspan="6" class="empty-state-cell text-center py-12">
                                         <div class="flex flex-col items-center text-[var(--text-muted)]">
                                             <i data-lucide="history" style="width:48px;height:48px;opacity:.4" class="mb-3"></i>
                                             <p class="text-sm m-0">No payout history found.</p>
@@ -466,7 +480,7 @@
 
                 <!-- Pagination -->
                 @if($history->hasPages())
-                    <div class="flex justify-center py-5 border-t border-[var(--border)]">
+                    <div style="display:flex;justify-content:center;padding-top:1rem;border-top:1px solid var(--border);">
                         {{ $history->appends(['barangay' => request('barangay'), 'date_from' => request('date_from'), 'date_to' => request('date_to')])->links('vendor.pagination.custom') }}
                     </div>
                 @endif
@@ -530,7 +544,6 @@
         })();
     </script>
 
-    <div class="mobile-bottom-nav"><div class="mobile-bottom-nav-row"><a href="/admin/senior" class="mobile-bottom-nav-item"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a><a href="/admin/senior/registration" class="mobile-bottom-nav-item"><i data-lucide="user-plus"></i><span>Register</span></a><a href="/admin/senior/masterlist" class="mobile-bottom-nav-item"><i data-lucide="list"></i><span>Masterlist</span></a><a href="/admin/senior/birthdays" class="mobile-bottom-nav-item"><i data-lucide="cake"></i><span>Birthdays</span></a><button type="button" class="mobile-bottom-nav-item" onclick="toggleMobileMoreNav()"><i data-lucide="chevron-up" id="mobileMoreIcon"></i><span>More</span></button></div><div class="mobile-bottom-nav-row mobile-nav-extra" id="mobileNavExtra" style="display:none;"><a href="/admin/senior/payouts-history" class="mobile-bottom-nav-item active"><i data-lucide="history"></i><span>Payouts</span></a><a href="/admin/senior/statistics" class="mobile-bottom-nav-item"><i data-lucide="bar-chart-3"></i><span>Stats</span></a><a href="/admin/senior/archive" class="mobile-bottom-nav-item"><i data-lucide="archive"></i><span>Archive</span></a><a href="#" onclick="confirmLogout(event)" class="mobile-bottom-nav-item"><i data-lucide="log-out"></i><span>Logout</span></a></div></div>
 
     <script>
         // Confirm logout

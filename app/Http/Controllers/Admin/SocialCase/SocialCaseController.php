@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\SocialCase;
 
 use App\Http\Controllers\Controller;
 use App\Models\SocialCase\SocialCaseStudy;
+use App\Models\SocialCase\SocialCaseActivityLog;
 use App\Models\Client;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -18,7 +19,11 @@ class SocialCaseController extends Controller
 
     public function socialCaseDashboard()
     {
-        return view('admin.social-case.dashboard');
+        $justLoggedIn = session('admin_just_logged_in', false);
+        if ($justLoggedIn) {
+            session()->forget('admin_just_logged_in');
+        }
+        return view('admin.social-case.dashboard', compact('justLoggedIn'));
     }
 
     public function socialCaseNew()
@@ -274,5 +279,39 @@ class SocialCaseController extends Controller
 
         $case->delete();
         return response()->json(['message' => 'Case deleted successfully']);
+    }
+
+    public function logActivity(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|string',
+            'details' => 'required|string',
+            'case_info' => 'nullable|array',
+        ]);
+
+        $activity = SocialCaseActivityLog::create([
+            'action' => $request->action,
+            'details' => $request->details,
+            'case_info' => $request->case_info,
+            'admin' => 'Social Case Study Officer',
+        ]);
+
+        return response()->json($activity);
+    }
+
+    public function getActivities()
+    {
+        $activities = SocialCaseActivityLog::orderByDesc('created_at')
+            ->limit(50)
+            ->get();
+
+        return response()->json($activities);
+    }
+
+    public function clearActivities()
+    {
+        SocialCaseActivityLog::truncate();
+
+        return response()->json(['message' => 'Activities cleared']);
     }
 }

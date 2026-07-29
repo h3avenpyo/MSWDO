@@ -45,7 +45,7 @@
             --font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
         }
         *,*::before,*::after{box-sizing:border-box;}
-        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100%;overflow-x:hidden;overflow-y:auto;}
+        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100%;overflow:hidden;}
         body{font-size:14px;line-height:1.5;}
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
         button{font-family:inherit;cursor:pointer;}
@@ -146,6 +146,19 @@
         .delay-2{animation-delay:.2s;}
         .delay-3{animation-delay:.3s;}
 
+        /* Welcome Greeting */
+        .welcome-greeting {
+            padding: 4px 0 16px 0;
+            animation: fadeIn .6s ease forwards;
+        }
+        .welcome-text {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            line-height: 1.2;
+        }
+
         /* ── Sidebar Overlay ── */
         .sidebar-overlay.active { display: block !important; }
 
@@ -171,57 +184,66 @@
         .hamburger-btn:hover { background: var(--primary-hover); }
         
         /* ── Mobile Header (hidden on desktop) ── */
-        .mobile-header {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
-            color: #ffffff;
-            padding: 10px 16px;
-            box-shadow: 0 2px 12px rgba(26, 35, 126, 0.2);
-            align-items: center;
-            justify-content: space-between;
-            height: 56px;
-        }
-        .mobile-header-info {
+        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
+        .mobile-header-brand {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 16px;
             flex: 1;
             min-width: 0;
         }
-        .mobile-title {
-            font-size: 16px;
+        .mobile-logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #FBC02D;
+            padding: 4px;
+            flex-shrink: 0;
+        }
+        .mobile-logo-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .mobile-brand-text {
+            flex: 1;
+            min-width: 0;
+        }
+        .mobile-brand-title {
+            font-size: 18px;
             font-weight: 700;
             color: #ffffff;
+            margin: 0;
+            line-height: 1.2;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            line-height: 1.2;
-            letter-spacing: -0.2px;
         }
-        .mobile-header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-        }
-        .mobile-avatar {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: var(--accent-yellow);
-            color: var(--primary);
-            font-weight: 700;
+        .mobile-brand-subtitle {
             font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 2px 0 0 0;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .mobile-menu-btn {
             display: flex;
             align-items: center;
             justify-content: center;
+            background: transparent;
+            border: none;
+            color: #ffffff;
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            padding: 8px;
+            flex-shrink: 0;
+            margin-right: 24px;
+        }
+        .mobile-menu-icon {
+            width: 32px;
+            height: 32px;
         }
         
         /* ── Mobile Search (hidden on desktop) ── */
@@ -240,60 +262,6 @@
             display: none;
         }
         
-        /* ── Mobile Bottom Navigation (hidden on desktop and laptop) ── */
-        .mobile-bottom-nav {
-            display: none !important;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-            padding: 8px 4px;
-            box-shadow: 0 -2px 10px rgba(15, 23, 42, 0.05);
-            gap: 6px;
-        }
-        .mobile-bottom-nav-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            width: 100%;
-        }
-        .mobile-bottom-nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-size: 10px;
-            font-weight: 500;
-            padding: 6px 0;
-            transition: all 0.2s;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-        .mobile-bottom-nav-item.active {
-            color: var(--primary);
-            font-weight: 700;
-        }
-        .mobile-bottom-nav-item [data-lucide] {
-            width: 20px;
-            height: 20px;
-            transition: transform 0.2s ease;
-        }
-        .mobile-bottom-nav-item:hover {
-            color: var(--primary);
-        }
-        .mobile-nav-extra {
-            padding-top: 4px;
-            margin-top: 2px;
-        }
-        
         /* ── Stat Card Trend (hidden on desktop) ── */
         .stat-card-trend {
             display: none;
@@ -301,10 +269,12 @@
 
         /* ── Responsive: Tablet (< 1024px) ── */
         @media (max-width: 1023px) {
+            body { overflow-y: auto !important; }
             .hamburger-btn { display: flex; }
             .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
             .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 72px !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 72px !important; height: auto !important; overflow: visible !important; flex: none !important; }
+            .main-scroll { overflow: visible !important; flex: none !important; }
             .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
             .dashboard-grid { grid-template-columns: 1fr !important; }
             #barangayChartWrap { justify-content: center; }
@@ -314,7 +284,11 @@
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
             /* Mobile-specific background */
-            body { background: #F5F7FB; }
+            body { background: #F5F7FB; overflow-y: auto !important; }
+
+            /* Welcome greeting - smaller on mobile */
+            .welcome-greeting { padding: 12px 0 16px 0; }
+            .welcome-text { font-size: 18px; font-weight: 600; }
 
             /* Fix main container for mobile - allow natural scrolling */
             .app { flex-direction: column; }
@@ -322,15 +296,16 @@
                 margin-left: 0 !important;
                 max-width: 100% !important;
                 padding: 12px 14px !important;
-                padding-top: 66px !important;
+                padding-top: 90px !important;
                 height: auto !important;
                 overflow: visible !important;
-                padding-bottom: 80px !important;
+                flex: none !important;
             }
             .main-scroll {
                 overflow: visible !important;
                 height: auto !important;
                 min-height: auto !important;
+                flex: none !important;
             }
 
             /* Hide desktop header & standalone hamburger button, show integrated mobile header */
@@ -346,7 +321,7 @@
             }
             .stat-card {
                 width: 100% !important;
-                height: auto !important;
+                height: 110px !important;
                 padding: 16px !important;
                 border-radius: 16px !important;
                 flex-direction: column !important;
@@ -355,7 +330,7 @@
                 position: relative !important;
             }
             .stat-card::before { display: none !important; }
-            .stat-card-content { width: 100%; }
+            .stat-card-content { width: 100%; padding-right: 48px; }
             .stat-card-label {
                 font-size: 11px !important;
                 font-weight: 600 !important;
@@ -518,12 +493,6 @@
             /* Hamburger button adjustments */
             .hamburger-btn { top: 14px !important; left: 16px !important; z-index: 1002 !important; }
 
-            /* Bottom navigation - strictly visible on mobile screens (<768px) only */
-            .mobile-bottom-nav { 
-                display: flex !important; 
-                flex-direction: column !important; 
-            }
-
             /* Hide trend indicators (fake data) */
             .stat-card-trend { display: none !important; }
 
@@ -541,22 +510,20 @@
 
         /* ── Responsive: Small Mobile (< 480px) ── */
         @media (max-width: 479px) {
-            .main, .main-content { padding: 10px !important; padding-top: 64px !important; padding-bottom: 76px !important; }
+            .main, .main-content { padding: 10px !important; padding-top: 88px !important; }
+            .stat-cards { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
             .stat-card-value { font-size: 24px !important; }
             .stat-card-icon { width: 36px !important; height: 36px !important; top: 12px !important; right: 12px !important; }
             .stat-card-icon svg { width: 16px !important; height: 16px !important; }
             .stat-card { padding: 14px !important; }
-            .stat-cards { gap: 10px !important; }
             .quick-actions-grid { gap: 10px !important; }
             .quick-action-btn { padding: 14px 10px !important; font-size: 11px !important; }
             .quick-action-btn i, .quick-action-btn [data-lucide] { width: 22px !important; height: 22px !important; }
-            .mobile-header { padding: 10px 12px !important; }
-            .mobile-header-content { margin-left: 48px !important; }
-            .mobile-title { font-size: 14px !important; }
-            .mobile-greeting { font-size: 11px !important; }
-            .mobile-subtitle { font-size: 10px !important; }
-            .mobile-avatar { width: 36px !important; height: 36px !important; font-size: 12px !important; }
-            .mobile-notification { width: 36px !important; height: 36px !important; }
+            .mobile-header { padding: 0 12px !important; height: 72px !important; }
+            .mobile-logo { width: 48px !important; height: 48px !important; }
+            .mobile-brand-title { font-size: 16px !important; }
+            .mobile-brand-subtitle { font-size: 11px !important; }
+            .mobile-menu-icon { width: 28px !important; height: 28px !important; }
             .analytics-card, .activity-card { padding: 14px !important; }
             .activity-item { padding: 10px !important; gap: 10px !important; }
             .activity-icon { width: 32px !important; height: 32px !important; }
@@ -615,12 +582,31 @@
 
     <!-- Mobile Header (visible only on mobile) -->
     <div class="mobile-header">
-        <div class="mobile-header-info">
-            <div class="mobile-greeting">Dashboard</div>
-            <div class="mobile-title">Senior Citizen</div>
-        </div>
-        <div class="mobile-header-actions">
-            <div class="mobile-avatar" title="{{ $userName }}">{{ $initials }}</div>
+        <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+        <div class="mobile-header-brand">
+            <div class="mobile-brand-text">
+                <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+                <p class="mobile-brand-subtitle">Senior Citizen Dashboard</p>
+            </div>
+            <div class="mobile-logo">
+                @php
+                $logo = null;
+                if(file_exists(public_path('images/mswdo-logo.png'))){
+                    $logo='mswdo-logo.png';
+                }else{
+                    $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+                    if(!empty($files))
+                    $logo=basename($files[0]);
+                }
+                @endphp
+                @if($logo)
+                <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+                @endif
+            </div>
         </div>
     </div>
 
@@ -641,6 +627,11 @@
 
         <div class="main-scroll">
 
+
+        <!-- Welcome Greeting -->
+        <div class="welcome-greeting">
+            <h1 class="welcome-text">Welcome, {{ $userName }} &#128075;</h1>
+        </div>
 
         <!-- Stat Cards -->
         <div class="stat-cards">
@@ -745,49 +736,6 @@
     </div>
 </div>
 
-<!-- Mobile Bottom Navigation (visible only on mobile) -->
-<div class="mobile-bottom-nav">
-    <div class="mobile-bottom-nav-row">
-        <a href="/admin/senior" class="mobile-bottom-nav-item active">
-            <i data-lucide="layout-dashboard"></i>
-            <span>Dashboard</span>
-        </a>
-        <a href="/admin/senior/registration" class="mobile-bottom-nav-item">
-            <i data-lucide="user-plus"></i>
-            <span>Register</span>
-        </a>
-        <a href="/admin/senior/masterlist" class="mobile-bottom-nav-item">
-            <i data-lucide="list"></i>
-            <span>Masterlist</span>
-        </a>
-        <a href="/admin/senior/birthdays" class="mobile-bottom-nav-item">
-            <i data-lucide="cake"></i>
-            <span>Birthdays</span>
-        </a>
-        <button type="button" class="mobile-bottom-nav-item mobile-more-toggle" onclick="toggleMobileMoreNav()">
-            <i data-lucide="chevron-up" id="mobileMoreIcon"></i>
-            <span id="mobileMoreText">More</span>
-        </button>
-    </div>
-    <div class="mobile-bottom-nav-row mobile-nav-extra" id="mobileNavExtra" style="display:none;">
-        <a href="/admin/senior/payouts-history" class="mobile-bottom-nav-item">
-            <i data-lucide="history"></i>
-            <span>Payouts</span>
-        </a>
-        <a href="/admin/senior/statistics" class="mobile-bottom-nav-item">
-            <i data-lucide="bar-chart-3"></i>
-            <span>Stats</span>
-        </a>
-        <a href="/admin/senior/archive" class="mobile-bottom-nav-item">
-            <i data-lucide="archive"></i>
-            <span>Archive</span>
-        </a>
-        <a href="#" onclick="confirmLogout(event)" class="mobile-bottom-nav-item">
-            <i data-lucide="log-out"></i>
-            <span>Logout</span>
-        </a>
-    </div>
-</div>
 
 <!-- Barangay Distribution Modal -->
 <div id="barangayModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.style.display='none'">

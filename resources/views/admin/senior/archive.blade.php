@@ -57,10 +57,15 @@
 
         /* Main */
         .main{flex:1;min-width:0;margin-left:var(--sidebar-width);padding:var(--content-padding);max-width:calc(100% - var(--sidebar-width));height:100vh;overflow:hidden;display:flex;flex-direction:column;}
-        .main-scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;border-radius:16px;}
-        .main-scroll::-webkit-scrollbar{display:none;}
-        .archive-table-wrap{scrollbar-width:none;-ms-overflow-style:none;}
+        .main-scroll{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;}
+        .archive-table-wrap{flex:1;overflow-y:auto;min-height:0;border-radius:8px;scrollbar-width:none;-ms-overflow-style:none;}
         .archive-table-wrap::-webkit-scrollbar{display:none;}
+        /* ---------- Toolbar Row ---------- */
+        .archive-toolbar{display:flex;gap:12px;align-items:stretch;flex-shrink:0;margin-bottom:24px;}
+        .archive-toolbar .stat-cards{margin-bottom:0;flex-shrink:0;width:280px;display:block;}
+        .archive-toolbar .stat-cards .stat-card{height:100%;margin-bottom:0;}
+        .archive-toolbar .filter-section{margin-bottom:0;flex:1;}
+        @media(max-width:900px){.archive-toolbar{flex-direction:column;}.archive-toolbar .stat-cards{width:100%;}}
         /* ---------- Stat Cards ---------- */
         .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:24px;animation:fadeInUp .6s ease-out;flex-shrink:0;}
         @media(max-width:1024px){.stat-cards{grid-template-columns:repeat(3,1fr);}}
@@ -97,6 +102,8 @@
         .filter-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
         .filter-left { display: flex; gap: 12px; flex: 1; min-width: 0; flex-wrap: wrap; }
         .filter-right { display: flex; gap: 12px; flex-shrink: 0; }
+        .sex-age-wrap .sex-letter{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#6B7280;color:white;font-size:11px;font-weight:700;margin-right:4px;}
+        .sex-age-wrap .sex-sep { display: none; }
         .filter-group { display: flex; flex-direction: column; gap: 4px; }
         .filter-group.search-group { flex: 1; min-width: 200px; }
         .filter-group.select-group { flex: 1; min-width: 200px; }
@@ -311,30 +318,31 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in { animation: fadeIn 0.5s ease forwards; }
-        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:linear-gradient(135deg,#1A237E 0%,#283593 100%);color:#fff;padding:10px 16px;box-shadow:0 2px 12px rgba(26,35,126,0.2);align-items:center;justify-content:space-between;height:56px;}
-        .mobile-header-title{font-size:16px;font-weight:700;color:#fff;letter-spacing:-0.2px;}
-        .mobile-header-sub{font-size:11px;color:rgba(255,255,255,0.7);font-weight:500;}
-        .mobile-avatar-hdr{width:34px;height:34px;border-radius:50%;background:#FBC02D;color:#1A237E;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
-        .mobile-bottom-nav{display:none !important;position:fixed;bottom:0;left:0;right:0;z-index:1000;background:#fff;border-top:1px solid #E5E7EB;padding:8px 4px;box-shadow:0 -2px 10px rgba(15,23,42,0.05);flex-direction:column;gap:6px;}
-        .mobile-bottom-nav-row{display:flex;align-items:center;justify-content:space-around;width:100%;}
-        .mobile-bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:#6B7280;font-size:10px;font-weight:500;padding:6px 0;transition:all 0.2s;background:none;border:none;cursor:pointer;font-family:inherit;}
-        .mobile-bottom-nav-item.active{color:#1A237E;font-weight:700;}
-        .mobile-bottom-nav-item [data-lucide]{width:20px;height:20px;}
-        .mobile-bottom-nav-item:hover{color:#1A237E;}
-        .mobile-nav-extra{padding-top:4px;margin-top:2px;}
+        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
+        .mobile-header-brand{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
+        .mobile-logo{width:56px;height:56px;border-radius:50%;background:#FBC02D;padding:4px;flex-shrink:0;}
+        .mobile-logo-img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+        .mobile-brand-text{flex:1;min-width:0;}
+        .mobile-brand-title{font-size:18px;font-weight:700;color:#ffffff;margin:0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .mobile-brand-subtitle{font-size:12px;color:rgba(255,255,255,0.8);margin:2px 0 0 0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .mobile-menu-btn{display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:#ffffff;cursor:pointer;padding:8px;flex-shrink:0;margin-right:24px;}
+        .mobile-menu-icon{width:32px;height:32px;}
         @media(max-width:767px){
             .app{flex-direction:column !important;min-height:100vh !important;}
-            .main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:66px !important;padding-bottom:140px !important;}
-            .main-scroll{overflow:visible !important;flex:none !important;height:auto !important;padding-bottom:140px !important;}
+            .main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:90px !important;}
+            .main-scroll{overflow:visible !important;flex:none !important;height:auto !important;}
             .table-card{overflow:visible !important;flex:none !important;height:auto !important;margin-bottom:40px !important;padding-bottom:30px !important;}
             header{display:none !important;}
             .hamburger-btn{display:none !important;}
             .mobile-header{display:flex !important;}
-            .mobile-bottom-nav{display:flex !important;flex-direction:column !important;}
         }
         @media(max-width:479px){
-            .main,.main-content{padding:10px !important;padding-top:64px !important;padding-bottom:140px !important;}
-            .main-scroll{padding-bottom:140px !important;}
+            .main,.main-content{padding:10px !important;padding-top:88px !important;}
+            .mobile-header{height:72px !important;}
+            .mobile-logo{width:48px !important;height:48px !important;}
+            .mobile-brand-title{font-size:16px !important;}
+            .mobile-brand-subtitle{font-size:11px !important;}
+            .mobile-menu-icon{width:28px !important;height:28px !important;}
         }
 
         /* Flash messages */
@@ -350,6 +358,7 @@
             margin-bottom: 1rem;
             animation: fadeIn 0.3s ease;
             position: relative;
+            flex-shrink: 0;
         }
         .flash-message[data-lucide] { width: 20px; height: 20px; flex-shrink: 0; }
         .flash-success {
@@ -426,7 +435,7 @@
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
             .mobile-select-all { display: flex !important; }
-            .main { padding: 12px !important; padding-top: 64px !important; }
+            .main { padding: 12px !important; padding-top: 90px !important; }
             .stat-cards { grid-template-columns: 1fr !important; }
             .filter-section { padding: 12px !important; }
             .table-card { padding: 0.75rem !important; }
@@ -497,6 +506,9 @@
                 border-bottom: none;
             }
             .archive-table-wrap tbody td[data-label="Action"]::before { display: none; }
+            .archive-table-wrap tbody td .hide-mobile-addr { display: none !important; }
+            .archive-table-wrap tbody td .sex-age-wrap .sex-sep { display: inline; color: var(--text-muted); font-size: 0.82rem; }
+            .archive-table-wrap tbody td .sex-age-wrap { display: inline-flex; align-items: center; gap: 0; }
             .archive-table-wrap tbody td .badge-archived { font-size: 0.7rem; }
 
             /* ── Pagination ── */
@@ -539,8 +551,34 @@
     <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
         <i data-lucide="menu" style="width:24px;height:24px"></i>
     </button>
-    @php $mhUser=session('admin_user_name')??'Admin';$mhW=explode(' ',$mhUser);$mhI=count($mhW)>=2?strtoupper(substr($mhW[0],0,1).substr($mhW[1],0,1)):strtoupper(substr($mhUser,0,2)); @endphp
-    <div class="mobile-header"><div><div class="mobile-header-sub">Senior Citizen</div><div class="mobile-header-title">Archive</div></div><div class="mobile-avatar-hdr">{{ $mhI }}</div></div>
+    @php
+    $logo = null;
+    if(file_exists(public_path('images/mswdo-logo.png'))){
+        $logo='mswdo-logo.png';
+    }else{
+        $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+        if(!empty($files))
+        $logo=basename($files[0]);
+    }
+    @endphp
+    <div class="mobile-header">
+        <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+        <div class="mobile-header-brand">
+            <div class="mobile-brand-text">
+                <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+                <p class="mobile-brand-subtitle">Senior Citizen Archive</p>
+            </div>
+            <div class="mobile-logo">
+                @if($logo)
+                <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+                @endif
+            </div>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <div class="main">
@@ -585,6 +623,7 @@
             </div>
         @endif
 
+        <div class="archive-toolbar">
         <!-- Summary Card -->
         <div class="stat-cards">
             <div class="stat-card stat-card-purple">
@@ -700,6 +739,7 @@
                 </div>
             </form>
         </div>
+    </div>
 
         <!-- Archive Table Card -->
         <div class="table-card">
@@ -710,7 +750,7 @@
                 <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
                 <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
             </div>
-            <div style="flex:1;overflow-y:auto;overflow-x:auto;min-height:0;border-radius:8px;" class="archive-table-wrap">
+            <div class="archive-table-wrap" style="overflow-x:auto;">
                 <table class="custom-table" id="archiveTable" style="table-layout:fixed;">
                     <thead>
                         <tr>
@@ -734,7 +774,7 @@
                             <td data-label="Control No.">{{ $senior->control_number ?? '-' }}</td>
                             <td data-label="Full Name">
                                 <div class="font-semibold">{{ $senior->full_name ?? '-' }}</div>
-                                <div class="text-[#9CA3AF] text-[12px]">{{ $senior->address ? \Illuminate\Support\Str::limit($senior->address, 35) : '' }}</div>
+                                <div class="text-[#9CA3AF] text-[12px] hide-mobile-addr">{{ $senior->address ? \Illuminate\Support\Str::limit($senior->address, 35) : '' }}</div>
                             </td>
                             <td data-label="Barangay">
                                 @if($senior->barangay)
@@ -744,10 +784,13 @@
                                 @endif
                             </td>
                             <td data-label="Sex / Age">
-                                @if($senior->sex)
-                                    <span class="inline-flex items-center justify-center w-[26px] h-[26px] rounded-full bg-[#6B7280] text-white text-[11px] font-bold mr-1">{{ $senior->sex == 'Male' ? 'M' : 'F' }}</span>
-                                @endif
-                                <strong>{{ $senior->age ?? '-' }}</strong>
+                                <div class="sex-age-wrap">
+                                    @if($senior->sex)
+                                        <span class="sex-letter">{{ $senior->sex == 'Male' ? 'M' : 'F' }}</span>
+                                    @endif
+                                    <span class="sex-sep"> / </span>
+                                    <strong class="age-val">{{ $senior->age ?? '-' }}</strong>
+                                </div>
                             </td>
                             <td data-label="Birth Date">
                                 @if($senior->birth_date)
@@ -1017,10 +1060,8 @@
         }
     </script>
 
-    <div class="mobile-bottom-nav"><div class="mobile-bottom-nav-row"><a href="/admin/senior" class="mobile-bottom-nav-item"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a><a href="/admin/senior/registration" class="mobile-bottom-nav-item"><i data-lucide="user-plus"></i><span>Register</span></a><a href="/admin/senior/masterlist" class="mobile-bottom-nav-item"><i data-lucide="list"></i><span>Masterlist</span></a><a href="/admin/senior/birthdays" class="mobile-bottom-nav-item"><i data-lucide="cake"></i><span>Birthdays</span></a><button type="button" class="mobile-bottom-nav-item" onclick="toggleMobileMoreNav()"><i data-lucide="chevron-up" id="mobileMoreIcon"></i><span>More</span></button></div><div class="mobile-bottom-nav-row mobile-nav-extra" id="mobileNavExtra" style="display:none;"><a href="/admin/senior/payouts-history" class="mobile-bottom-nav-item"><i data-lucide="history"></i><span>Payouts</span></a><a href="/admin/senior/statistics" class="mobile-bottom-nav-item"><i data-lucide="bar-chart-3"></i><span>Stats</span></a><a href="/admin/senior/archive" class="mobile-bottom-nav-item active"><i data-lucide="archive"></i><span>Archive</span></a><a href="#" onclick="confirmLogout(event)" class="mobile-bottom-nav-item"><i data-lucide="log-out"></i><span>Logout</span></a></div></div>
 
     <script>
-        function toggleMobileMoreNav(){const extra=document.getElementById('mobileNavExtra');const icon=document.getElementById('mobileMoreIcon');if(!extra)return;if(extra.style.display==='none'||extra.style.display===''){extra.style.display='flex';if(icon){icon.setAttribute('data-lucide','chevron-down');lucide.createIcons();}}else{extra.style.display='none';if(icon){icon.setAttribute('data-lucide','chevron-up');lucide.createIcons();}}}
         document.addEventListener('DOMContentLoaded', function() {
             lucide.createIcons();
 

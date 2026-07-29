@@ -96,29 +96,30 @@
         .stat-card-red .stat-card-icon{background:var(--danger-bg);color:var(--danger);}
         .stat-card-orange .stat-card-icon{background:#FFF7ED;color:#F59E0B;}
 
-        /* Filter card */
-        .filter-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:16px 20px;margin-bottom:20px;flex-shrink:0;}
-        .filter-card h3{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-        .filter-field label{display:block;font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;}
-        .filter-field select,.filter-field input{width:100%;height:36px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);transition:all .2s ease;}
-        .filter-field select:focus,.filter-field input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
+        /* Filter Section */
+        .filter-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:16px 20px;margin-bottom:20px;flex-shrink:0;}
+        .filter-section h3{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+        .filter-group{display:flex;flex-direction:column;gap:4px;}
+        .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;display:block;}
+        .filter-select{width:100%;height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
+        .filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
 
         /* Chart containers */
-        .chart-container{position:relative;height:300px;}
+        .chart-container{position:relative;height:380px;}
 
         /* Charts grid */
         .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;box-sizing:border-box;}
         .charts-outer{padding-bottom:8px;width:100%;box-sizing:border-box;}
 
-        /* Export buttons */
-        .export-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s ease;font-family:inherit;}
-        .export-btn:hover{transform:translateY(-1px);}
-        .export-btn.primary{background:var(--primary);color:#fff;}
-        .export-btn.primary:hover{background:var(--primary-hover);}
-        .export-btn.danger{background:var(--danger);color:#fff;}
-        .export-btn.danger:hover{background:#B91C1C;}
-        .export-btn.success{background:var(--success);color:#fff;}
-        .export-btn.success:hover{background:#15803D;}
+        /* Buttons */
+        .btn{border:1px solid var(--border);background:var(--surface);color:var(--text-primary);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:8px;box-shadow:var(--shadow);transition:all 0.2s ease;height:42px;cursor:pointer;text-decoration:none;font-family:inherit;}
+        .btn:hover{border-color:var(--primary);transform:translateY(-1px);}
+        .btn.primary{background:var(--primary);color:#FFFFFF;border-color:var(--primary);}
+        .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);}
+        .btn.danger{background:var(--danger);color:#FFFFFF;border-color:var(--danger);}
+        .btn.success{background:var(--success);color:#FFFFFF;border-color:var(--success);}
+        .btn.ghost{background:transparent;box-shadow:none;border-color:transparent;color:var(--text-secondary);}
+        .btn.ghost:hover{background:var(--background);color:var(--text-primary);}
 
         /* Animations */
         @keyframes fadeInUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
@@ -127,40 +128,41 @@
         .delay-1{animation-delay:.1s;}
         .delay-2{animation-delay:.2s;}
         .delay-3{animation-delay:.3s;}
-        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#fff;color:var(--text-primary);padding:10px 16px;border-bottom:1px solid var(--border);align-items:center;justify-content:space-between;height:56px;}
-        .mobile-header-title{font-size:17px;font-weight:700;color:var(--text-primary);letter-spacing:-0.2px;}
-        .mobile-header-sub{font-size:11px;color:var(--text-muted);font-weight:500;}
-        .mobile-avatar-hdr{width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;}
-        .mobile-bottom-nav{display:none !important;position:fixed;bottom:0;left:0;right:0;z-index:1000;background:#fff;border-top:1px solid #E5E7EB;padding:8px 4px;box-shadow:0 -2px 10px rgba(15,23,42,0.05);flex-direction:column;gap:6px;}
-        .mobile-bottom-nav-row{display:flex;align-items:center;justify-content:space-around;width:100%;}
-        .mobile-bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:#6B7280;font-size:10px;font-weight:500;padding:6px 0;transition:all 0.2s;background:none;border:none;cursor:pointer;font-family:inherit;}
-        .mobile-bottom-nav-item.active{color:#1A237E;font-weight:700;}
-        .mobile-bottom-nav-item [data-lucide]{width:20px;height:20px;}
-        .mobile-bottom-nav-item:hover{color:#1A237E;}
-        .mobile-nav-extra{padding-top:4px;margin-top:2px;}
+        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
+        .mobile-header-brand{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
+        .mobile-logo{width:56px;height:56px;border-radius:50%;background:#FBC02D;padding:4px;flex-shrink:0;}
+        .mobile-logo-img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+        .mobile-brand-text{flex:1;min-width:0;}
+        .mobile-brand-title{font-size:18px;font-weight:700;color:#ffffff;margin:0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .mobile-brand-subtitle{font-size:12px;color:rgba(255,255,255,0.8);margin:2px 0 0 0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .mobile-menu-btn{display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:#ffffff;cursor:pointer;padding:8px;flex-shrink:0;margin-right:24px;}
+        .mobile-menu-icon{width:32px;height:32px;}
         @media(max-width:767px){
             .app{flex-direction:column !important;min-height:100vh !important;}
-            .main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:66px !important;padding-bottom:140px !important;}
-            .main-scroll{overflow:visible !important;flex:none !important;height:auto !important;padding-bottom:140px !important;}
+            .main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:90px !important;}
+            .main-scroll{overflow:visible !important;flex:none !important;height:auto !important;}
             .charts-grid{grid-template-columns:1fr !important;gap:16px !important;width:100% !important;box-sizing:border-box !important;}
             .charts-outer{padding:0 0 8px 0 !important;width:100% !important;box-sizing:border-box !important;}
             .analytics-card{width:100% !important;box-sizing:border-box !important;margin-left:0 !important;margin-right:0 !important;margin-bottom:0 !important;padding:12px !important;border-radius:16px !important;min-height:auto !important;height:auto !important;}
-            .chart-container{height:200px !important;}
+            .chart-container{height:280px !important;}
             .chart-card,.stat-card,.card,.table-card{margin-bottom:16px !important;}
             .dashboard-grid,.analytics-grid,.stats-grid{padding-bottom:40px !important;}
             #analyticsFilterGrid{grid-template-columns:1fr 1fr !important;}
             header{display:none !important;}
             .hamburger-btn{display:none !important;}
             .mobile-header{display:flex !important;}
-            .mobile-bottom-nav{display:flex !important;flex-direction:column !important;}
         }
         @media(max-width:479px){
-            .main,.main-content{padding:10px !important;padding-top:64px !important;padding-bottom:140px !important;}
-            .main-scroll{padding-bottom:140px !important;}
+            .main,.main-content{padding:10px !important;padding-top:88px !important;}
             .charts-grid{grid-template-columns:1fr !important;width:100% !important;box-sizing:border-box !important;}
             .analytics-card{width:100% !important;box-sizing:border-box !important;padding:10px !important;border-radius:14px !important;}
-            .chart-container{height:180px !important;}
-            #analyticsFilterGrid{grid-template-columns:1fr !important;}
+            .chart-container{height:260px !important;}
+            #analyticsFilterGrid{grid-template-columns:1fr 1fr !important;}
+            .mobile-header{height:72px !important;}
+            .mobile-logo{width:48px !important;height:48px !important;}
+            .mobile-brand-title{font-size:16px !important;}
+            .mobile-brand-subtitle{font-size:11px !important;}
+            .mobile-menu-icon{width:28px !important;height:28px !important;}
         }
 
         /* ── Sidebar Overlay ── */
@@ -196,37 +198,41 @@
             .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
             .dashboard-grid { grid-template-columns: 1fr !important; }
             #analyticsFilterGrid { grid-template-columns: repeat(3, 1fr) !important; }
-            .chart-container { height: 280px !important; }
+            .chart-container { height: 340px !important; }
         }
 
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
-            .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
-            .stat-cards { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-            .stat-card { width: 100% !important; height: 100px !important; padding: 12px !important; }
-            .stat-card-value { font-size: 20px !important; }
-            .stat-card-icon { width: 36px !important; height: 36px !important; }
-            .stat-card-icon svg { width: 18px !important; height: 18px !important; }
-            .stat-card-label { font-size: 9px !important; }
+            .main, .main-content { padding: 12px !important; padding-top: 90px !important; }
+            .stat-cards { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+            .stat-card { width: 100% !important; height: auto !important; padding: 16px !important; border-radius: 16px !important; flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; position: relative !important; }
+            .stat-card::before { display: none !important; }
+            .stat-card-content { width: 100%; }
+            .stat-card-value { font-size: 28px !important; font-weight: 700 !important; }
+            .stat-card-icon { width: 40px !important; height: 40px !important; border-radius: 50% !important; position: absolute !important; top: 14px !important; right: 14px !important; }
+            .stat-card-icon svg { width: 20px !important; height: 20px !important; }
+            .stat-card-label { font-size: 11px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.3px !important; color: var(--text-secondary) !important; margin-bottom: 4px !important; }
             .topnav, .top-navbar { padding: 10px 12px !important; }
             .topnav-datetime, .navbar-datetime { display: none !important; }
             .filter-bar, .filter-group { flex-wrap: wrap; }
             .filter-bar > div, .filter-group > div { min-width: 0 !important; }
             #analyticsFilterGrid { grid-template-columns: 1fr 1fr !important; }
-            #analyticsFilterGrid > div:last-child { grid-column: 1 / -1; }
+
             .analytics-card { padding: 12px !important; border-radius: 16px !important; min-height: auto !important; height: auto !important; }
-            .chart-container { height: 200px !important; }
-            .filter-card { padding: 12px !important; }
+            .chart-container { height: 280px !important; }
+            .filter-section { padding: 12px !important; }
             .charts-grid { grid-template-columns: 1fr !important; }
         }
 
         /* ── Responsive: Small Mobile (< 480px) ── */
         @media (max-width: 479px) {
-            .stat-card-icon { width: 40px !important; height: 40px !important; }
+            .stat-card { padding: 14px !important; }
             .stat-card-value { font-size: 24px !important; }
-            .stat-cards { gap: 12px !important; }
+            .stat-card-icon { width: 36px !important; height: 36px !important; top: 12px !important; right: 12px !important; }
+            .stat-card-icon svg { width: 16px !important; height: 16px !important; }
+            .stat-cards { gap: 10px !important; }
             .analytics-card { padding: 10px !important; border-radius: 14px !important; }
-            .chart-container { height: 180px !important; }
+            .chart-container { height: 260px !important; }
             #analyticsFilterGrid { grid-template-columns: 1fr 1fr !important; }
         }
     </style>
@@ -257,8 +263,34 @@
     <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
         <i data-lucide="menu" style="width:24px;height:24px"></i>
     </button>
-    @php $mhUser=session('admin_user_name')??'Admin';$mhW=explode(' ',$mhUser);$mhI=count($mhW)>=2?strtoupper(substr($mhW[0],0,1).substr($mhW[1],0,1)):strtoupper(substr($mhUser,0,2)); @endphp
-    <div class="mobile-header"><div><div class="mobile-header-sub">Senior Citizen &rsaquo; Statistics</div><div class="mobile-header-title">Statistics</div></div><div class="mobile-avatar-hdr">{{ $mhI }}</div></div>
+    @php
+    $logo = null;
+    if(file_exists(public_path('images/mswdo-logo.png'))){
+        $logo='mswdo-logo.png';
+    }else{
+        $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+        if(!empty($files))
+        $logo=basename($files[0]);
+    }
+    @endphp
+    <div class="mobile-header">
+        <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+        <div class="mobile-header-brand">
+            <div class="mobile-brand-text">
+                <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+                <p class="mobile-brand-subtitle">Senior Citizen Statistics</p>
+            </div>
+            <div class="mobile-logo">
+                @if($logo)
+                <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+                @endif
+            </div>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <div class="main">
@@ -286,13 +318,13 @@
 
         <div class="main-scroll">
         <!-- Filter Card -->
-        <div class="filter-card animate-fade-in">
+        <div class="filter-section">
             <h3><i data-lucide="filter" style="width:16px;height:16px;color:var(--primary)"></i> Statistics Filters</h3>
             <form id="filterForm" method="GET" action="{{ route('admin.senior.analytics') }}" autocomplete="off">
                 <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;align-items:end" id="analyticsFilterGrid">
-                    <div class="filter-field">
-                        <label>Year</label>
-                        <select name="year">
+                    <div class="filter-group">
+                        <label class="filter-label">Year</label>
+                        <select class="filter-select" name="year">
                             <option value="2026" {{ $year == 2026 ? 'selected' : '' }}>2026</option>
                             <option value="2025" {{ $year == 2025 ? 'selected' : '' }}>2025</option>
                             <option value="2024" {{ $year == 2024 ? 'selected' : '' }}>2024</option>
@@ -300,35 +332,35 @@
                             <option value="2022" {{ $year == 2022 ? 'selected' : '' }}>2022</option>
                         </select>
                     </div>
-                    <div class="filter-field">
-                        <label>Month</label>
-                        <select name="month">
+                    <div class="filter-group">
+                        <label class="filter-label">Month</label>
+                        <select class="filter-select" name="month">
                             <option value="">All</option>
                             @for($i = 1; $i <= 12; $i++)
                                 <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>{{ date('M', mktime(0, 0, 0, $i, 1)) }}</option>
                             @endfor
                         </select>
                     </div>
-                    <div class="filter-field">
-                        <label>Barangay</label>
-                        <select name="barangay" id="barangaySelect">
+                    <div class="filter-group">
+                        <label class="filter-label">Barangay</label>
+                        <select class="filter-select" name="barangay" id="barangaySelect">
                             <option value="">All</option>
                             @foreach($allBarangays as $b)
                                 <option value="{{ $b }}">{{ $b }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="filter-field">
-                        <label>Gender</label>
-                        <select name="gender">
+                    <div class="filter-group">
+                        <label class="filter-label">Gender</label>
+                        <select class="filter-select" name="gender">
                             <option value="">All</option>
                             <option value="Male" {{ $gender == 'Male' ? 'selected' : '' }}>Male</option>
                             <option value="Female" {{ $gender == 'Female' ? 'selected' : '' }}>Female</option>
                         </select>
                     </div>
-                    <div class="filter-field">
-                        <label>Age Group</label>
-                        <select name="age_group">
+                    <div class="filter-group">
+                        <label class="filter-label">Age Group</label>
+                        <select class="filter-select" name="age_group">
                             <option value="">All</option>
                             <option value="60-69" {{ $ageGroup == '60-69' ? 'selected' : '' }}>60-69</option>
                             <option value="70-79" {{ $ageGroup == '70-79' ? 'selected' : '' }}>70-79</option>
@@ -337,12 +369,12 @@
                             <option value="100+" {{ $ageGroup == '100+' ? 'selected' : '' }}>100+</option>
                         </select>
                     </div>
-                    <div style="display:flex;gap:8px">
-                        <button type="submit" class="export-btn primary" style="flex:1;justify-content:center">
-                            <i data-lucide="check" style="width:14px;height:14px"></i> Apply
+                    <div style="display:flex;gap:8px;align-items:end">
+                        <button type="submit" class="btn primary" style="flex:1;justify-content:center;height:44px">
+                            <i data-lucide="check" style="width:16px;height:16px"></i> Apply
                         </button>
-                        <a href="{{ route('admin.senior.analytics') }}" class="export-btn" style="flex:1;justify-content:center;background:var(--surface);color:var(--text-primary);border:1px solid var(--border)">
-                            <i data-lucide="rotate-ccw" style="width:14px;height:14px"></i> Reset
+                        <a href="{{ route('admin.senior.analytics') }}" class="btn ghost" style="flex:1;justify-content:center;height:44px">
+                            <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> Reset
                         </a>
                     </div>
                 </div>
@@ -421,7 +453,6 @@
     </div>  <!-- close main -->
 </div>  <!-- close app -->
 
-<div class="mobile-bottom-nav"><div class="mobile-bottom-nav-row"><a href="/admin/senior" class="mobile-bottom-nav-item"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a><a href="/admin/senior/registration" class="mobile-bottom-nav-item"><i data-lucide="user-plus"></i><span>Register</span></a><a href="/admin/senior/masterlist" class="mobile-bottom-nav-item"><i data-lucide="list"></i><span>Masterlist</span></a><a href="/admin/senior/birthdays" class="mobile-bottom-nav-item"><i data-lucide="cake"></i><span>Birthdays</span></a><button type="button" class="mobile-bottom-nav-item" onclick="toggleMobileMoreNav()"><i data-lucide="chevron-up" id="mobileMoreIcon"></i><span>More</span></button></div><div class="mobile-bottom-nav-row mobile-nav-extra" id="mobileNavExtra" style="display:none;"><a href="/admin/senior/payouts-history" class="mobile-bottom-nav-item"><i data-lucide="history"></i><span>Payouts</span></a><a href="/admin/senior/statistics" class="mobile-bottom-nav-item active"><i data-lucide="bar-chart-3"></i><span>Stats</span></a><a href="/admin/senior/archive" class="mobile-bottom-nav-item"><i data-lucide="archive"></i><span>Archive</span></a><a href="#" onclick="confirmLogout(event)" class="mobile-bottom-nav-item"><i data-lucide="log-out"></i><span>Logout</span></a></div></div>
 <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">@csrf</form>
 
 <script>

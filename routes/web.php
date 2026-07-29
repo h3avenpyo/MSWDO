@@ -39,6 +39,11 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::get('/api/cases/{id}', [SocialCaseController::class, 'getCase'])->name('api.show');
         Route::put('/api/cases/{id}', [SocialCaseController::class, 'updateCase'])->name('api.update');
         Route::delete('/api/cases/{id}', [SocialCaseController::class, 'deleteCase'])->name('api.delete');
+
+        // Activity logging routes
+        Route::post('/api/activities', [SocialCaseController::class, 'logActivity'])->name('api.activities.log');
+        Route::get('/api/activities', [SocialCaseController::class, 'getActivities'])->name('api.activities.get');
+        Route::post('/api/activities/clear', [SocialCaseController::class, 'clearActivities'])->name('api.activities.clear');
     });
 });
 

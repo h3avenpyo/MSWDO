@@ -102,7 +102,7 @@
             align-items:center;
             gap:.65rem;
         }
-        .sidebar-brand i{font-size:1.3rem;color:var(--accent-yellow);}
+        .sidebar-brand i,.sidebar-brand [data-lucide]{width:24px;height:24px;color:var(--accent-yellow);}
         .sidebar-menu{
             list-style:none;
             margin:0;
@@ -1191,6 +1191,23 @@
                 transform:translateY(0);
             }
         }
+        @keyframes fadeIn{
+            from{opacity:0;transform:translateY(10px);}
+            to{opacity:1;transform:translateY(0);}
+        }
+
+        /* ---------- Welcome Greeting ---------- */
+        .welcome-greeting {
+            padding: 4px 0 16px 0;
+            animation: fadeIn .6s ease forwards;
+        }
+        .welcome-text {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            line-height: 1.2;
+        }
         
         /* ---------- Responsive Design ---------- */
         @media (max-width:1200px){
@@ -1872,6 +1889,69 @@
         /* ── Sidebar Overlay ── */
         .sidebar-overlay.active { display: block !important; }
 
+        /* ── Mobile Header (hidden on desktop) ── */
+        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
+        .mobile-header-brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+            min-width: 0;
+        }
+        .mobile-logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #FBC02D;
+            padding: 4px;
+            flex-shrink: 0;
+        }
+        .mobile-logo-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .mobile-brand-text {
+            flex: 1;
+            min-width: 0;
+        }
+        .mobile-brand-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .mobile-brand-subtitle {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 2px 0 0 0;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .mobile-menu-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            padding: 8px;
+            flex-shrink: 0;
+            margin-right: 24px;
+        }
+        .mobile-menu-icon {
+            width: 32px;
+            height: 32px;
+        }
+
         /* ── Responsive: Tablet (< 1024px) ── */
         @media (max-width: 1023px) {
             .hamburger-btn { display: flex; }
@@ -1887,7 +1967,7 @@
 
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
-            .main { padding: 12px !important; padding-top: 64px !important; }
+            .main { padding: 12px !important; padding-top: 90px !important; }
             .stat-cards { grid-template-columns: 1fr !important; }
             .stat-card { flex-direction: column; text-align: center; gap: 12px; padding: 12px; }
             .stat-card-value { font-size: 24px !important; }
@@ -1896,17 +1976,47 @@
             .topnav-datetime { display: none; }
             .analytics-card { min-height:0 !important; }
             .activity-card { min-height:240px !important; }
-            .activity-feed { max-height:50vh !important; }
+            .activity-feed { max-height:50vh !important; overflow-y: auto !important; }
+
+            /* Welcome greeting - smaller on mobile */
+            .welcome-greeting { padding: 12px 0 16px 0; }
+            .welcome-text { font-size: 18px; font-weight: 600; }
+
+            /* Hide desktop header & standalone hamburger button, show integrated mobile header */
+            header { display: none !important; }
+            .hamburger-btn { display: none !important; }
+            .mobile-header { display: flex !important; padding: 0 12px !important; height: 72px !important; }
+            .mobile-logo { width: 48px !important; height: 48px !important; }
+            .mobile-brand-title { font-size: 16px !important; }
+            .mobile-brand-subtitle { font-size: 11px !important; }
+
+            /* Stat cards - two columns on mobile */
+            .stat-cards { grid-template-columns: 1fr 1fr !important; gap: 12px !important; margin-bottom: 16px !important; }
+            .stat-card { height: 110px !important; padding: 16px !important; border-radius: 16px !important; flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; position: relative !important; }
+            .stat-card::before { display: none !important; }
+            .stat-card-content { width: 100%; padding-right: 48px; }
+            .stat-card-label { font-size: 11px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.3px !important; color: var(--text-secondary) !important; margin-bottom: 4px !important; }
+            .stat-card-value { font-size: 28px !important; font-weight: 700 !important; }
+            .stat-card-icon { width: 40px !important; height: 40px !important; position: absolute !important; top: 16px !important; right: 16px !important; }
 
             /* ── Cases page: card layout ── */
             .sc-table-card { padding: 1rem; margin-bottom: 1rem; }
             .sc-table-card-title { font-size: 1rem; margin-bottom: 1rem; }
             .sc-filter-row { flex-direction: column; gap: 10px; }
-            .sc-filter-left { flex-direction: column; gap: 10px; width: 100%; }
+            .sc-filter-left { display: flex; flex-direction: column; gap: 10px; width: 100%; }
             .sc-search-group { min-width: 0; width: 100%; }
-            .sc-select-group { min-width: 0; width: 100%; }
+            .sc-filter-row-inline { display: flex; gap: 10px; width: 100%; flex-wrap: wrap; }
+            .sc-filter-row-inline .sc-select-group { width: calc(50% - 5px); min-width: 0; position: relative; }
+            .sc-filter-left > .sc-select-group { width: 100%; position: relative; }
             .sc-filter-right { width: 100%; }
             .sc-filter-right .sc-action-btn { width: 100%; justify-content: center; }
+
+            /* ── Archive page: filter layout ── */
+            .archive-filter-bar { flex-direction: column !important; }
+            .archive-filter-bar > div:first-child { width: 100% !important; max-width: none !important; }
+            .archive-filter-row-inline { display: flex !important; gap: 10px !important; width: 100% !important; flex-wrap: wrap !important; }
+            .archive-filter-row-inline > div { width: calc(50% - 5px) !important; min-width: 0 !important; max-width: none !important; }
+            .archive-filter-bar > div:nth-child(2) { width: 100% !important; }
             .sc-table-responsive { border: none; overflow: visible; }
             .sc-data-table { table-layout: auto; width: 100%; }
             .sc-data-table thead { display: none; }
@@ -1951,6 +2061,18 @@
             .sc-data-table tbody td .badge { font-size: 0.7rem; }
             .sc-pagination { gap: 8px; margin-top: 1rem; }
             .sc-page-btn { height: 34px; min-width: 34px; font-size: 0.8rem; padding: 0 0.5rem; }
+        }
+
+        /* ── Responsive: Desktop (>= 768px) - Reset mobile styles ── */
+        @media (min-width: 768px) {
+            .sc-filter-row-inline { display: flex; gap: 10px; }
+            .sc-filter-row-inline .sc-select-group { width: auto; flex: 1; }
+            .sc-filter-left { flex-direction: row; }
+            .archive-filter-bar { flex-direction: row !important; }
+            .archive-filter-bar > div:first-child { width: auto !important; max-width: 280px !important; }
+            .archive-filter-row-inline { display: flex !important; gap: 10px !important; width: auto !important; }
+            .archive-filter-row-inline > div { width: auto !important; max-width: 180px !important; }
+            .archive-filter-bar > div:nth-child(2) { width: auto !important; }
         }
 
         /* ── Responsive: Small Mobile (< 480px) ── */

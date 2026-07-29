@@ -37,6 +37,7 @@
         .form-input::placeholder{color:var(--text-muted);}
         select.form-input{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right .75rem center;background-size:1rem;padding-right:2.5rem;}
         textarea.form-input{resize:vertical;min-height:80px;}
+        input[type="date"].form-input{min-height:44px;appearance:none;-webkit-appearance:none;position:relative;background-image:none;padding-right:14px;}
         .btn{border:1px solid var(--border);background:var(--surface);color:var(--text-primary);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:8px;box-shadow:var(--shadow);transition:all .2s ease;height:42px;cursor:pointer;text-decoration:none;}
         .btn:hover{border-color:var(--primary);transform:translateY(-1px);}
         .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary);}
@@ -72,59 +73,75 @@
             position: fixed;
             top: 0; left: 0; right: 0;
             z-index: 1000;
-            background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
+            background: #1A237E;
             color: #fff;
-            padding: 10px 16px;
-            box-shadow: 0 2px 12px rgba(26,35,126,0.2);
+            padding: 0 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             align-items: center;
             justify-content: space-between;
-            height: 56px;
+            height: 80px;
         }
-        .mobile-header-title { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.2px; }
-        .mobile-header-sub { font-size: 11px; color: rgba(255,255,255,0.7); font-weight: 500; }
-        .mobile-avatar {
-            width: 34px; height: 34px; border-radius: 50%;
-            background: var(--accent-yellow); color: var(--primary);
-            font-weight: 700; font-size: 12px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-        }
-
-        /* ── Mobile Bottom Navigation ── */
-        .mobile-bottom-nav {
-            display: none !important;
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            z-index: 1000;
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-            padding: 8px 4px;
-            box-shadow: 0 -2px 10px rgba(15,23,42,0.05);
-            flex-direction: column;
-            gap: 6px;
-        }
-        .mobile-bottom-nav-row {
+        .mobile-header-brand {
             display: flex;
             align-items: center;
-            justify-content: space-around;
-            width: 100%;
-        }
-        .mobile-bottom-nav-item {
+            gap: 16px;
             flex: 1;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            gap: 4px;
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-size: 10px; font-weight: 500;
-            padding: 6px 0;
-            transition: all 0.2s;
-            background: none; border: none; cursor: pointer;
+            min-width: 0;
         }
-        .mobile-bottom-nav-item.active { color: #1A237E; font-weight: 700; }
-        .mobile-bottom-nav-item [data-lucide] { width: 20px; height: 20px; }
-        .mobile-bottom-nav-item:hover { color: #1A237E; }
-        .mobile-nav-extra { padding-top: 4px; margin-top: 2px; }
+        .mobile-logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #FBC02D;
+            padding: 4px;
+            flex-shrink: 0;
+        }
+        .mobile-logo-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .mobile-brand-text {
+            flex: 1;
+            min-width: 0;
+        }
+        .mobile-brand-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .mobile-brand-subtitle {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 2px 0 0 0;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .mobile-menu-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            padding: 8px;
+            flex-shrink: 0;
+            margin-right: 24px;
+        }
+        .mobile-menu-icon {
+            width: 32px;
+            height: 32px;
+        }
+
 
         /* ── Responsive: Tablet (< 1024px) ── */
         @media (max-width: 1023px) {
@@ -141,19 +158,23 @@
                 margin-left: 0 !important; max-width: 100% !important;
                 height: auto !important; overflow: visible !important;
                 padding: 12px 14px !important;
-                padding-top: 66px !important;
-                padding-bottom: 110px !important;
+                padding-top: 90px !important;
             }
             .form-card { overflow: visible !important; }
             header { display: none !important; }
             .hamburger-btn { display: none !important; }
             .mobile-header { display: flex !important; }
-            .mobile-bottom-nav { display: flex !important; flex-direction: column !important; }
+            input[type="date"].form-input{background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3e%3cline x1='16' y1='2' x2='16' y2='6'/%3e%3cline x1='8' y1='2' x2='8' y2='6'/%3e%3cline x1='3' y1='10' x2='21' y2='10'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-right:36px;}
         }
 
         /* ── Responsive: Small Mobile (< 480px) ── */
         @media (max-width: 479px) {
-            .main { padding: 10px !important; padding-top: 64px !important; padding-bottom: 76px !important; }
+            .main { padding: 10px !important; padding-top: 88px !important; }
+            .mobile-header { height: 72px !important; }
+            .mobile-logo { width: 48px !important; height: 48px !important; }
+            .mobile-brand-title { font-size: 16px !important; }
+            .mobile-brand-subtitle { font-size: 11px !important; }
+            .mobile-menu-icon { width: 28px !important; height: 28px !important; }
         }
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
     </style>
@@ -186,13 +207,33 @@
     </button>
 
     <!-- Mobile Header -->
-    @php $userName2 = session('admin_user_name') ?? 'Admin User'; $w2 = explode(' ', $userName2); $ini2 = count($w2)>=2 ? strtoupper(substr($w2[0],0,1).substr($w2[1],0,1)) : strtoupper(substr($userName2,0,2)); @endphp
+    @php
+    $logo = null;
+    if(file_exists(public_path('images/mswdo-logo.png'))){
+        $logo='mswdo-logo.png';
+    }else{
+        $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+        if(!empty($files))
+        $logo=basename($files[0]);
+    }
+    @endphp
     <div class="mobile-header">
-        <div>
-            <div class="mobile-header-sub">Senior Citizen</div>
-            <div class="mobile-header-title">Registration</div>
+        <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+        <div class="mobile-header-brand">
+            <div class="mobile-brand-text">
+                <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+                <p class="mobile-brand-subtitle">Senior Citizen Registration</p>
+            </div>
+            <div class="mobile-logo">
+                @if($logo)
+                <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+                @endif
+            </div>
         </div>
-        <div class="mobile-avatar">{{ $ini2 }}</div>
     </div>
 
     <!-- Main Content -->
@@ -356,49 +397,6 @@
     </div>
 </div>
 
-<!-- Mobile Bottom Navigation -->
-<div class="mobile-bottom-nav">
-    <div class="mobile-bottom-nav-row">
-        <a href="/admin/senior" class="mobile-bottom-nav-item">
-            <i data-lucide="layout-dashboard"></i>
-            <span>Dashboard</span>
-        </a>
-        <a href="/admin/senior/registration" class="mobile-bottom-nav-item active">
-            <i data-lucide="user-plus"></i>
-            <span>Register</span>
-        </a>
-        <a href="/admin/senior/masterlist" class="mobile-bottom-nav-item">
-            <i data-lucide="list"></i>
-            <span>Masterlist</span>
-        </a>
-        <a href="/admin/senior/birthdays" class="mobile-bottom-nav-item">
-            <i data-lucide="cake"></i>
-            <span>Birthdays</span>
-        </a>
-        <button type="button" class="mobile-bottom-nav-item" onclick="toggleMobileMoreNav()">
-            <i data-lucide="chevron-up" id="mobileMoreIcon"></i>
-            <span>More</span>
-        </button>
-    </div>
-    <div class="mobile-bottom-nav-row mobile-nav-extra" id="mobileNavExtra" style="display:none;">
-        <a href="/admin/senior/payouts-history" class="mobile-bottom-nav-item">
-            <i data-lucide="history"></i>
-            <span>Payouts</span>
-        </a>
-        <a href="/admin/senior/statistics" class="mobile-bottom-nav-item">
-            <i data-lucide="bar-chart-3"></i>
-            <span>Stats</span>
-        </a>
-        <a href="/admin/senior/archive" class="mobile-bottom-nav-item">
-            <i data-lucide="archive"></i>
-            <span>Archive</span>
-        </a>
-        <a href="#" onclick="confirmLogout(event)" class="mobile-bottom-nav-item">
-            <i data-lucide="log-out"></i>
-            <span>Logout</span>
-        </a>
-    </div>
-</div>
 
 <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display:none">@csrf</form>
 

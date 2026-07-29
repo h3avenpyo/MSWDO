@@ -2,6 +2,36 @@
 @section('title', 'All Social Case Studies')
 
 @section('content')
+<!-- Mobile Header (visible only on mobile) -->
+@php
+$logo = null;
+if(file_exists(public_path('images/mswdo-logo.png'))){
+    $logo='mswdo-logo.png';
+}else{
+    $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+    if(!empty($files))
+    $logo=basename($files[0]);
+}
+@endphp
+<div class="mobile-header">
+    <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+        </svg>
+    </button>
+    <div class="mobile-header-brand">
+        <div class="mobile-brand-text">
+            <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+            <p class="mobile-brand-subtitle">All Social Case Studies</p>
+        </div>
+        <div class="mobile-logo">
+            @if($logo)
+            <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+            @endif
+        </div>
+    </div>
+</div>
+
 <style>
     html,body{overflow-x:hidden!important;overflow-y:auto!important}
     .app{min-height:auto!important}
@@ -24,7 +54,7 @@
 <div class="main">
     <!-- Modern Page Header -->
     @php
-        $userName = session('admin_user_name') ?? 'Admin User';
+        $userName = 'Social Case Study Officer';
         $words = explode(' ', $userName);
         $initials = '';
         if (count($words) >= 2) {
@@ -63,40 +93,40 @@
                             </button>
                         </div>
                     </div>
-                    <div class="sc-select-group">
-                        <label class="sc-filter-label">Status</label>
-                        <select id="statusFilter" class="sc-filter-select" onchange="applyFilters()">
-                            <option value="All">All Status</option>
-                            <option value="Draft">Draft</option>
-                            <option value="Review">Review</option>
-                            <option value="Approved">Approved</option>
-                            <option value="Printed">Printed</option>
-                            <option value="Released">Released</option>
-                        </select>
+                    <div class="sc-filter-row-inline">
+                        <div class="sc-select-group" id="statusDropdown">
+                            <label class="sc-filter-label">Status</label>
+                            <div onclick="toggleStatusMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="statusBtn">
+                                <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
+                                <span id="statusLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Status</span>
+                                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
+                            </div>
+                            <div id="statusMenu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;max-height:260px;overflow-y:auto;padding:4px">
+                                <!-- Options populated by JavaScript -->
+                            </div>
+                        </div>
+                        <div class="sc-select-group" id="assistanceDropdown">
+                            <label class="sc-filter-label">Assistance Type</label>
+                            <div onclick="toggleAssistanceMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="assistanceBtn">
+                                <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
+                                <span id="assistanceLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Types</span>
+                                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
+                            </div>
+                            <div id="assistanceMenu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;max-height:260px;overflow-y:auto;padding:4px">
+                                <!-- Options populated by JavaScript -->
+                            </div>
+                        </div>
                     </div>
-                    <div class="sc-select-group">
-                        <label class="sc-filter-label">Assistance Type</label>
-                        <select id="assistanceFilter" class="sc-filter-select" onchange="applyFilters()">
-                            <option value="All">All Types</option>
-                            <option value="Medical Assistance">Medical</option>
-                            <option value="Burial Assistance">Burial</option>
-                            <option value="Educational Assistance">Educational</option>
-                            <option value="Financial Assistance">Financial</option>
-                            <option value="Food / Relief Assistance">Food/Relief</option>
-                            <option value="Livelihood Assistance">Livelihood</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div class="sc-select-group">
+                    <div class="sc-select-group" id="barangayDropdown">
                         <label class="sc-filter-label">Barangay</label>
-                        <select id="barangayFilter" class="sc-filter-select" onchange="applyFilters()">
-                            <option value="All">All Barangays</option>
-                            <option value="Biluso">Biluso</option>
-                            <option value="Poblacion IV">Poblacion IV</option>
-                            <option value="Tubuan">Tubuan</option>
-                            <option value="Batas">Batas</option>
-                            <option value="Bigaa">Bigaa</option>
-                        </select>
+                        <div onclick="toggleBarangayMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="barangayBtn">
+                            <i data-lucide="map-pin" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
+                            <span id="barangayLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Barangays</span>
+                            <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
+                        </div>
+                        <div id="barangayMenu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;max-height:260px;overflow-y:auto;padding:4px">
+                            <!-- Options populated by JavaScript -->
+                        </div>
                     </div>
                 </div>
 
@@ -160,8 +190,193 @@
 @push('scripts')
 <script src="{{ asset('js/social-case.js') }}"></script>
 <script>
+    // Filter state
+    var filterState = {
+        status: 'All',
+        assistance: 'All',
+        barangay: 'All'
+    };
+
+    // Populate dropdown menus
+    function populateDropdowns() {
+        // Populate Status dropdown
+        const statusMenu = document.getElementById('statusMenu');
+        if(statusMenu && typeof STATUSES !== 'undefined') {
+            statusMenu.innerHTML = '<div class="status-opt" data-value="All" onclick="selectStatus(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Status</div>';
+            STATUSES.forEach(status => {
+                statusMenu.innerHTML += `<div class="status-opt" data-value="${status}" onclick="selectStatus(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">${status}</div>`;
+            });
+        }
+
+        // Populate Assistance Type dropdown
+        const assistanceMenu = document.getElementById('assistanceMenu');
+        if(assistanceMenu && typeof PURPOSES !== 'undefined') {
+            assistanceMenu.innerHTML = '<div class="assistance-opt" data-value="All" onclick="selectAssistance(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Types</div>';
+            PURPOSES.forEach(purpose => {
+                assistanceMenu.innerHTML += `<div class="assistance-opt" data-value="${purpose}" onclick="selectAssistance(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">${purpose}</div>`;
+            });
+        }
+
+        // Populate Barangay dropdown
+        const barangayMenu = document.getElementById('barangayMenu');
+        if(barangayMenu && typeof BARANGAYS !== 'undefined') {
+            barangayMenu.innerHTML = '<div class="barangay-opt" data-value="All" onclick="selectBarangay(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Barangays</div>';
+            BARANGAYS.forEach(barangay => {
+                barangayMenu.innerHTML += `<div class="barangay-opt" data-value="${barangay}" onclick="selectBarangay(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">${barangay}</div>`;
+            });
+        }
+    }
+
+    function toggleStatusMenu(){
+        var menu=document.getElementById('statusMenu');
+        var arrow=document.querySelector('#statusBtn [data-lucide="chevron-down"]');
+        if(menu.style.display==='none'||!menu.style.display){
+            menu.style.display='block';
+            if(arrow) arrow.style.transform='rotate(180deg)';
+            highlightStatusOpt();
+        }else{
+            menu.style.display='none';
+            if(arrow) arrow.style.transform='';
+        }
+    }
+
+    function selectStatus(el){
+        var val=el.getAttribute('data-value');
+        filterState.status=val;
+        document.getElementById('statusLabel').textContent=el.textContent;
+        document.getElementById('statusMenu').style.display='none';
+        var arrow=document.querySelector('#statusBtn [data-lucide="chevron-down"]');
+        if(arrow) arrow.style.transform='';
+        highlightStatusOpt();
+        
+        var btn=document.getElementById('statusBtn');
+        if(val && val !== 'All'){
+            btn.classList.add('active');
+            btn.setAttribute('data-filter', val);
+        } else {
+            btn.classList.remove('active');
+            btn.removeAttribute('data-filter');
+        }
+        
+        applyFilters();
+    }
+
+    function highlightStatusOpt(){
+        var opts=document.querySelectorAll('.status-opt');
+        opts.forEach(function(o){
+            if(o.getAttribute('data-value')===filterState.status) o.classList.add('selected');
+            else o.classList.remove('selected');
+        });
+    }
+
+    function toggleAssistanceMenu(){
+        var menu=document.getElementById('assistanceMenu');
+        var arrow=document.querySelector('#assistanceBtn [data-lucide="chevron-down"]');
+        if(menu.style.display==='none'||!menu.style.display){
+            menu.style.display='block';
+            if(arrow) arrow.style.transform='rotate(180deg)';
+            highlightAssistanceOpt();
+        }else{
+            menu.style.display='none';
+            if(arrow) arrow.style.transform='';
+        }
+    }
+
+    function selectAssistance(el){
+        var val=el.getAttribute('data-value');
+        filterState.assistance=val;
+        document.getElementById('assistanceLabel').textContent=el.textContent;
+        document.getElementById('assistanceMenu').style.display='none';
+        var arrow=document.querySelector('#assistanceBtn [data-lucide="chevron-down"]');
+        if(arrow) arrow.style.transform='';
+        highlightAssistanceOpt();
+        
+        var btn=document.getElementById('assistanceBtn');
+        if(val && val !== 'All'){
+            btn.classList.add('active');
+            btn.setAttribute('data-filter', val);
+        } else {
+            btn.classList.remove('active');
+            btn.removeAttribute('data-filter');
+        }
+        
+        applyFilters();
+    }
+
+    function highlightAssistanceOpt(){
+        var opts=document.querySelectorAll('.assistance-opt');
+        opts.forEach(function(o){
+            if(o.getAttribute('data-value')===filterState.assistance) o.classList.add('selected');
+            else o.classList.remove('selected');
+        });
+    }
+
+    function toggleBarangayMenu(){
+        var menu=document.getElementById('barangayMenu');
+        var arrow=document.querySelector('#barangayBtn [data-lucide="chevron-down"]');
+        if(menu.style.display==='none'||!menu.style.display){
+            menu.style.display='block';
+            if(arrow) arrow.style.transform='rotate(180deg)';
+            highlightBarangayOpt();
+        }else{
+            menu.style.display='none';
+            if(arrow) arrow.style.transform='';
+        }
+    }
+
+    function selectBarangay(el){
+        var val=el.getAttribute('data-value');
+        filterState.barangay=val;
+        document.getElementById('barangayLabel').textContent=el.textContent;
+        document.getElementById('barangayMenu').style.display='none';
+        var arrow=document.querySelector('#barangayBtn [data-lucide="chevron-down"]');
+        if(arrow) arrow.style.transform='';
+        highlightBarangayOpt();
+        
+        var btn=document.getElementById('barangayBtn');
+        if(val && val !== 'All') btn.classList.add('active');
+        else btn.classList.remove('active');
+        
+        applyFilters();
+    }
+
+    function highlightBarangayOpt(){
+        var opts=document.querySelectorAll('.barangay-opt');
+        opts.forEach(function(o){
+            if(o.getAttribute('data-value')===filterState.barangay) o.classList.add('selected');
+            else o.classList.remove('selected');
+        });
+    }
+
+    // Close menus when clicking outside
+    document.addEventListener('click',function(e){
+        var statusDD=document.getElementById('statusDropdown');
+        var assistanceDD=document.getElementById('assistanceDropdown');
+        var barangayDD=document.getElementById('barangayDropdown');
+        
+        if(statusDD && !statusDD.contains(e.target)){
+            var menu=document.getElementById('statusMenu');
+            var arrow=document.querySelector('#statusBtn [data-lucide="chevron-down"]');
+            if(menu) menu.style.display='none';
+            if(arrow) arrow.style.transform='';
+        }
+        if(assistanceDD && !assistanceDD.contains(e.target)){
+            var menu=document.getElementById('assistanceMenu');
+            var arrow=document.querySelector('#assistanceBtn [data-lucide="chevron-down"]');
+            if(menu) menu.style.display='none';
+            if(arrow) arrow.style.transform='';
+        }
+        if(barangayDD && !barangayDD.contains(e.target)){
+            var menu=document.getElementById('barangayMenu');
+            var arrow=document.querySelector('#barangayBtn [data-lucide="chevron-down"]');
+            if(menu) menu.style.display='none';
+            if(arrow) arrow.style.transform='';
+        }
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
+        populateDropdowns();
         loadCaseList();
     });
 </script>

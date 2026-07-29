@@ -2,6 +2,36 @@
 @section('title', 'Archive - Social Case Study')
 
 @section('content')
+<!-- Mobile Header (visible only on mobile) -->
+@php
+$logo = null;
+if(file_exists(public_path('images/mswdo-logo.png'))){
+    $logo='mswdo-logo.png';
+}else{
+    $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+    if(!empty($files))
+    $logo=basename($files[0]);
+}
+@endphp
+<div class="mobile-header">
+    <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+        </svg>
+    </button>
+    <div class="mobile-header-brand">
+        <div class="mobile-brand-text">
+            <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+            <p class="mobile-brand-subtitle">Archive</p>
+        </div>
+        <div class="mobile-logo">
+            @if($logo)
+            <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+            @endif
+        </div>
+    </div>
+</div>
+
 <style>
     html,body{overflow-x:hidden!important;overflow-y:auto!important}
     .app{min-height:auto!important}
@@ -120,7 +150,7 @@
 <div class="main">
     <!-- Modern Page Header -->
     @php
-        $userName = session('admin_user_name') ?? 'Admin User';
+        $userName = 'Social Case Study Officer';
         $words = explode(' ', $userName);
         $initials = '';
         if (count($words) >= 2) {
@@ -159,33 +189,35 @@
                 </button>
             </div>
         </div>
-        <div style="position:relative;min-width:180px" id="archiveBrgyDropdown">
-            <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Filter by Barangay</label>
-            <div onclick="toggleArchiveBrgyMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="archiveBrgyBtn">
-                <i data-lucide="map-pin" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
-                <span id="archiveBrgyLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Barangays</span>
-                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
+        <div class="archive-filter-row-inline" style="display:flex;gap:10px">
+            <div style="position:relative;min-width:180px" id="archiveBrgyDropdown">
+                <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Filter by Barangay</label>
+                <div onclick="toggleArchiveBrgyMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="archiveBrgyBtn">
+                    <i data-lucide="map-pin" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
+                    <span id="archiveBrgyLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Barangays</span>
+                    <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
+                </div>
+                <div id="archiveBrgyMenu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;max-height:260px;overflow-y:auto;padding:4px">
+                    <div class="archive-brgy-opt" data-value="" onclick="selectArchiveBrgy(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Barangays</div>
+                </div>
             </div>
-            <div id="archiveBrgyMenu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;max-height:260px;overflow-y:auto;padding:4px">
-                <div class="archive-brgy-opt" data-value="" onclick="selectArchiveBrgy(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Barangays</div>
-            </div>
-        </div>
-        <div style="position:relative;min-width:180px" id="archiveTypeDropdown">
-            <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Filter by Type</label>
-            <div onclick="toggleArchiveTypeMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="archiveTypeBtn">
-                <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
-                <span id="archiveTypeLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Types</span>
-                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
-            </div>
-            <div id="archiveTypeMenu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;max-height:260px;overflow-y:auto;padding:4px">
-                <div class="archive-type-opt" data-value="" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Types</div>
-                <div class="archive-type-opt" data-value="Medical Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Medical Assistance</div>
-                <div class="archive-type-opt" data-value="Burial Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Burial Assistance</div>
-                <div class="archive-type-opt" data-value="Educational Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Educational Assistance</div>
-                <div class="archive-type-opt" data-value="Financial Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Financial Assistance</div>
-                <div class="archive-type-opt" data-value="Food / Relief Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Food / Relief Assistance</div>
-                <div class="archive-type-opt" data-value="Livelihood Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Livelihood Assistance</div>
-                <div class="archive-type-opt" data-value="Other" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Other</div>
+            <div style="position:relative;min-width:180px" id="archiveTypeDropdown">
+                <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Filter by Type</label>
+                <div onclick="toggleArchiveTypeMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="archiveTypeBtn">
+                    <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
+                    <span id="archiveTypeLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Types</span>
+                    <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
+                </div>
+                <div id="archiveTypeMenu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;max-height:260px;overflow-y:auto;padding:4px">
+                    <div class="archive-type-opt" data-value="" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Types</div>
+                    <div class="archive-type-opt" data-value="Medical Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Medical Assistance</div>
+                    <div class="archive-type-opt" data-value="Burial Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Burial Assistance</div>
+                    <div class="archive-type-opt" data-value="Educational Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Educational Assistance</div>
+                    <div class="archive-type-opt" data-value="Financial Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Financial Assistance</div>
+                    <div class="archive-type-opt" data-value="Food / Relief Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Food / Relief Assistance</div>
+                    <div class="archive-type-opt" data-value="Livelihood Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Livelihood Assistance</div>
+                    <div class="archive-type-opt" data-value="Other" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Other</div>
+                </div>
             </div>
         </div>
     </div>

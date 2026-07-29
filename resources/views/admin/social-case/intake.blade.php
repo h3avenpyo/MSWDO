@@ -2,6 +2,36 @@
 @section('title', 'Case Encoding - Social Case Study')
 
 @section('content')
+<!-- Mobile Header (visible only on mobile) -->
+@php
+$logo = null;
+if(file_exists(public_path('images/mswdo-logo.png'))){
+    $logo='mswdo-logo.png';
+}else{
+    $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+    if(!empty($files))
+    $logo=basename($files[0]);
+}
+@endphp
+<div class="mobile-header">
+    <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+        </svg>
+    </button>
+    <div class="mobile-header-brand">
+        <div class="mobile-brand-text">
+            <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+            <p class="mobile-brand-subtitle">Case Encoding</p>
+        </div>
+        <div class="mobile-logo">
+            @if($logo)
+            <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+            @endif
+        </div>
+    </div>
+</div>
+
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <i data-lucide="file-text" style="width:24px;height:24px"></i>
@@ -19,7 +49,7 @@
 <div class="main">
     <!-- Modern Page Header -->
     @php
-        $userName = session('admin_user_name') ?? 'Admin User';
+        $userName = 'Social Case Study Officer';
         $words = explode(' ', $userName);
         $initials = '';
         if (count($words) >= 2) {

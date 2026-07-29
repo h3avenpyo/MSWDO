@@ -16,156 +16,98 @@
         rel="stylesheet" />
 
     @vite(['resources/css/app.css','resources/js/app.js'])
+    <script src="https://unpkg.com/lucide@latest"></script>
 
 </head>
 
 <body class="bg-[#F8FAFC] text-[#1F2937] antialiased">
 
 <!-- ========================= -->
-<!-- NAVBAR -->
+<!-- SIDEBAR (desktop) -->
 <!-- ========================= -->
-
-<header class="fixed top-0 z-50 w-full bg-primary bg-opacity-95 backdrop-blur shadow-lg">
-
-<div class="max-w-7xl mx-auto px-6">
-
-<div class="flex items-center justify-between h-20">
-
-<!-- Logo -->
-
-<a href="#" class="flex items-center gap-4">
-
-<div class="h-14 w-14 rounded-full bg-warm-gold p-1">
-
-@php
-
-$logo = null;
-
-if(file_exists(public_path('images/mswdo-logo.png'))){
-
-$logo='mswdo-logo.png';
-
-}else{
-
-$files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
-
-if(!empty($files))
-
-$logo=basename($files[0]);
-
-}
-
-@endphp
-
-@if($logo)
-
-<img src="{{ asset('images/'.$logo) }}" class="rounded-full h-full w-full object-cover">
-
-@endif
-
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <i data-lucide="building-2" style="width:24px;height:24px"></i>
+        <span>MSWDO Silang</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="#home"><i data-lucide="home" style="width:20px;height:20px"></i> Home</a></li>
+        <li><a href="#services"><i data-lucide="briefcase" style="width:20px;height:20px"></i> Services</a></li>
+        <li><a href="#about"><i data-lucide="info" style="width:20px;height:20px"></i> About</a></li>
+        <li><a href="#programs"><i data-lucide="megaphone" style="width:20px;height:20px"></i> Programs</a></li>
+        <li><a href="#contact"><i data-lucide="mail" style="width:20px;height:20px"></i> Contact</a></li>
+    </ul>
+    <div class="sidebar-foot">
+        <a href="/admin" class="flex items-center gap-2 text-xs" style="color:rgba(255,255,255,.5);text-decoration:none">
+            <i data-lucide="log-in" style="width:14px;height:14px"></i> Admin Login
+        </a>
+    </div>
 </div>
 
-<div>
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
-<h1 class="text-white font-bold text-lg">
-
-MSWDO SILANG
-
-</h1>
-
-<p class="text-offwhite text-xs">
-
-Municipal Social Welfare & Development Office
-
-</p>
-
-</div>
-
-</a>
-
-<!-- Desktop Menu -->
-
-<nav class="hidden lg:flex items-center gap-8 text-offwhite">
-
-<a href="#home" class="hover:text-warm-gold transition">Home</a>
-
-<a href="#services" class="hover:text-warm-gold transition">Services</a>
-
-<a href="#about" class="hover:text-warm-gold transition">About</a>
-
-<a href="#programs" class="hover:text-warm-gold transition">Programs</a>
-
-<a href="#contact" class="hover:text-warm-gold transition">Contact</a>
-
-<!-- <a href="#"
-
-class="bg-warm-gold text-[#1F2937] px-5 py-2 rounded-full font-semibold hover:bg-[#f4c243] transition">
-
-Login
-
-</a> -->
-
-</nav>
-
-<button id="menuButton"
-
-class="lg:hidden text-white">
-
-<svg xmlns="http://www.w3.org/2000/svg"
-
-fill="none"
-
-viewBox="0 0 24 24"
-
-stroke-width="1.5"
-
-stroke="currentColor"
-
-class="w-8 h-8">
-
-<path stroke-linecap="round"
-
-stroke-linejoin="round"
-
-d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
-
-</svg>
-
+<!-- Hamburger Button (mobile) -->
+<button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+    <i data-lucide="menu" style="width:24px;height:24px"></i>
 </button>
 
+<!-- Mobile Header (visible only on mobile) -->
+<div class="mobile-header">
+    <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+        </svg>
+    </button>
+    <div class="mobile-header-brand">
+        <div class="mobile-brand-text">
+            <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+            <p class="mobile-brand-subtitle">Municipal Social Welfare & Development Office</p>
+        </div>
+        <div class="mobile-logo">
+            @php
+            $logo = null;
+            if(file_exists(public_path('images/mswdo-logo.png'))){
+                $logo='mswdo-logo.png';
+            }else{
+                $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+                if(!empty($files))
+                $logo=basename($files[0]);
+            }
+            @endphp
+            @if($logo)
+            <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+            @endif
+        </div>
+    </div>
 </div>
 
-</div>
-
-<!-- Mobile Menu -->
-
-<div id="mobileMenu"
-
-class="hidden bg-primary text-white lg:hidden">
-
-<div class="flex flex-col p-6 gap-4">
-
-<a href="#home">Home</a>
-
-<a href="#services">Services</a>
-
-<a href="#about">About</a>
-
-<a href="#programs">Programs</a>
-
-<a href="#contact">Contact</a>
-
-<a href="#" class="bg-warm-gold text-[#1F2937] rounded-lg py-2 text-center font-semibold">
-
-Login
-
-</a>
-
-</div>
-
-</div>
-
-</header>
+<!-- Desktop Navbar (visible only on laptop/desktop) -->
+<nav class="desktop-navbar">
+    <div class="navbar-brand">
+        @php
+        $logo = null;
+        if(file_exists(public_path('images/mswdo-logo.png'))){
+            $logo='mswdo-logo.png';
+        }else{
+            $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+            if(!empty($files))
+            $logo=basename($files[0]);
+        }
+        @endphp
+        @if($logo)
+        <img src="{{ asset('images/'.$logo) }}" class="navbar-logo">
+        @endif
+        <span>MSWDO Silang</span>
+    </div>
+    <ul class="navbar-menu">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#programs">Programs</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+</nav>
 
 <!-- ========================= -->
 
@@ -175,7 +117,7 @@ Login
 
 <section id="home"
 
-class="relative overflow-hidden bg-gradient-to-r from-[#1A237E] via-[#1A237E] to-[#1A237E] pt-36 pb-24">
+class="relative overflow-hidden bg-gradient-to-r from-[#1A237E] via-[#1A237E] to-[#1A237E] pb-24 pt-24">
 
 <div class="absolute inset-0 opacity-10">
 
@@ -846,6 +788,57 @@ View Services
 <!-- CONTACT SECTION -->
 <!-- ===================================== -->
 <style>
+/* ── Sidebar + Mobile Header ── */
+.sidebar{width:var(--sidebar-width,260px);flex-shrink:0;background:#1A237E;color:#FFF;position:fixed;left:0;top:0;height:100vh;z-index:1000;display:flex;flex-direction:column;transition:transform .3s ease;}
+.sidebar-brand{height:72px;padding:0 1.5rem;border-bottom:1px solid rgba(255,255,255,.1);color:#fff;font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:.65rem;}
+.sidebar-brand i,.sidebar-brand [data-lucide]{width:24px;height:24px;color:#FBC02D;}
+.sidebar-menu{list-style:none;margin:0;padding:1rem 0;flex:1;}
+.sidebar-menu li{margin-bottom:.2rem;}
+.sidebar-menu a{color:rgba(255,255,255,.75);padding:.75rem 1.5rem;display:flex;align-items:center;gap:.75rem;text-decoration:none;font-size:.9rem;border-left:3px solid transparent;transition:all .2s ease;}
+.sidebar-menu a:hover{background:rgba(255,255,255,.1);color:#FBC02D;}
+.sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
+.sidebar-foot{padding:1rem 1.5rem;font-size:11px;color:rgba(255,255,255,.4);border-top:1px solid rgba(255,255,255,.1);}
+.sidebar-overlay.active{display:block!important;}
+
+.hamburger-btn{display:none;position:fixed;top:12px;left:12px;z-index:1002;background:#1A237E;color:#fff;border:none;outline:none;border-radius:12px;width:44px;height:44px;align-items:center;justify-content:center;cursor:pointer;}
+.hamburger-btn:focus{outline:none;box-shadow:0 0 0 3px rgba(26,35,126,0.4);}
+
+.mobile-header{display:none!important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
+.mobile-header-brand{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
+.mobile-logo{width:56px;height:56px;border-radius:50%;background:#FBC02D;padding:4px;flex-shrink:0;}
+.mobile-logo-img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.mobile-brand-text{flex:1;min-width:0;}
+.mobile-brand-title{font-size:18px;font-weight:700;color:#ffffff;margin:0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mobile-brand-subtitle{font-size:12px;color:rgba(255,255,255,.8);margin:2px 0 0 0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mobile-menu-btn{display:flex;align-items:center;justify-content:center;background:transparent;border:none;outline:none;color:#ffffff;cursor:pointer;padding:8px;flex-shrink:0;margin-right:24px;}
+.mobile-menu-btn:focus{outline:none;}
+.mobile-menu-icon{width:32px;height:32px;}
+
+@media(max-width:1023px){
+    .hamburger-btn{display:flex;}
+    .sidebar{transform:translateX(-100%)!important;z-index:1001!important;}
+    .sidebar.show{transform:translateX(0)!important;}
+    body{padding-left:0!important;padding-top:80px!important;}
+    .mobile-header{display:flex!important;z-index:998!important;}
+}
+
+@media(min-width:1024px){
+    body{padding-left:0;padding-top:0;}
+    .hamburger-btn{display:none!important;}
+    .mobile-header{display:none!important;}
+    .sidebar{display:none!important;}
+    .desktop-navbar{display:flex!important;}
+}
+
+/* Desktop Navbar Styles */
+.desktop-navbar{display:none;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 3rem;align-items:center;justify-content:space-between;height:80px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
+.navbar-brand{display:flex;align-items:center;gap:1rem;color:#fff;font-weight:700;font-size:1.2rem;letter-spacing:0.5px;}
+.navbar-logo{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #FBC02D;}
+.navbar-menu{list-style:none;margin:0;padding:0;display:flex;align-items:center;gap:2.5rem;}
+.navbar-menu li{margin:0;}
+.navbar-menu a{color:#fff;text-decoration:none;font-size:0.95rem;font-weight:500;padding:0.5rem 0;transition:color .2s ease,opacity .2s ease;opacity:0.9;}
+.navbar-menu a:hover{color:#FBC02D;opacity:1;}
+
 .contact-section {
     padding: 7rem 1.5rem;
     background-color: #F8FAFC; /* Match site off-white */
@@ -1350,15 +1343,58 @@ View Services
 
 <script>
 
-const menuButton = document.getElementById('menuButton');
+// Sidebar toggle
+function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    if (sidebar.classList.contains('show')) {
+        sidebar.classList.remove('show');
+        if (overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    } else {
+        sidebar.classList.add('show');
+        if (overlay) overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
 
-const mobileMenu = document.getElementById('mobileMenu');
-
-menuButton.addEventListener('click', () => {
-
-    mobileMenu.classList.toggle('hidden');
-
+// Overlay click
+var overlay = document.getElementById('sidebarOverlay');
+if (overlay) overlay.addEventListener('click', function() {
+    var sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.classList.remove('show');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
 });
+
+// Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        var sidebar = document.getElementById('sidebar');
+        var ov = document.getElementById('sidebarOverlay');
+        if (sidebar && sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+            if (ov) ov.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+});
+
+// Hide sidebar on desktop resize
+window.addEventListener('resize', function() {
+    if (window.innerWidth >= 1024) {
+        var sidebar = document.getElementById('sidebar');
+        var ov = document.getElementById('sidebarOverlay');
+        if (sidebar && sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+            if (ov) ov.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+});
+
+// Init Lucide icons
+lucide.createIcons();
 
 const scrollBtn = document.getElementById('scrollTop');
 
