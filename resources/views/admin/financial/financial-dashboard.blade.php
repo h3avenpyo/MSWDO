@@ -12,7 +12,8 @@ $userName = session('admin_user_name') ?? 'Officer';
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <div>
             <h2 class="wizard-heading mb-1"><i class="fas fa-clipboard-list me-2"></i>Financial Assistance: Step 1</h2>
-            <p class="mb-0 text-white-50" style="font-size: var(--text-sm);">Intake &amp; Initial Assessment Workflow</p>
+            <p class="mb-0 text-white-50" style="font-size: var(--text-sm);">Intake &amp; Initial Assessment Workflow
+            </p>
         </div>
         <div class="d-flex align-items-center">
             <div class="user-welcome">
@@ -31,25 +32,29 @@ $userName = session('admin_user_name') ?? 'Officer';
             <div class="col-md-6 col-xl-3">
                 <div class="d-flex align-items-start gap-2">
                     <i class="fas fa-check-circle text-warning mt-1 flex-shrink-0" style="font-size: 0.85rem;"></i>
-                    <span class="text-white-50" style="font-size: var(--text-xs); line-height: 1.35;">Verify client identification &amp; basic documentary requirements.</span>
+                    <span class="text-white-50" style="font-size: var(--text-xs); line-height: 1.35;">Verify client
+                        identification &amp; basic documentary requirements.</span>
                 </div>
             </div>
             <div class="col-md-6 col-xl-3">
                 <div class="d-flex align-items-start gap-2">
                     <i class="fas fa-check-circle text-warning mt-1 flex-shrink-0" style="font-size: 0.85rem;"></i>
-                    <span class="text-white-50" style="font-size: var(--text-xs); line-height: 1.35;">Conduct initial intake assessment &amp; interview.</span>
+                    <span class="text-white-50" style="font-size: var(--text-xs); line-height: 1.35;">Conduct initial
+                        intake assessment &amp; interview.</span>
                 </div>
             </div>
             <div class="col-md-6 col-xl-3">
                 <div class="d-flex align-items-start gap-2">
                     <i class="fas fa-check-circle text-warning mt-1 flex-shrink-0" style="font-size: 0.85rem;"></i>
-                    <span class="text-white-50" style="font-size: var(--text-xs); line-height: 1.35;">Encode beneficiary information in system.</span>
+                    <span class="text-white-50" style="font-size: var(--text-xs); line-height: 1.35;">Encode beneficiary
+                        information in system.</span>
                 </div>
             </div>
             <div class="col-md-6 col-xl-3">
                 <div class="d-flex align-items-start gap-2">
                     <i class="fas fa-check-circle text-warning mt-1 flex-shrink-0" style="font-size: 0.85rem;"></i>
-                    <span class="text-white-50" style="font-size: var(--text-xs); line-height: 1.35;">Forward validated intake assessments for authorization &amp; disbursement.</span>
+                    <span class="text-white-50" style="font-size: var(--text-xs); line-height: 1.35;">Forward validated
+                        intake assessments for authorization &amp; disbursement.</span>
                 </div>
             </div>
         </div>
@@ -62,7 +67,7 @@ $userName = session('admin_user_name') ?? 'Officer';
         </div>
         <div class="step-item-pill active">
             <div class="step-circle"><i class="fas fa-hand-holding-usd"></i></div>
-            <div class="step-label">Step 2: For Step 2 &amp; Process</div>
+            <div class="step-label">Step 2: For Assessment</div>
         </div>
     </div>
 
@@ -121,14 +126,17 @@ $userName = session('admin_user_name') ?? 'Officer';
             <div class="p-3">
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <a href="/admin/financial/financialstep1" class="action-tile h-100 flex-column align-items-start justify-content-between p-4">
+                        <a href="/admin/financial/financialstep1"
+                            class="action-tile h-100 flex-column align-items-start justify-content-between p-4">
                             <div class="d-flex align-items-center justify-content-between w-100 mb-3">
                                 <div class="stat-icon primary"><i class="fas fa-clipboard-list"></i></div>
                                 <span class="badge bg-primary text-white rounded-pill px-3 py-1">Active Step</span>
                             </div>
                             <div>
-                                <div class="action-tile-title mb-1" style="font-size: var(--text-md);">Step 1: Intake &amp; Assessment</div>
-                                <div class="action-tile-desc">Encode new client intake details, upload documentary requirements, and complete initial social assessment.</div>
+                                <div class="action-tile-title mb-1" style="font-size: var(--text-md);">Step 1: Intake
+                                    &amp; Assessment</div>
+                                <div class="action-tile-desc">Encode new client intake details, upload documentary
+                                    requirements, and complete initial social assessment.</div>
                             </div>
                             <div class="mt-3 text-primary fw-semibold small">
                                 Open Step 1 Module <i class="fas fa-arrow-right ms-1"></i>
@@ -136,14 +144,17 @@ $userName = session('admin_user_name') ?? 'Officer';
                         </a>
                     </div>
                     <div class="col-md-6">
-                        <a href="/admin/beneficiary-intake" class="action-tile h-100 flex-column align-items-start justify-content-between p-4">
+                        <a href="/admin/beneficiary-intake"
+                            class="action-tile h-100 flex-column align-items-start justify-content-between p-4">
                             <div class="d-flex align-items-center justify-content-between w-100 mb-3">
                                 <div class="stat-icon info"><i class="fas fa-folder-open"></i></div>
                                 <span class="badge bg-info text-white rounded-pill px-3 py-1">Directory</span>
                             </div>
                             <div>
-                                <div class="action-tile-title mb-1" style="font-size: var(--text-md);">All Intakes Directory</div>
-                                <div class="action-tile-desc">View existing intake records, track assessment statuses, and manage beneficiary cases.</div>
+                                <div class="action-tile-title mb-1" style="font-size: var(--text-md);">All Intakes
+                                    Directory</div>
+                                <div class="action-tile-desc">View existing intake records, track assessment statuses,
+                                    and manage beneficiary cases.</div>
                             </div>
                             <div class="mt-3 text-info fw-semibold small">
                                 View Directory <i class="fas fa-arrow-right ms-1"></i>

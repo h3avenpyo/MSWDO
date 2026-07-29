@@ -1,0 +1,95 @@
+/* Beneficiary Intake Form Styles (Create & Edit) */
+
+.form-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    margin-bottom: 1.5rem;
+}
+
+.form-header-bar {
+    background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
+    color: #ffffff;
+    padding: 1.25rem 1.5rem;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.section-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #1A237E;
+    background-color: #EEF2FF;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.required-star {
+    color: #DC2626;
+    font-weight: bold;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #334155;
+    margin-bottom: 0.35rem;
+}
+
+.form-control,
+.form-select {
+    border-radius: 8px;
+    border: 1px solid #CBD5E1;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #1A237E;
+    box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.15);
+}
+
+.form-control[readonly] {
+    background-color: #F8FAFC;
+    color: #64748B;
+}
+
+.rep-card-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.toggle-card {
+    background-color: #F8FAFC;
+    border: 1px dashed #CBD5E1;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.dswd-notice-bar {
+    background-color: #7F1D1D;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.fam-table th {
+    background-color: #F1F5F9;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #475569;
+}

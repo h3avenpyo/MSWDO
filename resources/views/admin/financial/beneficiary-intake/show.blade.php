@@ -4,73 +4,7 @@
 @section('page-title', 'General Intake Sheet Overview')
 
 @section('page-styles')
-<style>
-    .detail-card {
-        background: #ffffff;
-        border-radius: 12px;
-        border: 1px solid #E2E8F0;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-        margin-bottom: 1.5rem;
-    }
-    .detail-header-bar {
-        background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
-        color: #ffffff;
-        padding: 1.25rem 1.5rem;
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
-    }
-    .info-label {
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #64748B;
-        margin-bottom: 0.25rem;
-    }
-    .info-value {
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: #1E293B;
-    }
-    .badge-status {
-        background-color: #EEF2FF;
-        color: #1A237E;
-        padding: 0.4rem 0.85rem;
-        border-radius: 20px;
-        font-weight: 700;
-        font-size: 0.8rem;
-    }
-
-    /* Print Specific Styling matching Physical Hardcopy Form */
-    @media print {
-        body {
-            background-color: #ffffff !important;
-            font-family: 'Times New Roman', Times, serif, sans-serif !important;
-            font-size: 11pt !important;
-            color: #000000 !important;
-        }
-        .main-content, .p-4 {
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-        .no-print, nav, .top-navbar, .sidebar, .sidebar-overlay, button, a {
-            display: none !important;
-        }
-        .print-container {
-            display: block !important;
-            width: 100% !important;
-            margin: 0 auto !important;
-            padding: 10mm !important;
-        }
-        .print-table, .print-table th, .print-table td {
-            border: 1px solid #000000 !important;
-            border-collapse: collapse !important;
-        }
-    }
-    .print-container {
-        display: none;
-    }
-</style>
+<link href="{{ asset('css/beneficiary-intake/show.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')

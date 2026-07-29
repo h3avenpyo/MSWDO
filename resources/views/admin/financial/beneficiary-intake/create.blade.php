@@ -4,88 +4,7 @@
 @section('page-title', 'Create General Intake Sheet')
 
 @section('page-styles')
-<style>
-    .form-card {
-        background: #ffffff;
-        border-radius: 12px;
-        border: 1px solid #E2E8F0;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-        margin-bottom: 1.5rem;
-    }
-    .form-header-bar {
-        background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
-        color: #ffffff;
-        padding: 1.25rem 1.5rem;
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
-    }
-    .section-tag {
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #1A237E;
-        background-color: #EEF2FF;
-        padding: 0.35rem 0.75rem;
-        border-radius: 6px;
-        display: inline-block;
-        margin-bottom: 1rem;
-    }
-    .required-star {
-        color: #DC2626;
-        font-weight: bold;
-    }
-    .form-label {
-        font-weight: 600;
-        font-size: 0.85rem;
-        color: #334155;
-        margin-bottom: 0.35rem;
-    }
-    .form-control, .form-select {
-        border-radius: 8px;
-        border: 1px solid #CBD5E1;
-        padding: 0.6rem 0.85rem;
-        font-size: 0.9rem;
-        transition: all 0.2s ease;
-    }
-    .form-control:focus, .form-select:focus {
-        border-color: #1A237E;
-        box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.15);
-    }
-    .form-control[readonly] {
-        background-color: #F8FAFC;
-        color: #64748B;
-    }
-    .rep-card-disabled {
-        opacity: 0.6;
-        pointer-events: none;
-    }
-    .toggle-card {
-        background-color: #F8FAFC;
-        border: 1px dashed #CBD5E1;
-        border-radius: 10px;
-        padding: 1rem 1.25rem;
-        margin-bottom: 1.25rem;
-    }
-    .dswd-notice-bar {
-        background-color: #7F1D1D;
-        color: #ffffff;
-        font-weight: 700;
-        font-size: 0.85rem;
-        text-align: center;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        margin-bottom: 1.5rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-    .fam-table th {
-        background-color: #F1F5F9;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        color: #475569;
-    }
-</style>
+<link href="{{ asset('css/beneficiary-intake/form.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -97,33 +16,34 @@
             <h4 class="fw-bold mb-1" style="color: #1A237E;">GENERAL INTAKE SHEET</h4>
             <p class="text-muted small mb-0">Official MSWDO Financial Assistance Client Assessment Record.</p>
         </div>
-        <a href="{{ route('admin.beneficiary-intake.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+        <a href="{{ route('admin.beneficiary-intake.index') }}"
+            class="btn btn-outline-secondary btn-sm rounded-pill px-3">
             <i class="fas fa-arrow-left me-1"></i> Back to Intake List
         </a>
     </div>
 
     @if ($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
-            <div class="d-flex align-items-center">
-                <i class="fas fa-exclamation-triangle fa-lg me-3"></i>
-                <div>
-                    <strong>Please check the form errors below:</strong>
-                    <ul class="mb-0 mt-1 small">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+    <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle fa-lg me-3"></i>
+            <div>
+                <strong>Please check the form errors below:</strong>
+                <ul class="mb-0 mt-1 small">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     @endif
 
     <form action="{{ route('admin.beneficiary-intake.store') }}" method="POST" id="intakeForm">
         @csrf
 
         @if(isset($client) && $client)
-            <input type="hidden" name="client_id" value="{{ $client->id }}">
+        <input type="hidden" name="client_id" value="{{ $client->id }}">
         @endif
 
         <!-- HEADER CONTROL DETAILS -->
@@ -136,32 +56,38 @@
                 <div class="row g-3">
                     <div class="col-md-3">
                         <label class="form-label">Control Number <span class="required-star">*</span></label>
-                        <input type="text" name="control_number" class="form-control" value="{{ old('control_number', $controlNumber) }}" readonly required>
+                        <input type="text" name="control_number" class="form-control"
+                            value="{{ old('control_number', $controlNumber) }}" readonly required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Client Status <span class="required-star">*</span></label>
                         <div class="d-flex gap-3 mt-2">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="client_type" id="type_new" value="New" {{ old('client_type', 'New') == 'New' ? 'checked' : '' }} required>
+                                <input class="form-check-input" type="radio" name="client_type" id="type_new"
+                                    value="New" {{ old('client_type', 'New' )=='New' ? 'checked' : '' }} required>
                                 <label class="form-check-label fw-bold" for="type_new">New</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="client_type" id="type_returning" value="Returning" {{ old('client_type') == 'Returning' ? 'checked' : '' }}>
+                                <input class="form-check-input" type="radio" name="client_type" id="type_returning"
+                                    value="Returning" {{ old('client_type')=='Returning' ? 'checked' : '' }}>
                                 <label class="form-check-label fw-bold" for="type_returning">Returning</label>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Date <span class="required-star">*</span></label>
-                        <input type="date" name="date_processed" class="form-control" value="{{ old('date_processed', date('Y-m-d')) }}" required>
+                        <input type="date" name="date_processed" class="form-control"
+                            value="{{ old('date_processed', date('Y-m-d')) }}" required>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Time Start</label>
-                        <input type="text" name="time_start" class="form-control" value="{{ old('time_start', date('h:i A')) }}" placeholder="e.g. 09:00 AM">
+                        <input type="text" name="time_start" class="form-control"
+                            value="{{ old('time_start', date('h:i A')) }}" placeholder="e.g. 09:00 AM">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Time End</label>
-                        <input type="text" name="time_end" class="form-control" value="{{ old('time_end') }}" placeholder="e.g. 09:30 AM">
+                        <input type="text" name="time_end" class="form-control" value="{{ old('time_end') }}"
+                            placeholder="e.g. 09:30 AM">
                     </div>
                 </div>
             </div>
@@ -173,7 +99,9 @@
                 <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
                     <div>
                         <span class="section-tag">Section I</span>
-                        <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-user me-2 text-primary"></i> IMPORMASYON NG BENEPISYARYO <span class="text-muted fs-6">(Beneficiary's Identifying Information)</span></h5>
+                        <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-user me-2 text-primary"></i> IMPORMASYON NG
+                            BENEPISYARYO <span class="text-muted fs-6">(Beneficiary's Identifying Information)</span>
+                        </h5>
                     </div>
                     <span class="text-muted small"><span class="required-star">*</span> Required fields</span>
                 </div>
@@ -182,24 +110,35 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-3">
                         <label class="form-label">Apelyido (Last Name) <span class="required-star">*</span></label>
-                        <input type="text" name="beneficiary_last_name" class="form-control" value="{{ old('beneficiary_last_name', $client->last_name ?? '') }}" placeholder="Apelyido" required>
+                        <input type="text" name="beneficiary_last_name" class="form-control"
+                            value="{{ old('beneficiary_last_name', $client->last_name ?? '') }}" placeholder="Apelyido"
+                            required>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Unang Pangalan (First Name) <span class="required-star">*</span></label>
-                        <input type="text" name="beneficiary_first_name" class="form-control" value="{{ old('beneficiary_first_name', $client->first_name ?? '') }}" placeholder="Unang Pangalan" required>
+                        <label class="form-label">Unang Pangalan (First Name) <span
+                                class="required-star">*</span></label>
+                        <input type="text" name="beneficiary_first_name" class="form-control"
+                            value="{{ old('beneficiary_first_name', $client->first_name ?? '') }}"
+                            placeholder="Unang Pangalan" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Gitnang Pangalan (Middle Name)</label>
-                        <input type="text" name="beneficiary_middle_name" class="form-control" value="{{ old('beneficiary_middle_name', $client->middle_name ?? '') }}" placeholder="Gitnang Pangalan">
+                        <input type="text" name="beneficiary_middle_name" class="form-control"
+                            value="{{ old('beneficiary_middle_name', $client->middle_name ?? '') }}"
+                            placeholder="Gitnang Pangalan">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Ext. (Sr., Jr., III)</label>
                         <select name="beneficiary_extension_name" class="form-select">
                             <option value="">None</option>
-                            <option value="Jr." {{ old('beneficiary_extension_name') == 'Jr.' ? 'selected' : '' }}>Jr.</option>
-                            <option value="Sr." {{ old('beneficiary_extension_name') == 'Sr.' ? 'selected' : '' }}>Sr.</option>
-                            <option value="III" {{ old('beneficiary_extension_name') == 'III' ? 'selected' : '' }}>III</option>
-                            <option value="IV" {{ old('beneficiary_extension_name') == 'IV' ? 'selected' : '' }}>IV</option>
+                            <option value="Jr." {{ old('beneficiary_extension_name')=='Jr.' ? 'selected' : '' }}>Jr.
+                            </option>
+                            <option value="Sr." {{ old('beneficiary_extension_name')=='Sr.' ? 'selected' : '' }}>Sr.
+                            </option>
+                            <option value="III" {{ old('beneficiary_extension_name')=='III' ? 'selected' : '' }}>III
+                            </option>
+                            <option value="IV" {{ old('beneficiary_extension_name')=='IV' ? 'selected' : '' }}>IV
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -207,15 +146,19 @@
                 <!-- Address -->
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
-                        <label class="form-label">House No. / Street / Purok <span class="required-star">*</span></label>
-                        <input type="text" name="beneficiary_street_address" class="form-control" value="{{ old('beneficiary_street_address', $client->street_address ?? '') }}" placeholder="House No. / Street / Purok" required>
+                        <label class="form-label">House No. / Street / Purok <span
+                                class="required-star">*</span></label>
+                        <input type="text" name="beneficiary_street_address" class="form-control"
+                            value="{{ old('beneficiary_street_address', $client->street_address ?? '') }}"
+                            placeholder="House No. / Street / Purok" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Barangay <span class="required-star">*</span></label>
                         <select name="beneficiary_barangay" class="form-select" required>
                             <option value="">Select Barangay</option>
                             @foreach($barangays as $brgy)
-                                <option value="{{ $brgy }}" {{ old('beneficiary_barangay', $client->barangay ?? '') == $brgy ? 'selected' : '' }}>{{ $brgy }}</option>
+                            <option value="{{ $brgy }}" {{ old('beneficiary_barangay', $client->barangay ?? '') == $brgy
+                                ? 'selected' : '' }}>{{ $brgy }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -227,7 +170,8 @@
                         <div class="row g-2">
                             <div class="col-6">
                                 <label class="form-label">Province/District</label>
-                                <input type="text" name="beneficiary_province" class="form-control" value="CAVITE" readonly>
+                                <input type="text" name="beneficiary_province" class="form-control" value="CAVITE"
+                                    readonly>
                             </div>
                             <div class="col-6">
                                 <label class="form-label">Region</label>
@@ -240,26 +184,38 @@
                 <!-- Demographics -->
                 <div class="row g-3">
                     <div class="col-md-3">
-                        <label class="form-label">Numero ng Telepono (Mobile No.) <span class="required-star">*</span></label>
-                        <input type="text" name="beneficiary_contact_number" class="form-control" value="{{ old('beneficiary_contact_number', $client->contact_number ?? '') }}" placeholder="09XXXXXXXXX" required>
+                        <label class="form-label">Numero ng Telepono (Mobile No.) <span
+                                class="required-star">*</span></label>
+                        <input type="text" name="beneficiary_contact_number" class="form-control"
+                            value="{{ old('beneficiary_contact_number', $client->contact_number ?? '') }}"
+                            placeholder="09XXXXXXXXX" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Kapanganakan (MM/DD/YYYY) <span class="required-star">*</span></label>
-                        <input type="text" name="beneficiary_birthday" id="beneficiary_birthday" class="form-control" value="{{ old('beneficiary_birthday', isset($client->birth_date) ? $client->birth_date->format('m/d/Y') : '') }}" placeholder="MM/DD/YYYY" maxlength="10" required oninput="formatAndCalculateAge(this, 'beneficiary_age')">
+                        <input type="text" name="beneficiary_birthday" id="beneficiary_birthday" class="form-control"
+                            value="{{ old('beneficiary_birthday', isset($client->birth_date) ? $client->birth_date->format('m/d/Y') : '') }}"
+                            placeholder="MM/DD/YYYY" maxlength="10" required
+                            oninput="formatAndCalculateAge(this, 'beneficiary_age')">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Edad (Age) <span class="required-star">*</span></label>
-                        <input type="number" name="beneficiary_age" id="beneficiary_age" class="form-control" value="{{ old('beneficiary_age', $client->age ?? '') }}" readonly required placeholder="Edad">
+                        <input type="number" name="beneficiary_age" id="beneficiary_age" class="form-control"
+                            value="{{ old('beneficiary_age', $client->age ?? '') }}" readonly required
+                            placeholder="Edad">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Kasarian (Gender) <span class="required-star">*</span></label>
                         <div class="d-flex gap-3 mt-2">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="beneficiary_sex" id="sex_male" value="Male" {{ old('beneficiary_sex', $client->sex ?? '') == 'Male' ? 'checked' : '' }} required>
+                                <input class="form-check-input" type="radio" name="beneficiary_sex" id="sex_male"
+                                    value="Male" {{ old('beneficiary_sex', $client->sex ?? '') == 'Male' ? 'checked' :
+                                '' }} required>
                                 <label class="form-check-label" for="sex_male">M</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="beneficiary_sex" id="sex_female" value="Female" {{ old('beneficiary_sex', $client->sex ?? '') == 'Female' ? 'checked' : '' }}>
+                                <input class="form-check-input" type="radio" name="beneficiary_sex" id="sex_female"
+                                    value="Female" {{ old('beneficiary_sex', $client->sex ?? '') == 'Female' ? 'checked'
+                                : '' }}>
                                 <label class="form-check-label" for="sex_female">F</label>
                             </div>
                         </div>
@@ -268,20 +224,28 @@
                         <label class="form-label">Civil Status (Katayuan) <span class="required-star">*</span></label>
                         <select name="beneficiary_civil_status" class="form-select" required>
                             <option value="">Select</option>
-                            <option value="Single" {{ old('beneficiary_civil_status') == 'Single' ? 'selected' : '' }}>Single</option>
-                            <option value="Married" {{ old('beneficiary_civil_status') == 'Married' ? 'selected' : '' }}>Married</option>
-                            <option value="Widowed" {{ old('beneficiary_civil_status') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
-                            <option value="Separated" {{ old('beneficiary_civil_status') == 'Separated' ? 'selected' : '' }}>Separated</option>
-                            <option value="Cohabiting" {{ old('beneficiary_civil_status') == 'Cohabiting' ? 'selected' : '' }}>Cohabiting</option>
+                            <option value="Single" {{ old('beneficiary_civil_status')=='Single' ? 'selected' : '' }}>
+                                Single</option>
+                            <option value="Married" {{ old('beneficiary_civil_status')=='Married' ? 'selected' : '' }}>
+                                Married</option>
+                            <option value="Widowed" {{ old('beneficiary_civil_status')=='Widowed' ? 'selected' : '' }}>
+                                Widowed</option>
+                            <option value="Separated" {{ old('beneficiary_civil_status')=='Separated' ? 'selected' : ''
+                                }}>Separated</option>
+                            <option value="Cohabiting" {{ old('beneficiary_civil_status')=='Cohabiting' ? 'selected'
+                                : '' }}>Cohabiting</option>
                         </select>
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="form-label">Trabaho (Occupation)</label>
-                        <input type="text" name="beneficiary_occupation" class="form-control" value="{{ old('beneficiary_occupation') }}" placeholder="Trabaho (e.g. N/A, Vendor, Housekeeper)">
+                        <input type="text" name="beneficiary_occupation" class="form-control"
+                            value="{{ old('beneficiary_occupation') }}"
+                            placeholder="Trabaho (e.g. N/A, Vendor, Housekeeper)">
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="form-label">Buwanang Kita (Monthly Salary)</label>
-                        <input type="number" step="0.01" min="0" name="beneficiary_monthly_salary" class="form-control" value="{{ old('beneficiary_monthly_salary') }}" placeholder="0.00">
+                        <input type="number" step="0.01" min="0" name="beneficiary_monthly_salary" class="form-control"
+                            value="{{ old('beneficiary_monthly_salary') }}" placeholder="0.00">
                     </div>
                 </div>
 
@@ -291,15 +255,21 @@
         <!-- SECTION 2: IMPORMASYON NG KINATAWAN -->
         <div class="form-card">
             <div class="card-body p-4">
-                
+
                 <div class="toggle-card d-flex align-items-center justify-content-between">
                     <div>
-                        <h6 class="fw-bold mb-1 text-dark"><i class="fas fa-user-friends me-2 text-primary"></i> IMPORMASYON NG KINATAWAN <span class="text-muted fs-6">(Representative's Identifying Information)</span></h6>
-                        <p class="text-muted small mb-0">Check if representative is filing on behalf of the beneficiary.</p>
+                        <h6 class="fw-bold mb-1 text-dark"><i class="fas fa-user-friends me-2 text-primary"></i>
+                            IMPORMASYON NG KINATAWAN <span class="text-muted fs-6">(Representative's Identifying
+                                Information)</span></h6>
+                        <p class="text-muted small mb-0">Check if representative is filing on behalf of the beneficiary.
+                        </p>
                     </div>
                     <div class="form-check form-switch fs-5">
-                        <input class="form-check-input" type="checkbox" role="switch" name="has_representative" id="has_representative" value="1" {{ old('has_representative') ? 'checked' : '' }} onchange="toggleRepresentativeSection()">
-                        <label class="form-check-label fw-bold fs-6 ms-2" for="has_representative">Has Representative</label>
+                        <input class="form-check-input" type="checkbox" role="switch" name="has_representative"
+                            id="has_representative" value="1" {{ old('has_representative') ? 'checked' : '' }}
+                            onchange="toggleRepresentativeSection()">
+                        <label class="form-check-label fw-bold fs-6 ms-2" for="has_representative">Has
+                            Representative</label>
                     </div>
                 </div>
 
@@ -307,40 +277,51 @@
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-3">
-                            <label class="form-label">Apelyido (Last Name) <span class="required-star rep-star">*</span></label>
-                            <input type="text" name="rep_last_name" class="form-control rep-field" value="{{ old('rep_last_name') }}" placeholder="Apelyido">
+                            <label class="form-label">Apelyido (Last Name) <span
+                                    class="required-star rep-star">*</span></label>
+                            <input type="text" name="rep_last_name" class="form-control rep-field"
+                                value="{{ old('rep_last_name') }}" placeholder="Apelyido">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Unang Pangalan (First Name) <span class="required-star rep-star">*</span></label>
-                            <input type="text" name="rep_first_name" class="form-control rep-field" value="{{ old('rep_first_name') }}" placeholder="Unang Pangalan">
+                            <label class="form-label">Unang Pangalan (First Name) <span
+                                    class="required-star rep-star">*</span></label>
+                            <input type="text" name="rep_first_name" class="form-control rep-field"
+                                value="{{ old('rep_first_name') }}" placeholder="Unang Pangalan">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Gitnang Pangalan (Middle Name)</label>
-                            <input type="text" name="rep_middle_name" class="form-control rep-field" value="{{ old('rep_middle_name') }}" placeholder="Gitnang Pangalan">
+                            <input type="text" name="rep_middle_name" class="form-control rep-field"
+                                value="{{ old('rep_middle_name') }}" placeholder="Gitnang Pangalan">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Ext. (Sr., Jr., III)</label>
                             <select name="rep_extension_name" class="form-select rep-field">
                                 <option value="">None</option>
-                                <option value="Jr." {{ old('rep_extension_name') == 'Jr.' ? 'selected' : '' }}>Jr.</option>
-                                <option value="Sr." {{ old('rep_extension_name') == 'Sr.' ? 'selected' : '' }}>Sr.</option>
-                                <option value="III" {{ old('rep_extension_name') == 'III' ? 'selected' : '' }}>III</option>
-                                <option value="IV" {{ old('rep_extension_name') == 'IV' ? 'selected' : '' }}>IV</option>
+                                <option value="Jr." {{ old('rep_extension_name')=='Jr.' ? 'selected' : '' }}>Jr.
+                                </option>
+                                <option value="Sr." {{ old('rep_extension_name')=='Sr.' ? 'selected' : '' }}>Sr.
+                                </option>
+                                <option value="III" {{ old('rep_extension_name')=='III' ? 'selected' : '' }}>III
+                                </option>
+                                <option value="IV" {{ old('rep_extension_name')=='IV' ? 'selected' : '' }}>IV</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">House No. / Street / Purok <span class="required-star rep-star">*</span></label>
-                            <input type="text" name="rep_street_address" class="form-control rep-field" value="{{ old('rep_street_address') }}" placeholder="House No., Street">
+                            <label class="form-label">House No. / Street / Purok <span
+                                    class="required-star rep-star">*</span></label>
+                            <input type="text" name="rep_street_address" class="form-control rep-field"
+                                value="{{ old('rep_street_address') }}" placeholder="House No., Street">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Barangay <span class="required-star rep-star">*</span></label>
                             <select name="rep_barangay" class="form-select rep-field">
                                 <option value="">Select Barangay</option>
                                 @foreach($barangays as $brgy)
-                                    <option value="{{ $brgy }}" {{ old('rep_barangay') == $brgy ? 'selected' : '' }}>{{ $brgy }}</option>
+                                <option value="{{ $brgy }}" {{ old('rep_barangay')==$brgy ? 'selected' : '' }}>{{ $brgy
+                                    }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -364,49 +345,65 @@
 
                     <div class="row g-3">
                         <div class="col-md-3">
-                            <label class="form-label">Numero ng Telepono <span class="required-star rep-star">*</span></label>
-                            <input type="text" name="rep_contact_number" class="form-control rep-field" value="{{ old('rep_contact_number') }}" placeholder="09XXXXXXXXX">
+                            <label class="form-label">Numero ng Telepono <span
+                                    class="required-star rep-star">*</span></label>
+                            <input type="text" name="rep_contact_number" class="form-control rep-field"
+                                value="{{ old('rep_contact_number') }}" placeholder="09XXXXXXXXX">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Kapanganakan (MM/DD/YYYY) <span class="required-star rep-star">*</span></label>
-                            <input type="text" name="rep_birthday" id="rep_birthday" class="form-control rep-field" value="{{ old('rep_birthday') }}" placeholder="MM/DD/YYYY" maxlength="10" oninput="formatAndCalculateAge(this, 'rep_age')">
+                            <label class="form-label">Kapanganakan (MM/DD/YYYY) <span
+                                    class="required-star rep-star">*</span></label>
+                            <input type="text" name="rep_birthday" id="rep_birthday" class="form-control rep-field"
+                                value="{{ old('rep_birthday') }}" placeholder="MM/DD/YYYY" maxlength="10"
+                                oninput="formatAndCalculateAge(this, 'rep_age')">
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Edad (Age) <span class="required-star rep-star">*</span></label>
-                            <input type="number" name="rep_age" id="rep_age" class="form-control rep-field" value="{{ old('rep_age') }}" readonly placeholder="Edad">
+                            <input type="number" name="rep_age" id="rep_age" class="form-control rep-field"
+                                value="{{ old('rep_age') }}" readonly placeholder="Edad">
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Kasarian (Gender) <span class="required-star rep-star">*</span></label>
+                            <label class="form-label">Kasarian (Gender) <span
+                                    class="required-star rep-star">*</span></label>
                             <select name="rep_sex" class="form-select rep-field">
                                 <option value="">Select</option>
-                                <option value="Male" {{ old('rep_sex') == 'Male' ? 'selected' : '' }}>M</option>
-                                <option value="Female" {{ old('rep_sex') == 'Female' ? 'selected' : '' }}>F</option>
+                                <option value="Male" {{ old('rep_sex')=='Male' ? 'selected' : '' }}>M</option>
+                                <option value="Female" {{ old('rep_sex')=='Female' ? 'selected' : '' }}>F</option>
                             </select>
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Civil Status <span class="required-star rep-star">*</span></label>
                             <select name="rep_civil_status" class="form-select rep-field">
                                 <option value="">Select</option>
-                                <option value="Single" {{ old('rep_civil_status') == 'Single' ? 'selected' : '' }}>Single</option>
-                                <option value="Married" {{ old('rep_civil_status') == 'Married' ? 'selected' : '' }}>Married</option>
-                                <option value="Widowed" {{ old('rep_civil_status') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
-                                <option value="Separated" {{ old('rep_civil_status') == 'Separated' ? 'selected' : '' }}>Separated</option>
+                                <option value="Single" {{ old('rep_civil_status')=='Single' ? 'selected' : '' }}>Single
+                                </option>
+                                <option value="Married" {{ old('rep_civil_status')=='Married' ? 'selected' : '' }}>
+                                    Married</option>
+                                <option value="Widowed" {{ old('rep_civil_status')=='Widowed' ? 'selected' : '' }}>
+                                    Widowed</option>
+                                <option value="Separated" {{ old('rep_civil_status')=='Separated' ? 'selected' : '' }}>
+                                    Separated</option>
                             </select>
                         </div>
                         <div class="col-md-4 mt-3">
                             <label class="form-label">Trabaho (Occupation)</label>
-                            <input type="text" name="rep_occupation" class="form-control rep-field" value="{{ old('rep_occupation') }}" placeholder="Trabaho">
+                            <input type="text" name="rep_occupation" class="form-control rep-field"
+                                value="{{ old('rep_occupation') }}" placeholder="Trabaho">
                         </div>
                         <div class="col-md-4 mt-3">
                             <label class="form-label">Buwanang Kita (Monthly Salary)</label>
-                            <input type="number" step="0.01" min="0" name="rep_monthly_salary" class="form-control rep-field" value="{{ old('rep_monthly_salary') }}" placeholder="0.00">
+                            <input type="number" step="0.01" min="0" name="rep_monthly_salary"
+                                class="form-control rep-field" value="{{ old('rep_monthly_salary') }}"
+                                placeholder="0.00">
                         </div>
                         <div class="col-md-4 mt-3">
-                            <label class="form-label">Relasyon sa Benepisyaryo <span class="required-star rep-star">*</span></label>
+                            <label class="form-label">Relasyon sa Benepisyaryo <span
+                                    class="required-star rep-star">*</span></label>
                             <select name="rep_relationship" class="form-select rep-field">
                                 <option value="">Select Relationship</option>
                                 @foreach($relationships as $rel)
-                                    <option value="{{ $rel }}" {{ old('rep_relationship') == $rel ? 'selected' : '' }}>{{ $rel }}</option>
+                                <option value="{{ $rel }}" {{ old('rep_relationship')==$rel ? 'selected' : '' }}>{{ $rel
+                                    }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -420,47 +417,54 @@
         <!-- DSWD OFFICIAL USE ONLY SECTION -->
         <div class="form-card">
             <div class="card-body p-4">
-                <div class="dswd-notice-bar">
-                    Huwag susulatan ang DSWD lamang ang pwede gumamit <span class="fw-normal">(Do not write below this part for DSWD's use only)</span>
-                </div>
 
                 <div class="row g-4">
                     <!-- Left Column: Beneficiary Category Checkboxes -->
                     <div class="col-md-5 border-end pe-md-4">
-                        <h6 class="fw-bold text-dark mb-3"><i class="fas fa-list-check me-2 text-primary"></i> Beneficiary Category</h6>
+                        <h6 class="fw-bold text-dark mb-3"><i class="fas fa-list-check me-2 text-primary"></i>
+                            Beneficiary Category</h6>
                         <p class="text-muted small mb-3">Specify Sub-Category (Check all applicable):</p>
-                        
+
                         @php
-                            $catOptions = [
-                                'Solo Parents',
-                                'Indigenous People',
-                                'PWD',
-                                '4PS DSWD Beneficiary',
-                                'LGBTQIA+',
-                                'Psychosocial/Mental/Learning Disability',
-                                'Stateless Person/Asylum Seekers/Refugees',
-                            ];
-                            $oldCats = old('beneficiary_categories', []);
+                        $catOptions = [
+                        'Solo Parents',
+                        'Indigenous People',
+                        'PWD',
+                        '4PS DSWD Beneficiary',
+                        'LGBTQIA+',
+                        'Psychosocial/Mental/Learning Disability',
+                        'Stateless Person/Asylum Seekers/Refugees',
+                        ];
+                        $oldCats = old('beneficiary_categories', []);
                         @endphp
 
                         @foreach($catOptions as $cOpt)
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="beneficiary_categories[]" value="{{ $cOpt }}" id="cat_{{ Str::slug($cOpt) }}" {{ in_array($cOpt, $oldCats) ? 'checked' : '' }}>
-                                <label class="form-check-label small fw-semibold" for="cat_{{ Str::slug($cOpt) }}">{{ $cOpt }}</label>
-                            </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="beneficiary_categories[]"
+                                value="{{ $cOpt }}" id="cat_{{ Str::slug($cOpt) }}" {{ in_array($cOpt, $oldCats)
+                                ? 'checked' : '' }}>
+                            <label class="form-check-label small fw-semibold" for="cat_{{ Str::slug($cOpt) }}">{{ $cOpt
+                                }}</label>
+                        </div>
                         @endforeach
 
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" name="beneficiary_categories[]" value="Others" id="cat_others" {{ in_array('Others', $oldCats) ? 'checked' : '' }} onchange="toggleCategoryOtherText()">
+                            <input class="form-check-input" type="checkbox" name="beneficiary_categories[]"
+                                value="Others" id="cat_others" {{ in_array('Others', $oldCats) ? 'checked' : '' }}
+                                onchange="toggleCategoryOtherText()">
                             <label class="form-check-label small fw-semibold" for="cat_others">Others</label>
                         </div>
-                        <input type="text" name="beneficiary_category_other" id="beneficiary_category_other_input" class="form-control mt-2 {{ in_array('Others', $oldCats) ? '' : 'd-none' }}" value="{{ old('beneficiary_category_other') }}" placeholder="Specify other category...">
+                        <input type="text" name="beneficiary_category_other" id="beneficiary_category_other_input"
+                            class="form-control mt-2 {{ in_array('Others', $oldCats) ? '' : 'd-none' }}"
+                            value="{{ old('beneficiary_category_other') }}" placeholder="Specify other category...">
                     </div>
 
                     <!-- Right Column: Social Worker's Assessment -->
                     <div class="col-md-7 ps-md-4">
-                        <h6 class="fw-bold text-dark mb-3"><i class="fas fa-clipboard-check me-2 text-primary"></i> Social Worker's Assessment</h6>
-                        <textarea name="social_worker_assessment" rows="7" class="form-control" placeholder="Write initial assessment, client situation, and social worker recommendations here...">{{ old('social_worker_assessment') }}</textarea>
+                        <h6 class="fw-bold text-dark mb-3"><i class="fas fa-clipboard-check me-2 text-primary"></i>
+                            Social Worker's Assessment</h6>
+                        <textarea name="social_worker_assessment" rows="7" class="form-control"
+                            placeholder="Write initial assessment, client situation, and social worker recommendations here...">{{ old('social_worker_assessment') }}</textarea>
                     </div>
                 </div>
             </div>
@@ -470,8 +474,10 @@
         <div class="form-card">
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="fw-bold text-dark mb-0"><i class="fas fa-users me-2 text-primary"></i> KOMPOSISYON NG PAMILYA <span class="text-muted fs-6">(Family Composition)</span></h6>
-                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill fw-bold" onclick="addFamilyRow()">
+                    <h6 class="fw-bold text-dark mb-0"><i class="fas fa-users me-2 text-primary"></i> KOMPOSISYON NG
+                        PAMILYA <span class="text-muted fs-6">(Family Composition)</span></h6>
+                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill fw-bold"
+                        onclick="addFamilyRow()">
                         <i class="fas fa-plus me-1"></i> Add Family Member
                     </button>
                 </div>
@@ -490,27 +496,40 @@
                         </thead>
                         <tbody id="familyTableBody">
                             @php
-                                $oldFam = old('family_composition', [ ['name' => '', 'relationship' => '', 'age' => '', 'occupation' => '', 'salary' => ''] ]);
+                            $oldFam = old('family_composition', [ ['name' => '', 'relationship' => '', 'age' => '',
+                            'occupation' => '', 'salary' => ''] ]);
                             @endphp
                             @foreach($oldFam as $index => $fam)
                             <tr>
                                 <td>
-                                    <input type="text" name="family_composition[{{ $index }}][name]" class="form-control form-control-sm" value="{{ $fam['name'] ?? '' }}" placeholder="Full Name">
+                                    <input type="text" name="family_composition[{{ $index }}][name]"
+                                        class="form-control form-control-sm" value="{{ $fam['name'] ?? '' }}"
+                                        placeholder="Full Name">
                                 </td>
                                 <td>
-                                    <input type="text" name="family_composition[{{ $index }}][relationship]" class="form-control form-control-sm" value="{{ $fam['relationship'] ?? '' }}" placeholder="e.g. Spouse, Son">
+                                    <input type="text" name="family_composition[{{ $index }}][relationship]"
+                                        class="form-control form-control-sm" value="{{ $fam['relationship'] ?? '' }}"
+                                        placeholder="e.g. Spouse, Son">
                                 </td>
                                 <td>
-                                    <input type="number" min="0" name="family_composition[{{ $index }}][age]" class="form-control form-control-sm" value="{{ $fam['age'] ?? '' }}" placeholder="Edad">
+                                    <input type="number" min="0" name="family_composition[{{ $index }}][age]"
+                                        class="form-control form-control-sm" value="{{ $fam['age'] ?? '' }}"
+                                        placeholder="Edad">
                                 </td>
                                 <td>
-                                    <input type="text" name="family_composition[{{ $index }}][occupation]" class="form-control form-control-sm" value="{{ $fam['occupation'] ?? '' }}" placeholder="Trabaho">
+                                    <input type="text" name="family_composition[{{ $index }}][occupation]"
+                                        class="form-control form-control-sm" value="{{ $fam['occupation'] ?? '' }}"
+                                        placeholder="Trabaho">
                                 </td>
                                 <td>
-                                    <input type="number" step="0.01" min="0" name="family_composition[{{ $index }}][salary]" class="form-control form-control-sm" value="{{ $fam['salary'] ?? '' }}" placeholder="0.00">
+                                    <input type="number" step="0.01" min="0"
+                                        name="family_composition[{{ $index }}][salary]"
+                                        class="form-control form-control-sm" value="{{ $fam['salary'] ?? '' }}"
+                                        placeholder="0.00">
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeFamilyRow(this)"><i class="fas fa-trash"></i></button>
+                                    <button type="button" class="btn btn-sm btn-link text-danger p-0"
+                                        onclick="removeFamilyRow(this)"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
                             @endforeach
@@ -523,22 +542,30 @@
         <!-- SECTION 4: ASSISTANCE PURPOSE & INTERVIEW DETAILS -->
         <div class="form-card">
             <div class="card-body p-4">
-                <h6 class="fw-bold text-dark mb-3"><i class="fas fa-hand-holding-heart me-2 text-primary"></i> ASSISTANCE PURPOSE / MEDICAL CONDITION &amp; INTERVIEW DETAILS</h6>
-                
+                <h6 class="fw-bold text-dark mb-3"><i class="fas fa-hand-holding-heart me-2 text-primary"></i>
+                    ASSISTANCE PURPOSE / MEDICAL CONDITION &amp; INTERVIEW DETAILS</h6>
+
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Assistance Purpose / Medical Condition</label>
-                        <select name="assistance_purpose" id="assistance_purpose_select" class="form-select" onchange="togglePurposeOtherInput()">
+                        <select name="assistance_purpose" id="assistance_purpose_select" class="form-select"
+                            onchange="togglePurposeOtherInput()">
                             <option value="">Select Medical Condition / Assistance Purpose</option>
                             @foreach($medicalConditions as $cond)
-                                <option value="{{ $cond }}" {{ old('assistance_purpose') == $cond ? 'selected' : '' }}>{{ $cond }}</option>
+                            <option value="{{ $cond }}" {{ old('assistance_purpose')==$cond ? 'selected' : '' }}>{{
+                                $cond }}</option>
                             @endforeach
                         </select>
-                        <input type="text" name="purpose_other" id="purpose_other_input" class="form-control mt-2 {{ old('assistance_purpose') == 'Other Medical Conditions' ? '' : 'd-none' }}" value="{{ old('purpose_other') }}" placeholder="Specify medical condition or details...">
+                        <input type="text" name="purpose_other" id="purpose_other_input"
+                            class="form-control mt-2 {{ old('assistance_purpose') == 'Other Medical Conditions' ? '' : 'd-none' }}"
+                            value="{{ old('purpose_other') }}" placeholder="Specify medical condition or details...">
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Interviewed by <span class="text-muted">(MSWD Personnel / Social Worker)</span></label>
-                        <input type="text" name="interviewed_by" class="form-control" value="{{ old('interviewed_by', session('admin_user_name') ?? '') }}" placeholder="Printed Name of Interviewer">
+                        <label class="form-label">Interviewed by <span class="text-muted">(MSWD Personnel / Social
+                                Worker)</span></label>
+                        <input type="text" name="interviewed_by" class="form-control"
+                            value="{{ old('interviewed_by', session('admin_user_name') ?? '') }}"
+                            placeholder="Printed Name of Interviewer">
                     </div>
                 </div>
             </div>
@@ -546,8 +573,10 @@
 
         <!-- Form Submit Bar -->
         <div class="d-flex justify-content-end gap-3 mb-5">
-            <a href="{{ route('admin.beneficiary-intake.index') }}" class="btn btn-light border px-4 py-2 rounded-3">Cancel</a>
-            <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-3" style="background: #1A237E; border: none;">
+            <a href="{{ route('admin.beneficiary-intake.index') }}"
+                class="btn btn-light border px-4 py-2 rounded-3">Cancel</a>
+            <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-3"
+                style="background: #1A237E; border: none;">
                 <i class="fas fa-save me-2"></i> Save General Intake Sheet
             </button>
         </div>
@@ -557,147 +586,5 @@
 @endsection
 
 @section('page-scripts')
-<script>
-    function formatAndCalculateAge(inputEl, ageInputId) {
-        let val = inputEl.value.replace(/\D/g, '');
-        if (val.length >= 2 && val.length < 4) {
-            val = val.slice(0, 2) + '/' + val.slice(2);
-        } else if (val.length >= 4) {
-            val = val.slice(0, 2) + '/' + val.slice(2, 4) + '/' + val.slice(4, 8);
-        }
-        inputEl.value = val;
-
-        const ageEl = document.getElementById(ageInputId);
-        if (val.length === 10) {
-            const parts = val.split('/');
-            const month = parseInt(parts[0], 10) - 1;
-            const day = parseInt(parts[1], 10);
-            const year = parseInt(parts[2], 10);
-
-            if (!isNaN(month) && !isNaN(day) && !isNaN(year) && year > 1900 && month >= 0 && month <= 11 && day >= 1 && day <= 31) {
-                const birthDate = new Date(year, month, day);
-                const today = new Date();
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const m = today.getMonth() - birthDate.getMonth();
-                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                    age--;
-                }
-                ageEl.value = age >= 0 ? age : '';
-                return;
-            }
-        }
-        ageEl.value = '';
-    }
-
-    function toggleCategoryOtherText() {
-        const catOthers = document.getElementById('cat_others');
-        const otherInput = document.getElementById('beneficiary_category_other_input');
-        if (catOthers && catOthers.checked) {
-            otherInput.classList.remove('d-none');
-        } else {
-            otherInput.classList.add('d-none');
-            otherInput.value = '';
-        }
-    }
-
-    function togglePurposeOtherInput() {
-        const select = document.getElementById('assistance_purpose_select');
-        const otherInput = document.getElementById('purpose_other_input');
-        if (select && (select.value === 'Other Medical Conditions' || select.value === 'Others')) {
-            otherInput.classList.remove('d-none');
-        } else if (otherInput) {
-            otherInput.classList.add('d-none');
-            otherInput.value = '';
-        }
-    }
-
-    function toggleRepresentativeSection() {
-        const hasRep = document.getElementById('has_representative').checked;
-        const repSection = document.getElementById('representative_section');
-        const repFields = repSection.querySelectorAll('.rep-field');
-
-        if (hasRep) {
-            repSection.classList.remove('rep-card-disabled');
-            repFields.forEach(el => el.disabled = false);
-        } else {
-            repSection.classList.add('rep-card-disabled');
-            repFields.forEach(el => {
-                el.disabled = true;
-                if (el.tagName === 'INPUT' && el.type !== 'hidden') el.value = '';
-                if (el.tagName === 'SELECT') el.selectedIndex = 0;
-            });
-        }
-    }
-
-    // Dynamic Family Composition Table
-    let familyIndex = {{ count(old('family_composition', [1])) }};
-    function addFamilyRow() {
-        const tbody = document.getElementById('familyTableBody');
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td><input type="text" name="family_composition[${familyIndex}][name]" class="form-control form-control-sm" placeholder="Full Name"></td>
-            <td><input type="text" name="family_composition[${familyIndex}][relationship]" class="form-control form-control-sm" placeholder="e.g. Spouse, Son"></td>
-            <td><input type="number" min="0" name="family_composition[${familyIndex}][age]" class="form-control form-control-sm" placeholder="Edad"></td>
-            <td><input type="text" name="family_composition[${familyIndex}][occupation]" class="form-control form-control-sm" placeholder="Trabaho"></td>
-            <td><input type="number" step="0.01" min="0" name="family_composition[${familyIndex}][salary]" class="form-control form-control-sm" placeholder="0.00"></td>
-            <td class="text-center"><button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeFamilyRow(this)"><i class="fas fa-trash"></i></button></td>
-        `;
-        tbody.appendChild(tr);
-        familyIndex++;
-    }
-
-    function removeFamilyRow(btn) {
-        const row = btn.closest('tr');
-        const tbody = document.getElementById('familyTableBody');
-        if (tbody.children.length > 1) {
-            row.remove();
-        } else {
-            row.querySelectorAll('input').forEach(i => i.value = '');
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const benBirth = document.getElementById('beneficiary_birthday');
-        if (benBirth && benBirth.value) {
-            formatAndCalculateAge(benBirth, 'beneficiary_age');
-        }
-        const repBirth = document.getElementById('rep_birthday');
-        if (repBirth && repBirth.value) {
-            formatAndCalculateAge(repBirth, 'rep_age');
-        }
-        toggleRepresentativeSection();
-        togglePurposeOtherInput();
-
-        const intakeForm = document.getElementById('intakeForm');
-        if (intakeForm) {
-            intakeForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                if (!intakeForm.checkValidity()) {
-                    intakeForm.reportValidity();
-                    return;
-                }
-
-                Swal.fire({
-                    title: 'Save General Intake Sheet?',
-                    text: 'Are you sure you want to save this General Intake Sheet record?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#1A237E',
-                    cancelButtonColor: '#64748B',
-                    confirmButtonText: '<i class="fas fa-save me-1"></i> Yes, Save Record',
-                    cancelButtonText: 'Cancel',
-                    reverseButtons: true,
-                    customClass: {
-                        popup: 'rounded-4 shadow-lg'
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        intakeForm.submit();
-                    }
-                });
-            });
-        }
-    });
-</script>
+<script src="{{ asset('js/beneficiary-intake/form.js') }}"></script>
 @endsection

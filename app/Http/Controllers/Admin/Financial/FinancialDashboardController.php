@@ -25,12 +25,19 @@ class FinancialDashboardController extends Controller
 
     public function financialStep1()
     {
-        $totalIntakes = class_exists(BeneficiaryIntake::class) 
-            ? BeneficiaryIntake::count() 
-            : 0;
-        $recentIntakes = class_exists(BeneficiaryIntake::class) 
-            ? BeneficiaryIntake::latest()->paginate(10)
-            : collect();
+        $today = Carbon::today();
+
+        if (class_exists(BeneficiaryIntake::class)) {
+            $query = BeneficiaryIntake::where(function ($q) use ($today) {
+                $q->whereDate('created_at', $today)
+                  ->orWhereDate('date_processed', $today);
+            });
+            $totalIntakes = (clone $query)->count();
+            $recentIntakes = $query->latest()->paginate(10);
+        } else {
+            $totalIntakes = 0;
+            $recentIntakes = collect();
+        }
 
         return view('admin.financial.financialstep1', compact('totalIntakes', 'recentIntakes'));
     }

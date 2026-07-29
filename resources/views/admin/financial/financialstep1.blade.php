@@ -21,8 +21,8 @@ $userName = session('admin_user_name') ?? 'Officer';
         <div class="card animate-fade-in">
             <div class="card-header-clean">
                 <div>
-                    <h3 class="card-title-clean">Step 1 Intakes Directory</h3>
-                    <p class="card-subtitle-clean">Recent financial assistance client assessments</p>
+                    <h3 class="card-title-clean">Today's Intake Assessments</h3>
+                    <p class="card-subtitle-clean">General Intake Sheets created today &bull; <span class="fw-bold text-primary">{{ date('F d, Y') }}</span></p>
                 </div>
                 <a href="{{ route('admin.beneficiary-intake.create') }}" class="btn btn-brand">
                     <i class="fas fa-plus me-1"></i> New Client Intake
@@ -72,10 +72,10 @@ $userName = session('admin_user_name') ?? 'Officer';
                             @empty
                             <tr>
                                 <td colspan="6" class="p-4">
-                                    <div class="empty-state-box text-center">
-                                        <i class="fas fa-inbox fa-3x mb-3 text-muted opacity-50 d-block"></i>
-                                        <h4 class="fw-bold mb-1" style="font-size: var(--text-md); color: var(--color-text-primary);">No recent financial assistance intakes found</h4>
-                                        <p class="text-muted mb-0" style="font-size: var(--text-sm);">Click "New Client Intake" to create an initial assessment record.</p>
+                                    <div class="empty-state-box text-center py-3">
+                                        <i class="fas fa-calendar-day fa-3x mb-3 text-muted opacity-50 d-block"></i>
+                                        <h4 class="fw-bold mb-1" style="font-size: var(--text-md); color: var(--color-text-primary);">No intake records created today ({{ date('M d, Y') }})</h4>
+                                        <p class="text-muted mb-0" style="font-size: var(--text-sm);">Click "New Client Intake" to create a new assessment record for today.</p>
                                     </div>
                                 </td>
                             </tr>

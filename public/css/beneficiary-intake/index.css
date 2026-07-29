@@ -1,0 +1,76 @@
+/* Beneficiary Intake Masterlist Styles */
+
+.filter-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Table Responsive Container */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table-clean {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-clean th {
+    background-color: var(--color-overlay, #F8FAFC);
+    font-weight: 700;
+    font-size: var(--text-xs, 0.75rem);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.875rem 1.25rem;
+    color: var(--color-text-secondary, #64748B);
+    border-bottom: 2px solid var(--color-border-strong, #CBD5E1);
+}
+
+.table-clean td {
+    padding: 1rem 1.25rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--color-border, #E2E8F0);
+    font-size: var(--text-sm, 0.875rem);
+}
+
+.table-clean tbody tr:hover td {
+    background-color: rgba(241, 245, 249, 0.6);
+}
+
+.badge-cat {
+    background-color: #EEF2FF;
+    color: #1A237E;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+}
+
+.badge-rep {
+    background-color: #F0FDF4;
+    color: #15803D;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.action-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+}

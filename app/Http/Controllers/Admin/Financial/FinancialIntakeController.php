@@ -354,4 +354,64 @@ class FinancialIntakeController extends Controller
         return redirect()->route('admin.beneficiary-intake.index')
             ->with('success', 'Intake Sheet record has been deleted successfully.');
     }
+
+    /**
+     * Generate formatted Transmittal Report for Intake Assessment records.
+     */
+    public function transmittalReport(Request $request)
+    {
+        $query = BeneficiaryIntake::query();
+
+        // Determine target date (defaults to current day / today)
+        $rawDate = $request->input('transmittal_date') ?? $request->input('date');
+        $targetDate = !empty($rawDate) 
+            ? Carbon::parse($rawDate) 
+            : Carbon::today();
+
+        // 1. Check if specific intake IDs were selected via checkboxes
+        if ($request->filled('ids')) {
+            $rawIds = $request->input('ids');
+            $ids = is_array($rawIds) ? $rawIds : array_filter(explode(',', $rawIds));
+            if (!empty($ids)) {
+                $query->whereIn('id', $ids);
+            }
+        } else {
+            // 2. Filter by target date (defaults to current day)
+            $query->where(function ($q) use ($targetDate) {
+                $q->whereDate('date_processed', $targetDate)
+                  ->orWhereDate('created_at', $targetDate);
+            });
+
+            // 3. Filter by Barangay if specified
+            if ($request->filled('barangay') && $request->barangay !== 'All') {
+                $query->where('beneficiary_barangay', $request->barangay);
+            }
+
+            // 4. Search query if specified
+            if ($request->filled('search')) {
+                $search = trim($request->search);
+                $query->where(function ($q) use ($search) {
+                    $q->where('control_number', 'like', "%{$search}%")
+                      ->orWhere('beneficiary_first_name', 'like', "%{$search}%")
+                      ->orWhere('beneficiary_last_name', 'like', "%{$search}%")
+                      ->orWhere('beneficiary_middle_name', 'like', "%{$search}%");
+                });
+            }
+        }
+
+        $intakes = $query->latest()->get();
+
+        // Formatted parameters matching the sample image header
+        $transmittalDate = $targetDate->format('m-d-Y');
+        $transmittalSession = strtoupper($request->input('transmittal_session', 'AM'));
+        $defaultStaff = session('admin_user_name') ?? 'FRANCES';
+        $staffName = $request->input('staff_name', $defaultStaff);
+
+        return view('admin.financial.beneficiary-intake.transmittal', compact(
+            'intakes',
+            'transmittalDate',
+            'transmittalSession',
+            'staffName'
+        ));
+    }
 }
