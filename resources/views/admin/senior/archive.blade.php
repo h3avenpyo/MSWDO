@@ -220,50 +220,100 @@
         .empty-state h5 { color: #6B7280; font-weight: 600; font-size: 1rem; }
         .empty-state p { color: #9CA3AF; font-size: 0.85rem; margin-top: 0.25rem; max-width: 28rem; }
 
-        /* Custom Pagination */
-        .pagination-custom {
+        /* ---------- Archive Pagination ---------- */
+        .archive-pagination-wrap {
             display: flex;
-            justify-content: center;
-            gap: 0.25rem;
-            margin: 0;
-            list-style: none;
-            padding: 0;
-        }
-        .pagination-custom li { margin: 0; }
-        .pagination-custom li a,
-        .pagination-custom li span {
-            display: inline-flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 0.375rem 0.75rem;
-            border-radius: 8px;
-            text-decoration: none;
-            background: var(--surface);
-            transition: all 0.2s;
-            min-width: 40px;
-            text-align: center;
+            gap: 10px;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            width: 100%;
+            flex-shrink: 0;
+        }
+        .archive-pagination-info {
             font-size: 0.875rem;
-            font-family: var(--font-family);
+            color: var(--text-secondary);
+            text-align: center;
+            font-weight: 500;
         }
-        .pagination-custom li a:hover {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
+        .archive-pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
         }
-        .pagination-custom li.active span,
-        .pagination-custom li.active a {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
+        .archive-pagination-controls .ssg-pagination {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 6px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            flex-wrap: wrap !important;
         }
-        .pagination-custom li.disabled span,
-        .pagination-custom li.disabled a {
-            color: var(--text-muted);
-            background-color: var(--background);
-            border-color: var(--border);
-            cursor: not-allowed;
+        .archive-pagination-controls .ssg-pagination .pg-btn,
+        .archive-pagination-controls .ssg-pagination .pg-active,
+        .archive-pagination-controls .ssg-pagination .pg-dots,
+        .archive-pagination-controls .ssg-pagination .pg-disabled {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 38px !important;
+            min-width: 38px !important;
+            padding: 0 12px !important;
+            border: 1px solid #D1D5DB !important;
+            border-radius: 8px !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            line-height: 1 !important;
+            white-space: nowrap !important;
+            user-select: none !important;
+            text-decoration: none !important;
+            transition: all 0.2s ease !important;
+            box-sizing: border-box !important;
+            background: #ffffff;
+            color: #1F2937;
+        }
+        .archive-pagination-controls .ssg-pagination .pg-btn:hover {
+            background: #F3F4F6 !important;
+            border-color: #1A237E !important;
+            color: #1A237E !important;
+        }
+        .archive-pagination-controls .ssg-pagination .pg-active {
+            background: #1A237E !important;
+            color: #ffffff !important;
+            border-color: #1A237E !important;
+            font-weight: 600 !important;
+            box-shadow: 0 2px 6px rgba(26, 35, 126, 0.25) !important;
+        }
+        .archive-pagination-controls .ssg-pagination .pg-disabled {
+            background: #F9FAFB !important;
+            color: #9CA3AF !important;
+            border-color: #E5E7EB !important;
+            cursor: not-allowed !important;
+            opacity: 0.7 !important;
+        }
+        .archive-pagination-controls .ssg-pagination .pg-dots {
+            background: transparent !important;
+            border: none !important;
+            color: var(--text-muted) !important;
+            cursor: default !important;
+            min-width: 24px !important;
+            padding: 0 4px !important;
+        }
+        .archive-pagination-controls .ssg-pagination .pg-mobile-info {
+            display: none !important;
+        }
+        .archive-pagination-controls .ssg-pagination .pg-prev-arrow,
+        .archive-pagination-controls .ssg-pagination .pg-next-arrow {
+            display: none !important;
+        }
+        .archive-pagination-controls .ssg-pagination .pg-prev-text,
+        .archive-pagination-controls .ssg-pagination .pg-next-text {
+            display: inline !important;
         }
 
         /* Custom Select */
@@ -432,7 +482,8 @@
         .archive-table-wrap tbody td .sex-age-wrap .sex-sep{display:inline;color:var(--text-muted);font-size:0.82rem;}
         .archive-table-wrap tbody td .sex-age-wrap{display:inline-flex;align-items:center;gap:0;}
         .archive-table-wrap tbody td .badge-archived{font-size:0.7rem;}
-        .pagination-custom{flex-wrap:wrap;justify-content:center;}
+        .archive-pagination-wrap { margin-top: 0.875rem !important; padding-top: 0.875rem !important; gap: 6px !important; }
+        .archive-pagination-info { font-size: 0.813rem !important; }
         }
 
         @media (max-width: 479px) {
@@ -486,6 +537,7 @@
             .filter-right { width: auto !important; flex-wrap: nowrap !important; gap: 12px !important; }
             .archive-table-wrap tbody td { font-size: 0.82rem !important; }
             .archive-table-wrap tbody td::before { min-width: 70px !important; font-size: 0.72rem !important; }
+            .archive-pagination-wrap { margin-top: 1.25rem !important; padding-top: 1rem !important; gap: 8px !important; }
         }
         /* ── 992–1199px: Large tablets — same hamburger+header layout ── */
         @media (min-width: 992px) and (max-width: 1199px) {
@@ -506,6 +558,7 @@
             .filter-right { width: auto !important; flex-wrap: nowrap !important; gap: 12px !important; }
             .archive-table-wrap tbody td { font-size: 0.85rem !important; }
             .archive-table-wrap tbody td::before { min-width: 70px !important; font-size: 0.72rem !important; }
+            .archive-pagination-wrap { margin-top: 1.25rem !important; padding-top: 1rem !important; gap: 8px !important; }
         }
 
         @media (min-width: 1200px) {
@@ -525,6 +578,7 @@
             .archive-table-wrap tbody td { font-size: 0.85rem !important; }
             /* Empty state fills the full flex area and centers content */
             .archive-table-wrap .empty-state { flex: 1 !important; min-height: 320px !important; justify-content: center !important; }
+            .archive-pagination-wrap { margin-top: 0.875rem !important; padding-top: 0.875rem !important; gap: 8px !important; flex-shrink: 0 !important; }
         }
     </style>
 </head>
@@ -841,11 +895,26 @@
             </div>
 
             <!-- Pagination -->
-            @if($archivedSeniors->hasPages())
-            <div class="flex justify-center py-4 border-t border-[#F3F4F6]" style="flex-shrink:0;">
-                {{ $archivedSeniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
+            <div class="archive-pagination-wrap">
+                <div class="archive-pagination-info">
+                    @if($archivedSeniors->total() > 0)
+                        Showing {{ $archivedSeniors->firstItem() }} to {{ $archivedSeniors->lastItem() }} of {{ $archivedSeniors->total() }} Archived Senior Citizens
+                    @else
+                        Showing 0 of 0 Archived Senior Citizens
+                    @endif
+                </div>
+                <div class="archive-pagination-controls">
+                    @if($archivedSeniors->hasPages())
+                        {{ $archivedSeniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
+                    @else
+                        <div class="ssg-pagination">
+                            <span class="pg-disabled">&laquo; Previous</span>
+                            <span class="pg-active">1</span>
+                            <span class="pg-disabled">Next &raquo;</span>
+                        </div>
+                    @endif
+                </div>
             </div>
-            @endif
         </div>
     </div>
 </div>

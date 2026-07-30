@@ -109,22 +109,22 @@
         .analytics-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:20px;}
 
         /* Activity Card */
-        .activity-card{background:var(--surface);border-radius:16px;padding:24px;box-shadow:var(--shadow);border:1px solid var(--border);min-height:420px;animation:fadeInUp .6s ease-out .2s backwards;}
-        .activity-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:20px;}
-        .activity-feed{max-height:340px;overflow-y:auto;padding-right:8px;}
+        .activity-card{background:var(--surface);border-radius:16px;padding:24px;box-shadow:var(--shadow);border:1px solid var(--border);min-height:420px;animation:fadeInUp .6s ease-out .2s backwards;overflow:hidden;display:flex;flex-direction:column;}
+        .activity-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:20px;flex-shrink:0;}
+        .activity-feed{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:8px;min-height:0;}
         .activity-feed::-webkit-scrollbar{width:6px;}
         .activity-feed::-webkit-scrollbar-track{background:var(--background);border-radius:3px;}
         .activity-feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
         .activity-feed::-webkit-scrollbar-thumb:hover{background:var(--text-muted);}
 
-        .activity-item{display:flex;gap:14px;padding:14px;border-radius:12px;background:var(--background);margin-bottom:10px;transition:all .2s ease;}
+        .activity-item{display:flex;gap:14px;padding:14px;border-radius:12px;background:var(--background);margin-bottom:10px;transition:all .2s ease;overflow:hidden;}
         .activity-item:last-child{margin-bottom:0;}
         .activity-item:hover{transform:translateX(4px);background:var(--surface);box-shadow:0 2px 8px rgba(0,0,0,.04);}
         .activity-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
         .activity-icon svg{width:20px;height:20px;}
-        .activity-content{flex:1;min-width:0;}
-        .activity-text{font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:2px;line-height:1.4;word-break:break-word;white-space:normal;}
-        .activity-time{font-size:11px;color:var(--text-muted);word-break:break-word;white-space:normal;}
+        .activity-content{flex:1;min-width:0;overflow:hidden;display:flex;flex-direction:column;}
+        .activity-text{font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:2px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+        .activity-time{font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
         /* Table Card */
         .table-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;animation:fadeInUp .6s ease-out .3s backwards;}
@@ -455,10 +455,21 @@
             /* Recent Activities */
             .activity-card {
                 min-height: auto !important;
+                height: 340px !important;
+                max-height: 340px !important;
                 padding: 16px !important;
                 border-radius: 16px !important;
+                display: flex !important;
+                flex-direction: column !important;
             }
-            .activity-feed { max-height: none !important; overflow: visible !important; }
+            .activity-feed {
+                flex: 1 !important;
+                min-height: 0 !important;
+                max-height: none !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                padding-right: 4px !important;
+            }
             .activity-item {
                 padding: 12px !important;
                 border-radius: 12px !important;
@@ -546,6 +557,9 @@
             .hamburger-btn { display: flex !important; }
             .mobile-header { display: none !important; }
             header { display: flex !important; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .activity-card { display: flex !important; flex-direction: column !important; height: 400px !important; min-height: 400px !important; max-height: 400px !important; }
+            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: none !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
 
         /* ── Small Tablets (768px - 991px) ── */
@@ -557,6 +571,16 @@
             .hamburger-btn { display: flex !important; }
             .mobile-header { display: none !important; }
             header { display: flex !important; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .activity-card { display: flex !important; flex-direction: column !important; height: 380px !important; min-height: 380px !important; max-height: 380px !important; }
+            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: none !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
+        }
+
+        /* ── Mobile (0px - 767px) ── */
+        @media (max-width: 767px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .activity-card { display: flex !important; flex-direction: column !important; height: 350px !important; min-height: 350px !important; max-height: 350px !important; }
+            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: none !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
     </style>
 </head>

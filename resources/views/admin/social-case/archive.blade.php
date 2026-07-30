@@ -36,6 +36,11 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     html,body{overflow-x:hidden!important;overflow-y:auto!important}
     .app{min-height:auto!important}
     .main{display:flex!important;flex-direction:column!important;overflow-x:hidden!important;overflow-y:auto!important}
+    @media (min-width:1200px){
+        html,body{overflow:hidden!important}
+        .app{height:100vh!important;overflow:hidden!important}
+        .main{height:100vh!important;overflow:hidden!important;overflow-x:hidden!important;overflow-y:hidden!important}
+    }
     #archiveSearch:focus{border-color:#1A237E;box-shadow:0 0 0 3px rgba(26,35,126,.08)}
     .archive-type-opt.selected,.archive-brgy-opt.selected{background:#F3F4F6;font-weight:600}
     .archive-type-opt:not(.selected):hover,.archive-brgy-opt:not(.selected):hover{background:#F3F4F6}
@@ -250,13 +255,50 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     }
 
     @media (min-width: 1200px) {
-        .archive-panel-wrap { padding: revert !important; margin-bottom: 0 !important; flex: 1 !important; display: flex !important; flex-direction: column !important; }
-        .archive-table-wrap { flex: 1 !important; display: flex !important; flex-direction: column !important; overflow: auto !important; min-height: 0 !important; }
-        .archive-table { flex: 1 !important; display: flex !important; flex-direction: column !important; width: 100% !important; }
-        .archive-table thead { flex-shrink: 0; }
-        .archive-table tbody { flex: 1 !important; display: flex !important; flex-direction: column !important; }
-        .archive-table tbody tr.empty-row { flex: 1 !important; display: flex !important; width: 100% !important; border: none !important; background: transparent !important; box-shadow: none !important; margin: 0 !important; }
-        .archive-table tbody tr.empty-row td.empty-cell { flex: 1 !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; width: 100% !important; border: none !important; padding: 3rem 1.5rem !important; }
+        /* ── Panel & wrap: grow to fill all remaining height ── */
+        .archive-panel-wrap { padding: 1rem !important; margin-bottom: 0 !important; flex: 1 !important; min-height: 0 !important; overflow: hidden !important; display: flex !important; flex-direction: column !important; }
+        .archive-table-wrap { flex: 1 !important; min-height: 0 !important; border: 1px solid var(--border) !important; overflow: auto !important; border-radius: 8px !important; }
+
+        /* ── Restore standard table display ── */
+        .archive-table { display: table !important; width: 100% !important; }
+        .archive-table thead { display: table-header-group !important; }
+        .archive-table tbody { display: table-row-group !important; }
+        .archive-table tbody tr {
+            display: table-row !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            margin-bottom: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+        }
+        .archive-table tbody td {
+            display: table-cell !important;
+            padding: 0.9rem 1rem !important;
+            border-bottom: 1px solid var(--border) !important;
+            font-size: 0.9rem !important;
+            justify-content: unset !important;
+            gap: 0 !important;
+        }
+        .archive-table tbody td::before { content: none !important; display: none !important; }
+        .archive-table tbody td[data-label="Action"] {
+            justify-content: flex-start !important;
+            padding-top: 0.9rem !important;
+            border-bottom: 1px solid var(--border) !important;
+        }
+        .archive-table tbody td[data-label="Action"]::before { display: none !important; }
+        .archive-table tbody td:not([data-label]) { text-align: left !important; }
+        .archive-table tbody td:not([data-label])::before { display: none !important; }
+        .archive-table tbody td .badge { font-size: inherit !important; }
+
+        /* ── Empty row (keep it centered across the full table row) ── */
+        .archive-table tbody tr.empty-row { display: table-row !important; background: transparent !important; border: none !important; box-shadow: none !important; margin: 0 !important; }
+        .archive-table tbody tr.empty-row td.empty-cell {
+            display: table-cell !important;
+            padding: 3rem 1.5rem !important;
+            border: none !important;
+            text-align: center !important;
+        }
         .archive-table tbody tr.empty-row td.empty-cell::before { display: none !important; }
 
         .empty-icon-wrap {
@@ -283,6 +325,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             line-height: 1.5;
         }
 
+        /* ── Filter bar ── */
         .archive-filter-bar {
             flex-direction: row !important;
             flex-wrap: nowrap !important;
@@ -309,6 +352,10 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             min-width: 160px !important;
             max-width: none !important;
         }
+
+        /* ── Pagination: pinned at the bottom of .main, centered ── */
+        .sc-pagination { flex-direction: column !important; justify-content: center !important; align-items: center !important; gap: 8px !important; margin-top: 12px !important; flex-shrink: 0 !important; padding-bottom: 4px !important; }
+        .sc-page-btn { height: 38px; min-width: 38px; font-size: 0.875rem; padding: 0 0.75rem; }
     }
     .archive-brgy-opt:hover,
     .archive-type-opt:hover {
@@ -415,18 +462,18 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         </div>
     </div>
 
-    <div class="panel archive-panel-wrap" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;margin-bottom:0">
-        <div class="archive-table-wrap" style="flex:1;overflow:auto;min-height:0;border-radius:8px">
+    <div class="panel archive-panel-wrap">
+        <div class="archive-table-wrap">
             <table class="archive-table">
                 <thead><tr><th>Control No</th><th>Client</th><th>Assistance Type</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
                 <tbody id="archiveTable"></tbody>
             </table>
         </div>
+    </div>
 
-        <div class="sc-pagination">
-            <div class="sc-pagination-info" id="archivePaginationInfo">Showing 0 of 0 Archived Cases</div>
-            <div class="sc-pagination-controls" id="archivePaginationControls"></div>
-        </div>
+    <div class="sc-pagination">
+        <div class="sc-pagination-info" id="archivePaginationInfo">Showing 0 of 0 Archived Cases</div>
+        <div class="sc-pagination-controls" id="archivePaginationControls"></div>
     </div>
 </div>
 @endsection

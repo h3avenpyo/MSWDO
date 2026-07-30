@@ -38,6 +38,17 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .main{display:flex!important;flex-direction:column!important;overflow-x:hidden!important;overflow-y:auto!important}
     @media (min-width:768px){header{display:flex!important}}
     @media (max-width:767px){.mobile-header{display:flex!important}}
+    @media (min-width:1200px){
+        html,body{overflow:hidden!important}
+        .app{height:100vh!important;overflow:hidden!important}
+        .main{height:100vh!important;overflow:hidden!important}
+        /* Card grows to fill remaining vertical space */
+        .sc-table-card{flex:1!important;min-height:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;margin-bottom:0!important;}
+        /* Table scrolls internally */
+        .sc-table-responsive{flex:1!important;min-height:0!important;overflow:auto!important;}
+        /* Pagination: centered at bottom */
+        .sc-pagination{flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:8px!important;margin-top:12px!important;flex-shrink:0!important;padding-bottom:4px!important;border-top:none!important;}
+    }
 </style>
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
@@ -170,20 +181,21 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             </a>
         </div>
 
-        <!-- Pagination -->
-        <div class="sc-pagination">
-            <div class="sc-pagination-info" id="paginationInfo">Showing 0 of 0 Social Case Studies</div>
-            <div class="sc-pagination-controls" id="paginationControls">
-                <button class="sc-page-btn" id="prevBtn" disabled>
-                    <i data-lucide="chevron-left" style="width:14px;height:14px"></i> Previous
-                </button>
-                <button class="sc-page-btn active" id="page1">1</button>
-                <button class="sc-page-btn" id="page2">2</button>
-                <button class="sc-page-btn" id="page3">3</button>
-                <button class="sc-page-btn" id="nextBtn">
-                    Next <i data-lucide="chevron-right" style="width:14px;height:14px"></i>
-                </button>
-            </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="sc-pagination">
+        <div class="sc-pagination-info" id="paginationInfo">Showing 0 of 0 Social Case Studies</div>
+        <div class="sc-pagination-controls" id="paginationControls">
+            <button class="sc-page-btn" id="prevBtn" disabled>
+                <i data-lucide="chevron-left" style="width:14px;height:14px"></i> Previous
+            </button>
+            <button class="sc-page-btn active" id="page1">1</button>
+            <button class="sc-page-btn" id="page2">2</button>
+            <button class="sc-page-btn" id="page3">3</button>
+            <button class="sc-page-btn" id="nextBtn">
+                Next <i data-lucide="chevron-right" style="width:14px;height:14px"></i>
+            </button>
         </div>
     </div>
 </div>
