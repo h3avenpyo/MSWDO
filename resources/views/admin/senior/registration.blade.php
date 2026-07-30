@@ -69,7 +69,7 @@
 
         /* ── Mobile Header ── */
         .mobile-header {
-            display: none !important;
+            display: flex !important;
             position: fixed;
             top: 0; left: 0; right: 0;
             z-index: 1000;
@@ -143,15 +143,40 @@
         }
 
 
-        /* ── Responsive: Tablet (< 1024px) ── */
-        @media (max-width: 1023px) {
-            .hamburger-btn { display: flex; }
-            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
-            .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
+        .hamburger-btn { display: flex; }
+        .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+        .sidebar.show { transform: translateX(0) !important; }
+        .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
+
+        /* ── Desktop (min-width: 1200px) ── */
+        @media (min-width: 1200px) {
+            .hamburger-btn { display: none !important; }
+            .sidebar { transform: none !important; z-index: 1000 !important; }
+            .sidebar.show { transform: none !important; }
+            .main, .main-content { margin-left: 260px !important; max-width: calc(100% - 260px) !important; padding: 32px !important; }
+            .mobile-header { display: none !important; }
         }
 
-        /* ── Responsive: Mobile (< 768px) ── */
+        /* ── Large Tablets (992px - 1199px) ── */
+        @media (min-width: 992px) and (max-width: 1199px) {
+            .hamburger-btn { display: flex !important; }
+            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 24px !important; }
+            .mobile-header { display: none !important; }
+            header { display: flex !important; }
+        }
+
+        /* ── Small Tablets (768px - 991px) ── */
+        @media (min-width: 768px) and (max-width: 991px) {
+            .hamburger-btn { display: flex !important; }
+            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 20px !important; }
+            .mobile-header { display: none !important; }
+            header { display: flex !important; }
+        }
+
         @media (max-width: 767px) {
             .app { flex-direction: column; }
             .main {
@@ -164,8 +189,8 @@
             header { display: none !important; }
             .hamburger-btn { display: none !important; }
             .mobile-header { display: flex !important; }
-            input[type="date"].form-input{background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3e%3cline x1='16' y1='2' x2='16' y2='6'/%3e%3cline x1='8' y1='2' x2='8' y2='6'/%3e%3cline x1='3' y1='10' x2='21' y2='10'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-right:36px;}
         }
+        input[type="date"].form-input{background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3e%3cline x1='16' y1='2' x2='16' y2='6'/%3e%3cline x1='8' y1='2' x2='8' y2='6'/%3e%3cline x1='3' y1='10' x2='21' y2='10'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-right:36px;}
 
         /* ── Responsive: Small Mobile (< 480px) ── */
         @media (max-width: 479px) {
@@ -177,6 +202,10 @@
             .mobile-menu-icon { width: 28px !important; height: 28px !important; }
         }
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+        @media (min-width: 1200px) {
+            .hamburger-btn { display: none !important; }
+        }
     </style>
 </head>
 <body>

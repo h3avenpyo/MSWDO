@@ -35,12 +35,13 @@
             transition: max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             margin: 0 auto;
         }
+        /* Default (mobile): login-mode stacks vertically */
         .portal-container.login-mode {
-            max-width: 80rem;
+            max-width: 28rem;
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             align-items: center;
-            gap: 4rem;
+            gap: 1.5rem;
             width: 100%;
         }
         .logo-wrapper {
@@ -51,14 +52,15 @@
             margin-bottom: 3rem;
             transition: margin-bottom 0.3s ease;
         }
+        /* In login-mode (mobile/tablet): compact logo above the form */
         .portal-container.login-mode .logo-wrapper {
             margin-bottom: 0;
             flex: 0 0 auto;
-            min-width: 15rem;
+            min-width: unset;
         }
         .portal-container.login-mode .logo-img {
-            width: 8rem;
-            height: 8rem;
+            width: 5rem;
+            height: 5rem;
         }
         .logo-img {
             width: 6rem;
@@ -100,34 +102,50 @@
 
         .roles-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
+            grid-template-columns: 1fr;
+            gap: 1rem;
             margin-top: 1rem;
             width: 100%;
         }
-        @media (max-width: 1024px) {
-            .roles-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .portal-container.login-mode {
-                gap: 2rem;
-            }
+        @media (max-width: 479px) {
+            body { padding: 1rem; }
+            body.login-mode-active { padding: 1rem; }
+            .welcome-title { font-size: 1.5rem; }
+            .welcome-subtitle { font-size: 0.875rem; }
+            .login-panel { padding: 1.25rem !important; max-width: 100% !important; width: 100% !important; }
+            .logo-img { width: 4rem; height: 4rem; }
+            .portal-container.login-mode .logo-img { width: 3.5rem; height: 3.5rem; }
+            .portal-container.login-mode { gap: 0.75rem; }
+            .portal-container.login-mode .welcome-title { font-size: 1.25rem; }
+            .skeleton-logo { width: 4rem; height: 4rem; }
+            .skeleton-title { width: 16rem; max-width: 80%; }
         }
-        @media (max-width: 640px) {
-            .roles-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (min-width: 480px) and (max-width: 767px) {
+            .portal-container.login-mode { max-width: 26rem; gap: 1.25rem; }
+            .login-panel { max-width: 100% !important; width: 100% !important; }
+        }
+        @media (min-width: 768px) {
+            .roles-grid { grid-template-columns: repeat(2, 1fr); }
+            .welcome-title { font-size: 2.25rem; }
+            /* Tablet: still vertical stack but wider */
+            .portal-container.login-mode { max-width: 32rem; gap: 1.5rem; }
+            .login-panel { max-width: 100% !important; width: 100% !important; padding: 2rem; }
+            .portal-container.login-mode .logo-img { width: 6rem; height: 6rem; }
+        }
+        @media (min-width: 992px) {
+            .roles-grid { grid-template-columns: repeat(4, 1fr); }
+            /* Desktop: go side-by-side */
             .portal-container.login-mode {
-                flex-direction: column;
-                gap: 1.5rem;
+                max-width: 80rem;
+                flex-direction: row;
+                align-items: center;
+                gap: 4rem;
             }
             .portal-container.login-mode .logo-wrapper {
-                min-width: 0;
+                min-width: 15rem;
             }
-            .login-panel {
-                max-width: 100%;
-                padding: 1.5rem;
-            }
+            .portal-container.login-mode .logo-img { width: 8rem; height: 8rem; }
+            .login-panel { max-width: 28rem !important; padding: 2.5rem; flex: 1; }
         }
         .role-card {
             background: #FFFFFF;
@@ -189,12 +207,12 @@
             background-color: #FFFFFF;
             border: 1px solid #E2E8F0;
             border-radius: 0.75rem;
-            padding: 2.5rem;
+            padding: 1.5rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             animation: slideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            flex: 1;
-            max-width: 28rem;
             width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
         @keyframes slideIn {
             from {
@@ -375,19 +393,15 @@
         }
         .skeleton-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
+            grid-template-columns: 1fr;
+            gap: 1rem;
             width: 100%;
         }
-        @media (max-width: 1024px) {
-            .skeleton-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        @media (min-width: 768px) {
+            .skeleton-grid { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
         }
-        @media (max-width: 640px) {
-            .skeleton-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (min-width: 992px) {
+            .skeleton-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
         }
         .skeleton-card-container {
             background: #FFFFFF;
@@ -425,19 +439,10 @@
             display: none !important;
         }
 
-        /* ── Responsive: Small Mobile (< 480px) ── */
-        @media (max-width: 479px) {
-            body { padding: 1rem; }
-            body.login-mode-active { padding: 1rem; }
-            .welcome-title { font-size: 1.75rem; }
-            .welcome-subtitle { font-size: 0.9rem; }
-            .login-panel { padding: 1.25rem; }
-            .logo-img { width: 4rem; height: 4rem; }
-            .portal-container.login-mode .logo-img { width: 5rem; height: 5rem; }
-            .portal-container.login-mode { gap: 1rem; }
-            .skeleton-logo { width: 4rem; height: 4rem; }
-            .skeleton-title { width: 16rem; max-width: 80%; }
-        }
+        /* ══════════════════════════════════════════════
+           BREAKPOINTS (Mobile-First)
+           xs: 0–767px (default), sm: 768+, md: 992+, lg: 1200+
+           ══════════════════════════════════════════════ */
     </style>
 </head>
 <body>

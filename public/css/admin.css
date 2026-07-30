@@ -223,7 +223,6 @@ body {
     right: 0;
     background-color: var(--cards);
     border: 1px solid var(--border);
-    border-radius: 8px;
     box-shadow: 0 8px 16px rgba(0,0,0,0.12);
     min-width: 200px;
     z-index: 1000;
@@ -818,82 +817,89 @@ body {
     display: block;
 }
 
-/* ── Responsive: Tablet (< 1024px) ── */
-@media (max-width: 1023px) {
-    .sidebar {
-        transform: translateX(-100%);
-        z-index: 1001;
-    }
-    .sidebar.show {
-        transform: translateX(0);
-    }
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-    }
-    .top-navbar {
-        padding: 1rem 1.25rem;
-    }
+/* ── Table responsive wrapper ── */
+.table-responsive-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
-/* ── Responsive: Mobile (< 768px) ── */
-@media (max-width: 767px) {
-    .top-navbar {
-        padding: 0.75rem 1rem;
-    }
-    .navbar-title {
-        font-size: 0.95rem;
-    }
-    .navbar-datetime {
-        display: none;
-    }
-    .navbar-right {
-        gap: 0.75rem;
-    }
-    .stat-card {
-        padding: 1rem;
-    }
-    .stat-value {
-        font-size: 1.5rem;
-    }
-    .stat-icon {
-        width: 44px;
-        height: 44px;
-        font-size: 1.1rem;
-    }
-    .card-body {
-        padding: 1rem;
-    }
-    .card-header {
-        padding: 1rem;
-        font-size: 1rem;
-    }
-    .table th,
-    .table td {
-        padding: 0.625rem 0.75rem;
-        font-size: 0.8125rem;
-    }
-    .btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.8125rem;
-    }
-    .step-circle {
-        width: 30px;
-        height: 30px;
-        font-size: 0.8rem;
-    }
-    .step-label {
-        font-size: 0.65rem;
-    }
-    .empty-state {
-        padding: 1.5rem;
-    }
-    .empty-state-icon {
-        font-size: 2rem;
-    }
+/* ══════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS (Mobile-First)
+   ══════════════════════════════════════════════
+   
+   xs: 0–767px   (default, no query needed)
+   sm: 768–991px  @media (min-width: 768px)
+   md: 992–1199px @media (min-width: 992px)
+   lg: 1200px+    @media (min-width: 1200px)
+*/
+
+/* ── xs: Phones (0–767px) ── */
+.sidebar {
+    transform: translateX(-100%);
+    z-index: 1001;
+}
+.sidebar.show {
+    transform: translateX(0);
+}
+.main-content {
+    margin-left: 0;
+    width: 100%;
+}
+.top-navbar {
+    padding: 0.75rem 1rem;
+}
+.navbar-title {
+    font-size: 0.95rem;
+}
+.navbar-datetime {
+    display: none;
+}
+.navbar-right {
+    gap: 0.75rem;
+}
+.stat-card {
+    padding: 1rem;
+}
+.stat-value {
+    font-size: 1.5rem;
+}
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+}
+.card-body {
+    padding: 1rem;
+}
+.card-header {
+    padding: 1rem;
+    font-size: 1rem;
+}
+.table th,
+.table td {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
+}
+.btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+}
+.step-circle {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+}
+.step-label {
+    font-size: 0.65rem;
+}
+.empty-state {
+    padding: 1.5rem;
+}
+.empty-state-icon {
+    font-size: 2rem;
 }
 
-/* ── Responsive: Small Mobile (< 480px) ── */
+/* ── xs: Small phones (0–479px) ── */
 @media (max-width: 479px) {
     .top-navbar {
         padding: 0.625rem 0.75rem;
@@ -913,7 +919,89 @@ body {
     }
 }
 
-/* ── Responsive: Large Desktop (≥ 1536px) ── */
+/* ── sm: Small tablets (768px+) ── */
+@media (min-width: 768px) {
+    .stat-card {
+        padding: 1.25rem;
+    }
+    .navbar-datetime {
+        display: block;
+    }
+    .top-navbar {
+        padding: 1rem 1.5rem;
+    }
+    .navbar-title {
+        font-size: 1rem;
+    }
+    .navbar-right {
+        gap: 1rem;
+    }
+}
+
+/* ── md: Large tablets (992px+) ── */
+@media (min-width: 992px) {
+    .top-navbar {
+        padding: 1.25rem 1.75rem;
+    }
+    .navbar-title {
+        font-size: 1.1rem;
+    }
+}
+
+/* ── lg: Desktops (1200px+) ── */
+@media (min-width: 1200px) {
+    .sidebar {
+        transform: translateX(0);
+        z-index: 1000;
+    }
+    .main-content {
+        margin-left: 260px;
+        width: calc(100% - 260px);
+    }
+    .top-navbar {
+        padding: 1.25rem 2rem;
+    }
+    .stat-card {
+        padding: 1.5rem;
+    }
+    .stat-value {
+        font-size: 1.75rem;
+    }
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 1.4rem;
+    }
+    .card-body {
+        padding: 1.5rem;
+    }
+    .card-header {
+        padding: 1.25rem 1.5rem;
+        font-size: 1.1rem;
+    }
+    .table th,
+    .table td {
+        padding: 1rem;
+        font-size: 0.875rem;
+    }
+    .btn {
+        padding: 0.6rem 1.25rem;
+        font-size: 0.9rem;
+    }
+    .step-circle {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+    .step-label {
+        font-size: 0.75rem;
+    }
+    .navbar-right {
+        gap: 1.5rem;
+    }
+}
+
+/* ── Large Desktop (≥ 1536px) ── */
 @media (min-width: 1536px) {
     .card-body {
         padding: 2rem;

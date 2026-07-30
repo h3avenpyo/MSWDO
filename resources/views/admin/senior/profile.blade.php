@@ -129,28 +129,42 @@
 
         /* ── Sidebar Overlay ── */
         .sidebar-overlay.active { display: block !important; }
+        .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+        .sidebar.show { transform: translateX(0) !important; }
+        .main, .main-content { margin-left: 0 !important; max-width: 100% !important; }
+        .main, .main-content { padding: 16px !important; }
+        .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
+        .dashboard-grid { grid-template-columns: 1fr !important; }
 
-        /* ── Responsive: Tablet (< 1024px) ── */
-        @media (max-width: 1023px) {
-            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
-            .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; }
-            .main, .main-content { padding: 16px !important; }
-            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
-            .dashboard-grid { grid-template-columns: 1fr !important; }
+        /* ── Desktop (min-width: 1200px) ── */
+        @media (min-width: 1200px) {
+            .sidebar { transform: none !important; z-index: 1000 !important; }
+            .sidebar.show { transform: none !important; }
+            .main, .main-content { margin-left: 260px !important; max-width: calc(100% - 260px) !important; }
+            .main, .main-content { padding: 0 !important; }
         }
 
-        /* ── Responsive: Mobile (< 768px) ── */
-        @media (max-width: 767px) {
-            .main, .main-content { padding: 12px !important; }
-            .stat-cards { grid-template-columns: 1fr !important; }
-            .topnav, .top-navbar { padding: 10px 12px !important; }
-            .topnav-datetime, .navbar-datetime { display: none !important; }
-            .filter-bar, .filter-group { flex-wrap: wrap; }
-            .filter-bar > div, .filter-group > div { min-width: 0 !important; }
-            .verify-container { padding: 0 8px; overflow-x: auto; }
-            .detail-row { flex-direction: column; gap: 4px; }
-            .detail-label { width: auto; max-width: none; }
+        .main, .main-content { padding: 12px !important; }
+        .stat-cards { grid-template-columns: 1fr !important; }
+        .topnav, .top-navbar { padding: 10px 12px !important; }
+        .topnav-datetime, .navbar-datetime { display: none !important; }
+        .filter-bar, .filter-group { flex-wrap: wrap; }
+        .filter-bar > div, .filter-group > div { min-width: 0 !important; }
+        .verify-container { padding: 0 8px; overflow-x: auto; }
+        .detail-row { flex-direction: column; gap: 4px; }
+        .detail-label { width: auto; max-width: none; }
+
+        /* ── Tablet+ (min-width: 768px) ── */
+        @media (min-width: 768px) {
+            .main, .main-content { padding: 16px !important; }
+            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
+            .topnav, .top-navbar { padding: 1rem 2rem !important; }
+            .topnav-datetime, .navbar-datetime { display: block !important; }
+            .filter-bar, .filter-group { flex-wrap: nowrap !important; }
+            .filter-bar > div, .filter-group > div { min-width: auto !important; }
+            .verify-container { padding: 0; overflow-x: visible; }
+            .detail-row { flex-direction: row; gap: 0; }
+            .detail-label { min-width: 100px; max-width: 140px; }
         }
 
         /* ── Responsive: Small Mobile (< 480px) ── */

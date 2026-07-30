@@ -849,10 +849,14 @@ function renderArchive(){
   
   if(archivedCases.length === 0){
     const hasFilters = q || f || b;
-    table.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted)">
-      <i data-lucide="${hasFilters ? 'search-x' : 'archive'}" style="width:32px;height:32px;margin-bottom:8px"></i>
-      <div>${hasFilters ? 'No matching archived cases' : 'No archived cases'}</div>
-      <div style="font-size:12px;margin-top:4px">${hasFilters ? 'Try adjusting your search or filter' : 'Archived cases will appear here'}</div>
+    table.innerHTML = `<tr class="empty-row"><td colspan="6" class="empty-cell">
+      <div class="empty-state-content">
+        <div class="empty-icon-wrap">
+          <i data-lucide="${hasFilters ? 'search-x' : 'archive'}"></i>
+        </div>
+        <div class="empty-title">${hasFilters ? 'No matching archived cases' : 'No archived cases'}</div>
+        <div class="empty-subtitle">${hasFilters ? 'Try adjusting your search or filter' : 'Archived cases will appear here'}</div>
+      </div>
     </td></tr>`;
     const pagInfo = document.getElementById('archivePaginationInfo');
     if(pagInfo) pagInfo.textContent = 'Showing 0 of 0 Archived Cases';
@@ -2171,9 +2175,9 @@ function renderCaseList(){
 
   // Get filter values
   const searchQuery = (document.getElementById('searchInput')?.value || "").toLowerCase();
-  const statusFilter = document.getElementById('statusFilter')?.value || "All";
-  const assistanceFilter = document.getElementById('assistanceFilter')?.value || "All";
-  const barangayFilter = document.getElementById('barangayFilter')?.value || "All";
+  const statusFilter = filterState.status || "All";
+  const assistanceFilter = filterState.assistance || "All";
+  const barangayFilter = filterState.barangay || "All";
 
   // Filter cases (exclude archived – those live on the archive page)
   let filtered = cases.filter(c => {
@@ -2217,7 +2221,7 @@ function renderCaseList(){
         <td data-label="Control No."><span class="control-no">${escapeHtml(c.controlNo)||"—"}</span></td>
         <td data-label="Client">${escapeHtml(c.client?.name)||"<span class=muted>Unnamed</span>"}</td>
         <td data-label="Type">${escapeHtml(c.purpose)}</td>
-        <td data-label="Barangay">Biluso</td>
+        <td data-label="Barangay">${escapeHtml(c.client?.address || c.client?.barangay || '—')}</td>
         <td data-label="Status"><span class="badge ${STATUS_CLASS[c.status]}">${c.status}</span></td>
         <td data-label="Created">${fmtDate(c.createdAt)}</td>
         <td data-label="Action">
@@ -2284,14 +2288,22 @@ function resetFilters(){
   const searchInput = document.getElementById('searchInput');
   if(searchInput) searchInput.value = '';
   
-  const statusFilter = document.getElementById('statusFilter');
-  if(statusFilter) statusFilter.value = 'All';
+  filterState = { status: 'All', assistance: 'All', barangay: 'All' };
   
-  const assistanceFilter = document.getElementById('assistanceFilter');
-  if(assistanceFilter) assistanceFilter.value = 'All';
+  document.getElementById('statusLabel').textContent = 'All Status';
+  document.getElementById('assistanceLabel').textContent = 'All Types';
+  document.getElementById('barangayLabel').textContent = 'All Barangays';
   
-  const barangayFilter = document.getElementById('barangayFilter');
-  if(barangayFilter) barangayFilter.value = 'All';
+  var statusBtn = document.getElementById('statusBtn');
+  if(statusBtn) { statusBtn.classList.remove('active'); statusBtn.removeAttribute('data-filter'); }
+  var assistanceBtn = document.getElementById('assistanceBtn');
+  if(assistanceBtn) { assistanceBtn.classList.remove('active'); assistanceBtn.removeAttribute('data-filter'); }
+  var barangayBtn = document.getElementById('barangayBtn');
+  if(barangayBtn) { barangayBtn.classList.remove('active'); barangayBtn.removeAttribute('data-filter'); }
+  
+  highlightStatusOpt();
+  highlightAssistanceOpt();
+  highlightBarangayOpt();
   
   view.caseListPage = 1;
   renderCaseList();

@@ -144,15 +144,22 @@
         .table thead th { background: var(--background); border-bottom: 1px solid var(--border); font-size: .82rem; color: var(--secondary); text-transform: uppercase; letter-spacing: .05em; }
 
         /* Responsive */
-        @media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-100%);
+        }
+        .sidebar.show {
+            transform: translateX(0);
+        }
+        .main-content {
+            margin-left: 0;
+        }
+        @media (min-width: 768px) {
             .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.show {
                 transform: translateX(0);
             }
             .main-content {
-                margin-left: 0;
+                margin-left: 260px;
+                width: calc(100% - 260px);
             }
         }
 

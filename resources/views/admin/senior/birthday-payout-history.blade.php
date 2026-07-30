@@ -144,77 +144,32 @@
         }
         .hamburger-btn:hover { background: var(--primary-hover); }
 
-/* ── Responsive: Tablet (< 1024px) ── */
-        @media (max-width: 1023px) {
-            .hamburger-btn { display: flex; }
-            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
-            .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; height: 100vh !important; }
-            .main-scroll { flex: 1 !important; min-height: 0 !important; overflow: hidden !important; }
-            .table-card { flex: 1 !important; min-height: 0 !important; overflow: hidden !important; }
-            .table-scroll { flex: 1 !important; min-height: 0 !important; overflow-y: auto !important; overflow-x: auto !important; }
-        }
+        .sidebar{transform:translateX(-100%) !important;z-index:1001 !important;}
+        .sidebar.show{transform:translateX(0) !important;}
+        .main,.main-content{margin-left:0 !important;max-width:100% !important;padding:16px !important;padding-top:64px !important;height:100vh !important;}
+        .main-scroll{flex:1 !important;min-height:0 !important;overflow:hidden !important;}
+        .table-card{flex:1 !important;min-height:0 !important;overflow:hidden !important;}
+        .table-scroll{flex:1 !important;min-height:0 !important;overflow-y:auto !important;overflow-x:auto !important;}
 
-        /* ── Responsive: Mobile (< 768px) ── */
+        input[type="date"].filter-select{background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3e%3cline x1='16' y1='2' x2='16' y2='6'/%3e%3cline x1='8' y1='2' x2='8' y2='6'/%3e%3cline x1='3' y1='10' x2='21' y2='10'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-right:36px;}
         @media (max-width: 767px) {
-            .main, .main-content { padding: 12px !important; padding-top: 64px !important; height: auto !important; min-height: 100vh !important; }
-            .main-scroll { flex: none !important; min-height: 0 !important; height: auto !important; overflow: visible !important; }
-            input[type="date"].filter-select{background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3e%3cline x1='16' y1='2' x2='16' y2='6'/%3e%3cline x1='8' y1='2' x2='8' y2='6'/%3e%3cline x1='3' y1='10' x2='21' y2='10'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-right:36px;}
-
-            /* ── Filter → 2 columns ── */
-            #filterGrid { grid-template-columns: 1fr 1fr !important; }
-            #filterGrid > div:last-child { grid-column: 1 / -1 !important; }
-            #filterGrid > div:last-child .btn { flex: 1 !important; }
-
-            /* ── Table Card ── */
-            .table-card { padding: 1rem !important; border-radius: 12px !important; flex: none !important; min-height: 0 !important; overflow: visible !important; height: auto !important; }
-            .table-card-title { font-size: 1rem !important; margin-bottom: 1rem !important; }
-
-            /* ── Table → Card layout ── */
-            .table-scroll { border: none !important; border-radius: 0 !important; flex: none !important; min-height: 0 !important; overflow: visible !important; height: auto !important; }
-            .table-scroll table { display: block !important; width: 100%; }
-            .table-scroll tbody { display: block; }
-            .table-scroll thead { display: none !important; }
-            .table-scroll tbody tr {
-                display: block;
-                background: var(--surface);
-                border: 1px solid #D1D5DB;
-                border-radius: 10px;
-                margin-bottom: 10px;
-                padding: 12px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            }
-            .table-scroll tbody td {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                padding: 8px 0;
-                border: none;
-                font-size: 0.82rem;
-                gap: 8px;
-                word-break: break-word;
-                overflow-wrap: break-word;
-            }
-            .table-scroll tbody td:not(:last-child) {
-                border-bottom: 1px solid var(--border);
-            }
-            .table-scroll tbody td::before {
-                content: attr(data-label);
-                font-weight: 600;
-                color: var(--text-secondary);
-                font-size: 0.72rem;
-                text-transform: uppercase;
-                letter-spacing: 0.03em;
-                flex-shrink: 0;
-                min-width: 70px;
-            }
-
-            /* ── Empty state ── */
-            .table-scroll tbody td.empty-state-cell { display: flex !important; justify-content: center !important; text-align: center !important; padding: 40px 12px !important; }
-            .table-scroll tbody td.empty-state-cell::before { display: none !important; }
+        #filterGrid{grid-template-columns:1fr 1fr !important;}
+        #filterGrid>div:last-child{grid-column:1 / -1 !important;}
+        #filterGrid>div:last-child .btn{flex:1 !important;}
+        .table-card{padding:1rem !important;border-radius:12px !important;flex:none !important;min-height:0 !important;overflow:visible !important;height:auto !important;}
+        .table-card-title{font-size:1rem !important;margin-bottom:1rem !important;}
+        .table-scroll{border:none !important;border-radius:0 !important;flex:none !important;min-height:0 !important;overflow:visible !important;height:auto !important;}
+        .table-scroll table{display:block !important;width:100%;}
+        .table-scroll tbody{display:block;}
+        .table-scroll thead{display:none !important;}
+        .table-scroll tbody tr{display:block;background:var(--surface);border:1px solid #D1D5DB;border-radius:10px;margin-bottom:10px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+        .table-scroll tbody td{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border:none;font-size:0.82rem;gap:8px;word-break:break-word;overflow-wrap:break-word;}
+        .table-scroll tbody td:not(:last-child){border-bottom:1px solid var(--border);}
+        .table-scroll tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.03em;flex-shrink:0;min-width:70px;}
+        .table-scroll tbody td.empty-state-cell{display:flex !important;justify-content:center !important;text-align:center !important;padding:40px 12px !important;}
+        .table-scroll tbody td.empty-state-cell::before{display:none !important;}
         }
 
-        /* ── Responsive: Small Mobile (< 480px) ── */
         @media (max-width: 479px) {
             .table-scroll tbody td { font-size: 0.78rem !important; }
             .table-scroll tbody td::before { min-width: 60px !important; font-size: 0.68rem !important; }
@@ -225,7 +180,7 @@
             .filter-section { padding: 14px !important; }
         }
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
+        .mobile-header{display:flex !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
         .mobile-header-brand{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
         .mobile-logo{width:56px;height:56px;border-radius:50%;background:#FBC02D;padding:4px;flex-shrink:0;}
         .mobile-logo-img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
@@ -234,22 +189,48 @@
         .mobile-brand-subtitle{font-size:12px;color:rgba(255,255,255,0.8);margin:2px 0 0 0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .mobile-menu-btn{display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:#ffffff;cursor:pointer;padding:8px;flex-shrink:0;margin-right:24px;}
         .mobile-menu-icon{width:32px;height:32px;}
-        @media(max-width:767px){
-            .app{flex-direction:column !important;min-height:100vh !important;}
-            .main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:90px !important;}
-            .main-scroll{overflow:visible !important;flex:none !important;height:auto !important;}
-            .table-card{margin-bottom:40px !important;padding-bottom:30px !important;}
-            header,.top-navbar{display:none !important;}
-            .hamburger-btn{display:none !important;}
-            .mobile-header{display:flex !important;}
-        }
-        @media(max-width:479px){
+        .app{flex-direction:column !important;min-height:100vh !important;}
+        .main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:90px !important;}
+        .main-scroll{overflow:visible !important;flex:none !important;height:auto !important;}
+        .table-card{margin-bottom:40px !important;padding-bottom:30px !important;}
+        header,.top-navbar{display:none !important;}
+        .hamburger-btn{display:none !important;}
+
+        @media (max-width: 479px){
             .main,.main-content{padding:10px !important;padding-top:88px !important;height:auto !important;}
             .mobile-header{height:72px !important;}
             .mobile-logo{width:48px !important;height:48px !important;}
             .mobile-brand-title{font-size:16px !important;}
             .mobile-brand-subtitle{font-size:11px !important;}
             .mobile-menu-icon{width:28px !important;height:28px !important;}
+        }
+
+        @media (min-width: 768px) {
+            .hamburger-btn { display: flex; }
+            .mobile-header { display: none !important; }
+            header, .top-navbar { display: flex !important; }
+            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; height: 100vh !important; min-height: auto !important; }
+            .main-scroll { flex: 1 !important; min-height: 0 !important; overflow: hidden !important; }
+            .table-card { flex: 1 !important; min-height: 0 !important; overflow: hidden !important; padding: 2rem !important; border-radius: 16px !important; margin-bottom: 0 !important; }
+            .table-card-title { font-size: 1.25rem !important; margin-bottom: 1.5rem !important; }
+            .table-scroll { flex: 1 !important; min-height: 0 !important; overflow-y: auto !important; overflow-x: auto !important; border: 1px solid var(--border) !important; border-radius: 8px !important; }
+            #filterGrid { grid-template-columns: 1fr 1fr auto auto !important; }
+            #filterGrid > div:last-child { grid-column: auto !important; }
+            .filter-section { padding: 20px !important; }
+        }
+
+        @media (min-width: 1200px) {
+            .app { flex-direction: row !important; }
+            .hamburger-btn { display: none !important; }
+            .mobile-header { display: none !important; }
+            header, .top-navbar { display: flex !important; }
+            .sidebar { transform: translateX(0) !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 260px !important; max-width: calc(100% - 260px) !important; padding: 32px !important; padding-top: 32px !important; }
+            .main-scroll { flex: 1 !important; min-height: 0 !important; display: flex !important; flex-direction: column !important; overflow: hidden !important; }
+            .table-card { overflow: hidden !important; }
         }
     </style>
 </head>

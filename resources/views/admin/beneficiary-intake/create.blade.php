@@ -106,18 +106,30 @@
             border-radius: 8px;
         }
 
-        @media (max-width: 767px) {
+        .step-wizard {
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+        .step-label {
+            font-size: 0.65rem;
+        }
+        .step-circle {
+            width: 28px;
+            height: 28px;
+            font-size: 0.75rem;
+        }
+        @media (min-width: 768px) {
             .step-wizard {
-                overflow-x: auto;
-                padding-bottom: 0.5rem;
+                overflow-x: visible;
+                padding-bottom: 1rem;
             }
             .step-label {
-                font-size: 0.65rem;
+                font-size: 0.75rem;
             }
             .step-circle {
-                width: 28px;
-                height: 28px;
-                font-size: 0.75rem;
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
             }
         }
     </style>

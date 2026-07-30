@@ -232,12 +232,14 @@
     .badge-ineligible { background: #FEE2E2; color: #991B1B; }
 
     /* ── Responsive ─────────────────────────────────────────── */
-    @media (max-width: 767px) {
-        .row.g-4 { gap: 1rem !important; }
-        .col-xl-5, .col-xl-7 { flex: 0 0 100%; max-width: 100%; }
-    }
-    @media (max-width: 575px) {
+    .row.g-4 { gap: 1rem !important; }
+    .col-xl-5, .col-xl-7 { flex: 0 0 100%; max-width: 100%; }
+    @media (max-width: 479px) {
         .row.g-3.mb-4 > [class*="col-"] { flex: 0 0 100%; max-width: 100%; min-width: 0; }
+    }
+    @media (min-width: 768px) {
+        .row.g-4 { gap: 1.5rem !important; }
+        .col-xl-5, .col-xl-7 { flex: initial; max-width: initial; }
     }
     .panel-body, .client-result-card, .check-row { overflow-wrap: break-word; }
     .check-row { flex-wrap: wrap; }

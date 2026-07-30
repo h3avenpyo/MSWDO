@@ -13,30 +13,36 @@
         .ssg-pagination .pg-dots { background:#F8FAFC; color:#6B7280; cursor:default; }
         .ssg-pagination .pg-disabled { background:#F8FAFC; color:#6B7280; cursor:not-allowed; }
         .ssg-pagination .pg-mobile-info { display:none; }
-        @media(max-width:640px){
-            .ssg-pagination { gap:0.5rem; flex-wrap:nowrap; }
+        .ssg-pagination { gap:0.5rem; flex-wrap:nowrap; }
+        .ssg-pagination .pg-btn,
+        .ssg-pagination .pg-active,
+        .ssg-pagination .pg-dots {
+            padding:0.5rem 0.75rem; font-size:0.85rem; min-width:40px; text-align:center;
+        }
+        .ssg-pagination .pg-prev-text,
+        .ssg-pagination .pg-next-text { display:none; }
+        .ssg-pagination .pg-prev-arrow,
+        .ssg-pagination .pg-next-arrow { display:inline; }
+        .ssg-pagination .pg-page-num,
+        .ssg-pagination .pg-dots { display:none !important; }
+        .ssg-pagination .pg-mobile-info {
+            display:inline-flex; align-items:center;
+            padding:0.5rem 1rem; font-size:0.85rem; font-weight:500;
+            color:#4B5563; white-space:nowrap;
+        }
+        @media(min-width:641px){
+            .ssg-pagination { gap:0.5rem; flex-wrap:wrap; }
             .ssg-pagination .pg-btn,
             .ssg-pagination .pg-active,
             .ssg-pagination .pg-dots {
-                padding:0.5rem 0.75rem; font-size:0.85rem; min-width:40px; text-align:center;
+                padding:0.5rem 1rem; font-size:0.85rem; min-width:auto; text-align:initial;
             }
             .ssg-pagination .pg-prev-text,
-            .ssg-pagination .pg-next-text { display:none; }
-            .ssg-pagination .pg-prev-arrow,
-            .ssg-pagination .pg-next-arrow { display:inline; }
-            /* Hide all page number buttons and dots on mobile */
-            .ssg-pagination .pg-page-num,
-            .ssg-pagination .pg-dots { display:none !important; }
-            /* Show the mobile page indicator */
-            .ssg-pagination .pg-mobile-info {
-                display:inline-flex; align-items:center;
-                padding:0.5rem 1rem; font-size:0.85rem; font-weight:500;
-                color:#4B5563; white-space:nowrap;
-            }
-        }
-        @media(min-width:641px){
+            .ssg-pagination .pg-next-text { display:inline; }
             .ssg-pagination .pg-prev-arrow,
             .ssg-pagination .pg-next-arrow { display:none; }
+            .ssg-pagination .pg-page-num,
+            .ssg-pagination .pg-dots { display:initial !important; }
             .ssg-pagination .pg-mobile-info { display:none !important; }
         }
     </style>

@@ -236,92 +236,41 @@
         }
         .hamburger-btn:hover { background: var(--primary-hover); }
 
-        /* ── Responsive: Tablet (< 1024px) ── */
-        @media (max-width: 1023px) {
-            .hamburger-btn { display: flex; }
-            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
-            .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
-        }
+        .sidebar{transform:translateX(-100%) !important;z-index:1001 !important;}
+        .sidebar.show{transform:translateX(0) !important;}
+        .main,.main-content{margin-left:0 !important;max-width:100% !important;padding:16px !important;padding-top:64px !important;}
+        .mobile-select-all{display:flex !important;}
+        .topnav,.top-navbar{padding:10px 12px !important;}
+        .topnav-datetime,.navbar-datetime{display:none !important;}
+        .filter-row{flex-direction:column !important;align-items:stretch !important;gap:10px !important;}
+        .filter-left{flex-direction:column !important;gap:10px !important;width:100% !important;}
+        .filter-left .filter-group{width:100% !important;min-width:0 !important;}
+        .filter-left .filter-group.select-group{min-width:0 !important;}
+        .filter-left .input-group{width:100% !important;}
+        .filter-right{flex-wrap:wrap;width:100% !important;justify-content:stretch;}
+        .filter-right .btn{flex:1;justify-content:center;}
+        .summary-cards{gap:10px !important;}
+        .summary-card{padding:14px !important;border-radius:12px !important;gap:10px !important;}
+        .summary-card-icon{display:none !important;}
+        .summary-card-value{font-size:1.25rem !important;}
+        .summary-card-label{font-size:10px !important;}
+        .table-card{padding:1rem !important;border-radius:12px !important;}
+        .action-buttons-row{flex-wrap:wrap !important;gap:8px !important;}
+        .action-buttons-row .btn{flex:1 1 calc(50% - 4px) !important;min-width:0 !important;justify-content:center !important;}
+        .table-scroll{border:none !important;overflow:visible !important;border-radius:0 !important;}
+        .custom-table{table-layout:auto !important;width:100%;font-size:0.82rem !important;}
+        .custom-table thead{display:none !important;}
+        .custom-table tbody tr{display:block;background:var(--surface);border:1px solid #D1D5DB;border-radius:10px;margin-bottom:10px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+        .custom-table tbody td{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border:none;font-size:0.82rem;gap:8px;}
+        .custom-table tbody td:not(:last-child){border-bottom:1px solid var(--border);}
+        .custom-table tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.03em;flex-shrink:0;min-width:70px;}
+        .custom-table tbody td.col-check{justify-content:flex-end;padding:8px 0 4px;border-bottom:none;}
+        .custom-table tbody td.col-check::before{display:none;}
+        .custom-table tbody td[data-label="#"]{display:none !important;}
+        .custom-table tbody td[data-label="OSCA ID"]{display:none !important;}
+        .custom-table tbody td.empty-state-cell{display:flex !important;justify-content:center !important;text-align:center !important;padding:40px 12px !important;}
+        .custom-table tbody td.empty-state-cell::before{display:none !important;}
 
-        /* ── Responsive: Mobile (< 768px) ── */
-        @media (max-width: 767px) {
-            .mobile-select-all { display: flex !important; }
-            .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
-            .topnav, .top-navbar { padding: 10px 12px !important; }
-            .topnav-datetime, .navbar-datetime { display: none !important; }
-
-            /* ── Filter → stack ── */
-            .filter-row { flex-direction: column !important; align-items: stretch !important; gap: 10px !important; }
-            .filter-left { flex-direction: column !important; gap: 10px !important; width: 100% !important; }
-            .filter-left .filter-group { width: 100% !important; min-width: 0 !important; }
-            .filter-left .filter-group.select-group { min-width: 0 !important; }
-            .filter-left .input-group { width: 100% !important; }
-            .filter-right { flex-wrap: wrap; width: 100% !important; justify-content: stretch; }
-            .filter-right .btn { flex: 1; justify-content: center; }
-
-            /* ── Summary cards → compact ── */
-            .summary-cards { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-            .summary-card { padding: 14px !important; border-radius: 12px !important; gap: 10px !important; }
-            .summary-card-icon { display: none !important; }
-            .summary-card-value { font-size: 1.25rem !important; }
-            .summary-card-label { font-size: 10px !important; }
-
-            /* ── Table Card ── */
-            .table-card { padding: 1rem !important; border-radius: 12px !important; }
-
-            /* ── Action buttons → wrap ── */
-            .action-buttons-row { flex-wrap: wrap !important; gap: 8px !important; }
-            .action-buttons-row .btn { flex: 1 1 calc(50% - 4px) !important; min-width: 0 !important; justify-content: center !important; }
-
-            /* ── Table → Card layout ── */
-            .table-scroll { border: none !important; overflow: visible !important; border-radius: 0 !important; }
-            .custom-table { table-layout: auto !important; width: 100%; font-size: 0.82rem !important; }
-            .custom-table thead { display: none !important; }
-            .custom-table tbody tr {
-                display: block;
-                background: var(--surface);
-                border: 1px solid #D1D5DB;
-                border-radius: 10px;
-                margin-bottom: 10px;
-                padding: 12px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            }
-            .custom-table tbody td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 8px 0;
-                border: none;
-                font-size: 0.82rem;
-                gap: 8px;
-            }
-            .custom-table tbody td:not(:last-child) {
-                border-bottom: 1px solid var(--border);
-            }
-            .custom-table tbody td::before {
-                content: attr(data-label);
-                font-weight: 600;
-                color: var(--text-secondary);
-                font-size: 0.72rem;
-                text-transform: uppercase;
-                letter-spacing: 0.03em;
-                flex-shrink: 0;
-                min-width: 70px;
-            }
-            .custom-table tbody td.col-check {
-                justify-content: flex-end;
-                padding: 8px 0 4px;
-                border-bottom: none;
-            }
-            .custom-table tbody td.col-check::before { display: none; }
-            .custom-table tbody td[data-label="#"] { display: none !important; }
-            .custom-table tbody td[data-label="OSCA ID"] { display: none !important; }
-            .custom-table tbody td.empty-state-cell { display: flex !important; justify-content: center !important; text-align: center !important; padding: 40px 12px !important; }
-            .custom-table tbody td.empty-state-cell::before { display: none !important; }
-        }
-
-        /* ── Responsive: Small Mobile (< 480px) ── */
         @media (max-width: 479px) {
             .summary-card-value { font-size: 1.1rem !important; }
             .summary-card { padding: 12px !important; }
@@ -331,7 +280,7 @@
             .action-buttons-row .btn { flex: 1 1 100% !important; }
         }
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
+        .mobile-header{display:flex !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
         .mobile-header-brand{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
         .mobile-logo{width:56px;height:56px;border-radius:50%;background:#FBC02D;padding:4px;flex-shrink:0;}
         .mobile-logo-img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
@@ -340,21 +289,50 @@
         .mobile-brand-subtitle{font-size:12px;color:rgba(255,255,255,0.8);margin:2px 0 0 0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .mobile-menu-btn{display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:#ffffff;cursor:pointer;padding:8px;flex-shrink:0;margin-right:24px;}
         .mobile-menu-icon{width:32px;height:32px;}
-        @media(max-width:767px){
-            .app{flex-direction:column !important;min-height:100vh !important;}
-            .main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:90px !important;}
-            .table-card{overflow:visible !important;flex:none !important;height:auto !important;margin-bottom:40px !important;padding-bottom:30px !important;}
-            header,.top-navbar{display:none !important;}
-            .hamburger-btn{display:none !important;}
-            .mobile-header{display:flex !important;}
-        }
-        @media(max-width:479px){
+        .app{flex-direction:column !important;min-height:100vh !important;}
+        .main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:90px !important;}
+        .table-card{overflow:visible !important;flex:none !important;height:auto !important;margin-bottom:40px !important;padding-bottom:30px !important;}
+        header,.top-navbar{display:none !important;}
+        .hamburger-btn{display:none !important;}
+
+        @media (max-width: 479px){
             .main,.main-content{padding:10px !important;padding-top:88px !important;}
             .mobile-header{height:72px !important;}
             .mobile-logo{width:48px !important;height:48px !important;}
             .mobile-brand-title{font-size:16px !important;}
             .mobile-brand-subtitle{font-size:11px !important;}
             .mobile-menu-icon{width:28px !important;height:28px !important;}
+        }
+
+        @media (min-width: 768px) {
+            .hamburger-btn { display: flex; }
+            .mobile-header { display: none !important; }
+            header, .top-navbar { display: flex !important; }
+            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; height: auto !important; overflow: visible !important; }
+            .table-card { overflow: hidden !important; flex: 1 !important; height: auto !important; margin-bottom: 0 !important; padding: 2rem !important; border-radius: 16px !important; }
+            .filter-row { flex-direction: row !important; align-items: flex-end !important; gap: 12px !important; }
+            .filter-left { flex-direction: row !important; gap: 12px !important; width: auto !important; }
+            .filter-left .filter-group { width: auto !important; min-width: 160px !important; }
+            .filter-left .filter-group.select-group { min-width: 160px !important; }
+            .filter-left .input-group { width: auto !important; }
+            .filter-right { flex-wrap: nowrap !important; width: auto !important; }
+            .summary-cards { gap: 20px !important; }
+            .summary-card { padding: 20px !important; border-radius: 16px !important; gap: 16px !important; }
+            .summary-card-icon { display: flex !important; }
+            .summary-card-value { font-size: 1.75rem !important; }
+            .summary-card-label { font-size: 12px !important; }
+        }
+
+        @media (min-width: 1200px) {
+            .app { flex-direction: row !important; }
+            .hamburger-btn { display: none !important; }
+            .mobile-header { display: none !important; }
+            header, .top-navbar { display: flex !important; }
+            .sidebar { transform: translateX(0) !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 260px !important; max-width: calc(100% - 260px) !important; padding: 32px !important; padding-top: 32px !important; min-height: 100vh !important; overflow-y: auto !important; overflow-x: hidden !important; }
         }
     </style>
 </head>

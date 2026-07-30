@@ -93,14 +93,14 @@ document.addEventListener('DOMContentLoaded', function() {
     var sidebarLinks = document.querySelectorAll('.sidebar-menu a');
     sidebarLinks.forEach(function(link) {
         link.addEventListener('click', function() {
-            if (window.innerWidth < 1024) {
+            if (window.innerWidth < 1200) {
                 closeSidebar();
             }
         });
     });
 
     window.addEventListener('resize', function() {
-        if (window.innerWidth >= 1024) {
+        if (window.innerWidth >= 1200) {
             closeSidebar();
         }
     });

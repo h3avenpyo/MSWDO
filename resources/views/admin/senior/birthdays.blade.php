@@ -38,9 +38,10 @@
         .main-scroll::-webkit-scrollbar{display:none;}
 
 
-        .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:32px;animation:fadeInUp .6s ease-out;flex-shrink:0;}
-        @media(max-width:1024px){.stat-cards{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:480px){.stat-cards{grid-template-columns:1fr;}}
+        .stat-cards{display:grid;grid-template-columns:1fr;gap:20px;margin-bottom:32px;animation:fadeInUp .6s ease-out;flex-shrink:0;}
+        @media(min-width:768px){.stat-cards{grid-template-columns:1fr 1fr;}}
+        @media(min-width:992px){.stat-cards{grid-template-columns:repeat(3,1fr);}}
+        @media(min-width:1200px){.stat-cards{grid-template-columns:repeat(4,1fr);}}
 
         .stat-card{background:var(--surface);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;cursor:pointer;}
         .stat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;transition:all .3s ease;}
@@ -148,8 +149,8 @@
         .mobile-brand-subtitle{font-size:12px;color:rgba(255,255,255,0.8);margin:2px 0 0 0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .mobile-menu-btn{display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:#ffffff;cursor:pointer;padding:8px;flex-shrink:0;margin-right:24px;}
         .mobile-menu-icon{width:32px;height:32px;}
-        @media(max-width:767px){.app{flex-direction:column !important;}.main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:90px !important;}.main-scroll{overflow:visible !important;flex:none !important;}header{display:none !important;}.hamburger-btn{display:none !important;}.mobile-header{display:flex !important;}}
-        @media(max-width:479px){.main,.main-content{padding:10px !important;padding-top:88px !important;}.mobile-header{height:72px !important;}.mobile-logo{width:48px !important;height:48px !important;}.mobile-brand-title{font-size:16px !important;}.mobile-brand-subtitle{font-size:11px !important;}.mobile-menu-icon{width:28px !important;height:28px !important;}}
+        .app{flex-direction:column !important;}.main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:90px !important;}.main-scroll{overflow:visible !important;flex:none !important;}header{display:none !important;}.hamburger-btn{display:none !important;}.mobile-header{display:flex !important;}
+        @media (max-width: 479px){.main,.main-content{padding:10px !important;padding-top:88px !important;}.mobile-header{height:72px !important;}.mobile-logo{width:48px !important;height:48px !important;}.mobile-brand-title{font-size:16px !important;}.mobile-brand-subtitle{font-size:11px !important;}.mobile-menu-icon{width:28px !important;height:28px !important;}}
 
         /* ── Sidebar Overlay ── */
         .sidebar-overlay.active { display: block !important; }
@@ -175,124 +176,56 @@
         }
         .hamburger-btn:hover { background: var(--primary-hover); }
 
-        /* ── Responsive: Tablet (< 1024px) ── */
-        @media (max-width: 1023px) {
-            .hamburger-btn { display: flex; }
-            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
-            .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
-            .table-card { overflow: visible !important; }
-            .table-scroll { overflow: visible !important; min-height: 0; }
-            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
-            .dashboard-grid { grid-template-columns: 1fr !important; }
-        }
+        .sidebar{transform:translateX(-100%) !important;z-index:1001 !important;}
+        .sidebar.show{transform:translateX(0) !important;}
+        .main,.main-content{margin-left:0 !important;max-width:100% !important;padding:12px 14px !important;padding-top:90px !important;}
+        .table-card{overflow:visible !important;margin-bottom:40px !important;padding-bottom:30px !important;}
+        .table-scroll{overflow:visible !important;height:auto !important;border:none !important;border-radius:0 !important;min-height:0;}
+        .main-scroll{overflow:visible !important;flex:none !important;height:auto !important;}
+        .stat-cards{gap:10px !important;margin-bottom:20px !important;}
+        .stat-card{padding:14px !important;border-radius:12px !important;}
+        .stat-card-icon{display:none !important;}
+        .stat-card-value{font-size:24px !important;}
+        .stat-card-label{font-size:10px !important;}
+        .topnav,.top-navbar{padding:10px 12px !important;}
+        .topnav-datetime,.navbar-datetime{display:none !important;}
+        .filter-bar,.filter-group{flex-wrap:wrap;}
+        .filter-bar>div,.filter-group>div{min-width:0 !important;}
+        #filterGrid{grid-template-columns:1fr 1fr !important;}
+        .barangay-cards-grid{grid-template-columns:1fr !important;gap:20px !important;}
+        .action-bar-row{flex-direction:column !important;gap:10px !important;align-items:flex-start !important;}
+        .action-bar-row>div{width:100% !important;}
+        .table-scroll table{display:block !important;table-layout:auto !important;width:100%;}
+        .table-scroll tbody{display:block;}
+        .table-scroll thead{display:none !important;}
+        .table-scroll tbody tr{display:block;background:var(--surface);border:1px solid #D1D5DB;border-radius:10px;margin-bottom:10px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+        .table-scroll tbody td{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border:none;font-size:0.82rem;gap:8px;}
+        .table-scroll tbody td:not(:last-child){border-bottom:1px solid var(--border);}
+        .table-scroll tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.03em;flex-shrink:0;min-width:70px;}
+        .table-scroll tbody td[data-label="#"]{display:none !important;}
+        .table-scroll tbody td[data-label="ID"]{display:none !important;}
+        .table-scroll tbody td[data-label="Action"]{justify-content:flex-end;padding-top:8px;border-bottom:none;}
+        .table-scroll tbody td[data-label="Action"]::before{display:none;}
+        #paginationWrapper{flex-direction:column !important;gap:10px !important;padding:12px !important;}
+        #paginationLinks{gap:3px !important;flex-wrap:wrap !important;justify-content:center;}
+        #paginationLinks .page-item a,#paginationLinks .page-item span{min-width:34px;height:34px;padding:0 0.5rem;font-size:12px;}
+        .modal-box{max-width:100% !important;border-radius:12px !important;max-height:85vh !important;}
+        .modal-header-bar{padding:14px 16px !important;border-radius:12px 12px 0 0 !important;}
+        .modal-header-bar h4{font-size:14px !important;}
+        .modal-body-scroll{padding:16px !important;max-height:70vh !important;}
+        #profileContent{grid-template-columns:1fr !important;}
+        .barangay-group-header{padding:10px 12px !important;}
+        .barangay-group-header strong{font-size:0.85rem !important;}
+        #groupedContent{padding:12px !important;}
+        #groupedContent table{display:block !important;width:100% !important;}
+        #groupedContent table tbody{display:block;}
+        #groupedContent table thead{display:none !important;}
+        #groupedContent table tbody tr{display:block;background:var(--surface);border:1px solid #D1D5DB;border-radius:8px;margin-bottom:8px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+        #groupedContent table tbody td{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border:none;font-size:0.82rem;gap:8px;}
+        #groupedContent table tbody td:not(:last-child){border-bottom:1px solid var(--border);}
+        #groupedContent table tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.03em;flex-shrink:0;min-width:60px;}
+        #groupedContent table tbody td[data-label="#"]{display:none !important;}
 
-        /* ── Responsive: Mobile (< 768px) ── */
-        @media (max-width: 767px) {
-            .main, .main-content { padding: 12px !important; padding-top: 90px !important; }
-            .table-card { margin-bottom: 40px !important; padding-bottom: 30px !important; }
-            .table-scroll { overflow: visible !important; height: auto !important; }
-            .main-scroll { overflow: visible !important; flex: none !important; height: auto !important; }
-            .stat-cards { grid-template-columns: 1fr 1fr !important; gap: 10px !important; margin-bottom: 20px !important; }
-            .stat-card { padding: 14px !important; border-radius: 12px !important; }
-            .stat-card-icon { display: none !important; }
-            .stat-card-value { font-size: 24px !important; }
-            .stat-card-label { font-size: 10px !important; }
-            .topnav, .top-navbar { padding: 10px 12px !important; }
-            .topnav-datetime, .navbar-datetime { display: none !important; }
-            .filter-bar, .filter-group { flex-wrap: wrap; }
-            .filter-bar > div, .filter-group > div { min-width: 0 !important; }
-            #filterGrid { grid-template-columns: 1fr 1fr !important; }
-
-            /* ── Barangay breakdown cards → better spacing on mobile ── */
-            .barangay-cards-grid {
-                grid-template-columns: 1fr !important;
-                gap: 20px !important;
-            }
-
-            /* ── Action bar → stack ── */
-            .action-bar-row { flex-direction: column !important; gap: 10px !important; align-items: flex-start !important; }
-            .action-bar-row > div { width: 100% !important; }
-
-            /* ── Table → Card layout ── */
-            .table-scroll { border: none !important; overflow: visible !important; border-radius: 0 !important; }
-            .table-scroll table { display: block !important; table-layout: auto !important; width: 100%; }
-            .table-scroll tbody { display: block; }
-            .table-scroll thead { display: none !important; }
-            .table-scroll tbody tr {
-                display: block;
-                background: var(--surface);
-                border: 1px solid #D1D5DB;
-                border-radius: 10px;
-                margin-bottom: 10px;
-                padding: 12px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            }
-            .table-scroll tbody td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 8px 0;
-                border: none;
-                font-size: 0.82rem;
-                gap: 8px;
-            }
-            .table-scroll tbody td:not(:last-child) {
-                border-bottom: 1px solid var(--border);
-            }
-            .table-scroll tbody td::before {
-                content: attr(data-label);
-                font-weight: 600;
-                color: var(--text-secondary);
-                font-size: 0.72rem;
-                text-transform: uppercase;
-                letter-spacing: 0.03em;
-                flex-shrink: 0;
-                min-width: 70px;
-            }
-            .table-scroll tbody td[data-label="#"] { display: none !important; }
-            .table-scroll tbody td[data-label="ID"] { display: none !important; }
-            .table-scroll tbody td[data-label="Action"] { justify-content: flex-end; padding-top: 8px; border-bottom: none; }
-            .table-scroll tbody td[data-label="Action"]::before { display: none; }
-
-            /* ── Pagination wrapper → stack ── */
-            #paginationWrapper { flex-direction: column !important; gap: 10px !important; padding: 12px !important; }
-            #paginationLinks { gap: 3px !important; flex-wrap: wrap !important; justify-content: center; }
-            #paginationLinks .page-item a, #paginationLinks .page-item span { min-width: 34px; height: 34px; padding: 0 0.5rem; font-size: 12px; }
-
-            /* ── Profile modal ── */
-            .modal-box { max-width: 100% !important; border-radius: 12px !important; max-height: 85vh !important; }
-            .modal-header-bar { padding: 14px 16px !important; border-radius: 12px 12px 0 0 !important; }
-            .modal-header-bar h4 { font-size: 14px !important; }
-            .modal-body-scroll { padding: 16px !important; max-height: 70vh !important; }
-            #profileContent { grid-template-columns: 1fr !important; }
-
-            /* ── Grouped view ── */
-            .barangay-group-header { padding: 10px 12px !important; }
-            .barangay-group-header strong { font-size: 0.85rem !important; }
-            #groupedContent { padding: 12px !important; }
-            #groupedContent table { display: block !important; width: 100% !important; }
-            #groupedContent table tbody { display: block; }
-            #groupedContent table thead { display: none !important; }
-            #groupedContent table tbody tr {
-                display: block; background: var(--surface); border: 1px solid #D1D5DB;
-                border-radius: 8px; margin-bottom: 8px; padding: 10px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            }
-            #groupedContent table tbody td {
-                display: flex; justify-content: space-between; align-items: center;
-                padding: 6px 0; border: none; font-size: 0.82rem; gap: 8px;
-            }
-            #groupedContent table tbody td:not(:last-child) { border-bottom: 1px solid var(--border); }
-            #groupedContent table tbody td::before {
-                content: attr(data-label); font-weight: 600; color: var(--text-secondary);
-                font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.03em;
-                flex-shrink: 0; min-width: 60px;
-            }
-            #groupedContent table tbody td[data-label="#"] { display: none !important; }
-        }
-
-        /* ── Responsive: Small Mobile (< 480px) ── */
         @media (max-width: 479px) {
             .stat-cards { gap: 8px !important; }
             .stat-card { padding: 12px !important; }
@@ -303,6 +236,45 @@
             .table-scroll tbody td { font-size: 0.78rem !important; }
             .table-scroll tbody td::before { min-width: 60px !important; font-size: 0.68rem !important; }
             .view-toggle { display: none !important; }
+        }
+
+        @media (min-width: 768px) {
+            .hamburger-btn { display: flex; }
+            .mobile-header { display: none !important; }
+            header { display: flex !important; }
+            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
+            .table-card { overflow: visible !important; margin-bottom: 0 !important; padding-bottom: 0 !important; }
+            .table-scroll { overflow: visible !important; min-height: 0; border: none !important; border-radius: 0 !important; height: auto !important; }
+            .main-scroll { overflow: visible !important; flex: none !important; height: auto !important; }
+            .stat-cards { gap: 20px !important; margin-bottom: 32px !important; }
+            .stat-card { padding: 20px !important; border-radius: 16px !important; }
+            .stat-card-icon { display: flex !important; }
+            .stat-card-value { font-size: 32px !important; }
+            .stat-card-label { font-size: 11px !important; }
+            #filterGrid { grid-template-columns: repeat(2, 1fr) !important; }
+            .dashboard-grid { grid-template-columns: 1fr !important; }
+            .barangay-cards-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+        }
+        @media (min-width: 992px) and (max-width: 1199px) {
+            .barangay-cards-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 12px !important; }
+        }
+
+        @media (min-width: 1200px) {
+            .app { flex-direction: row !important; }
+            .hamburger-btn { display: none !important; }
+            .mobile-header { display: none !important; }
+            header { display: flex !important; }
+            .sidebar { transform: translateX(0) !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 260px !important; max-width: calc(100% - 260px) !important; padding: 32px !important; padding-top: 32px !important; height: 100vh !important; overflow: hidden !important; }
+            .main-scroll { flex: 1 !important; overflow-y: auto !important; height: 100% !important; }
+            .table-card { overflow: hidden !important; flex: 1 !important; }
+            .table-scroll { flex: 1 !important; overflow-y: auto !important; overflow-x: auto !important; height: auto !important; border: none !important; border-radius: 0 !important; }
+            .barangay-cards-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 12px !important; }
+            /* Both Month and Year compact on desktop */
+            #filterGrid { grid-template-columns: 160px 110px !important; }
         }
     </style>
 </head>
@@ -420,7 +392,7 @@
                     <i data-lucide="landmark" style="width:20px;height:20px;color:var(--primary)"></i>
                     Barangay Budget Breakdown
                 </h3>
-                <div id="filterGrid" style="display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:end">
+                <div id="filterGrid" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:12px">
                     <div>
                         <label class="filter-label">Month</label>
                         <select id="monthFilter" class="filter-select" onchange="filterByMonth()">
@@ -442,17 +414,17 @@
             <div style="display:flex;gap:16px;font-size:13px;margin-bottom:16px">
                 <div><strong style="color:var(--text-primary)">Grand Total:</strong> <span style="color:var(--primary);font-weight:700">₱{{ number_format($grandTotal, 2) }}</span></div>
             </div>
-            <div class="barangay-cards-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px">
+            <div class="barangay-cards-grid" style="display:grid;grid-template-columns:1fr;gap:12px">
                 @foreach($barangayBreakdown as $barangay)
-                <div style="background:var(--background);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;min-height:300px">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-                        <strong style="font-size:18px;color:var(--text-primary)">{{ $barangay['barangay'] }}</strong>
-                        <span class="badge" style="background:var(--primary);color:white;font-size:14px;padding:6px 12px;border-radius:8px">{{ $barangay['total_seniors'] }}</span>
+                <div class="brgy-card" style="background:var(--background);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;min-height:200px">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                        <strong style="font-size:15px;color:var(--text-primary)">{{ $barangay['barangay'] }}</strong>
+                        <span class="badge" style="background:var(--primary);color:white;font-size:12px;padding:4px 10px;border-radius:8px">{{ $barangay['total_seniors'] }}</span>
                     </div>
-                    <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;flex:1">
+                    <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;flex:1">
                         <div style="display:flex;justify-content:space-between">
                             <span style="color:var(--text-secondary);font-weight:500">Total Budget:</span>
-                            <strong style="color:var(--text-primary);font-size:16px">₱{{ number_format($barangay['total_amount'], 2) }}</strong>
+                            <strong style="color:var(--text-primary);font-size:14px">₱{{ number_format($barangay['total_amount'], 2) }}</strong>
                         </div>
                         <div>
                             <span style="color:var(--text-secondary);font-weight:500">Celebrants:</span>

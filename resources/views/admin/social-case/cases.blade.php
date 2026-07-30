@@ -36,6 +36,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     html,body{overflow-x:hidden!important;overflow-y:auto!important}
     .app{min-height:auto!important}
     .main{display:flex!important;flex-direction:column!important;overflow-x:hidden!important;overflow-y:auto!important}
+    @media (min-width:768px){header{display:flex!important}}
+    @media (max-width:767px){.mobile-header{display:flex!important}}
 </style>
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">

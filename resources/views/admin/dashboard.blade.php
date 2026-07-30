@@ -53,7 +53,9 @@
             display: flex;
             flex-direction: column;
             transition: transform .3s ease;
+            transform: translateX(-100%);
         }
+        .sidebar.show { transform: translateX(0); }
         .sidebar-brand {
             padding: 1.5rem;
             border-bottom: 1px solid rgba(255,255,255,.1);
@@ -208,46 +210,45 @@
            RESPONSIVE BREAKPOINTS
            ══════════════════════════════════════════════ */
 
-        /* ── Large Desktop (≥ 1536px) ── */
-        @media (min-width: 1536px) {
-            .stat-cards-grid { gap: 2rem; }
-        }
-
-        /* ── Tablet Landscape / Small Laptop (< 1024px) ── */
-        @media (max-width: 1023px) {
-            .sidebar { transform: translateX(-100%); z-index: 1001; }
-            .sidebar.show { transform: translateX(0); }
-            .main-content { margin-left: 0; width: 100%; }
-            .stat-cards-grid { grid-template-columns: repeat(2, 1fr); }
-            .top-navbar { padding: 1rem 1.25rem; }
-            .reports-actions { flex-wrap: wrap; gap: 0.5rem; }
-        }
-
-        /* ── Tablet Portrait (< 768px) ── */
-        @media (max-width: 767px) {
-            .top-navbar { padding: 0.75rem 1rem; }
-            .navbar-title { font-size: 0.95rem; }
-            .navbar-datetime { display: none; }
-            .stat-cards-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-            .stat-card { padding: 1rem; }
-            .stat-icon { width: 44px; height: 44px; font-size: 1.1rem; }
-            .stat-value { font-size: 1.5rem; }
-            .stat-label { font-size: 0.75rem; }
-            .chart-container { height: 250px; }
-            .card-body { padding: 1rem; }
-            .card-header { padding: 1rem; font-size: 1rem; }
-            .table th, .table td { padding: 0.625rem 0.75rem; font-size: 0.8125rem; }
-            .reports-actions .btn { font-size: 0.75rem; padding: 0.375rem 0.625rem; }
-            .reports-summary-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        /* ── Mobile (< 480px) ── */
+        /* ── Small phones (0–479px) ── */
         @media (max-width: 479px) {
             .stat-cards-grid { grid-template-columns: 1fr; }
             .stat-card { flex-direction: column; text-align: center; gap: 0.75rem; }
             .top-navbar h5 { font-size: 0.875rem; }
             .reports-summary-grid { grid-template-columns: 1fr; }
             .reports-actions { justify-content: center; }
+        }
+
+        /* ── sm: Small tablets (768px+) ── */
+        @media (min-width: 768px) {
+            .navbar-datetime { display: block; }
+            .stat-cards-grid { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+            .stat-card { padding: 1.25rem; }
+            .card-body { padding: 1.25rem; }
+            .reports-summary-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* ── md: Large tablets (992px+) ── */
+        @media (min-width: 992px) {
+            .stat-cards-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+            .stat-card { padding: 1.5rem; }
+            .stat-value { font-size: 2rem; }
+            .reports-summary-grid { grid-template-columns: repeat(3, 1fr); }
+            .chart-container { height: 300px; }
+        }
+
+        /* ── lg: Desktops (1200px+) ── */
+        @media (min-width: 1200px) {
+            .sidebar { transform: translateX(0); z-index: 1000; }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 260px; width: calc(100% - 260px); }
+            .top-navbar { padding: 1rem 2rem; }
+            .navbar-title { font-size: 1.1rem; }
+        }
+
+        /* ── Large Desktop (≥ 1536px) ── */
+        @media (min-width: 1536px) {
+            .stat-cards-grid { gap: 2rem; }
         }
     </style>
 </head>
@@ -274,7 +275,7 @@
         <nav class="top-navbar">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
-                    <button class="btn btn-link d-lg-none me-3" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                    <button class="btn btn-link d-lg-none d-xl-none me-3" onclick="toggleSidebar()" aria-label="Toggle sidebar">
                         <i class="fas fa-bars"></i>
                     </button>
                     <h5 class="mb-0 me-4">Dashboard</h5>
@@ -489,11 +490,11 @@
             });
             document.querySelectorAll('.sidebar-menu a').forEach(function(link) {
                 link.addEventListener('click', function() {
-                    if (window.innerWidth < 1024) toggleSidebar();
+                    if (window.innerWidth < 1200) toggleSidebar();
                 });
             });
             window.addEventListener('resize', function() {
-                if (window.innerWidth >= 1024) {
+                if (window.innerWidth >= 1200) {
                     var sidebar = document.getElementById('sidebar');
                     var overlay = document.getElementById('sidebarOverlay');
                     if (sidebar && sidebar.classList.contains('show')) {

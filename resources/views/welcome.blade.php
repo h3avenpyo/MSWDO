@@ -814,15 +814,14 @@ View Services
 .mobile-menu-btn:focus{outline:none;}
 .mobile-menu-icon{width:32px;height:32px;}
 
-@media(max-width:1023px){
-    .hamburger-btn{display:flex;}
-    .sidebar{transform:translateX(-100%)!important;z-index:1001!important;}
-    .sidebar.show{transform:translateX(0)!important;}
-    body{padding-left:0!important;padding-top:80px!important;}
-    .mobile-header{display:flex!important;z-index:998!important;}
-}
+.hamburger-btn{display:flex;}
+.sidebar{transform:translateX(-100%)!important;z-index:1001!important;}
+.sidebar.show{transform:translateX(0)!important;}
+body{padding-left:0!important;padding-top:80px!important;}
+.mobile-header{display:flex!important;z-index:998!important;}
+.desktop-navbar{display:none!important;}
 
-@media(min-width:1024px){
+@media(min-width:1200px){
     body{padding-left:0;padding-top:0;}
     .hamburger-btn{display:none!important;}
     .mobile-header{display:none!important;}
@@ -1090,7 +1089,7 @@ View Services
     font-weight: 700;
     font-family: monospace;
 }
-@media (max-width: 639px) {
+@media (max-width: 479px) {
     .contact-card {
         padding: 2rem;
     }

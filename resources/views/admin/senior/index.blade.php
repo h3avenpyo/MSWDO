@@ -52,7 +52,8 @@
         .app{display:flex;min-height:100vh;flex-direction:row;}
 
         /* Sidebar */
-        .sidebar{width:var(--sidebar-width);flex-shrink:0;background:var(--primary);color:#FFF;position:fixed;left:0;top:0;height:100vh;z-index:1000;display:flex;flex-direction:column;transition:transform .3s ease;}
+        .sidebar{width:var(--sidebar-width);flex-shrink:0;background:var(--primary);color:#FFF;position:fixed;left:0;top:0;height:100vh;z-index:1001;display:flex;flex-direction:column;transition:transform .3s ease;transform:translateX(-100%);}
+        .sidebar.show{transform:translateX(0);}
         .sidebar-brand{height:72px;padding:0 1.5rem;border-bottom:1px solid rgba(255,255,255,.1);color:#fff;font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:.65rem;}
         .sidebar-brand i,.sidebar-brand [data-lucide]{width:24px;height:24px;color:var(--accent-yellow);}
         .sidebar-menu{list-style:none;margin:0;padding:1rem 0;flex:1;}
@@ -64,7 +65,8 @@
         .sidebar-foot{padding:1rem 1.5rem;font-size:11px;color:rgba(255,255,255,.4);border-top:1px solid rgba(255,255,255,.1);}
 
         /* Main */
-        .main{flex:1;min-width:0;margin-left:var(--sidebar-width);padding:var(--content-padding);max-width:calc(100% - var(--sidebar-width));height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+        .main{flex:1;min-width:0;margin-left:0;padding:16px;padding-top:72px;max-width:100%;height:auto;overflow:visible;display:flex;flex-direction:column;}
+        .main-scroll{overflow:visible;flex:none;}
 
         @media(max-width:767px){
             .main{height:auto;overflow:visible;}
@@ -265,20 +267,6 @@
         /* ── Stat Card Trend (hidden on desktop) ── */
         .stat-card-trend {
             display: none;
-        }
-
-        /* ── Responsive: Tablet (< 1024px) ── */
-        @media (max-width: 1023px) {
-            body { overflow-y: auto !important; }
-            .hamburger-btn { display: flex; }
-            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
-            .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 72px !important; height: auto !important; overflow: visible !important; flex: none !important; }
-            .main-scroll { overflow: visible !important; flex: none !important; }
-            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
-            .dashboard-grid { grid-template-columns: 1fr !important; }
-            #barangayChartWrap { justify-content: center; }
-            #barangayChartBox { width: 240px !important; height: 240px !important; }
         }
 
         /* ── Responsive: Mobile (< 768px) ── */
@@ -533,6 +521,39 @@
             .barangay-rank-item { padding: 10px !important; gap: 10px !important; }
             .barangay-name { font-size: 13px !important; }
             .barangay-count { font-size: 11px !important; }
+        }
+
+        /* ── lg: Desktops (1200px+) ── */
+        @media (min-width: 1200px) {
+            .sidebar { transform: translateX(0) !important; z-index: 1000 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: var(--sidebar-width) !important; max-width: calc(100% - var(--sidebar-width)) !important; padding: var(--content-padding) !important; padding-top: var(--content-padding) !important; height: 100vh !important; overflow: hidden !important; flex: 1 !important; }
+            .main-scroll { overflow-y: auto !important; flex: 1 !important; }
+            .hamburger-btn { display: none !important; }
+            .mobile-header { display: none !important; }
+            header { display: flex !important; }
+        }
+
+        /* ── Large Tablets (992px - 1199px) ── */
+        @media (min-width: 992px) and (max-width: 1199px) {
+            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 24px !important; padding-top: 72px !important; height: auto !important; overflow: visible !important; }
+            .main-scroll { overflow: visible !important; }
+            .hamburger-btn { display: flex !important; }
+            .mobile-header { display: none !important; }
+            header { display: flex !important; }
+        }
+
+        /* ── Small Tablets (768px - 991px) ── */
+        @media (min-width: 768px) and (max-width: 991px) {
+            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 20px !important; padding-top: 72px !important; height: auto !important; overflow: visible !important; }
+            .main-scroll { overflow: visible !important; }
+            .hamburger-btn { display: flex !important; }
+            .mobile-header { display: none !important; }
+            header { display: flex !important; }
         }
     </style>
 </head>
@@ -1029,7 +1050,7 @@
             }
         });
         window.addEventListener('resize', function() {
-            if (window.innerWidth >= 1024) {
+            if (window.innerWidth >= 1200) {
                 var sidebar = document.getElementById('sidebar');
                 var ov = document.getElementById('sidebarOverlay');
                 if (sidebar && sidebar.classList.contains('show')) {

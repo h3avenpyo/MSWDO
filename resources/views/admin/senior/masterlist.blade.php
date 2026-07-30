@@ -228,12 +228,16 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
             .mobile-menu-icon{width:28px !important;height:28px !important;}
         }
 
-        /* ── Sidebar Overlay ── */
-        .sidebar-overlay.active { display: block !important; }
+        /* ── Sidebar: off-canvas by default (xs: 0–767px) ── */
+        .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
+        .sidebar.show { transform: translateX(0) !important; }
+        .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
+        .main { height: auto !important; overflow: visible !important; }
+        .main-scroll { overflow: visible !important; flex: none !important; }
 
         /* ── Hamburger Button ── */
         .hamburger-btn {
-            display: none;
+            display: flex;
             position: fixed;
             top: 12px;
             left: 12px;
@@ -252,22 +256,8 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
         }
         .hamburger-btn:hover { background: var(--primary-hover); }
 
-        /* ── Desktop: no scroll ── */
-        @media (min-width: 768px) {
-            .main-scroll { overflow: hidden !important; }
-        }
-
-        /* ── Responsive: Tablet (< 1024px) ── */
-        @media (max-width: 1023px) {
-            .hamburger-btn { display: flex; }
-            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
-            .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
-            .main { height: auto !important; overflow: visible !important; }
-            .main-scroll { overflow: visible !important; flex: none !important; }
-            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
-            .dashboard-grid { grid-template-columns: 1fr !important; }
-        }
+        /* ── Sidebar Overlay ── */
+        .sidebar-overlay.active { display: block !important; }
 
         /* ── Responsive: Mobile (< 768px) ── */
         @media (max-width: 767px) {
@@ -373,6 +363,20 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
             .filter-right > * { flex: 1 1 100% !important; }
             .table-scroll tbody td { font-size: 0.78rem !important; }
             .table-scroll tbody td::before { min-width: 60px !important; font-size: 0.68rem !important; }
+        }
+
+        /* ── lg: Desktops (1200px+) ── */
+        @media (min-width: 1200px) {
+            .sidebar { transform: translateX(0) !important; z-index: 1000 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+            .main, .main-content { margin-left: 260px !important; max-width: calc(100% - 260px) !important; padding: 32px !important; padding-top: 32px !important; height: 100vh !important; overflow: hidden !important; }
+            .main-scroll { overflow-y: auto !important; flex: 1 !important; }
+            .hamburger-btn { display: none !important; }
+            .mobile-header { display: none !important; }
+            header { display: flex !important; }
+            .table-scroll table { table-layout: auto !important; width: 100% !important; }
+            .table-scroll th, .table-scroll td { white-space: nowrap; padding: 14px 20px; }
+            .table-scroll td[data-label="Address"], .table-scroll td[data-label="Full Name"] { white-space: normal !important; word-break: break-word; }
         }
     </style>
 </head>
@@ -1102,7 +1106,7 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
         }
     });
     window.addEventListener('resize', function() {
-        if (window.innerWidth >= 1024) {
+        if (window.innerWidth >= 1200) {
             var sidebar = document.getElementById('sidebar');
             var ov = document.getElementById('sidebarOverlay');
             if (sidebar && sidebar.classList.contains('show')) {
