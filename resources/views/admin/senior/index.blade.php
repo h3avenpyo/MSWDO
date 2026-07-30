@@ -120,11 +120,11 @@
         .activity-item{display:flex;gap:14px;padding:14px;border-radius:12px;background:var(--background);margin-bottom:10px;transition:all .2s ease;}
         .activity-item:last-child{margin-bottom:0;}
         .activity-item:hover{transform:translateX(4px);background:var(--surface);box-shadow:0 2px 8px rgba(0,0,0,.04);}
-        .activity-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-        .activity-icon svg{width:18px;height:18px;}
+        .activity-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .activity-icon svg{width:20px;height:20px;}
         .activity-content{flex:1;min-width:0;}
-        .activity-text{font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:2px;line-height:1.4;}
-        .activity-time{font-size:11px;color:var(--text-muted);}
+        .activity-text{font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:2px;line-height:1.4;word-break:break-word;white-space:normal;}
+        .activity-time{font-size:11px;color:var(--text-muted);word-break:break-word;white-space:normal;}
 
         /* Table Card */
         .table-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;animation:fadeInUp .6s ease-out .3s backwards;}
@@ -150,7 +150,7 @@
 
         /* Welcome Greeting */
         .welcome-greeting {
-            padding: 4px 0 16px 0;
+            padding: 4px 0 16px 24px;
             animation: fadeIn .6s ease forwards;
         }
         .welcome-text {
@@ -532,6 +532,9 @@
             .hamburger-btn { display: none !important; }
             .mobile-header { display: none !important; }
             header { display: flex !important; }
+            .dashboard-grid { grid-template-columns: 1.8fr 1fr; }
+            .analytics-card, .activity-card { display: flex; flex-direction: column; height: 420px !important; min-height: 420px !important; max-height: 420px !important; flex: none; }
+            .activity-feed { flex: 1; min-height: 0; max-height: none !important; overflow-y: auto; padding-right: 8px; }
         }
 
         /* ── Large Tablets (992px - 1199px) ── */
@@ -634,7 +637,7 @@
     <!-- Main Content -->
     <div class="main">
         <!-- Page Header -->
-        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
+        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8 lg:mb-3">
             <div class="flex items-center">
                 <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Senior Citizen Dashboard</h1>
             </div>
@@ -651,7 +654,7 @@
 
         <!-- Welcome Greeting -->
         <div class="welcome-greeting">
-            <h1 class="welcome-text">Welcome, {{ $userName }} &#128075;</h1>
+            <h1 class="welcome-text">Welcome, <span style="color: var(--primary);">{{ $userName }}</span></h1>
         </div>
 
         <!-- Stat Cards -->

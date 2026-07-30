@@ -1197,7 +1197,7 @@
 
         /* ---------- Welcome Greeting ---------- */
         .welcome-greeting {
-            padding: 4px 0 16px 0;
+            padding: 4px 0 16px 24px;
             animation: fadeIn .6s ease forwards;
         }
         .welcome-text {
@@ -2127,7 +2127,7 @@
             .sc-data-table th,
             .sc-data-table td { padding: 1rem 1.25rem; font-size: 0.9rem; }
             .sc-data-table th { font-size: 0.8rem; }
-            .welcome-greeting { padding: 4px 0 16px 0; }
+            .welcome-greeting { padding: 4px 0 16px 24px; }
             .sc-pagination { flex-direction: row; justify-content: space-between; align-items: center; gap: 16px; margin-top: 2rem; }
             
             /* Reduced & Equal heights for dashboard cards on desktop */

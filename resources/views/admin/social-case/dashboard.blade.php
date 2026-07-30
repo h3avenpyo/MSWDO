@@ -72,7 +72,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     <!-- Welcome Greeting -->
     <div class="welcome-greeting">
-        <h1 class="welcome-text">Welcome, {{ $userName }} &#128075;</h1>
+        <h1 class="welcome-text">Welcome, <span style="color: var(--primary);">{{ $userName }}</span></h1>
     </div>
 
     <!-- Modern Statistic Cards -->
