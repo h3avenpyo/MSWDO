@@ -46,6 +46,7 @@
     <form action="{{ route('admin.beneficiary-intake.update', $intake) }}" method="POST" id="editIntakeForm">
         @csrf
         @method('PUT')
+        <input type="hidden" name="exclude_id" id="exclude_id" value="{{ $intake->id }}">
 
         <!-- HEADER CONTROL DETAILS -->
         <div class="form-card">
@@ -88,6 +89,65 @@
             </div>
         </div>
 
+        <!-- 6-MONTH VALIDITY DUPLICATE ALERT CARD -->
+        <div id="duplicateAlertCard" class="mb-4 {{ session('duplicate_check_error') ? '' : 'd-none' }}" style="background: #FFF5F5; border: 1.5px solid #FCA5A5; border-radius: 16px; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.06); transition: all 180ms ease;">
+            <div class="p-4">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px; background: #FEE2E2; border: 1px solid #FCA5A5; color: #991B1B;">
+                        <i class="fas fa-user-lock fa-lg"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                            <h5 class="fw-bold mb-0" style="color: #991B1B; font-size: 1.05rem; letter-spacing: -0.01em;">
+                                <i class="fas fa-shield-halved me-2 text-danger"></i>6-Month Policy Restriction
+                            </h5>
+                            <span class="px-3 py-1 rounded-pill fw-semibold" style="background: #FEF2F2; border: 1px solid #F87171; color: #991B1B; font-size: 0.75rem;">
+                                Restricted: Duplicate Beneficiary
+                            </span>
+                        </div>
+                        <p class="mb-3" id="duplicateWarningText" style="color: #475569; font-size: 0.875rem; line-height: 1.5;">
+                            {{ session('duplicate_check_error', 'Beneficiary has already received financial assistance within the last 6 months.') }}
+                        </p>
+
+                        <div class="table-responsive bg-white border rounded-3 overflow-hidden shadow-xs" style="border-color: #CBD5E1 !important;">
+                            <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.85rem;">
+                                <thead style="background: #F8FAFC; border-bottom: 1px solid #CBD5E1;">
+                                    <tr class="text-secondary" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;">
+                                        <th class="ps-3 py-2">Control No.</th>
+                                        <th class="py-2">App Date</th>
+                                        <th class="py-2">Policy Status</th>
+                                        <th class="py-2">Beneficiary Name</th>
+                                        <th class="py-2">Representative</th>
+                                        <th class="py-2">Assistance Type</th>
+                                        <th class="pe-3 py-2 text-end">Eligible Again</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="duplicateMatchesTableBody">
+                                    @if(session('duplicate_matches'))
+                                        @foreach(session('duplicate_matches') as $match)
+                                        <tr style="border-bottom: 1px solid #F1F5F9;">
+                                            <td class="ps-3 fw-bold" style="color: #1A237E;">{{ $match['control_number'] }}</td>
+                                            <td class="text-secondary">{{ $match['date_processed'] }}</td>
+                                            <td>
+                                                <span class="px-2.5 py-0.5 rounded-pill fw-semibold" style="background: #FEF2F2; border: 1px solid #F87171; color: #991B1B; font-size: 0.75rem;">
+                                                    {{ $match['matched_role'] }}
+                                                </span>
+                                            </td>
+                                            <td class="fw-semibold text-dark">{{ $match['beneficiary_name'] }}</td>
+                                            <td class="text-secondary">{{ $match['representative_name'] }}</td>
+                                            <td class="text-secondary">{{ $match['assistance_type'] }}</td>
+                                            <td class="pe-3 text-end fw-bold" style="color: #DC2626;">{{ $match['eligible_again_date'] }}</td>
+                                        </tr>
+                                        @endforeach
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- SECTION 1: IMPORMASYON NG BENEPISYARYO -->
         <div class="form-card">
             <div class="card-body p-4">
@@ -103,15 +163,15 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-3">
                         <label class="form-label">Apelyido (Last Name) <span class="required-star">*</span></label>
-                        <input type="text" name="beneficiary_last_name" class="form-control" value="{{ old('beneficiary_last_name', $intake->beneficiary_last_name) }}" required>
+                        <input type="text" name="beneficiary_last_name" id="beneficiary_last_name" class="form-control" value="{{ old('beneficiary_last_name', $intake->beneficiary_last_name) }}" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Unang Pangalan (First Name) <span class="required-star">*</span></label>
-                        <input type="text" name="beneficiary_first_name" class="form-control" value="{{ old('beneficiary_first_name', $intake->beneficiary_first_name) }}" required>
+                        <input type="text" name="beneficiary_first_name" id="beneficiary_first_name" class="form-control" value="{{ old('beneficiary_first_name', $intake->beneficiary_first_name) }}" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Gitnang Pangalan (Middle Name)</label>
-                        <input type="text" name="beneficiary_middle_name" class="form-control" value="{{ old('beneficiary_middle_name', $intake->beneficiary_middle_name) }}">
+                        <input type="text" name="beneficiary_middle_name" id="beneficiary_middle_name" class="form-control" value="{{ old('beneficiary_middle_name', $intake->beneficiary_middle_name) }}">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Ext. (Sr., Jr., III)</label>
@@ -229,15 +289,15 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-3">
                             <label class="form-label">Apelyido (Last Name) <span class="required-star rep-star">*</span></label>
-                            <input type="text" name="rep_last_name" class="form-control rep-field" value="{{ old('rep_last_name', $intake->rep_last_name) }}" placeholder="Apelyido">
+                            <input type="text" name="rep_last_name" id="rep_last_name" class="form-control rep-field" value="{{ old('rep_last_name', $intake->rep_last_name) }}" placeholder="Apelyido">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Unang Pangalan (First Name) <span class="required-star rep-star">*</span></label>
-                            <input type="text" name="rep_first_name" class="form-control rep-field" value="{{ old('rep_first_name', $intake->rep_first_name) }}" placeholder="Unang Pangalan">
+                            <input type="text" name="rep_first_name" id="rep_first_name" class="form-control rep-field" value="{{ old('rep_first_name', $intake->rep_first_name) }}" placeholder="Unang Pangalan">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Gitnang Pangalan (Middle Name)</label>
-                            <input type="text" name="rep_middle_name" class="form-control rep-field" value="{{ old('rep_middle_name', $intake->rep_middle_name) }}" placeholder="Gitnang Pangalan">
+                            <input type="text" name="rep_middle_name" id="rep_middle_name" class="form-control rep-field" value="{{ old('rep_middle_name', $intake->rep_middle_name) }}" placeholder="Gitnang Pangalan">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Ext. (Sr., Jr., III)</label>

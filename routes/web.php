@@ -118,6 +118,7 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::get('/', [FinancialIntakeController::class, 'index'])->name('index');
         Route::get('/create/{client?}', [FinancialIntakeController::class, 'create'])->name('create');
         Route::post('/', [FinancialIntakeController::class, 'store'])->name('store');
+        Route::post('/check-duplicate', [FinancialIntakeController::class, 'checkDuplicate'])->name('check-duplicate');
         Route::get('/transmittal', [FinancialIntakeController::class, 'transmittalReport'])->name('transmittal');
         Route::post('/transmittal', [FinancialIntakeController::class, 'transmittalReport'])->name('transmittal.generate');
         Route::get('/{intake}', [FinancialIntakeController::class, 'show'])->name('show');

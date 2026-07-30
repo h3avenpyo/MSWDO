@@ -8,6 +8,7 @@ use App\Http\Requests\SocialCase\UpdateBeneficiaryIntakeRequest;
 use App\Models\SocialCase\BeneficiaryIntake;
 use App\Models\Client;
 use App\Services\SocialCase\EligibilityChecker;
+use App\Services\Financial\FinancialDuplicateChecker;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -156,9 +157,18 @@ class FinancialIntakeController extends Controller
     /**
      * Store a newly created intake sheet in database for Financial Module.
      */
-    public function store(StoreBeneficiaryIntakeRequest $request, EligibilityChecker $checker)
+    public function store(StoreBeneficiaryIntakeRequest $request, EligibilityChecker $checker, FinancialDuplicateChecker $duplicateChecker)
     {
         $data = $request->validated();
+
+        // Strict 6-Month Validity Policy Check
+        $duplicateCheck = $duplicateChecker->checkDuplicate($data);
+        if ($duplicateCheck['is_duplicate']) {
+            return redirect()->back()
+                ->withInput()
+                ->with('duplicate_check_error', $duplicateCheck['warning_message'])
+                ->with('duplicate_matches', $duplicateCheck['matches']);
+        }
 
         if (! empty($data['beneficiary_birthday'])) {
             $data['beneficiary_age'] = Carbon::parse($data['beneficiary_birthday'])->age;
@@ -296,9 +306,18 @@ class FinancialIntakeController extends Controller
     /**
      * Update the specified intake sheet in database for Financial Module.
      */
-    public function update(UpdateBeneficiaryIntakeRequest $request, BeneficiaryIntake $intake)
+    public function update(UpdateBeneficiaryIntakeRequest $request, BeneficiaryIntake $intake, FinancialDuplicateChecker $duplicateChecker)
     {
         $data = $request->validated();
+
+        // Strict 6-Month Validity Policy Check (exclude current record)
+        $duplicateCheck = $duplicateChecker->checkDuplicate($data, $intake->id);
+        if ($duplicateCheck['is_duplicate']) {
+            return redirect()->back()
+                ->withInput()
+                ->with('duplicate_check_error', $duplicateCheck['warning_message'])
+                ->with('duplicate_matches', $duplicateCheck['matches']);
+        }
 
         if (! empty($data['beneficiary_birthday'])) {
             $data['beneficiary_age'] = Carbon::parse($data['beneficiary_birthday'])->age;
@@ -413,5 +432,16 @@ class FinancialIntakeController extends Controller
             'transmittalSession',
             'staffName'
         ));
+    }
+
+    /**
+     * AJAX endpoint to check for strict 6-month validity duplicates during intake entry.
+     */
+    public function checkDuplicate(Request $request, FinancialDuplicateChecker $duplicateChecker)
+    {
+        $excludeId = $request->input('exclude_id') ? (int) $request->input('exclude_id') : null;
+        $result = $duplicateChecker->checkDuplicate($request->all(), $excludeId);
+
+        return response()->json($result);
     }
 }

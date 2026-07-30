@@ -17,12 +17,14 @@
             <p class="text-muted small mb-0">View, search, edit, and manage all intake sheets.</p>
         </div>
         <div class="d-flex gap-2">
-            <button type="button" class="btn btn-outline-primary fw-bold rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#transmittalModal" id="btnOpenTransmittalModal">
+            <button type="button" class="btn btn-outline-primary fw-bold rounded-pill px-3" data-bs-toggle="modal"
+                data-bs-target="#transmittalModal" id="btnOpenTransmittalModal">
                 <i class="fas fa-file-invoice me-1"></i> Transmittal Report
             </button>
-            <a href="{{ route('admin.beneficiary-intake.create') }}" class="btn btn-primary fw-bold rounded-pill px-4" style="background: #1A237E; border: none;">
+            {{-- <a href="{{ route('admin.beneficiary-intake.create') }}"
+                class="btn btn-primary fw-bold rounded-pill px-4" style="background: #1A237E; border: none;">
                 <i class="fas fa-plus me-1"></i> Create New Intake
-            </a>
+            </a> --}}
         </div>
     </div>
 
@@ -132,8 +134,8 @@
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <!-- Delete -->
-                                <form action="{{ route('admin.beneficiary-intake.destroy', $intake) }}" method="POST"
-                                    class="d-inline delete-intake-form">
+                                {{-- <form action="{{ route('admin.beneficiary-intake.destroy', $intake) }}"
+                                    method="POST" class="d-inline delete-intake-form">
                                     @csrf
                                     @method('DELETE')
                                     <button type="button"
@@ -141,7 +143,7 @@
                                         title="Delete Record">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
-                                </form>
+                                </form> --}}
                             </div>
                         </td>
                     </tr>
@@ -184,20 +186,22 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('admin.beneficiary-intake.transmittal') }}" method="GET" target="_blank" id="transmittalForm">
+            <form action="{{ route('admin.beneficiary-intake.transmittal') }}" method="GET" target="_blank"
+                id="transmittalForm">
                 <div class="modal-body py-4">
-                    
+
                     @if(request()->filled('search'))
-                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
                     @endif
                     @if(request()->filled('barangay') && request('barangay') !== 'All')
-                        <input type="hidden" name="barangay" value="{{ request('barangay') }}">
+                    <input type="hidden" name="barangay" value="{{ request('barangay') }}">
                     @endif
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small text-secondary">Transmittal Date</label>
-                            <input type="date" name="transmittal_date" class="form-control" value="{{ date('Y-m-d') }}" required>
+                            <input type="date" name="transmittal_date" class="form-control" value="{{ date('Y-m-d') }}"
+                                required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small text-secondary">Session / Time</label>
@@ -210,13 +214,16 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold small text-secondary">Assigned Staff Name</label>
-                        <input type="text" name="staff_name" class="form-control" value="{{ session('admin_user_name') ?? 'FRANCES' }}" placeholder="e.g. FRANCES" required>
+                        <input type="text" name="staff_name" class="form-control"
+                            value="{{ session('admin_user_name') ?? 'FRANCES' }}" placeholder="e.g. FRANCES" required>
                     </div>
 
                 </div>
                 <div class="modal-footer border-top-0 pt-0">
-                    <button type="button" class="btn btn-light border px-3 rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary px-4 rounded-pill fw-bold" style="background: #1A237E; border: none;">
+                    <button type="button" class="btn btn-light border px-3 rounded-pill"
+                        data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4 rounded-pill fw-bold"
+                        style="background: #1A237E; border: none;">
                         <i class="fas fa-print me-1"></i> Generate &amp; Print Report
                     </button>
                 </div>
