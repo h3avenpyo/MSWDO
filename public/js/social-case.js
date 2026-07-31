@@ -2,6 +2,7 @@
 const STATUSES = ["Draft","Review","Approved","Released","Archived"];
 const STATUS_CLASS = {Draft:"b-draft",Review:"b-review",Approved:"b-approved",Released:"b-released",Archived:"b-archived"};
 const PURPOSES = ["Medical Assistance","Burial Assistance","Educational Assistance","Financial Assistance","Food / Relief Assistance","Livelihood Assistance","Other"];
+const RELATIONSHIPS = ["Spouse","Wife","Husband","Son","Daughter","Father","Mother","Brother","Sister","Grandparent","Grandchild","Uncle","Aunt","Nephew","Niece","Cousin","Father-in-law","Mother-in-law","Brother-in-law","Sister-in-law","Stepfather","Stepmother","Stepchild","Adopted Child","Foster Parent","Legal Guardian","Boarder","Live-in Partner","Other"];
 const BARANGAYS = [
   "Acacia","Adlas","Anahaw I","Anahaw II","Balite I","Balite II","Balubad","Banaba","Batas",
   "Biga I","Biga II","Biluso","Bucal","Buho","Bulihan","Cabangaan","Carmen","Hoyo","Hukay","Iba",
@@ -1793,7 +1794,7 @@ function renderIntakeForm(){
     ${d.household.map((m,i)=>`
       <div class="grid3" style="margin-bottom:8px;align-items:end;padding-bottom:8px;border-bottom:1px solid var(--surface-sunken)">
         <div class="field" style="margin-bottom:0"><label>${i===0?'Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value" placeholder="Enter name"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Relationship <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.relationship)}" oninput="draftIntake.household[${i}].relationship=this.value" placeholder="Enter relationship"></div>
+        <div class="field" style="margin-bottom:0"><label>${i===0?'Relationship <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><select oninput="draftIntake.household[${i}].relationship=this.value"><option value="">Select relationship</option>${RELATIONSHIPS.map(o=>`<option ${m.relationship===o?'selected':''}>${o}</option>`).join("")}</select></div>
         <div class="field" style="margin-bottom:0"><label>${i===0?'Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="number" value="${escapeHtml(String(m.age))}" oninput="draftIntake.household[${i}].age=this.value" min="0" max="150" placeholder="Enter age"></div>
         <div class="field" style="margin-bottom:0"><label>${i===0?'Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value" placeholder="Enter educational attainment"></div>
         <div class="field" style="margin-bottom:0"><label>${i===0?'Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="Enter occupation (N/A if none)"></div>
