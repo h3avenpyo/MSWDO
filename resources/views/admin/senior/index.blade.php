@@ -105,11 +105,11 @@
         .stat-card-red .stat-card-icon{background:var(--danger-bg);color:var(--danger);}
 
         /* Analytics Card */
-        .analytics-card{background:var(--surface);border-radius:16px;padding:24px;box-shadow:var(--shadow);border:1px solid var(--border);min-height:420px;animation:fadeInUp .6s ease-out .1s backwards;}
+        .analytics-card{background:var(--surface);border-radius:16px;padding:24px;border:1px solid var(--border);min-height:420px;animation:fadeInUp .6s ease-out .1s backwards;}
         .analytics-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:20px;}
 
         /* Activity Card */
-        .activity-card{background:var(--surface);border-radius:16px;padding:24px;box-shadow:var(--shadow);border:1px solid var(--border);min-height:420px;animation:fadeInUp .6s ease-out .2s backwards;overflow:hidden;display:flex;flex-direction:column;}
+        .activity-card{background:var(--surface);border-radius:16px;padding:24px;border:1px solid var(--border);min-height:420px;animation:fadeInUp .6s ease-out .2s backwards;overflow:hidden;display:flex;flex-direction:column;}
         .activity-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:20px;flex-shrink:0;}
         .activity-feed{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:8px;min-height:0;}
         .activity-feed::-webkit-scrollbar{width:6px;}
@@ -542,9 +542,19 @@
             .main-scroll { overflow-y: auto !important; flex: 1 !important; }
             .hamburger-btn { display: none !important; }
             .mobile-header { display: none !important; }
-            header { display: flex !important; }
+            header {
+                display: flex !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                height: auto !important;
+                padding: 0 !important;
+                margin-bottom: 0.75rem !important;
+                align-items: center !important;
+                gap: 0 !important;
+            }
             .dashboard-grid { grid-template-columns: 1.8fr 1fr; }
-            .analytics-card, .activity-card { display: flex; flex-direction: column; height: 420px !important; min-height: 420px !important; max-height: 420px !important; flex: none; }
+            .analytics-card, .activity-card { display: flex; flex-direction: column; height: 520px !important; min-height: 520px !important; max-height: 520px !important; flex: none; }
             .activity-feed { flex: 1; min-height: 0; max-height: none !important; overflow-y: auto; padding-right: 8px; }
         }
 
@@ -663,7 +673,7 @@
         <!-- Page Header -->
         <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8 lg:mb-3">
             <div class="flex items-center">
-                <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Senior Citizen Dashboard</h1>
+                <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Welcome, {{ $userName }}</h1>
             </div>
             <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
                 <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime"></div>
@@ -675,11 +685,6 @@
 
         <div class="main-scroll">
 
-
-        <!-- Welcome Greeting -->
-        <div class="welcome-greeting">
-            <h1 class="welcome-text">Welcome, <span style="color: var(--primary);">{{ $userName }}</span></h1>
-        </div>
 
         <!-- Stat Cards -->
         <div class="stat-cards">
