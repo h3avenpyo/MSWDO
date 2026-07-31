@@ -1363,7 +1363,7 @@
         @media (max-width: 767px){input::placeholder,textarea::placeholder{font-size:12px;}}
         @media (min-width: 768px) and (max-width: 991px){input::placeholder,textarea::placeholder{font-size:13px;}}
         @media (min-width: 992px) and (max-width: 1199px){input::placeholder,textarea::placeholder{font-size:13.5px;}}
-        @media (min-width: 1200px){input::placeholder,textarea::placeholder{font-size:14px;}}
+        @media (min-width: 1200px){input::placeholder,textarea::placeholder{font-size:15px;}}
         .field-control-no input{font-variant-numeric:tabular-nums;letter-spacing:0.02em;}
         @media (max-width: 767px){
             .field-control-no{grid-column:1 / -1;}
@@ -2156,6 +2156,34 @@
                 height: auto !important;
                 padding: 0 !important;
                 margin-bottom: 12px !important;
+            }
+
+            /* Larger, more readable inputs at 1200px+ */
+            input[type=text], input[type=date], input[type=number], input[type=tel], select, textarea {
+                font-size: 15px !important;
+                padding: 12px 14px !important;
+                height: 48px !important;
+                border: 1px solid #C7D2FE !important;
+            }
+            textarea { height: auto !important; min-height: 90px !important; }
+
+            /* Filters: match the input look at 1200px+ */
+            #statusBtn, #assistanceBtn, #barangayBtn,
+            #archiveBrgyBtn, #archiveTypeBtn,
+            .archive-filter-bar {
+                border-color: #C7D2FE !important;
+            }
+            #statusBtn, #assistanceBtn, #barangayBtn,
+            #archiveBrgyBtn, #archiveTypeBtn {
+                height: 48px !important;
+                font-size: 15px !important;
+            }
+            #searchInput, #archiveSearch {
+                border-right: none !important;
+                border-radius: 6px 0 0 6px !important;
+            }
+            #searchInput + button, #archiveSearch + button {
+                height: 48px !important;
             }
             .chart-wrapper { flex: 1; min-height: 0; height: 100%; flex-direction: row; align-items: center; gap: 24px; }
             .chart-legend { flex: 0 1 300px; width: auto; flex-direction: column; flex-wrap: nowrap; justify-content: center; gap: 16px; }
