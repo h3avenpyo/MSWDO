@@ -2146,7 +2146,7 @@
             .sc-pagination { flex-direction: row; justify-content: space-between; align-items: center; gap: 16px; margin-top: 2rem; }
             
             /* Reduced & Equal heights for dashboard cards on desktop */
-            .analytics-card, .activity-card { height: 420px !important; min-height: 420px !important; max-height: 420px !important; flex: none; }
+            .analytics-card, .activity-card { height: 550px !important; min-height: 550px !important; max-height: 550px !important; flex: none; }
             .chart-wrapper { flex: 1; min-height: 0; height: 100%; flex-direction: row; align-items: center; gap: 24px; }
             .chart-legend { flex: 0 1 300px; width: auto; flex-direction: column; flex-wrap: nowrap; justify-content: center; gap: 16px; }
             .chart-canvas { min-height: 0 !important; height: 100%; flex: 1; }
