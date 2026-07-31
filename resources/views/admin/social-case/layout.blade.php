@@ -2147,6 +2147,16 @@
             
             /* Reduced & Equal heights for dashboard cards on desktop */
             .analytics-card, .activity-card { height: 550px !important; min-height: 550px !important; max-height: 550px !important; flex: none; }
+
+            /* Remove header container at 1200px+ but keep the time and date */
+            header.sc-flat-header {
+                background: transparent !important;
+                border-bottom: none !important;
+                box-shadow: none !important;
+                height: auto !important;
+                padding: 0 !important;
+                margin-bottom: 12px !important;
+            }
             .chart-wrapper { flex: 1; min-height: 0; height: 100%; flex-direction: row; align-items: center; gap: 24px; }
             .chart-legend { flex: 0 1 300px; width: auto; flex-direction: column; flex-wrap: nowrap; justify-content: center; gap: 16px; }
             .chart-canvas { min-height: 0 !important; height: 100%; flex: 1; }
