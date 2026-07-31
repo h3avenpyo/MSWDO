@@ -68,12 +68,16 @@ class BirthdayController extends Controller
         // Get selected month from request or default to current month
         $selectedMonth = $request->get('month', now()->format('n'));
         $selectedYear = $request->get('year', now()->year);
+        $selectedBarangay = $request->get('barangay', '');
         $payoutAmount = 500.00;
 
         $barangayBreakdown = SeniorCitizenRecord::where('status', 'active')
             ->whereNotNull('birth_date')
             ->whereNotNull('barangay')
             ->whereRaw("MONTH(birth_date) = ?", [$selectedMonth])
+            ->when($selectedBarangay, function ($query) use ($selectedBarangay) {
+                $query->where('barangay', $selectedBarangay);
+            })
             ->get()
             ->groupBy('barangay')
             ->map(function ($seniors, $barangay) use ($selectedYear, $payoutAmount) {
@@ -91,9 +95,11 @@ class BirthdayController extends Controller
                 $celebrants = $seniors->map(function ($s) {
                     $controlNo = $s->control_number ?? $s->record_number ?? '-';
                     $fullName = trim("{$s->first_name} {$s->middle_name} {$s->last_name}");
+                    $birthDate = $s->birth_date ? \Carbon\Carbon::parse($s->birth_date)->format('M d, Y') : '-';
                     return [
                         'control_number' => $controlNo,
                         'full_name' => $fullName,
+                        'birth_date' => $birthDate,
                     ];
                 })->sortBy('full_name')->values();
 
@@ -120,7 +126,7 @@ class BirthdayController extends Controller
             'todayCount', 'weekCount', 'nextMonthCount', 'total',
             'barangays', 'months', 'barangayBreakdown',
             'grandTotal', 'grandRemaining', 'payoutAmount',
-            'selectedMonth', 'selectedYear'
+            'selectedMonth', 'selectedYear', 'selectedBarangay'
         ));
     }
 

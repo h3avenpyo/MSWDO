@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root{
-            --primary:#1A237E;--primary-hover:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--success:#16A34A;--success-bg:#ECFDF5;--danger:#DC2626;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EEF2FF;--purple:#7C3AED;--purple-bg:#F3E8FF;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+            --primary:#1A237E;--primary-hover:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--success:#16A34A;--success-bg:#ECFDF5;--danger:#DC2626;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EEF2FF;--purple:#7C3AED;--purple-bg:#F3E8FF;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:Arial,Helvetica,sans-serif;
         }
         *,*::before,*::after{box-sizing:border-box;}
         html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100%;overflow-x:hidden;overflow-y:auto;}
@@ -100,7 +100,7 @@
         .filter-select{width:100%;height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
         .filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
 
-        .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;display:block;text-transform:uppercase;letter-spacing:0.05em;}
+        .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;display:block;text-transform:uppercase;letter-spacing:0.05em;height:18px;line-height:18px;}
 
         .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border);border-radius:10px;font-family:var(--font-family);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s ease;padding:10px 20px;background:var(--surface);color:var(--text-primary);box-shadow:var(--shadow);height:42px;text-decoration:none;}
         .btn:hover{border-color:var(--primary);transform:translateY(-1px);}
@@ -124,7 +124,7 @@
 
         .modal-overlay{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px;}
         .modal-overlay.show{display:flex;}
-        .modal-box{background:var(--surface);border-radius:16px;width:100%;max-width:800px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15);}
+        .modal-box{background:var(--surface);border-radius:16px;width:100%;max-width:250px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15);}
         .modal-header-bar{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);background:var(--primary);color:white;border-radius:16px 16px 0 0;}
         .modal-header-bar h4{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;margin:0;}
         .modal-header-bar h4 svg{width:20px;height:20px;}
@@ -209,7 +209,7 @@
         #paginationWrapper{flex-direction:column !important;gap:10px !important;padding:12px !important;}
         #paginationLinks{gap:3px !important;flex-wrap:wrap !important;justify-content:center;}
         #paginationLinks .page-item a,#paginationLinks .page-item span{min-width:34px;height:34px;padding:0 0.5rem;font-size:12px;}
-        .modal-box{max-width:100% !important;border-radius:12px !important;max-height:85vh !important;}
+        .modal-box{max-width:800px !important;border-radius:12px !important;max-height:85vh !important;}
         .modal-header-bar{padding:14px 16px !important;border-radius:12px 12px 0 0 !important;}
         .modal-header-bar h4{font-size:14px !important;}
         .modal-body-scroll{padding:16px !important;max-height:70vh !important;}
@@ -451,22 +451,19 @@
                     <i data-lucide="landmark" style="width:20px;height:20px;color:var(--primary)"></i>
                     Barangay Budget Breakdown
                 </h3>
-                <div id="filterGrid" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:12px">
-                    <div>
-                        <label class="filter-label">Month</label>
-                        <select id="monthFilter" class="filter-select" onchange="filterByMonth()">
-                            @foreach($months as $num => $name)
-                                <option value="{{ $num }}" {{ $selectedMonth == $num ? 'selected' : '' }}>{{ $name }}</option>
+                <div id="filterGrid" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:12px;align-items:start">
+                    <div style="display:flex;flex-direction:column;gap:3px">
+                        <label class="filter-label">Barangay</label>
+                        <select id="barangayFilter" class="filter-select" style="height:44px" onchange="filterByDate()">
+                            <option value="">All Barangays</option>
+                            @foreach($barangays as $barangay)
+                                <option value="{{ $barangay }}" {{ $selectedBarangay == $barangay ? 'selected' : '' }}>{{ $barangay }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div>
-                        <label class="filter-label">Year</label>
-                        <select id="yearFilter" class="filter-select" onchange="filterByMonth()">
-                            @for($year = now()->year; $year >= now()->year - 1; $year--)
-                                <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>{{ $year }}</option>
-                            @endfor
-                        </select>
+                    <div style="display:flex;flex-direction:column;gap:3px">
+                        <label class="filter-label">Date</label>
+                        <input type="month" id="dateFilter" style="width:100%;height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;" value="{{ $selectedYear }}-{{ str_pad($selectedMonth, 2, '0', STR_PAD_LEFT) }}" onchange="filterByDate()">
                     </div>
                 </div>
             </div>
@@ -487,32 +484,52 @@
                         </div>
                         <div>
                             <span style="color:var(--text-secondary);font-weight:500">Celebrants:</span>
-                            <div id="celebrants-{{ str_replace(' ', '-', $barangay['barangay']) }}" style="margin-top:8px;color:var(--text-primary);font-size:13px;line-height:1.8">
+                            <div id="celebrants-{{ str_replace(' ', '-', $barangay['barangay']) }}" style="margin-top:8px">
                                 @php
-                                    $displayLimit = 5;
+                                    $displayLimit = 3;
                                     $showAll = false;
                                     $celebrantsList = $barangay['celebrants'];
                                 @endphp
-                                @foreach($celebrantsList as $celebrant)
-                                    @if($loop->index < $displayLimit)
-                                        <div style="padding:4px 0;border-bottom:1px solid var(--border)">
-                                            <span style="color:var(--text-secondary)">{{ $celebrant['control_number'] }}</span> - {{ $celebrant['full_name'] }}
-                                        </div>
-                                    @elseif($loop->index == $displayLimit)
-                                        @php $showAll = true; @endphp
-                                    @endif
-                                @endforeach
-                                @if($showAll && $celebrantsList->count() > $displayLimit)
-                                    <div id="more-{{ str_replace(' ', '-', $barangay['barangay']) }}" style="display:none">
+                                <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                                    <thead>
+                                        <tr>
+                                            <th style="padding:10px 12px;text-align:left;background:#e5e7eb;border-bottom:2px solid #9ca3af;color:#374151;font-weight:700;font-size:13px;">Control No.</th>
+                                            <th style="padding:10px 12px;text-align:left;background:#e5e7eb;border-bottom:2px solid #9ca3af;color:#374151;font-weight:700;font-size:13px;">Name</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         @foreach($celebrantsList as $celebrant)
-                                            @if($loop->index >= $displayLimit)
-                                                <div style="padding:4px 0;border-bottom:1px solid var(--border)">
-                                                    <span style="color:var(--text-secondary)">{{ $celebrant['control_number'] }}</span> - {{ $celebrant['full_name'] }}
-                                                </div>
+                                            @if($loop->index < $displayLimit)
+                                                <tr style="border-bottom:1px solid var(--border);">
+                                                    <td style="padding:10px 12px;color:var(--text-secondary);">{{ $celebrant['control_number'] }}</td>
+                                                    <td style="padding:10px 12px;color:var(--text-primary);">{{ $celebrant['full_name'] }}</td>
+                                                </tr>
+                                            @elseif($loop->index == $displayLimit)
+                                                @php $showAll = true; @endphp
                                             @endif
                                         @endforeach
+                                    </tbody>
+                                </table>
+                                @if($showAll && $celebrantsList->count() > $displayLimit)
+                                    <div id="more-{{ str_replace(' ', '-', $barangay['barangay']) }}" style="display:none">
+                                        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                                            <tbody>
+                                                @foreach($celebrantsList as $celebrant)
+                                                    @if($loop->index >= $displayLimit)
+                                                        <tr style="border-bottom:1px solid var(--border);" data-control="{{ $celebrant['control_number'] }}" data-name="{{ $celebrant['full_name'] }}" data-birthday="{{ $celebrant['birth_date'] ?? '' }}">
+                                                            <td style="padding:10px 12px;color:var(--text-secondary);">{{ $celebrant['control_number'] }}</td>
+                                                            <td style="padding:10px 12px;color:var(--text-primary);">{{ $celebrant['full_name'] }}</td>
+                                                        </tr>
+                                                    @endif
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
-                                    <button onclick="toggleCelebrants('{{ str_replace(' ', '-', $barangay['barangay']) }}')" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:12px;margin-top:4px;padding:0">View All ({{ $celebrantsList->count() - $displayLimit }} more)</button>
+                                    <!-- Store all celebrants data for modal in a script tag -->
+                                    <script type="application/json" id="data-{{ str_replace(' ', '-', $barangay['barangay']) }}">
+                                        {!! $celebrantsList->toJson() !!}
+                                    </script>
+                                    <button onclick="openCelebrantsModal('{{ str_replace(' ', '-', $barangay['barangay']) }}', '{{ addslashes($barangay['barangay']) }}')" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:12px;margin-top:8px;padding:0">View All ({{ $celebrantsList->count() }} total)</button>
                                 @endif
                             </div>
                         </div>
@@ -530,6 +547,21 @@
                 @endforeach
             </div>
         </div>
+        </div>
+    </div>
+</div>
+
+<!-- Celebrants Modal -->
+<div id="celebrantsModal" class="modal-overlay" style="padding:20px;">
+    <div class="modal-box" style="width:800px !important;max-width:800px !important;">
+        <div class="modal-header-bar" style="padding:24px 28px !important;">
+            <h4 style="font-size:18px !important;"><i data-lucide="users" style="width:24px;height:24px"></i> <span id="modalBarangayName">Barangay</span> - All Celebrants</h4>
+            <button class="modal-close-btn" onclick="closeCelebrantsModal()">
+                <i data-lucide="x" style="width:18px;height:18px"></i>
+            </button>
+        </div>
+        <div class="modal-body-scroll" id="modalBody" style="padding:28px !important;">
+            <!-- Content will be populated by JavaScript -->
         </div>
     </div>
 </div>
@@ -1194,10 +1226,102 @@
         }
     }
 
-    function filterByMonth() {
-        const month = document.getElementById('monthFilter').value;
-        const year = document.getElementById('yearFilter').value;
-        window.location.href = `{{ route('admin.senior.birthdays') }}?month=${month}&year=${year}`;
+    function openCelebrantsModal(barangayId, barangayName) {
+        const dataScript = document.getElementById(`data-${barangayId}`);
+        const modal = document.getElementById('celebrantsModal');
+        const modalBarangayName = document.getElementById('modalBarangayName');
+        const modalBody = document.getElementById('modalBody');
+
+        if (!dataScript) {
+            console.error('Could not find script with id: data-' + barangayId);
+            alert('Error: Could not load celebrant data');
+            return;
+        }
+
+        // Set the barangay name
+        modalBarangayName.textContent = barangayName;
+
+        // Parse all celebrants data from JSON script tag
+        try {
+            const celebrantsData = JSON.parse(dataScript.textContent);
+
+            // Create a table structure
+            let tableHTML = `
+                <table style="width:100%;border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th style="padding:16px;text-align:left;background:var(--background);border-bottom:2px solid var(--border);font-size:15px;font-weight:600;color:var(--text-secondary);">Control Number</th>
+                            <th style="padding:16px;text-align:left;background:var(--background);border-bottom:2px solid var(--border);font-size:15px;font-weight:600;color:var(--text-secondary);">Name</th>
+                            <th style="padding:16px;text-align:left;background:var(--background);border-bottom:2px solid var(--border);font-size:15px;font-weight:600;color:var(--text-secondary);">Birthday</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            // Add all celebrants to the table
+            celebrantsData.forEach(celebrant => {
+                const controlNumber = celebrant.control_number || '-';
+                const fullName = celebrant.full_name || '-';
+                const birthday = celebrant.birth_date || '-';
+                
+                tableHTML += `
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:16px;color:var(--text-secondary);font-size:15px;">${controlNumber}</td>
+                        <td style="padding:16px;color:var(--text-primary);font-size:15px;font-weight:500;">${fullName}</td>
+                        <td style="padding:16px;color:var(--text-muted);font-size:15px;">${birthday}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            modalBody.innerHTML = tableHTML;
+
+            // Show modal
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+
+            // Reinitialize Lucide icons
+            lucide.createIcons();
+        } catch (e) {
+            console.error('Error parsing celebrant data:', e);
+            alert('Error loading celebrant data: ' + e.message);
+        }
+    }
+
+    function closeCelebrantsModal() {
+        const modal = document.getElementById('celebrantsModal');
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('celebrantsModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeCelebrantsModal();
+        }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeCelebrantsModal();
+        }
+    });
+
+    function filterByDate() {
+        const dateValue = document.getElementById('dateFilter').value;
+        const barangay = document.getElementById('barangayFilter').value;
+        
+        if (dateValue) {
+            const [year, month] = dateValue.split('-');
+            window.location.href = `{{ route('admin.senior.birthdays') }}?month=${month}&year=${year}&barangay=${barangay}`;
+        } else {
+            window.location.href = `{{ route('admin.senior.birthdays') }}?barangay=${barangay}`;
+        }
     }
 
     function toggleSelectAll() {
