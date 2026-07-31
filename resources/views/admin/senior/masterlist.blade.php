@@ -275,6 +275,7 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
             .filter-right > * { flex: 1 1 calc(50% - 4px) !important; min-width: 0 !important; }
             .filter-right > a, .filter-right > button, .filter-right .btn, .filter-right > div { width: 100% !important; justify-content: center !important; text-align: center !important; padding: 8px 10px !important; font-size: 12px !important; }
             .filter-right > a { display: inline-flex !important; align-items: center !important; justify-content: center !important; }
+            .filter-label { display: flex !important; align-items: center !important; gap: 6px !important; }
 
             /* ── Table Card ── */
             .table-card { padding: 1rem !important; border-radius: 12px !important; overflow: visible !important; flex: none !important; min-height: 0 !important; height: auto !important; }
@@ -365,7 +366,15 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
             .table-scroll tbody td::before { min-width: 60px !important; font-size: 0.68rem !important; }
         }
 
-        /* ── lg: Desktops (1200px+) ── */
+        /* ── md: Small tablets (768px - 991px) ── */
+        @media (min-width: 768px) and (max-width: 991px) {
+        }
+
+        /* ── lg: Large tablets (992px - 1199px) ── */
+        @media (min-width: 992px) and (max-width: 1199px) {
+        }
+
+        /* ── xl: Desktops (1200px+) ── */
         @media (min-width: 1200px) {
             .sidebar { transform: translateX(0) !important; z-index: 1000 !important; }
             .sidebar.show { transform: translateX(0) !important; }
@@ -374,6 +383,8 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
             .hamburger-btn { display: none !important; }
             .mobile-header { display: none !important; }
             header { display: none !important; }
+            .table-scroll table { width: calc(100% + 100px); }
+            .filter-group.search-group { max-width: 300px; }
             .desktop-datetime-container {
                 display: flex !important;
                 justify-content: flex-end !important;
@@ -479,100 +490,92 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
     </header>
 
     <div class="main-scroll">
-    <!-- Table Card -->
-    <div class="table-card" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden">
-        <h2 class="table-card-title">Registered Senior Citizens</h2>
-
-        <!-- Filter Section -->
-        <div class="filter-section">
-            <form method="GET" action="{{ route('admin.senior.masterlist') }}" id="filterForm">
-                <div class="filter-row">
-                    <div class="filter-left">
-                        <div class="filter-group search-group">
-                            <label class="filter-label">Search by Name</label>
-                            <div class="input-group">
-                                <input type="text" name="search" placeholder="Search by name..." value="{{ request('search') }}">
-                                <button type="submit" class="search-btn">
-                                    <i data-lucide="search" style="width:16px;height:16px"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="filter-group select-group">
-                            <label class="filter-label">Filter by Barangay</label>
-                            <select class="filter-select" name="barangay" onchange="this.form.submit()">
-                                <option value="">All Barangays</option>
-                                <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
-                                <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
-                                <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
-                                <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
-                                <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
-                                <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
-                                <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
-                                <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
-                                <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
-                                <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
-                                <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
-                                <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
-                                <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
-                                <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
-                                <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
-                                <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
-                                <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
-                                <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
-                                <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
-                                <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
-                                <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
-                                <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
-                                <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
-                                <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
-                                <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
-                                <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
-                                <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
-                                <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
-                                <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
-                                <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
-                                <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
-                                <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
-                                <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
-                                <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
-                                <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
-                                <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
-                                <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
-                                <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
-                                <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
-                                <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
-                                <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
-                                <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
-                                <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
-                                <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
-                                <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
-                                <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
-                                <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
-                                <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
-                                <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
-                                <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
-                                <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
-                                <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
-                                <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
-                                <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
-                                <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
-                                <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
-                                <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
-                                <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
-                                <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
-                                <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
-                                <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
-                                <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
-                                <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
-                                <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
-                            </select>
+    <!-- Filter Section -->
+    <div class="filter-section" style="margin-bottom: 1.5rem; flex-shrink: 0;">
+        <h2 class="table-card-title" style="font-size: 1.75rem; font-weight: 700; color: var(--text-primary); margin: 0 0 1.5rem 0; flex-shrink: 0;">Registered Senior Citizens</h2>
+        <form method="GET" action="{{ route('admin.senior.masterlist') }}" id="filterForm">
+            <div class="filter-row" style="display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                <div class="filter-left" style="display: flex; gap: 12px; flex: 1; min-width: 0; flex-wrap: wrap;">
+                    <div class="filter-group search-group" style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 250px;">
+                        <label class="filter-label" style="font-size: 0.75rem; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Search by Name</label>
+                        <div class="input-group" style="display: flex; align-items: center; height: 44px;">
+                            <input type="text" name="search" placeholder="Search by name..." value="{{ request('search') }}" style="flex: 1; height: 44px; border: 1px solid var(--border); border-right: none; border-radius: 6px 0 0 6px; padding: 0 1rem; font-size: 0.875rem; color: var(--text-primary); background: var(--surface); transition: all 0.2s ease;">
+                            <button type="submit" class="search-btn" style="background-color: var(--primary); color: #ffffff; border: none; padding: 0 1.25rem; border-radius: 0 6px 6px 0; cursor: pointer; height: 44px; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
+                                <i data-lucide="search" style="width:16px;height:16px"></i>
+                            </button>
                         </div>
                     </div>
-
-                    <div class="filter-right">
-                        <!-- <a href="/admin/senior/registration" style="height:44px;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:#0f766e;color:white;border:none;cursor:pointer;text-decoration:none;transition:all 0.2s ease;font-family:inherit;">
-                            <i data-lucide="plus" style="width:16px;height:16px"></i> Add New
-                        </a> -->
+                    <div class="filter-group select-group" style="display: flex; flex-direction: column; gap: 4px; min-width: 200px;">
+                        <label class="filter-label" style="font-size: 0.75rem; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;"><i data-lucide="filter" style="width:14px;height:14px"></i> Filter by Barangay</label>
+                        <select class="filter-select" name="barangay" onchange="this.form.submit()" style="height: 44px; border: 1px solid var(--border); border-radius: 6px; padding: 0 2.25rem 0 1rem; font-size: 0.875rem; color: var(--text-primary); background: var(--surface); cursor: pointer; width: 100%; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 16px 12px; transition: all 0.2s ease;">
+                            <option value="">All Barangays</option>
+                            <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
+                            <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
+                            <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
+                            <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
+                            <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
+                            <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
+                            <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
+                            <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
+                            <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
+                            <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
+                            <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
+                            <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
+                            <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
+                            <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
+                            <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
+                            <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
+                            <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
+                            <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
+                            <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
+                            <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
+                            <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
+                            <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
+                            <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
+                            <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
+                            <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
+                            <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
+                            <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
+                            <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
+                            <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
+                            <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
+                            <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
+                            <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
+                            <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
+                            <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
+                            <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
+                            <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
+                            <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
+                            <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
+                            <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
+                            <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
+                            <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
+                            <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
+                            <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
+                            <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
+                            <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
+                            <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
+                            <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
+                            <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
+                            <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
+                            <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
+                            <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
+                            <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
+                            <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
+                            <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
+                            <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
+                            <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
+                            <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
+                            <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
+                            <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
+                            <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
+                            <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
+                            <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
+                            <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
+                            <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
+                        </select>
+                    </div>
+                    <div class="filter-right" style="display: flex; gap: 12px; flex-shrink: 0; align-items: flex-end;">
                         <a href="#" style="height:44px;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:#1A237E;color:white;border:none;cursor:pointer;text-decoration:none;transition:all 0.2s ease;font-family:inherit;" onclick="exportPdf(event)">
                             <i data-lucide="file-output" style="width:16px;height:16px"></i> Export PDF
                         </a>
@@ -592,80 +595,80 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
                         @endif
                     </div>
                 </div>
-            </form>
+            </div>
+        </form>
+    </div>
+
+    @if($seniors->count() > 0)
+        <!-- Mobile Select All (shown only on mobile since thead is hidden) -->
+        <div class="mobile-select-all" style="display:none;align-items:center;gap:8px;padding:8px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-secondary);">
+            <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px">
+            <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
+            <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
+        </div>
+        <div class="table-scroll" style="flex:1;overflow-y:auto;min-height:0;border-radius:8px;border:1px solid var(--border);">
+            <table style="table-layout:fixed;">
+                <thead>
+                    <tr>
+                        <th class="col-check" style="width:5%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="cursor:pointer;accent-color:var(--primary);"></th>
+                        <th style="width:14%;">Control No</th>
+                        <th style="width:20%;">Full Name</th>
+                        <th style="width:15%;">Barangay</th>
+                        <th style="width:10%;">Status</th>
+                        <th style="width:22%;">Address</th>
+                        <th style="width:6%;">Age</th>
+                        <th style="width:13%;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($seniors as $senior)
+                        <tr>
+                            <td data-label="#" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="cursor:pointer;accent-color:var(--primary);"></td>
+                            <td data-label="Control No" style="word-wrap:break-word;font-weight:600;">{{ $senior->control_number ?? '-' }}</td>
+                            <td data-label="Full Name" style="word-wrap:break-word;">{{ $senior->full_name ?? '-' }}</td>
+                            <td data-label="Barangay" style="word-wrap:break-word;">{{ $senior->barangay ?? '-' }}</td>
+                            <td data-label="Status">
+                                <span class="badge {{ $senior->status->value == 'active' ? 'badge-active' : 'badge-pending' }}">
+                                    {{ ucfirst($senior->status->value ?? 'pending') }}
+                                </span>
+                            </td>
+                            <td data-label="Address" style="word-wrap:break-word;">{{ $senior->address ?? '-' }}</td>
+                            <td data-label="Age" style="word-wrap:break-word;">{{ $senior->age ?? '-' }}</td>
+                            <td data-label="Action">
+                                <div class="actions" style="display:flex;gap:6px;">
+                                    <button class="btn btn-sm primary" style="padding:4px 8px;height:32px;min-width:32px;" onclick="viewProfile({{ $senior->id }})">
+                                        <i data-lucide="eye" style="width:14px;height:14px"></i>
+                                    </button>
+                                    <a href="{{ route('admin.senior.id-card', $senior->id) }}" class="btn btn-sm warning" style="padding:4px 8px;height:32px;min-width:32px;" title="ID Card">
+                                        <i data-lucide="id-card" style="width:14px;height:14px"></i>
+                                    </a>
+                                    <button class="btn btn-sm danger archive-senior-btn"
+                                        data-id="{{ $senior->id }}"
+                                        data-name="{{ $senior->full_name }}"
+                                        style="padding:4px 8px;height:32px;min-width:32px;">
+                                        <i data-lucide="archive" style="width:14px;height:14px"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
 
-        @if($seniors->count() > 0)
-            <!-- Mobile Select All (shown only on mobile since thead is hidden) -->
-            <div class="mobile-select-all" style="display:none;align-items:center;gap:8px;padding:8px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-secondary);">
-                <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px">
-                <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
-                <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
-            </div>
-            <div class="table-scroll" style="flex:1;overflow-y:auto;min-height:0;border-radius:8px;border:1px solid var(--border);">
-                <table style="table-layout:fixed;">
-                    <thead>
-                        <tr>
-                            <th class="col-check" style="width:5%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="cursor:pointer;accent-color:var(--primary);"></th>
-                            <th style="width:12%;">Control No</th>
-                            <th style="width:18%;">Full Name</th>
-                            <th style="width:15%;">Barangay</th>
-                            <th style="width:12%;">Status</th>
-                            <th style="width:20%;">Address</th>
-                            <th style="width:8%;">Age</th>
-                            <th style="width:15%;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($seniors as $senior)
-                            <tr>
-                                <td data-label="#" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="cursor:pointer;accent-color:var(--primary);"></td>
-                                <td data-label="Control No" style="word-wrap:break-word;font-weight:600;">{{ $senior->control_number ?? '-' }}</td>
-                                <td data-label="Full Name" style="word-wrap:break-word;">{{ $senior->full_name ?? '-' }}</td>
-                                <td data-label="Barangay" style="word-wrap:break-word;">{{ $senior->barangay ?? '-' }}</td>
-                                <td data-label="Status">
-                                    <span class="badge {{ $senior->status->value == 'active' ? 'badge-active' : 'badge-pending' }}">
-                                        {{ ucfirst($senior->status->value ?? 'pending') }}
-                                    </span>
-                                </td>
-                                <td data-label="Address" style="word-wrap:break-word;">{{ $senior->address ?? '-' }}</td>
-                                <td data-label="Age" style="word-wrap:break-word;">{{ $senior->age ?? '-' }}</td>
-                                <td data-label="Action">
-                                    <div class="actions" style="display:flex;gap:6px;">
-                                        <button class="btn btn-sm primary" style="padding:4px 8px;height:32px;min-width:32px;" onclick="viewProfile({{ $senior->id }})">
-                                            <i data-lucide="eye" style="width:14px;height:14px"></i>
-                                        </button>
-                                        <a href="{{ route('admin.senior.id-card', $senior->id) }}" class="btn btn-sm warning" style="padding:4px 8px;height:32px;min-width:32px;" title="ID Card">
-                                            <i data-lucide="id-card" style="width:14px;height:14px"></i>
-                                        </a>
-                                        <button class="btn btn-sm danger archive-senior-btn"
-                                            data-id="{{ $senior->id }}"
-                                            data-name="{{ $senior->full_name }}"
-                                            style="padding:4px 8px;height:32px;min-width:32px;">
-                                            <i data-lucide="archive" style="width:14px;height:14px"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            <div style="display:flex;justify-content:center;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);">
-                {{ $seniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
-            </div>
-        @else
-            <div style="text-align:center;padding:60px 20px;color:var(--text-secondary);">
-                <i data-lucide="users" style="width:56px;height:56px;color:#D1D5DB;margin:0 auto 12px;display:block"></i>
-                <p style="margin:8px 0 16px;font-size:14px;color:var(--text-muted);">No senior citizens registered yet.</p>
-                <a href="/admin/senior/registration" class="btn primary">
-                    <i data-lucide="plus" style="width:16px;height:16px"></i> Register First Senior Citizen
-                </a>
-            </div>
-        @endif
-    </div>
+        <!-- Pagination -->
+        <div style="display:flex;justify-content:center;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);">
+            {{ $seniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
+        </div>
+    @else
+        <div style="text-align:center;padding:60px 20px;color:var(--text-secondary);">
+            <i data-lucide="users" style="width:56px;height:56px;color:#D1D5DB;margin:0 auto 12px;display:block"></i>
+            <p style="margin:8px 0 16px;font-size:14px;color:var(--text-muted);">No senior citizens registered yet.</p>
+            <a href="/admin/senior/registration" class="btn primary">
+                <i data-lucide="plus" style="width:16px;height:16px"></i> Register First Senior Citizen
+            </a>
+        </div>
+    @endif
 </div>
 </div>
 

@@ -63,7 +63,7 @@
 
         /* Main */
         .main{flex:1;min-width:0;margin-left:var(--sidebar-width);padding:var(--content-padding);max-width:calc(100% - var(--sidebar-width));height:100vh;overflow:hidden;display:flex;flex-direction:column;}
-        .main-scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;border-radius:16px;}
+        .main-scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;}
         .main-scroll::-webkit-scrollbar{display:none;}
 
         /* Analytics Card */
@@ -72,9 +72,9 @@
 
         /* Stat Cards */
         .stat-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;animation:fadeInUp .6s ease-out;flex-shrink:0;}
-        @media(min-width:1200px){.stat-cards{grid-template-columns:repeat(3,1fr);}}
+        @media(min-width:1200px){.stat-cards{grid-template-columns:repeat(6,1fr);}}
 
-        .stat-card{background:var(--surface);border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;}
+        .stat-card{background:var(--surface);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;}
         .stat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;transition:all .3s ease;}
         .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);}
         .stat-card-blue::before{background:var(--icon-blue);}
@@ -84,10 +84,10 @@
         .stat-card-orange::before{background:#F59E0B;}
 
         .stat-card-content{flex:1;}
-        .stat-card-label{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text-primary);margin-bottom:6px;}
-        .stat-card-value{font-size:24px;font-weight:700;color:var(--text-primary);line-height:1;}
-        .stat-card-icon{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-        .stat-card-icon svg{width:22px;height:22px;}
+        .stat-card-label{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px;}
+        .stat-card-value{font-size:32px;font-weight:700;color:var(--text-primary);line-height:1;}
+        .stat-card-icon{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .stat-card-icon svg{width:24px;height:24px;}
         .stat-card-blue .stat-card-icon{background:var(--info-bg);color:var(--icon-blue);}
         .stat-card-green .stat-card-icon{background:var(--success-bg);color:var(--icon-green);}
         .stat-card-purple .stat-card-icon{background:var(--purple-bg);color:var(--icon-purple);}
@@ -101,6 +101,10 @@
         .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;display:block;}
         .filter-select{width:100%;height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
         .filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
+
+        /* Base rules for responsive elements */
+        .desktop-filter { display: none; }
+        .mobile-filter { display: block; }
 
         /* Chart containers */
         .chart-container{position:relative;height:380px;}
@@ -215,6 +219,10 @@
             .chart-container { height: 340px !important; }
             .dashboard-grid { grid-template-columns: 1fr !important; }
             .filter-section { padding: 16px 20px !important; }
+
+            /* Hide desktop filter, show regular filter */
+            .desktop-filter { display: none !important; }
+            .mobile-filter { display: block !important; }
         }
 
         @media (min-width: 1200px) {
@@ -244,13 +252,22 @@
             #analyticsFilterGrid { grid-template-columns: repeat(6, 1fr) !important; }
             .dashboard-grid { grid-template-columns: repeat(2, 1fr) !important; }
             .filter-section { padding: 16px 20px !important; }
-            .stat-card { width: auto !important; height: auto !important; padding: 14px 16px !important; border-radius: 16px !important; flex-direction: row !important; align-items: center !important; gap: 0 !important; position: relative !important; }
+            .stat-card { width: auto !important; height: auto !important; padding: 20px !important; border-radius: 16px !important; flex-direction: row !important; align-items: center !important; gap: 0 !important; position: relative !important; }
+
+            /* Show desktop filter, hide it on smaller screens */
+            .desktop-filter { display: block !important; }
+            .desktop-filter { background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; margin-bottom: 24px !important; }
+            .desktop-filter h3 { font-size: 18px !important; font-weight: 700 !important; margin-bottom: 16px !important; }
+            .desktop-filter .filter-label { font-size: 14px !important; font-weight: 600 !important; margin-bottom: 6px !important; }
+            .desktop-filter .filter-select { height: 50px !important; font-size: 15px !important; padding: 0 16px !important; }
+            .desktop-filter .btn { height: 50px !important; font-size: 15px !important; padding: 12px 24px !important; }
+            .mobile-filter { display: none !important; }
             .stat-card::before { display: block !important; }
             .stat-card-content { width: auto; }
-            .stat-card-value { font-size: 24px !important; }
-            .stat-card-icon { width: 42px !important; height: 42px !important; border-radius: 50% !important; position: relative !important; top: auto !important; right: auto !important; }
-            .stat-card-icon svg { width: 22px !important; height: 22px !important; }
-            .stat-card-label { color: var(--text-primary) !important; }
+            .stat-card-value { font-size: 32px !important; }
+            .stat-card-icon { width: 52px !important; height: 52px !important; border-radius: 50% !important; position: relative !important; top: auto !important; right: auto !important; }
+            .stat-card-icon svg { width: 24px !important; height: 24px !important; }
+            .stat-card-label { color: var(--text-secondary) !important; }
             .topnav, .top-navbar { padding: 0 !important; }
             .topnav-datetime, .navbar-datetime { display: block !important; }
             .filter-bar, .filter-group { flex-wrap: nowrap; }
@@ -347,8 +364,8 @@
         </header>
 
         <div class="main-scroll">
-        <!-- Filter Card -->
-        <div class="filter-section">
+        <!-- Filter Card (outside container for 1200px+) -->
+        <div class="filter-section desktop-filter" style="margin-bottom:24px;">
             <h3><i data-lucide="filter" style="width:16px;height:16px;color:var(--primary)"></i> Statistics Filters</h3>
             <form id="filterForm" method="GET" action="{{ route('admin.senior.analytics') }}" autocomplete="off">
                 <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;align-items:end" id="analyticsFilterGrid">
@@ -403,7 +420,71 @@
                         <button type="submit" class="btn primary" style="flex:1;justify-content:center;height:44px">
                             <i data-lucide="check" style="width:16px;height:16px"></i> Apply
                         </button>
-                        <a href="{{ route('admin.senior.analytics') }}" class="btn ghost" style="flex:1;justify-content:center;height:44px">
+                        <a href="{{ route('admin.senior.analytics') }}" class="btn" style="flex:1;justify-content:center;height:44px;background:white;color:#EF4444;border-color:#EF4444;font-weight:600;">
+                            <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> Reset
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Filter Card (inside container for mobile/tablet) -->
+        <div class="filter-section mobile-filter">
+            <h3><i data-lucide="filter" style="width:16px;height:16px;color:var(--primary)"></i> Statistics Filters</h3>
+            <form id="filterFormMobile" method="GET" action="{{ route('admin.senior.analytics') }}" autocomplete="off">
+                <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;align-items:end" id="analyticsFilterGridMobile">
+                    <div class="filter-group">
+                        <label class="filter-label">Year</label>
+                        <select class="filter-select" name="year">
+                            <option value="2026" {{ $year == 2026 ? 'selected' : '' }}>2026</option>
+                            <option value="2025" {{ $year == 2025 ? 'selected' : '' }}>2025</option>
+                            <option value="2024" {{ $year == 2024 ? 'selected' : '' }}>2024</option>
+                            <option value="2023" {{ $year == 2023 ? 'selected' : '' }}>2023</option>
+                            <option value="2022" {{ $year == 2022 ? 'selected' : '' }}>2022</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Month</label>
+                        <select class="filter-select" name="month">
+                            <option value="">All</option>
+                            @for($i = 1; $i <= 12; $i++)
+                                <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>{{ date('M', mktime(0, 0, 0, $i, 1)) }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Barangay</label>
+                        <select class="filter-select" name="barangay" id="barangaySelectMobile">
+                            <option value="">All</option>
+                            @foreach($allBarangays as $b)
+                                <option value="{{ $b }}">{{ $b }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Gender</label>
+                        <select class="filter-select" name="gender">
+                            <option value="">All</option>
+                            <option value="Male" {{ $gender == 'Male' ? 'selected' : '' }}>Male</option>
+                            <option value="Female" {{ $gender == 'Female' ? 'selected' : '' }}>Female</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Age Group</label>
+                        <select class="filter-select" name="age_group">
+                            <option value="">All</option>
+                            <option value="60-69" {{ $ageGroup == '60-69' ? 'selected' : '' }}>60-69</option>
+                            <option value="70-79" {{ $ageGroup == '70-79' ? 'selected' : '' }}>70-79</option>
+                            <option value="80-89" {{ $ageGroup == '80-89' ? 'selected' : '' }}>80-89</option>
+                            <option value="90-99" {{ $ageGroup == '90-99' ? 'selected' : '' }}>90-99</option>
+                            <option value="100+" {{ $ageGroup == '100+' ? 'selected' : '' }}>100+</option>
+                        </select>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:end">
+                        <button type="submit" class="btn primary" style="flex:1;justify-content:center;height:44px">
+                            <i data-lucide="check" style="width:16px;height:16px"></i> Apply
+                        </button>
+                        <a href="{{ route('admin.senior.analytics') }}" class="btn" style="flex:1;justify-content:center;height:44px;background:white;color:#EF4444;border-color:#EF4444;font-weight:600;">
                             <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> Reset
                         </a>
                     </div>

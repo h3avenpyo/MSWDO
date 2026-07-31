@@ -286,6 +286,47 @@
             }
             /* Both Month and Year compact on desktop */
             #filterGrid { grid-template-columns: 160px 110px !important; }
+            
+            /* Make contents larger and more visible */
+            .table-scroll th { font-size: 13px !important; padding: 14px 18px !important; }
+            .table-scroll td { font-size: 15px !important; padding: 16px 18px !important; }
+            .stat-card-label { font-size: 13px !important; }
+            .stat-card-value { font-size: 36px !important; }
+            .stat-card-icon { width: 56px !important; height: 56px !important; }
+            .stat-card-icon svg { width: 26px !important; height: 26px !important; }
+            .badge { font-size: 13px !important; padding: 5px 12px !important; }
+            .countdown-badge { font-size: 13px !important; padding: 5px 12px !important; }
+            .avatar-circle { width: 34px !important; height: 34px !important; font-size: 12px !important; }
+            .filter-chip { font-size: 14px !important; padding: 7px 16px !important; }
+            
+            /* Budget Overview Card */
+            .filter-section { padding: 20px !important; }
+            .filter-section h2 { font-size: 22px !important; }
+            .filter-section p { font-size: 15px !important; }
+            .filter-section div[style*="font-size:28px"] { font-size: 36px !important; }
+            .filter-section div[style*="font-size:12px"] { font-size: 14px !important; }
+            .filter-section div[style*="font-size:11px"] { font-size: 13px !important; }
+            .filter-section div[style*="font-size:20px"] { font-size: 26px !important; }
+            .filter-section button { font-size: 14px !important; padding: 12px 20px !important; }
+            
+            /* Barangay Budget Breakdown */
+            .filter-section h3 { font-size: 18px !important; }
+            .filter-section label { font-size: 14px !important; }
+            .filter-section select { font-size: 14px !important; }
+            .filter-section div[style*="font-size:13px"] { font-size: 15px !important; }
+            .filter-section strong { font-size: 16px !important; }
+            
+            /* Barangay Cards */
+            .brgy-card { padding: 20px !important; min-height: 220px !important; }
+            .brgy-card strong { font-size: 17px !important; }
+            .brgy-card .badge { font-size: 14px !important; padding: 6px 12px !important; }
+            .brgy-card div[style*="font-size:13px"] { font-size: 15px !important; }
+            .brgy-card div[style*="font-size:14px"] { font-size: 16px !important; }
+            .brgy-card button { font-size: 14px !important; padding: 12px 18px !important; }
+            .brgy-card div[style*="font-size:12px"] { font-size: 14px !important; }
+            
+            /* Barangay cards grid */
+            .barangay-cards-grid { gap: 16px !important; }
         }
     </style>
 </head>

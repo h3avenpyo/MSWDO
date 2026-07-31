@@ -100,6 +100,16 @@
 
         /* ---------- Filter Section ---------- */
         .filter-section { margin-bottom: 1.5rem; flex-shrink: 0; background: var(--surface); border-radius: 16px; border: 1px solid var(--border); padding: 20px; box-shadow: var(--shadow); }
+
+        /* Base rules for responsive elements */
+        .desktop-filter { display: none; }
+        .mobile-filter { display: block; }
+        .desktop-title { display: none; }
+        .mobile-title { display: block; }
+        .desktop-table { display: none; }
+        .desktop-pagination { display: none; }
+        .mobile-table { display: block; }
+        .mobile-pagination { display: block; }
         .filter-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
         .filter-left { display: flex; gap: 12px; flex: 1; min-width: 0; flex-wrap: wrap; }
         .filter-right { display: flex; gap: 12px; flex-shrink: 0; }
@@ -536,6 +546,17 @@
             .filter-row { flex-direction: row !important; gap: 12px !important; }
             .filter-right { width: auto !important; flex-wrap: nowrap !important; gap: 12px !important; }
             .archive-table-wrap tbody td { font-size: 0.82rem !important; }
+
+            /* Hide desktop filter, show mobile filter */
+            .desktop-filter { display: none !important; }
+            .mobile-filter { display: block !important; }
+            .desktop-title { display: none !important; }
+            .mobile-title { display: block !important; }
+            .desktop-table { display: none !important; }
+            .desktop-pagination { display: none !important; }
+            .mobile-table { display: block !important; }
+            .mobile-pagination { display: block !important; }
+            .table-card { display: block !important; }
             .archive-table-wrap tbody td::before { min-width: 70px !important; font-size: 0.72rem !important; }
             .archive-pagination-wrap { margin-top: 1.25rem !important; padding-top: 1rem !important; gap: 8px !important; }
         }
@@ -590,6 +611,39 @@
             /* Empty state fills the full flex area and centers content */
             .archive-table-wrap .empty-state { flex: 1 !important; min-height: 320px !important; justify-content: center !important; }
             .archive-pagination-wrap { margin-top: 0.875rem !important; padding-top: 0.875rem !important; gap: 8px !important; flex-shrink: 0 !important; }
+
+            /* Show desktop filter, hide mobile filter */
+            .desktop-filter { display: block !important; }
+            .desktop-filter { background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; margin-bottom: 24px !important; }
+            .desktop-filter .filter-label { font-size: 14px !important; font-weight: 600 !important; margin-bottom: 6px !important; }
+            .desktop-filter .filter-select { height: 50px !important; font-size: 15px !important; padding: 0 16px !important; }
+            .desktop-filter input[type="text"] { height: 50px !important; font-size: 15px !important; padding: 0 16px !important; }
+            .desktop-filter .search-btn { height: 50px !important; width: 50px !important; }
+            .desktop-filter .search-btn svg { width: 20px !important; height: 20px !important; }
+            .desktop-filter button[type="button"] { height: 50px !important; font-size: 15px !important; padding: 12px 24px !important; }
+            .desktop-filter .btn { height: 50px !important; font-size: 15px !important; padding: 12px 24px !important; }
+            .mobile-filter { display: none !important; }
+            .desktop-title { display: block !important; }
+            .mobile-title { display: none !important; }
+            .desktop-table { display: block !important; }
+            .desktop-pagination { display: block !important; }
+            .mobile-table { display: none !important; }
+            .mobile-pagination { display: none !important; }
+            .table-card { display: none !important; }
+            
+            /* Ensure pagination is visible */
+            .desktop-pagination { margin-top: 24px !important; }
+            
+            /* Ensure desktop table has proper styling */
+            .desktop-table { padding: 0 !important; background: var(--surface) !important; border-radius: 8px !important; min-height: calc(100vh - 250px) !important; overflow-y: auto !important; overflow-x: auto !important; }
+            .desktop-table table { width: 100% !important; border-collapse: collapse; table-layout: fixed; }
+            .desktop-table th { padding: 12px 16px !important; font-size: 11px !important; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); text-align: left; border-bottom: 2px solid var(--border); }
+            .desktop-table td { padding: 14px 16px !important; font-size: 13px !important; color: var(--text-primary); border-bottom: 1px solid var(--border); vertical-align: middle; }
+            .desktop-table tr:hover td { background: var(--background); }
+            .desktop-table td:last-child { white-space: nowrap !important; }
+            .desktop-table .btn-restore { white-space: nowrap !important; }
+            .desktop-table th:nth-child(4) { padding-left: 40px !important; }
+            .desktop-table td:nth-child(4) { padding-left: 40px !important; }
         }
     </style>
 </head>
@@ -714,8 +768,8 @@
             </div>
         </div>
 
-        <!-- Filter & Search -->
-        <div class="filter-section">
+        <!-- Filter & Search (outside container for 1200px+) -->
+        <div class="filter-section desktop-filter" style="margin-bottom:24px;">
             <form method="GET" action="{{ route('admin.senior.archive.list') }}">
                 <div class="filter-row">
                     <div class="filter-left">
@@ -816,31 +870,133 @@
                 </div>
             </form>
         </div>
+
+        <!-- Filter & Search (inside container for mobile/tablet) -->
+        <div class="filter-section mobile-filter">
+            <form method="GET" action="{{ route('admin.senior.archive.list') }}">
+                <div class="filter-row">
+                    <div class="filter-left">
+                        <div class="filter-group search-group">
+                            <label class="filter-label">Search by Name</label>
+                            <div class="input-group">
+                                <input type="text" name="search" placeholder="Search by name..." value="{{ request('search') }}">
+                                <button type="submit" class="search-btn">
+                                    <i data-lucide="search" style="width:16px;height:16px"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="filter-group select-group">
+                            <label class="filter-label">Filter by Barangay</label>
+                            <select class="filter-select" name="barangay" onchange="this.form.submit()">
+                                <option value="">All Barangays</option>
+                                <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
+                                <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
+                                <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
+                                <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
+                                <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
+                                <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
+                                <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
+                                <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
+                                <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
+                                <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
+                                <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
+                                <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
+                                <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
+                                <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
+                                <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
+                                <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
+                                <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
+                                <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
+                                <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
+                                <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
+                                <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
+                                <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
+                                <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
+                                <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
+                                <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
+                                <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
+                                <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
+                                <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
+                                <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
+                                <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
+                                <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
+                                <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
+                                <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
+                                <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
+                                <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
+                                <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
+                                <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
+                                <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
+                                <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
+                                <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
+                                <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
+                                <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
+                                <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
+                                <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
+                                <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
+                                <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
+                                <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
+                                <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
+                                <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
+                                <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
+                                <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
+                                <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
+                                <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
+                                <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
+                                <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
+                                <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
+                                <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
+                                <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
+                                <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
+                                <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
+                                <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
+                                <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
+                                <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
+                                <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
+                                </select>
+                            </div>
+                            <div class="filter-group" style="justify-content:flex-end;">
+                                <label class="filter-label">&nbsp;</label>
+                                <button type="button" id="bulkActionButtonMobile" onclick="showBulkActionPopup()" disabled
+                                        style="height:44px;font-weight:600;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE;cursor:pointer;transition:all 0.2s ease;font-family:inherit;opacity:0.45;">
+                                    <i data-lucide="list-checks" style="width:14px;height:14px"></i> Bulk Actions <span id="selectedCountMobile" style="background:#3730A3;color:white;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:4px;">0</span>
+                                </button>
+                            </div>
+                        </div>
+                    <div class="filter-right">
+                        @if(request('search') || request('barangay'))
+                            <a href="{{ route('admin.senior.archive.list') }}" class="btn ghost" style="height:44px;">
+                                <i data-lucide="x" style="width:14px;height:14px"></i> Clear
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 
         <!-- Archive Table Card -->
         <div class="table-card">
-            <h2 class="table-card-title">Archived Records</h2>
+            <h2 class="table-card-title mobile-title">Archived Records</h2>
             <!-- Mobile Select All (shown only on mobile since thead is hidden) -->
             <div class="mobile-select-all" style="display:none;align-items:center;gap:8px;padding:8px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-secondary);flex-shrink:0;">
                 <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px">
                 <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
                 <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
             </div>
-            <div class="archive-table-wrap" style="overflow-x:auto;">
-                <table class="custom-table" id="archiveTable" style="table-layout:fixed;">
+            <div class="archive-table-wrap mobile-table" style="overflow-x:auto;">
+                <table class="custom-table" id="archiveTableMobile" style="table-layout:fixed;">
                     <thead>
                         <tr>
-                            <th class="col-check" style="width:3%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px"></th>
+                            <th class="col-check" style="width:3%;"><input type="checkbox" id="selectAllMobile" onchange="toggleSelectAllMobile(this.checked)" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px"></th>
                             <th style="width:4%;">#</th>
-                            <th style="width:11%;">Control No.</th>
-                            <th style="width:18%;">Full Name</th>
-                            <th style="width:12%;">Barangay</th>
-                            <th style="width:8%;">Sex / Age</th>
-                            <th style="width:11%;">Birth Date</th>
-                            <th style="width:11%;">Archived On</th>
-                            <th style="width:9%;">Status</th>
-                            <th style="width:7%;">Action</th>
+                            <th style="width:12%;">Control No.</th>
+                            <th style="width:21%;">Full Name</th>
+                            <th style="width:13%;">Barangay</th>
+                            <th style="width:9%;">Sex / Age</th>
+                            <th style="width:12%;">Archived On</th>
+                            <th style="width:10%;">Status</th>
+                            <th style="width:16%;">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -869,13 +1025,6 @@
                                     <strong class="age-val">{{ $senior->age ?? '-' }}</strong>
                                 </div>
                             </td>
-                            <td data-label="Birth Date">
-                                @if($senior->birth_date)
-                                    {{ \Carbon\Carbon::parse($senior->birth_date)->format('M d, Y') }}
-                                @else
-                                    <span class="text-[#9CA3AF]">-</span>
-                                @endif
-                            </td>
                             <td data-label="Archived On">
                                 <span class="text-[#9CA3AF] text-[13px]">
                                     {{ $senior->updated_at ? \Carbon\Carbon::parse($senior->updated_at)->format('M d, Y') : '-' }}
@@ -898,7 +1047,7 @@
                         </tr>
                         @empty
                         <tr style="height:100%;">
-                            <td colspan="10" style="padding:0;border:none;height:100%;vertical-align:top;">
+                            <td colspan="9" style="padding:0;border:none;height:100%;vertical-align:top;">
                             <div class="empty-state">
                                 <i data-lucide="archive"></i>
                                 <h5>No Archived Cases</h5>
@@ -914,8 +1063,8 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
-            <div class="archive-pagination-wrap">
+            <!-- Pagination (inside card for mobile) -->
+            <div class="archive-pagination-wrap mobile-pagination">
                 <div class="archive-pagination-info">
                     @if($archivedSeniors->total() > 0)
                         Showing {{ $archivedSeniors->firstItem() }} to {{ $archivedSeniors->lastItem() }} of {{ $archivedSeniors->total() }} Archived Senior Citizens
@@ -935,6 +1084,93 @@
                     @endif
                 </div>
             </div>
+        </div>
+
+        <!-- Archive Table (outside card for desktop) -->
+        <h2 class="table-card-title desktop-title" style="font-size:1.5rem;font-weight:700;color:var(--text-primary);margin:0 0 0.5rem 0;">Archived Records</h2>
+        <div class="archive-table-wrap desktop-table" style="overflow-x:auto;border-radius:8px;border:1px solid var(--border);margin-top:0;">
+            <table class="custom-table" id="archiveTableDesktop" style="table-layout:fixed;">
+                <thead>
+                    <tr>
+                        <th class="col-check" style="width:4%;"><input type="checkbox" id="selectAllDesktop" onchange="toggleSelectAll()" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px"></th>
+                        <th style="width:4%;">#</th>
+                        <th style="width:15%;">Control No.</th>
+                        <th style="width:24%;">Full Name</th>
+                        <th style="width:11%;">Barangay</th>
+                        <th style="width:9%;">Sex / Age</th>
+                        <th style="width:11%;">Archived On</th>
+                        <th style="width:9%;">Status</th>
+                        <th style="width:13%;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($archivedSeniors as $index => $senior)
+                    <tr>
+                        <td class="col-check"><input type="checkbox" class="archive-checkbox" data-id="{{ $senior->id }}" onchange="updateSelectedCount()"></td>
+                        <td>{{ $archivedSeniors->firstItem() + $index }}</td>
+                        <td>
+                            <div style="font-weight:600;color:var(--text-primary);">{{ $senior->control_number }}</div>
+                        </td>
+                        <td>
+                            <div style="font-weight:500;color:var(--text-primary);">{{ $senior->full_name }}</div>
+                            <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $senior->address }}</div>
+                        </td>
+                        <td>{{ $senior->barangay }}</td>
+                        <td>
+                            <div class="sex-age-wrap">
+                                <span class="sex-letter">{{ substr($senior->sex, 0, 1) }}</span>
+                                <span class="sex-sep">/</span>
+                                <span class="age">{{ $senior->age }}</span>
+                            </div>
+                        </td>
+                        <td>{{ $senior->archived_at ? date('M d, Y', strtotime($senior->archived_at)) : '-' }}</td>
+                        <td>
+                            <span class="badge" style="display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600;background:#FEF2F2;color:#DC2626;">Archived</span>
+                        </td>
+                        <td>
+                            <button type="button" onclick="restoreArchive({{ $senior->id }})" class="btn-restore" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:500;background:#ECFDF5;color:#16A34A;border:1px solid #6EE7B7;cursor:pointer;transition:all 0.2s ease;font-family:inherit;">
+                                <i data-lucide="rotate-ccw" style="width:14px;height:14px"></i> Restore
+                            </button>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr style="height:100%;">
+                        <td colspan="9" style="padding:0;border:none;height:100%;vertical-align:top;">
+                            <div class="empty-state">
+                                <i data-lucide="archive"></i>
+                                <h5>No Archived Cases</h5>
+                                <p>Archived cases will appear here. Records archived from the masterlist will show up in this list.</p>
+                                <a href="/admin/senior/masterlist" class="inline-flex items-center gap-1.5 bg-[#1A237E] hover:bg-[#121858] text-white rounded-lg font-semibold text-[13px] px-4 py-2 mt-2 transition-colors no-underline" style="font-family:var(--font-family)">
+                                    <i data-lucide="list" class="w-4 h-4"></i> Go to Masterlist
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination (outside card for desktop) -->
+    <div class="archive-pagination-wrap desktop-pagination" style="margin-top:24px;">
+        <div class="archive-pagination-info">
+            @if($archivedSeniors->total() > 0)
+                Showing {{ $archivedSeniors->firstItem() }} to {{ $archivedSeniors->lastItem() }} of {{ $archivedSeniors->total() }} Archived Senior Citizens
+            @else
+                Showing 0 of 0 Archived Senior Citizens
+            @endif
+        </div>
+        <div class="archive-pagination-controls">
+            @if($archivedSeniors->hasPages())
+                {{ $archivedSeniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
+            @else
+                <div class="ssg-pagination">
+                    <span class="pg-disabled">&laquo; Previous</span>
+                    <span class="pg-active">1</span>
+                    <span class="pg-disabled">Next &raquo;</span>
+                </div>
+            @endif
         </div>
     </div>
 </div>
