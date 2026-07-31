@@ -506,14 +506,18 @@
                     <div class="stat-card-label">MALE</div>
                     <div class="stat-card-value">{{ $maleCount }}</div>
                 </div>
-                <div class="stat-card-icon"><i data-lucide="male"></i></div>
+                <div class="stat-card-icon">
+                    <img src="{{ asset('images/male.png') }}" alt="Male" style="width:24px;height:24px;">
+                </div>
             </div>
             <div class="stat-card stat-card-purple animate-fade-in delay-2">
                 <div class="stat-card-content">
                     <div class="stat-card-label">FEMALE</div>
                     <div class="stat-card-value">{{ $femaleCount }}</div>
                 </div>
-                <div class="stat-card-icon"><i data-lucide="female"></i></div>
+                <div class="stat-card-icon">
+                    <img src="{{ asset('images/female.png') }}" alt="Female" style="width:24px;height:24px;">
+                </div>
             </div>
             <div class="stat-card stat-card-green animate-fade-in delay-3">
                 <div class="stat-card-content">

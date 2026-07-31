@@ -507,7 +507,8 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
                     </div>
                     <div class="filter-group select-group" style="display: flex; flex-direction: column; gap: 4px; min-width: 200px;">
                         <label class="filter-label" style="font-size: 0.75rem; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;"><i data-lucide="filter" style="width:14px;height:14px"></i> Filter by Barangay</label>
-                        <select class="filter-select" name="barangay" onchange="this.form.submit()" style="height: 44px; border: 1px solid var(--border); border-radius: 6px; padding: 0 2.25rem 0 1rem; font-size: 0.875rem; color: var(--text-primary); background: var(--surface); cursor: pointer; width: 100%; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 16px 12px; transition: all 0.2s ease;">
+                        <div style="position: relative;">
+                            <select class="filter-select" name="barangay" onchange="this.form.submit()" style="height: 44px; border: 1px solid var(--border); border-radius: 6px; padding: 0 2.25rem 0 1rem; font-size: 0.875rem; color: var(--text-primary); background: var(--surface); cursor: pointer; width: 100%; appearance: none; -webkit-appearance: none; background-image: none; transition: all 0.2s ease;">
                             <option value="">All Barangays</option>
                             <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
                             <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
@@ -574,6 +575,8 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
                             <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
                             <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
                         </select>
+                        <i data-lucide="chevron-down" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #6B7280; pointer-events: none;"></i>
+                        </div>
                     </div>
                     <div class="filter-right" style="display: flex; gap: 12px; flex-shrink: 0; align-items: flex-end;">
                         <a href="#" style="height:44px;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:#1A237E;color:white;border:none;cursor:pointer;text-decoration:none;transition:all 0.2s ease;font-family:inherit;" onclick="exportPdf(event)">
@@ -639,9 +642,6 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
                                     <button class="btn btn-sm primary" style="padding:4px 8px;height:32px;min-width:32px;" onclick="viewProfile({{ $senior->id }})">
                                         <i data-lucide="eye" style="width:14px;height:14px"></i>
                                     </button>
-                                    <a href="{{ route('admin.senior.id-card', $senior->id) }}" class="btn btn-sm warning" style="padding:4px 8px;height:32px;min-width:32px;" title="ID Card">
-                                        <i data-lucide="id-card" style="width:14px;height:14px"></i>
-                                    </a>
                                     <button class="btn btn-sm danger archive-senior-btn"
                                         data-id="{{ $senior->id }}"
                                         data-name="{{ $senior->full_name }}"
