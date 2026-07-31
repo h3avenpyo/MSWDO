@@ -1123,7 +1123,7 @@
                                 <span class="age">{{ $senior->age }}</span>
                             </div>
                         </td>
-                        <td>{{ $senior->archived_at ? date('M d, Y', strtotime($senior->archived_at)) : '-' }}</td>
+                        <td>{{ $senior->updated_at ? \Carbon\Carbon::parse($senior->updated_at)->format('M d, Y') : '-' }}</td>
                         <td>
                             <span class="badge" style="display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600;background:#FEF2F2;color:#DC2626;">Archived</span>
                         </td>
