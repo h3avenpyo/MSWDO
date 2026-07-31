@@ -225,7 +225,18 @@
             .main-scroll { overflow-y: auto !important; flex: 1 !important; height: 100% !important; }
             .hamburger-btn { display: none !important; }
             .mobile-header { display: none !important; }
-            header { display: flex !important; }
+            header { display: none !important; }
+            .desktop-datetime-container {
+                display: flex !important;
+                justify-content: flex-end !important;
+                align-items: center !important;
+                margin-bottom: 0.75rem !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                height: auto !important;
+                padding: 0 !important;
+            }
             .charts-grid { grid-template-columns: 1fr 1fr !important; gap: 20px !important; width: auto !important; }
             .charts-outer { padding: 0 0 8px 0 !important; width: 100% !important; }
             .analytics-card { width: auto !important; padding: 24px !important; border-radius: 16px !important; margin: 0 !important; height: auto !important; }
@@ -316,6 +327,13 @@
                 $initials = strtoupper(substr($userName, 0, 2));
             }
         @endphp
+
+        <!-- <div class="desktop-datetime-container" style="display:none">
+            <div class="flex items-center gap-5 justify-end">
+                <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="desktopDateTime"></div>
+                <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">{{ $initials }}</div>
+            </div>
+        </div> -->
 
         <!-- Page Header -->
         <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
@@ -503,7 +521,11 @@
     function updateDateTime() {
         const now = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
-        document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options).replace(',', ' at');
+        const dateTimeStr = now.toLocaleDateString('en-US', options).replace(',', ' at');
+        const currentDateTime = document.getElementById('currentDateTime');
+        const desktopDateTime = document.getElementById('desktopDateTime');
+        if (currentDateTime) currentDateTime.textContent = dateTimeStr;
+        if (desktopDateTime) desktopDateTime.textContent = dateTimeStr;
     }
     updateDateTime();
     setInterval(updateDateTime, 60000);

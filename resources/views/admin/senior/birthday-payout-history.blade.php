@@ -225,12 +225,23 @@
             .app { flex-direction: row !important; }
             .hamburger-btn { display: none !important; }
             .mobile-header { display: none !important; }
-            header, .top-navbar { display: flex !important; }
+            header, .top-navbar { display: none !important; }
             .sidebar { transform: translateX(0) !important; }
             .sidebar.show { transform: translateX(0) !important; }
             .main, .main-content { margin-left: 260px !important; max-width: calc(100% - 260px) !important; padding: 32px !important; padding-top: 32px !important; }
             .main-scroll { flex: 1 !important; min-height: 0 !important; display: flex !important; flex-direction: column !important; overflow: hidden !important; }
             .table-card { overflow: hidden !important; }
+            .desktop-datetime-container {
+                display: flex !important;
+                justify-content: flex-end !important;
+                align-items: center !important;
+                margin-bottom: 0.75rem !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                height: auto !important;
+                padding: 0 !important;
+            }
         }
     </style>
 </head>
@@ -290,6 +301,19 @@
 
     <!-- Main Content -->
     <div class="main-content">
+        @php
+            $userName = session('admin_user_name') ?? 'Admin User';
+            $words = explode(' ', $userName);
+            $initials = count($words) >= 2 ? strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1)) : strtoupper(substr($userName, 0, 2));
+        @endphp
+
+        <!-- <div class="desktop-datetime-container" style="display:none">
+            <div class="flex items-center gap-5 justify-end">
+                <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="desktopDateTime"></div>
+                <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">{{ $initials }}</div>
+            </div>
+        </div> -->
+
         <!-- Header -->
         <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
             <div class="flex items-center">
@@ -474,7 +498,11 @@
         function updateDateTime() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+            const dateTimeStr = now.toLocaleDateString('en-US', options);
+            const currentDateTime = document.getElementById('currentDateTime');
+            const desktopDateTime = document.getElementById('desktopDateTime');
+            if (currentDateTime) currentDateTime.textContent = dateTimeStr;
+            if (desktopDateTime) desktopDateTime.textContent = dateTimeStr;
         }
         updateDateTime();
         setInterval(updateDateTime, 1000);

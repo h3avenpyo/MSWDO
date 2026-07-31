@@ -555,6 +555,7 @@
             }
             .dashboard-grid { grid-template-columns: 1.8fr 1fr; }
             .analytics-card, .activity-card { display: flex; flex-direction: column; height: 520px !important; min-height: 520px !important; max-height: 520px !important; flex: none; }
+            #barangayChartBox { width: 360px !important; height: 360px !important; }
             .activity-feed { flex: 1; min-height: 0; max-height: none !important; overflow-y: auto; padding-right: 8px; }
         }
 

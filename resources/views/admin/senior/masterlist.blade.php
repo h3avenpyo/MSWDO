@@ -373,7 +373,18 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
             .main-scroll { overflow-y: auto !important; flex: 1 !important; }
             .hamburger-btn { display: none !important; }
             .mobile-header { display: none !important; }
-            header { display: flex !important; }
+            header { display: none !important; }
+            .desktop-datetime-container {
+                display: flex !important;
+                justify-content: flex-end !important;
+                align-items: center !important;
+                margin-bottom: 0.75rem !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                height: auto !important;
+                padding: 0 !important;
+            }
             .table-scroll table { table-layout: auto !important; width: 100% !important; }
             .table-scroll th, .table-scroll td { white-space: nowrap; padding: 14px 20px; }
             .table-scroll td[data-label="Address"], .table-scroll td[data-label="Full Name"] { white-space: normal !important; word-break: break-word; }
@@ -448,6 +459,13 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
             $initials = strtoupper(substr($userName, 0, 2));
         }
     @endphp
+
+    <!-- <div class="desktop-datetime-container" style="display:none">
+        <div class="flex items-center gap-5 justify-end">
+            <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="desktopDateTime"></div>
+            <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">{{ $initials }}</div>
+        </div>
+    </div> -->
 
     <!-- Modern Page Header -->
     <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
@@ -552,9 +570,9 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
                     </div>
 
                     <div class="filter-right">
-                        <a href="/admin/senior/registration" style="height:44px;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:#0f766e;color:white;border:none;cursor:pointer;text-decoration:none;transition:all 0.2s ease;font-family:inherit;">
+                        <!-- <a href="/admin/senior/registration" style="height:44px;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:#0f766e;color:white;border:none;cursor:pointer;text-decoration:none;transition:all 0.2s ease;font-family:inherit;">
                             <i data-lucide="plus" style="width:16px;height:16px"></i> Add New
-                        </a>
+                        </a> -->
                         <a href="#" style="height:44px;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:#1A237E;color:white;border:none;cursor:pointer;text-decoration:none;transition:all 0.2s ease;font-family:inherit;" onclick="exportPdf(event)">
                             <i data-lucide="file-output" style="width:16px;height:16px"></i> Export PDF
                         </a>
@@ -750,11 +768,11 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
     function updateDateTime() {
         const now = new Date();
         const options = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'2-digit', hour12: true };
-        const el = document.getElementById('currentDateTime');
-        if (el) {
-            const dateTimeStr = now.toLocaleDateString('en-US', options).replace(',', ' at');
-            el.textContent = dateTimeStr;
-        }
+        const dateTimeStr = now.toLocaleDateString('en-US', options).replace(',', ' at');
+        const currentDateTime = document.getElementById('currentDateTime');
+        const desktopDateTime = document.getElementById('desktopDateTime');
+        if (currentDateTime) currentDateTime.textContent = dateTimeStr;
+        if (desktopDateTime) desktopDateTime.textContent = dateTimeStr;
     }
     updateDateTime();
     setInterval(updateDateTime, 60000);

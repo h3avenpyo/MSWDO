@@ -565,13 +565,24 @@
             .app { flex-direction: row !important; }
             .hamburger-btn { display: none !important; }
             .mobile-header { display: none !important; }
-            header { display: flex !important; }
+            header { display: none !important; }
             .sidebar { transform: translateX(0) !important; }
             .sidebar.show { transform: translateX(0) !important; }
             .main { margin-left: var(--sidebar-width) !important; max-width: calc(100% - var(--sidebar-width)) !important; padding: var(--content-padding) !important; padding-top: var(--content-padding) !important; height: 100vh !important; overflow: hidden !important; }
             .main-scroll { flex: 1 !important; overflow: hidden !important; display: flex !important; flex-direction: column !important; }
             .table-card { overflow: hidden !important; flex: 1 !important; height: auto !important; padding: 2rem !important; border-radius: 16px !important; display: flex !important; flex-direction: column !important; }
             .table-card-title { font-size: 1.25rem !important; margin-bottom: 1.5rem !important; }
+            .desktop-datetime-container {
+                display: flex !important;
+                justify-content: flex-end !important;
+                align-items: center !important;
+                margin-bottom: 0.75rem !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                height: auto !important;
+                padding: 0 !important;
+            }
             /* archive-table-wrap must flex-grow so empty state fills the space */
             .archive-table-wrap { overflow-y: auto !important; flex: 1 !important; min-height: 0 !important; height: auto !important; border-radius: 8px !important; display: flex !important; flex-direction: column !important; }
             .archive-table-wrap table { flex: 1 !important; }
@@ -649,6 +660,15 @@
                 $initials = strtoupper(substr($userName, 0, 2));
             }
         @endphp
+
+        <!-- <div class="desktop-datetime-container" style="display:none">
+            <div class="flex items-center gap-5 justify-end">
+                <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="desktopDateTime"></div>
+                <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
+                    {{ $initials }}
+                </div>
+            </div>
+        </div> -->
 
         <!-- Page Header -->
         <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
@@ -966,7 +986,11 @@
         function updateDateTime() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+            const dateTimeStr = now.toLocaleDateString('en-US', options);
+            const currentDateTime = document.getElementById('currentDateTime');
+            const desktopDateTime = document.getElementById('desktopDateTime');
+            if (currentDateTime) currentDateTime.textContent = dateTimeStr;
+            if (desktopDateTime) desktopDateTime.textContent = dateTimeStr;
         }
         updateDateTime();
         setInterval(updateDateTime, 60000);
