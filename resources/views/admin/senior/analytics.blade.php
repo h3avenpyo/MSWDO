@@ -99,7 +99,7 @@
         .filter-section h3{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
         .filter-group{display:flex;flex-direction:column;gap:4px;}
         .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;display:block;}
-        .filter-select{width:100%;height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
+        .filter-select{width:100%;max-width:200px;height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
         .filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
 
         /* Base rules for responsive elements */
@@ -249,8 +249,26 @@
             .charts-outer { padding: 0 0 8px 0 !important; width: 100% !important; }
             .analytics-card { width: auto !important; padding: 24px !important; border-radius: 16px !important; margin: 0 !important; height: auto !important; }
             .chart-container { height: 380px !important; }
-            #analyticsFilterGrid { grid-template-columns: repeat(6, 1fr) !important; }
+            #analyticsFilterGrid { grid-template-columns: repeat(2, 1fr) !important; }
             .dashboard-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+
+        /* Statistics Filters Responsive Layout */
+        @media (min-width: 992px) and (max-width: 1199px) {
+            #analyticsFilterGridMobile { grid-template-columns: repeat(4, 1fr) !important; }
+        }
+
+        @media (min-width: 768px) and (max-width: 991px) {
+            #analyticsFilterGridMobile { grid-template-columns: repeat(3, 1fr) !important; }
+        }
+
+        @media (max-width: 767px) {
+            #analyticsFilterGridMobile { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+
+        @media (max-width: 479px) {
+            #analyticsFilterGridMobile { grid-template-columns: 1fr !important; }
+        }
             .filter-section { padding: 16px 20px !important; }
             .stat-card { width: auto !important; height: auto !important; padding: 20px !important; border-radius: 16px !important; flex-direction: row !important; align-items: center !important; gap: 0 !important; position: relative !important; }
 
@@ -368,10 +386,10 @@
         <div class="filter-section desktop-filter" style="margin-bottom:24px;">
             <h3><i data-lucide="filter" style="width:16px;height:16px;color:var(--primary)"></i> Statistics Filters</h3>
             <form id="filterForm" method="GET" action="{{ route('admin.senior.analytics') }}" autocomplete="off">
-                <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;align-items:end" id="analyticsFilterGrid">
+                <div style="display:grid;grid-template-columns:repeat(2,1fr) !important;gap:12px;align-items:end" id="analyticsFilterGrid">
                     <div class="filter-group">
                         <label class="filter-label">Year</label>
-                        <select class="filter-select" name="year">
+                        <select class="filter-select" name="year" style="width:165px">
                             <option value="2026" {{ $year == 2026 ? 'selected' : '' }}>2026</option>
                             <option value="2025" {{ $year == 2025 ? 'selected' : '' }}>2025</option>
                             <option value="2024" {{ $year == 2024 ? 'selected' : '' }}>2024</option>
@@ -381,7 +399,7 @@
                     </div>
                     <div class="filter-group">
                         <label class="filter-label">Month</label>
-                        <select class="filter-select" name="month">
+                        <select class="filter-select" name="month" style="width:165px">
                             <option value="">All</option>
                             @for($i = 1; $i <= 12; $i++)
                                 <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>{{ date('M', mktime(0, 0, 0, $i, 1)) }}</option>
@@ -390,7 +408,7 @@
                     </div>
                     <div class="filter-group">
                         <label class="filter-label">Barangay</label>
-                        <select class="filter-select" name="barangay" id="barangaySelect">
+                        <select class="filter-select" name="barangay" id="barangaySelect" style="width:165px">
                             <option value="">All</option>
                             @foreach($allBarangays as $b)
                                 <option value="{{ $b }}">{{ $b }}</option>
@@ -399,7 +417,7 @@
                     </div>
                     <div class="filter-group">
                         <label class="filter-label">Gender</label>
-                        <select class="filter-select" name="gender">
+                        <select class="filter-select" name="gender" style="width:165px">
                             <option value="">All</option>
                             <option value="Male" {{ $gender == 'Male' ? 'selected' : '' }}>Male</option>
                             <option value="Female" {{ $gender == 'Female' ? 'selected' : '' }}>Female</option>
@@ -407,7 +425,7 @@
                     </div>
                     <div class="filter-group">
                         <label class="filter-label">Age Group</label>
-                        <select class="filter-select" name="age_group">
+                        <select class="filter-select" name="age_group" style="width:165px">
                             <option value="">All</option>
                             <option value="60-69" {{ $ageGroup == '60-69' ? 'selected' : '' }}>60-69</option>
                             <option value="70-79" {{ $ageGroup == '70-79' ? 'selected' : '' }}>70-79</option>
@@ -416,13 +434,16 @@
                             <option value="100+" {{ $ageGroup == '100+' ? 'selected' : '' }}>100+</option>
                         </select>
                     </div>
-                    <div style="display:flex;gap:8px;align-items:end">
-                        <button type="submit" class="btn primary" style="flex:1;justify-content:center;height:44px">
-                            <i data-lucide="check" style="width:16px;height:16px"></i> Apply
-                        </button>
-                        <a href="{{ route('admin.senior.analytics') }}" class="btn" style="flex:1;justify-content:center;height:44px;background:white;color:#EF4444;border-color:#EF4444;font-weight:600;">
-                            <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> Reset
-                        </a>
+                    <div class="filter-group">
+                        <label class="filter-label">&nbsp;</label>
+                        <div style="display:flex;gap:8px">
+                            <button type="submit" class="btn primary" style="flex:1;justify-content:center;height:44px">
+                                <i data-lucide="check" style="width:16px;height:16px"></i> Apply
+                            </button>
+                            <a href="{{ route('admin.senior.analytics') }}" class="btn" style="flex:1;justify-content:center;height:44px;background:white;color:#EF4444;border-color:#EF4444;font-weight:600;">
+                                <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> Reset
+                            </a>
+                        </div>
                     </div>
                 </div>
             </form>
