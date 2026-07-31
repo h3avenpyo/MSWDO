@@ -1353,6 +1353,21 @@
         .grid3{display:grid;grid-template-columns:1fr;gap:16px;}
         .field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
         .field-sep{height:1px;background:var(--border);margin:4px 0 16px;}
+        input::placeholder,textarea::placeholder{
+            opacity:1;
+            color:var(--text-secondary);
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        @media (max-width: 767px){input::placeholder,textarea::placeholder{font-size:12px;}}
+        @media (min-width: 768px) and (max-width: 991px){input::placeholder,textarea::placeholder{font-size:13px;}}
+        @media (min-width: 992px) and (max-width: 1199px){input::placeholder,textarea::placeholder{font-size:13.5px;}}
+        @media (min-width: 1200px){input::placeholder,textarea::placeholder{font-size:14px;}}
+        .field-control-no input{font-variant-numeric:tabular-nums;letter-spacing:0.02em;}
+        @media (max-width: 767px){
+            .field-control-no{grid-column:1 / -1;}
+        }
         .checkbox-row{
             display:flex;
             align-items:center;

@@ -1740,11 +1740,13 @@ function renderIntakeForm(){
   if(!container) return;
 
   const d = draftIntake;
+  d.signers.preparedByTitle = "MSWDO Staff";
+  d.signers.notedByTitle = "MSWDO Head";
   container.innerHTML = `
   <div class="panel">
     <h3>Report details</h3>
     <div class="field-row">
-      <div class="field"><label>Control no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.controlNo)}" oninput="draftIntake.controlNo=this.value"></div>
+      <div class="field field-control-no"><label>Control no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.controlNo)}" oninput="draftIntake.controlNo=this.value" placeholder="Control no."></div>
       <div class="field"><label>Report date <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.interview.reportDate}" oninput="draftIntake.interview.reportDate=this.value"></div>
     </div>
   </div>
@@ -1753,7 +1755,7 @@ function renderIntakeForm(){
     <h3>I. Identifying information</h3>
       <div class="field"><label>Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value" required maxlength="255" placeholder="Enter full name"></div>
       <div class="field-row">
-        <div class="field"><label>Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="number" id="clientAgeInput" value="${escapeHtml(String(d.client.age))}" min="0" max="150" placeholder="Auto-computed from birthdate" readonly style="background:#F3F4F6;cursor:not-allowed"></div>
+        <div class="field"><label>Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="number" id="clientAgeInput" value="${escapeHtml(String(d.client.age))}" min="0" max="150" placeholder="Auto-computed" readonly style="background:#F3F4F6;cursor:not-allowed"></div>
         <div class="field"><label>Sex <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
           <select oninput="draftIntake.client.sex=this.value" required>
             ${["","Male","Female"].map(o=>`<option ${d.client.sex===o?'selected':''}>${o}</option>`).join("")}
@@ -1770,10 +1772,10 @@ function renderIntakeForm(){
       <div class="field-sep"></div>
       <div class="field-row">
         <div class="field"><label>Birthdate <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value; updateClientAge()"></div>
-        <div class="field"><label>Birthplace <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value" placeholder="Enter birthplace"></div>
+        <div class="field"><label>Birthplace <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value" placeholder="Birthplace"></div>
       </div>
       <div class="field"><label>Religion <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.religion)}" oninput="draftIntake.client.religion=this.value" placeholder="Enter religion"></div>
-      <div class="field"><label>Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.education)}" oninput="draftIntake.client.education=this.value" placeholder="Enter educational attainment"></div>
+      <div class="field"><label>Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.education)}" oninput="draftIntake.client.education=this.value" placeholder="Educational attainment"></div>
       <div class="field-sep"></div>
       <div class="field-row">
         <div class="field"><label>Civil status <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
@@ -1781,10 +1783,10 @@ function renderIntakeForm(){
             ${["","Single","Married","Widowed","Separated"].map(o=>`<option ${d.client.civilStatus===o?'selected':''}>${o}</option>`).join("")}
           </select>
         </div>
-        <div class="field"><label>Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="Enter occupation (N/A if none)"></div>
+        <div class="field"><label>Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="Enter occupation"></div>
       </div>
       <div class="field-row">
-        <div class="field"><label>Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.income)}" oninput="draftIntake.client.income=this.value" placeholder="Enter income (N/A if none)"></div>
+        <div class="field"><label>Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.income)}" oninput="draftIntake.client.income=this.value" placeholder="Income (N/A if none)"></div>
         <div class="field"><label>Contact no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="tel" value="${escapeHtml(d.client.contact)}" oninput="draftIntake.client.contact=this.value" pattern="09[0-9]{9}" maxlength="11" placeholder="e.g. 09171234567" title="Must be a valid PH mobile number (09xxxxxxxxx)"></div>
       </div>
   </div>
@@ -1796,10 +1798,10 @@ function renderIntakeForm(){
         <div class="field" style="margin-bottom:0"><label>${i===0?'Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value" placeholder="Enter name"></div>
         <div class="field" style="margin-bottom:0"><label>${i===0?'Relationship <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><select oninput="draftIntake.household[${i}].relationship=this.value"><option value="">Select relationship</option>${RELATIONSHIPS.map(o=>`<option ${m.relationship===o?'selected':''}>${o}</option>`).join("")}</select></div>
         <div class="field" style="margin-bottom:0"><label>${i===0?'Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="number" value="${escapeHtml(String(m.age))}" oninput="draftIntake.household[${i}].age=this.value" min="0" max="150" placeholder="Enter age"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value" placeholder="Enter educational attainment"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="Enter occupation (N/A if none)"></div>
+        <div class="field" style="margin-bottom:0"><label>${i===0?'Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value" placeholder="Educational attainment"></div>
+        <div class="field" style="margin-bottom:0"><label>${i===0?'Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="Enter occupation"></div>
         <div class="field" style="margin-bottom:0;display:flex;gap:6px">
-          <div style="flex:1"><label>${i===0?'Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.income)}" oninput="draftIntake.household[${i}].income=this.value" placeholder="Enter income (N/A if none)"></div>
+          <div style="flex:1"><label>${i===0?'Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.income)}" oninput="draftIntake.household[${i}].income=this.value" placeholder="Income (N/A if none)"></div>
           ${i>0?`<button class="btn ghost btn-sm" style="align-self:flex-end" onclick="draftIntake.household.splice(${i},1); renderIntakeForm();"><i data-lucide="x" style="width:16px;height:16px"></i></button>`:""}
         </div>
       </div>`).join("")}
@@ -1814,10 +1816,10 @@ function renderIntakeForm(){
   <div class="panel">
     <h3>Signatories</h3>
       <div class="field"><label>Prepared by (name) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.preparedByName)}" oninput="draftIntake.signers.preparedByName=this.value" required maxlength="255" placeholder="Enter prepared by name"></div>
-      <div class="field"><label>Prepared by (title) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.preparedByTitle)}" oninput="draftIntake.signers.preparedByTitle=this.value" placeholder="Enter prepared by title"></div>
+      <div class="field"><label>Prepared by (title)</label><input type="text" value="MSWDO Staff" readonly style="background:#F3F4F6;cursor:not-allowed"></div>
       <div class="field-sep"></div>
       <div class="field"><label>Noted by (name) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.notedByName)}" oninput="draftIntake.signers.notedByName=this.value" required maxlength="255" placeholder="Enter noted by name"></div>
-      <div class="field"><label>Noted by (title) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.notedByTitle)}" oninput="draftIntake.signers.notedByTitle=this.value" placeholder="Enter noted by title"></div>
+      <div class="field"><label>Noted by (title)</label><input type="text" value="MSWDO Head" readonly style="background:#F3F4F6;cursor:not-allowed"></div>
   </div>
 
   <div class="panel">
