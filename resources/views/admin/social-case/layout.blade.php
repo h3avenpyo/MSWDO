@@ -1458,7 +1458,7 @@
         @media print{
             html,body,.app,.main{overflow:visible !important;height:auto !important;}
             .no-print{display:none !important;}
-            .sidebar,.page-head,.toolbar-row,.hamburger-btn,.sidebar-overlay{display:none !important;}
+            .sidebar,.mobile-header,header,.page-head,.toolbar-row,.hamburger-btn,.sidebar-overlay{display:none !important;}
             .main{padding:0;max-width:none;margin:0;}
             .doc-page{border:none;padding:0;max-width:none;page-break-after:always;break-after:page;}
             .doc-page:last-child{page-break-after:avoid;break-after:avoid;}

@@ -2375,18 +2375,30 @@ async function markAsPrinted(caseId){
   }
 }
 
+function removePrintArtifacts(){
+  const s = document.getElementById('printStyle');
+  if(s) s.remove();
+  const pc = document.getElementById('printOnlyContainer');
+  if(pc) pc.remove();
+}
+
 async function printDocument(){
   const c = getCase(view.caseId);
   if(!c) return;
+  
+  // Clear any leftover print-only DOM from a previous print. The print-only
+  // container/style are intentionally left mounted after printing (see below),
+  // so every print call must start clean.
+  removePrintArtifacts();
   
   // Get the list of agencies from the case
   const agencies = c.agencies || (c.submittedTo ? c.submittedTo.split(',').map(s => s.trim()).filter(Boolean) : []);
   
   if(agencies.length === 0) {
-    // If no agencies selected, just print the current preview
+    // If no agencies selected, just print the current preview.
+    // Nothing is mutated here, so no cleanup or reload is needed.
     await markAsPrinted(view.caseId);
     window.print();
-    setTimeout(() => location.reload(), 2000);
     return;
   }
   
@@ -2580,15 +2592,17 @@ async function printDocument(){
     document.head.appendChild(printStyle);
     
     await markAsPrinted(view.caseId);
+
+    // window.print() is non-blocking on mobile/tablet browsers, and even desktop
+    // browsers emit 'afterprint' / print-media changes when the dialog closes —
+    // which is not the same as the print job finishing. Removing #printOnlyContainer
+    // or #printStyle (or re-rendering the page) around the print call races the
+    // print job and can blank the output or let the app chrome (navbar, sidebar,
+    // mobile-header) leak into it. So the print-only DOM is left mounted: it is
+    // display:none on screen and only styled under @media print, so it is invisible
+    // on the page, and the next printDocument() call clears it.
     window.print();
-    
-    // Clean up after printing
-    setTimeout(() => {
-      document.head.removeChild(printStyle);
-      document.body.removeChild(printContainer);
-      location.reload();
-    }, 2000);
-    
+
   } catch(error) {
     console.error('Error generating print document:', error);
     alert('Failed to generate print document. Please try again.');
@@ -2874,14 +2888,14 @@ function renderCaseDetail(){
       @media print {
         @page {
           margin: 0;
-          size: auto;
+          size: 210mm 297mm;
         }
         body {
           background: white !important;
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
         }
-        .sidebar, header, .doc-toolbar, .no-print,
+        .sidebar, .mobile-header, header, .doc-toolbar, .no-print,
         .hamburger-btn, .sidebar-overlay,
         .detail-header, .header-actions, .template-tabs,
         .preview-header, .info-banner, .status-badge {
@@ -3896,7 +3910,7 @@ async function renderDocument(){
       @page { margin: 0; size: auto; }
       html, body, .app, .main { overflow: visible !important; height: auto !important; }
       .no-print { display: none !important; }
-      .sidebar, .page-head, .toolbar-row, header { display: none !important; }
+      .sidebar, .mobile-header, .page-head, .toolbar-row, header { display: none !important; }
       .main { padding: 0; max-width: none; margin: 0; }
       body { background: #fff; }
       .page { height: 297mm !important; min-height: 0 !important; margin: 0 !important; padding: 10mm 25.4mm 32.5mm 25.4mm !important; box-shadow: none !important; overflow: hidden !important; page-break-after: always; break-after: page; }
