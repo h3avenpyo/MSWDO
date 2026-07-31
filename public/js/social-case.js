@@ -1716,6 +1716,24 @@ async function loadIntakeForm(){
   lucide.createIcons();
 }
 
+function updateClientAge(){
+  const bd = draftIntake.client.birthdate;
+  const ageInput = document.getElementById('clientAgeInput');
+  if (bd && bd.trim()) {
+    const b = new Date(bd + 'T00:00:00');
+    if (!isNaN(b.getTime())) {
+      const today = new Date();
+      let age = today.getFullYear() - b.getFullYear();
+      const m = today.getMonth() - b.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < b.getDate())) age--;
+      draftIntake.client.age = age;
+    }
+  } else {
+    draftIntake.client.age = '';
+  }
+  if (ageInput) ageInput.value = draftIntake.client.age;
+}
+
 function renderIntakeForm(){
   const container = document.getElementById('intakeFormContent');
   if(!container) return;
@@ -1734,7 +1752,7 @@ function renderIntakeForm(){
     <h3>I. Identifying information</h3>
       <div class="field"><label>Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value" required maxlength="255" placeholder="Enter full name"></div>
       <div class="field-row">
-        <div class="field"><label>Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="number" value="${escapeHtml(String(d.client.age))}" oninput="draftIntake.client.age=this.value" min="0" max="150" placeholder="Enter age"></div>
+        <div class="field"><label>Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="number" id="clientAgeInput" value="${escapeHtml(String(d.client.age))}" min="0" max="150" placeholder="Auto-computed from birthdate" readonly style="background:#F3F4F6;cursor:not-allowed"></div>
         <div class="field"><label>Sex <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
           <select oninput="draftIntake.client.sex=this.value" required>
             ${["","Male","Female"].map(o=>`<option ${d.client.sex===o?'selected':''}>${o}</option>`).join("")}
@@ -1750,7 +1768,7 @@ function renderIntakeForm(){
       </div>
       <div class="field-sep"></div>
       <div class="field-row">
-        <div class="field"><label>Birthdate <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value"></div>
+        <div class="field"><label>Birthdate <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value; updateClientAge()"></div>
         <div class="field"><label>Birthplace <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value" placeholder="Enter birthplace"></div>
       </div>
       <div class="field"><label>Religion <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.religion)}" oninput="draftIntake.client.religion=this.value" placeholder="Enter religion"></div>
@@ -1831,26 +1849,16 @@ function renderIntakeForm(){
   `;
   
   // Add real-time input validation after form renders
+  updateClientAge();
+
   setTimeout(() => {
     const contactInput = document.querySelector('input[oninput*="draftIntake.client.contact"]');
-    const clientAgeInput = document.querySelector('input[oninput*="draftIntake.client.age"]');
     
     // Contact number validation - PH format (09xxxxxxxxx)
     if (contactInput) {
       contactInput.addEventListener('input', function(e) {
         let value = this.value.replace(/[^0-9]/g, '');
         if (value.length > 11) value = value.substring(0, 11);
-        if (this.value !== value) {
-          this.value = value;
-        }
-      });
-    }
-    
-    // Client age validation - digits only, 0-150
-    if (clientAgeInput) {
-      clientAgeInput.addEventListener('input', function(e) {
-        let value = this.value.replace(/[^0-9]/g, '');
-        if (value !== '' && parseInt(value) > 150) value = '150';
         if (this.value !== value) {
           this.value = value;
         }
@@ -2092,11 +2100,7 @@ function showIntakeSummaryModal(){
         <!-- Narrative Sections -->
         ${sectionTitle('Narrative Sections', 'align-left')}
         ${[
-          ['III. Problem Presented', d.interview.problemPresented],
-          ['IV. Home Condition', d.interview.homeCondition],
-          ['V. Socio-Economic Condition', d.interview.socioEconomic],
-          ['VI. Evaluation', d.interview.evaluation],
-          ['VII. Recommendation', d.interview.recommendation]
+          ['III. Problem Presented', d.interview.problemPresented]
         ].map(([label, content]) => `
           <div style="margin-bottom:14px">
             <div style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:5px">${label}</div>
