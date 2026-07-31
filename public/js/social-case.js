@@ -2536,7 +2536,7 @@ async function printDocument(){
     printContainer.style.position = 'fixed';
     printContainer.style.top = '0';
     printContainer.style.left = '0';
-    printContainer.style.width = '210mm';
+    printContainer.style.width = '215.9mm';
     printContainer.style.height = 'auto';
     printContainer.style.zIndex = '999999';
     printContainer.style.background = 'white';
@@ -2550,7 +2550,7 @@ async function printDocument(){
     printStyle.textContent = `
       @media print {
         @page {
-          size: 210mm 297mm;
+          size: 215.9mm 279.4mm;
           margin: 0;
         }
         * {
@@ -2560,7 +2560,7 @@ async function printDocument(){
         html, body {
           margin: 0 !important;
           padding: 0 !important;
-          width: 210mm !important;
+          width: 215.9mm !important;
           height: auto !important;
           background: white !important;
           overflow: visible !important;
@@ -2569,7 +2569,7 @@ async function printDocument(){
         #printOnlyContainer { 
           display: block !important; 
           position: relative !important;
-          width: 210mm !important;
+          width: 215.9mm !important;
           height: auto !important;
           margin: 0 !important;
           padding: 0 !important;
@@ -2577,15 +2577,17 @@ async function printDocument(){
           overflow: visible !important;
         }
         .page {
-          width: 210mm !important;
-          height: 297mm !important;
+          width: 215.9mm !important;
+          height: 279.4mm !important;
           margin: 0 !important;
-          padding: 10mm 25.4mm 32.5mm 25.4mm !important;
+          padding: 12.7mm 25.4mm 32.4mm 25.4mm !important;
           background: white !important;
           position: relative !important;
           box-shadow: none !important;
           overflow: hidden !important;
           border: none !important;
+          transform: none !important;
+          zoom: 1 !important;
         }
       }
     `;
@@ -2695,10 +2697,10 @@ function downloadWord(){
       <style>
         body { margin: 0; padding: 0; }
         .page { 
-          width: 210mm; 
-          min-height: 297mm; 
+          width: 215.9mm; 
+          min-height: 279.4mm; 
           margin: 0; 
-          padding: 10mm 25.4mm 32.5mm 25.4mm; 
+          padding: 12.7mm 25.4mm 32.4mm 25.4mm; 
           background: white; 
           position: relative; 
           page-break-after: always; 
@@ -2732,7 +2734,7 @@ function downloadWord(){
         .footer { display: flex; justify-content: space-between; margin-top: 32px; }
         .signature { text-align: center; }
         .signature b { display: block; margin-top: 32px; }
-        .document-footer { position: absolute; bottom: 15mm; left: 18mm; right: 18mm; display: flex; justify-content: space-between; font-size: 11px; }
+        .document-footer { position: absolute; bottom: 12.7mm; left: 25.4mm; right: 25.4mm; display: flex; justify-content: space-between; font-size: 11px; }
         .doc-address { text-align: center; }
       </style>
     </head>
@@ -2888,7 +2890,7 @@ function renderCaseDetail(){
       @media print {
         @page {
           margin: 0;
-          size: 210mm 297mm;
+          size: 215.9mm 279.4mm;
         }
         body {
           background: white !important;
@@ -2929,11 +2931,12 @@ function renderCaseDetail(){
           padding: 0 !important;
         }
         .page {
-          height: 297mm !important;
+          height: 279.4mm !important;
           min-height: 0 !important;
           margin: 0 !important;
           box-shadow: none !important;
           transform: none !important;
+          zoom: 1 !important;
           overflow: hidden !important;
           page-break-after: always;
         }
@@ -2942,7 +2945,7 @@ function renderCaseDetail(){
         }
         .document-footer {
           position: absolute !important;
-          bottom: 32.5mm !important;
+          bottom: 12.7mm !important;
           page-break-inside: avoid !important;
         }
         .footer {
@@ -3430,12 +3433,12 @@ async function loadDocumentPreview(caseId){
     const docStyles = `
       <style>
         .page {
-          width: 210mm;
-          height: 297mm;
+          width: 215.9mm;
+          height: 279.4mm;
           margin: 20px auto;
           background: white;
           position: relative;
-          padding: 10mm 25.4mm 32.5mm 25.4mm;
+          padding: 12.7mm 25.4mm 32.4mm 25.4mm;
           box-shadow: 0 0 12px rgba(0,0,0,.25);
           overflow: hidden;
         }
@@ -3579,7 +3582,7 @@ async function loadDocumentPreview(caseId){
         }
         .page .document-footer {
           position: absolute;
-          bottom: 32.5mm;
+          bottom: 12.7mm;
           left: 25.4mm;
           right: 25.4mm;
           border-top: 1px solid #7f7f7f;
@@ -3598,11 +3601,17 @@ async function loadDocumentPreview(caseId){
           justify-content: space-between;
           font-style: italic;
         }
-        @media(max-width:800px){
-          .document-viewer .page-wrap{overflow:hidden}
+        @media (max-width: 767px) {
+          .document-viewer .page { zoom: 0.38; }
         }
-        @media(max-width:480px){
-          .document-viewer .page-wrap{overflow:hidden}
+        @media (min-width: 768px) and (max-width: 991px) {
+          .document-viewer .page { zoom: 0.60; }
+        }
+        @media (min-width: 992px) and (max-width: 1199px) {
+          .document-viewer .page { zoom: 0.80; }
+        }
+        @media (min-width: 1200px) {
+          .document-viewer .page { zoom: 1; }
         }
       </style>
     `;
@@ -3613,31 +3622,15 @@ async function loadDocumentPreview(caseId){
     }).join('');
     container.innerHTML = docStyles + pagesHtml;
 
-    function scaleDocumentPages(){
-      const vw = window.innerWidth;
-      let scale = 1;
-      if(vw <= 480) scale = 0.35;
-      else if(vw <= 768) scale = 0.50;
-      else if(vw <= 1024) scale = 0.65;
-      else scale = 1;
-      const pages = container.querySelectorAll('.page');
-      pages.forEach(p => {
-        if(scale < 1){
-          const naturalHeight = p.offsetHeight;
-          p.style.transform = 'scale(' + scale + ')';
-          p.style.transformOrigin = 'top center';
-          p.style.marginBottom = '-' + (naturalHeight * (1 - scale)) + 'px';
-          p.parentElement.style.height = (naturalHeight * scale) + 'px';
-        } else {
-          p.style.transform = '';
-          p.style.transformOrigin = '';
-          p.style.marginBottom = '';
-          p.parentElement.style.height = '';
-        }
-      });
-    }
-    scaleDocumentPages();
-    window.addEventListener('resize', scaleDocumentPages);
+    // Responsive scaling is handled entirely by the CSS `zoom` media queries
+    // above, so clear any legacy inline transform/wrap-height from previous versions.
+    container.querySelectorAll('.page').forEach(p => {
+      p.style.transform = '';
+      p.style.transformOrigin = '';
+      p.style.margin = '';
+      p.style.marginBottom = '';
+      if (p.parentElement) p.parentElement.style.height = '';
+    });
 
     console.log('Document preview rendered successfully');
   } catch (error) {
@@ -3761,12 +3754,12 @@ async function renderDocument(){
   const toolbarHtml = `
   <style>
     .page {
-      width: 210mm;
-      min-height: 297mm;
+      width: 215.9mm;
+      min-height: 279.4mm;
       margin: 20px auto;
       background: white;
       position: relative;
-      padding: 31.5mm 25.4mm 32.5mm 25.4mm;
+      padding: 12.7mm 25.4mm 32.4mm 25.4mm;
       box-shadow: 0 0 12px rgba(0,0,0,.25);
     }
     .watermark {
@@ -3887,9 +3880,9 @@ async function renderDocument(){
     .signature small { font-size: 12px; }
     .document-footer {
       position: absolute;
-      bottom: 12mm;
-      left: 18mm;
-      right: 18mm;
+      bottom: 12.7mm;
+      left: 25.4mm;
+      right: 25.4mm;
       border-top: 1px solid #7f7f7f;
       padding-top: 5px;
       font-size: 12px;
@@ -3906,18 +3899,30 @@ async function renderDocument(){
       justify-content: space-between;
       font-style: italic;
     }
+    @media (max-width: 767px) {
+      #documentContent .page { zoom: 0.38; }
+    }
+    @media (min-width: 768px) and (max-width: 991px) {
+      #documentContent .page { zoom: 0.60; }
+    }
+    @media (min-width: 992px) and (max-width: 1199px) {
+      #documentContent .page { zoom: 0.80; }
+    }
+    @media (min-width: 1200px) {
+      #documentContent .page { zoom: 1; }
+    }
     @media print {
-      @page { margin: 0; size: auto; }
+      @page { margin: 0; size: 215.9mm 279.4mm; }
       html, body, .app, .main { overflow: visible !important; height: auto !important; }
       .no-print { display: none !important; }
       .sidebar, .mobile-header, .page-head, .toolbar-row, header { display: none !important; }
       .main { padding: 0; max-width: none; margin: 0; }
       body { background: #fff; }
-      .page { height: 297mm !important; min-height: 0 !important; margin: 0 !important; padding: 10mm 25.4mm 32.5mm 25.4mm !important; box-shadow: none !important; overflow: hidden !important; page-break-after: always; break-after: page; }
+      .page { height: 279.4mm !important; min-height: 0 !important; margin: 0 !important; padding: 12.7mm 25.4mm 32.4mm 25.4mm !important; box-shadow: none !important; overflow: hidden !important; zoom: 1 !important; page-break-after: always; break-after: page; }
       .page:last-child { page-break-after: avoid; break-after: avoid; }
     }
   </style>
-  <div class="doc-toolbar no-print" style="box-shadow:var(--shadow);max-width:210mm;margin:0 auto 20px;">
+  <div class="doc-toolbar no-print" style="box-shadow:var(--shadow);max-width:215.9mm;margin:0 auto 20px;">
     <button class="btn ghost btn-sm" onclick="window.location.href='/admin/social-case/detail/${c.id}'"><i data-lucide="arrow-left" style="width:16px;height:16px"></i> Back to case</button>
     <div style="display:flex;gap:10px;align-items:center;">
       <span style="font-size:13px;font-weight:500;color:var(--text-secondary);white-space:nowrap;">Print Copy:</span>

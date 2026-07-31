@@ -479,7 +479,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/social-case.js') }}"></script>
+<script src="{{ asset('js/social-case.js') . '?v=' . filemtime(public_path('js/social-case.js')) }}"></script>
 <script>
     function toggleArchiveTypeMenu(){
         var menu=document.getElementById('archiveTypeMenu');
