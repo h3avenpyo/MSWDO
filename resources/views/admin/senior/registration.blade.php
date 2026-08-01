@@ -13,264 +13,31 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root{--primary:#1A237E;--primary-hover:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+        :root{--primary:#1A237E;--primary-hover:#121858;--primary-dark:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
         *,*::before,*::after{box-sizing:border-box;}
         html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100%;overflow-x:hidden;overflow-y:auto;}
         body{font-size:14px;line-height:1.5;}
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
-        .app{display:flex;min-height:100vh;}
-        .sidebar{width:260px;flex-shrink:0;background:var(--primary);color:#FFF;position:fixed;left:0;top:0;height:100vh;z-index:1000;display:flex;flex-direction:column;transition:transform .3s ease;}
-        .sidebar-brand{height:72px;padding:0 1.5rem;border-bottom:1px solid rgba(255,255,255,.1);color:#fff;font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:.65rem;}
-        .sidebar-brand i,.sidebar-brand [data-lucide]{width:24px;height:24px;color:var(--accent-yellow);}
-        .sidebar-menu{list-style:none;margin:0;padding:1rem 0;flex:1;}
-        .sidebar-menu li{margin-bottom:.2rem;}
-        .sidebar-menu a{color:rgba(255,255,255,.75);padding:.75rem 1.5rem;display:flex;align-items:center;gap:.75rem;text-decoration:none;font-size:.9rem;border-left:3px solid transparent;transition:all .2s ease;}
-        .sidebar-menu a:hover{background:rgba(255,255,255,.1);color:var(--accent-yellow);}
-        .sidebar-menu a.active{background:rgba(255,255,255,.1);color:var(--accent-yellow);border-left-color:var(--accent-yellow);}
-        .sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
-        .main{flex:1;min-width:0;margin-left:260px;padding:32px;max-width:calc(100% - 260px);display:flex;flex-direction:column;height:100vh;overflow:hidden;}
-        .form-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:32px;flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;}
-        .form-card::-webkit-scrollbar{display:none;}
+        .form-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:32px;overflow:visible;}
         .form-label{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.3px;}
-        .form-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text-primary);outline:none;transition:border-color .2s,box-shadow .2s;font-family:var(--font-family);}
+        .form-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text-primary);outline:none;transition:border-color .2s,box-shadow .2s;font-family:var(--font-family);height:44px;}
         .form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.1);}
         .form-input::placeholder{color:var(--text-muted);}
         select.form-input{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right .75rem center;background-size:1rem;padding-right:2.5rem;}
-        textarea.form-input{resize:vertical;min-height:80px;}
+        textarea.form-input{resize:vertical;height:auto;min-height:80px;}
         input[type="date"].form-input{min-height:44px;appearance:none;-webkit-appearance:none;position:relative;background-image:none;padding-right:14px;}
         .btn{border:1px solid var(--border);background:var(--surface);color:var(--text-primary);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:8px;box-shadow:var(--shadow);transition:all .2s ease;height:42px;cursor:pointer;text-decoration:none;}
         .btn:hover{border-color:var(--primary);transform:translateY(-1px);}
         .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary);}
         .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);}
 
-        /* ── Sidebar Overlay ── */
-        .sidebar-overlay.active { display: block !important; }
-
-        /* ── Hamburger Button ── */
-        .hamburger-btn {
-            display: none;
-            position: fixed;
-            top: 12px;
-            left: 12px;
-            z-index: 1002;
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            width: 44px;
-            height: 44px;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            transition: background 0.2s;
-        }
-        .hamburger-btn:hover { background: var(--primary-hover); }
-
-        /* ── Mobile Header ── */
-        .mobile-header {
-            display: flex !important;
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 1000;
-            background: #1A237E;
-            color: #fff;
-            padding: 0 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            align-items: center;
-            justify-content: space-between;
-            height: 80px;
-        }
-        .mobile-header-brand {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex: 1;
-            min-width: 0;
-        }
-        .mobile-logo {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: #FBC02D;
-            padding: 4px;
-            flex-shrink: 0;
-        }
-        .mobile-logo-img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .mobile-brand-text {
-            flex: 1;
-            min-width: 0;
-        }
-        .mobile-brand-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #ffffff;
-            margin: 0;
-            line-height: 1.2;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .mobile-brand-subtitle {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.8);
-            margin: 2px 0 0 0;
-            line-height: 1.2;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .mobile-menu-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: none;
-            color: #ffffff;
-            cursor: pointer;
-            padding: 8px;
-            flex-shrink: 0;
-            margin-right: 24px;
-        }
-        .mobile-menu-icon {
-            width: 32px;
-            height: 32px;
-        }
-
-
-        .hamburger-btn { display: flex; }
-        .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
-        .sidebar.show { transform: translateX(0) !important; }
-        .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
-
-        /* ── Desktop (min-width: 1200px) ── */
-        @media (min-width: 1200px) {
-            .hamburger-btn { display: none !important; }
-            .sidebar { transform: none !important; z-index: 1000 !important; }
-            .sidebar.show { transform: none !important; }
-            .main, .main-content { margin-left: 260px !important; max-width: calc(100% - 260px) !important; padding: 32px !important; }
-            .mobile-header { display: none !important; }
-            header { display: flex !important; }
-            .form-card { padding: 40px !important; }
-            .form-card h2 { font-size: 28px !important; margin-bottom: 12px !important; }
-            .form-card p { font-size: 18px !important; margin-bottom: 32px !important; }
-            .form-label { font-size: 16px !important; margin-bottom: 10px !important; }
-            .form-input { font-size: 16px !important; padding: 14px 18px !important; border-radius: 12px !important; }
-            .grid { gap: 24px !important; }
-        }
-
-        /* ── Large Tablets (992px - 1199px) ── */
-        @media (min-width: 992px) and (max-width: 1199px) {
-            .hamburger-btn { display: flex !important; }
-            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
-            .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 24px !important; }
-            .mobile-header { display: none !important; }
-            header { display: flex !important; }
-        }
-
-        /* ── Small Tablets (768px - 991px) ── */
-        @media (min-width: 768px) and (max-width: 991px) {
-            .hamburger-btn { display: flex !important; }
-            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
-            .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 20px !important; }
-            .mobile-header { display: none !important; }
-            header { display: flex !important; }
-        }
-
-        @media (max-width: 767px) {
-            .app { flex-direction: column; }
-            .main {
-                margin-left: 0 !important; max-width: 100% !important;
-                height: auto !important; overflow: visible !important;
-                padding: 12px 14px !important;
-                padding-top: 90px !important;
-            }
-            .form-card { overflow: visible !important; }
-            header { display: none !important; }
-            .hamburger-btn { display: none !important; }
-            .mobile-header { display: flex !important; }
-        }
         input[type="date"].form-input{background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3e%3cline x1='16' y1='2' x2='16' y2='6'/%3e%3cline x1='8' y1='2' x2='8' y2='6'/%3e%3cline x1='3' y1='10' x2='21' y2='10'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-right:36px;}
-
-        /* ── Responsive: Small Mobile (< 480px) ── */
-        @media (max-width: 479px) {
-            .main { padding: 10px !important; padding-top: 88px !important; }
-            .mobile-header { height: 72px !important; }
-            .mobile-logo { width: 48px !important; height: 48px !important; }
-            .mobile-brand-title { font-size: 16px !important; }
-            .mobile-brand-subtitle { font-size: 11px !important; }
-            .mobile-menu-icon { width: 28px !important; height: 28px !important; }
-        }
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-
-        @media (min-width: 1200px) {
-            .hamburger-btn { display: none !important; }
-        }
     </style>
 </head>
 <body>
 <div class="app">
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-brand">
-            <i data-lucide="users" style="width:24px;height:24px"></i>
-            <span>Senior Citizen</span>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="/admin/senior"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i> Dashboard</a></li>
-            <li><a href="/admin/senior/registration" class="active"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
-            <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
-            <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
-            <li><a href="/admin/senior/payouts-history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
-            <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
-            <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
-            <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
-            <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
-        </ul>
-    </div>
-    <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
-
-    <!-- Hamburger Button (desktop/tablet) -->
-    <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
-        <i data-lucide="menu" style="width:24px;height:24px"></i>
-    </button>
-
-    <!-- Mobile Header -->
-    @php
-    $logo = null;
-    if(file_exists(public_path('images/mswdo-logo.png'))){
-        $logo='mswdo-logo.png';
-    }else{
-        $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
-        if(!empty($files))
-        $logo=basename($files[0]);
-    }
-    @endphp
-    <div class="mobile-header">
-        <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
-            </svg>
-        </button>
-        <div class="mobile-header-brand">
-            <div class="mobile-brand-text">
-                <h1 class="mobile-brand-title">MSWDO SILANG</h1>
-                <p class="mobile-brand-subtitle">Senior Citizen Registration</p>
-            </div>
-            <div class="mobile-logo">
-                @if($logo)
-                <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
-                @endif
-            </div>
-        </div>
-    </div>
+    @include('admin.senior.partials.navigation', ['active' => 'registration', 'mobileSubtitle' => 'Senior Citizen Registration'])
 
     <!-- Main Content -->
     <div class="main">
@@ -280,6 +47,7 @@
             $initials = count($words) >= 2 ? strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1)) : strtoupper(substr($userName, 0, 2));
         @endphp
 
+        <div class="main-scroll">
         <div class="desktop-datetime-container" style="display:none">
             <div class="flex items-center gap-5 justify-end">
                 <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="desktopDateTime"></div>
@@ -422,7 +190,7 @@
                         <label class="form-label">PhilSys Number <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
                         <input type="text" name="philsys_number" class="form-input" placeholder="Enter 12-digit PhilSys number" pattern="[0-9]{12}" maxlength="12" value="{{ old('philsys_number') }}">
                     </div>
-                    <div>
+                    <div class="lg:col-span-2">
                         <label class="form-label">RRN Number <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
                         <input type="text" name="rrn_number" class="form-input" placeholder="Enter 29-digit RRN number" pattern="[0-9]{29}" maxlength="29" value="{{ old('rrn_number') }}">
                     </div>
@@ -439,6 +207,7 @@
                 </div>
             </form>
         </div>
+        </div>
     </div>
 </div>
 
@@ -446,50 +215,6 @@
 <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display:none">@csrf</form>
 
 <script>
-    function toggleSidebar() {
-        var sidebar = document.getElementById('sidebar');
-        var overlay = document.getElementById('sidebarOverlay');
-        if (sidebar.classList.contains('show')) {
-            sidebar.classList.remove('show');
-            if (overlay) overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        } else {
-            sidebar.classList.add('show');
-            if (overlay) overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-    }
-    (function() {
-        var overlay = document.getElementById('sidebarOverlay');
-        if (overlay) overlay.addEventListener('click', function() {
-            var sidebar = document.getElementById('sidebar');
-            if (sidebar) sidebar.classList.remove('show');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        });
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                var sidebar = document.getElementById('sidebar');
-                if (sidebar && sidebar.classList.contains('show')) {
-                    sidebar.classList.remove('show');
-                    if (overlay) overlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            }
-        });
-        window.addEventListener('resize', function() {
-            if (window.innerWidth >= 1024) {
-                var sidebar = document.getElementById('sidebar');
-                var ov = document.getElementById('sidebarOverlay');
-                if (sidebar && sidebar.classList.contains('show')) {
-                    sidebar.classList.remove('show');
-                    if (ov) ov.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            }
-        });
-    })();
-
     // Input validation - prevent invalid characters
     document.addEventListener('DOMContentLoaded', function() {
         const contactNumberInput = document.querySelector('[name="contact_number"]');
@@ -603,11 +328,6 @@
             const code=barangayCodes[barangay];const seq=String(barangaySequences[barangay]).padStart(6,'0');
             controlNumberField.value=`SC-${code}-${year}-${seq}`;
         }else{controlNumberField.value='';}
-    }
-
-    function confirmLogout(e){
-        e.preventDefault();
-        Swal.fire({title:'Are you sure?',text:'Do you really want to log out?',icon:'warning',showCancelButton:true,confirmButtonColor:'#1A237E',cancelButtonColor:'#EF4444',confirmButtonText:'Yes, log out',cancelButtonText:'Cancel',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}}).then(r=>{if(r.isConfirmed)document.getElementById('logout-form').submit();});
     }
 
     function toggleMobileMoreNav(){
