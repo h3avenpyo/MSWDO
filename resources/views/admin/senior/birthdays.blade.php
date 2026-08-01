@@ -95,11 +95,27 @@
         /* ── Desktop (1400px+): 3 cards per row ── */
         @media (min-width:1400px){
             .barangay-cards-grid{gap:28px;}
+            .modal-overlay{padding:24px !important;}
+            .modal-box{max-width:900px !important;max-height:85vh !important;}
+            .modal-header-bar{padding:24px 28px !important;}
+            .modal-header-bar h4{font-size:18px !important;}
+            .modal-header-bar h4 svg{width:24px !important;height:24px !important;}
+            .modal-body-scroll{padding:28px !important;max-height:70vh !important;}
+            .modal-body-scroll th{font-size:15px !important;padding:16px !important;}
+            .modal-body-scroll td{font-size:15px !important;padding:16px !important;}
         }
 
         /* ── Laptop (1200–1399px): 3 cards per row, slightly smaller gaps ── */
         @media (min-width:1200px) and (max-width:1399px){
             .barangay-cards-grid{gap:20px;}
+            .modal-overlay{padding:20px !important;}
+            .modal-box{max-width:850px !important;max-height:82vh !important;}
+            .modal-header-bar{padding:20px 24px !important;}
+            .modal-header-bar h4{font-size:17px !important;}
+            .modal-header-bar h4 svg{width:22px !important;height:22px !important;}
+            .modal-body-scroll{padding:24px !important;max-height:68vh !important;}
+            .modal-body-scroll th{font-size:14px !important;padding:14px !important;}
+            .modal-body-scroll td{font-size:14px !important;padding:14px !important;}
         }
 
         /* ── Desktop / Laptop shared typography (keeps existing look) ── */
@@ -141,6 +157,14 @@
             header{margin-bottom:0.75rem !important;}
             header h1{font-size:20px !important;}
             #currentDateTime{font-size:12px !important;}
+            .modal-overlay{padding:16px !important;}
+            .modal-box{max-width:700px !important;max-height:80vh !important;}
+            .modal-header-bar{padding:16px 20px !important;}
+            .modal-header-bar h4{font-size:16px !important;}
+            .modal-header-bar h4 svg{width:20px !important;height:20px !important;}
+            .modal-body-scroll{padding:20px !important;max-height:65vh !important;}
+            .modal-body-scroll th{font-size:13px !important;padding:12px !important;}
+            .modal-body-scroll td{font-size:13px !important;padding:12px !important;}
         }
 
         /* ── Mobile (<768px): 1 card per row, stacked filters ── */
@@ -153,10 +177,14 @@
             .brgy-card-actions .btn,.brgy-card-actions > div{min-height:44px;}
             #filterGrid{grid-template-columns:1fr !important;}
             header{margin-bottom:0.75rem !important;}
-            .modal-box{max-width:800px !important;border-radius:12px !important;max-height:85vh !important;}
+            .modal-overlay{padding:12px !important;}
+            .modal-box{max-width:100% !important;border-radius:12px !important;max-height:90vh !important;}
             .modal-header-bar{padding:14px 16px !important;border-radius:12px 12px 0 0 !important;}
             .modal-header-bar h4{font-size:14px !important;}
-            .modal-body-scroll{padding:16px !important;max-height:70vh !important;}
+            .modal-header-bar h4 svg{width:18px !important;height:18px !important;}
+            .modal-body-scroll{padding:16px !important;max-height:75vh !important;}
+            .modal-body-scroll th{font-size:12px !important;padding:10px !important;}
+            .modal-body-scroll td{font-size:12px !important;padding:10px !important;}
         }
 
         /* ── Small mobile (<480px): full-width cards, compact badge ── */
@@ -166,6 +194,14 @@
             .brgy-card-head strong{font-size:14px !important;}
             .brgy-count-badge{font-size:11px !important;padding:3px 8px !important;}
             .brgy-card-actions{padding-top:12px;}
+            .modal-overlay{padding:8px !important;}
+            .modal-box{max-width:100% !important;border-radius:10px !important;max-height:92vh !important;}
+            .modal-header-bar{padding:12px 14px !important;border-radius:10px 10px 0 0 !important;}
+            .modal-header-bar h4{font-size:13px !important;}
+            .modal-header-bar h4 svg{width:16px !important;height:16px !important;}
+            .modal-body-scroll{padding:14px !important;max-height:78vh !important;}
+            .modal-body-scroll th{font-size:11px !important;padding:8px !important;}
+            .modal-body-scroll td{font-size:11px !important;padding:8px !important;}
         }
     </style>
 </head>
@@ -185,17 +221,6 @@
     @endphp
 
     <div class="main">
-        <!-- Page Header -->
-        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8 lg:mb-3">
-            <div class="flex items-center">
-                <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Birthday Beneficiaries</h1>
-            </div>
-            <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-                <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime"></div>
-                <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">{{ $initials }}</div>
-            </div>
-        </header>
-
         <div class="main-scroll">
             {{-- Budget Overview Card --}}
             <div class="filter-section budget-card section-spacing" style="background:linear-gradient(135deg,var(--primary) 0%,var(--primary-hover) 100%);color:white;padding:14px">
@@ -355,18 +380,6 @@
 </div>
 
 <script>
-    // Date time
-    function updateDateTime() {
-        const now = new Date();
-        const opts = window.innerWidth < 1200
-            ? { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }
-            : { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
-        const el = document.getElementById('currentDateTime');
-        if (el) el.textContent = now.toLocaleDateString('en-US', opts).replace(',', ' at');
-    }
-    updateDateTime();
-    setInterval(updateDateTime, 60000);
-    window.addEventListener('resize', updateDateTime);
 
     // Resolve selected month/year from the date filter (falls back to today)
     function getSelectedMonthYear() {

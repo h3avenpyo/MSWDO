@@ -34,7 +34,7 @@
 
         /* ── Summary / Filters ── */
         .section-spacing{margin-bottom:28px;}
-        #summaryGrid{display:grid;grid-template-columns:1fr;gap:12px;align-items:stretch;}
+        #summaryGrid{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:stretch;}
         .filter-field{display:flex;flex-direction:column;justify-content:flex-end;min-width:0;gap:3px;}
         .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;display:block;text-transform:uppercase;letter-spacing:0.05em;height:18px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .filter-select{width:100%;height:44px;min-height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
@@ -51,34 +51,23 @@
         .bulk-btn svg{width:15px;height:15px;flex-shrink:0;}
         .bulk-count{background:#3730A3;color:white;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:4px;}
 
-        /* ── Summary Card ── */
-        .stat-card{background:var(--surface);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;min-width:0;width:100%;max-width:100%;animation:fadeInUp .6s ease-out backwards;}
-        .stat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--purple);transition:all .3s ease;}
-        .stat-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,0.08);}
-        .stat-card-content{flex:1;min-width:0;}
-        .stat-card-label{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-        .stat-card-value{font-size:32px;font-weight:700;color:var(--text-primary);line-height:1;}
-        .stat-card-icon{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--purple-bg);color:var(--purple);}
-        .stat-card-icon svg{width:24px;height:24px;}
-
         /* ── Table Card ── */
-        .table-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;min-width:0;width:100%;max-width:100%;}
-        .table-card-title{font-size:1.25rem;font-weight:700;color:var(--text-primary);margin:0 0 1.25rem 0;flex-shrink:0;}
-        .table-responsive{overflow-x:auto;width:100%;max-width:100%;-webkit-overflow-scrolling:touch;border-radius:8px;border:1px solid var(--border);}
-        .table-responsive table{width:100%;border-collapse:collapse;min-width:0;}
-        .table-responsive thead{background:var(--surface);}
-        .table-responsive th{padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary);text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;}
-        .table-responsive td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid var(--border);vertical-align:middle;overflow-wrap:break-word;word-break:break-word;min-width:0;}
-        .table-responsive tr:hover td{background:var(--background);}
-        .table-responsive tr:last-child td{border-bottom:none;}
+        .table-card-title{font-size:1.25rem;font-weight:700;color:var(--text-primary);margin:0 0 1.25rem 0;flex-shrink:0;padding:0 24px;}
+        .table-responsive{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);margin:0 24px 24px 0;}
+        .mobile-select-all{margin:0 24px 10px 0;}
+        .table-responsive table{width:100%;border-collapse:collapse;table-layout:auto;}
+        .table-responsive thead th{padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary);text-align:left;border-bottom:2px solid var(--border);background:var(--surface);white-space:nowrap;}
+        .table-responsive tbody td{padding:12px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid var(--border);vertical-align:middle;white-space:normal;word-break:break-word;}
+        .table-responsive tbody tr:last-child td{border-bottom:none;}
+        .table-responsive tbody tr:hover td{background:var(--background);}
         .table-responsive input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
-        .td-name{font-weight:500;color:var(--text-primary);}
+        .td-name{font-weight:500;color:var(--text-primary);font-size:13px;}
         .td-addr{font-size:0.75rem;color:var(--text-secondary);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
-        .control-no{font-weight:600;color:var(--text-primary);}
+        .control-no{font-weight:600;color:var(--text-primary);font-size:13px;}
         .sex-age-wrap{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
         .sex-letter{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#6B7280;color:white;font-size:11px;font-weight:700;flex-shrink:0;}
-        .sex-sep{color:var(--text-muted);}
-        .badge-archived{background:rgba(156,163,175,.15);color:#6B7280;padding:.35rem .75rem;border-radius:6px;font-size:.75rem;font-weight:600;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;}
+        .sex-sep{color:var(--text-muted);font-size:13px;}
+        .badge-archived{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:rgba(156,163,175,.15);color:#6B7280;}
         .btn-restore{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:500;background:#ECFDF5;color:#16A34A;border:1px solid #6EE7B7;cursor:pointer;transition:all .2s ease;font-family:inherit;white-space:nowrap;text-decoration:none;}
         .btn-restore:hover{background:#D1FAE5;}
         .btn-restore svg{width:14px;height:14px;}
@@ -135,43 +124,119 @@
            RESPONSIVE BREAKPOINTS
            ══════════════════════════════════════════════ */
 
-        /* ── Desktop (1200px+): summary in one row ── */
-        @media (min-width:1200px){
+        /* ── Extra Large (1400px+): summary in one row ── */
+        @media (min-width:1400px){
             .section-spacing{margin-bottom:32px;}
-            #summaryGrid{grid-template-columns:minmax(220px,300px) minmax(220px,1fr) minmax(180px,1fr) auto;gap:16px;}
+            #summaryGrid{grid-template-columns:1fr 1fr auto;gap:16px;}
             .filter-label{font-size:13px !important;}
             .filter-select,.input-group input,.search-btn,.bulk-btn{height:48px !important;min-height:48px !important;}
             .filter-select{font-size:14px !important;}
             .input-group input{font-size:15px !important;}
             .search-btn{width:52px !important;}
             .bulk-btn{font-size:14px !important;padding:0 22px !important;}
-            .table-card-title{font-size:1.5rem !important;}
+            .table-card-title{font-size:1.5rem !important;padding:0 28px !important;}
+            .table-responsive{margin:0 28px 28px 0 !important;}
+            .mobile-select-all{margin:0 28px 10px 0 !important;}
             .table-responsive th{font-size:13px !important;padding:14px 18px !important;}
             .table-responsive td{font-size:15px !important;padding:16px 18px !important;}
             .badge-archived{font-size:13px !important;padding:5px 12px !important;}
             .btn-restore{font-size:14px !important;padding:8px 16px !important;}
+            .td-name{font-size:15px !important;font-weight:600 !important;}
+            .td-addr{font-size:13px !important;white-space:normal !important;overflow:visible !important;text-overflow:clip !important;}
         }
 
-        /* ── Tablet (768–1199px): summary in two rows, table stays a table ── */
-        @media (min-width:768px) and (max-width:1199px){
+        /* ── Large Desktop (1200–1399px): summary in one row ── */
+        @media (min-width:1200px) and (max-width:1399px){
+            .section-spacing{margin-bottom:28px;}
+            #summaryGrid{grid-template-columns:1fr 1fr auto;gap:14px;}
+            .filter-label{font-size:12px !important;}
+            .filter-select,.input-group input,.search-btn,.bulk-btn{height:46px !important;min-height:46px !important;}
+            .filter-select{font-size:13px !important;}
+            .input-group input{font-size:14px !important;}
+            .search-btn{width:50px !important;}
+            .bulk-btn{font-size:13px !important;padding:0 20px !important;}
+            .table-card-title{font-size:1.3rem !important;padding:0 24px !important;}
+            .table-responsive{margin:0 24px 24px 0 !important;}
+            .mobile-select-all{margin:0 24px 10px 0 !important;}
+            .table-responsive th{font-size:12px !important;padding:12px 16px !important;}
+            .table-responsive td{font-size:14px !important;padding:14px 16px !important;}
+            .badge-archived{font-size:12px !important;padding:4px 10px !important;}
+            .btn-restore{font-size:13px !important;padding:7px 14px !important;}
+            .td-name{font-size:14px !important;font-weight:600 !important;}
+            .td-addr{font-size:12px !important;white-space:normal !important;overflow:visible !important;text-overflow:clip !important;}
+        }
+
+        /* ── Medium Desktop (992–1199px): summary in two rows ── */
+        @media (min-width:992px) and (max-width:1199px){
+            .section-spacing{margin-bottom:24px;}
+            #summaryGrid{grid-template-columns:1fr 1fr;gap:14px;}
+            .table-card-title{font-size:1.2rem !important;padding:0 20px !important;}
+            .table-responsive{margin:0 20px 20px 0 !important;}
+            .mobile-select-all{margin:0 20px 10px 0 !important;}
+            .table-responsive th{padding:11px 14px !important;}
+            .table-responsive td{padding:13px 14px !important;}
+            .empty-state{min-height:220px;padding:2.5rem 1.5rem;}
+            .td-name{font-size:13px !important;font-weight:600 !important;}
+            .td-addr{font-size:11px !important;white-space:normal !important;overflow:visible !important;text-overflow:clip !important;}
+        }
+
+        /* ── Tablet (768–991px): summary in two rows, table stays a table ── */
+        @media (min-width:768px) and (max-width:991px){
             .section-spacing{margin-bottom:20px;}
-            #summaryGrid{grid-template-columns:1fr 1fr;gap:16px;}
-            .table-card{padding:16px !important;}
-            .table-card-title{font-size:1.1rem !important;margin-bottom:1rem !important;}
-            .table-responsive{border-radius:6px !important;}
+            #summaryGrid{grid-template-columns:1fr 1fr;gap:12px;}
+            .table-card-title{font-size:1.1rem !important;padding:0 16px !important;}
+            .table-responsive{margin:0 16px 16px 0 !important;}
+            .mobile-select-all{margin:0 16px 10px 0 !important;}
             .table-responsive th{padding:10px 12px !important;}
             .table-responsive td{padding:12px 12px !important;}
             .empty-state{min-height:220px;padding:2.5rem 1.5rem;}
+            .td-name{font-size:12px !important;font-weight:600 !important;}
+            .td-addr{font-size:10px !important;white-space:normal !important;overflow:visible !important;text-overflow:clip !important;}
         }
 
-        /* ── Mobile (<768px): stacked filters, table → cards (matches masterlist) ── */
-        @media (max-width:767px){
-            .section-spacing{margin-bottom:16px;}
+        /* ── Large Mobile (576–767px): stacked filters, table → cards ── */
+        @media (min-width:576px) and (max-width:767px){
+            .section-spacing{margin-bottom:18px;}
             #summaryGrid{grid-template-columns:1fr;gap:12px;}
-            .table-card{padding:12px !important;border-radius:12px !important;}
-            .table-card-title{font-size:1rem !important;margin-bottom:0.875rem !important;}
+            .table-card-title{font-size:1.1rem !important;padding:0 14px !important;}
+            .table-responsive{margin:0 14px 14px 0 !important;}
+            .mobile-select-all{margin:0 14px 10px 0 !important;}
             .bulk-btn{flex:1 1 auto;}
-            .mobile-select-all{display:flex;}
+            .empty-state{min-height:180px;padding:2rem 1rem;}
+            .empty-state [data-lucide]{width:48px !important;height:48px !important;}
+            .empty-state h5{font-size:.95rem !important;}
+            .empty-state p{font-size:.8rem !important;}
+
+            /* Table → stacked cards */
+            .table-responsive{overflow:visible !important;border:none !important;background:transparent !important;box-shadow:none !important;border-radius:0 !important;}
+            .table-responsive table{display:block !important;width:100% !important;min-width:0 !important;table-layout:auto !important;}
+            .table-responsive thead{display:none !important;}
+            .table-responsive tbody{display:block;}
+            .table-responsive tbody tr{display:block;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;padding:12px 14px;box-shadow:var(--shadow);}
+            .table-responsive tbody tr:last-child{margin-bottom:0;}
+            .table-responsive tbody td{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border:none;border-bottom:1px solid var(--border);font-size:13px !important;white-space:normal;word-break:break-word;text-align:right;}
+            .table-responsive tbody td:last-child{border-bottom:none;}
+            .table-responsive tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:11px;text-transform:uppercase;letter-spacing:.03em;flex-shrink:0;min-width:88px;text-align:left;}
+            .table-responsive tbody td.col-check{justify-content:flex-end;border-bottom:none;padding:0 0 6px;}
+            .table-responsive tbody td.col-check::before{display:none !important;}
+            .table-responsive tbody td[data-label="Control No."]{white-space:nowrap;}
+            .table-responsive tbody td[data-label="Action"]{justify-content:flex-end;border-bottom:none;padding-top:10px;}
+            .table-responsive tbody td[data-label="Action"]::before{display:none !important;}
+            .table-responsive tbody td.empty-state-cell{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:0 !important;}
+            .table-responsive tbody td.empty-state-cell::before{display:none !important;}
+            .td-name{font-size:14px !important;}
+            .td-addr{white-space:normal;overflow:visible;text-overflow:clip;}
+            .btn-restore{min-height:42px;padding:9px 14px;font-size:13px;}
+        }
+
+        /* ── Mobile (<576px): stacked filters, table → cards ── */
+        @media (max-width:575px){
+            .section-spacing{margin-bottom:16px;}
+            #summaryGrid{grid-template-columns:1fr;gap:10px;}
+            .table-card-title{font-size:1rem !important;padding:0 12px !important;}
+            .table-responsive{margin:0 12px 12px 0 !important;}
+            .mobile-select-all{margin:0 12px 10px 0 !important;}
+            .bulk-btn{flex:1 1 auto;}
             .empty-state{min-height:180px;padding:2rem 1rem;}
             .empty-state [data-lucide]{width:48px !important;height:48px !important;}
             .empty-state h5{font-size:.95rem !important;}
@@ -189,7 +254,6 @@
             .table-responsive tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:11px;text-transform:uppercase;letter-spacing:.03em;flex-shrink:0;min-width:88px;text-align:left;}
             .table-responsive tbody td.col-check{justify-content:flex-end;border-bottom:none;padding:0 0 6px;}
             .table-responsive tbody td.col-check::before{display:none !important;}
-            .table-responsive tbody td[data-label="#"]{display:none !important;}
             .table-responsive tbody td[data-label="Control No."]{white-space:nowrap;}
             .table-responsive tbody td[data-label="Action"]{justify-content:flex-end;border-bottom:none;padding-top:10px;}
             .table-responsive tbody td[data-label="Action"]::before{display:none !important;}
@@ -199,13 +263,40 @@
             .btn-restore{min-height:44px;padding:10px 14px;font-size:13px;}
         }
 
-        /* ── Small mobile (<480px) ── */
+        /* ── Small Mobile (<480px): stacked filters, table → cards ── */
         @media (max-width:479px){
             .section-spacing{margin-bottom:14px;}
-            .table-card{padding:10px !important;}
-            .table-card-title{font-size:.95rem !important;}
-            .table-responsive tbody td{font-size:12px !important;}
-            .table-responsive tbody td::before{font-size:10px !important;min-width:70px;}
+            #summaryGrid{grid-template-columns:1fr;gap:8px;}
+            .table-card-title{font-size:.95rem !important;padding:0 10px !important;}
+            .table-responsive{margin:0 10px 10px 0 !important;}
+            .mobile-select-all{margin:0 10px 10px 0 !important;}
+            .bulk-btn{flex:1 1 auto;}
+            .mobile-select-all{display:flex;}
+            .empty-state{min-height:160px;padding:1.5rem 0.75rem;}
+            .empty-state [data-lucide]{width:44px !important;height:44px !important;}
+            .empty-state h5{font-size:.9rem !important;}
+            .empty-state p{font-size:.75rem !important;}
+
+            /* Table → stacked cards */
+            .table-responsive{overflow:visible !important;border:none !important;background:transparent !important;box-shadow:none !important;border-radius:0 !important;}
+            .table-responsive table{display:block !important;width:100% !important;min-width:0 !important;table-layout:auto !important;}
+            .table-responsive thead{display:none !important;}
+            .table-responsive tbody{display:block;}
+            .table-responsive tbody tr{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;padding:10px 12px;box-shadow:var(--shadow);}
+            .table-responsive tbody tr:last-child{margin-bottom:0;}
+            .table-responsive tbody td{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border:none;border-bottom:1px solid var(--border);font-size:12px !important;white-space:normal;word-break:break-word;text-align:right;}
+            .table-responsive tbody td:last-child{border-bottom:none;}
+            .table-responsive tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:10px;text-transform:uppercase;letter-spacing:.03em;flex-shrink:0;min-width:70px;text-align:left;}
+            .table-responsive tbody td.col-check{justify-content:flex-end;border-bottom:none;padding:0 0 6px;}
+            .table-responsive tbody td.col-check::before{display:none !important;}
+            .table-responsive tbody td[data-label="Control No."]{white-space:nowrap;}
+            .table-responsive tbody td[data-label="Action"]{justify-content:flex-end;border-bottom:none;padding-top:10px;}
+            .table-responsive tbody td[data-label="Action"]::before{display:none !important;}
+            .table-responsive tbody td.empty-state-cell{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:0 !important;}
+            .table-responsive tbody td.empty-state-cell::before{display:none !important;}
+            .td-name{font-size:13px !important;}
+            .td-addr{white-space:normal;overflow:visible;text-overflow:clip;}
+            .btn-restore{min-height:40px;padding:8px 12px;font-size:12px;}
         }
     </style>
 </head>
@@ -238,13 +329,6 @@
             <!-- Summary Section -->
             <form method="GET" action="{{ route('admin.senior.archive.list') }}">
                 <div id="summaryGrid" class="section-spacing">
-                    <div class="stat-card">
-                        <div class="stat-card-content">
-                            <div class="stat-card-label">TOTAL ARCHIVED</div>
-                            <div class="stat-card-value">{{ $archivedSeniors->total() }}</div>
-                        </div>
-                        <div class="stat-card-icon"><i data-lucide="archive"></i></div>
-                    </div>
                     <div class="filter-field">
                         <label class="filter-label" for="searchInput">Search by Name</label>
                         <div class="input-group">
@@ -278,21 +362,19 @@
             </form>
 
             <!-- Archived Records Table -->
-            <div class="table-card">
-                <h2 class="table-card-title">Archived Records</h2>
-                @if($archivedSeniors->count() > 0)
-                    <div class="mobile-select-all">
-                        <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)">
-                        <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
-                        <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
-                    </div>
-                @endif
-                <div class="table-responsive">
+            <h2 class="table-card-title">Archived Records</h2>
+            @if($archivedSeniors->count() > 0)
+                <div class="mobile-select-all">
+                    <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)">
+                    <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
+                    <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
+                </div>
+            @endif
+            <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
                                 <th class="col-check"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)"></th>
-                                <th>#</th>
                                 <th>Control No.</th>
                                 <th>Full Name</th>
                                 <th>Barangay</th>
@@ -306,7 +388,6 @@
                             @forelse($archivedSeniors as $index => $senior)
                                 <tr>
                                     <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()"></td>
-                                    <td data-label="#">{{ $archivedSeniors->firstItem() + $index }}</td>
                                     <td data-label="Control No."><span class="control-no">{{ $senior->control_number ?? '-' }}</span></td>
                                     <td data-label="Full Name">
                                         <div class="td-name">{{ $senior->full_name ?? '-' }}</div>
@@ -340,7 +421,7 @@
                                         <form method="POST" action="{{ route('admin.senior.unarchive', $senior->id) }}" id="restore-form-{{ $senior->id }}" style="display:inline;">
                                             @csrf
                                             <button type="button" class="btn-restore" onclick="confirmRestore({{ $senior->id }}, '{{ addslashes($senior->full_name) }}')">
-                                                <i data-lucide="rotate-ccw"></i> Restore
+                                                <i data-lucide="rotate-ccw"></i>
                                             </button>
                                         </form>
                                     </td>

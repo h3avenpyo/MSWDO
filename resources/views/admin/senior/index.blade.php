@@ -51,15 +51,20 @@
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
         button{font-family:inherit;cursor:pointer;}
         /* Dashboard Grid */
-        .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;width:100%;}
+        .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;width:100%;}
         @media(max-width:1199px){.dashboard-grid{grid-template-columns:1fr;}}
+        @media(max-width:991px){.dashboard-grid{grid-template-columns:1fr;}}
+        @media(max-width:767px){.dashboard-grid{grid-template-columns:1fr;}}
+        @media(max-width:575px){.dashboard-grid{grid-template-columns:1fr;}}
 
         /* Stat Cards */
-        .stat-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-bottom:24px;animation:fadeInUp .6s ease-out;flex-shrink:0;}
+        .stat-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-bottom:12px;animation:fadeInUp .6s ease-out;flex-shrink:0;}
         .stat-cards>a{display:block;width:100%;min-width:0;}
         @media(min-width:1200px) and (max-width:1399px){.stat-cards{grid-template-columns:repeat(6,1fr);gap:18px;}.stat-cards>a:nth-child(1),.stat-cards>a:nth-child(2),.stat-cards>a:nth-child(3){grid-column:span 2;}.stat-cards>a:nth-child(4),.stat-cards>a:nth-child(5){grid-column:span 3;}}
-        @media(min-width:768px) and (max-width:1199px){.stat-cards{grid-template-columns:repeat(2,1fr);gap:16px;}}
-        @media(min-width:375px) and (max-width:767px){.stat-cards{grid-template-columns:1fr 1fr;gap:12px;}}
+        @media(min-width:992px) and (max-width:1199px){.stat-cards{grid-template-columns:repeat(3,1fr);gap:16px;}}
+        @media(min-width:768px) and (max-width:991px){.stat-cards{grid-template-columns:repeat(2,1fr);gap:16px;}}
+        @media(min-width:576px) and (max-width:767px){.stat-cards{grid-template-columns:repeat(2,1fr);gap:12px;}}
+        @media(min-width:375px) and (max-width:575px){.stat-cards{grid-template-columns:1fr 1fr;gap:12px;}}
         @media(max-width:374px){.stat-cards{grid-template-columns:1fr 1fr;}}
 
         .stat-card{width:100%;background:var(--surface);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;min-height:0;}
@@ -83,13 +88,19 @@
         .stat-card-red .stat-card-icon{background:var(--danger-bg);color:var(--danger);}
 
         /* Analytics Card */
-        .analytics-card{width:100%;background:var(--surface);border-radius:16px;padding:24px;border:1px solid var(--border);min-height:0;animation:fadeInUp .6s ease-out .1s backwards;}
+        .analytics-card{width:100%;background:var(--surface);border-radius:16px;padding:24px;border:1px solid var(--border);min-height:0;height:550px;animation:fadeInUp .6s ease-out .1s backwards;}
         .analytics-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:20px;}
+        @media(min-width:1400px){.analytics-card{width:100%;height:550px;}#barangayChartWrap{flex-direction:row;align-items:flex-start;}#barangayLegend{max-height:450px;}}
+        @media(min-width:1200px) and (max-width:1399px){.analytics-card{width:100%;height:500px;}#barangayChartWrap{flex-direction:row;align-items:flex-start;}#barangayLegend{max-height:400px;}}
+        @media(min-width:992px) and (max-width:1199px){.analytics-card{width:100%;height:450px;}#barangayChartWrap{flex-direction:row;align-items:flex-start;}#barangayLegend{max-height:350px;}}
+        @media(min-width:768px) and (max-width:991px){.analytics-card{width:100%;height:400px;}#barangayChartWrap{flex-direction:row;align-items:flex-start;}#barangayLegend{max-height:300px;}}
+        @media(min-width:576px) and (max-width:767px){.analytics-card{width:100%;height:auto;}#barangayLegend{max-height:180px;}}
+        @media(max-width:575px){.analytics-card{width:100%;height:auto;}#barangayLegend{max-height:180px;}}
 
         /* Activity Card */
         .activity-card{width:100%;background:var(--surface);border-radius:16px;padding:24px;border:1px solid var(--border);min-height:0;animation:fadeInUp .6s ease-out .2s backwards;display:flex;flex-direction:column;}
         .activity-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:20px;flex-shrink:0;}
-        .activity-feed{flex:1;overflow:visible;overflow-x:hidden;padding-right:8px;min-height:0;}
+        .activity-feed{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:8px;min-height:0;max-height:400px;}
         .activity-feed::-webkit-scrollbar{width:6px;}
         .activity-feed::-webkit-scrollbar-track{background:var(--background);border-radius:3px;}
         .activity-feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
@@ -171,6 +182,7 @@
 
             /* Hide desktop header & standalone hamburger button, show integrated mobile header */
             header { display: none !important; }
+            .activity-feed { max-height: 300px !important; }
 
             /* Stat cards - match statistics layout */
             .stat-cards {
@@ -278,11 +290,13 @@
 
             /* Top Barangays - display donut chart on mobile */
             .analytics-card {
+                width: 100% !important;
                 min-height: auto !important;
                 padding: 16px !important;
                 border-radius: 16px !important;
                 overflow-x: hidden !important;
                 max-width: 100% !important;
+                height: auto !important;
             }
             #barangayChartWrap { 
                 display: flex !important; 
@@ -350,10 +364,10 @@
                 max-width: 100% !important;
             }
             .activity-feed {
-                flex: none !important;
+                flex: 1 !important;
                 min-height: 0 !important;
-                max-height: none !important;
-                overflow: visible !important;
+                max-height: 350px !important;
+                overflow-y: auto !important;
                 overflow-x: hidden !important;
                 padding-right: 4px !important;
             }
@@ -427,6 +441,7 @@
             }
             .dashboard-grid { grid-template-columns: 1fr 1fr; }
             #barangayChartBox { width: 360px !important; height: 360px !important; }
+            .activity-feed { max-height: 400px !important; }
         }
 
         /* ── Large Tablets (992px - 1199px) ── */
@@ -434,7 +449,7 @@
             header { display: flex !important; }
             .dashboard-grid { grid-template-columns: 1fr; }
             .activity-card { display: flex !important; flex-direction: column !important; min-height: 0 !important; }
-            .activity-feed { flex: none !important; min-height: 0 !important; max-height: none !important; overflow: visible !important; overflow-x: hidden !important; padding-right: 8px !important; }
+            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: 380px !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
 
         /* ── Small Tablets (768px - 991px) ── */
@@ -442,14 +457,14 @@
             header { display: flex !important; }
             .dashboard-grid { grid-template-columns: 1fr; }
             .activity-card { display: flex !important; flex-direction: column !important; min-height: 0 !important; }
-            .activity-feed { flex: none !important; min-height: 0 !important; max-height: none !important; overflow: visible !important; overflow-x: hidden !important; padding-right: 8px !important; }
+            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: 360px !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
 
         /* ── Mobile (0px - 767px) ── */
         @media (max-width: 767px) {
             .dashboard-grid { grid-template-columns: 1fr; }
             .activity-card { display: flex !important; flex-direction: column !important; min-height: 0 !important; }
-            .activity-feed { flex: none !important; min-height: 0 !important; max-height: none !important; overflow: visible !important; overflow-x: hidden !important; padding-right: 8px !important; }
+            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: 300px !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
 
         /* ══════════════════════════════════════════════
@@ -462,6 +477,7 @@
             .stat-card { padding: 18px; }
             .dashboard-grid { gap: 18px !important; margin-bottom: 20px !important; }
             #barangayChartBox { width: 300px !important; height: 300px !important; }
+            .activity-feed { max-height: 390px !important; }
         }
 
         /* ── Tablet (768–1199px): icon-only sidebar, 2-col cards, stacked content ── */
@@ -487,14 +503,14 @@
             .dashboard-grid { grid-template-columns: 1fr !important; gap: 16px !important; margin-bottom: 16px !important; }
 
             /* Chart: stacked on tablet, chart on top, legend below */
-            .analytics-card { padding: 20px !important; min-height: auto !important; border-radius: 16px !important; overflow-x: hidden !important; max-width: 100% !important; }
+            .analytics-card { width: 100% !important; padding: 20px !important; min-height: auto !important; border-radius: 16px !important; overflow-x: hidden !important; max-width: 100% !important; height: auto !important; }
             #barangayChartWrap { justify-content: center; flex-direction: column; align-items: center; gap: 16px; flex-wrap: nowrap; width: 100%; max-width: 100%; }
             #barangayChartBox { width: min(280px, 100%) !important; height: auto !important; aspect-ratio: 1 / 1 !important; max-width: 100% !important; }
             #barangayLegend { width: 100% !important; max-width: 100% !important; max-height: 200px !important; overflow-y: auto !important; overflow-x: hidden !important; }
 
             /* Activities below chart */
             .activity-card { display: flex !important; flex-direction: column !important; min-height: 0 !important; }
-            .activity-feed { flex: none !important; min-height: 0 !important; max-height: none !important; overflow: visible !important; overflow-x: hidden !important; padding-right: 8px !important; }
+            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: 280px !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
 
         /* ── Small mobile (<375px): still two cards per row (matches statistics) ── */
@@ -600,12 +616,16 @@
             <div class="analytics-card">
                 <div class="flex items-center justify-between mb-5">
                     <h3><i data-lucide="map-pin" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px;color:var(--icon-blue)"></i>Top Barangays</h3>
-                    <button class="text-xs font-semibold px-3 py-1 rounded-lg view-all-btn" style="background:var(--info-bg);color:var(--icon-blue);border:none" onclick="document.getElementById('barangayModal').style.display='flex'">View All <i data-lucide="arrow-right" style="width:14px;height:14px;margin-left:2px"></i></button>
                 </div>
                 <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap" id="barangayChartWrap">
                     <div id="barangayChartBox" style="width:280px;height:280px;flex-shrink:0"><canvas id="barangayDonut"></canvas></div>
-                    <div id="barangayLegend" style="flex:1;min-width:0;max-height:220px;overflow-y:auto"></div>
+                    <div id="barangayLegend" style="flex:1;min-width:0;max-height:270px;overflow-y:auto"></div>
                 </div>
+                <style>
+                    @media(min-width:1200px) and (max-width:1399px){#barangayLegend{max-height:220px;}}
+                    @media(min-width:992px) and (max-width:1199px){#barangayLegend{max-height:170px;}}
+                    @media(min-width:768px) and (max-width:991px){#barangayLegend{max-height:120px;}}
+                </style>
                 <!-- Mobile Barangay List (visible only on mobile) -->
                 <div class="mobile-barangay-list" id="mobileBarangayList"></div>
             </div>
@@ -716,7 +736,7 @@
     // Barangay Distribution
     function initBarangayChart(){
         const barangayData=@json($barangayDistribution);
-        const sortedData=[...barangayData].sort((a,b)=>b.count-a.count);
+        const sortedData=[...barangayData].sort((a,b)=>a.barangay.localeCompare(b.barangay));
         renderTopBarangaysList(sortedData);
         renderMobileBarangayList(sortedData);
     }
@@ -787,14 +807,16 @@
 
         // Legend
         if(legendContainer){
+            legendContainer.style.paddingRight='16px';
+            legendContainer.style.overflowY='auto';
+            legendContainer.style.scrollbarWidth='thin';
+            legendContainer.style.scrollbarColor='transparent transparent';
             legendContainer.innerHTML=data.map((item,i)=>{
-                const pct=totalCount>0?((item.count/totalCount)*100).toFixed(1):0;
                 const color=colors[i]||'#9CA3AF';
-                return `<div class="flex items-center gap-3 py-2 px-2 rounded-lg" style="transition:background .2s" onmouseover="this.style.background='var(--background)'" onmouseout="this.style.background=''">
-                    <div class="rounded-sm flex-shrink-0" style="width:10px;height:10px;background:${color}"></div>
-                    <span class="text-sm flex-1 min-w-0 truncate">${item.barangay}</span>
-                    <span class="text-sm font-semibold" style="color:var(--primary)">${item.count}</span>
-                    <span class="text-xs font-medium" style="color:var(--text-muted);width:42px;text-align:right">${pct}%</span>
+                return `<div class="flex items-center gap-2 py-2 px-2 rounded-lg" style="transition:background .2s" onmouseover="this.style.background='var(--background)'" onmouseout="this.style.background=''">
+                    <div class="rounded-sm flex-shrink-0" style="width:12px;height:12px;background:${color}"></div>
+                    <span class="text-sm flex-1 min-w-0 font-medium" style="color:var(--text-primary)">${item.barangay}</span>
+                    <span class="text-sm font-semibold" style="color:var(--primary);flex-shrink:0">${item.count}</span>
                 </div>`;
             }).join('');
         }

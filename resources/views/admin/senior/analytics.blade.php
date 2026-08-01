@@ -36,10 +36,10 @@
         .btn-clear:hover{border-color:var(--danger);color:var(--danger);}
 
         /* ── Filter Section ── */
-        .filter-section{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:20px;}
-        .section-spacing{margin-bottom:28px;}
-        .filter-field{display:flex;flex-direction:column;gap:3px;min-width:0;}
-        .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;display:block;text-transform:uppercase;letter-spacing:0.05em;height:18px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .filter-section{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:12px 20px 20px 20px;}
+        .section-spacing{margin-bottom:8px;margin-top:-12px;}
+        .filter-field{display:flex;flex-direction:column;gap:1px;min-width:0;}
+        .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:2px;margin-top:0;display:block;text-transform:uppercase;letter-spacing:0.05em;height:18px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .filter-select{width:100%;height:44px;min-height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
         .filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
         #filterGrid{display:grid;grid-template-columns:1fr;gap:12px;align-items:end;}
@@ -47,7 +47,7 @@
         .filter-actions .btn{flex:1;}
 
         /* ── Stat Cards ── */
-        .stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:16px;}
+        .stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-bottom:8px;}
         .stat-card{background:var(--surface);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;min-width:0;width:100%;max-width:100%;animation:fadeInUp .6s ease-out backwards;}
         .stat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;transition:all .3s ease;}
         .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);}
@@ -58,7 +58,7 @@
         .stat-card-orange::before{background:#F59E0B;}
         .stat-card-content{flex:1;min-width:0;}
         .stat-card-label{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-        .stat-card-value{font-size:32px;font-weight:700;color:var(--text-primary);line-height:1;}
+        .stat-card-value{font-size:28px;font-weight:700;color:var(--text-primary);line-height:1;}
         .stat-card-icon{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
         .stat-card-icon svg,.stat-card-icon img{width:24px;height:24px;object-fit:contain;}
         .stat-card-blue .stat-card-icon{background:var(--info-bg);color:var(--icon-blue);}
@@ -76,7 +76,7 @@
         .analytics-card{background:var(--surface);border-radius:16px;padding:20px;box-shadow:var(--shadow);border:1px solid var(--border);min-width:0;width:100%;max-width:100%;box-sizing:border-box;animation:fadeInUp .6s ease-out backwards;}
         .analytics-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:16px;display:flex;align-items:center;gap:6px;}
         .analytics-card h3 svg{width:16px;height:16px;color:var(--icon-blue);}
-        .chart-container{position:relative;height:300px;width:100%;max-width:100%;}
+        .chart-container{position:relative;height:260px;width:100%;max-width:100%;}
 
         /* ── Animations ── */
         @keyframes fadeInUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
@@ -85,9 +85,11 @@
            RESPONSIVE BREAKPOINTS
            ══════════════════════════════════════════════ */
 
-        /* ── Desktop (1200px+): filters in one row ── */
-        @media (min-width:1200px){
-            .section-spacing{margin-bottom:32px;}
+
+
+        /* ── Small desktop (1200–1299px): filters in one row ── */
+        @media (min-width:1200px) and (max-width:1299px){
+            .section-spacing{margin-bottom:8px;margin-top:-12px;}
             .filter-section{padding:24px;}
             #filterGrid{grid-template-columns:minmax(130px,1fr) minmax(110px,1fr) minmax(170px,1fr) minmax(110px,1fr) minmax(130px,1fr) auto;}
             .filter-actions{flex:0 0 auto;}
@@ -95,47 +97,140 @@
             .filter-label{font-size:13px !important;}
             .filter-select{font-size:14px !important;height:48px !important;min-height:48px !important;}
             .btn{height:48px !important;min-height:48px !important;font-size:14px !important;}
-            .stat-cards{gap:24px;margin-bottom:32px;}
+            .stat-cards{gap:12px;margin-bottom:8px;}
             .charts-grid{gap:24px;grid-template-columns:1fr 1fr;}
-            .chart-container{height:380px;}
+            .chart-container{height:320px;}
             .analytics-card{padding:24px;}
             .analytics-card h3{font-size:15px;margin-bottom:20px;}
+            .stat-card-value{font-size:35px;}
+        }
+
+        /* ── Medium desktop (1300–1399px): filters in one row ── */
+        @media (min-width:1300px) and (max-width:1399px){
+            .section-spacing{margin-bottom:8px;margin-top:-12px;}
+            .filter-section{padding:24px;}
+            #filterGrid{grid-template-columns:minmax(130px,1fr) minmax(110px,1fr) minmax(170px,1fr) minmax(110px,1fr) minmax(130px,1fr) auto;}
+            .filter-actions{flex:0 0 auto;}
+            .filter-actions .btn{flex:none;padding:0 22px;}
+            .filter-label{font-size:13px !important;}
+            .filter-select{font-size:14px !important;height:48px !important;min-height:48px !important;}
+            .btn{height:48px !important;min-height:48px !important;font-size:14px !important;}
+            .stat-cards{gap:12px;margin-bottom:8px;}
+            .charts-grid{gap:24px;grid-template-columns:1fr 1fr;}
+            .chart-container{height:320px;}
+            .analytics-card{padding:24px;}
+            .analytics-card h3{font-size:15px;margin-bottom:20px;}
+            .stat-card-value{font-size:36px;}
         }
 
         /* ── Large laptop (1400px+): six stat cards in one row ── */
         @media (min-width:1400px){
-            .stat-cards{grid-template-columns:repeat(6,1fr);gap:24px;}
-            .stat-card-value{font-size:36px;}
-            .chart-container{height:440px;}
+            .section-spacing{margin-bottom:8px;margin-top:-12px;}
+            .filter-section{padding:24px;}
+            #filterGrid{grid-template-columns:minmax(130px,1fr) minmax(110px,1fr) minmax(170px,1fr) minmax(110px,1fr) minmax(130px,1fr) auto;}
+            .filter-actions{flex:0 0 auto;}
+            .filter-actions .btn{flex:none;padding:0 22px;}
+            .filter-label{font-size:13px !important;}
+            .filter-select{font-size:14px !important;height:48px !important;min-height:48px !important;}
+            .btn{height:48px !important;min-height:48px !important;font-size:14px !important;}
+            .stat-cards{grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:8px;}
+            .charts-grid{gap:24px;grid-template-columns:1fr 1fr;}
+            .chart-container{height:360px;}
             .analytics-card{padding:28px;}
+            .analytics-card h3{font-size:15px;margin-bottom:20px;}
+            .stat-card-value{font-size:38px;}
         }
 
-        /* ── Large laptop (1200–1399px): three stat cards per row ── */
-        @media (min-width:1200px) and (max-width:1399px){
-            .stat-cards{grid-template-columns:repeat(3,1fr);gap:20px;}
+        /* ── Extra large desktop (1600px+): larger font size ── */
+        @media (min-width:1600px){
+            .stat-card-value{font-size:42px;}
         }
 
-        /* ── Tablet (768–1199px): filters two side by side ── */
-        @media (min-width:768px) and (max-width:1199px){
-            .section-spacing{margin-bottom:20px;}
+
+
+        /* ── Small tablet (768–959px): filters three per row ── */
+        @media (min-width:768px) and (max-width:959px){
+            .section-spacing{margin-bottom:8px;margin-top:-12px;}
             .filter-section{padding:16px !important;}
-            #filterGrid{grid-template-columns:1fr 1fr;gap:12px;}
+            #filterGrid{grid-template-columns:repeat(3,1fr);gap:12px;}
             .filter-actions .btn{flex:1;}
-            .stat-cards{grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:20px;}
+            .stat-cards{grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:8px;}
             .charts-grid{grid-template-columns:1fr;gap:16px;}
-            .chart-container{height:340px;}
+            .chart-container{height:290px;}
             .analytics-card{padding:16px;}
             .stat-card-value{font-size:30px;}
         }
 
-        /* ── Mobile (<768px): stacked filters, two stat cards per row ── */
-        @media (max-width:767px){
-            .section-spacing{margin-bottom:16px;}
+        /* ── Medium tablet (960–1099px): filters four per row ── */
+        @media (min-width:960px) and (max-width:1099px){
+            .section-spacing{margin-bottom:8px;margin-top:-12px;}
+            .filter-section{padding:16px !important;}
+            #filterGrid{grid-template-columns:repeat(4,1fr);gap:12px;}
+            .filter-actions .btn{flex:1;}
+            .stat-cards{grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:8px;}
+            .charts-grid{grid-template-columns:1fr;gap:16px;}
+            .chart-container{height:290px;}
+            .analytics-card{padding:16px;}
+            .stat-card-value{font-size:33px;}
+        }
+
+        /* ── Large tablet (1100–1199px): filters five per row ── */
+        @media (min-width:1100px) and (max-width:1199px){
+            .section-spacing{margin-bottom:8px;margin-top:-12px;}
+            .filter-section{padding:16px !important;}
+            #filterGrid{grid-template-columns:repeat(5,1fr);gap:12px;}
+            .filter-actions .btn{flex:1;}
+            .stat-cards{grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:8px;}
+            .charts-grid{grid-template-columns:1fr;gap:16px;}
+            .chart-container{height:290px;}
+            .analytics-card{padding:16px;}
+            .stat-card-value{font-size:34px;}
+        }
+
+        /* ── Small desktop (1200–1299px): filters in one row ── */
+        @media (min-width:1200px) and (max-width:1299px){
+            .section-spacing{margin-bottom:8px;margin-top:-12px;}
+            .filter-section{padding:24px;}
+            #filterGrid{grid-template-columns:minmax(130px,1fr) minmax(110px,1fr) minmax(170px,1fr) minmax(110px,1fr) minmax(130px,1fr) auto;}
+            .filter-actions{flex:0 0 auto;}
+            .filter-actions .btn{flex:none;padding:0 22px;}
+            .filter-label{font-size:13px !important;}
+            .filter-select{font-size:14px !important;height:48px !important;min-height:48px !important;}
+            .btn{height:48px !important;min-height:48px !important;font-size:14px !important;}
+            .stat-cards{gap:12px;margin-bottom:8px;}
+            .charts-grid{gap:24px;grid-template-columns:1fr 1fr;}
+            .chart-container{height:320px;}
+            .analytics-card{padding:24px;}
+            .analytics-card h3{font-size:15px;margin-bottom:20px;}
+            .stat-card-value{font-size:35px;}
+        }
+
+        /* ── Medium desktop (1300–1399px): filters in one row ── */
+        @media (min-width:1300px) and (max-width:1399px){
+            .section-spacing{margin-bottom:8px;margin-top:-12px;}
+            .filter-section{padding:24px;}
+            #filterGrid{grid-template-columns:minmax(130px,1fr) minmax(110px,1fr) minmax(170px,1fr) minmax(110px,1fr) minmax(130px,1fr) auto;}
+            .filter-actions{flex:0 0 auto;}
+            .filter-actions .btn{flex:none;padding:0 22px;}
+            .filter-label{font-size:13px !important;}
+            .filter-select{font-size:14px !important;height:48px !important;min-height:48px !important;}
+            .btn{height:48px !important;min-height:48px !important;font-size:14px !important;}
+            .stat-cards{gap:12px;margin-bottom:8px;}
+            .charts-grid{gap:24px;grid-template-columns:1fr 1fr;}
+            .chart-container{height:320px;}
+            .analytics-card{padding:24px;}
+            .analytics-card h3{font-size:15px;margin-bottom:20px;}
+            .stat-card-value{font-size:36px;}
+        }
+
+        /* ── Large mobile (600–767px): filters three per row ── */
+        @media (min-width:600px) and (max-width:767px){
+            .section-spacing{margin-bottom:8px;margin-top:-12px;}
             .filter-section{padding:14px !important;}
-            #filterGrid{grid-template-columns:1fr 1fr;gap:12px;}
+            #filterGrid{grid-template-columns:repeat(3,1fr);gap:12px;}
             .filter-actions{flex-direction:column;gap:8px;}
             .filter-actions .btn{width:100%;flex:1 1 auto;min-height:44px;}
-            .stat-cards{grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+            .stat-cards{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
             .stat-card{padding:16px;flex-direction:column;align-items:flex-start;gap:8px;}
             .stat-card::before{display:none;}
             .stat-card-content{width:100%;padding-right:48px;}
@@ -143,21 +238,69 @@
             .stat-card-icon{width:40px;height:40px;position:absolute;top:14px;right:14px;}
             .stat-card-icon svg,.stat-card-icon img{width:20px;height:20px;}
             .charts-grid{grid-template-columns:1fr;gap:16px;}
-            .chart-container{height:300px;}
+            .chart-container{height:260px;}
             .analytics-card{padding:14px !important;border-radius:14px !important;}
         }
 
-        /* ── Small mobile (<480px): stat cards two side by side ── */
-        @media (max-width:479px){
-            .section-spacing{margin-bottom:14px;}
-            .filter-section{padding:12px !important;}
-            .stat-cards{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-            .stat-card{padding:14px;}
-            .stat-card-value{font-size:24px;}
-            .stat-card-icon{width:36px;height:36px;top:12px;right:12px;}
-            .stat-card-icon svg,.stat-card-icon img{width:16px;height:16px;}
+        /* ── Medium mobile (480–599px): filters two per row ── */
+        @media (min-width:480px) and (max-width:599px){
+            .section-spacing{margin-bottom:8px;margin-top:-12px;}
+            .filter-section{padding:14px !important;}
+            #filterGrid{grid-template-columns:1fr 1fr;gap:12px;}
+            .filter-actions{flex-direction:column;gap:8px;}
+            .filter-actions .btn{width:100%;flex:1 1 auto;min-height:44px;}
+            .stat-cards{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+            .stat-card{padding:16px;flex-direction:column;align-items:flex-start;gap:8px;}
+            .stat-card::before{display:none;}
+            .stat-card-content{width:100%;padding-right:48px;}
+            .stat-card-value{font-size:26px;}
+            .stat-card-icon{width:40px;height:40px;position:absolute;top:14px;right:14px;}
+            .stat-card-icon svg,.stat-card-icon img{width:20px;height:20px;}
+            .charts-grid{grid-template-columns:1fr;gap:16px;}
             .chart-container{height:260px;}
+            .analytics-card{padding:14px !important;border-radius:14px !important;}
+        }
+
+        /* ── Small mobile (<480px): filters two per row ── */
+        @media (max-width:479px){
+            .section-spacing{margin-bottom:8px;margin-top:-12px;}
+            .filter-section{padding:14px !important;}
+            #filterGrid{grid-template-columns:1fr 1fr;gap:12px;}
+            .filter-actions{flex-direction:column;gap:8px;}
+            .filter-actions .btn{width:100%;flex:1 1 auto;min-height:44px;}
+            .stat-cards{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+            .stat-card{padding:16px;flex-direction:column;align-items:flex-start;gap:8px;}
+            .stat-card::before{display:none;}
+            .stat-card-content{width:100%;padding-right:48px;}
+            .stat-card-value{font-size:28px;}
+            .stat-card-icon{width:40px;height:40px;position:absolute;top:14px;right:14px;}
+            .stat-card-icon svg,.stat-card-icon img{width:20px;height:20px;}
+            .charts-grid{grid-template-columns:1fr;gap:16px;}
+            .chart-container{height:260px;}
+            .analytics-card{padding:14px !important;border-radius:14px !important;}
+        }
+
+        /* ── Small mobile (<480px): filters two per row ── */
+        @media (max-width:479px){
+            .section-spacing{margin-bottom:8px;margin-top:-12px;}
+            .filter-section{padding:12px !important;}
+            #filterGrid{grid-template-columns:1fr 1fr;gap:12px;}
+            .filter-actions{flex-direction:column;gap:8px;}
+            .filter-actions .btn{width:100%;flex:1 1 auto;min-height:44px;}
+            .stat-cards{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+            .stat-card{padding:14px;flex-direction:column;align-items:flex-start;gap:8px;}
+            .stat-card::before{display:none;}
+            .stat-card-content{width:100%;padding-right:48px;}
+            .stat-card-value{font-size:22px;}
+            .stat-card-icon{width:36px;height:36px;position:absolute;top:12px;right:12px;}
+            .stat-card-icon svg,.stat-card-icon img{width:16px;height:16px;}
+            .chart-container{height:240px;}
             .analytics-card{padding:12px !important;}
+        }
+
+        /* ── Very small mobile (<360px): filters two per row ── */
+        @media (max-width:359px){
+            .stat-card-value{font-size:20px;}
         }
     </style>
 </head>
@@ -303,6 +446,19 @@
 
 <script>
     lucide.createIcons();
+
+    // Force barangay filter to "All" on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const barangayFilter = document.getElementById('barangayFilter');
+        if (barangayFilter) {
+            // Always reset to "All"
+            barangayFilter.value = '';
+            // Remove barangay parameter from URL
+            const url = new URL(window.location);
+            url.searchParams.delete('barangay');
+            window.history.replaceState({}, '', url);
+        }
+    });
 </script>
 
 <script>

@@ -173,6 +173,20 @@
         @media (min-width: 768px) and (max-width: 1199px) {
             .filters-grid { grid-template-columns: 1fr 1fr; }
             .filter-actions { grid-column: 1 / -1; }
+            .table-responsive thead th:nth-child(2) { width: 16%; }
+            .table-responsive tbody td[data-label="Control No"] { font-size: 12px; }
+        }
+
+        /* ---------- Large Desktop (1400px+): adjust control number column ---------- */
+        @media (min-width: 1400px) {
+            .table-responsive thead th:nth-child(2) { width: 12%; }
+            .table-responsive tbody td[data-label="Control No"] { font-size: 14px; }
+        }
+
+        /* ---------- Desktop (1200-1399px): adjust control number column ---------- */
+        @media (min-width: 1200px) and (max-width: 1399px) {
+            .table-responsive thead th:nth-child(2) { width: 13%; }
+            .table-responsive tbody td[data-label="Control No"] { font-size: 13px; }
         }
 
         /* ---------- Mobile (<768px): stacked filters, scrollable table ---------- */

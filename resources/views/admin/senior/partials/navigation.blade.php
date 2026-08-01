@@ -31,7 +31,7 @@
     .hamburger-btn:hover{background:var(--primary-hover);}
 
     /* Mobile Header (integrated hamburger + brand, mobile only) */
-    .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
+    .mobile-header{display:none;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
     .mobile-header-brand{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
     .mobile-logo{width:56px;height:56px;border-radius:50%;background:#FBC02D;padding:4px;flex-shrink:0;}
     .mobile-logo-img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
@@ -117,11 +117,6 @@
 <!-- Sidebar Overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
-<!-- Floating Hamburger Button -->
-<button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
-    <i data-lucide="menu" style="width:24px;height:24px"></i>
-</button>
-
 <!-- Mobile Header (visible only on mobile) -->
 @php
     $logo = null;
@@ -150,6 +145,8 @@
         </div>
     </div>
 </div>
+
+
 
 <script>
     function toggleSidebar() {
