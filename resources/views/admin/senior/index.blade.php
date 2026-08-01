@@ -45,8 +45,8 @@
             --font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
         }
         *,*::before,*::after{box-sizing:border-box;}
-        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100%;overflow:hidden;}
-        body{font-size:14px;line-height:1.5;}
+        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);min-height:100%;}
+        body{font-size:14px;line-height:1.5;overflow-x:hidden;}
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
         button{font-family:inherit;cursor:pointer;}
         .app{display:flex;min-height:100vh;flex-direction:row;}
@@ -65,25 +65,27 @@
         .sidebar-foot{padding:1rem 1.5rem;font-size:11px;color:rgba(255,255,255,.4);border-top:1px solid rgba(255,255,255,.1);}
 
         /* Main */
-        .main{flex:1;min-width:0;margin-left:0;padding:16px;padding-top:72px;max-width:100%;height:auto;overflow:visible;display:flex;flex-direction:column;}
-        .main-scroll{overflow:visible;flex:none;}
+        .main{flex:1;min-width:0;margin-left:0;padding:16px;padding-top:72px;width:auto;max-width:none;height:auto;overflow:visible;display:flex;flex-direction:column;}
+        .main-scroll{overflow:visible;flex:none;width:100%;}
 
         @media(max-width:767px){
             .main{height:auto;overflow:visible;}
         }
 
         /* Dashboard Grid */
-        .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px;}
-        @media(max-width:1024px){.dashboard-grid{grid-template-columns:1fr;}}
+        .dashboard-grid{display:grid;grid-template-columns:1.8fr 1fr;gap:24px;margin-bottom:24px;width:100%;}
+        @media(max-width:1199px){.dashboard-grid{grid-template-columns:1fr;}}
 
         /* Stat Cards */
-        .main-scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;}
-        .main-scroll::-webkit-scrollbar{display:none;}
-        .stat-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:32px;animation:fadeInUp .6s ease-out;flex-shrink:0;}
+        .main-scroll{flex:none;width:100%;overflow:visible;height:auto;min-height:0;}
+        .stat-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-bottom:24px;animation:fadeInUp .6s ease-out;flex-shrink:0;}
+        .stat-cards>a{display:block;width:100%;min-width:0;}
+        @media(min-width:1200px) and (max-width:1399px){.stat-cards{grid-template-columns:repeat(6,1fr);gap:18px;}.stat-cards>a:nth-child(1),.stat-cards>a:nth-child(2),.stat-cards>a:nth-child(3){grid-column:span 2;}.stat-cards>a:nth-child(4),.stat-cards>a:nth-child(5){grid-column:span 3;}}
         @media(min-width:768px) and (max-width:1199px){.stat-cards{grid-template-columns:repeat(2,1fr);gap:16px;}}
-        @media(max-width:767px){.stat-cards{grid-template-columns:1fr 1fr;gap:12px;}}
+        @media(min-width:400px) and (max-width:767px){.stat-cards{grid-template-columns:1fr 1fr;gap:12px;}}
+        @media(max-width:399px){.stat-cards{grid-template-columns:1fr;}}
 
-        .stat-card{background:var(--surface);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;min-height:0;}
+        .stat-card{width:100%;background:var(--surface);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;min-height:0;}
         .stat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;transition:all .3s ease;}
         .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);}
         .stat-card-blue::before{background:var(--icon-blue);}
@@ -104,13 +106,13 @@
         .stat-card-red .stat-card-icon{background:var(--danger-bg);color:var(--danger);}
 
         /* Analytics Card */
-        .analytics-card{background:var(--surface);border-radius:16px;padding:24px;border:1px solid var(--border);min-height:420px;animation:fadeInUp .6s ease-out .1s backwards;}
+        .analytics-card{width:100%;background:var(--surface);border-radius:16px;padding:24px;border:1px solid var(--border);min-height:0;animation:fadeInUp .6s ease-out .1s backwards;}
         .analytics-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:20px;}
 
         /* Activity Card */
-        .activity-card{background:var(--surface);border-radius:16px;padding:24px;border:1px solid var(--border);min-height:420px;animation:fadeInUp .6s ease-out .2s backwards;overflow:hidden;display:flex;flex-direction:column;}
+        .activity-card{width:100%;background:var(--surface);border-radius:16px;padding:24px;border:1px solid var(--border);min-height:0;animation:fadeInUp .6s ease-out .2s backwards;display:flex;flex-direction:column;}
         .activity-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:20px;flex-shrink:0;}
-        .activity-feed{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:8px;min-height:0;}
+        .activity-feed{flex:1;overflow:visible;overflow-x:hidden;padding-right:8px;min-height:0;}
         .activity-feed::-webkit-scrollbar{width:6px;}
         .activity-feed::-webkit-scrollbar-track{background:var(--background);border-radius:3px;}
         .activity-feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
@@ -281,7 +283,8 @@
             .app { flex-direction: column; }
             .main, .main-content {
                 margin-left: 0 !important;
-                max-width: 100% !important;
+                width: 100% !important;
+                max-width: none !important;
                 padding: 12px 14px !important;
                 padding-top: 90px !important;
                 height: auto !important;
@@ -454,18 +457,16 @@
             /* Recent Activities */
             .activity-card {
                 min-height: auto !important;
-                height: 340px !important;
-                max-height: 340px !important;
                 padding: 16px !important;
                 border-radius: 16px !important;
                 display: flex !important;
                 flex-direction: column !important;
             }
             .activity-feed {
-                flex: 1 !important;
+                flex: none !important;
                 min-height: 0 !important;
                 max-height: none !important;
-                overflow-y: auto !important;
+                overflow: visible !important;
                 overflow-x: hidden !important;
                 padding-right: 4px !important;
             }
@@ -537,8 +538,8 @@
         @media (min-width: 1200px) {
             .sidebar { transform: translateX(0) !important; z-index: 1000 !important; }
             .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: var(--sidebar-width) !important; max-width: calc(100% - var(--sidebar-width)) !important; padding: var(--content-padding) !important; padding-top: var(--content-padding) !important; height: 100vh !important; overflow: hidden !important; flex: 1 !important; }
-            .main-scroll { overflow-y: auto !important; flex: 1 !important; }
+            .main, .main-content { margin-left: var(--sidebar-width) !important; width: calc(100% - var(--sidebar-width)) !important; max-width: none !important; padding: var(--content-padding) !important; padding-top: var(--content-padding) !important; height: auto !important; overflow: visible !important; flex: none !important; }
+            .main-scroll { overflow: visible !important; flex: none !important; width: 100% !important; }
             .hamburger-btn { display: none !important; }
             .mobile-header { display: none !important; }
             header {
@@ -553,9 +554,7 @@
                 gap: 0 !important;
             }
             .dashboard-grid { grid-template-columns: 1.8fr 1fr; }
-            .analytics-card, .activity-card { display: flex; flex-direction: column; height: 520px !important; min-height: 520px !important; max-height: 520px !important; flex: none; }
             #barangayChartBox { width: 360px !important; height: 360px !important; }
-            .activity-feed { flex: 1; min-height: 0; max-height: none !important; overflow-y: auto; padding-right: 8px; }
         }
 
         /* ── Large Tablets (992px - 1199px) ── */
@@ -568,8 +567,8 @@
             .mobile-header { display: none !important; }
             header { display: flex !important; }
             .dashboard-grid { grid-template-columns: 1fr; }
-            .activity-card { display: flex !important; flex-direction: column !important; height: 400px !important; min-height: 400px !important; max-height: 400px !important; }
-            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: none !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
+            .activity-card { display: flex !important; flex-direction: column !important; min-height: 0 !important; }
+            .activity-feed { flex: none !important; min-height: 0 !important; max-height: none !important; overflow: visible !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
 
         /* ── Small Tablets (768px - 991px) ── */
@@ -582,15 +581,15 @@
             .mobile-header { display: none !important; }
             header { display: flex !important; }
             .dashboard-grid { grid-template-columns: 1fr; }
-            .activity-card { display: flex !important; flex-direction: column !important; height: 380px !important; min-height: 380px !important; max-height: 380px !important; }
-            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: none !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
+            .activity-card { display: flex !important; flex-direction: column !important; min-height: 0 !important; }
+            .activity-feed { flex: none !important; min-height: 0 !important; max-height: none !important; overflow: visible !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
 
         /* ── Mobile (0px - 767px) ── */
         @media (max-width: 767px) {
             .dashboard-grid { grid-template-columns: 1fr; }
-            .activity-card { display: flex !important; flex-direction: column !important; height: 350px !important; min-height: 350px !important; max-height: 350px !important; }
-            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: none !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
+            .activity-card { display: flex !important; flex-direction: column !important; min-height: 0 !important; }
+            .activity-feed { flex: none !important; min-height: 0 !important; max-height: none !important; overflow: visible !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
 
         /* ══════════════════════════════════════════════
@@ -601,10 +600,8 @@
         @media (min-width: 1200px) and (max-width: 1399px) {
             .main, .main-content { padding: 24px !important; padding-top: 24px !important; }
             header { margin-bottom: 0.5rem !important; }
-            .stat-cards { gap: 18px; margin-bottom: 24px; }
             .stat-card { padding: 18px; }
-            .dashboard-grid { gap: 18px !important; margin-bottom: 24px !important; }
-            .analytics-card, .activity-card { height: 460px !important; min-height: 460px !important; max-height: 460px !important; }
+            .dashboard-grid { gap: 18px !important; margin-bottom: 20px !important; }
             #barangayChartBox { width: 300px !important; height: 300px !important; }
         }
 
@@ -645,14 +642,15 @@
             /* Main offset for the icon-only sidebar */
             .main, .main-content {
                 margin-left: 72px !important;
-                max-width: calc(100% - 72px) !important;
+                width: calc(100% - 72px) !important;
+                max-width: none !important;
                 padding: 16px !important;
                 padding-top: 16px !important;
                 height: auto !important;
                 overflow: visible !important;
                 flex: none !important;
             }
-            .main-scroll { overflow: visible !important; flex: none !important; }
+            .main-scroll { overflow: visible !important; flex: none !important; width: 100% !important; }
 
             /* Header: compact */
             header {
@@ -681,13 +679,13 @@
             #barangayLegend { max-height: 200px !important; }
 
             /* Activities below chart */
-            .activity-card { height: 380px !important; min-height: 380px !important; max-height: 380px !important; }
-            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: none !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
+            .activity-card { display: flex !important; flex-direction: column !important; min-height: 0 !important; }
+            .activity-feed { flex: none !important; min-height: 0 !important; max-height: none !important; overflow: visible !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
 
-        /* ── Small mobile (<400px): keep 2 cards per row, compact ── */
+        /* ── Small mobile (<400px): single-column cards ── */
         @media (max-width: 399px) {
-            .stat-cards { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+            .stat-cards { grid-template-columns: 1fr !important; gap: 10px !important; }
             .stat-card { height: auto !important; min-height: 92px !important; }
             .stat-card-value { font-size: 24px !important; }
         }
