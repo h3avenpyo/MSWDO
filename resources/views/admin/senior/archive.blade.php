@@ -107,9 +107,7 @@
         .desktop-title { display: none; }
         .mobile-title { display: block; }
         .desktop-table { display: none; }
-        .desktop-pagination { display: none; }
         .mobile-table { display: block; }
-        .mobile-pagination { display: block; }
         .filter-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
         .filter-left { display: flex; gap: 12px; flex: 1; min-width: 0; flex-wrap: wrap; }
         .filter-right { display: flex; gap: 12px; flex-shrink: 0; }
@@ -229,102 +227,6 @@
         .empty-state [data-lucide] { width: 56px; height: 56px; color: #D1D5DB; margin-bottom: 1rem; }
         .empty-state h5 { color: #6B7280; font-weight: 600; font-size: 1rem; }
         .empty-state p { color: #9CA3AF; font-size: 0.85rem; margin-top: 0.25rem; max-width: 28rem; }
-
-        /* ---------- Archive Pagination ---------- */
-        .archive-pagination-wrap {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-            width: 100%;
-            flex-shrink: 0;
-        }
-        .archive-pagination-info {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            text-align: center;
-            font-weight: 500;
-        }
-        .archive-pagination-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-        }
-        .archive-pagination-controls .ssg-pagination {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            gap: 6px !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            flex-wrap: wrap !important;
-        }
-        .archive-pagination-controls .ssg-pagination .pg-btn,
-        .archive-pagination-controls .ssg-pagination .pg-active,
-        .archive-pagination-controls .ssg-pagination .pg-dots,
-        .archive-pagination-controls .ssg-pagination .pg-disabled {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            height: 38px !important;
-            min-width: 38px !important;
-            padding: 0 12px !important;
-            border: 1px solid #D1D5DB !important;
-            border-radius: 8px !important;
-            font-size: 0.875rem !important;
-            font-weight: 500 !important;
-            line-height: 1 !important;
-            white-space: nowrap !important;
-            user-select: none !important;
-            text-decoration: none !important;
-            transition: all 0.2s ease !important;
-            box-sizing: border-box !important;
-            background: #ffffff;
-            color: #1F2937;
-        }
-        .archive-pagination-controls .ssg-pagination .pg-btn:hover {
-            background: #F3F4F6 !important;
-            border-color: #1A237E !important;
-            color: #1A237E !important;
-        }
-        .archive-pagination-controls .ssg-pagination .pg-active {
-            background: #1A237E !important;
-            color: #ffffff !important;
-            border-color: #1A237E !important;
-            font-weight: 600 !important;
-            box-shadow: 0 2px 6px rgba(26, 35, 126, 0.25) !important;
-        }
-        .archive-pagination-controls .ssg-pagination .pg-disabled {
-            background: #F9FAFB !important;
-            color: #9CA3AF !important;
-            border-color: #E5E7EB !important;
-            cursor: not-allowed !important;
-            opacity: 0.7 !important;
-        }
-        .archive-pagination-controls .ssg-pagination .pg-dots {
-            background: transparent !important;
-            border: none !important;
-            color: var(--text-muted) !important;
-            cursor: default !important;
-            min-width: 24px !important;
-            padding: 0 4px !important;
-        }
-        .archive-pagination-controls .ssg-pagination .pg-mobile-info {
-            display: none !important;
-        }
-        .archive-pagination-controls .ssg-pagination .pg-prev-arrow,
-        .archive-pagination-controls .ssg-pagination .pg-next-arrow {
-            display: none !important;
-        }
-        .archive-pagination-controls .ssg-pagination .pg-prev-text,
-        .archive-pagination-controls .ssg-pagination .pg-next-text {
-            display: inline !important;
-        }
 
         /* Custom Select */
         .custom-select {
@@ -492,8 +394,13 @@
         .archive-table-wrap tbody td .sex-age-wrap .sex-sep{display:inline;color:var(--text-muted);font-size:0.82rem;}
         .archive-table-wrap tbody td .sex-age-wrap{display:inline-flex;align-items:center;gap:0;}
         .archive-table-wrap tbody td .badge-archived{font-size:0.7rem;}
-        .archive-pagination-wrap { margin-top: 0.875rem !important; padding-top: 0.875rem !important; gap: 6px !important; }
-        .archive-pagination-info { font-size: 0.813rem !important; }
+        /* Empty state - centered in the middle */
+        .archive-table-wrap tbody td.empty-state-cell { justify-content: center !important; align-items: center !important; }
+        .archive-table-wrap tbody td.empty-state-cell::before { display: none !important; }
+        .archive-table-wrap .empty-state { min-height: 200px !important; padding: 2rem 1rem !important; justify-content: center !important; width: 100% !important; }
+        .archive-table-wrap .empty-state [data-lucide] { width: 48px !important; height: 48px !important; }
+        .archive-table-wrap .empty-state h5 { font-size: 0.95rem !important; }
+        .archive-table-wrap .empty-state p { font-size: 0.8rem !important; }
         }
 
         @media (max-width: 479px) {
@@ -553,12 +460,11 @@
             .desktop-title { display: none !important; }
             .mobile-title { display: block !important; }
             .desktop-table { display: none !important; }
-            .desktop-pagination { display: none !important; }
             .mobile-table { display: block !important; }
-            .mobile-pagination { display: block !important; }
             .table-card { display: block !important; }
             .archive-table-wrap tbody td::before { min-width: 70px !important; font-size: 0.72rem !important; }
-            .archive-pagination-wrap { margin-top: 1.25rem !important; padding-top: 1rem !important; gap: 8px !important; }
+            .archive-table-wrap .empty-state { padding: 3rem 2rem !important; min-height: 240px !important; }
+            .archive-table-wrap .empty-state [data-lucide] { width: 52px !important; height: 52px !important; }
         }
         /* ── 992–1199px: Large tablets — same hamburger+header layout ── */
         @media (min-width: 992px) and (max-width: 1199px) {
@@ -579,7 +485,8 @@
             .filter-right { width: auto !important; flex-wrap: nowrap !important; gap: 12px !important; }
             .archive-table-wrap tbody td { font-size: 0.85rem !important; }
             .archive-table-wrap tbody td::before { min-width: 70px !important; font-size: 0.72rem !important; }
-            .archive-pagination-wrap { margin-top: 1.25rem !important; padding-top: 1rem !important; gap: 8px !important; }
+            .archive-table-wrap .empty-state { padding: 3.5rem 2rem !important; min-height: 260px !important; }
+            .archive-table-wrap .empty-state [data-lucide] { width: 54px !important; height: 54px !important; }
         }
 
         @media (min-width: 1200px) {
@@ -610,7 +517,6 @@
             .archive-table-wrap tbody td { font-size: 0.85rem !important; }
             /* Empty state fills the full flex area and centers content */
             .archive-table-wrap .empty-state { flex: 1 !important; min-height: 320px !important; justify-content: center !important; }
-            .archive-pagination-wrap { margin-top: 0.875rem !important; padding-top: 0.875rem !important; gap: 8px !important; flex-shrink: 0 !important; }
 
             /* Show desktop filter, hide mobile filter */
             .desktop-filter { display: block !important; }
@@ -626,14 +532,9 @@
             .desktop-title { display: block !important; }
             .mobile-title { display: none !important; }
             .desktop-table { display: block !important; }
-            .desktop-pagination { display: block !important; }
             .mobile-table { display: none !important; }
-            .mobile-pagination { display: none !important; }
             .table-card { display: none !important; }
-            
-            /* Ensure pagination is visible */
-            .desktop-pagination { margin-top: 24px !important; }
-            
+
             /* Ensure desktop table has proper styling */
             .desktop-table { padding: 0 !important; background: var(--surface) !important; border-radius: 8px !important; min-height: calc(100vh - 250px) !important; overflow-y: auto !important; overflow-x: auto !important; }
             .desktop-table table { width: 100% !important; border-collapse: collapse; table-layout: fixed; }
@@ -1047,7 +948,7 @@
                         </tr>
                         @empty
                         <tr style="height:100%;">
-                            <td colspan="9" style="padding:0;border:none;height:100%;vertical-align:top;">
+                            <td colspan="9" class="empty-state-cell" style="padding:0;border:none;height:100%;vertical-align:top;">
                             <div class="empty-state">
                                 <i data-lucide="archive"></i>
                                 <h5>No Archived Cases</h5>
@@ -1063,27 +964,6 @@
                 </table>
             </div>
 
-            <!-- Pagination (inside card for mobile) -->
-            <div class="archive-pagination-wrap mobile-pagination">
-                <div class="archive-pagination-info">
-                    @if($archivedSeniors->total() > 0)
-                        Showing {{ $archivedSeniors->firstItem() }} to {{ $archivedSeniors->lastItem() }} of {{ $archivedSeniors->total() }} Archived Senior Citizens
-                    @else
-                        Showing 0 of 0 Archived Senior Citizens
-                    @endif
-                </div>
-                <div class="archive-pagination-controls">
-                    @if($archivedSeniors->hasPages())
-                        {{ $archivedSeniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
-                    @else
-                        <div class="ssg-pagination">
-                            <span class="pg-disabled">&laquo; Previous</span>
-                            <span class="pg-active">1</span>
-                            <span class="pg-disabled">Next &raquo;</span>
-                        </div>
-                    @endif
-                </div>
-            </div>
         </div>
 
         <!-- Archive Table (outside card for desktop) -->
@@ -1135,7 +1015,7 @@
                     </tr>
                     @empty
                     <tr style="height:100%;">
-                        <td colspan="9" style="padding:0;border:none;height:100%;vertical-align:top;">
+                        <td colspan="9" class="empty-state-cell" style="padding:0;border:none;height:100%;vertical-align:top;">
                             <div class="empty-state">
                                 <i data-lucide="archive"></i>
                                 <h5>No Archived Cases</h5>
@@ -1152,27 +1032,12 @@
         </div>
     </div>
 
-    <!-- Pagination (outside card for desktop) -->
-    <div class="archive-pagination-wrap desktop-pagination" style="margin-top:24px;">
-        <div class="archive-pagination-info">
-            @if($archivedSeniors->total() > 0)
-                Showing {{ $archivedSeniors->firstItem() }} to {{ $archivedSeniors->lastItem() }} of {{ $archivedSeniors->total() }} Archived Senior Citizens
-            @else
-                Showing 0 of 0 Archived Senior Citizens
-            @endif
+    @if($archivedSeniors->count() > 0)
+        <!-- Pagination -->
+        <div style="display:flex;justify-content:center;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);">
+            {{ $archivedSeniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
         </div>
-        <div class="archive-pagination-controls">
-            @if($archivedSeniors->hasPages())
-                {{ $archivedSeniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
-            @else
-                <div class="ssg-pagination">
-                    <span class="pg-disabled">&laquo; Previous</span>
-                    <span class="pg-active">1</span>
-                    <span class="pg-disabled">Next &raquo;</span>
-                </div>
-            @endif
-        </div>
-    </div>
+    @endif
 </div>
 
     <!-- ======================== BULK ACTION MODAL ======================== -->
