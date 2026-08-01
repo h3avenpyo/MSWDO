@@ -18,6 +18,7 @@
         :root {
             --primary: #1A237E;
             --primary-hover: #121858;
+            --primary-dark: #121858;
             --sidebar-bg: #1A237E;
             --accent-yellow: #FBC02D;
             --background: #F5F7FB;
@@ -32,644 +33,416 @@
             --danger-bg: #FEF2F2;
             --info: #3B82F6;
             --info-bg: #EEF2FF;
-            --purple: #7C3AED;
-            --purple-bg: #F3E8FF;
+            --sidebar-width: 260px;
+            --content-padding: 32px;
             --shadow: 0 10px 30px rgba(15,23,42,.08);
             --font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
 
         *, *::before, *::after { box-sizing: border-box; }
-        html, body { margin: 0; padding: 0; height: 100%; background: var(--background); color: var(--text-primary); font-family: var(--font-family); overflow-x: hidden; overflow-y: auto; }
-        body { font-size: 14px; line-height: 1.5; }
+        html, body { margin: 0; padding: 0; background: var(--background); color: var(--text-primary); font-family: var(--font-family); min-height: 100%; }
+        body { font-size: 14px; line-height: 1.5; overflow-x: hidden; }
         h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
         button { font-family: inherit; cursor: pointer; }
-        input, select, textarea { font-family: inherit; font-size: 14px; }
-        .app { display: flex; min-height: 100vh; }
+        a { text-decoration: none; }
 
-        /* ---------- Sidebar ---------- */
-        .sidebar {
-            width: 260px; flex-shrink: 0; background: var(--primary); color: #FFFFFF;
-            position: fixed; left: 0; top: 0; height: 100vh; z-index: 1000;
-            display: flex; flex-direction: column; transition: transform .3s ease;
+        /* ---------- Filters ---------- */
+        .filter-section { margin-bottom: 20px; }
+        .filters-grid {
+            display: grid;
+            grid-template-columns: minmax(0,1fr) minmax(200px,280px) auto;
+            gap: 14px; align-items: end;
         }
-        .sidebar-brand {
-            height: 72px; padding: 0 1.5rem; border-bottom: 1px solid rgba(255,255,255,.1);
-            color: #fff; font-weight: 700; font-size: 1.1rem;
-            display: flex; align-items: center; gap: .65rem;
+        .filter-group { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+        .filter-label {
+            font-size: 12px; font-weight: 600; color: var(--text-primary);
+            text-transform: uppercase; letter-spacing: .05em; display: flex; align-items: center; gap: 6px;
         }
-        .sidebar-brand i, .sidebar-brand [data-lucide] { width: 24px; height: 24px; color: var(--accent-yellow); }
-        .sidebar-menu { list-style: none; margin: 0; padding: 1rem 0; flex: 1; }
-        .sidebar-menu li { margin-bottom: .2rem; }
-        .sidebar-menu a {
-            color: rgba(255,255,255,.75); padding: .75rem 1.5rem;
-            display: flex; align-items: center; gap: .75rem;
-            text-decoration: none; font-size: .9rem;
-            border-left: 3px solid transparent; transition: all .2s ease;
+        .input-group {
+            display: flex; align-items: center; height: 44px; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+            transition: border-color .2s, box-shadow .2s;
         }
-        .sidebar-menu a:hover { background: rgba(255,255,255,.1); color: var(--accent-yellow); }
-        .sidebar-menu a.active { background: rgba(255,255,255,.1); color: var(--accent-yellow); border-left-color: var(--accent-yellow); }
-        .sidebar-menu a i, .sidebar-menu a [data-lucide] { width: 20px; height: 20px; text-align: center; }
-
-        /* ---------- Main ---------- */
-html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
-.main {
-    flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
-    max-width: calc(100% - 260px); height: 100vh;
-    display: flex; flex-direction: column; overflow: hidden;
-}
-.main-scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;border-radius:16px;display:flex;flex-direction:column;}
-.main-scroll::-webkit-scrollbar{display:none;}
+        .input-group:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,35,126,.1); }
+        .input-group input {
+            flex: 1; min-width: 0; height: 44px; border: none; outline: none;
+            padding: 0 14px; font-size: 14px; color: var(--text-primary); background: transparent;
+        }
+        .input-group .search-btn {
+            background: var(--primary); color: #fff; border: none; width: 48px; height: 44px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+            transition: background .2s;
+        }
+        .input-group .search-btn:hover { background: var(--primary-hover); }
+        .select-wrap { position: relative; }
+        .filter-select {
+            width: 100%; height: 44px; border: 1px solid var(--border); border-radius: 10px;
+            padding: 0 40px 0 14px; font-size: 14px; color: var(--text-primary);
+            background: var(--surface); cursor: pointer; appearance: none; -webkit-appearance: none; outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .filter-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,35,126,.1); }
+        .select-arrow {
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+            width: 16px; height: 16px; color: var(--text-secondary); pointer-events: none;
+        }
+        .filter-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
         /* ---------- Buttons ---------- */
         .btn {
-            border: 1px solid var(--border); background: var(--surface);
-            color: var(--text-primary); padding: 10px 20px; border-radius: 10px;
-            font-size: 14px; font-weight: 500; display: inline-flex;
-            align-items: center; gap: 8px; box-shadow: var(--shadow);
-            transition: all 0.2s ease; height: 42px; cursor: pointer; text-decoration: none;
+            border: 1px solid var(--border); background: var(--surface); color: var(--text-primary);
+            padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 500;
+            display: inline-flex; align-items: center; gap: 8px; box-shadow: var(--shadow);
+            transition: all .2s ease; height: 44px; cursor: pointer;
         }
         .btn:hover { border-color: var(--primary); transform: translateY(-1px); }
-        .btn.primary { background: var(--primary); color: #FFFFFF; border-color: var(--primary); }
-        .btn.primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
-        .btn.danger { background: var(--danger); color: #FFFFFF; border-color: var(--danger); }
-        .btn.danger:hover { background: #B91C1C; border-color: #B91C1C; }
-        .btn.success { background: var(--success); color: #FFFFFF; border-color: var(--success); }
-        .btn.success:hover { background: #15803D; border-color: #15803D; }
-        .btn.warning { background: #F59E0B; color: #FFFFFF; border-color: #F59E0B; }
-        .btn.warning:hover { background: #D97706; border-color: #D97706; }
-        .btn.ghost { background: transparent; box-shadow: none; border-color: transparent; color: var(--text-secondary); }
-        .btn.ghost:hover { background: var(--background); color: var(--text-primary); }
-        .btn:disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
-        .btn-sm { padding: 6px 12px; font-size: 13px; height: 36px; }
-
-        /* ---------- Table Card ---------- */
-        .table-card {
-            background: var(--surface); border-radius: 16px;
-            border: 1px solid var(--border); box-shadow: var(--shadow);
-            padding: 2rem; display: flex; flex-direction: column;
-            overflow: hidden; flex: 1; min-height: 0;
-        }
-        .table-card-title {
-            font-size: 1.25rem; font-weight: 700; color: var(--text-primary);
-            margin-top: 0; margin-bottom: 1.5rem; flex-shrink: 0;
-        }
-
-        /* ---------- Filter Section ---------- */
-        .filter-section { margin-bottom: 1.5rem; flex-shrink: 0; }
-        .filter-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-        .filter-left { display: flex; gap: 12px; flex: 1; min-width: 0; flex-wrap: wrap; }
-        .filter-right { display: flex; gap: 12px; flex-shrink: 0; }
-        .filter-group { display: flex; flex-direction: column; gap: 4px; }
-        .filter-group.search-group { flex: 1; min-width: 250px; }
-        .filter-group.select-group { min-width: 200px; }
-        .filter-label { font-size: 0.75rem; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; }
-
-        /* ---------- Search Input ---------- */
-        .input-group { display: flex; align-items: center; height: 44px; }
-        .input-group input {
-            flex: 1; height: 44px; border: 1px solid var(--border); border-right: none;
-            border-radius: 6px 0 0 6px; padding: 0 1rem; font-size: 0.875rem;
-            color: var(--text-primary); background: var(--surface); transition: all 0.2s ease;
-        }
-        .input-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,58,138,0.15); }
-        .input-group .search-btn {
-            background-color: var(--primary); color: #ffffff; border: none;
-            padding: 0 1.25rem; border-radius: 0 6px 6px 0; cursor: pointer;
-            height: 44px; display: flex; align-items: center; justify-content: center;
-            transition: background 0.2s;
-        }
-        .input-group .search-btn:hover { background-color: var(--primary-hover); }
-
-        /* ---------- Select ---------- */
-        .filter-select {
-            height: 44px; border: 1px solid var(--border); border-radius: 6px;
-            padding: 0 2.25rem 0 1rem; font-size: 0.875rem; color: var(--text-primary);
-            background: var(--surface); cursor: pointer; width: 100%;
-            appearance: none; -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-            background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 16px 12px;
-            transition: all 0.2s ease;
-        }
-        .filter-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,58,138,0.15); }
-
-        /* ---------- Table Scroll ---------- */
-        .table-scroll { flex: 1; overflow-y: auto; min-height: 0; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
-        .table-scroll::-webkit-scrollbar { display: none; }
-        .table-scroll table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        .table-scroll thead { position: sticky; top: 0; z-index: 1; background: var(--surface); }
-        .table-scroll th {
-            padding: 12px 16px; font-size: 11px; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 0.05em;
-            color: var(--text-secondary); text-align: left; border-bottom: 2px solid var(--border);
-        }
-        .table-scroll td {
-            padding: 14px 16px; font-size: 13px; color: var(--text-primary);
-            border-bottom: 1px solid var(--border); vertical-align: middle;
-        }
-        .table-scroll tr:hover td { background: var(--background); }
-
-        /* ---------- Badge ---------- */
-        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
-        .badge-active { background: var(--success-bg); color: var(--success); }
-        .badge-pending { background: #FEF3C7; color: #92400E; }
+        .btn-export { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .btn-export:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+        .btn-bulk { background: #E0E7FF; color: #3730A3; border: 1px solid #C7D2FE; }
+        .btn-bulk:hover { border-color: #3730A3; transform: translateY(-1px); }
+        .btn-bulk:disabled { opacity: .45; cursor: not-allowed; pointer-events: none; }
+        .btn-clear { background: var(--surface); color: var(--danger); border: 1px solid #FECACA; }
+        .btn-clear:hover { border-color: var(--danger); }
 
         /* ---------- Dropdown ---------- */
         .dropdown { position: relative; display: inline-block; }
         .dropdown-menu {
             position: absolute; top: 100%; right: 0; z-index: 50;
             background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.12); min-width: 200px;
-            padding: 6px; display: none; margin-top: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.12); min-width: 200px; padding: 6px;
+            display: none; margin-top: 6px;
         }
         .dropdown-menu.show { display: block; }
         .dropdown-item {
             display: flex; align-items: center; gap: 8px; padding: 10px 14px;
             font-size: 13px; color: var(--text-primary); border-radius: 6px;
-            text-decoration: none; cursor: pointer; transition: background 0.15s;
+            text-decoration: none; cursor: pointer; transition: background .15s;
         }
         .dropdown-item:hover { background: var(--background); }
 
-        #seniorModal { transition: opacity 0.2s ease; }
+        /* ---------- Table ---------- */
+        .mobile-select-all {
+            display: none; align-items: center; gap: 8px; padding: 10px 12px; margin-bottom: 10px;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+            font-size: 13px; color: var(--text-secondary);
+        }
+        .table-responsive {
+            width: 100%; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
+        }
+        .table-responsive table { width: 100%; border-collapse: collapse; table-layout: auto; }
+        .table-responsive thead th {
+            padding: 12px 16px; font-size: 11px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: .05em; color: var(--text-secondary); text-align: left;
+            border-bottom: 2px solid var(--border); background: var(--surface); white-space: nowrap;
+        }
+        .table-responsive tbody td {
+            padding: 12px 16px; font-size: 13px; color: var(--text-primary);
+            border-bottom: 1px solid var(--border); vertical-align: middle;
+            white-space: normal; word-break: break-word;
+        }
+        .table-responsive tbody tr:last-child td { border-bottom: none; }
+        .table-responsive tbody tr:hover td { background: var(--background); }
+        .table-responsive td[data-label="Control No"],
+        .table-responsive td[data-label="Age"] { white-space: nowrap; }
+        .table-responsive td .badge { white-space: nowrap; }
+        .actions { display: flex; gap: 8px; }
+        .action-btn {
+            width: 34px; height: 34px; padding: 0; display: inline-flex; align-items: center;
+            justify-content: center; border-radius: 8px;
+        }
+        .action-btn i { width: 15px; height: 15px; }
+        .badge {
+            display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+            border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap;
+        }
+        .badge-active { background: var(--success-bg); color: var(--success); }
+        .badge-pending { background: #FEF3C7; color: #92400E; }
+        .checkbox { cursor: pointer; accent-color: var(--primary); width: 16px; height: 16px; }
 
-        /* ---------- Responsive ---------- */
-        @media (max-width: 1200px) {
-            .main { padding: 24px; }
+        /* ---------- Pagination ---------- */
+        .pagination-wrap {
+            display: flex; justify-content: center; flex-wrap: wrap; gap: 8px;
+            margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border);
         }
 
-        /* ---------- Animations ---------- */
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* ---------- Modal ---------- */
+        #seniorModal { transition: opacity .2s ease; }
 
-        /* ── Mobile Header ── */
-        .mobile-header{display:none !important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
-        .mobile-header-brand{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
-        .mobile-logo{width:56px;height:56px;border-radius:50%;background:#FBC02D;padding:4px;flex-shrink:0;}
-        .mobile-logo-img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
-        .mobile-brand-text{flex:1;min-width:0;}
-        .mobile-brand-title{font-size:18px;font-weight:700;color:#ffffff;margin:0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-        .mobile-brand-subtitle{font-size:12px;color:rgba(255,255,255,0.8);margin:2px 0 0 0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-        .mobile-menu-btn{display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:#ffffff;cursor:pointer;padding:8px;flex-shrink:0;margin-right:24px;}
-        .mobile-menu-icon{width:32px;height:32px;}
-        @media(max-width:767px){
-            .app{flex-direction:column !important;min-height:100vh !important;}
-            .main,.main-content{margin-left:0 !important;max-width:100% !important;height:auto !important;overflow:visible !important;padding:12px 14px !important;padding-top:90px !important;}
-            .main-scroll{overflow:visible !important;flex:none !important;height:auto !important;}
-            .table-card{margin-bottom:40px !important;padding-bottom:30px !important;}
-            header{display:none !important;}
-            .hamburger-btn{display:none !important;}
-            .mobile-header{display:flex !important;}
-        }
-        @media(max-width:479px){
-            .main,.main-content{padding:10px !important;padding-top:88px !important;}
-            .mobile-header{height:72px !important;}
-            .mobile-logo{width:48px !important;height:48px !important;}
-            .mobile-brand-title{font-size:16px !important;}
-            .mobile-brand-subtitle{font-size:11px !important;}
-            .mobile-menu-icon{width:28px !important;height:28px !important;}
+        /* ---------- Tablet (768-1199px): filters in 2 rows ---------- */
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .filters-grid { grid-template-columns: 1fr 1fr; }
+            .filter-actions { grid-column: 1 / -1; }
         }
 
-        /* ── Sidebar: off-canvas by default (xs: 0–767px) ── */
-        .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
-        .sidebar.show { transform: translateX(0) !important; }
-        .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
-        .main { height: auto !important; overflow: visible !important; }
-        .main-scroll { overflow: visible !important; flex: none !important; }
-
-        /* ── Hamburger Button ── */
-        .hamburger-btn {
-            display: flex;
-            position: fixed;
-            top: 12px;
-            left: 12px;
-            z-index: 1002;
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            width: 44px;
-            height: 44px;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            transition: background 0.2s;
-        }
-        .hamburger-btn:hover { background: var(--primary-hover); }
-
-        /* ── Sidebar Overlay ── */
-        .sidebar-overlay.active { display: block !important; }
-
-        /* ── Responsive: Mobile (< 768px) ── */
+        /* ---------- Mobile (<768px): stacked filters, scrollable table ---------- */
         @media (max-width: 767px) {
-            .mobile-select-all { display: flex !important; }
-            .main, .main-content { padding: 12px !important; padding-top: 90px !important; }
-            .topnav, .top-navbar { padding: 10px 12px !important; }
-            .topnav-datetime, .navbar-datetime { display: none !important; }
+            .filter-section { margin-bottom: 14px; }
+            .filters-grid { grid-template-columns: 1fr; gap: 12px; }
+            .filter-actions { flex-direction: column; align-items: stretch; }
+            .filter-actions .btn,
+            .filter-actions .dropdown,
+            .filter-actions .dropdown > button { width: 100%; justify-content: center; }
+            .mobile-select-all { display: flex; }
+            .action-btn { width: 44px; height: 44px; }
 
-            /* ── Filter → stack ── */
-            .filter-section { margin-bottom: 1rem; }
-            .filter-row { flex-direction: column !important; gap: 10px !important; }
-            .filter-left { flex-direction: column !important; gap: 10px !important; width: 100% !important; }
-            .filter-group.search-group, .filter-group.select-group { min-width: 0 !important; width: 100% !important; }
-            .filter-right { width: 100% !important; flex-wrap: wrap !important; gap: 8px !important; display: flex !important; }
-            .filter-right > * { flex: 1 1 calc(50% - 4px) !important; min-width: 0 !important; }
-            .filter-right > a, .filter-right > button, .filter-right .btn, .filter-right > div { width: 100% !important; justify-content: center !important; text-align: center !important; padding: 8px 10px !important; font-size: 12px !important; }
-            .filter-right > a { display: inline-flex !important; align-items: center !important; justify-content: center !important; }
-            .filter-label { display: flex !important; align-items: center !important; gap: 6px !important; }
-
-            /* ── Table Card ── */
-            .table-card { padding: 1rem !important; border-radius: 12px !important; overflow: visible !important; flex: none !important; min-height: 0 !important; height: auto !important; }
-            .table-card-title { font-size: 1rem !important; margin-bottom: 1rem !important; }
-
-            /* ── Table → Card layout ── */
-            .table-scroll { border: none !important; border-radius: 0 !important; overflow: visible !important; flex: none !important; min-height: 0 !important; height: auto !important; }
-            .table-scroll table { display: block !important; width: 100%; }
-            .table-scroll tbody { display: block; }
-            .table-scroll thead { display: none !important; }
-            .table-scroll tbody tr {
+            /* Table → stacked cards */
+            .table-responsive {
+                overflow: visible; border: none; background: transparent;
+                box-shadow: none; border-radius: 0;
+            }
+            .table-responsive table { display: block; width: 100%; }
+            .table-responsive thead { display: none; }
+            .table-responsive tbody { display: block; }
+            .table-responsive tbody tr {
                 display: block;
                 background: var(--surface);
-                border: 1px solid #D1D5DB;
-                border-radius: 10px;
-                margin-bottom: 10px;
-                padding: 12px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                margin-bottom: 12px;
+                padding: 12px 14px;
+                box-shadow: var(--shadow);
             }
-            .table-scroll tbody td {
+            .table-responsive tbody td {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+                gap: 12px;
                 padding: 8px 0;
                 border: none;
-                font-size: 0.82rem;
-                gap: 8px;
-            }
-            .table-scroll tbody td:not(:last-child) {
                 border-bottom: 1px solid var(--border);
+                white-space: normal;
+                word-break: break-word;
+                text-align: right;
             }
-            .table-scroll tbody td::before {
+            .table-responsive tbody td:last-child { border-bottom: none; }
+            .table-responsive tbody td::before {
                 content: attr(data-label);
                 font-weight: 600;
                 color: var(--text-secondary);
-                font-size: 0.72rem;
+                font-size: 11px;
                 text-transform: uppercase;
-                letter-spacing: 0.03em;
+                letter-spacing: .03em;
                 flex-shrink: 0;
-                min-width: 70px;
+                min-width: 88px;
+                text-align: left;
             }
-            .table-scroll tbody td.col-check {
+            .table-responsive tbody td.col-check {
                 justify-content: flex-end;
-                padding: 8px 0 4px;
                 border-bottom: none;
+                padding: 0 0 6px;
             }
-            .table-scroll tbody td.col-check::before { display: none; }
-            .table-scroll tbody td[data-label="#"] {
-                display: none !important;
-            }
-            .table-scroll tbody td[data-label="Action"] {
+            .table-responsive tbody td.col-check::before { display: none; }
+            .table-responsive tbody td[data-label="Control No"],
+            .table-responsive tbody td[data-label="Age"] { white-space: nowrap; }
+            .table-responsive tbody td[data-label="Action"] {
                 justify-content: flex-end;
-                padding-top: 8px;
                 border-bottom: none;
+                padding-top: 10px;
             }
-            .table-scroll tbody td[data-label="Action"]::before { display: none; }
-            .table-scroll tbody td .badge { font-size: 0.7rem; }
-
-            /* ── Action buttons → smaller for side-by-side ── */
-            .table-scroll tbody td[data-label="Action"] .actions { gap: 6px !important; }
-            .table-scroll tbody td[data-label="Action"] .actions > button,
-            .table-scroll tbody td[data-label="Action"] .actions > a { padding: 4px 8px !important; height: 32px !important; min-width: 32px !important; }
-            .table-scroll tbody td[data-label="Action"] .actions > button[style*="padding:6px 10px"],
-            .table-scroll tbody td[data-label="Action"] .actions > a[style*="padding:6px 10px"] { padding: 4px 8px !important; }
-            .table-scroll tbody td[data-label="Action"] .actions > button[style*="height:34px"],
-            .table-scroll tbody td[data-label="Action"] .actions > a[style*="height:34px"] { height: 32px !important; }
-            .table-scroll tbody td[data-label="Action"] .actions > button[style*="padding:6px 10px"][style*="height:34px"],
-            .table-scroll tbody td[data-label="Action"] .actions > a[style*="padding:6px 10px"][style*="height:34px"] { padding: 4px 8px !important; height: 32px !important; min-width: 32px !important; }
-            .table-scroll tbody td[data-label="Action"] .actions > button i,
-            .table-scroll tbody td[data-label="Action"] .actions > a i { width: 14px !important; height: 14px !important; }
-
-            /* ── Modal ── */
-            #seniorModal > div { max-width: 100% !important; border-radius: 12px !important; max-height: 85vh !important; }
-            #seniorModal > div > div:first-child { padding: 12px 16px !important; }
-            #seniorModal > div > div:first-child h5 { font-size: 0.95rem !important; }
-            #seniorModal > div > div:nth-child(2) { padding: 16px !important; }
-            #seniorModal > div > div:last-child { padding: 12px 16px !important; flex-wrap: wrap !important; gap: 8px !important; }
-            #seniorModal > div > div:last-child button { flex: 1; min-width: 0; justify-content: center; }
-        }
-
-        /* ── Responsive: Small Mobile (< 480px) ── */
-        @media (max-width: 479px) {
-            .stat-card-icon { width: 40px !important; height: 40px !important; }
-            .stat-card-value { font-size: 24px !important; }
-            .stat-cards { gap: 12px !important; }
-            .filter-right > * { flex: 1 1 100% !important; }
-            .table-scroll tbody td { font-size: 0.78rem !important; }
-            .table-scroll tbody td::before { min-width: 60px !important; font-size: 0.68rem !important; }
-        }
-
-        /* ── md: Small tablets (768px - 991px) ── */
-        @media (min-width: 768px) and (max-width: 991px) {
-        }
-
-        /* ── lg: Large tablets (992px - 1199px) ── */
-        @media (min-width: 992px) and (max-width: 1199px) {
-        }
-
-        /* ── xl: Desktops (1200px+) ── */
-        @media (min-width: 1200px) {
-            .sidebar { transform: translateX(0) !important; z-index: 1000 !important; }
-            .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 260px !important; max-width: calc(100% - 260px) !important; padding: 32px !important; padding-top: 32px !important; height: 100vh !important; overflow: hidden !important; }
-            .main-scroll { overflow-y: auto !important; flex: 1 !important; }
-            .hamburger-btn { display: none !important; }
-            .mobile-header { display: none !important; }
-            header { display: none !important; }
-            .table-scroll table { width: calc(100% + 100px); }
-            .filter-group.search-group { max-width: 300px; }
-            .desktop-datetime-container {
-                display: flex !important;
-                justify-content: flex-end !important;
-                align-items: center !important;
-                margin-bottom: 0.75rem !important;
-                background: transparent !important;
-                border: none !important;
-                box-shadow: none !important;
-                height: auto !important;
-                padding: 0 !important;
-            }
-            .table-scroll table { table-layout: auto !important; width: 100% !important; }
-            .table-scroll th, .table-scroll td { white-space: nowrap; padding: 14px 20px; }
-            .table-scroll td[data-label="Address"], .table-scroll td[data-label="Full Name"] { white-space: normal !important; word-break: break-word; }
+            .table-responsive tbody td[data-label="Action"]::before { display: none; }
         }
     </style>
 </head>
 <body>
 <div class="app">
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <i data-lucide="users" style="width:24px;height:24px"></i>
-        <span>Senior Citizen</span>
-    </div>
-    <ul class="sidebar-menu">
-        <li><a href="/admin/senior"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i> Dashboard</a></li>
-        <li><a href="/admin/senior/registration"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
-        <li><a href="/admin/senior/masterlist" class="active"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
-        <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
-        <li><a href="/admin/senior/payouts-history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
-        <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
-        <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
-        <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
-        <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
-    </ul>
-    </div>
-    <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
-
-    <!-- Hamburger Button (fixed position) -->
-    <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
-        <i data-lucide="menu" style="width:24px;height:24px"></i>
-    </button>
-    <!-- Mobile Header -->
-    @php
-    $logo = null;
-    if(file_exists(public_path('images/mswdo-logo.png'))){
-        $logo='mswdo-logo.png';
-    }else{
-        $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
-        if(!empty($files))
-        $logo=basename($files[0]);
-    }
-    @endphp
-    <div class="mobile-header">
-        <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
-            </svg>
-        </button>
-        <div class="mobile-header-brand">
-            <div class="mobile-brand-text">
-                <h1 class="mobile-brand-title">MSWDO SILANG</h1>
-                <p class="mobile-brand-subtitle">Senior Citizen Masterlist</p>
-            </div>
-            <div class="mobile-logo">
-                @if($logo)
-                <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
-                @endif
-            </div>
-        </div>
-    </div>
+    @include('admin.senior.partials.navigation', ['active' => 'masterlist', 'mobileSubtitle' => 'Senior Citizen Masterlist'])
 
     <!-- Main Content -->
     <div class="main">
-    @php
-        $userName = session('admin_user_name') ?? 'Admin User';
-        $words = explode(' ', $userName);
-        $initials = '';
-        if (count($words) >= 2) {
-            $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
-        } else {
-            $initials = strtoupper(substr($userName, 0, 2));
-        }
-    @endphp
+        @php
+            $userName = session('admin_user_name') ?? 'Admin User';
+            $words = explode(' ', $userName);
+            $initials = '';
+            if (count($words) >= 2) {
+                $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+            } else {
+                $initials = strtoupper(substr($userName, 0, 2));
+            }
+        @endphp
 
-    <!-- <div class="desktop-datetime-container" style="display:none">
-        <div class="flex items-center gap-5 justify-end">
-            <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="desktopDateTime"></div>
-            <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">{{ $initials }}</div>
-        </div>
-    </div> -->
-
-    <!-- Modern Page Header -->
-    <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
-            <div class="flex items-center">
-                <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Senior Citizen Masterlist</h1>
-        </div>
-        <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-            <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime"></div>
-            <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">{{ $initials }}</div>
-        </div>
-    </header>
-
-    <div class="main-scroll">
-    <!-- Filter Section -->
-    <div class="filter-section" style="margin-bottom: 1.5rem; flex-shrink: 0;">
-        <h2 class="table-card-title" style="font-size: 1.75rem; font-weight: 700; color: var(--text-primary); margin: 0 0 1.5rem 0; flex-shrink: 0;">Registered Senior Citizens</h2>
-        <form method="GET" action="{{ route('admin.senior.masterlist') }}" id="filterForm">
-            <div class="filter-row" style="display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-                <div class="filter-left" style="display: flex; gap: 12px; flex: 1; min-width: 0; flex-wrap: wrap;">
-                    <div class="filter-group search-group" style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 250px;">
-                        <label class="filter-label" style="font-size: 0.75rem; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Search by Name</label>
-                        <div class="input-group" style="display: flex; align-items: center; height: 44px;">
-                            <input type="text" name="search" placeholder="Search by name..." value="{{ request('search') }}" style="flex: 1; height: 44px; border: 1px solid var(--border); border-right: none; border-radius: 6px 0 0 6px; padding: 0 1rem; font-size: 0.875rem; color: var(--text-primary); background: var(--surface); transition: all 0.2s ease;">
-                            <button type="submit" class="search-btn" style="background-color: var(--primary); color: #ffffff; border: none; padding: 0 1.25rem; border-radius: 0 6px 6px 0; cursor: pointer; height: 44px; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
-                                <i data-lucide="search" style="width:16px;height:16px"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="filter-group select-group" style="display: flex; flex-direction: column; gap: 4px; min-width: 200px;">
-                        <label class="filter-label" style="font-size: 0.75rem; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;"><i data-lucide="filter" style="width:14px;height:14px"></i> Filter by Barangay</label>
-                        <div style="position: relative;">
-                            <select class="filter-select" name="barangay" onchange="this.form.submit()" style="height: 44px; border: 1px solid var(--border); border-radius: 6px; padding: 0 2.25rem 0 1rem; font-size: 0.875rem; color: var(--text-primary); background: var(--surface); cursor: pointer; width: 100%; appearance: none; -webkit-appearance: none; background-image: none; transition: all 0.2s ease;">
-                            <option value="">All Barangays</option>
-                            <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
-                            <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
-                            <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
-                            <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
-                            <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
-                            <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
-                            <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
-                            <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
-                            <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
-                            <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
-                            <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
-                            <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
-                            <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
-                            <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
-                            <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
-                            <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
-                            <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
-                            <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
-                            <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
-                            <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
-                            <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
-                            <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
-                            <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
-                            <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
-                            <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
-                            <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
-                            <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
-                            <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
-                            <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
-                            <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
-                            <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
-                            <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
-                            <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
-                            <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
-                            <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
-                            <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
-                            <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
-                            <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
-                            <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
-                            <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
-                            <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
-                            <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
-                            <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
-                            <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
-                            <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
-                            <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
-                            <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
-                            <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
-                            <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
-                            <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
-                            <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
-                            <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
-                            <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
-                            <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
-                            <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
-                            <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
-                            <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
-                            <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
-                            <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
-                            <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
-                            <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
-                            <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
-                            <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
-                            <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
-                        </select>
-                        <i data-lucide="chevron-down" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #6B7280; pointer-events: none;"></i>
-                        </div>
-                    </div>
-                    <div class="filter-right" style="display: flex; gap: 12px; flex-shrink: 0; align-items: flex-end;">
-                        <a href="#" style="height:44px;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:#1A237E;color:white;border:none;cursor:pointer;text-decoration:none;transition:all 0.2s ease;font-family:inherit;" onclick="exportPdf(event)">
-                            <i data-lucide="file-output" style="width:16px;height:16px"></i> Export PDF
-                        </a>
-                        <div class="dropdown" id="bulkActionDropdown">
-                            <button id="bulkActionButton" onclick="toggleDropdown()" disabled style="height:44px;font-weight:600;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE;cursor:pointer;transition:all 0.2s ease;font-family:inherit;opacity:0.45;">
-                                <i data-lucide="archive" style="width:14px;height:14px"></i> Bulk Actions <span id="selectedCount" style="background: #3730A3; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: 4px;">0</span>
-                            </button>
-                            <div class="dropdown-menu" id="bulkDropdownMenu">
-                                <a class="dropdown-item" href="#" onclick="bulkArchive()"><i data-lucide="archive" style="width:14px;height:14px"></i> Archive Selected</a>
-                                <a class="dropdown-item" href="#" onclick="bulkExport()"><i data-lucide="download" style="width:14px;height:14px"></i> Export Selected</a>
+        <div class="main-scroll">
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <form method="GET" action="{{ route('admin.senior.masterlist') }}" id="filterForm">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label class="filter-label" for="searchInput">Search by Name</label>
+                            <div class="input-group">
+                                <input type="text" id="searchInput" name="search" placeholder="Search by name..." value="{{ request('search') }}">
+                                <button type="submit" class="search-btn" aria-label="Search">
+                                    <i data-lucide="search" style="width:16px;height:16px"></i>
+                                </button>
                             </div>
                         </div>
-                        @if(request('search') || request('barangay'))
-                            <a href="{{ route('admin.senior.masterlist') }}" style="height:44px;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:white;color:#DC2626;border:1px solid #FECACA;cursor:pointer;text-decoration:none;transition:all 0.2s ease;font-family:inherit;">
-                                <i data-lucide="x" style="width:16px;height:16px"></i> Clear Filters
+                        <div class="filter-group">
+                            <label class="filter-label" for="barangaySelect"><i data-lucide="filter" style="width:14px;height:14px"></i> Filter by Barangay</label>
+                            <div class="select-wrap">
+                                <select class="filter-select" id="barangaySelect" name="barangay" onchange="this.form.submit()">
+                                    <option value="">All Barangays</option>
+                                    <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
+                                    <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
+                                    <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
+                                    <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
+                                    <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
+                                    <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
+                                    <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
+                                    <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
+                                    <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
+                                    <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
+                                    <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
+                                    <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
+                                    <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
+                                    <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
+                                    <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
+                                    <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
+                                    <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
+                                    <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
+                                    <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
+                                    <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
+                                    <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
+                                    <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
+                                    <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
+                                    <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
+                                    <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
+                                    <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
+                                    <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
+                                    <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
+                                    <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
+                                    <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
+                                    <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
+                                    <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
+                                    <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
+                                    <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
+                                    <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
+                                    <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
+                                    <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
+                                    <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
+                                    <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
+                                    <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
+                                    <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
+                                    <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
+                                    <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
+                                    <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
+                                    <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
+                                    <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
+                                    <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
+                                    <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
+                                    <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
+                                    <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
+                                    <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
+                                    <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
+                                    <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
+                                    <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
+                                    <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
+                                    <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
+                                    <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
+                                    <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
+                                    <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
+                                    <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
+                                    <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
+                                    <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
+                                    <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
+                                    <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="select-arrow"></i>
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <a href="#" class="btn btn-export" onclick="exportPdf(event)">
+                                <i data-lucide="file-output" style="width:16px;height:16px"></i> Export PDF
                             </a>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    @if($seniors->count() > 0)
-        <!-- Mobile Select All (shown only on mobile since thead is hidden) -->
-        <div class="mobile-select-all" style="display:none;align-items:center;gap:8px;padding:8px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-secondary);">
-            <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px">
-            <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
-            <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
-        </div>
-        <div class="table-scroll" style="flex:1;overflow-y:auto;min-height:0;border-radius:8px;border:1px solid var(--border);">
-            <table style="table-layout:fixed;">
-                <thead>
-                    <tr>
-                        <th class="col-check" style="width:5%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="cursor:pointer;accent-color:var(--primary);"></th>
-                        <th style="width:14%;">Control No</th>
-                        <th style="width:20%;">Full Name</th>
-                        <th style="width:15%;">Barangay</th>
-                        <th style="width:10%;">Status</th>
-                        <th style="width:22%;">Address</th>
-                        <th style="width:6%;">Age</th>
-                        <th style="width:13%;">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($seniors as $senior)
-                        <tr>
-                            <td data-label="#" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="cursor:pointer;accent-color:var(--primary);"></td>
-                            <td data-label="Control No" style="word-wrap:break-word;font-weight:600;">{{ $senior->control_number ?? '-' }}</td>
-                            <td data-label="Full Name" style="word-wrap:break-word;">{{ $senior->full_name ?? '-' }}</td>
-                            <td data-label="Barangay" style="word-wrap:break-word;">{{ $senior->barangay ?? '-' }}</td>
-                            <td data-label="Status">
-                                <span class="badge {{ $senior->status->value == 'active' ? 'badge-active' : 'badge-pending' }}">
-                                    {{ ucfirst($senior->status->value ?? 'pending') }}
-                                </span>
-                            </td>
-                            <td data-label="Address" style="word-wrap:break-word;">{{ $senior->address ?? '-' }}</td>
-                            <td data-label="Age" style="word-wrap:break-word;">{{ $senior->age ?? '-' }}</td>
-                            <td data-label="Action">
-                                <div class="actions" style="display:flex;gap:6px;">
-                                    <button class="btn btn-sm primary" style="padding:4px 8px;height:32px;min-width:32px;" onclick="viewProfile({{ $senior->id }})">
-                                        <i data-lucide="eye" style="width:14px;height:14px"></i>
-                                    </button>
-                                    <button class="btn btn-sm danger archive-senior-btn"
-                                        data-id="{{ $senior->id }}"
-                                        data-name="{{ $senior->full_name }}"
-                                        style="padding:4px 8px;height:32px;min-width:32px;">
-                                        <i data-lucide="archive" style="width:14px;height:14px"></i>
-                                    </button>
+                            <div class="dropdown" id="bulkActionDropdown">
+                                <button id="bulkActionButton" class="btn btn-bulk" onclick="toggleDropdown()" disabled>
+                                    <i data-lucide="archive" style="width:14px;height:14px"></i> Bulk Actions
+                                    <span id="selectedCount" style="background:#3730A3;color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:4px;">0</span>
+                                </button>
+                                <div class="dropdown-menu" id="bulkDropdownMenu">
+                                    <a class="dropdown-item" href="#" onclick="bulkArchive()"><i data-lucide="archive" style="width:14px;height:14px"></i> Archive Selected</a>
+                                    <a class="dropdown-item" href="#" onclick="bulkExport()"><i data-lucide="download" style="width:14px;height:14px"></i> Export Selected</a>
                                 </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                            </div>
+                            @if(request('search') || request('barangay'))
+                                <a href="{{ route('admin.senior.masterlist') }}" class="btn btn-clear">
+                                    <i data-lucide="x" style="width:16px;height:16px"></i> Clear Filters
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-        <!-- Pagination -->
-        <div style="display:flex;justify-content:center;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);">
-            {{ $seniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
+            @if($seniors->count() > 0)
+                <!-- Mobile Select All (shown only on mobile since the table scrolls horizontally) -->
+                <div class="mobile-select-all">
+                    <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)" class="checkbox">
+                    <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
+                    <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="col-check" style="width:4%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="checkbox"></th>
+                                <th style="width:14%;">Control No</th>
+                                <th style="width:20%;">Full Name</th>
+                                <th style="width:15%;">Barangay</th>
+                                <th style="width:10%;">Status</th>
+                                <th style="width:22%;">Address</th>
+                                <th style="width:6%;">Age</th>
+                                <th style="width:9%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($seniors as $senior)
+                                <tr>
+                                    <td data-label="#" class="col-check"><input type="checkbox" class="senior-checkbox checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()"></td>
+                                    <td data-label="Control No" style="font-weight:600;word-wrap:break-word;">{{ $senior->control_number ?? '-' }}</td>
+                                    <td data-label="Full Name" style="word-wrap:break-word;">{{ $senior->full_name ?? '-' }}</td>
+                                    <td data-label="Barangay" style="word-wrap:break-word;">{{ $senior->barangay ?? '-' }}</td>
+                                    <td data-label="Status">
+                                        <span class="badge {{ $senior->status->value == 'active' ? 'badge-active' : 'badge-pending' }}">
+                                            {{ ucfirst($senior->status->value ?? 'pending') }}
+                                        </span>
+                                    </td>
+                                    <td data-label="Address" style="word-wrap:break-word;">{{ $senior->address ?? '-' }}</td>
+                                    <td data-label="Age" style="word-wrap:break-word;">{{ $senior->age ?? '-' }}</td>
+                                    <td data-label="Action">
+                                        <div class="actions">
+                                            <button class="btn action-btn primary" style="background:var(--primary);border-color:var(--primary);color:#fff;" onclick="viewProfile({{ $senior->id }})" title="View Profile">
+                                                <i data-lucide="eye"></i>
+                                            </button>
+                                            <button class="btn action-btn danger archive-senior-btn"
+                                                data-id="{{ $senior->id }}"
+                                                data-name="{{ $senior->full_name }}"
+                                                style="background:var(--danger-bg);border-color:#FECACA;color:var(--danger);"
+                                                title="Archive">
+                                                <i data-lucide="archive"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-wrap">
+                    {{ $seniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
+                </div>
+            @else
+                <div style="text-align:center;padding:60px 20px;color:var(--text-secondary);">
+                    <i data-lucide="users" style="width:56px;height:56px;color:#D1D5DB;margin:0 auto 12px;display:block"></i>
+                    <p style="margin:8px 0 16px;font-size:14px;color:var(--text-muted);">No senior citizens registered yet.</p>
+                    <a href="/admin/senior/registration" class="btn btn-export">
+                        <i data-lucide="plus" style="width:16px;height:16px"></i> Register First Senior Citizen
+                    </a>
+                </div>
+            @endif
         </div>
-    @else
-        <div style="text-align:center;padding:60px 20px;color:var(--text-secondary);">
-            <i data-lucide="users" style="width:56px;height:56px;color:#D1D5DB;margin:0 auto 12px;display:block"></i>
-            <p style="margin:8px 0 16px;font-size:14px;color:var(--text-muted);">No senior citizens registered yet.</p>
-            <a href="/admin/senior/registration" class="btn primary">
-                <i data-lucide="plus" style="width:16px;height:16px"></i> Register First Senior Citizen
-            </a>
-        </div>
-    @endif
-</div>
+    </div>
 </div>
 
 <!-- ======================== MODAL ======================== -->
@@ -753,33 +526,12 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
     </div>
 </div>
 
+<!-- Hidden form for secure POST logout -->
+<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display:none;">
+    @csrf
+</form>
+
 <script>
-    function toggleSidebar() {
-        var sidebar = document.getElementById('sidebar');
-        var overlay = document.getElementById('sidebarOverlay');
-        if (sidebar.classList.contains('show')) {
-            sidebar.classList.remove('show');
-            if (overlay) overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        } else {
-            sidebar.classList.add('show');
-            if (overlay) overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-    }
-
-    function updateDateTime() {
-        const now = new Date();
-        const options = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'2-digit', hour12: true };
-        const dateTimeStr = now.toLocaleDateString('en-US', options).replace(',', ' at');
-        const currentDateTime = document.getElementById('currentDateTime');
-        const desktopDateTime = document.getElementById('desktopDateTime');
-        if (currentDateTime) currentDateTime.textContent = dateTimeStr;
-        if (desktopDateTime) desktopDateTime.textContent = dateTimeStr;
-    }
-    updateDateTime();
-    setInterval(updateDateTime, 60000);
-
     // Custom Dropdown
     function toggleDropdown() {
         const menu = document.getElementById('bulkDropdownMenu');
@@ -993,7 +745,6 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
                 return r.blob();
             })
             .then(blob => {
-                const disposition = '';
                 const filename = 'senior_citizens.pdf';
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
@@ -1044,11 +795,7 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
             }
         });
     }
-</script>
 
-
-<script>
-    function toggleMobileMoreNav(){const extra=document.getElementById('mobileNavExtra');const icon=document.getElementById('mobileMoreIcon');if(!extra)return;if(extra.style.display==='none'||extra.style.display===''){extra.style.display='flex';if(icon){icon.setAttribute('data-lucide','chevron-down');lucide.createIcons();}}else{extra.style.display='none';if(icon){icon.setAttribute('data-lucide','chevron-up');lucide.createIcons();}}}
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
 
@@ -1077,67 +824,6 @@ html, body { overflow-x: hidden; overflow-y: auto; height: 100%; }
             });
         @endif
     });
-</script>
-
-<!-- Hidden form for secure POST logout -->
-<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
-    @csrf
-</form>
-
-<script>
-    function confirmLogout(event) {
-        event.preventDefault();
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'Do you really want to log out?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#1A237E',
-            cancelButtonColor: '#EF4444',
-            confirmButtonText: 'Yes, log out',
-            cancelButtonText: 'Cancel',
-            background: '#ffffff',
-            customClass: {
-                popup: 'rounded-4 shadow-lg'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('logout-form').submit();
-            }
-        });
-    }
-</script>
-<script>
-(function() {
-    var overlay = document.getElementById('sidebarOverlay');
-    if (overlay) overlay.addEventListener('click', function() {
-        var sidebar = document.getElementById('sidebar');
-        if (sidebar) sidebar.classList.remove('show');
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
-    });
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            var sidebar = document.getElementById('sidebar');
-            if (sidebar && sidebar.classList.contains('show')) {
-                sidebar.classList.remove('show');
-                if (overlay) overlay.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        }
-    });
-    window.addEventListener('resize', function() {
-        if (window.innerWidth >= 1200) {
-            var sidebar = document.getElementById('sidebar');
-            var ov = document.getElementById('sidebarOverlay');
-            if (sidebar && sidebar.classList.contains('show')) {
-                sidebar.classList.remove('show');
-                if (ov) ov.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        }
-    });
-})();
 </script>
 </body>
 </html>
