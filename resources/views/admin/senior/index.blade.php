@@ -79,10 +79,9 @@
         /* Stat Cards */
         .main-scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;}
         .main-scroll::-webkit-scrollbar{display:none;}
-        .stat-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-bottom:32px;animation:fadeInUp .6s ease-out;flex-shrink:0;}
-        @media(max-width:1024px){.stat-cards{grid-template-columns:repeat(3,1fr);}}
-        @media(max-width:768px){.stat-cards{grid-template-columns:1fr 1fr;}}
-        @media(max-width:480px){.stat-cards{grid-template-columns:1fr;}}
+        .stat-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:32px;animation:fadeInUp .6s ease-out;flex-shrink:0;}
+        @media(min-width:768px) and (max-width:1199px){.stat-cards{grid-template-columns:repeat(2,1fr);gap:16px;}}
+        @media(max-width:767px){.stat-cards{grid-template-columns:1fr 1fr;gap:12px;}}
 
         .stat-card{background:var(--surface);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;min-height:0;}
         .stat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;transition:all .3s ease;}
@@ -593,6 +592,105 @@
             .activity-card { display: flex !important; flex-direction: column !important; height: 350px !important; min-height: 350px !important; max-height: 350px !important; }
             .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: none !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
+
+        /* ══════════════════════════════════════════════
+           REDESIGN: maximize screen space per breakpoint
+           ══════════════════════════════════════════════ */
+
+        /* ── Large laptop (1200–1399px): tighter spacing, stat cards 3+2 ── */
+        @media (min-width: 1200px) and (max-width: 1399px) {
+            .main, .main-content { padding: 24px !important; padding-top: 24px !important; }
+            header { margin-bottom: 0.5rem !important; }
+            .stat-cards { gap: 18px; margin-bottom: 24px; }
+            .stat-card { padding: 18px; }
+            .dashboard-grid { gap: 18px !important; margin-bottom: 24px !important; }
+            .analytics-card, .activity-card { height: 460px !important; min-height: 460px !important; max-height: 460px !important; }
+            #barangayChartBox { width: 300px !important; height: 300px !important; }
+        }
+
+        /* ── Tablet (768–1199px): icon-only sidebar, 2-col cards, stacked content ── */
+        @media (min-width: 768px) and (max-width: 1199px) {
+            /* Sidebar: collapse to icon-only, always visible */
+            .sidebar {
+                width: 72px !important;
+                transform: translateX(0) !important;
+                z-index: 1000 !important;
+            }
+            .sidebar.show { transform: translateX(0) !important; }
+            .sidebar-brand { justify-content: center; padding: 1.25rem 0 !important; }
+            .sidebar-brand span { display: none !important; }
+            .sidebar-menu { padding: 0.75rem 0; }
+            .sidebar-menu a { position: relative; justify-content: center; padding: 0.95rem 0 !important; }
+            .sidebar-menu a span {
+                display: none;
+                position: absolute;
+                left: 72px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: var(--primary-dark);
+                color: #fff;
+                padding: 0.4rem 0.65rem;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 600;
+                white-space: nowrap;
+                z-index: 1002;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            }
+            .sidebar-menu a:hover span { display: block; }
+            .sidebar-foot { display: none !important; }
+            .sidebar-overlay { display: none !important; }
+            .hamburger-btn { display: none !important; }
+
+            /* Main offset for the icon-only sidebar */
+            .main, .main-content {
+                margin-left: 72px !important;
+                max-width: calc(100% - 72px) !important;
+                padding: 16px !important;
+                padding-top: 16px !important;
+                height: auto !important;
+                overflow: visible !important;
+                flex: none !important;
+            }
+            .main-scroll { overflow: visible !important; flex: none !important; }
+
+            /* Header: compact */
+            header {
+                display: flex !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                height: auto !important;
+                padding: 0.5rem 0 !important;
+                margin-bottom: 1rem !important;
+                gap: 0 !important;
+            }
+            header h1 { font-size: 20px !important; }
+            #currentDateTime { font-size: 12px !important; }
+
+            /* Stat cards: 2-col grid */
+            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; gap: 16px !important; margin-bottom: 20px !important; }
+
+            /* Dashboard grid: stacked, chart full width */
+            .dashboard-grid { grid-template-columns: 1fr !important; gap: 16px !important; margin-bottom: 16px !important; }
+
+            /* Chart: slightly reduced height, legend wraps cleanly */
+            .analytics-card { padding: 20px !important; min-height: auto !important; border-radius: 16px !important; }
+            #barangayChartWrap { justify-content: center; }
+            #barangayChartBox { width: 300px !important; height: 300px !important; }
+            #barangayLegend { max-height: 200px !important; }
+
+            /* Activities below chart */
+            .activity-card { height: 380px !important; min-height: 380px !important; max-height: 380px !important; }
+            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: none !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
+        }
+
+        /* ── Small mobile (<400px): keep 2 cards per row, compact ── */
+        @media (max-width: 399px) {
+            .stat-cards { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+            .stat-card { height: auto !important; min-height: 92px !important; }
+            .stat-card-value { font-size: 24px !important; }
+        }
     </style>
 </head>
 <body>
@@ -604,15 +702,15 @@
             <span>Senior Citizen</span>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="/admin/senior" class="active"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i> Dashboard</a></li>
-            <li><a href="/admin/senior/registration"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
-            <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
-            <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
-            <li><a href="/admin/senior/payouts-history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
-            <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
-            <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
-            <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
-            <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
+            <li><a href="/admin/senior" class="active"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
+            <li><a href="/admin/senior/registration"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>Registration</span></a></li>
+            <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i><span>Masterlist</span></a></li>
+            <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i><span>Birthday Beneficiaries</span></a></li>
+            <li><a href="/admin/senior/payouts-history"><i data-lucide="history" style="width:20px;height:20px"></i><span>Payout History</span></a></li>
+            <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i><span>Statistics</span></a></li>
+            <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i><span>Reports</span></a></li>
+            <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
+            <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a></li>
         </ul>
     </div>
 
@@ -811,7 +909,10 @@
     // Date time
     function updateDateTime(){
         const now=new Date();
-        const opts={weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true};
+        const compact=window.innerWidth<1200;
+        const opts=compact
+            ? {month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}
+            : {weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true};
         const dtEl=document.getElementById('currentDateTime');
         if(dtEl) dtEl.textContent=now.toLocaleDateString('en-US',opts).replace(',',' at');
         
@@ -825,6 +926,7 @@
     }
     updateDateTime();
     setInterval(updateDateTime,60000);
+    window.addEventListener('resize', function(){ updateDateTime(); });
 
     // Counter animation
     document.querySelectorAll('.counter').forEach(counter=>{
