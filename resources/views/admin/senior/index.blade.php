@@ -51,7 +51,7 @@
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
         button{font-family:inherit;cursor:pointer;}
         /* Dashboard Grid */
-        .dashboard-grid{display:grid;grid-template-columns:1.8fr 1fr;gap:24px;margin-bottom:24px;width:100%;}
+        .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;width:100%;}
         @media(max-width:1199px){.dashboard-grid{grid-template-columns:1fr;}}
 
         /* Stat Cards */
@@ -59,8 +59,8 @@
         .stat-cards>a{display:block;width:100%;min-width:0;}
         @media(min-width:1200px) and (max-width:1399px){.stat-cards{grid-template-columns:repeat(6,1fr);gap:18px;}.stat-cards>a:nth-child(1),.stat-cards>a:nth-child(2),.stat-cards>a:nth-child(3){grid-column:span 2;}.stat-cards>a:nth-child(4),.stat-cards>a:nth-child(5){grid-column:span 3;}}
         @media(min-width:768px) and (max-width:1199px){.stat-cards{grid-template-columns:repeat(2,1fr);gap:16px;}}
-        @media(min-width:400px) and (max-width:767px){.stat-cards{grid-template-columns:1fr 1fr;gap:12px;}}
-        @media(max-width:399px){.stat-cards{grid-template-columns:1fr;}}
+        @media(min-width:375px) and (max-width:767px){.stat-cards{grid-template-columns:1fr 1fr;gap:12px;}}
+        @media(max-width:374px){.stat-cards{grid-template-columns:1fr 1fr;}}
 
         .stat-card{width:100%;background:var(--surface);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;min-height:0;}
         .stat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;transition:all .3s ease;}
@@ -172,7 +172,7 @@
             /* Hide desktop header & standalone hamburger button, show integrated mobile header */
             header { display: none !important; }
 
-            /* Stat cards - compact modern style */
+            /* Stat cards - match statistics layout */
             .stat-cards {
                 grid-template-columns: 1fr 1fr !important;
                 gap: 12px !important;
@@ -180,7 +180,8 @@
             }
             .stat-card {
                 width: 100% !important;
-                height: 110px !important;
+                height: auto !important;
+                min-height: 0 !important;
                 padding: 16px !important;
                 border-radius: 16px !important;
                 flex-direction: column !important;
@@ -194,11 +195,14 @@
                 font-size: 11px !important;
                 font-weight: 600 !important;
                 text-transform: uppercase !important;
-                letter-spacing: 0.3px !important;
+                letter-spacing: 0.5px !important;
                 color: var(--text-secondary) !important;
                 margin-bottom: 4px !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
             }
-            .stat-card-value { font-size: 28px !important; font-weight: 700 !important; }
+            .stat-card-value { font-size: 28px !important; font-weight: 700 !important; line-height: 1 !important; }
             .stat-card-icon {
                 width: 40px !important;
                 height: 40px !important;
@@ -206,6 +210,7 @@
                 position: absolute !important;
                 top: 14px !important;
                 right: 14px !important;
+                flex-shrink: 0 !important;
             }
             .stat-card-icon svg { width: 20px !important; height: 20px !important; }
 
@@ -276,20 +281,31 @@
                 min-height: auto !important;
                 padding: 16px !important;
                 border-radius: 16px !important;
+                overflow-x: hidden !important;
+                max-width: 100% !important;
             }
             #barangayChartWrap { 
                 display: flex !important; 
                 flex-direction: column !important; 
                 align-items: center !important; 
+                justify-content: center !important; 
                 gap: 16px !important;
+                flex-wrap: nowrap !important;
+                width: 100% !important;
+                max-width: 100% !important;
             }
             #barangayChartBox { 
-                width: 220px !important; 
-                height: 220px !important; 
+                width: min(220px, 100%) !important; 
+                height: auto !important; 
+                aspect-ratio: 1 / 1 !important; 
+                max-width: 100% !important;
             }
             #barangayLegend { 
                 width: 100% !important; 
+                max-width: 100% !important; 
                 max-height: 180px !important; 
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
             }
             .mobile-barangay-list { display: none !important; }
             .barangay-rank-item {
@@ -330,6 +346,8 @@
                 border-radius: 16px !important;
                 display: flex !important;
                 flex-direction: column !important;
+                overflow-x: hidden !important;
+                max-width: 100% !important;
             }
             .activity-feed {
                 flex: none !important;
@@ -407,7 +425,7 @@
                 align-items: center !important;
                 gap: 0 !important;
             }
-            .dashboard-grid { grid-template-columns: 1.8fr 1fr; }
+            .dashboard-grid { grid-template-columns: 1fr 1fr; }
             #barangayChartBox { width: 360px !important; height: 360px !important; }
         }
 
@@ -468,21 +486,21 @@
             /* Dashboard grid: stacked, chart full width */
             .dashboard-grid { grid-template-columns: 1fr !important; gap: 16px !important; margin-bottom: 16px !important; }
 
-            /* Chart: slightly reduced height, legend wraps cleanly */
-            .analytics-card { padding: 20px !important; min-height: auto !important; border-radius: 16px !important; }
-            #barangayChartWrap { justify-content: center; }
-            #barangayChartBox { width: 300px !important; height: 300px !important; }
-            #barangayLegend { max-height: 200px !important; }
+            /* Chart: stacked on tablet, chart on top, legend below */
+            .analytics-card { padding: 20px !important; min-height: auto !important; border-radius: 16px !important; overflow-x: hidden !important; max-width: 100% !important; }
+            #barangayChartWrap { justify-content: center; flex-direction: column; align-items: center; gap: 16px; flex-wrap: nowrap; width: 100%; max-width: 100%; }
+            #barangayChartBox { width: min(280px, 100%) !important; height: auto !important; aspect-ratio: 1 / 1 !important; max-width: 100% !important; }
+            #barangayLegend { width: 100% !important; max-width: 100% !important; max-height: 200px !important; overflow-y: auto !important; overflow-x: hidden !important; }
 
             /* Activities below chart */
             .activity-card { display: flex !important; flex-direction: column !important; min-height: 0 !important; }
             .activity-feed { flex: none !important; min-height: 0 !important; max-height: none !important; overflow: visible !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
 
-        /* ── Small mobile (<400px): single-column cards ── */
-        @media (max-width: 399px) {
-            .stat-cards { grid-template-columns: 1fr !important; gap: 10px !important; }
-            .stat-card { height: auto !important; min-height: 92px !important; }
+        /* ── Small mobile (<375px): still two cards per row (matches statistics) ── */
+        @media (max-width: 374px) {
+            .stat-cards { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+            .stat-card { height: auto !important; min-height: 0 !important; }
             .stat-card-value { font-size: 24px !important; }
         }
     </style>
@@ -774,7 +792,7 @@
                 const color=colors[i]||'#9CA3AF';
                 return `<div class="flex items-center gap-3 py-2 px-2 rounded-lg" style="transition:background .2s" onmouseover="this.style.background='var(--background)'" onmouseout="this.style.background=''">
                     <div class="rounded-sm flex-shrink-0" style="width:10px;height:10px;background:${color}"></div>
-                    <span class="text-sm flex-1 truncate">${item.barangay}</span>
+                    <span class="text-sm flex-1 min-w-0 truncate">${item.barangay}</span>
                     <span class="text-sm font-semibold" style="color:var(--primary)">${item.count}</span>
                     <span class="text-xs font-medium" style="color:var(--text-muted);width:42px;text-align:right">${pct}%</span>
                 </div>`;
