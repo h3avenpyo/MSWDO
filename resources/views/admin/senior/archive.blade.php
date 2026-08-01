@@ -158,11 +158,26 @@
             #summaryGrid{grid-template-columns:1fr 1fr;gap:16px;}
             .table-card{padding:16px !important;}
             .table-card-title{font-size:1.1rem !important;margin-bottom:1rem !important;}
+            .table-responsive{border-radius:6px !important;}
+            .table-responsive th{padding:10px 12px !important;}
+            .table-responsive td{padding:12px 12px !important;}
             .empty-state{min-height:220px;padding:2.5rem 1.5rem;}
         }
 
-        /* ── Tablet & Mobile (<1200px): table → stacked cards, no sideways scroll ── */
-        @media (max-width:1199px){
+        /* ── Mobile (<768px): stacked filters, table → cards (matches masterlist) ── */
+        @media (max-width:767px){
+            .section-spacing{margin-bottom:16px;}
+            #summaryGrid{grid-template-columns:1fr;gap:12px;}
+            .table-card{padding:12px !important;border-radius:12px !important;}
+            .table-card-title{font-size:1rem !important;margin-bottom:0.875rem !important;}
+            .bulk-btn{flex:1 1 auto;}
+            .mobile-select-all{display:flex;}
+            .empty-state{min-height:180px;padding:2rem 1rem;}
+            .empty-state [data-lucide]{width:48px !important;height:48px !important;}
+            .empty-state h5{font-size:.95rem !important;}
+            .empty-state p{font-size:.8rem !important;}
+
+            /* Table → stacked cards (matches masterlist) */
             .table-responsive{overflow:visible !important;border:none !important;background:transparent !important;box-shadow:none !important;border-radius:0 !important;}
             .table-responsive table{display:block !important;width:100% !important;min-width:0 !important;table-layout:auto !important;}
             .table-responsive thead{display:none !important;}
@@ -182,20 +197,6 @@
             .table-responsive tbody td.empty-state-cell::before{display:none !important;}
             .td-addr{white-space:normal;overflow:visible;text-overflow:clip;}
             .btn-restore{min-height:44px;padding:10px 14px;font-size:13px;}
-        }
-
-        /* ── Mobile (<768px): stacked filters ── */
-        @media (max-width:767px){
-            .section-spacing{margin-bottom:16px;}
-            #summaryGrid{grid-template-columns:1fr;gap:12px;}
-            .table-card{padding:12px !important;border-radius:12px !important;}
-            .table-card-title{font-size:1rem !important;margin-bottom:0.875rem !important;}
-            .bulk-btn{flex:1 1 auto;}
-            .mobile-select-all{display:flex;}
-            .empty-state{min-height:180px;padding:2rem 1rem;}
-            .empty-state [data-lucide]{width:48px !important;height:48px !important;}
-            .empty-state h5{font-size:.95rem !important;}
-            .empty-state p{font-size:.8rem !important;}
         }
 
         /* ── Small mobile (<480px) ── */

@@ -115,11 +115,11 @@
             .stat-cards{grid-template-columns:repeat(3,1fr);gap:20px;}
         }
 
-        /* ── Tablet (768–1199px): filters in two rows ── */
+        /* ── Tablet (768–1199px): filters two side by side ── */
         @media (min-width:768px) and (max-width:1199px){
             .section-spacing{margin-bottom:20px;}
             .filter-section{padding:16px !important;}
-            #filterGrid{grid-template-columns:repeat(3,1fr);gap:12px;}
+            #filterGrid{grid-template-columns:1fr 1fr;gap:12px;}
             .filter-actions .btn{flex:1;}
             .stat-cards{grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:20px;}
             .charts-grid{grid-template-columns:1fr;gap:16px;}
@@ -147,11 +147,11 @@
             .analytics-card{padding:14px !important;border-radius:14px !important;}
         }
 
-        /* ── Small mobile (<480px): one stat card per row ── */
+        /* ── Small mobile (<480px): stat cards two side by side ── */
         @media (max-width:479px){
             .section-spacing{margin-bottom:14px;}
             .filter-section{padding:12px !important;}
-            .stat-cards{grid-template-columns:1fr;gap:10px;margin-bottom:14px;}
+            .stat-cards{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
             .stat-card{padding:14px;}
             .stat-card-value{font-size:24px;}
             .stat-card-icon{width:36px;height:36px;top:12px;right:12px;}
