@@ -327,6 +327,13 @@
             
             /* Barangay cards grid */
             .barangay-cards-grid { gap: 16px !important; }
+
+            /* Celebrant rows - fixed size */
+            .brgy-card table { table-layout: fixed; width: 100%; }
+            .brgy-card table th,
+            .brgy-card table td { height: 44px !important; padding: 10px 12px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+            .brgy-card table th:first-child,
+            .brgy-card table td:first-child { width: 42%; }
         }
     </style>
 </head>

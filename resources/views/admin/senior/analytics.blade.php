@@ -258,17 +258,22 @@
             #analyticsFilterGridMobile { grid-template-columns: repeat(4, 1fr) !important; }
         }
 
-        @media (min-width: 768px) and (max-width: 991px) {
-            #analyticsFilterGridMobile { grid-template-columns: repeat(3, 1fr) !important; }
+        /* Phones & small tablets - same layout as large tablets (992px - 1199px) */
+        @media (max-width: 991px) {
+            #analyticsFilterGridMobile { grid-template-columns: repeat(4, 1fr) !important; }
+            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
+            .charts-grid { grid-template-columns: 1fr !important; }
+            .chart-container { height: 340px !important; }
+            .filter-section { padding: 16px 20px !important; }
         }
 
-        @media (max-width: 767px) {
-            #analyticsFilterGridMobile { grid-template-columns: repeat(2, 1fr) !important; }
-        }
-
-        @media (max-width: 479px) {
-            #analyticsFilterGridMobile { grid-template-columns: 1fr !important; }
-        }
+        @media (min-width: 1200px) {
+            /* Statistics Filters - full row layout */
+            #analyticsFilterGrid { grid-template-columns: repeat(5, minmax(0, 1fr)) auto !important; gap: 16px !important; }
+            #analyticsFilterGrid .filter-group { min-width: 0; }
+            #analyticsFilterGrid .filter-select { width: 100% !important; max-width: none !important; }
+            #analyticsFilterGrid .filter-group:last-child { min-width: 250px; }
+            #analyticsFilterGrid .btn { white-space: nowrap; }
             .filter-section { padding: 16px 20px !important; }
             .stat-card { width: auto !important; height: auto !important; padding: 20px !important; border-radius: 16px !important; flex-direction: row !important; align-items: center !important; gap: 0 !important; position: relative !important; }
 
@@ -386,10 +391,10 @@
         <div class="filter-section desktop-filter" style="margin-bottom:24px;">
             <h3><i data-lucide="filter" style="width:16px;height:16px;color:var(--primary)"></i> Statistics Filters</h3>
             <form id="filterForm" method="GET" action="{{ route('admin.senior.analytics') }}" autocomplete="off">
-                <div style="display:grid;grid-template-columns:repeat(2,1fr) !important;gap:12px;align-items:end" id="analyticsFilterGrid">
+                <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) auto !important;gap:16px;align-items:end" id="analyticsFilterGrid">
                     <div class="filter-group">
                         <label class="filter-label">Year</label>
-                        <select class="filter-select" name="year" style="width:165px">
+                        <select class="filter-select" name="year">
                             <option value="2026" {{ $year == 2026 ? 'selected' : '' }}>2026</option>
                             <option value="2025" {{ $year == 2025 ? 'selected' : '' }}>2025</option>
                             <option value="2024" {{ $year == 2024 ? 'selected' : '' }}>2024</option>
@@ -399,7 +404,7 @@
                     </div>
                     <div class="filter-group">
                         <label class="filter-label">Month</label>
-                        <select class="filter-select" name="month" style="width:165px">
+                        <select class="filter-select" name="month">
                             <option value="">All</option>
                             @for($i = 1; $i <= 12; $i++)
                                 <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>{{ date('M', mktime(0, 0, 0, $i, 1)) }}</option>
@@ -408,7 +413,7 @@
                     </div>
                     <div class="filter-group">
                         <label class="filter-label">Barangay</label>
-                        <select class="filter-select" name="barangay" id="barangaySelect" style="width:165px">
+                        <select class="filter-select" name="barangay" id="barangaySelect">
                             <option value="">All</option>
                             @foreach($allBarangays as $b)
                                 <option value="{{ $b }}">{{ $b }}</option>
@@ -417,7 +422,7 @@
                     </div>
                     <div class="filter-group">
                         <label class="filter-label">Gender</label>
-                        <select class="filter-select" name="gender" style="width:165px">
+                        <select class="filter-select" name="gender">
                             <option value="">All</option>
                             <option value="Male" {{ $gender == 'Male' ? 'selected' : '' }}>Male</option>
                             <option value="Female" {{ $gender == 'Female' ? 'selected' : '' }}>Female</option>
@@ -425,7 +430,7 @@
                     </div>
                     <div class="filter-group">
                         <label class="filter-label">Age Group</label>
-                        <select class="filter-select" name="age_group" style="width:165px">
+                        <select class="filter-select" name="age_group">
                             <option value="">All</option>
                             <option value="60-69" {{ $ageGroup == '60-69' ? 'selected' : '' }}>60-69</option>
                             <option value="70-79" {{ $ageGroup == '70-79' ? 'selected' : '' }}>70-79</option>
