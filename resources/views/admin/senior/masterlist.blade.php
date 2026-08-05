@@ -127,14 +127,16 @@
             font-size: 13px; color: var(--text-secondary);
         }
         .table-responsive {
-            width: 100%; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
+            width: 100%; max-width: 100%; overflow-x: auto; overflow-y: auto; -webkit-overflow-scrolling: touch;
             background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
+            max-height: min(620px, calc(100vh - 260px));
         }
         .table-responsive table { width: 100%; border-collapse: collapse; table-layout: auto; }
         .table-responsive thead th {
             padding: 12px 16px; font-size: 11px; font-weight: 600; text-transform: uppercase;
             letter-spacing: .05em; color: var(--text-secondary); text-align: left;
             border-bottom: 2px solid var(--border); background: var(--surface); white-space: nowrap;
+            position: sticky; top: 0; z-index: 1;
         }
         .table-responsive tbody td {
             padding: 12px 16px; font-size: 13px; color: var(--text-primary);
@@ -203,7 +205,7 @@
             /* Table → stacked cards */
             .table-responsive {
                 overflow: visible; border: none; background: transparent;
-                box-shadow: none; border-radius: 0;
+                box-shadow: none; border-radius: 0; max-height: none;
             }
             .table-responsive table { display: block; width: 100%; }
             .table-responsive thead { display: none; }
@@ -276,6 +278,9 @@
         @endphp
 
         <div class="main-scroll">
+            <div style="margin-bottom:1.5rem;">
+                <p style="margin:0;font-size:0.875rem;color:#6B7280;">Step 1 of 2 — Search for an existing senior citizen and verify their record before proceeding with a new registration.</p>
+            </div>
             <!-- Filter Section -->
             <div class="filter-section">
                 <form method="GET" action="{{ route('admin.senior.masterlist') }}" id="filterForm">

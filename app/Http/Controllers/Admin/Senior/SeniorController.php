@@ -210,7 +210,7 @@ class SeniorController extends Controller
             });
         }
 
-        $seniors = $query->orderByDesc('created_at')->paginate(15);
+        $seniors = $query->orderByDesc('created_at')->paginate(15)->onEachSide(1);
 
         return view('admin.senior.masterlist', compact('seniors'));
     }

@@ -222,6 +222,9 @@
 
     <div class="main">
         <div class="main-scroll">
+            <div style="margin-bottom:1.5rem;">
+                <p style="margin:0;font-size:0.875rem;color:#6B7280;">Track senior citizens with upcoming birthdays and generate their pension payouts.</p>
+            </div>
             {{-- Budget Overview Card --}}
             <div class="filter-section budget-card section-spacing" style="background:linear-gradient(135deg,var(--primary) 0%,var(--primary-hover) 100%);color:white;padding:14px">
                 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">

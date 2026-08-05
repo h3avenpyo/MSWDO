@@ -180,6 +180,13 @@
 
 <div class="verify-container">
     
+    <div style="display:flex;align-items:flex-start;gap:10px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:12px 16px;margin-bottom:1.25rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#1A237E" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;margin-top:2px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/>
+        </svg>
+        <p style="margin:0;font-size:0.875rem;color:#3730A3;line-height:1.5;">Verify the senior citizen's official record and ID details.</p>
+    </div>
+    
     <!-- Header Seal/Brand -->
     <div class="text-center mb-4">
         <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--primary); margin: 0;">MSWDO SILANG</h2>

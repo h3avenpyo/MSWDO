@@ -310,6 +310,9 @@
 
     <div class="main">
         <div class="main-scroll">
+            <div style="margin-bottom:1.5rem;">
+                <p style="margin:0;font-size:0.875rem;color:#6B7280;">View senior citizen statistics and trends. Filter by year to generate a program summary.</p>
+            </div>
             <!-- Filter Section -->
             <div class="filter-section section-spacing">
                 <form id="filterForm" method="GET" action="{{ route('admin.senior.analytics') }}" autocomplete="off">

@@ -49,10 +49,10 @@
         /* ── Table Card ── */
         .table-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;min-width:0;width:100%;max-width:100%;}
         .table-card-title{font-size:1.25rem;font-weight:700;color:var(--text-primary);margin:0 0 1.25rem 0;flex-shrink:0;}
-        .table-responsive{overflow-x:auto;width:100%;max-width:100%;-webkit-overflow-scrolling:touch;border-radius:8px;border:1px solid var(--border);}
+        .table-responsive{overflow-x:auto;overflow-y:auto;width:100%;max-width:100%;-webkit-overflow-scrolling:touch;border-radius:8px;border:1px solid var(--border);max-height:min(620px, calc(100vh - 260px));}
         .table-responsive table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:0;}
         .table-responsive thead{background:var(--surface);}
-        .table-responsive th{padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary);text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;}
+        .table-responsive th{padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary);text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:1;background:var(--surface);}
         .table-responsive td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid var(--border);vertical-align:middle;overflow-wrap:anywhere;word-break:break-word;min-width:0;}
         .table-responsive tr:hover td{background:var(--background);}
         .table-responsive tr:last-child td{border-bottom:none;}
@@ -67,7 +67,7 @@
         .badge-reset{background:#FEF3C7;color:#D97706;}
 
         /* ── Pagination ── */
-        .pagination-wrap{display:flex;justify-content:center;padding-top:1rem;margin-top:1rem;border-top:1px solid var(--border);}
+        .pagination-wrap{display:flex;justify-content:center;margin-top:1rem;}
 
         /* ══════════════════════════════════════════════
            RESPONSIVE BREAKPOINTS
@@ -109,8 +109,8 @@
             .table-card{padding:12px !important;border-radius:12px !important;}
             .table-card-title{font-size:1rem !important;margin-bottom:0.875rem !important;}
 
-            /* Table → cards on mobile */
-            .table-responsive{overflow-x:visible !important;border:none !important;border-radius:0 !important;}
+            /* Table → cards on mobile (fixed-height scrollable area) */
+            .table-responsive{overflow:auto !important;border:none !important;border-radius:0 !important;max-height:min(620px, calc(100vh - 320px)) !important;-webkit-overflow-scrolling:touch;}
             .table-responsive table{display:block !important;width:100% !important;min-width:0 !important;table-layout:auto !important;}
             .table-responsive thead{display:none !important;}
             .table-responsive tbody{display:block;}
@@ -141,6 +141,9 @@
 
     <div class="main">
         <div class="main-scroll">
+            <div style="margin-bottom:1.5rem;">
+                <p style="margin:0;font-size:0.875rem;color:#6B7280;">Review the release history of senior citizen birthday pension payouts.</p>
+            </div>
             <!-- Filter Section -->
             <div class="filter-section section-spacing">
                 <form method="GET" action="{{ route('admin.senior.payouts-history') }}">
@@ -233,13 +236,13 @@
                         </tbody>
                     </table>
                 </div>
-
-                @if($history->hasPages())
-                    <div class="pagination-wrap">
-                        {{ $history->appends(['barangay' => request('barangay'), 'date_from' => request('date_from'), 'date_to' => request('date_to')])->links('vendor.pagination.custom') }}
-                    </div>
-                @endif
             </div>
+
+            @if($history->hasPages())
+                <div class="pagination-wrap">
+                    {{ $history->appends(['barangay' => request('barangay'), 'date_from' => request('date_from'), 'date_to' => request('date_to')])->links('vendor.pagination.custom') }}
+                </div>
+            @endif
         </div>
     </div>
 </div>
