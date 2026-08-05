@@ -25,6 +25,7 @@
             /* Government Color Palette */
             --primary: #1A237E;
             --primary-hover: #121858;
+            --primary-dark: #121858;
             --sidebar-bg: #1A237E;
             --background: #F5F7FB;
             --surface: #FFFFFF;
@@ -1221,8 +1222,6 @@
 
         @media (min-width: 992px) {
             :root{--card-gap:24px;--card-padding:24px;}
-            .stat-cards{grid-template-columns:repeat(4,1fr);gap:24px;}
-            .stat-card-value{font-size:36px;}
             .summary-cards{grid-template-columns:repeat(5,1fr);}
             .detail-grid{grid-template-columns:2fr 1fr;}
         }
@@ -2031,12 +2030,6 @@
             }
         }
 
-        /* ── md: 992+ override (must come after xs defaults) ── */
-        @media (min-width: 992px) {
-            .stat-cards{grid-template-columns:repeat(4,1fr);gap:24px;}
-            .stat-card-value{font-size:36px;}
-        }
-
         /* ── sm: 768+ ── */
         @media (min-width: 768px) {
             .main { padding: 16px; padding-top: 64px; }
@@ -2128,8 +2121,29 @@
             .sc-data-table tbody td { font-size: 0.78rem; }
         }
 
+        /* ── Tablet (768–1199px): icon-only sidebar (matches Senior dashboard) ── */
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .sidebar{width:72px !important;transform:translateX(0) !important;z-index:1000 !important;}
+            .sidebar.show{transform:translateX(0) !important;}
+            .sidebar-brand{justify-content:center;padding:1.25rem 0 !important;}
+            .sidebar-brand span{display:none !important;}
+            .sidebar-menu{padding:0.75rem 0;}
+            .sidebar-menu a{position:relative;justify-content:center;padding:0.95rem 0 !important;}
+            .sidebar-menu a span{display:none;position:absolute;left:72px;top:50%;transform:translateY(-50%);background:var(--primary-dark);color:#fff;padding:0.4rem 0.65rem;border-radius:6px;font-size:12px;font-weight:600;white-space:nowrap;z-index:1002;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+            .sidebar-menu a:hover span{display:block;}
+            .sidebar-foot{display:none !important;}
+            .sidebar-overlay{display:none !important;}
+            .hamburger-btn{display:none !important;}
+            .main,.main-content{margin-left:72px !important;width:calc(100% - 72px) !important;max-width:none !important;padding:16px !important;padding-top:16px !important;}
+            header{display:flex !important;}
+            .mobile-header{display:none !important;}
+            .topnav-datetime{display:inline;}
+        }
+
         @media (min-width: 1200px) {
             .hamburger-btn { display: none !important; }
+            .stat-cards{grid-template-columns:repeat(4,1fr);gap:24px;}
+            .stat-card-value{font-size:36px;}
             .sc-table-card { padding: 2.5rem; }
             .sc-table-card-title { font-size: 1.35rem; }
             .sc-filter-row { gap: 16px; }
