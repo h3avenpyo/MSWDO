@@ -106,14 +106,14 @@
         .activity-feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
         .activity-feed::-webkit-scrollbar-thumb:hover{background:var(--text-muted);}
 
-        .activity-item{display:flex;gap:14px;padding:14px;border-radius:12px;background:var(--background);margin-bottom:10px;transition:all .2s ease;overflow:hidden;}
+        .activity-item{display:flex;gap:14px;padding:16px;border-radius:12px;background:var(--background);margin-bottom:12px;transition:all .2s ease;}
         .activity-item:last-child{margin-bottom:0;}
         .activity-item:hover{transform:translateX(4px);background:var(--surface);box-shadow:0 2px 8px rgba(0,0,0,.04);}
-        .activity-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .activity-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
         .activity-icon svg{width:20px;height:20px;}
-        .activity-content{flex:1;min-width:0;overflow:hidden;display:flex;flex-direction:column;}
-        .activity-text{font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:2px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-        .activity-time{font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+        .activity-content{flex:1;min-width:0;}
+        .activity-text{font-size:14px;font-weight:500;color:var(--text-primary);margin-bottom:4px;line-height:1.4;}
+        .activity-time{font-size:12px;color:var(--text-muted);}
 
         /* Table Card */
         .table-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;animation:fadeInUp .6s ease-out .3s backwards;}
@@ -380,7 +380,7 @@
             .activity-icon {
                 width: 36px !important;
                 height: 36px !important;
-                border-radius: 10px !important;
+                border-radius: 50% !important;
             }
             .activity-icon svg { width: 18px !important; height: 18px !important; }
             .activity-text { font-size: 13px !important; font-weight: 600 !important; }
@@ -643,13 +643,27 @@
                 <div class="activity-feed">
                     @if(count($recentActivities) > 0)
                         @foreach($recentActivities as $activity)
+                        @php
+                        $iconMap = [
+                            'registered' => ['plus-circle', 'var(--success-bg)', 'var(--success)'],
+                            'updated' => ['edit', 'var(--info-bg)', 'var(--info)'],
+                            'viewed' => ['eye', 'var(--background)', 'var(--text-muted)'],
+                            'archived' => ['archive', 'var(--danger-bg)', 'var(--danger)'],
+                            'deleted' => ['trash-2', 'var(--danger-bg)', 'var(--danger)'],
+                            'restored' => ['undo-2', 'var(--info-bg)', 'var(--info)'],
+                            'printed birthday payout PDF' => ['printer', 'var(--purple-bg)', 'var(--purple)'],
+                            'printed birthday payout receipt' => ['printer', 'var(--purple-bg)', 'var(--purple)'],
+                            'released birthday payouts' => ['send', 'var(--success-bg)', 'var(--success)'],
+                        ];
+                        $ic = $iconMap[$activity->action] ?? $iconMap['updated'];
+                        @endphp
                         <div class="activity-item">
-                            <div class="activity-icon" style="background:var(--info-bg);color:var(--icon-blue)">
-                                <i data-lucide="{{ $activity->action == 'registered' ? 'user-plus' : ($activity->action == 'archived' ? 'archive' : ($activity->action == 'restored' ? 'undo-2' : 'id-card')) }}"></i>
+                            <div class="activity-icon" style="background:{{ $ic[1] }};color:{{ $ic[2] }}">
+                                <i data-lucide="{{ $ic[0] }}"></i>
                             </div>
                             <div class="activity-content">
-                                <div class="activity-text">{{ ucfirst($activity->action) }} <strong>{{ $activity->name }}</strong></div>
-                                <div class="activity-time">{{ $activity->identifier }} &middot; {{ $activity->created_at->format('M d, Y h:i A') }}</div>
+                                <div class="activity-text">{{ ucfirst($activity->action) }} <strong>{{ $activity->name }}</strong> ({{ $activity->identifier }})</div>
+                                <div class="activity-time">{{ $activity->created_at->diffForHumans() }} &middot; {{ $activity->created_at->format('M d, Y g:i A') }}</div>
                             </div>
                         </div>
                         @endforeach

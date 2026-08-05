@@ -1153,7 +1153,7 @@ async function renderActivityFeed(recent = null){
       </div>
       <div class="activity-content">
         <div class="activity-text">${a.details}${caseInfo ? ' - ' + caseInfo : ''}</div>
-        <div class="activity-time">${timeAgo}</div>
+        <div class="activity-time">${timeAgo} &middot; ${formatDateTime(a.timestamp)}</div>
       </div>
     </div>`;
   }).join("");
@@ -1213,6 +1213,15 @@ function getTimeAgo(dateStr){
   if(hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
   const days = Math.floor(hours / 24);
   return `${days} day${days > 1 ? 's' : ''} ago`;
+}
+
+function formatDateTime(dateStr){
+  if(!dateStr || dateStr === 'null' || dateStr === '') return 'Unknown';
+  const date = new Date(dateStr);
+  if(isNaN(date.getTime())) return 'Unknown';
+  const d = date.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  const t = date.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit', hour12:true});
+  return `${d} ${t}`;
 }
 
 function initCharts(){
