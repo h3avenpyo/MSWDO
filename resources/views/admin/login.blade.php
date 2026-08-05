@@ -284,6 +284,40 @@
             border-color: #1A237E;
             background-color: #FFFFFF;
         }
+        .password-wrapper {
+            position: relative;
+        }
+        .password-wrapper .form-input {
+            padding-right: 2.75rem;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 0.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: #94A3B8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            transition: color 0.2s ease, background-color 0.2s ease;
+        }
+        .password-toggle:hover {
+            color: #1A237E;
+            background-color: #EEF2FF;
+        }
+        .password-toggle svg {
+            width: 1.1rem;
+            height: 1.1rem;
+        }
+        .password-wrapper input::-ms-reveal,
+        .password-wrapper input::-ms-clear {
+            display: none;
+        }
         .form-options {
             display: flex;
             align-items: center;
@@ -447,7 +481,7 @@
 </head>
 <body>
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay">
+    <div id="loadingOverlay" class="loading-overlay{{ $errors->any() ? ' hidden' : '' }}">
         <div class="skeleton-wrapper">
             <div class="skeleton skeleton-logo"></div>
             <div class="skeleton skeleton-title"></div>
@@ -576,16 +610,6 @@
                 <p class="login-subtitle">Please enter your credentials below.</p>
             </div>
 
-            @if ($errors->any())
-                <div class="alert alert-danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 0.5rem; background-color: #FEE2E2; border: 1px solid #FECACA; color: #991B1B;">
-                    <ul style="margin: 0; padding-left: 1.25rem;">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <form id="loginForm" method="POST" action="{{ route('admin.login') }}">
                 @csrf
                 <input type="hidden" id="selectedRoleInput" name="role" value="">
@@ -593,12 +617,20 @@
 
                 <div class="form-group">
                     <label for="email" class="form-label">Email Address</label>
-                    <input type="email" id="email" name="email" required autocomplete="email" class="form-input">
+                    <input type="email" id="email" name="email" required autocomplete="email" class="form-input" value="{{ old('email') }}">
                 </div>
 
                 <div class="form-group">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" name="password" required autocomplete="current-password" class="form-input">
+                    <div class="password-wrapper">
+                        <input type="password" id="password" name="password" required autocomplete="current-password" class="form-input">
+                        <button type="button" class="password-toggle" id="passwordToggle" onclick="togglePassword()" aria-label="Show password" title="Show password">
+                            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="form-options">
@@ -626,6 +658,35 @@
                 document.getElementById('loadingOverlay').classList.add('hidden');
             }, 1000);
         });
+
+        // Restore the login form + role and show error popup when a login attempt failed
+        @if ($errors->any() && old('role'))
+            (function restoreFailedLogin() {
+                function run() {
+                    if (!document.getElementById('loginPanel')) return;
+                    selectRole(@json(old('role')));
+                    const messages = @json($errors->all());
+                    if (typeof Swal !== 'undefined' && messages.length) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Sign in failed',
+                            html: '<div style="text-align:center;color:#475569;font-size:15px">' +
+                                  messages.map(function(m) { return '<p style="margin:4px 0">' + m + '</p>'; }).join('') +
+                                  '</div>',
+                            confirmButtonColor: '#1A237E',
+                            confirmButtonText: 'Try again',
+                            background: '#ffffff',
+                            allowOutsideClick: true
+                        });
+                    }
+                }
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', run);
+                } else {
+                    run();
+                }
+            })();
+        @endif
 
         // Welcome popup — shows once ever per browser
         (function showWelcomeOnce() {
@@ -715,6 +776,23 @@
             loginPanel.style.display = 'none';
             rolePanel.style.display = 'grid';
             subtitle.style.visibility = 'visible';
+        }
+
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const btn = document.getElementById('passwordToggle');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>';
+                btn.setAttribute('aria-label', 'Hide password');
+                btn.title = 'Hide password';
+            } else {
+                input.type = 'password';
+                icon.innerHTML = '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>';
+                btn.setAttribute('aria-label', 'Show password');
+                btn.title = 'Show password';
+            }
         }
     </script>
 </body>
