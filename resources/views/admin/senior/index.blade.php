@@ -91,7 +91,7 @@
         .analytics-card{width:100%;background:var(--surface);border-radius:16px;padding:24px;border:1px solid var(--border);min-height:0;height:550px;animation:fadeInUp .6s ease-out .1s backwards;}
         .analytics-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:20px;}
         @media(min-width:1400px){.analytics-card{width:100%;height:550px;}#barangayChartWrap{flex-direction:row;align-items:flex-start;}#barangayLegend{max-height:450px;}}
-        @media(min-width:1200px) and (max-width:1399px){.analytics-card{width:100%;height:500px;}#barangayChartWrap{flex-direction:row;align-items:flex-start;}#barangayLegend{max-height:400px;}}
+        @media(min-width:1200px) and (max-width:1399px){.analytics-card{width:100%;height:550px;}#barangayChartWrap{flex-direction:row;align-items:flex-start;}#barangayLegend{max-height:400px;}}
         @media(min-width:992px) and (max-width:1199px){.analytics-card{width:100%;height:450px;}#barangayChartWrap{flex-direction:row;align-items:flex-start;}#barangayLegend{max-height:350px;}}
         @media(min-width:768px) and (max-width:991px){.analytics-card{width:100%;height:400px;}#barangayChartWrap{flex-direction:row;align-items:flex-start;}#barangayLegend{max-height:300px;}}
         @media(min-width:576px) and (max-width:767px){.analytics-card{width:100%;height:auto;}#barangayLegend{max-height:180px;}}
@@ -439,9 +439,10 @@
                 align-items: center !important;
                 gap: 0 !important;
             }
-            .dashboard-grid { grid-template-columns: 1fr 1fr; }
+            .dashboard-grid { grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr); gap: 24px; margin-bottom: 20px; }
             #barangayChartBox { width: 360px !important; height: 360px !important; }
-            .activity-feed { max-height: 400px !important; }
+            .activity-card { height: 550px; min-height: 550px; max-height: 550px; }
+            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: none !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
 
         /* ── Large Tablets (992px - 1199px) ── */
@@ -475,9 +476,10 @@
         @media (min-width: 1200px) and (max-width: 1399px) {
             header { margin-bottom: 0.5rem !important; }
             .stat-card { padding: 18px; }
-            .dashboard-grid { gap: 18px !important; margin-bottom: 20px !important; }
+            .dashboard-grid { gap: 24px !important; margin-bottom: 20px !important; }
             #barangayChartBox { width: 300px !important; height: 300px !important; }
-            .activity-feed { max-height: 390px !important; }
+            .activity-card { height: 550px !important; min-height: 550px !important; max-height: 550px !important; }
+            .activity-feed { max-height: none !important; }
         }
 
         /* ── Tablet (768–1199px): icon-only sidebar, 2-col cards, stacked content ── */
