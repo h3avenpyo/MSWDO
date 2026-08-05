@@ -100,11 +100,11 @@
         /* Activity Card */
         .activity-card{width:100%;background:var(--surface);border-radius:16px;padding:24px;border:1px solid var(--border);min-height:0;animation:fadeInUp .6s ease-out .2s backwards;display:flex;flex-direction:column;}
         .activity-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:20px;flex-shrink:0;}
-        .activity-feed{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:8px;min-height:0;max-height:400px;}
-        .activity-feed::-webkit-scrollbar{width:6px;}
-        .activity-feed::-webkit-scrollbar-track{background:var(--background);border-radius:3px;}
-        .activity-feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-        .activity-feed::-webkit-scrollbar-thumb:hover{background:var(--text-muted);}
+        .activity-feed{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:8px;min-height:0;max-height:400px;scrollbar-width:thin;scrollbar-color:#94A3B8 #E2E8F0;}
+        .activity-feed::-webkit-scrollbar{width:8px;}
+        .activity-feed::-webkit-scrollbar-track{background:#E2E8F0;border-radius:4px;}
+        .activity-feed::-webkit-scrollbar-thumb{background:#94A3B8;border-radius:4px;}
+        .activity-feed::-webkit-scrollbar-thumb:hover{background:var(--text-secondary);}
 
         .activity-item{display:flex;gap:14px;padding:16px;border-radius:12px;background:var(--background);margin-bottom:12px;transition:all .2s ease;}
         .activity-item:last-child{margin-bottom:0;}
@@ -513,8 +513,8 @@
             #barangayLegend { width: 100% !important; max-width: 100% !important; max-height: 200px !important; overflow-y: auto !important; overflow-x: hidden !important; }
 
             /* Activities below chart */
-            .activity-card { display: flex !important; flex-direction: column !important; min-height: 0 !important; }
-            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: 280px !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
+            .activity-card { display: flex !important; flex-direction: column !important; min-height: 0 !important; height: 520px !important; max-height: 520px !important; }
+            .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: none !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
 
         /* ── Small mobile (<375px): still two cards per row (matches statistics) ── */
