@@ -2138,6 +2138,11 @@
             header{display:flex !important;}
             .mobile-header{display:none !important;}
             .topnav-datetime{display:inline;}
+            .activity-card{display:flex !important;flex-direction:column !important;min-height:0 !important;height:550px !important;max-height:550px !important;}
+            .activity-feed{flex:1 !important;min-height:0 !important;max-height:none !important;overflow-y:auto !important;overflow-x:hidden !important;padding-right:8px !important;}
+            .sc-filter-row{flex-wrap:wrap;align-items:flex-end;}
+            .sc-filter-left{flex-wrap:wrap;}
+            .sc-filter-right{margin-left:auto;}
         }
 
         @media (min-width: 1200px) {

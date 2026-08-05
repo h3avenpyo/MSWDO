@@ -254,6 +254,19 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         color: #6B7280;
     }
 
+    /* Tablet (768-1199px): empty state stays a full-width centered row */
+    @media (min-width: 768px) and (max-width: 1199px) {
+        .archive-table tbody tr.empty-row { display: table-row !important; background: transparent !important; border: none !important; box-shadow: none !important; margin: 0 !important; }
+        .archive-table tbody tr.empty-row td.empty-cell {
+            display: table-cell !important;
+            padding: 2.5rem 1.5rem !important;
+            border: none !important;
+            text-align: center !important;
+        }
+        .archive-table tbody tr.empty-row td.empty-cell::before { display: none !important; }
+        .archive-table tbody tr.empty-row td.empty-cell .empty-state-content { align-items: center; justify-content: center; }
+    }
+
     @media (min-width: 1200px) {
         /* ── Panel & wrap: grow to fill all remaining height ── */
         .archive-panel-wrap { padding: 1rem !important; margin-bottom: 0 !important; flex: 1 !important; min-height: 0 !important; overflow: hidden !important; display: flex !important; flex-direction: column !important; }
@@ -399,17 +412,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             $initials = strtoupper(substr($userName, 0, 2));
         }
     @endphp
-    <header class="sc-flat-header bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
-        <div class="flex items-center">
-            <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Archived Cases</h1>
-        </div>
-        <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-            <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime">Thursday, July 16, 2026 at 01:51 PM</div>
-            <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
-                {{ $initials }}
-            </div>
-        </div>
-    </header>
 
     <!-- Page Sub-Header -->
     <div class="mb-6">
