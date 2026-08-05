@@ -88,7 +88,7 @@
         .stat-card-red .stat-card-icon{background:var(--danger-bg);color:var(--danger);}
 
         /* Analytics Card */
-        .analytics-card{width:100%;background:var(--surface);border-radius:16px;padding:24px;border:1px solid var(--border);min-height:0;height:550px;animation:fadeInUp .6s ease-out .1s backwards;}
+        .analytics-card{width:100%;background:var(--surface);border-radius:16px;padding:24px;border:1px solid var(--border);min-height:0;height:550px;display:flex;flex-direction:column;animation:fadeInUp .6s ease-out .1s backwards;}
         .analytics-card h3{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:20px;}
         @media(min-width:1400px){.analytics-card{width:100%;height:550px;}#barangayChartWrap{flex-direction:row;align-items:flex-start;}#barangayLegend{max-height:450px;}}
         @media(min-width:1200px) and (max-width:1399px){.analytics-card{width:100%;height:550px;}#barangayChartWrap{flex-direction:row;align-items:flex-start;}#barangayLegend{max-height:400px;}}
@@ -440,7 +440,9 @@
                 gap: 0 !important;
             }
             .dashboard-grid { grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr); gap: 24px; margin-bottom: 20px; }
-            #barangayChartBox { width: 360px !important; height: 360px !important; }
+            #barangayChartWrap { flex: 1 !important; min-height: 0 !important; height: 100% !important; flex-wrap: nowrap !important; align-items: center !important; }
+            #barangayChartBox { position: relative !important; flex: 1 1 0% !important; min-width: 0 !important; min-height: 0 !important; width: auto !important; height: 100% !important; }
+            #barangayLegend { flex: 0 1 300px !important; }
             .activity-card { height: 550px; min-height: 550px; max-height: 550px; }
             .activity-feed { flex: 1 !important; min-height: 0 !important; max-height: none !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px !important; }
         }
@@ -477,7 +479,7 @@
             header { margin-bottom: 0.5rem !important; }
             .stat-card { padding: 18px; }
             .dashboard-grid { gap: 24px !important; margin-bottom: 20px !important; }
-            #barangayChartBox { width: 300px !important; height: 300px !important; }
+            #barangayChartBox { position: relative !important; flex: 1 1 0% !important; min-width: 0 !important; min-height: 0 !important; width: auto !important; height: 100% !important; }
             .activity-card { height: 550px !important; min-height: 550px !important; max-height: 550px !important; }
             .activity-feed { max-height: none !important; }
         }
@@ -616,7 +618,7 @@
         <div class="dashboard-grid">
             <!-- Top Barangays -->
             <div class="analytics-card">
-                <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center justify-between mb-1">
                     <h3><i data-lucide="map-pin" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px;color:var(--icon-blue)"></i>Top Barangays</h3>
                 </div>
                 <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap" id="barangayChartWrap">
@@ -785,7 +787,7 @@
             },
             options:{
                 responsive:true,
-                maintainAspectRatio:true,
+                maintainAspectRatio:false,
                 cutout:'65%',
                 plugins:{
                     legend:{display:false},
