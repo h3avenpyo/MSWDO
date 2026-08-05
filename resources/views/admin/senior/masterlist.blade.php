@@ -202,10 +202,11 @@
             .mobile-select-all { display: flex; }
             .action-btn { width: 44px; height: 44px; }
 
-            /* Table → stacked cards */
+            /* Table → stacked cards (fixed-height scrollable area) */
             .table-responsive {
-                overflow: visible; border: none; background: transparent;
-                box-shadow: none; border-radius: 0; max-height: none;
+                overflow: auto; border: none;
+                box-shadow: none; border-radius: 0;
+                max-height: min(620px, calc(100vh - 320px)); -webkit-overflow-scrolling: touch;
             }
             .table-responsive table { display: block; width: 100%; }
             .table-responsive thead { display: none; }

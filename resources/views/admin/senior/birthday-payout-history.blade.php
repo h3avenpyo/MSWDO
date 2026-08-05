@@ -49,7 +49,7 @@
         /* ── Table Card ── */
         .table-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;min-width:0;width:100%;max-width:100%;}
         .table-card-title{font-size:1.25rem;font-weight:700;color:var(--text-primary);margin:0 0 1.25rem 0;flex-shrink:0;}
-        .table-responsive{overflow-x:auto;overflow-y:auto;width:100%;max-width:100%;-webkit-overflow-scrolling:touch;border-radius:8px;border:1px solid var(--border);max-height:min(620px, calc(100vh - 260px));}
+        .table-responsive{overflow-x:auto;overflow-y:auto;width:100%;max-width:100%;-webkit-overflow-scrolling:touch;border-radius:8px;border:1px solid var(--border);background:var(--surface);max-height:min(620px, calc(100vh - 260px));}
         .table-responsive table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:0;}
         .table-responsive thead{background:var(--surface);}
         .table-responsive th{padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary);text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:1;background:var(--surface);}
@@ -180,9 +180,8 @@
             </div>
 
             <!-- History Table -->
-            <div class="table-card">
-                <h2 class="table-card-title">Birthday Payout History Log</h2>
-                <div class="table-responsive">
+            <h2 class="table-card-title">Birthday Payout History Log</h2>
+            <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
@@ -236,7 +235,6 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
 
             @if($history->hasPages())
                 <div class="pagination-wrap">
