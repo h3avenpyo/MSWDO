@@ -633,6 +633,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        let lastSelectedRole = @json(old('role', ''));
+
         // Restore the login form + role and show error popup when a login attempt failed
         @if ($errors->any() && old('role'))
             (function restoreFailedLogin() {
@@ -877,6 +879,16 @@
             resetCodeFlow();
             setLoginMode('password');
 
+            // Clear credentials only when switching to a different role card,
+            // so the last used email/password doesn't show on other roles.
+            if (roleName !== lastSelectedRole) {
+                const emailField = document.getElementById('email');
+                const passwordField = document.getElementById('password');
+                if (emailField) emailField.value = '';
+                if (passwordField) passwordField.value = '';
+            }
+            lastSelectedRole = roleName;
+
             // Add class for layout transition
             container.classList.add('login-mode');
             document.body.classList.add('login-mode-active');
@@ -924,10 +936,12 @@
             const verifyStep = document.getElementById('codeVerifyStep');
             const notice = document.getElementById('codeSentNotice');
             const sendForm = document.getElementById('codeSendForm');
+            const codeEmail = document.getElementById('codeEmail');
             if (sendStep) sendStep.style.display = 'block';
             if (verifyStep) verifyStep.style.display = 'none';
             if (notice) notice.style.display = 'none';
             if (sendForm) sendForm.reset();
+            if (codeEmail) codeEmail.value = '';
             showInlineError('codeSendError', '');
             showInlineError('codeVerifyError', '');
         }
