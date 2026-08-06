@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\DashboardRedirector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -19,7 +20,6 @@ class AuthController extends Controller
         $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
-            'role' => ['required', 'string'],
         ]);
 
         $user = User::where('email', $request->email)
@@ -30,27 +30,6 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'Invalid email or password.'])->withInput();
         }
 
-        $moduleRoleMap = [
-            'Social Case Study' => ['admin', 'social_worker'],
-            'Senior Citizen' => ['admin', 'staff', 'Senior Citizen officer'],
-            'Financial Assistance Officer' => ['admin', 'staff', 'Financial assistance officer'],
-            'Admin' => ['admin'],
-        ];
-
-        $moduleRedirects = [
-            'Social Case Study' => 'admin.social-case.dashboard',
-            'Senior Citizen' => 'admin.senior',
-            'Financial Assistance Officer' => 'admin.financial',
-            'Admin' => 'admin.dashboard',
-        ];
-
-        $selectedModule = $request->role;
-        $allowedRoles = (array) ($moduleRoleMap[$selectedModule] ?? []);
-
-        if (! empty($allowedRoles) && ! in_array($user->role->value, $allowedRoles, true)) {
-            return back()->withErrors(['role' => "This account is not authorized for the selected role."])->withInput();
-        }
-
         session([
             'admin_user_id' => $user->id,
             'admin_user_name' => $user->name,
@@ -58,9 +37,7 @@ class AuthController extends Controller
             'admin_just_logged_in' => true,
         ]);
 
-        $redirectRoute = $moduleRedirects[$selectedModule] ?? 'admin.dashboard';
-
-        return redirect()->route($redirectRoute);
+        return redirect()->route(DashboardRedirector::routeFor($user->role));
     }
 
     public function logout(Request $request)

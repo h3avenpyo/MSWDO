@@ -161,25 +161,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         
         lucide.createIcons();
         loadDashboard();
-
-        // Welcome popup — only after login
-        @if(session('admin_just_logged_in'))
-        setTimeout(function() {
-            Swal.fire({
-                title: 'Welcome Admin!',
-                html: '<div style="text-align:center;line-height:1.7;color:#475569;font-size:15px">' +
-                      '<p style="margin:0 0 8px;font-weight:500">{{ $userName }}</p>' +
-                      '</div>',
-                icon: 'info',
-                confirmButtonColor: '#1A237E',
-                confirmButtonText: 'Continue',
-                background: '#ffffff',
-                customClass: { popup: 'rounded-4 shadow-lg' },
-                allowOutsideClick: false
-            });
-            fetch('/admin/clear-welcome', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } });
-        }, 500);
-        @endif
     });
 </script>
 @endpush

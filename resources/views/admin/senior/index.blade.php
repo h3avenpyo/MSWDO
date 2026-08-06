@@ -734,23 +734,6 @@
         update();
     });
 
-    // Welcome popup
-    document.addEventListener('DOMContentLoaded',function(){
-        @if($justLoggedIn ?? false)
-            Swal.fire({
-                title:'Welcome Admin!',
-                html:'<div style="text-align:center;line-height:1.7;color:#475569;font-size:15px"><p style="margin:0 0 8px;font-weight:500">Senior Citizen Officer</p></div>',
-                icon:'info',
-                confirmButtonColor:'#1A237E',
-                confirmButtonText:'Continue',
-                background:'#ffffff',
-                customClass:{popup:'rounded-4 shadow-lg'},
-                allowOutsideClick:false
-            });
-        @endif
-        initBarangayChart();
-    });
-
     // Barangay Distribution
     function initBarangayChart(){
         const barangayData=@json($barangayDistribution);
@@ -876,6 +859,8 @@
             </div>`;
         }).join('');
     }
+
+    initBarangayChart();
 
     // Confirm clear activities
     function confirmClearActivities(){
