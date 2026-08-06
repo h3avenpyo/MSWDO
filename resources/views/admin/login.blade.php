@@ -117,8 +117,6 @@
             .portal-container.login-mode .logo-img { width: 3.5rem; height: 3.5rem; }
             .portal-container.login-mode { gap: 0.75rem; }
             .portal-container.login-mode .welcome-title { font-size: 1.25rem; }
-            .skeleton-logo { width: 4rem; height: 4rem; }
-            .skeleton-title { width: 16rem; max-width: 80%; }
         }
         @media (min-width: 480px) and (max-width: 767px) {
             .portal-container.login-mode { max-width: 26rem; gap: 1.25rem; }
@@ -255,6 +253,76 @@
             color: #64748B;
             margin: 0;
         }
+        .login-mode-toggle {
+            display: flex;
+            gap: 0.25rem;
+            background-color: #F1F5F9;
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .login-mode-btn {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            border: none;
+            border-radius: 0.375rem;
+            background: transparent;
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: #64748B;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .login-mode-btn.active {
+            background: #FFFFFF;
+            color: #1A237E;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+        }
+        .code-sent-notice {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #EEF2FF;
+            border: 1px solid #C7D2FE;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.875rem;
+            color: #3730A3;
+        }
+        .resend-hint {
+            text-align: center;
+            font-size: 0.875rem;
+            color: #64748B;
+            margin-top: 1rem;
+        }
+        .resend-hint button {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #1A237E;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .resend-hint button:hover {
+            text-decoration: underline;
+        }
+        .form-error {
+            background-color: #FEF2F2;
+            border: 1px solid #FECACA;
+            color: #B91C1C;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.875rem;
+        }
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .portal-container.login-mode #backToHomepage {
+            display: none !important;
+        }
         .form-group {
             display: flex;
             flex-direction: column;
@@ -369,110 +437,6 @@
             transform: translateY(1px);
         }
 
-
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #F8FAFC;
-            z-index: 9999;
-            opacity: 1;
-            transition: opacity 1s ease-in-out;
-        }
-        .loading-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        /* Skeleton Loading */
-        .skeleton {
-            background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite linear;
-            border-radius: 0.5rem;
-        }
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        .skeleton-wrapper {
-            width: 100%;
-            max-width: 72rem;
-            margin: 0 auto;
-            padding: 2rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .skeleton-logo {
-            width: 6rem;
-            height: 6rem;
-            border-radius: 50%;
-            margin-bottom: 1rem;
-        }
-        .skeleton-title {
-            width: 24rem;
-            max-width: 80%;
-            height: 2.25rem;
-            margin-bottom: 0.5rem;
-        }
-        .skeleton-subtitle {
-            width: 30rem;
-            max-width: 60%;
-            height: 1rem;
-            margin-bottom: 3rem;
-        }
-        .skeleton-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            width: 100%;
-        }
-        @media (min-width: 768px) {
-            .skeleton-grid { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
-        }
-        @media (min-width: 992px) {
-            .skeleton-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
-        }
-        .skeleton-card-container {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            aspect-ratio: 1 / 1;
-            min-width: 0;
-        }
-        .skeleton-icon {
-            width: 3.5rem;
-            height: 3.5rem;
-            border-radius: 0.75rem;
-            margin-bottom: 1.5rem;
-        }
-        .skeleton-text-1 {
-            width: 80%;
-            height: 1.125rem;
-            margin-bottom: 0.75rem;
-        }
-        .skeleton-text-2 {
-            width: 95%;
-            height: 0.875rem;
-            margin-bottom: 0.5rem;
-        }
-        .skeleton-text-3 {
-            width: 70%;
-            height: 0.875rem;
-        }
-        .portal-container.login-mode #backToHomepage {
-            display: none !important;
-        }
-
         /* ══════════════════════════════════════════════
            BREAKPOINTS (Mobile-First)
            xs: 0–767px (default), sm: 768+, md: 992+, lg: 1200+
@@ -480,41 +444,6 @@
     </style>
 </head>
 <body>
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay{{ $errors->any() ? ' hidden' : '' }}">
-        <div class="skeleton-wrapper">
-            <div class="skeleton skeleton-logo"></div>
-            <div class="skeleton skeleton-title"></div>
-            <div class="skeleton skeleton-subtitle"></div>
-            <div class="skeleton-grid">
-                <div class="skeleton-card-container">
-                    <div class="skeleton skeleton-icon"></div>
-                    <div class="skeleton skeleton-text-1"></div>
-                    <div class="skeleton skeleton-text-2"></div>
-                    <div class="skeleton skeleton-text-3"></div>
-                </div>
-                <div class="skeleton-card-container">
-                    <div class="skeleton skeleton-icon"></div>
-                    <div class="skeleton skeleton-text-1"></div>
-                    <div class="skeleton skeleton-text-2"></div>
-                    <div class="skeleton skeleton-text-3"></div>
-                </div>
-                <div class="skeleton-card-container">
-                    <div class="skeleton skeleton-icon"></div>
-                    <div class="skeleton skeleton-text-1"></div>
-                    <div class="skeleton skeleton-text-2"></div>
-                    <div class="skeleton skeleton-text-3"></div>
-                </div>
-                <div class="skeleton-card-container">
-                    <div class="skeleton skeleton-icon"></div>
-                    <div class="skeleton skeleton-text-1"></div>
-                    <div class="skeleton skeleton-text-2"></div>
-                    <div class="skeleton skeleton-text-3"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div id="portalContainer" class="portal-container">
         <!-- Header -->
         <div class="logo-wrapper">
@@ -610,6 +539,11 @@
                 <p class="login-subtitle">Please enter your credentials below.</p>
             </div>
 
+            <div class="login-mode-toggle" id="loginModeToggle">
+                <button type="button" class="login-mode-btn active" id="modePasswordBtn" onclick="setLoginMode('password')">Password</button>
+                <button type="button" class="login-mode-btn" id="modeCodeBtn" onclick="setLoginMode('code')">Email Code</button>
+            </div>
+
             <form id="loginForm" method="POST" action="{{ route('admin.login') }}">
                 @csrf
                 <input type="hidden" id="selectedRoleInput" name="role" value="">
@@ -644,27 +578,70 @@
                 <button type="submit" class="submit-button">
                     Sign In
                 </button>
-
-
             </form>
+
+            <div id="codeLoginSection" style="display: none;">
+                <div id="codeSentNotice" class="code-sent-notice" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:1.25rem;height:1.25rem;flex-shrink:0;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                    </svg>
+                    <span>A 6-digit code was sent to <strong id="codeSentEmail"></strong>. Enter it below.</span>
+                </div>
+
+                <div id="codeSendStep">
+                    <form id="codeSendForm" method="POST" action="{{ route('admin.login.code.send') }}" novalidate>
+                        @csrf
+                        <input type="hidden" class="js-role-input" name="role" value="">
+
+                        <div class="form-group">
+                            <label for="codeEmail" class="form-label">Email Address</label>
+                            <input type="email" id="codeEmail" name="email" required autocomplete="email" class="form-input" value="{{ old('email') }}">
+                        </div>
+
+                        <div id="codeSendError" class="form-error" style="display: none;"></div>
+
+                        <button type="submit" id="codeSendBtn" class="submit-button">
+                            Send Code
+                        </button>
+                    </form>
+                </div>
+
+                <div id="codeVerifyStep" style="display: none;">
+                    <div style="margin-top: 1.5rem; border-top: 1px solid #E2E8F0; padding-top: 1.5rem;">
+                        <form id="codeVerifyForm" method="POST" action="{{ route('admin.login.code.verify') }}" novalidate>
+                            @csrf
+                            <input type="hidden" class="js-role-input" name="role" value="">
+                            <input type="hidden" id="codeVerifyEmail" name="email" value="">
+
+                            <div class="form-group">
+                                <label for="code" class="form-label">Login Code</label>
+                                <input type="text" id="code" name="code" required maxlength="6" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" class="form-input" placeholder="6-digit code">
+                            </div>
+
+                            <div id="codeVerifyError" class="form-error" style="display: none;"></div>
+
+                            <button type="submit" id="codeVerifyBtn" class="submit-button">
+                                Verify & Sign In
+                            </button>
+                        </form>
+                        <p class="resend-hint">Didn't get it? <button type="button" id="codeResendBtn">Send a new code</button></p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Hide loading overlay when page is fully loaded
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.getElementById('loadingOverlay').classList.add('hidden');
-            }, 1000);
-        });
-
         // Restore the login form + role and show error popup when a login attempt failed
         @if ($errors->any() && old('role'))
             (function restoreFailedLogin() {
                 function run() {
                     if (!document.getElementById('loginPanel')) return;
                     selectRole(@json(old('role')));
+                    @if (session('code_sent'))
+                        setLoginMode('code');
+                    @endif
                     const messages = @json($errors->all());
                     if (typeof Swal !== 'undefined' && messages.length) {
                         Swal.fire({
@@ -735,6 +712,150 @@
             return true;
         });
 
+        // Email-code login (AJAX — no page reload)
+        function currentRole() {
+            let role = '';
+            document.querySelectorAll('.js-role-input').forEach(function (input) {
+                if (input.value) role = input.value;
+            });
+            return role;
+        }
+
+        function showInlineError(elId, message) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            if (message) {
+                el.textContent = message;
+                el.style.display = 'block';
+            } else {
+                el.textContent = '';
+                el.style.display = 'none';
+            }
+        }
+
+        function submitCodeSend(btn) {
+            const form = document.getElementById('codeSendForm');
+            const emailInput = document.getElementById('codeEmail');
+            const role = currentRole();
+
+            if (!role) {
+                alert('Please select a role first.');
+                return;
+            }
+            if (!emailInput.value || !emailInput.checkValidity()) {
+                showInlineError('codeSendError', 'Please enter a valid email address.');
+                return;
+            }
+
+            const original = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            showInlineError('codeSendError', '');
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: { 'Accept': 'application/json' },
+                body: new FormData(form)
+            })
+            .then(function (res) {
+                return res.json().then(function (json) {
+                    return { ok: res.ok, json: json };
+                });
+            })
+            .then(function (result) {
+                if (result.ok) {
+                    const email = emailInput.value.trim();
+                    document.getElementById('codeSentEmail').textContent = email;
+                    document.getElementById('codeVerifyEmail').value = email;
+                    document.getElementById('codeSendStep').style.display = 'none';
+                    document.getElementById('codeSentNotice').style.display = 'flex';
+                    document.getElementById('codeVerifyStep').style.display = 'block';
+                    showInlineError('codeVerifyError', '');
+                    setTimeout(function () { document.getElementById('code').focus(); }, 100);
+                } else {
+                    const errors = result.json.errors || {};
+                    const message = errors.email || errors.role || result.json.message || 'Something went wrong. Please try again.';
+                    showInlineError('codeSendError', message);
+                }
+            })
+            .catch(function () {
+                showInlineError('codeSendError', 'Something went wrong. Please try again.');
+            })
+            .finally(function () {
+                btn.disabled = false;
+                btn.textContent = original;
+            });
+        }
+
+        const codeSendForm = document.getElementById('codeSendForm');
+        if (codeSendForm) {
+            codeSendForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitCodeSend(document.getElementById('codeSendBtn'));
+            });
+        }
+
+        const codeResendBtn = document.getElementById('codeResendBtn');
+        if (codeResendBtn) {
+            codeResendBtn.addEventListener('click', function() {
+                submitCodeSend(document.getElementById('codeSendBtn'));
+            });
+        }
+
+        const codeVerifyForm = document.getElementById('codeVerifyForm');
+        if (codeVerifyForm) {
+            codeVerifyForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const btn = document.getElementById('codeVerifyBtn');
+                const codeInput = document.getElementById('code');
+                const role = currentRole();
+
+                if (!role) {
+                    alert('Please select a role first.');
+                    return;
+                }
+                if (!codeInput.value || codeInput.value.length !== 6) {
+                    showInlineError('codeVerifyError', 'Please enter the 6-digit code.');
+                    return;
+                }
+
+                const original = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = 'Verifying...';
+                showInlineError('codeVerifyError', '');
+
+                fetch(this.action, {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json' },
+                    body: new FormData(this)
+                })
+                .then(function (res) {
+                    return res.json().then(function (json) {
+                        return { ok: res.ok, json: json };
+                    });
+                })
+                .then(function (result) {
+                    if (result.ok) {
+                        window.location.href = result.json.redirect;
+                    } else {
+                        const errors = result.json.errors || {};
+                        const message = errors.code || errors.email || errors.role || result.json.message || 'Invalid or expired code.';
+                        showInlineError('codeVerifyError', message);
+                        codeInput.value = '';
+                        codeInput.focus();
+                    }
+                })
+                .catch(function () {
+                    showInlineError('codeVerifyError', 'Something went wrong. Please try again.');
+                })
+                .finally(function () {
+                    btn.disabled = false;
+                    btn.textContent = original;
+                });
+            });
+        }
+
         function selectRole(roleName) {
             const container = document.getElementById('portalContainer');
             const rolePanel = document.getElementById('roleSelectionPanel');
@@ -746,6 +867,15 @@
             // Set role in input and title
             roleInput.value = roleName;
             loginTitle.innerText = roleName + " Login";
+
+            // Sync role to email-code forms
+            document.querySelectorAll('.js-role-input').forEach(function (input) {
+                input.value = roleName;
+            });
+
+            // Reset email-code flow so state from another role card doesn't carry over
+            resetCodeFlow();
+            setLoginMode('password');
 
             // Add class for layout transition
             container.classList.add('login-mode');
@@ -760,6 +890,46 @@
             setTimeout(() => {
                 document.getElementById('email').focus();
             }, 100);
+        }
+
+        function setLoginMode(mode) {
+            const pwForm = document.getElementById('loginForm');
+            const codeSection = document.getElementById('codeLoginSection');
+            const pwBtn = document.getElementById('modePasswordBtn');
+            const codeBtn = document.getElementById('modeCodeBtn');
+            const toggle = document.getElementById('loginModeToggle');
+
+            if (!toggle) return;
+
+            if (mode === 'code') {
+                resetCodeFlow();
+                pwForm.style.display = 'none';
+                codeSection.style.display = 'block';
+                pwBtn.classList.remove('active');
+                codeBtn.classList.add('active');
+                setTimeout(() => {
+                    const el = document.getElementById('codeEmail');
+                    if (el && el.offsetParent) el.focus();
+                }, 100);
+            } else {
+                pwForm.style.display = 'block';
+                codeSection.style.display = 'none';
+                codeBtn.classList.remove('active');
+                pwBtn.classList.add('active');
+            }
+        }
+
+        function resetCodeFlow() {
+            const sendStep = document.getElementById('codeSendStep');
+            const verifyStep = document.getElementById('codeVerifyStep');
+            const notice = document.getElementById('codeSentNotice');
+            const sendForm = document.getElementById('codeSendForm');
+            if (sendStep) sendStep.style.display = 'block';
+            if (verifyStep) verifyStep.style.display = 'none';
+            if (notice) notice.style.display = 'none';
+            if (sendForm) sendForm.reset();
+            showInlineError('codeSendError', '');
+            showInlineError('codeVerifyError', '');
         }
 
         function showRoles() {

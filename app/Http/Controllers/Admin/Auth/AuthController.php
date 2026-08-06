@@ -31,9 +31,9 @@ class AuthController extends Controller
         }
 
         $moduleRoleMap = [
-            'Social Case Study' => ['social_worker'],
-            'Senior Citizen' => ['staff', 'Senior Citizen officer'],
-            'Financial Assistance Officer' => ['staff', 'Financial assistance officer'],
+            'Social Case Study' => ['admin', 'social_worker'],
+            'Senior Citizen' => ['admin', 'staff', 'Senior Citizen officer'],
+            'Financial Assistance Officer' => ['admin', 'staff', 'Financial assistance officer'],
             'Admin' => ['admin'],
         ];
 
