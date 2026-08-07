@@ -509,9 +509,6 @@
         </div>
         <div style="padding:16px 24px;border-top:1px solid var(--border);background:var(--surface);display:flex;justify-content:flex-end;gap:12px;">
             <button onclick="closeModal()" style="padding:8px 16px;background:var(--background);border:1px solid var(--border);border-radius:6px;font-weight:500;color:var(--text-primary);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='var(--background)'">Close</button>
-            <button onclick="window.location.href='/admin/senior/profile/' + currentSeniorId" style="padding:8px 16px;background:#1A237E;border:none;border-radius:6px;font-weight:500;color:white;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.2s;" onmouseover="this.style.background='#3730A3'" onmouseout="this.style.background='#1A237E'">
-                <i data-lucide="user" style="width:16px;height:16px;"></i> Full Profile
-            </button>
         </div>
     </div>
 </div>

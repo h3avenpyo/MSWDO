@@ -61,11 +61,6 @@ Route::get('/admin/senior/masterlist', [SeniorController::class, 'seniorMasterli
 Route::get('/admin/senior/archive', [SeniorController::class, 'seniorArchiveList'])->name('admin.senior.archive.list');
 Route::post('/admin/senior/archive/{id}', [SeniorController::class, 'archiveSenior'])->name('admin.senior.archive');
 Route::post('/admin/senior/unarchive/{id}', [SeniorController::class, 'unarchiveSenior'])->name('admin.senior.unarchive');
-Route::get('/admin/senior/id-card/{id}', [SeniorController::class, 'showIdCard'])->name('admin.senior.id-card');
-Route::post('/admin/senior/id-card/{id}/generate', [SeniorController::class, 'generateIdCard'])->name('admin.senior.id-card.generate');
-Route::post('/admin/senior/id-card/{id}/reprint', [SeniorController::class, 'reprintIdCard'])->name('admin.senior.id-card.reprint');
-Route::get('/admin/senior/id-card/{id}/download', [SeniorController::class, 'downloadIdCardPdf'])->name('admin.senior.id-card.download');
-Route::get('/admin/senior/profile/{id}', [SeniorController::class, 'seniorProfile'])->name('admin.senior.profile');
 Route::get('/admin/senior/profile/{id}/json', [SeniorController::class, 'seniorProfileJson'])->name('admin.senior.profile.json');
 Route::prefix('admin/senior/birthdays')->name('admin.senior.birthdays')->group(function () {
     Route::get('/', [BirthdayController::class, 'index']);
