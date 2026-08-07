@@ -302,6 +302,60 @@ function extractSpecificNeed(rawText, purposeLabel) {
   return '';
 }
 function rewriteProblemPresented(rawProblem, purpose, clientFullName, clientData = {}, household = []) {
+  // --- Grammar utility helpers ---
+  const capitaliseSentences = function(text) {
+    return text.replace(/(^|[.!?]\s+)([a-z])/g, function(m, sep, letter) {
+      return sep + letter.toUpperCase();
+    });
+  };
+  const fixFirstPerson = function(text) {
+    // standalone lowercase "i" -> "I"
+    return text.replace(/(?<![a-zA-Z])i(?![a-zA-Z])/g, 'I');
+  };
+  const fixArticles = function(text) {
+    text = text.replace(/\ba\s+([AEIOUaeiou][a-z])/g, 'an $1');
+    text = text.replace(/\ban\s+([^AEIOUaeiou\s])/g, 'a $1');
+    return text;
+  };
+  const fixSpacing = function(text) {
+    text = text.replace(/\s+([.,!?;:])/g, '$1');
+    text = text.replace(/([.!?;:])([^\s"'\d)\]])/g, '$1 $2');
+    text = text.replace(/\s{2,}/g, ' ');
+    return text.trim();
+  };
+  const fixCommonPhrases = function(text) {
+    text = text.replace(/\bchemo\s*therapy\b/gi, 'chemotherapy');
+    text = text.replace(/\bNEPHRO?S?CLEROSIS\b/gi, 'nephrosclerosis');
+    text = text.replace(/\bdiabetes\s+mellitus\b/gi, 'Diabetes Mellitus');
+    text = text.replace(/\bchronic\s+kidney\s+disease\b/gi, 'Chronic Kidney Disease');
+    text = text.replace(/\brenal\s+failure\b/gi, 'Renal Failure');
+    text = text.replace(/\bSocial Case Study\b(?!\s+Report)/gi, 'Social Case Study Report');
+    text = text.replace(/\b(financial|medical|burial|educational|food\s*\/?\s*relief|livelihood)\s+assistance\b/gi, function(m) {
+      return m.replace(/\b\w/g, c => c.toUpperCase());
+    });
+    text = text.replace(/\bAssistance\s*\/?\s*Support\b/gi, 'Assistance');
+    text = text.replace(/\b(her|his|their|my)\s+(mother|father|sister|brother|wife|husband|son|daughter|spouse|parent)\s+(maintenance|treatment|medication|hemodialysis|dialysis|surgery|therapy|operation|hospitalization|care|chemotherapy|session|checkup|check-up|medicine)\b/gi, '$1 $2\'s $3');
+    text = text.replace(/\bneeded\s+in\b/gi, 'needed for');
+    text = text.replace(/\bneeded\s+due\s+to\b/gi, 'needed for');
+    text = text.replace(/\bPlease\s+see\s+(the\s+)?attachments?\b/gi, 'Please see the attached documents');
+    text = text.replace(/\bPlease\s+see\s+(the\s+)?attachments?\s+for\b/gi, 'Please see the attached documents for');
+    text = text.replace(/\bthru\b/gi, 'through');
+    text = text.replace(/\bw\/\b/g, 'with');
+    text = text.replace(/\bw\/o\b/g, 'without');
+    text = text.replace(/\basst\.?\b/gi, 'assistance');
+    text = text.replace(/\bpls\b/gi, 'please');
+    text = text.replace(/\bwrt\b/gi, 'with regard to');
+    text = text.replace(/\bpursuant\s+of\b/gi, 'pursuant to');
+    text = text.replace(/\bin\s+regards\s+to\b/gi, 'with regard to');
+    text = text.replace(/\bin\s+relation\s+of\b/gi, 'in relation to');
+    text = text.replace(/\bwould like to request\b/gi, 'is requesting');
+    text = text.replace(/\bwants to request\b/gi, 'is requesting');
+    // Fix comma-splice: "...Medical Assistance, she is also requesting" -> "...Medical Assistance. She is also requesting"
+    text = text.replace(/([a-z]),\s*(she|he|they|the patient|the client|the deceased)\s+is/gi, '$1. $2 is');
+    return text;
+  };
+
+
   if (!rawProblem || !rawProblem.trim()) return "";
   const purposeLabel = purpose || "Financial Assistance";
   const clientRef = clientFullName || "The client";
@@ -327,25 +381,16 @@ function rewriteProblemPresented(rawProblem, purpose, clientFullName, clientData
     );
   };
 
-  // --- Phase 1: Light grammar / terminology fixes (preserve the officer's wording) ---
+  // --- Phase 1: Grammar / terminology fixes (preserve the officer's wording) ---
 
   let p = rawProblem.trim();
-  p = p.replace(/\bchemo\s*therapy\b/gi, "chemotherapy");
-  p = p.replace(/\bNEPHRO?S?CLEROSIS\b/gi, "nephrosclerosis");
-  p = p.replace(/\bSocial Case Study\b(?!\s+Report)/gi, "Social Case Study Report");
-  p = p.replace(/\b(financial|medical|burial|educational|food\s*\/?\s*relief|livelihood)\s+assistance\b/gi, function(m) {
-    return m.replace(/\b\w/g, c => c.toUpperCase());
-  });
-  p = p.replace(/\bAssistance\s*\/?\s*Support\b/gi, "Assistance");
-  p = p.replace(/\b(her|his|their|my)\s+(mother|father|sister|brother|wife|husband|son|daughter|spouse|parent)\s+(maintenance|treatment|medication|hemodialysis|dialysis|surgery|therapy|operation|hospitalization|care|chemotherapy|session|checkup|check-up|medicine)\b/gi,
-    "$1 $2's $3");
-  p = p.replace(/\bneeded\s+in\b/gi, "needed for");
-  p = p.replace(/\bneeded\s+due\s+to\b/gi, "needed for");
-  p = p.replace(/\bPlease\s+see\s+(the\s+)?attachments?\b/gi, "Please see the attached documents");
-  p = p.replace(/\bPlease\s+see\s+the\s+attachments?\s+for\b/gi, "Please see the attached documents for");
-  p = p.replace(/\bPlease\s+see\s+attachments?\s+for\b/gi, "Please see the attached documents for");
-  p = p.replace(/\s+/g, ' ').trim();
-  p = p.replace(/\.\s*$/, '').trim();
+  p = fixCommonPhrases(p);
+  p = fixFirstPerson(p);
+  p = fixArticles(p);
+  p = fixSpacing(p);
+  p = capitaliseSentences(p);
+  // Ensure text ends with a sentence-ending punctuation
+  if (p && !/[.!?]$/.test(p)) p = p + '.';
 
   // --- Phase 2: Analyse the typed text ---
 
@@ -398,6 +443,7 @@ function rewriteProblemPresented(rawProblem, purpose, clientFullName, clientData
 
   // --- Phase 7: Final cleanup ---
 
+  paraphrased = capitaliseSentences(paraphrased);
   paraphrased = paraphrased.replace(/\s+/g, ' ').trim();
   paraphrased = paraphrased.replace(/\.\./g, '.');
   paraphrased = paraphrased.replace(/,\s*\./g, '.');
@@ -2243,12 +2289,27 @@ function renderCaseList(){
   const emptyState = document.getElementById('emptyState');
   const table = document.getElementById('dataTable');
 
-  if(paginatedCases.length === 0 && filtered.length === 0){
-    table.style.display = 'none';
-    emptyState.style.display = 'block';
+  if(table) table.style.display = 'table';
+  if(emptyState) emptyState.style.display = 'none';
+
+  if(paginatedCases.length === 0){
+    tableBody.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="7" class="empty-cell">
+          <div class="empty-state-content">
+            <div class="empty-icon-wrap">
+              <i data-lucide="folder-open"></i>
+            </div>
+            <div class="empty-title">No Social Case Studies Found</div>
+            <div class="empty-subtitle">Create your first Social Case Study to begin managing case records.</div>
+            <a href="/admin/social-case/new" style="background:var(--primary);color:#fff;border:none;display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:10px 16px;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none;">
+              <i data-lucide="plus" style="width:16px;height:16px"></i> Create New Case
+            </a>
+          </div>
+        </td>
+      </tr>
+    `;
   }else{
-    table.style.display = 'table';
-    emptyState.style.display = 'none';
     tableBody.innerHTML = paginatedCases.map(c => `
       <tr>
         <td data-label="Control No."><span class="control-no">${escapeHtml(c.controlNo)||"—"}</span></td>
@@ -2283,11 +2344,11 @@ function renderCaseList(){
   // Update pagination info
   const paginationInfo = document.getElementById('paginationInfo');
   if(filtered.length === 0){
-    paginationInfo.textContent = 'Showing 0 of 0 Social Case Studies';
+    paginationInfo.textContent = 'Showing 0 of 0 Records';
   }else{
     const showingFrom = startIndex + 1;
     const showingTo = Math.min(endIndex, filtered.length);
-    paginationInfo.textContent = `Showing ${showingFrom}–${showingTo} of ${filtered.length} Social Case Studies`;
+    paginationInfo.textContent = `Showing ${showingFrom}–${showingTo} of ${filtered.length} Records`;
   }
 
   // Update pagination controls

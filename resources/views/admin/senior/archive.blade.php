@@ -298,6 +298,80 @@
             .td-addr{white-space:normal;overflow:visible;text-overflow:clip;}
             .btn-restore{min-height:40px;padding:8px 12px;font-size:12px;}
         }
+
+        /* ══════════════════════════════════════════════
+           ARCHIVE TABLE — visual match with Social Case archive
+           ══════════════════════════════════════════════ */
+        .archive-panel-wrap{width:100%;padding:1rem;margin-bottom:1rem;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
+        .archive-table-wrap{border:1px solid var(--border);border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+        .archive-table{width:100%;border-collapse:collapse;font-size:14px;}
+        .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--text-secondary);text-align:left;border-bottom:1px solid var(--border);background:var(--background);white-space:nowrap;}
+        .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid var(--border);vertical-align:middle;white-space:normal;word-break:break-word;}
+        .archive-table tbody tr:last-child td{border-bottom:none;}
+        .archive-table input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
+        .archive-table .col-check{width:40px;text-align:center;}
+        .mobile-select-all{margin:0 0 10px 0 !important;}
+
+        .empty-row{background:transparent !important;border:none !important;box-shadow:none !important;padding:0 !important;margin:0 !important;}
+        .empty-cell{padding:2.5rem 1rem !important;border:none !important;display:flex !important;flex-direction:column !important;align-items:center !important;justify-content:center !important;width:100% !important;}
+        .empty-cell::before{display:none !important;}
+        .empty-state-content{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+        .empty-icon-wrap{width:64px;height:64px;border-radius:50%;background:#F3F4F6;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:#9CA3AF;}
+        .empty-icon-wrap svg{width:32px;height:32px;}
+        .empty-title{font-size:1.125rem;font-weight:700;color:#1F2937;margin-bottom:4px;}
+        .empty-subtitle{font-size:0.875rem;color:#6B7280;}
+        /* Tablet (768-1199px): empty state stays a full-width centered row */
+        @media (min-width:768px) and (max-width:1199px){
+            .archive-table tbody tr.empty-row{display:table-row !important;background:transparent !important;border:none !important;box-shadow:none !important;margin:0 !important;}
+            .archive-table tbody tr.empty-row td.empty-cell{display:table-cell !important;padding:2.5rem 1.5rem !important;border:none !important;text-align:center !important;}
+            .archive-table tbody tr.empty-row td.empty-cell::before{display:none !important;}
+            .archive-table tbody tr.empty-row td.empty-cell .empty-state-content{align-items:center;justify-content:center;}
+        }
+        @media (min-width:1200px){
+            .archive-table tbody tr.empty-row{display:table-row !important;background:transparent !important;border:none !important;box-shadow:none !important;margin:0 !important;}
+            .archive-table tbody tr.empty-row td.empty-cell{display:table-cell !important;padding:3rem 1.5rem !important;border:none !important;text-align:center !important;}
+            .archive-table tbody tr.empty-row td.empty-cell::before{display:none !important;}
+            .empty-icon-wrap{width:80px;height:80px;margin-bottom:20px;background:#EEF2FF;color:#1A237E;}
+            .empty-icon-wrap svg{width:40px !important;height:40px !important;}
+            .empty-title{font-size:1.35rem !important;font-weight:700 !important;color:#111827 !important;margin-bottom:8px !important;}
+            .empty-subtitle{font-size:0.95rem !important;color:#6B7280 !important;max-width:400px;line-height:1.5;}
+        }
+
+        /* Desktop (1200px+): table fills remaining viewport height (matches Social Case archive).
+           Higher-specificity selectors so they beat the nav partial's later-in-cascade .main/.main-scroll rules. */
+        @media (min-width:1200px){
+            html,body{overflow:hidden !important;}
+            .app{height:100vh !important;overflow:hidden !important;}
+            .app .main{height:100vh !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;}
+            .app .main-scroll{flex:1 !important;min-height:0 !important;overflow-y:auto !important;overflow-x:hidden !important;display:flex !important;flex-direction:column !important;}
+            .archive-panel-wrap{padding:1rem !important;margin-bottom:0 !important;flex:1 !important;min-height:0 !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;}
+            .archive-table-wrap{flex:1 !important;min-height:0 !important;border:1px solid var(--border) !important;overflow:auto !important;border-radius:8px !important;}
+        }
+
+        /* ── Pagination info ── */
+        .archive-pagination-info{font-size:0.875rem;color:var(--text-secondary);text-align:center;padding-top:0.75rem;}
+
+        /* ── Filter container (matches Social Case archive filter bar) ── */
+        .archive-filter-bar{display:block;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;}
+        .archive-filter-bar #summaryGrid{margin-bottom:0;}
+
+        /* Mobile (<768px): table → stacked cards (matches Social Case archive) */
+        @media (max-width:767px){
+            .archive-panel-wrap{padding:.75rem;}
+            .archive-table-wrap{border:none;border-radius:0;overflow:visible;}
+            .archive-table thead{display:none;}
+            .archive-table tbody tr{display:block;background:var(--surface);border:1px solid #D1D5DB;border-radius:10px;margin-bottom:10px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+            .archive-table tbody tr:last-child{margin-bottom:0;}
+            .archive-table tbody td{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border:none;font-size:.82rem;gap:8px;text-align:right;}
+            .archive-table tbody td:not(:last-child){border-bottom:1px solid var(--border);}
+            .archive-table tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;flex-shrink:0;min-width:70px;text-align:left;}
+            .archive-table tbody td.col-check{justify-content:flex-end;padding:0 0 6px;border-bottom:none;}
+            .archive-table tbody td.col-check::before{display:none;}
+            .archive-table tbody td[data-label="Action"]{justify-content:flex-end;padding-top:8px;border-bottom:none;}
+            .archive-table tbody td[data-label="Action"]::before{display:none;}
+            .archive-table tbody td.empty-cell{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:0 !important;}
+            .archive-table tbody td.empty-cell::before{display:none !important;}
+        }
     </style>
 </head>
 <body>
@@ -313,25 +387,12 @@
                 $barangays = ['Acacia','Adlas','Anahaw I','Anahaw II','Balite I','Balite II','Balubad','Banaba','Batas','Biga I','Biga II','Biluso','Bucal','Buho','Bulihan','Cabangaan','Carmen','Hoyo','Hukay','Iba','Inchican','Ipil I','Ipil II','Kalubkob','Kaong','Lalaan I','Lalaan II','Litlit','Lucsuhin','Lumil','Maguyam','Malabag','Malaking Tatyao','Mataas na Burol','Munting Ilog','Narra I','Narra II','Narra III','Paligawan','Pasong Langka','Barangay I (Poblacion)','Barangay II (Poblacion)','Barangay III (Poblacion)','Barangay IV (Poblacion)','Barangay V (Poblacion)','Pooc I','Pooc II','Pulong Bunga','Pulong Saging','Puting Kahoy','Sabutan','San Miguel I','San Miguel II','San Vicente I','San Vicente II','Santol','Tartaria','Tibig','Toledo','Tubuan I','Tubuan II','Tubuan III','Ulat','Yakal'];
             @endphp
 
-            <!-- Flash Messages -->
-            @if(session('success'))
-                <div class="flash-message flash-success">
-                    <i data-lucide="check-circle"></i>
-                    <span>{{ session('success') }}</span>
-                    <button type="button" class="flash-close" onclick="this.parentElement.remove()"><i data-lucide="x"></i></button>
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="flash-message flash-error">
-                    <i data-lucide="alert-circle"></i>
-                    <span>{{ session('error') }}</span>
-                    <button type="button" class="flash-close" onclick="this.parentElement.remove()"><i data-lucide="x"></i></button>
-                </div>
-            @endif
+
 
             <!-- Summary Section -->
             <form method="GET" action="{{ route('admin.senior.archive.list') }}">
-                <div id="summaryGrid" class="section-spacing">
+                <div class="archive-filter-bar">
+                    <div id="summaryGrid">
                     <div class="filter-field">
                         <label class="filter-label" for="searchInput">Search by Name</label>
                         <div class="input-group">
@@ -362,10 +423,10 @@
                         </div>
                     </div>
                 </div>
+                </div>
             </form>
 
             <!-- Archived Records Table -->
-            <h2 class="table-card-title">Archived Records</h2>
             @if($archivedSeniors->count() > 0)
                 <div class="mobile-select-all">
                     <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)">
@@ -373,8 +434,9 @@
                     <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
                 </div>
             @endif
-            <div class="table-responsive">
-                    <table>
+            <div class="panel archive-panel-wrap">
+                <div class="archive-table-wrap">
+                    <table class="archive-table">
                         <thead>
                             <tr>
                                 <th class="col-check"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)"></th>
@@ -430,19 +492,29 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr>
-                                    <td colspan="9" class="empty-state-cell">
-                                        <div class="empty-state">
-                                            <i data-lucide="archive"></i>
-                                            <h5>No Archived Cases</h5>
-                                            <p>Archived cases will appear here. Records archived from the masterlist will show up in this list.</p>
-                                            <a href="{{ route('admin.senior.masterlist') }}"><i data-lucide="list"></i> Go to Masterlist</a>
+                                <tr class="empty-row">
+                                    <td colspan="9" class="empty-cell">
+                                        <div class="empty-state-content">
+                                            <div class="empty-icon-wrap">
+                                                <i data-lucide="archive"></i>
+                                            </div>
+                                            <div class="empty-title">No archived cases</div>
+                                            <div class="empty-subtitle">Archived cases will appear here</div>
                                         </div>
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
+                    </div>
+                </div>
+
+                <div class="archive-pagination-info">
+                    @if($archivedSeniors->total() === 0)
+                        Showing 0 of 0 Archived Cases
+                    @else
+                        Showing {{ $archivedSeniors->firstItem() }}–{{ $archivedSeniors->lastItem() }} of {{ $archivedSeniors->total() }} Archived Cases
+                    @endif
                 </div>
 
                 @if($archivedSeniors->count() > 0 && $archivedSeniors->hasPages())
@@ -610,6 +682,33 @@
             }
         });
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('success'))
+            Swal.fire({
+                title: 'Success!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonColor: '#1A237E',
+                confirmButtonText: 'OK',
+                background: '#ffffff',
+                timer: 3000,
+                timerProgressBar: true,
+                customClass: { popup: 'rounded-4 shadow-lg' }
+            });
+        @endif
+        @if(session('error'))
+            Swal.fire({
+                title: 'Error!',
+                text: "{{ session('error') }}",
+                icon: 'error',
+                confirmButtonColor: '#DC2626',
+                confirmButtonText: 'OK',
+                background: '#ffffff',
+                customClass: { popup: 'rounded-4 shadow-lg' }
+            });
+        @endif
+    });
 </script>
 
 <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">@csrf</form>

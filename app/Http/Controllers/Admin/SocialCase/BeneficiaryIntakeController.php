@@ -21,7 +21,7 @@ class BeneficiaryIntakeController extends Controller
     public function create(EligibilityChecker $checker, ?Client $client = null)
     {
         if ($client && ! $checker->check($client)['eligible']) {
-            return redirect()->route('admin.social-case-eligibility.show', $client)
+            return redirect()->route('admin.beneficiary-intake.create', $client)
                 ->with('error', 'This client is not eligible to proceed to beneficiary intake.');
         }
 
@@ -52,7 +52,7 @@ class BeneficiaryIntakeController extends Controller
             : null;
 
         if ($client && ! $checker->check($client)['eligible']) {
-            return redirect()->route('admin.social-case-eligibility.show', $client)
+            return redirect()->route('admin.beneficiary-intake.create', $client)
                 ->with('error', 'This client is not eligible to proceed to case study creation.');
         }
 
@@ -63,10 +63,8 @@ class BeneficiaryIntakeController extends Controller
                 ->with('success', 'Beneficiary intake form has been saved successfully.');
         }
 
-        return redirect()->route('admin.social-case-studies.create', [
-            'client' => $client,
-            'intake' => $intake->id,
-        ])->with('success', 'Beneficiary intake saved. Continue with case study requirements.');
+        return redirect()->route('admin.social-case.new')
+            ->with('success', 'Beneficiary intake saved. Continue with case study requirements.');
     }
 
     public function show(BeneficiaryIntake $intake)

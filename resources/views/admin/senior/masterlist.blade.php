@@ -15,257 +15,214 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root {
-            --primary: #1A237E;
-            --primary-hover: #121858;
-            --primary-dark: #121858;
-            --sidebar-bg: #1A237E;
-            --accent-yellow: #FBC02D;
-            --background: #F5F7FB;
-            --surface: #FFFFFF;
-            --border: #E5E7EB;
-            --text-primary: #111827;
-            --text-secondary: #6B7280;
-            --text-muted: #9CA3AF;
-            --success: #16A34A;
-            --success-bg: #ECFDF5;
-            --danger: #DC2626;
-            --danger-bg: #FEF2F2;
-            --info: #3B82F6;
-            --info-bg: #EEF2FF;
-            --sidebar-width: 260px;
-            --content-padding: 32px;
-            --shadow: 0 10px 30px rgba(15,23,42,.08);
-            --font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        :root{
+            --primary:#1A237E;--primary-hover:#121858;--primary-dark:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--success:#16A34A;--success-bg:#ECFDF5;--danger:#DC2626;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EEF2FF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+        }
+        *,*::before,*::after{box-sizing:border-box;}
+        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);min-height:100%;}
+        body{font-size:14px;line-height:1.5;overflow-x:hidden;}
+        h1,h2,h3,h4,h5{margin:0;font-weight:600;letter-spacing:-0.01em;}
+        button{font-family:inherit;cursor:pointer;}
+        a{text-decoration:none;}
+
+        /* ── Buttons (Flat Design) ── */
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border);border-radius:10px;font-family:var(--font-family);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s ease;padding:10px 20px;background:var(--surface);color:var(--text-primary);box-shadow:none;height:44px;min-height:44px;text-decoration:none;white-space:nowrap;}
+        .btn:hover{border-color:var(--primary);transform:none;}
+        .btn svg{width:16px;height:16px;}
+        .btn-export{background:var(--primary);color:#fff;border-color:var(--primary);}
+        .btn-export:hover{background:var(--primary-hover);border-color:var(--primary-hover);}
+        .btn-bulk{background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE;}
+        .btn-bulk:hover{border-color:#3730A3;transform:none;}
+        .btn-bulk:disabled{opacity:.45;cursor:not-allowed;pointer-events:none;}
+        .btn-clear{background:var(--surface);color:var(--danger);border:1px solid #FECACA;}
+        .btn-clear:hover{border-color:var(--danger);}
+
+        /* ── Dropdown ── */
+        .dropdown{position:relative;display:inline-block;}
+        .dropdown-menu{position:absolute;top:100%;right:0;z-index:50;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.08);min-width:200px;padding:6px;display:none;margin-top:6px;}
+        .dropdown-menu.show{display:block;}
+        .dropdown-item{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:13px;color:var(--text-primary);border-radius:6px;text-decoration:none;cursor:pointer;transition:background .15s;}
+        .dropdown-item:hover{background:var(--background);}
+
+        /* ── Summary / Filters ── */
+        .section-spacing{margin-bottom:28px;}
+        #summaryGrid{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:stretch;}
+        .filter-field{display:flex;flex-direction:column;justify-content:flex-end;min-width:0;gap:3px;}
+        .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;display:block;text-transform:uppercase;letter-spacing:0.05em;height:18px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .filter-select{width:100%;height:44px;min-height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .15s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
+        .filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
+        .input-group{display:flex;align-items:center;}
+        .input-group input{flex:1;min-width:0;height:44px;border:1px solid var(--border);border-right:none;border-radius:8px 0 0 8px;padding:0 1rem;font-size:14px;color:var(--text-primary);background:var(--surface);transition:all .15s ease;font-family:inherit;}
+        .input-group input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(30,58,138,.15);}
+        .search-btn{background:var(--primary);color:#ffffff;border:none;padding:0 1.1rem;border-radius:0 8px 8px 0;cursor:pointer;height:44px;width:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+        .search-btn:hover{background:var(--primary-hover);}
+        .search-btn svg{width:18px;height:18px;}
+        .bulk-actions-row{display:flex;gap:8px;align-items:center;min-width:0;}
+
+        /* ── Archive-style panel & table ── */
+        .archive-panel-wrap{width:100%;padding:1rem;margin-bottom:1rem;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
+        .archive-table-wrap{border:1px solid var(--border);border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+        .archive-table{width:100%;border-collapse:collapse;font-size:14px;}
+        .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--text-secondary);text-align:left;border-bottom:1px solid var(--border);background:var(--background);white-space:nowrap;}
+        .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid var(--border);vertical-align:middle;white-space:normal;word-break:break-word;}
+        .archive-table tbody tr:last-child td{border-bottom:none;}
+        .archive-table input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
+        .archive-table .col-check{width:40px;text-align:center;}
+
+        /* ── Badges ── */
+        .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;}
+        .badge-active{background:var(--success-bg);color:var(--success);}
+        .badge-pending{background:#FEF3C7;color:#92400E;}
+
+        /* ── Action buttons (Flat Design) ── */
+        .actions{display:flex;gap:6px;align-items:center;}
+        .action-btn{width:34px !important;height:34px !important;min-height:34px !important;max-height:34px !important;padding:0 !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;border-radius:8px !important;box-shadow:none !important;cursor:pointer;transition:background .15s ease, border-color .15s ease;}
+        .action-btn:hover{transform:none;}
+        .action-btn svg, .action-btn i{width:16px !important;height:16px !important;}
+
+        /* ── Mobile Select All ── */
+        .mobile-select-all{display:none;align-items:center;gap:8px;padding:10px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-secondary);}
+        .mobile-select-all input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
+
+        /* ── Empty State ── */
+        .empty-row{background:transparent !important;border:none !important;box-shadow:none !important;padding:0 !important;margin:0 !important;}
+        .empty-cell{padding:2.5rem 1rem !important;border:none !important;display:flex !important;flex-direction:column !important;align-items:center !important;justify-content:center !important;width:100% !important;}
+        .empty-cell::before{display:none !important;}
+        .empty-state-content{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+        .empty-icon-wrap{width:64px;height:64px;border-radius:50%;background:#F3F4F6;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:#9CA3AF;}
+        .empty-icon-wrap svg{width:32px;height:32px;}
+        .empty-title{font-size:1.125rem;font-weight:700;color:#1F2937;margin-bottom:4px;}
+        .empty-subtitle{font-size:0.875rem;color:#6B7280;}
+
+        /* ── Pagination info ── */
+        .archive-pagination-info{font-size:0.875rem;color:var(--text-secondary);text-align:center;padding-top:0.75rem;}
+
+        /* ── Pagination links ── */
+        .pagination-wrap{display:flex;justify-content:center;flex-wrap:wrap;padding-top:1rem;margin-top:1rem;border-top:1px solid var(--border);}
+
+        /* ── Filter container ── */
+        .archive-filter-bar{display:block;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;}
+        .archive-filter-bar #summaryGrid{margin-bottom:0;}
+
+        /* ══════════════════════════════════════════════
+           RESPONSIVE BREAKPOINTS
+           ══════════════════════════════════════════════ */
+
+        /* ── Extra Large (1400px+) ── */
+        @media (min-width:1400px){
+            .section-spacing{margin-bottom:32px;}
+            #summaryGrid{grid-template-columns:1fr 1fr auto;gap:16px;}
+            .filter-label{font-size:13px !important;}
+            .filter-select,.input-group input,.search-btn{height:48px !important;min-height:48px !important;}
+            .filter-select{font-size:14px !important;}
+            .input-group input{font-size:15px !important;}
+            .search-btn{width:52px !important;}
+            .archive-table thead th{font-size:13px !important;padding:14px 18px !important;}
+            .archive-table tbody td{font-size:15px !important;padding:16px 18px !important;}
+            .badge{font-size:13px !important;padding:5px 12px !important;}
         }
 
-        *, *::before, *::after { box-sizing: border-box; }
-        html, body { margin: 0; padding: 0; background: var(--background); color: var(--text-primary); font-family: var(--font-family); min-height: 100%; }
-        body { font-size: 14px; line-height: 1.5; overflow-x: hidden; }
-        h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
-        button { font-family: inherit; cursor: pointer; }
-        a { text-decoration: none; }
-
-        /* ---------- Filters ---------- */
-        .filter-section { margin-bottom: 20px; }
-        .filters-grid {
-            display: grid;
-            grid-template-columns: minmax(0,1fr) minmax(200px,280px) auto;
-            gap: 14px; align-items: end;
-        }
-        .filter-group { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-        .filter-label {
-            font-size: 12px; font-weight: 600; color: var(--text-primary);
-            text-transform: uppercase; letter-spacing: .05em; display: flex; align-items: center; gap: 6px;
-        }
-        .input-group {
-            display: flex; align-items: center; height: 44px; background: var(--surface);
-            border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
-            transition: border-color .2s, box-shadow .2s;
-        }
-        .input-group:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,35,126,.1); }
-        .input-group input {
-            flex: 1; min-width: 0; height: 44px; border: none; outline: none;
-            padding: 0 14px; font-size: 14px; color: var(--text-primary); background: transparent;
-        }
-        .input-group .search-btn {
-            background: var(--primary); color: #fff; border: none; width: 48px; height: 44px;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
-            transition: background .2s;
-        }
-        .input-group .search-btn:hover { background: var(--primary-hover); }
-        .select-wrap { position: relative; }
-        .filter-select {
-            width: 100%; height: 44px; border: 1px solid var(--border); border-radius: 10px;
-            padding: 0 40px 0 14px; font-size: 14px; color: var(--text-primary);
-            background: var(--surface); cursor: pointer; appearance: none; -webkit-appearance: none; outline: none;
-            transition: border-color .2s, box-shadow .2s;
-        }
-        .filter-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,35,126,.1); }
-        .select-arrow {
-            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
-            width: 16px; height: 16px; color: var(--text-secondary); pointer-events: none;
-        }
-        .filter-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-
-        /* ---------- Buttons ---------- */
-        .btn {
-            border: 1px solid var(--border); background: var(--surface); color: var(--text-primary);
-            padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 500;
-            display: inline-flex; align-items: center; gap: 8px; box-shadow: var(--shadow);
-            transition: all .2s ease; height: 44px; cursor: pointer;
-        }
-        .btn:hover { border-color: var(--primary); transform: translateY(-1px); }
-        .btn-export { background: var(--primary); color: #fff; border-color: var(--primary); }
-        .btn-export:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
-        .btn-bulk { background: #E0E7FF; color: #3730A3; border: 1px solid #C7D2FE; }
-        .btn-bulk:hover { border-color: #3730A3; transform: translateY(-1px); }
-        .btn-bulk:disabled { opacity: .45; cursor: not-allowed; pointer-events: none; }
-        .btn-clear { background: var(--surface); color: var(--danger); border: 1px solid #FECACA; }
-        .btn-clear:hover { border-color: var(--danger); }
-
-        /* ---------- Dropdown ---------- */
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-menu {
-            position: absolute; top: 100%; right: 0; z-index: 50;
-            background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,.12); min-width: 200px; padding: 6px;
-            display: none; margin-top: 6px;
-        }
-        .dropdown-menu.show { display: block; }
-        .dropdown-item {
-            display: flex; align-items: center; gap: 8px; padding: 10px 14px;
-            font-size: 13px; color: var(--text-primary); border-radius: 6px;
-            text-decoration: none; cursor: pointer; transition: background .15s;
-        }
-        .dropdown-item:hover { background: var(--background); }
-
-        /* ---------- Table ---------- */
-        .mobile-select-all {
-            display: none; align-items: center; gap: 8px; padding: 10px 12px; margin-bottom: 10px;
-            background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-            font-size: 13px; color: var(--text-secondary);
-        }
-        .table-responsive {
-            width: 100%; max-width: 100%; overflow-x: auto; overflow-y: auto; -webkit-overflow-scrolling: touch;
-            background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
-            max-height: min(620px, calc(100vh - 260px));
-        }
-        .table-responsive table { width: 100%; border-collapse: collapse; table-layout: auto; }
-        .table-responsive thead th {
-            padding: 12px 16px; font-size: 11px; font-weight: 600; text-transform: uppercase;
-            letter-spacing: .05em; color: var(--text-secondary); text-align: left;
-            border-bottom: 2px solid var(--border); background: var(--surface); white-space: nowrap;
-            position: sticky; top: 0; z-index: 1;
-        }
-        .table-responsive tbody td {
-            padding: 12px 16px; font-size: 13px; color: var(--text-primary);
-            border-bottom: 1px solid var(--border); vertical-align: middle;
-            white-space: normal; word-break: break-word;
-        }
-        .table-responsive tbody tr:last-child td { border-bottom: none; }
-        .table-responsive tbody tr:hover td { background: var(--background); }
-        .table-responsive td[data-label="Control No"],
-        .table-responsive td[data-label="Age"] { white-space: nowrap; }
-        .table-responsive td .badge { white-space: nowrap; }
-        .actions { display: flex; gap: 8px; }
-        .action-btn {
-            width: 34px; height: 34px; padding: 0; display: inline-flex; align-items: center;
-            justify-content: center; border-radius: 8px;
-        }
-        .action-btn i { width: 15px; height: 15px; }
-        .badge {
-            display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
-            border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap;
-        }
-        .badge-active { background: var(--success-bg); color: var(--success); }
-        .badge-pending { background: #FEF3C7; color: #92400E; }
-        .checkbox { cursor: pointer; accent-color: var(--primary); width: 16px; height: 16px; }
-
-        /* ---------- Pagination ---------- */
-        .pagination-wrap {
-            display: flex; justify-content: center; flex-wrap: wrap; gap: 8px;
-            margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border);
+        /* ── Large Desktop (1200–1399px) ── */
+        @media (min-width:1200px) and (max-width:1399px){
+            .section-spacing{margin-bottom:28px;}
+            #summaryGrid{grid-template-columns:1fr 1fr auto;gap:14px;}
+            .filter-label{font-size:12px !important;}
+            .filter-select,.input-group input,.search-btn{height:46px !important;min-height:46px !important;}
+            .filter-select{font-size:13px !important;}
+            .input-group input{font-size:14px !important;}
+            .search-btn{width:50px !important;}
+            .archive-table thead th{font-size:12px !important;padding:12px 16px !important;}
+            .archive-table tbody td{font-size:14px !important;padding:14px 16px !important;}
         }
 
-        /* ---------- Modal ---------- */
-        #seniorModal { transition: opacity .2s ease; }
-
-        /* ---------- Tablet (768-1199px): filters in 2 rows ---------- */
-        @media (min-width: 768px) and (max-width: 1199px) {
-            .filters-grid { grid-template-columns: 1fr 1fr; }
-            .filter-actions { grid-column: 1 / -1; }
-            .table-responsive thead th:nth-child(2) { width: 16%; }
-            .table-responsive tbody td[data-label="Control No"] { font-size: 12px; }
+        /* ── Medium Desktop (992–1199px) ── */
+        @media (min-width:992px) and (max-width:1199px){
+            .section-spacing{margin-bottom:24px;}
+            #summaryGrid{grid-template-columns:1fr 1fr;gap:14px;}
+            .archive-table thead th{padding:11px 14px !important;}
+            .archive-table tbody td{padding:13px 14px !important;}
+            .empty-icon-wrap{width:56px;height:56px;}
+            .empty-title{font-size:1rem !important;}
         }
 
-        /* ---------- Large Desktop (1400px+): adjust control number column ---------- */
-        @media (min-width: 1400px) {
-            .table-responsive thead th:nth-child(2) { width: 12%; }
-            .table-responsive tbody td[data-label="Control No"] { font-size: 14px; }
+        /* ── Tablet (768–991px) ── */
+        @media (min-width:768px) and (max-width:991px){
+            .section-spacing{margin-bottom:20px;}
+            #summaryGrid{grid-template-columns:1fr 1fr;gap:12px;}
+            .archive-table thead th{padding:10px 12px !important;}
+            .archive-table tbody td{padding:12px 12px !important;}
         }
 
-        /* ---------- Desktop (1200-1399px): adjust control number column ---------- */
-        @media (min-width: 1200px) and (max-width: 1399px) {
-            .table-responsive thead th:nth-child(2) { width: 13%; }
-            .table-responsive tbody td[data-label="Control No"] { font-size: 13px; }
+        /* ── Desktop full-height layout (matches archive page) ── */
+        @media (min-width:1200px){
+            html,body{overflow:hidden !important;}
+            .app{height:100vh !important;overflow:hidden !important;}
+            .app .main{height:100vh !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;}
+            .app .main-scroll{flex:1 !important;min-height:0 !important;overflow-y:auto !important;overflow-x:hidden !important;display:flex !important;flex-direction:column !important;}
+            .archive-panel-wrap{padding:1rem !important;margin-bottom:0 !important;flex:1 !important;min-height:0 !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;}
+            .archive-table-wrap{flex:1 !important;min-height:0 !important;border:1px solid var(--border) !important;overflow:auto !important;border-radius:8px !important;}
+            .empty-icon-wrap{width:80px;height:80px;margin-bottom:20px;background:#EEF2FF;color:#1A237E;}
+            .empty-icon-wrap svg{width:40px !important;height:40px !important;}
+            .empty-title{font-size:1.35rem !important;font-weight:700 !important;color:#111827 !important;margin-bottom:8px !important;}
+            .empty-subtitle{font-size:0.95rem !important;color:#6B7280 !important;max-width:400px;line-height:1.5;}
+        }
+        @media (min-width:768px) and (max-width:1199px){
+            .archive-table tbody tr.empty-row{display:table-row !important;background:transparent !important;border:none !important;box-shadow:none !important;margin:0 !important;}
+            .archive-table tbody tr.empty-row td.empty-cell{display:table-cell !important;padding:2.5rem 1.5rem !important;border:none !important;text-align:center !important;}
+            .archive-table tbody tr.empty-row td.empty-cell::before{display:none !important;}
+            .archive-table tbody tr.empty-row td.empty-cell .empty-state-content{align-items:center;justify-content:center;}
+        }
+        @media (min-width:1200px){
+            .archive-table tbody tr.empty-row{display:table-row !important;background:transparent !important;border:none !important;box-shadow:none !important;margin:0 !important;}
+            .archive-table tbody tr.empty-row td.empty-cell{display:table-cell !important;padding:3rem 1.5rem !important;border:none !important;text-align:center !important;}
+            .archive-table tbody tr.empty-row td.empty-cell::before{display:none !important;}
         }
 
-        /* ---------- Mobile (<768px): stacked filters, scrollable table ---------- */
-        @media (max-width: 767px) {
-            .filter-section { margin-bottom: 14px; }
-            .filters-grid { grid-template-columns: 1fr; gap: 12px; }
-            .filter-actions { flex-direction: column; align-items: stretch; }
-            .filter-actions .btn,
-            .filter-actions .dropdown,
-            .filter-actions .dropdown > button { width: 100%; justify-content: center; }
-            .mobile-select-all { display: flex; }
-            .action-btn { width: 44px; height: 44px; }
-
-            /* Table → stacked cards (fixed-height scrollable area) */
-            .table-responsive {
-                overflow: auto; border: none;
-                box-shadow: none; border-radius: 0;
-                max-height: min(620px, calc(100vh - 320px)); -webkit-overflow-scrolling: touch;
-            }
-            .table-responsive table { display: block; width: 100%; }
-            .table-responsive thead { display: none; }
-            .table-responsive tbody { display: block; }
-            .table-responsive tbody tr {
-                display: block;
-                background: var(--surface);
-                border: 1px solid var(--border);
-                border-radius: 12px;
-                margin-bottom: 12px;
-                padding: 12px 14px;
-                box-shadow: var(--shadow);
-            }
-            .table-responsive tbody td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                gap: 12px;
-                padding: 8px 0;
-                border: none;
-                border-bottom: 1px solid var(--border);
-                white-space: normal;
-                word-break: break-word;
-                text-align: right;
-            }
-            .table-responsive tbody td:last-child { border-bottom: none; }
-            .table-responsive tbody td::before {
-                content: attr(data-label);
-                font-weight: 600;
-                color: var(--text-secondary);
-                font-size: 11px;
-                text-transform: uppercase;
-                letter-spacing: .03em;
-                flex-shrink: 0;
-                min-width: 88px;
-                text-align: left;
-            }
-            .table-responsive tbody td.col-check {
-                justify-content: flex-end;
-                border-bottom: none;
-                padding: 0 0 6px;
-            }
-            .table-responsive tbody td.col-check::before { display: none; }
-            .table-responsive tbody td[data-label="Control No"],
-            .table-responsive tbody td[data-label="Age"] { white-space: nowrap; }
-            .table-responsive tbody td[data-label="Action"] {
-                justify-content: flex-end;
-                border-bottom: none;
-                padding-top: 10px;
-            }
-            .table-responsive tbody td[data-label="Action"]::before { display: none; }
+        /* ── Large Mobile (576–767px): stacked filters ── */
+        @media (min-width:576px) and (max-width:767px){
+            .section-spacing{margin-bottom:18px;}
+            #summaryGrid{grid-template-columns:1fr;gap:12px;}
+            .bulk-actions-row{flex-direction:column;gap:8px;}
+            .mobile-select-all{display:flex;}
         }
+
+        /* ── Mobile (<768px): table → stacked cards ── */
+        @media (max-width:767px){
+            .archive-panel-wrap{padding:.75rem;}
+            .archive-table-wrap{border:none;border-radius:0;overflow:visible;}
+            .archive-table thead{display:none;}
+            .archive-table tbody tr{display:block;background:var(--surface);border:1px solid #D1D5DB;border-radius:10px;margin-bottom:10px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+            .archive-table tbody tr:last-child{margin-bottom:0;}
+            .archive-table tbody td{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border:none;font-size:.82rem;gap:8px;text-align:right;}
+            .archive-table tbody td:not(:last-child){border-bottom:1px solid var(--border);}
+            .archive-table tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;flex-shrink:0;min-width:80px;text-align:left;}
+            .archive-table tbody td.col-check{justify-content:flex-end;padding:0 0 6px;border-bottom:none;}
+            .archive-table tbody td.col-check::before{display:none;}
+            .archive-table tbody td[data-label="Control No"]{white-space:nowrap;}
+            .archive-table tbody td[data-label="Action"]{justify-content:flex-end;padding-top:8px;border-bottom:none;}
+            .archive-table tbody td[data-label="Action"]::before{display:none;}
+            .archive-table tbody td.empty-cell{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:0 !important;}
+            .archive-table tbody td.empty-cell::before{display:none !important;}
+            .action-btn{width:44px;height:44px;}
+            .mobile-select-all{display:flex;}
+        }
+
+        /* ── Small Mobile (<480px) ── */
+        @media (max-width:479px){
+            .section-spacing{margin-bottom:14px;}
+            #summaryGrid{grid-template-columns:1fr;gap:10px;}
+            .archive-table tbody td{font-size:.75rem;}
+            .archive-table tbody td::before{font-size:.65rem;min-width:70px;}
+        }
+
+        /* ── Modal ── */
+        #seniorModal{transition:opacity .2s ease;}
     </style>
 </head>
 <body>
 <div class="app">
     @include('admin.senior.partials.navigation', ['active' => 'masterlist', 'mobileSubtitle' => 'Senior Citizen Masterlist'])
 
-    <!-- Main Content -->
     <div class="main">
         @php
             $userName = session('admin_user_name') ?? 'Admin User';
@@ -282,158 +239,158 @@
             <div style="margin-bottom:1.5rem;">
                 <p style="margin:0;font-size:0.875rem;color:#6B7280;">Step 1 of 2 — Search for an existing senior citizen and verify their record before proceeding with a new registration.</p>
             </div>
-            <!-- Filter Section -->
-            <div class="filter-section">
-                <form method="GET" action="{{ route('admin.senior.masterlist') }}" id="filterForm">
-                    <div class="filters-grid">
-                        <div class="filter-group">
+
+            {{-- Filter Bar --}}
+            <form method="GET" action="{{ route('admin.senior.masterlist') }}" id="filterForm">
+                <div class="archive-filter-bar section-spacing">
+                    <div id="summaryGrid">
+                        <div class="filter-field">
                             <label class="filter-label" for="searchInput">Search by Name</label>
                             <div class="input-group">
                                 <input type="text" id="searchInput" name="search" placeholder="Search by name..." value="{{ request('search') }}">
-                                <button type="submit" class="search-btn" aria-label="Search">
-                                    <i data-lucide="search" style="width:16px;height:16px"></i>
-                                </button>
+                                <button type="submit" class="search-btn" aria-label="Search"><i data-lucide="search"></i></button>
                             </div>
                         </div>
-                        <div class="filter-group">
-                            <label class="filter-label" for="barangaySelect"><i data-lucide="filter" style="width:14px;height:14px"></i> Filter by Barangay</label>
-                            <div class="select-wrap">
-                                <select class="filter-select" id="barangaySelect" name="barangay" onchange="this.form.submit()">
-                                    <option value="">All Barangays</option>
-                                    <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
-                                    <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
-                                    <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
-                                    <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
-                                    <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
-                                    <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
-                                    <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
-                                    <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
-                                    <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
-                                    <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
-                                    <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
-                                    <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
-                                    <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
-                                    <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
-                                    <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
-                                    <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
-                                    <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
-                                    <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
-                                    <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
-                                    <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
-                                    <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
-                                    <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
-                                    <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
-                                    <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
-                                    <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
-                                    <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
-                                    <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
-                                    <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
-                                    <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
-                                    <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
-                                    <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
-                                    <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
-                                    <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
-                                    <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
-                                    <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
-                                    <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
-                                    <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
-                                    <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
-                                    <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
-                                    <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
-                                    <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
-                                    <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
-                                    <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
-                                    <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
-                                    <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
-                                    <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
-                                    <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
-                                    <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
-                                    <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
-                                    <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
-                                    <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
-                                    <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
-                                    <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
-                                    <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
-                                    <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
-                                    <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
-                                    <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
-                                    <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
-                                    <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
-                                    <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
-                                    <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
-                                    <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
-                                    <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
-                                    <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
-                                </select>
-                                <i data-lucide="chevron-down" class="select-arrow"></i>
-                            </div>
+                        <div class="filter-field">
+                            <label class="filter-label" for="barangaySelect">Filter by Barangay</label>
+                            <select class="filter-select" id="barangaySelect" name="barangay" onchange="this.form.submit()">
+                                <option value="">All Barangays</option>
+                                <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
+                                <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
+                                <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
+                                <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
+                                <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
+                                <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
+                                <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
+                                <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
+                                <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
+                                <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
+                                <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
+                                <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
+                                <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
+                                <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
+                                <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
+                                <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
+                                <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
+                                <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
+                                <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
+                                <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
+                                <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
+                                <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
+                                <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
+                                <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
+                                <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
+                                <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
+                                <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
+                                <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
+                                <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
+                                <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
+                                <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
+                                <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
+                                <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
+                                <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
+                                <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
+                                <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
+                                <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
+                                <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
+                                <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
+                                <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
+                                <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
+                                <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
+                                <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
+                                <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
+                                <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
+                                <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
+                                <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
+                                <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
+                                <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
+                                <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
+                                <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
+                                <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
+                                <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
+                                <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
+                                <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
+                                <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
+                                <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
+                                <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
+                                <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
+                                <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
+                                <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
+                                <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
+                                <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
+                                <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
+                            </select>
                         </div>
-                        <div class="filter-actions">
-                            <a href="#" class="btn btn-export" onclick="exportPdf(event)">
-                                <i data-lucide="file-output" style="width:16px;height:16px"></i> Export PDF
-                            </a>
-                            <div class="dropdown" id="bulkActionDropdown">
-                                <button id="bulkActionButton" class="btn btn-bulk" onclick="toggleDropdown()" disabled>
-                                    <i data-lucide="archive" style="width:14px;height:14px"></i> Bulk Actions
-                                    <span id="selectedCount" style="background:#3730A3;color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:4px;">0</span>
-                                </button>
-                                <div class="dropdown-menu" id="bulkDropdownMenu">
-                                    <a class="dropdown-item" href="#" onclick="bulkArchive()"><i data-lucide="archive" style="width:14px;height:14px"></i> Archive Selected</a>
-                                    <a class="dropdown-item" href="#" onclick="bulkExport()"><i data-lucide="download" style="width:14px;height:14px"></i> Export Selected</a>
-                                </div>
-                            </div>
-                            @if(request('search') || request('barangay'))
-                                <a href="{{ route('admin.senior.masterlist') }}" class="btn btn-clear">
-                                    <i data-lucide="x" style="width:16px;height:16px"></i> Clear Filters
+                        <div class="filter-field">
+                            <label class="filter-label">&nbsp;</label>
+                            <div class="bulk-actions-row">
+                                <a href="#" class="btn btn-export" onclick="exportPdf(event)">
+                                    <i data-lucide="file-output"></i> Export PDF
                                 </a>
-                            @endif
+                                <div class="dropdown" id="bulkActionDropdown">
+                                    <button id="bulkActionButton" class="btn btn-bulk" onclick="toggleDropdown()" disabled>
+                                        <i data-lucide="archive"></i> Bulk Actions
+                                        <span id="selectedCount" style="background:#3730A3;color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:4px;">0</span>
+                                    </button>
+                                    <div class="dropdown-menu" id="bulkDropdownMenu">
+                                        <a class="dropdown-item" href="#" onclick="bulkArchive()"><i data-lucide="archive" style="width:14px;height:14px"></i> Archive Selected</a>
+                                        <a class="dropdown-item" href="#" onclick="bulkExport()"><i data-lucide="download" style="width:14px;height:14px"></i> Export Selected</a>
+                                    </div>
+                                </div>
+                                @if(request('search') || request('barangay'))
+                                    <a href="{{ route('admin.senior.masterlist') }}" class="btn btn-clear">
+                                        <i data-lucide="x"></i> Clear
+                                    </a>
+                                @endif
+                            </div>
                         </div>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
 
             @if($seniors->count() > 0)
-                <!-- Mobile Select All (shown only on mobile since the table scrolls horizontally) -->
                 <div class="mobile-select-all">
-                    <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)" class="checkbox">
+                    <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)">
                     <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
                     <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
                 </div>
+            @endif
 
-                <div class="table-responsive">
-                    <table>
+            <div class="panel archive-panel-wrap">
+                <div class="archive-table-wrap">
+                    <table class="archive-table">
                         <thead>
                             <tr>
-                                <th class="col-check" style="width:4%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="checkbox"></th>
-                                <th style="width:14%;">Control No</th>
-                                <th style="width:20%;">Full Name</th>
-                                <th style="width:15%;">Barangay</th>
-                                <th style="width:10%;">Status</th>
-                                <th style="width:22%;">Address</th>
-                                <th style="width:6%;">Age</th>
-                                <th style="width:9%;">Action</th>
+                                <th class="col-check"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                                <th>Control No</th>
+                                <th>Full Name</th>
+                                <th>Barangay</th>
+                                <th>Status</th>
+                                <th>Address</th>
+                                <th>Age</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($seniors as $senior)
+                            @forelse($seniors as $senior)
                                 <tr>
-                                    <td data-label="#" class="col-check"><input type="checkbox" class="senior-checkbox checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()"></td>
-                                    <td data-label="Control No" style="font-weight:600;word-wrap:break-word;">{{ $senior->control_number ?? '-' }}</td>
-                                    <td data-label="Full Name" style="word-wrap:break-word;">{{ $senior->full_name ?? '-' }}</td>
-                                    <td data-label="Barangay" style="word-wrap:break-word;">{{ $senior->barangay ?? '-' }}</td>
+                                    <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()"></td>
+                                    <td data-label="Control No" style="font-weight:600;">{{ $senior->control_number ?? '-' }}</td>
+                                    <td data-label="Full Name">{{ $senior->full_name ?? '-' }}</td>
+                                    <td data-label="Barangay">{{ $senior->barangay ?? '-' }}</td>
                                     <td data-label="Status">
                                         <span class="badge {{ $senior->status->value == 'active' ? 'badge-active' : 'badge-pending' }}">
                                             {{ ucfirst($senior->status->value ?? 'pending') }}
                                         </span>
                                     </td>
-                                    <td data-label="Address" style="word-wrap:break-word;">{{ $senior->address ?? '-' }}</td>
-                                    <td data-label="Age" style="word-wrap:break-word;">{{ $senior->age ?? '-' }}</td>
+                                    <td data-label="Address">{{ $senior->address ?? '-' }}</td>
+                                    <td data-label="Age">{{ $senior->age ?? '-' }}</td>
                                     <td data-label="Action">
                                         <div class="actions">
-                                            <button class="btn action-btn primary" style="background:var(--primary);border-color:var(--primary);color:#fff;" onclick="viewProfile({{ $senior->id }})" title="View Profile">
+                                            <button class="action-btn" style="background:var(--primary);border-color:var(--primary);color:#fff;" onclick="viewProfile({{ $senior->id }})" title="View Profile">
                                                 <i data-lucide="eye"></i>
                                             </button>
-                                            <button class="btn action-btn danger archive-senior-btn"
+                                            <button class="action-btn archive-senior-btn"
                                                 data-id="{{ $senior->id }}"
                                                 data-name="{{ $senior->full_name }}"
                                                 style="background:var(--danger-bg);border-color:#FECACA;color:var(--danger);"
@@ -443,22 +400,35 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr class="empty-row">
+                                    <td colspan="8" class="empty-cell">
+                                        <div class="empty-state-content">
+                                            <div class="empty-icon-wrap">
+                                                <i data-lucide="users"></i>
+                                            </div>
+                                            <div class="empty-title">No senior citizens found</div>
+                                            <div class="empty-subtitle">No records match your search criteria</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
+            </div>
 
-                <!-- Pagination -->
+            <div class="archive-pagination-info">
+                @if($seniors->total() === 0)
+                    Showing 0 of 0 Records
+                @else
+                    Showing {{ $seniors->firstItem() }}–{{ $seniors->lastItem() }} of {{ $seniors->total() }} Records
+                @endif
+            </div>
+
+            @if($seniors->hasPages())
                 <div class="pagination-wrap">
                     {{ $seniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
-                </div>
-            @else
-                <div style="text-align:center;padding:60px 20px;color:var(--text-secondary);">
-                    <i data-lucide="users" style="width:56px;height:56px;color:#D1D5DB;margin:0 auto 12px;display:block"></i>
-                    <p style="margin:8px 0 16px;font-size:14px;color:var(--text-muted);">No senior citizens registered yet.</p>
-                    <a href="/admin/senior/registration" class="btn btn-export">
-                        <i data-lucide="plus" style="width:16px;height:16px"></i> Register First Senior Citizen
-                    </a>
                 </div>
             @endif
         </div>
@@ -527,9 +497,9 @@
                     <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">PhilSys Number</label>
                     <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalPhilsysNumber">—</div>
                 </div>
-                <div style="margin-bottom:8px;">
+                <div style="margin-bottom:8px;grid-column:span 2;">
                     <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">RRN Number</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalRrnNumber">—</div>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);word-break:break-word;overflow-wrap:anywhere;" id="modalRrnNumber">—</div>
                 </div>
                 <div style="margin-bottom:8px;grid-column:1/-1;">
                     <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Remarks</label>

@@ -22,7 +22,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     <div class="mobile-header-brand">
         <div class="mobile-brand-text">
             <h1 class="mobile-brand-title">MSWDO SILANG</h1>
-            <p class="mobile-brand-subtitle">Archive</p>
+            <p class="mobile-brand-subtitle">Archived Records</p>
         </div>
         <div class="mobile-logo">
             @if($logo)
@@ -420,7 +420,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     <!-- Search and Filter Bar -->
     <div class="archive-filter-bar" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px">
-        <div style="max-width:280px;width:100%;flex-shrink:0">
+        <div style="max-width:280px;width:100%;flex-shrink:0;display:flex;flex-direction:column;justify-content:flex-end">
             <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Search by Name</label>
             <div style="display:flex;align-items:center;height:44px;">
                 <input type="text" id="archiveSearch" placeholder="Search by name..."
@@ -432,9 +432,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             </div>
         </div>
         <div class="archive-filter-row-inline" style="display:flex;gap:10px">
-            <div style="position:relative" id="archiveBrgyDropdown">
+            <div style="position:relative;display:flex;flex-direction:column;justify-content:flex-end" id="archiveBrgyDropdown">
                 <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Filter by Barangay</label>
-                <div onclick="toggleArchiveBrgyMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="archiveBrgyBtn">
+                <div onclick="toggleArchiveBrgyMenu()" style="display:flex;align-items:center;gap:8px;padding:0 12px;height:44px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="archiveBrgyBtn">
                     <i data-lucide="map-pin" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
                     <span id="archiveBrgyLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Barangays</span>
                     <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
@@ -443,9 +443,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                     <div class="archive-brgy-opt" data-value="" onclick="selectArchiveBrgy(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Barangays</div>
                 </div>
             </div>
-            <div style="position:relative" id="archiveTypeDropdown">
+            <div style="position:relative;display:flex;flex-direction:column;justify-content:flex-end" id="archiveTypeDropdown">
                 <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Filter by Type</label>
-                <div onclick="toggleArchiveTypeMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="archiveTypeBtn">
+                <div onclick="toggleArchiveTypeMenu()" style="display:flex;align-items:center;gap:8px;padding:0 12px;height:44px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="archiveTypeBtn">
                     <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
                     <span id="archiveTypeLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Types</span>
                     <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
@@ -460,6 +460,11 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                     <div class="archive-type-opt" data-value="Livelihood Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Livelihood Assistance</div>
                     <div class="archive-type-opt" data-value="Other" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Other</div>
                 </div>
+            </div>
+            <div style="flex:0 0 auto;display:flex;flex-direction:column;justify-content:flex-end">
+                <button type="button" onclick="resetArchiveFilters()" style="width:fit-content;height:44px;padding:0 1rem;border:1px solid #EF4444;border-radius:8px;background:#fff;color:#EF4444;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                    <i data-lucide="x" style="width:14px;height:14px"></i> Reset
+                </button>
             </div>
         </div>
     </div>
@@ -560,6 +565,25 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             if(o.getAttribute('data-value')===view.archiveBarangay) o.classList.add('selected');
             else o.classList.remove('selected');
         });
+    }
+    function resetArchiveFilters() {
+        // Clear search
+        var searchEl = document.getElementById('archiveSearch');
+        if (searchEl) searchEl.value = '';
+        view.archiveSearch = '';
+        // Reset barangay
+        view.archiveBarangay = '';
+        document.getElementById('archiveBrgyLabel').textContent = 'All Barangays';
+        document.getElementById('archiveBrgyBtn').classList.remove('active');
+        highlightArchiveBrgyOpt();
+        // Reset type
+        view.archiveType = '';
+        document.getElementById('archiveTypeLabel').textContent = 'All Types';
+        document.getElementById('archiveTypeBtn').classList.remove('active');
+        highlightArchiveTypeOpt();
+        // Reset page and re-render
+        view.archivePage = 1;
+        renderArchive();
     }
     document.addEventListener('click',function(e){
         var typeDD=document.getElementById('archiveTypeDropdown');
