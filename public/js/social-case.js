@@ -303,123 +303,106 @@ function extractSpecificNeed(rawText, purposeLabel) {
 }
 function rewriteProblemPresented(rawProblem, purpose, clientFullName, clientData = {}, household = []) {
   if (!rawProblem || !rawProblem.trim()) return "";
-  let p = rawProblem.trim();
-  const clientRef = clientFullName || "The client";
-  const clientSex = (clientData.sex || "").toLowerCase();
   const purposeLabel = purpose || "Financial Assistance";
-
-  // Use first household member as the visitor
+  const clientRef = clientFullName || "The client";
   const visitor = (household || [])[0] || {};
   const visitorRelationship = (visitor.relationship || "").trim().toLowerCase();
-
-  const possessive = clientSex === 'male' ? 'his' : 'her';
 
   // Map purpose to the correct subject term
   const subjectMap = {
     'medical assistance': { subject: 'patient', possessive: "patient's" },
     'burial assistance':  { subject: 'deceased', possessive: "deceased's" },
   };
-  const defaultSubject = { subject: 'client', possessive: "client's" };
-  const subjectInfo = subjectMap[purposeLabel.toLowerCase()] || defaultSubject;
+  const subjectInfo = subjectMap[purposeLabel.toLowerCase()] || { subject: 'client', possessive: "client's" };
 
-  // --- Phase 1: Fix terminology ---
+  // Possessive adjective used for the need phrase, e.g. "for her tuition fee"
+  const clientSex = (clientData.sex || clientData.gender || "").toLowerCase();
+  const possAdj = clientSex === 'male' ? 'his' : clientSex === 'female' ? 'her' : "the client's";
 
-  // Medical terminology
+  // Fix "assistance for tuition fee" -> "assistance for her tuition fee"
+  const fixNeedPhrase = function(phrase) {
+    return phrase.replace(
+      /\bfor\s+(tuition\s+fees?|tuition|school\s+fees?|medication|medicines?|dialysis|hemodialysis|treatment|hospitalization|surgery|operation|maintenance|therapy|checkups?|check-ups?|daily\s+expenses?|expenses?|costs?|fees?)\b/gi,
+      function(m, item) { return "for " + possAdj + " " + item.toLowerCase(); }
+    );
+  };
+
+  // --- Phase 1: Light grammar / terminology fixes (preserve the officer's wording) ---
+
+  let p = rawProblem.trim();
   p = p.replace(/\bchemo\s*therapy\b/gi, "chemotherapy");
   p = p.replace(/\bNEPHRO?S?CLEROSIS\b/gi, "nephrosclerosis");
-
-  // Fix "Social Case Study" → "Social Case Study Report"
   p = p.replace(/\bSocial Case Study\b(?!\s+Report)/gi, "Social Case Study Report");
-
-  // Fix assistance type casing
   p = p.replace(/\b(financial|medical|burial|educational|food\s*\/?\s*relief|livelihood)\s+assistance\b/gi, function(m) {
     return m.replace(/\b\w/g, c => c.toUpperCase());
   });
   p = p.replace(/\bAssistance\s*\/?\s*Support\b/gi, "Assistance");
-
-  // Generic possessive fix for any family member + medical term
   p = p.replace(/\b(her|his|their|my)\s+(mother|father|sister|brother|wife|husband|son|daughter|spouse|parent)\s+(maintenance|treatment|medication|hemodialysis|dialysis|surgery|therapy|operation|hospitalization|care|chemotherapy|session|checkup|check-up|medicine)\b/gi,
     "$1 $2's $3");
-
-  // Fix "needed in" / "needed due to"
   p = p.replace(/\bneeded\s+in\b/gi, "needed for");
   p = p.replace(/\bneeded\s+due\s+to\b/gi, "needed for");
-
-  // Fix "Please see" grammar
   p = p.replace(/\bPlease\s+see\s+(the\s+)?attachments?\b/gi, "Please see the attached documents");
   p = p.replace(/\bPlease\s+see\s+the\s+attachments?\s+for\b/gi, "Please see the attached documents for");
   p = p.replace(/\bPlease\s+see\s+attachments?\s+for\b/gi, "Please see the attached documents for");
-
-  // Ensure proper punctuation before "Please see"
-  p = p.replace(/([^\.\!])\s+Please see/g, '$1. Please see');
-  p = p.replace(/\.\.\./g, '...');
-
-  // Fix double spaces
   p = p.replace(/\s+/g, ' ').trim();
+  p = p.replace(/\.\s*$/, '').trim();
 
-  // --- Phase 2: Detect patterns ---
+  // --- Phase 2: Analyse the typed text ---
 
-  const hasVisitMention = /\b(visited|went to|came to|approached|personally visited|goes to|went personally)\b/i.test(p);
-  const hasRequestMention = /\b(request|ask|asking|seeking|requesting|to obtain|in obtaining|for)\b/i.test(p);
-  const hasSocialCaseMention = /\b(social case study report|social case study)\b/i.test(p);
+  // Does the typed text already tell the visit story?
+  const hasVisit = /\b(visited|went to|came to|approached|personally visited|goes to|went personally)\b/i.test(p);
+  // Bare need statement, e.g. "need financial assistance for tuition fee"
+  const bareNeed = p.match(/^(?:i\s+|we\s+)?need(?:s|ed)?\s+(?:a\s+|an\s+|the\s+)?/i);
+  // e.g. "financial assistance for tuition fee" (no "need" verb)
+  const startsWithAssistance = /^(?:financial|medical|burial|educational|food\s*\/?\s*relief|livelihood)\s+assistance\b/i.test(p);
 
-  // Check if raw text starts with a person's name (no relationship words before "visited")
-  const nameBeforeVisit = p.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\s+(?:personally\s+)?(?:visited|went to|came to|approached)/i);
-  const typedName = nameBeforeVisit ? nameBeforeVisit[1].trim() : "";
+  // --- Phase 3: Build the opening sentence ---
 
-  // --- Phase 3: Remove redundant sentences ---
-
-  // Remove standalone "Need X Assistance/ Support" that duplicates the purpose
-  const assistTypes = ["Financial", "Medical", "Burial", "Educational", "Food / Relief", "Food/Relief", "Livelihood"];
-  const purposeType = assistTypes.find(t => purposeLabel.toLowerCase().includes(t.toLowerCase())) || "";
-  if (purposeType) {
-    const redundantPattern = new RegExp("(?:^|\\.\\s*)\\b(?:Need|Needs|Needed|I need|We need)\\s+" + purposeType.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "(?:\\s*\\/\\s*Support)?\\.?\\s*", "gi");
-    p = p.replace(redundantPattern, '');
-  }
-  // Also catch "Need X Assistance" with extra words
-  p = p.replace(/(?:^|\.\\s*)\b(?:Need|Needs|Needed)\s+(?:a\s+)?(?:Financial|Medical|Burial|Educational|Food\s*\/?\s*Relief|Livelihood)\s+Assistance(?:\s*\/?\s*Support)?\.?\s*/gi, '');
-  // Remove orphaned "Need Support" / "Need Help"
-  p = p.replace(/(?:^|\.\s*)\b(?:Need|Needs|Needed)\s+(?:a\s+)?(?:Support|Help)\.?\s*/gi, '');
-  p = p.replace(/\s+/g, ' ').trim();
-
-  // --- Phase 4: Build final output ---
-
-  let paraphrased = "";
-  const need = extractSpecificNeed(rawProblem, purposeLabel);
-  const needPhrase = need ? ` for ${purposeLabel} for ${need}` : ` for ${purposeLabel}`;
-
-  if (hasVisitMention || hasRequestMention) {
-    if (visitorRelationship) {
-      if (typedName) {
-        paraphrased = `The ${subjectInfo.possessive} ${visitorRelationship} personally visited our office to request assistance in obtaining a Social Case Study Report${needPhrase}.`;
-      } else {
-        paraphrased = `The ${subjectInfo.possessive} ${visitorRelationship} personally visited our office to request assistance in obtaining a Social Case Study Report${needPhrase}.`;
-      }
-    } else {
-      paraphrased = p;
-    }
+  let opening;
+  if (hasVisit) {
+    // Keep the officer's own words — they already describe who came and why
+    opening = fixNeedPhrase(p);
   } else {
-    if (visitorRelationship) {
-      paraphrased = `The ${subjectInfo.possessive} ${visitorRelationship} personally visited our office to request assistance in obtaining a Social Case Study Report${needPhrase}.`;
+    const who = visitorRelationship
+      ? `The ${subjectInfo.possessive} ${visitorRelationship}`
+      : clientRef;
+    opening = `${who} personally visited our office to request assistance in obtaining a Social Case Study Report for ${purposeLabel}.`;
+  }
+
+  // --- Phase 4: Build the need sentence straight from the typed text ---
+
+  let needSentence = '';
+  if (!hasVisit && p) {
+    if (bareNeed) {
+      // "need financial assistance for tuition fee" -> "The client needs Financial Assistance for her tuition fee"
+      const rest = fixNeedPhrase(p.slice(bareNeed[0].length).trim());
+      needSentence = `The ${subjectInfo.subject} needs ${rest.charAt(0).toUpperCase()}${rest.slice(1)}`;
+    } else if (startsWithAssistance) {
+      // "financial assistance for tuition fee" -> "The client needs Financial Assistance for her tuition fee"
+      needSentence = `The ${subjectInfo.subject} needs ${fixNeedPhrase(p.charAt(0).toUpperCase() + p.slice(1))}`;
     } else {
-      paraphrased = `${clientRef} personally visited our office to request assistance in obtaining a Social Case Study Report for ${purposeLabel}.`;
+      // Full typed sentence — keep it verbatim (grammar-fixed)
+      needSentence = fixNeedPhrase(p.charAt(0).toUpperCase() + p.slice(1));
     }
   }
 
-  // --- Phase 5: Ensure closing sentence ---
+  // --- Phase 5: Combine ---
 
-  const alreadyHasClosing = /\b(please see|attached documents|supporting documents|for your (reference|review)|supporting this request)\b/i.test(paraphrased);
-  if (!alreadyHasClosing) {
-    paraphrased = paraphrased.replace(/\.?\s*$/, '') + '. Please see the attached documents for your reference.';
+  let paraphrased = opening + (needSentence ? ' ' + needSentence : '');
+
+  // --- Phase 6: Ensure closing sentence ---
+
+  if (!/\b(please see|attached documents|supporting documents|for your (reference|review)|supporting this request)\b/i.test(paraphrased)) {
+    paraphrased = paraphrased.replace(/\.\s*$/, '') + '. Please see the attached documents for your reference.';
   }
 
-  // --- Phase 6: Final cleanup ---
+  // --- Phase 7: Final cleanup ---
 
   paraphrased = paraphrased.replace(/\s+/g, ' ').trim();
   paraphrased = paraphrased.replace(/\.\./g, '.');
   paraphrased = paraphrased.replace(/,\s*\./g, '.');
   paraphrased = paraphrased.replace(/\.\s*\./g, '.');
-  // Capitalize first letter
+  paraphrased = paraphrased.replace(/\.\s*$/, '.');
   if (paraphrased) paraphrased = paraphrased.charAt(0).toUpperCase() + paraphrased.slice(1);
 
   return paraphrased;
