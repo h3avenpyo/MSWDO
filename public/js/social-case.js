@@ -223,7 +223,7 @@ function showCaseDetailsModal(caseId){
 
           <div style="margin-bottom:8px;grid-column:1/-1;">
             <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Problem Presented</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);white-space:pre-wrap;">${escapeHtml(rewriteProblemPresented(caseRec.interview?.interviewSituation || caseRec.interview?.problemPresented || caseRec.summary || "", caseRec.purpose || "", (caseRec.client?.fullName || caseRec.client?.full_name || caseRec.client?.name || ""), caseRec.client, caseRec.household || caseRec.familyMembers || []))||"—"}</div>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);white-space:pre-wrap;">${escapeHtml(caseRec.interview?.interviewSituation || caseRec.interview?.problemPresented || caseRec.summary || "")||"—"}</div>
           </div>
         </div>
       </div>
@@ -1984,18 +1984,18 @@ function showIntakeSummaryModal(){
   const missingReqs  = d.requirements.filter(r => !r.submitted).map(r => escapeHtml(r.name));
   const selectedAgencies = AGENCIES.filter(a => d.agencies.includes(a.key));
 
-  const householdRows = d.household.map((m, i) => `
+  const householdLabels = ['Name','Relationship','Age','Education','Occupation','Income'];
+  const householdValues = m => [m.name, m.relationship, m.age, m.education, m.occupation, m.income];
+  const householdRows = d.household.map((m, i) => {
+    const td = 'padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6;word-break:break-word;overflow-wrap:anywhere';
+    return `
     <tr>
-      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.name)}</td>
-      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.relationship)}</td>
-      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.age)}</td>
-      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.education)}</td>
-      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.occupation)}</td>
-      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.income)}</td>
-    </tr>`);
+      ${householdValues(m).map((v, j) => `<td data-label="${householdLabels[j]}" style="${td}">${val(v)}</td>`).join('')}
+    </tr>`;
+  });
 
   const sectionTitle = (label, icon='') => `
-    <div style="display:flex;align-items:center;gap:8px;margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid #E5E7EB">
+    <div class="section-title" style="display:flex;align-items:center;gap:8px;margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid #E5E7EB">
       ${icon ? `<div style="width:28px;height:28px;background:#EEF2FF;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <i data-lucide="${icon}" style="width:14px;height:14px;color:#4338CA"></i>
       </div>` : ''}
@@ -2005,7 +2005,7 @@ function showIntakeSummaryModal(){
   const infoRow = (label, value) => `
     <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
       <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.04em">${label}</span>
-      <span style="font-size:14px;color:#111827;font-weight:500">${value}</span>
+      <span style="font-size:14px;color:#111827;font-weight:500;word-break:break-word;overflow-wrap:anywhere">${value}</span>
     </div>`;
 
   const modal = document.createElement('div');
@@ -2017,12 +2017,40 @@ function showIntakeSummaryModal(){
       @keyframes fadeIn { from{opacity:0} to{opacity:1} }
       @keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
       #intakeSummaryModal .modal-box { animation: slideUp 0.25s ease; }
+      @media (max-width:768px) {
+        #intakeSummaryModal .family-table thead { display:none; }
+        #intakeSummaryModal .family-table,
+        #intakeSummaryModal .family-table tbody,
+        #intakeSummaryModal .family-table tr,
+        #intakeSummaryModal .family-table td { display:block; width:100%; }
+        #intakeSummaryModal .family-table tr {
+          padding:10px 14px; border-bottom:1px solid #E5E7EB;
+          background:#F9FAFB;
+        }
+        #intakeSummaryModal .family-table tr:last-child { border-bottom:none; }
+        #intakeSummaryModal .family-table td {
+          padding:6px 0 !important; border-bottom:none !important;
+          display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+        }
+        #intakeSummaryModal .family-table td::before {
+          content:attr(data-label);
+          flex:0 0 auto;
+          font-size:11px; font-weight:700; color:#6B7280;
+          text-transform:uppercase; letter-spacing:0.04em;
+          padding-top:1px; text-align:left;
+        }
+        #intakeSummaryModal .family-table td.family-empty::before { content:none; }
+        #intakeSummaryModal .family-table td.family-empty { display:block; text-align:center; padding:16px !important; }
+        #intakeSummaryModal .family-table td > * { text-align:right; word-break:break-word; }
+      }
       .field-error input, .field-error select, .field-error textarea {
         border-color: #DC2626 !important;
         box-shadow: 0 0 0 1px #DC2626;
       }
       @media (max-width:768px) {
-        #intakeSummaryModal .modal-box { max-height:100vh; border-radius:0; height:100%; }
+        #intakeSummaryModal { padding:0 !important; align-items:stretch !important; }
+        #intakeSummaryModal .modal-box { max-width:100% !important; max-height:100vh !important; border-radius:0 !important; height:100% !important; width:100% !important; }
+        #intakeSummaryModal .modal-box, #intakeSummaryModal .modal-body, #intakeSummaryModal .modal-body * { word-break:break-word; overflow-wrap:anywhere; }
         #intakeSummaryModal .modal-header { padding:14px 16px !important; }
         #intakeSummaryModal .modal-body { padding:16px !important; }
         #intakeSummaryModal .modal-footer { padding:14px 16px !important; flex-direction:column !important; }
@@ -2032,30 +2060,36 @@ function showIntakeSummaryModal(){
         #intakeSummaryModal .info-grid { grid-template-columns:1fr 1fr !important; gap:12px !important; }
         #intakeSummaryModal .signatories-grid { grid-template-columns:1fr !important; gap:12px !important; }
         #intakeSummaryModal .agencies-grid { grid-template-columns:1fr !important; gap:12px !important; }
-        #intakeSummaryModal .reqs-grid { grid-template-columns:1fr !important; gap:6px !important; }
-        #intakeSummaryModal .control-banner { flex-direction:column !important; align-items:flex-start !important; gap:4px !important; padding:12px 14px !important; }
+        #intakeSummaryModal .reqs-grid { grid-template-columns:1fr 1fr !important; gap:8px !important; }
+        #intakeSummaryModal .control-banner { flex-direction:column !important; align-items:flex-start !important; gap:6px !important; padding:12px 14px !important; }
+        #intakeSummaryModal .control-banner > div { width:100%; word-break:break-word; overflow-wrap:anywhere; }
         #intakeSummaryModal .modal-title { font-size:15px !important; }
         #intakeSummaryModal .modal-subtitle { font-size:11px !important; }
         #intakeSummaryModal .footer-info { display:none !important; }
+        #intakeSummaryModal .section-title h3 { font-size:12px !important; }
       }
       @media (max-width:480px) {
         #intakeSummaryModal .info-grid { grid-template-columns:1fr !important; }
+        #intakeSummaryModal .reqs-grid { grid-template-columns:1fr !important; }
+        #intakeSummaryModal .modal-header { gap:8px; }
+        #intakeSummaryModal .modal-header .modal-title-block { min-width:0; }
+        #intakeSummaryModal .modal-footer .footer-actions { flex-direction:column; }
       }
     </style>
     <div class="modal-box" style="background:#FFFFFF;border-radius:16px;width:100%;max-width:780px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(15,23,42,0.18);overflow:hidden">
 
       <!-- Modal Header -->
       <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #E5E7EB;background:#FAFAFA;flex-shrink:0">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:36px;height:36px;background:#4338CA;border-radius:8px;display:flex;align-items:center;justify-content:center">
+        <div style="display:flex;align-items:center;gap:12px;min-width:0">
+          <div style="width:36px;height:36px;background:#4338CA;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
             <i data-lucide="file-check" style="width:18px;height:18px;color:#fff"></i>
           </div>
-          <div>
-            <div class="modal-title" style="font-size:17px;font-weight:700;color:#111827;font-family:Inter,sans-serif">Review Case Summary</div>
-            <div class="modal-subtitle" style="font-size:12px;color:#6B7280;margin-top:1px">Please verify all information before saving</div>
+          <div class="modal-title-block" style="min-width:0">
+            <div class="modal-title" style="font-size:17px;font-weight:700;color:#111827;font-family:Inter,sans-serif;word-break:break-word">Review Case Summary</div>
+            <div class="modal-subtitle" style="font-size:12px;color:#6B7280;margin-top:1px;word-break:break-word">Please verify all information before saving</div>
           </div>
         </div>
-        <button onclick="closeIntakeSummaryModal()" style="width:32px;height:32px;border:none;background:#F3F4F6;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-size:18px;color:#6B7280;line-height:1" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='#F3F4F6'">
+        <button onclick="closeIntakeSummaryModal()" style="width:32px;height:32px;border:none;background:#F3F4F6;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-size:18px;color:#6B7280;line-height:1;flex-shrink:0" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='#F3F4F6'">
           &times;
         </button>
       </div>
@@ -2094,17 +2128,17 @@ function showIntakeSummaryModal(){
 
         <!-- Family Composition -->
         ${sectionTitle('II. Family Composition', 'users')}
-        <div style="overflow-x:auto;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
-          <table style="width:100%;border-collapse:collapse">
+        <div style="border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+          <table class="family-table" style="width:100%;border-collapse:collapse">
             <thead>
               <tr style="background:#F9FAFB">
-                ${['Name','Relationship','Age','Education','Occupation','Income'].map(h =>
+                ${householdLabels.map(h =>
                   `<th style="padding:9px 12px;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.04em;text-align:left;border-bottom:1px solid #E5E7EB">${h}</th>`
                 ).join('')}
               </tr>
             </thead>
             <tbody>
-              ${householdRows.length ? householdRows.join('') : `<tr><td colspan="6" style="padding:16px;text-align:center;color:#9CA3AF;font-size:13px">No family members added</td></tr>`}
+              ${householdRows.length ? householdRows.join('') : `<tr><td colspan="6" class="family-empty" style="padding:16px;text-align:center;color:#9CA3AF;font-size:13px">No family members added</td></tr>`}
             </tbody>
           </table>
         </div>
