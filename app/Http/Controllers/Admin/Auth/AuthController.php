@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\DashboardRedirector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -19,7 +20,6 @@ class AuthController extends Controller
         $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
-            'role' => ['required', 'string'],
         ]);
 
         $user = User::where('email', $request->email)
@@ -30,6 +30,7 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'Invalid email or password.'])->withInput();
         }
 
+<<<<<<< HEAD
         $moduleRoleMap = [
             'Social Case Study' => ['social_worker'],
             'Senior Citizen' => ['staff', 'Senior Citizen officer'],
@@ -55,6 +56,8 @@ class AuthController extends Controller
             return back()->withErrors(['role' => "This account is not authorized for the selected role."])->withInput();
         }
 
+=======
+>>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
         session([
             'admin_user_id' => $user->id,
             'admin_user_name' => $user->name,
@@ -62,9 +65,7 @@ class AuthController extends Controller
             'admin_just_logged_in' => true,
         ]);
 
-        $redirectRoute = $moduleRedirects[$selectedModule] ?? 'admin.dashboard';
-
-        return redirect()->route($redirectRoute);
+        return redirect()->route(DashboardRedirector::routeFor($user->role));
     }
 
     public function logout(Request $request)

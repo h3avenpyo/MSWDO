@@ -6,6 +6,7 @@ enum UserRole: string
 {
     case Admin = 'admin';
     case SocialWorker = 'social_worker';
+    case EligibilityChecker = 'eligibility_checker';
     case Encoder = 'encoder';
     case Staff = 'staff';
     case SeniorCitizenOfficer = 'Senior Citizen officer';
@@ -18,6 +19,7 @@ enum UserRole: string
         return match ($this) {
             self::Admin => 'Administrator',
             self::SocialWorker => 'Social Worker',
+            self::EligibilityChecker => 'Eligibility Checker',
             self::Encoder => 'Encoder',
             self::Staff => 'Staff',
             self::SeniorCitizenOfficer => 'Senior Citizen Officer',
@@ -25,5 +27,20 @@ enum UserRole: string
             self::FinancialStep1 => 'Financial Assistance Step 1',
             self::FinancialStep2 => 'Financial Assistance Step 2',
         };
+    }
+
+    public function canAccessSocialCase(): bool
+    {
+        return in_array($this, [self::Admin, self::SocialWorker, self::EligibilityChecker], true);
+    }
+
+    public function canEncodeCase(): bool
+    {
+        return in_array($this, [self::Admin, self::SocialWorker], true);
+    }
+
+    public function canCheckEligibility(): bool
+    {
+        return in_array($this, [self::Admin, self::EligibilityChecker], true);
     }
 }

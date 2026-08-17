@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MSWDO Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    @vite(['resources/css/admin-compat.css'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -62,8 +62,13 @@
             display: flex;
             flex-direction: column;
             transition: transform .3s ease;
+            transform: translateX(-100%);
         }
+<<<<<<< HEAD
 
+=======
+        .sidebar.show { transform: translateX(0); }
+>>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
         .sidebar-brand {
             padding: 1.5rem;
             border-bottom: 1px solid rgba(255, 255, 255, .1);
@@ -367,6 +372,7 @@
            RESPONSIVE BREAKPOINTS
            ══════════════════════════════════════════════ */
 
+<<<<<<< HEAD
         /* ── Large Desktop (≥ 1536px) ── */
         @media (min-width: 1536px) {
             .stat-cards-grid {
@@ -471,6 +477,9 @@
         }
 
         /* ── Mobile (< 480px) ── */
+=======
+        /* ── Small phones (0–479px) ── */
+>>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
         @media (max-width: 479px) {
             .stat-cards-grid {
                 grid-template-columns: 1fr;
@@ -495,6 +504,40 @@
             }
         }
 
+<<<<<<< HEAD
+=======
+        /* ── sm: Small tablets (768px+) ── */
+        @media (min-width: 768px) {
+            .navbar-datetime { display: block; }
+            .stat-cards-grid { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+            .stat-card { padding: 1.25rem; }
+            .card-body { padding: 1.25rem; }
+            .reports-summary-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* ── md: Large tablets (992px+) ── */
+        @media (min-width: 992px) {
+            .stat-cards-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+            .stat-card { padding: 1.5rem; }
+            .stat-value { font-size: 2rem; }
+            .reports-summary-grid { grid-template-columns: repeat(3, 1fr); }
+            .chart-container { height: 300px; }
+        }
+
+        /* ── lg: Desktops (1200px+) ── */
+        @media (min-width: 1200px) {
+            .sidebar { transform: translateX(0); z-index: 1000; }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 260px; width: calc(100% - 260px); }
+            .top-navbar { padding: 1rem 2rem; }
+            .navbar-title { font-size: 1.1rem; }
+        }
+
+        /* ── Large Desktop (≥ 1536px) ── */
+        @media (min-width: 1536px) {
+            .stat-cards-grid { gap: 2rem; }
+        }
+>>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
     </style>
 </head>
 <body>
@@ -520,7 +563,7 @@
         <nav class="top-navbar">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
-                    <button class="btn btn-link d-lg-none me-3" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                    <button class="btn btn-link d-lg-none d-xl-none me-3" onclick="toggleSidebar()" aria-label="Toggle sidebar">
                         <i class="fas fa-bars"></i>
                     </button>
                     <h5 class="mb-0 me-4">Dashboard</h5>
@@ -707,7 +750,6 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function toggleSidebar() {
@@ -735,11 +777,11 @@
             });
             document.querySelectorAll('.sidebar-menu a').forEach(function(link) {
                 link.addEventListener('click', function() {
-                    if (window.innerWidth < 1024) toggleSidebar();
+                    if (window.innerWidth < 1200) toggleSidebar();
                 });
             });
             window.addEventListener('resize', function() {
-                if (window.innerWidth >= 1024) {
+                if (window.innerWidth >= 1200) {
                     var sidebar = document.getElementById('sidebar');
                     var overlay = document.getElementById('sidebarOverlay');
                     if (sidebar && sidebar.classList.contains('show')) {
@@ -815,6 +857,7 @@
     </form>
 
     <script>
+<<<<<<< HEAD
         document.addEventListener('DOMContentLoaded', function() {
             @if($justLoggedIn ?? false)
             var adminName = "{{ session('admin_user_name') ?? 'Admin' }}";
@@ -834,6 +877,8 @@
             @endif
         });
 
+=======
+>>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
         function confirmLogout(event) {
             event.preventDefault();
             Swal.fire({

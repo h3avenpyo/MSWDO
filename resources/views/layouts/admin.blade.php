@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'MSWDO Admin')</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    @vite(['resources/css/admin-compat.css'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
@@ -26,8 +26,16 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/admin.js') }}"></script>
+    <script>
+        document.addEventListener('click', function (e) {
+            var dismiss = e.target.closest('[data-bs-dismiss="alert"]');
+            if (dismiss) {
+                var alert = dismiss.closest('.alert');
+                if (alert) alert.remove();
+            }
+        });
+    </script>
     @yield('page-scripts')
 
     <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">

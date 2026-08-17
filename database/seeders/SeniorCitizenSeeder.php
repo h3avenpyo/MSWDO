@@ -83,7 +83,7 @@ class SeniorCitizenSeeder extends Seeder
 
             $barangayCode = $barangayCodes[$barangay];
 
-            for ($i = 0; $i < 10; $i++) {
+            for ($i = 0; $i < 50; $i++) {
                 $firstName = $firstNames[array_rand($firstNames)];
                 $middleName = $middleNames[array_rand($middleNames)];
                 $lastName = $lastNames[array_rand($lastNames)];
@@ -130,6 +130,6 @@ class SeniorCitizenSeeder extends Seeder
             }
         }
 
-        $this->command->info("{$totalCreated} senior citizen records seeded (10 per barangay, " . count($barangays) . " barangays).");
+        $this->command->info("{$totalCreated} senior citizen records seeded (50 per barangay, " . count($barangays) . " barangays).");
     }
 }

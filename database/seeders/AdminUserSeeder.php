@@ -35,6 +35,16 @@ class AdminUserSeeder extends Seeder
         );
 
         User::updateOrCreate(
+            ['email' => 'social2@mwsdo.test'],
+            [
+                'name' => 'Social Case Eligibility Checker',
+                'password' => Hash::make('password'),
+                'role' => 'eligibility_checker',
+                'status' => 'active',
+            ]
+        );
+
+        User::updateOrCreate(
             ['email' => 'senior@mswdo.test'],
             [
                 'name' => 'Senior Citizen Officer',

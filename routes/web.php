@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MultiDatabaseDemoController;
 use App\Http\Controllers\Admin\Auth\AuthController;
+use App\Http\Controllers\Admin\Auth\EmailCodeController;
 use App\Http\Controllers\Admin\Auth\OfficerController;
 use App\Http\Controllers\Admin\SocialCase\SocialCaseController;
 use App\Http\Controllers\Admin\SocialCase\SocialCaseIntakeController;
@@ -20,6 +21,8 @@ Route::get('/', function () {
 
 Route::get('/admin', [AuthController::class, 'showLogin'])->name('admin.login.form');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login');
+Route::post('/admin/login/code/send', [EmailCodeController::class, 'send'])->name('admin.login.code.send');
+Route::post('/admin/login/code/verify', [EmailCodeController::class, 'verify'])->name('admin.login.code.verify');
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 Route::post('/admin/clear-welcome', [AuthController::class, 'clearWelcome'])->name('admin.clear-welcome');
 
@@ -28,32 +31,42 @@ Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('adm
 // Social Case Module Routes
 Route::middleware(['admin.auth'])->group(function () {
     Route::prefix('admin/social-case')->name('admin.social-case.')->group(function () {
+        // Shared routes (both eligibility checker and case encoder)
         Route::get('/welcome', [SocialCaseController::class, 'socialCaseWelcome'])->name('welcome');
         Route::get('/dashboard', [SocialCaseController::class, 'socialCaseDashboard'])->name('dashboard');
         Route::get('/new', [SocialCaseController::class, 'socialCaseNew'])->name('new');
-        Route::get('/intake', [SocialCaseController::class, 'socialCaseIntake'])->name('intake');
         Route::get('/cases', [SocialCaseController::class, 'socialCaseCases'])->name('cases');
         Route::get('/archive', [SocialCaseController::class, 'socialCaseArchive'])->name('archive');
         Route::get('/detail/{caseId}', [SocialCaseController::class, 'socialCaseDetail'])->name('detail');
         Route::get('/document/{caseId}/{agency}', [SocialCaseController::class, 'socialCaseDocument'])->name('document');
 
-        // Social Case Intake Sheet Routes
-        Route::prefix('intake-sheet')->name('intake.')->group(function () {
-            Route::get('/', [SocialCaseIntakeController::class, 'index'])->name('index');
-            Route::get('/create/{client?}', [SocialCaseIntakeController::class, 'create'])->name('create');
-            Route::post('/', [SocialCaseIntakeController::class, 'store'])->name('store');
-            Route::get('/{intake}', [SocialCaseIntakeController::class, 'show'])->name('show');
-            Route::get('/{intake}/edit', [SocialCaseIntakeController::class, 'edit'])->name('edit');
-            Route::put('/{intake}', [SocialCaseIntakeController::class, 'update'])->name('update');
-            Route::delete('/{intake}', [SocialCaseIntakeController::class, 'destroy'])->name('destroy');
+        // Read-only API (shared)
+        Route::get('/api/cases', [SocialCaseController::class, 'getCases'])->name('api.cases');
+        Route::get('/api/cases/{id}', [SocialCaseController::class, 'getCase'])->name('api.show');
+        Route::get('/api/activities', [SocialCaseController::class, 'getActivities'])->name('api.activities.get');
+
+        // Eligibility checker only (social2@mwsdo.test)
+        Route::middleware('role:admin,eligibility_checker')->group(function () {
+            Route::post('/api/eligibility/check', [SocialCaseController::class, 'checkEligibility'])->name('api.eligibility.check');
+            Route::post('/api/eligibility/submit', [SocialCaseController::class, 'submitEligibility'])->name('api.eligibility.submit');
         });
 
-        // API routes for CRUD operations
-        Route::get('/api/cases', [SocialCaseController::class, 'getCases'])->name('api.cases');
-        Route::post('/api/cases', [SocialCaseController::class, 'storeCase'])->name('api.store');
-        Route::get('/api/cases/{id}', [SocialCaseController::class, 'getCase'])->name('api.show');
-        Route::put('/api/cases/{id}', [SocialCaseController::class, 'updateCase'])->name('api.update');
-        Route::delete('/api/cases/{id}', [SocialCaseController::class, 'deleteCase'])->name('api.delete');
+        // Case encoder only (social@mwsdo.test)
+        Route::middleware('role:admin,social_worker')->group(function () {
+            Route::get('/intake', [SocialCaseController::class, 'socialCaseIntake'])->name('intake');
+            Route::get('/submitted', [SocialCaseController::class, 'socialCaseSubmitted'])->name('submitted');
+        });
+
+        // Write API (case encoder only - creating, updating, archiving cases)
+        Route::middleware('role:admin,social_worker')->group(function () {
+            Route::post('/api/cases', [SocialCaseController::class, 'storeCase'])->name('api.store');
+            Route::put('/api/cases/{id}', [SocialCaseController::class, 'updateCase'])->name('api.update');
+            Route::delete('/api/cases/{id}', [SocialCaseController::class, 'deleteCase'])->name('api.delete');
+        });
+
+        // Activity logging (shared write - both roles log their own actions)
+        Route::post('/api/activities', [SocialCaseController::class, 'logActivity'])->name('api.activities.log');
+        Route::post('/api/activities/clear', [SocialCaseController::class, 'clearActivities'])->name('api.activities.clear');
     });
 });
 
@@ -75,11 +88,6 @@ Route::get('/admin/senior/masterlist', [SeniorController::class, 'seniorMasterli
 Route::get('/admin/senior/archive', [SeniorController::class, 'seniorArchiveList'])->name('admin.senior.archive.list');
 Route::post('/admin/senior/archive/{id}', [SeniorController::class, 'archiveSenior'])->name('admin.senior.archive');
 Route::post('/admin/senior/unarchive/{id}', [SeniorController::class, 'unarchiveSenior'])->name('admin.senior.unarchive');
-Route::get('/admin/senior/id-card/{id}', [SeniorController::class, 'showIdCard'])->name('admin.senior.id-card');
-Route::post('/admin/senior/id-card/{id}/generate', [SeniorController::class, 'generateIdCard'])->name('admin.senior.id-card.generate');
-Route::post('/admin/senior/id-card/{id}/reprint', [SeniorController::class, 'reprintIdCard'])->name('admin.senior.id-card.reprint');
-Route::get('/admin/senior/id-card/{id}/download', [SeniorController::class, 'downloadIdCardPdf'])->name('admin.senior.id-card.download');
-Route::get('/admin/senior/profile/{id}', [SeniorController::class, 'seniorProfile'])->name('admin.senior.profile');
 Route::get('/admin/senior/profile/{id}/json', [SeniorController::class, 'seniorProfileJson'])->name('admin.senior.profile.json');
 Route::prefix('admin/senior/birthdays')->name('admin.senior.birthdays')->group(function () {
     Route::get('/', [BirthdayController::class, 'index']);
@@ -89,22 +97,18 @@ Route::prefix('admin/senior/birthdays')->name('admin.senior.birthdays')->group(f
     Route::get('/export/pdf', [BirthdayController::class, 'exportPdf'])->name('.export.pdf');
     Route::get('/export/csv', [BirthdayController::class, 'exportCsv'])->name('.export.csv');
     Route::get('/print', [BirthdayController::class, 'printView'])->name('.print');
+    Route::post('/generate-payouts', [BirthdayController::class, 'generatePayouts'])->name('.generate-payouts');
+    Route::post('/release-payout/{id}', [BirthdayController::class, 'releasePayout'])->name('.release-payout');
+    Route::post('/bulk-release', [BirthdayController::class, 'bulkRelease'])->name('.bulk-release');
+    Route::post('/print-bulk', [BirthdayController::class, 'printBulkReleased'])->name('.print-bulk');
+    Route::post('/generate-all', [BirthdayController::class, 'generateAllPayouts'])->name('.generate-all');
+    Route::post('/release-all', [BirthdayController::class, 'releaseAllPayouts'])->name('.release-all');
+    Route::post('/generate-barangay', [BirthdayController::class, 'generateBarangayPayouts'])->name('.generate-barangay');
+    Route::post('/release-barangay', [BirthdayController::class, 'releaseBarangayPayouts'])->name('.release-barangay');
 });
 Route::get('/admin/senior/statistics', [SeniorAnalyticsController::class, 'index'])->name('admin.senior.analytics');
 Route::get('/admin/senior/reports', [SeniorController::class, 'senior'])->name('admin.senior.reports');
-Route::prefix('admin/senior/birthday-payouts')->name('admin.senior.birthday-payouts')->group(function () {
-    Route::get('/', [BirthdayPayoutController::class, 'index']);
-    Route::get('/history', [BirthdayPayoutController::class, 'history'])->name('.history');
-    Route::post('/generate', [BirthdayPayoutController::class, 'generate'])->name('.generate');
-    Route::post('/reset', [BirthdayPayoutController::class, 'reset'])->name('.reset');
-    Route::post('/release/{id}', [BirthdayPayoutController::class, 'release'])->name('.release');
-    Route::post('/bulk-release', [BirthdayPayoutController::class, 'bulkRelease'])->name('.bulk-release');
-    Route::post('/cancel/{id}', [BirthdayPayoutController::class, 'cancel'])->name('.cancel');
-    Route::get('/print', [BirthdayPayoutController::class, 'print'])->name('.print');
-    Route::get('/export-pdf', [BirthdayPayoutController::class, 'exportPdf'])->name('.export-pdf');
-    Route::get('/export-excel', [BirthdayPayoutController::class, 'exportExcel'])->name('.export-excel');
-    Route::get('/receipt/{id}', [BirthdayPayoutController::class, 'receipt'])->name('.receipt');
-});
+Route::get('/admin/senior/payouts-history', [BirthdayPayoutController::class, 'history'])->name('admin.senior.payouts-history');
 Route::post('/admin/senior/bulk-archive', [SeniorController::class, 'bulkArchive'])->name('admin.senior.bulk-archive');
 Route::post('/admin/senior/bulk-restore', [SeniorController::class, 'bulkRestore'])->name('admin.senior.bulk-restore');
 Route::get('/admin/senior/export', [SeniorController::class, 'exportSeniors'])->name('admin.senior.export');

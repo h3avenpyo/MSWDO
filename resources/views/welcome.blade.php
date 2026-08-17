@@ -6,11 +6,22 @@
     <title>MSWDO Silang</title>
     <meta name="description" content="Municipal Social Welfare and Development Office - Municipality of Silang">
     <link rel="preconnect" href="https://fonts.bunny.net">
+<<<<<<< HEAD
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="icon" type="image/x-icon" href="{{ asset('IserveIcon.ico') }}">
+=======
+
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800"
+        rel="stylesheet" />
+
+    @vite(['resources/css/app.css','resources/js/app.js'])
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+>>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
 </head>
 <body class="bg-[#F8FAFC] text-[#1F2937] antialiased">
+<<<<<<< HEAD
     <!-- ========================= -->
     <!-- NAVBAR -->
     <!-- ========================= -->
@@ -349,6 +360,339 @@
             <div class="text-center">
                 <h2 class="text-4xl font-bold">
                     How to Apply
+=======
+
+<!-- ========================= -->
+<!-- SIDEBAR (desktop) -->
+<!-- ========================= -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <i data-lucide="building-2" style="width:24px;height:24px"></i>
+        <span>MSWDO Silang</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="#home"><i data-lucide="home" style="width:20px;height:20px"></i> Home</a></li>
+        <li><a href="#services"><i data-lucide="briefcase" style="width:20px;height:20px"></i> Services</a></li>
+        <li><a href="#about"><i data-lucide="info" style="width:20px;height:20px"></i> About</a></li>
+        <li><a href="#programs"><i data-lucide="megaphone" style="width:20px;height:20px"></i> Programs</a></li>
+        <li><a href="#contact"><i data-lucide="mail" style="width:20px;height:20px"></i> Contact</a></li>
+    </ul>
+    <div class="sidebar-foot">
+        <a href="/admin" class="flex items-center gap-2 text-xs" style="color:rgba(255,255,255,.5);text-decoration:none">
+            <i data-lucide="log-in" style="width:14px;height:14px"></i> Admin Login
+        </a>
+    </div>
+</div>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
+
+<!-- Hamburger Button (mobile) -->
+<button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+    <i data-lucide="menu" style="width:24px;height:24px"></i>
+</button>
+
+<!-- Mobile Header (visible only on mobile) -->
+<div class="mobile-header">
+    <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+        </svg>
+    </button>
+    <div class="mobile-header-brand">
+        <div class="mobile-brand-text">
+            <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+            <p class="mobile-brand-subtitle">Municipal Social Welfare & Development Office</p>
+        </div>
+        <div class="mobile-logo">
+            @php
+            $logo = null;
+            if(file_exists(public_path('images/mswdo-logo.png'))){
+                $logo='mswdo-logo.png';
+            }else{
+                $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+                if(!empty($files))
+                $logo=basename($files[0]);
+            }
+            @endphp
+            @if($logo)
+            <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+            @endif
+        </div>
+    </div>
+</div>
+
+<!-- Desktop Navbar (visible only on laptop/desktop) -->
+<nav class="desktop-navbar">
+    <div class="navbar-brand">
+        @php
+        $logo = null;
+        if(file_exists(public_path('images/mswdo-logo.png'))){
+            $logo='mswdo-logo.png';
+        }else{
+            $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+            if(!empty($files))
+            $logo=basename($files[0]);
+        }
+        @endphp
+        @if($logo)
+        <img src="{{ asset('images/'.$logo) }}" class="navbar-logo">
+        @endif
+        <span>MSWDO Silang</span>
+    </div>
+    <ul class="navbar-menu">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#programs">Programs</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+</nav>
+
+<!-- ========================= -->
+
+<!-- HERO -->
+
+<!-- ========================= -->
+
+<section id="home"
+
+class="relative overflow-hidden bg-gradient-to-r from-[#1A237E] via-[#1A237E] to-[#1A237E] pb-24 pt-24">
+
+<div class="absolute inset-0 opacity-10">
+
+<div class="absolute h-96 w-96 rounded-full bg-warm-gold blur-3xl -top-20 -left-20"></div>
+
+<div class="absolute h-96 w-96 rounded-full bg-offwhite blur-3xl bottom-0 right-0"></div>
+
+</div>
+
+<div class="relative max-w-7xl mx-auto px-6">
+
+<div class="grid lg:grid-cols-2 gap-14 items-center">
+
+<div>
+
+<p class="uppercase tracking-[5px] text-warm-gold">
+
+WELCOME TO
+
+</p>
+
+<h1 class="mt-4 text-6xl font-extrabold text-white leading-tight">
+
+MSWDO
+
+<span class="text-warm-gold">
+
+SILANG
+
+</span>
+
+</h1>
+
+<p class="mt-6 text-offwhite text-lg leading-8">
+
+The Municipal Social Welfare and Development Office is committed to
+
+empowering vulnerable sectors through quality social protection,
+
+community development, and accessible public services.
+
+</p>
+
+<div class="mt-10 flex flex-wrap gap-4">
+
+<a href="#services"
+
+class="bg-warm-gold px-8 py-4 rounded-xl font-bold hover:scale-105 transition">
+
+Explore Services
+
+</a>
+
+<a href="#contact"
+
+class="border border-offwhite text-offwhite px-8 py-4 rounded-xl hover:bg-offwhite hover:text-primary transition">
+
+Contact Us
+
+</a>
+
+</div>
+
+<div class="grid grid-cols-3 gap-8 mt-14">
+
+<div>
+
+<h2 class="text-4xl font-bold text-warm-gold">
+
+10K+
+
+</h2>
+
+<p class="text-offwhite">
+
+Families Assisted
+
+</p>
+
+</div>
+
+<div>
+
+<h2 class="text-4xl font-bold text-warm-gold">
+
+25+
+
+</h2>
+
+<p class="text-offwhite">
+
+Programs
+
+</p>
+
+</div>
+
+<div>
+
+<h2 class="text-4xl font-bold text-warm-gold">
+
+24/7
+
+</h2>
+
+<p class="text-offwhite">
+
+Online Support
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="flex justify-center">
+
+<div class="bg-offwhite bg-opacity-70 backdrop-blur-lg rounded-3xl p-10 shadow-2xl">
+
+@if($logo)
+
+<img src="{{ asset('images/'.$logo) }}"
+
+class="w-80">
+
+@else
+
+<div class="w-80 h-80 rounded-full bg-card-white"></div>
+
+@endif
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+
+<!-- QUICK SERVICES -->
+
+<!-- ========================= -->
+
+<section id="services" class="py-20 bg-offwhite">
+
+<div class="max-w-7xl mx-auto px-6">
+
+<div class="text-center">
+
+<h2 class="text-4xl font-bold">
+
+Our Services
+
+</h2>
+
+<p class="text-secondary mt-3">
+
+Providing quality welfare services for every Silangueño.
+
+</p>
+
+</div>
+
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-14 justify-items-center mx-auto max-w-4xl">
+
+<div class="bg-card-white rounded-2xl shadow-lg p-8 hover:-translate-y-2 transition flex flex-col items-center text-center">
+
+<div class="text-5xl mb-4"> </div>
+
+<h3 class="font-bold text-xl">
+
+Financial Assistance
+
+</h3>
+
+<p class="text-secondary mt-3">
+
+Emergency and medical financial support for qualified residents.
+
+</p>
+
+</div>
+
+
+
+<div class="bg-card-white rounded-2xl shadow-lg p-8 hover:-translate-y-2 transition flex flex-col items-center text-center">
+
+<div class="text-5xl mb-4"></div>
+
+<h3 class="font-bold text-xl">
+
+Senior Citizens
+
+</h3>
+
+<p class="text-secondary mt-3">
+
+Programs and benefits dedicated to senior citizens.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ===================================== -->
+<!-- ABOUT MSWDO -->
+<!-- ===================================== -->
+
+<section id="about" class="py-24 bg-offwhite">
+
+    <div class="max-w-7xl mx-auto px-6">
+
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+
+            <div>
+
+                <span class="text-primary font-semibold uppercase tracking-widest">
+                    About Us
+                </span>
+
+                <h2 class="text-5xl font-bold mt-4">
+                    Serving the People of
+                    <span class="text-primary">Silang</span>
+>>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
                 </h2>
                 <p class="text-secondary mt-4">
                     Simple steps to request assistance.
@@ -402,6 +746,7 @@
                 </div>
             </div>
         </div>
+<<<<<<< HEAD
     </section>
     <!-- ===================================== -->
     <!-- LATEST ANNOUNCEMENTS -->
@@ -472,6 +817,665 @@
             </h2>
             <p class="text-offwhite mt-6 text-xl">
                 Our dedicated team is ready to assist you with your concerns.
+=======
+
+    </div>
+
+</section>
+
+<!-- ===================================== -->
+<!-- MISSION & VISION -->
+<!-- ===================================== -->
+
+<section class="py-24 bg-offwhite">
+
+<div class="max-w-7xl mx-auto px-6">
+
+<div class="grid lg:grid-cols-2 gap-10">
+
+<div class="bg-primary text-white rounded-3xl p-12 shadow-xl">
+
+<h2 class="text-4xl font-bold mb-8">
+
+Mission
+
+</h2>
+
+<p class="text-lg leading-8">
+
+To provide efficient, compassionate, and accessible social welfare
+services that improve the quality of life of every Silangueño through
+people-centered programs, community participation, and sustainable
+development.
+
+</p>
+
+</div>
+
+<div class="bg-warm-gold rounded-3xl p-12 shadow-xl">
+
+<h2 class="text-4xl font-bold text-slate-900 mb-8">
+
+Vision
+
+</h2>
+
+<p class="text-lg leading-8 text-slate-800">
+
+A resilient, inclusive, and empowered municipality where every citizen
+has equal access to opportunities, protection, and quality social
+services.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ===================================== -->
+<!-- PROCESS FLOW -->
+<!-- ===================================== -->
+
+<section class="py-24 bg-offwhite">
+
+<div class="max-w-7xl mx-auto px-6">
+
+<div class="text-center">
+
+<h2 class="text-4xl font-bold">
+
+How to Apply
+
+</h2>
+
+<p class="text-secondary mt-4">
+
+Simple steps to request assistance.
+
+</p>
+
+</div>
+
+<div class="grid md:grid-cols-5 gap-8 mt-16">
+
+<div class="text-center">
+
+<div class="w-20 h-20 mx-auto rounded-full bg-primary text-white flex items-center justify-center text-3xl">
+
+1
+
+</div>
+
+<h3 class="font-bold mt-6">
+
+Submit Request
+
+</h3>
+
+</div>
+
+<div class="text-center">
+
+<div class="w-20 h-20 mx-auto rounded-full bg-primary text-white flex items-center justify-center text-3xl">
+
+2
+
+</div>
+
+<h3 class="font-bold mt-6">
+
+Document Review
+
+</h3>
+
+</div>
+
+<div class="text-center">
+
+<div class="w-20 h-20 mx-auto rounded-full bg-primary text-white flex items-center justify-center text-3xl">
+
+3
+
+</div>
+
+<h3 class="font-bold mt-6">
+
+Assessment
+
+</h3>
+
+</div>
+
+<div class="text-center">
+
+<div class="w-20 h-20 mx-auto rounded-full bg-primary text-white flex items-center justify-center text-3xl">
+
+4
+
+</div>
+
+<h3 class="font-bold mt-6">
+
+Approval
+
+</h3>
+
+</div>
+
+<div class="text-center">
+
+<div class="w-20 h-20 mx-auto rounded-full bg-accent text-white flex items-center justify-center text-3xl">
+
+5
+
+</div>
+
+<h3 class="font-bold mt-6">
+
+Release Assistance
+
+</h3>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ===================================== -->
+<!-- LATEST ANNOUNCEMENTS -->
+<!-- ===================================== -->
+
+<section id="programs" class="py-24 bg-offwhite">
+
+<div class="max-w-7xl mx-auto px-6">
+
+<div class="text-center">
+
+<h2 class="text-4xl font-bold">
+
+Latest Announcements
+
+</h2>
+
+<p class="text-secondary mt-4">
+
+Stay updated with MSWDO activities and schedules.
+
+</p>
+
+</div>
+
+<div class="grid lg:grid-cols-3 gap-8 mt-14">
+
+<div class="rounded-2xl shadow-lg overflow-hidden">
+
+<div class="bg-primary h-3"></div>
+
+<div class="p-8">
+
+<span class="text-sm text-primary font-semibold">
+
+June 2026
+
+</span>
+
+<h3 class="text-2xl font-bold mt-3">
+
+Senior Citizen Pension Distribution
+
+</h3>
+
+<p class="text-secondary mt-4">
+
+The payout schedule for qualified senior citizens will begin this month.
+
+</p>
+
+</div>
+
+</div>
+
+<div class="welcome-card rounded-2xl shadow-lg overflow-hidden">
+
+<div class="bg-warm-gold h-3"></div>
+
+<div class="p-8">
+
+<span class="text-sm text-warm-gold font-semibold">
+
+June 2026
+
+</span>
+
+<h3 class="text-2xl font-bold mt-3">
+
+Financial Assistance Applications
+
+</h3>
+
+<p class="text-secondary mt-4">
+
+Qualified residents may now submit their applications online.
+
+</p>
+
+</div>
+
+</div>
+
+<div class="welcome-card rounded-2xl shadow-lg overflow-hidden">
+
+<div class="bg-accent h-3"></div>
+
+<div class="p-8">
+
+<span class="text-sm text-accent font-semibold">
+
+June 2026
+
+</span>
+
+<h3 class="text-2xl font-bold mt-3">
+
+VAWC Awareness Seminar
+
+</h3>
+
+<p class="text-secondary mt-4">
+
+Join our advocacy program promoting safe families and communities.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ===================================== -->
+<!-- CALL TO ACTION -->
+<!-- ===================================== -->
+
+<section class="py-20 bg-primary">
+
+<div class="max-w-5xl mx-auto text-center px-6">
+
+<h2 class="text-5xl font-bold text-white">
+
+Need Social Assistance?
+
+</h2>
+
+<p class="text-offwhite mt-6 text-xl">
+
+Our dedicated team is ready to assist you with your concerns.
+
+</p>
+
+<div class="mt-10 flex flex-wrap justify-center gap-6">
+
+<a href="#contact"
+
+class="bg-warm-gold px-8 py-4 rounded-xl font-bold hover:scale-105 transition">
+
+Contact MSWDO
+
+</a>
+
+<a href="#services"
+
+class="border border-offwhite px-8 py-4 rounded-xl text-white hover:bg-offwhite hover:text-primary transition">
+
+View Services
+
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ===================================== -->
+<!-- CONTACT SECTION -->
+<!-- ===================================== -->
+<style>
+/* ── Sidebar + Mobile Header ── */
+.sidebar{width:var(--sidebar-width,260px);flex-shrink:0;background:#1A237E;color:#FFF;position:fixed;left:0;top:0;height:100vh;z-index:1000;display:flex;flex-direction:column;transition:transform .3s ease;}
+.sidebar-brand{height:72px;padding:0 1.5rem;border-bottom:1px solid rgba(255,255,255,.1);color:#fff;font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:.65rem;}
+.sidebar-brand i,.sidebar-brand [data-lucide]{width:24px;height:24px;color:#FBC02D;}
+.sidebar-menu{list-style:none;margin:0;padding:1rem 0;flex:1;}
+.sidebar-menu li{margin-bottom:.2rem;}
+.sidebar-menu a{color:rgba(255,255,255,.75);padding:.75rem 1.5rem;display:flex;align-items:center;gap:.75rem;text-decoration:none;font-size:.9rem;border-left:3px solid transparent;transition:all .2s ease;}
+.sidebar-menu a:hover{background:rgba(255,255,255,.1);color:#FBC02D;}
+.sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
+.sidebar-foot{padding:1rem 1.5rem;font-size:11px;color:rgba(255,255,255,.4);border-top:1px solid rgba(255,255,255,.1);}
+.sidebar-overlay.active{display:block!important;}
+
+.hamburger-btn{display:none;position:fixed;top:12px;left:12px;z-index:1002;background:#1A237E;color:#fff;border:none;outline:none;border-radius:12px;width:44px;height:44px;align-items:center;justify-content:center;cursor:pointer;}
+.hamburger-btn:focus{outline:none;box-shadow:0 0 0 3px rgba(26,35,126,0.4);}
+
+.mobile-header{display:none!important;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
+.mobile-header-brand{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
+.mobile-logo{width:56px;height:56px;border-radius:50%;background:#FBC02D;padding:4px;flex-shrink:0;}
+.mobile-logo-img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.mobile-brand-text{flex:1;min-width:0;}
+.mobile-brand-title{font-size:18px;font-weight:700;color:#ffffff;margin:0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mobile-brand-subtitle{font-size:12px;color:rgba(255,255,255,.8);margin:2px 0 0 0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mobile-menu-btn{display:flex;align-items:center;justify-content:center;background:transparent;border:none;outline:none;color:#ffffff;cursor:pointer;padding:8px;flex-shrink:0;margin-right:24px;}
+.mobile-menu-btn:focus{outline:none;}
+.mobile-menu-icon{width:32px;height:32px;}
+
+.hamburger-btn{display:flex;}
+.sidebar{transform:translateX(-100%)!important;z-index:1001!important;}
+.sidebar.show{transform:translateX(0)!important;}
+body{padding-left:0!important;padding-top:80px!important;}
+.mobile-header{display:flex!important;z-index:998!important;}
+.desktop-navbar{display:none!important;}
+
+@media(min-width:1200px){
+    body{padding-left:0;padding-top:0;}
+    .hamburger-btn{display:none!important;}
+    .mobile-header{display:none!important;}
+    .sidebar{display:none!important;}
+    .desktop-navbar{display:flex!important;}
+}
+
+/* Desktop Navbar Styles */
+.desktop-navbar{display:none;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 3rem;align-items:center;justify-content:space-between;height:80px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
+.navbar-brand{display:flex;align-items:center;gap:1rem;color:#fff;font-weight:700;font-size:1.2rem;letter-spacing:0.5px;}
+.navbar-logo{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #FBC02D;}
+.navbar-menu{list-style:none;margin:0;padding:0;display:flex;align-items:center;gap:2.5rem;}
+.navbar-menu li{margin:0;}
+.navbar-menu a{color:#fff;text-decoration:none;font-size:0.95rem;font-weight:500;padding:0.5rem 0;transition:color .2s ease,opacity .2s ease;opacity:0.9;}
+.navbar-menu a:hover{color:#FBC02D;opacity:1;}
+
+.contact-section {
+    padding: 7rem 1.5rem;
+    background-color: #F8FAFC; /* Match site off-white */
+    border-top: 1px solid #E2E8F0;
+}
+.contact-container {
+    max-width: 76rem;
+    margin: 0 auto;
+}
+.contact-header {
+    text-align: center;
+    margin-bottom: 5rem;
+}
+.contact-subtitle {
+    color: #B45309; /* Deep amber gold */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 0.75rem;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+.contact-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1A237E; /* Brand primary blue */
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.03em;
+}
+.contact-description {
+    color: #475569; /* Slate secondary */
+    font-size: 1.0625rem;
+    max-width: 36rem;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    margin-bottom: 4rem;
+}
+@media (min-width: 1024px) {
+    .contact-grid {
+        grid-template-columns: 1fr 1.2fr;
+    }
+}
+.contact-card {
+    background: #FFFFFF;
+    border-radius: 0.75rem;
+    border: 1px solid #E2E8F0;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+}
+.card-title {
+    font-size: 1.375rem;
+    font-weight: 800;
+    color: #1A237E; /* Brand primary blue */
+    margin-bottom: 2.5rem;
+    letter-spacing: -0.01em;
+}
+.info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    flex: 1;
+}
+.info-item {
+    display: flex;
+    align-items: start;
+    gap: 1.25rem;
+}
+.info-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #1A237E; /* Brand primary blue */
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+}
+.info-content {
+    flex: 1;
+}
+.info-label {
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #B45309; /* Amber gold */
+    margin-bottom: 0.375rem;
+}
+.info-text {
+    color: #1F2937;
+    font-size: 1.0625rem;
+    line-height: 1.5;
+}
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    flex: 1;
+}
+.form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+@media (min-width: 640px) {
+    .form-row-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.form-field-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+}
+.form-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-size: 0.95rem;
+    border: 1px solid #CBD5E1;
+    border-radius: 0.5rem;
+    outline: none;
+    background-color: #F8FAFC;
+    color: #1F2937;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.form-input:focus {
+    border-color: #1A237E;
+    background-color: #FFFFFF;
+}
+.form-textarea {
+    resize: none;
+    min-height: 8rem;
+}
+.submit-button {
+    background-color: #1A237E; /* Brand primary blue */
+    color: #FFFFFF;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: background-color 0.2s ease;
+    margin-top: 1rem;
+}
+.submit-button:hover {
+    background-color: #111827;
+}
+.submit-button:active {
+    transform: translateY(1px);
+}
+.button-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+/* Emergency Card - High Contrast Brand Navy & Gold */
+.emergency-card {
+    background-color: #1A237E; /* Brand primary blue */
+    border-radius: 0.75rem;
+    padding: 3rem;
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.emergency-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: 1.5rem;
+}
+@media (min-width: 640px) {
+    .emergency-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+.emergency-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.emergency-badge {
+    border: 1px solid #FBC02D; /* Brand warm gold */
+    color: #FBC02D;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    align-self: start;
+}
+.emergency-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+.emergency-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem 3rem;
+}
+@media (min-width: 768px) {
+    .emergency-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+@media (min-width: 1200px) {
+    .emergency-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+.hotline-item {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.hotline-label {
+    color: #E2E8F0;
+    font-weight: 500;
+}
+.hotline-value {
+    color: #FBC02D; /* Brand warm gold */
+    font-weight: 700;
+    font-family: monospace;
+}
+@media (max-width: 479px) {
+    .contact-card {
+        padding: 2rem;
+    }
+    .emergency-card {
+        padding: 2rem;
+    }
+    .hotline-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+</style>
+
+<section id="contact" class="contact-section">
+    <div class="contact-container">
+        <div class="contact-header">
+            <span class="contact-subtitle">Get In Touch</span>
+            <h2 class="contact-title">Contact Us</h2>
+            <p class="contact-description">
+                Reach out to the Municipal Social Welfare and Development Office. We're here to help and answer any questions you may have.
+>>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
             </p>
             <div class="mt-10 flex flex-wrap justify-center gap-6">
                 <a href="#contact" class="bg-warm-gold px-8 py-4 rounded-xl font-bold hover:scale-105 transition">
@@ -959,6 +1963,7 @@
                 </p>
             </div>
         </div>
+<<<<<<< HEAD
     </footer>
     <!-- ===================================== -->
     <!-- SCROLL TO TOP -->
@@ -991,5 +1996,123 @@
             });
         });
     </script>
+=======
+
+        <hr class="border-primary border-opacity-70 my-10">
+
+        <div class="flex justify-center items-center text-sm">
+
+            <p class="text-offwhite text-center">
+                © {{ date('Y') }} MSWDO Silang. All Rights Reserved.
+            </p>
+
+        </div>
+
+    </div>
+
+</footer>
+
+<!-- ===================================== -->
+<!-- SCROLL TO TOP -->
+<!-- ===================================== -->
+
+<button
+    id="scrollTop"
+    class="hidden fixed bottom-6 right-6 bg-warm-gold p-4 rounded-full shadow-xl hover:scale-110 transition">
+
+    ↑
+
+</button>
+
+<!-- ===================================== -->
+<!-- JAVASCRIPT -->
+<!-- ===================================== -->
+
+<script>
+
+// Sidebar toggle
+function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    if (sidebar.classList.contains('show')) {
+        sidebar.classList.remove('show');
+        if (overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    } else {
+        sidebar.classList.add('show');
+        if (overlay) overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+// Overlay click
+var overlay = document.getElementById('sidebarOverlay');
+if (overlay) overlay.addEventListener('click', function() {
+    var sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.classList.remove('show');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+});
+
+// Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        var sidebar = document.getElementById('sidebar');
+        var ov = document.getElementById('sidebarOverlay');
+        if (sidebar && sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+            if (ov) ov.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+});
+
+// Hide sidebar on desktop resize
+window.addEventListener('resize', function() {
+    if (window.innerWidth >= 1024) {
+        var sidebar = document.getElementById('sidebar');
+        var ov = document.getElementById('sidebarOverlay');
+        if (sidebar && sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+            if (ov) ov.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+});
+
+// Init Lucide icons
+lucide.createIcons();
+
+const scrollBtn = document.getElementById('scrollTop');
+
+window.addEventListener('scroll', () => {
+
+    if (window.scrollY > 300) {
+
+        scrollBtn.classList.remove('hidden');
+
+    } else {
+
+        scrollBtn.classList.add('hidden');
+
+    }
+
+});
+
+scrollBtn.addEventListener('click', () => {
+
+    window.scrollTo({
+
+        top: 0,
+
+        behavior: 'smooth'
+
+    });
+
+});
+
+</script>
+
+>>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
 </body>
 </html>

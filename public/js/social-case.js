@@ -2,6 +2,7 @@
 const STATUSES = ["Draft","Review","Approved","Released","Archived"];
 const STATUS_CLASS = {Draft:"b-draft",Review:"b-review",Approved:"b-approved",Released:"b-released",Archived:"b-archived"};
 const PURPOSES = ["Medical Assistance","Burial Assistance","Educational Assistance","Financial Assistance","Food / Relief Assistance","Livelihood Assistance","Other"];
+const RELATIONSHIPS = ["Spouse","Wife","Husband","Son","Daughter","Father","Mother","Brother","Sister","Grandparent","Grandchild","Uncle","Aunt","Nephew","Niece","Cousin","Father-in-law","Mother-in-law","Brother-in-law","Sister-in-law","Stepfather","Stepmother","Stepchild","Adopted Child","Foster Parent","Legal Guardian","Boarder","Live-in Partner","Other"];
 const BARANGAYS = [
   "Acacia","Adlas","Anahaw I","Anahaw II","Balite I","Balite II","Balubad","Banaba","Batas",
   "Biga I","Biga II","Biluso","Bucal","Buho","Bulihan","Cabangaan","Carmen","Hoyo","Hukay","Iba",
@@ -26,6 +27,84 @@ let cases = [];
 let view = {tab:"dashboard", caseId:null, docAgency:null, newCaseStep:"search", eligClientName:"", eligOverride:false, eligMatch:null, caseListPage:1, archivePage:1, archiveSearch:"", archiveFilter:"", archiveBarangay:""};
 let selectedAgency = "PCSO";
 let draftIntake = null;
+
+/* ---------------- Role / permission helpers ---------------- */
+const CURRENT_USER_ROLE = (document.querySelector('meta[name="user-role"]')?.content || '').toLowerCase();
+const CAN_CHECK_ELIGIBILITY = CURRENT_USER_ROLE === 'eligibility_checker' || CURRENT_USER_ROLE === 'admin';
+const CAN_ENCODE = CURRENT_USER_ROLE === 'social_worker' || CURRENT_USER_ROLE === 'admin';
+const IS_PURE_ELIGIBILITY_CHECKER = CAN_CHECK_ELIGIBILITY && !CAN_ENCODE;
+
+/* ---- Activity Tracking ---- */
+async function logActivity(action, details, caseInfo = null) {
+  try {
+    const response = await fetch('/admin/social-case/api/activities', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        action: action,
+        details: details,
+        case_info: caseInfo
+      })
+    });
+    const data = await response.json();
+    console.log('Activity logged to database:', data);
+  } catch(e) {
+    console.error('Error logging activity:', e);
+    // Fallback to localStorage if API fails
+    const activities = JSON.parse(localStorage.getItem('sc_activities') || '[]');
+    const activity = {
+      id: Date.now(),
+      action: action,
+      details: details,
+      caseInfo: caseInfo,
+      timestamp: new Date().toISOString(),
+      date: new Date().toISOString().split('T')[0]
+    };
+    activities.unshift(activity);
+    if(activities.length > 50) activities.pop();
+    localStorage.setItem('sc_activities', JSON.stringify(activities));
+  }
+}
+
+async function getActivities() {
+  try {
+    const response = await fetch('/admin/social-case/api/activities');
+    const activities = await response.json();
+    // Convert database format to frontend format
+    return activities.map(a => ({
+      id: a.id,
+      action: a.action,
+      details: a.details,
+      caseInfo: a.case_info,
+      timestamp: a.created_at,
+      date: a.created_at
+    }));
+  } catch(e) {
+    console.error('Error fetching activities:', e);
+    // Fallback to localStorage
+    return JSON.parse(localStorage.getItem('sc_activities') || '[]');
+  }
+}
+
+async function clearActivities() {
+  try {
+    await fetch('/admin/social-case/api/activities/clear', {
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        'Accept': 'application/json'
+      }
+    });
+  } catch(e) {
+    console.error('Error clearing activities:', e);
+    // Fallback to localStorage
+    localStorage.removeItem('sc_activities');
+  }
+}
 
 /* ---- Naming-convention helpers (camelCase <-> snake_case) ---- */
 function camelToSnake(str){ return str.replace(/[A-Z]/g, c => '_'+c.toLowerCase()); }
@@ -150,7 +229,7 @@ function showCaseDetailsModal(caseId){
 
           <div style="margin-bottom:8px;grid-column:1/-1;">
             <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Problem Presented</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);white-space:pre-wrap;">${escapeHtml(rewriteProblemPresented(caseRec.interview?.interviewSituation || caseRec.interview?.problemPresented || caseRec.summary || "", caseRec.purpose || "", (caseRec.client?.fullName || caseRec.client?.full_name || caseRec.client?.name || ""), caseRec.client, caseRec.household || caseRec.familyMembers || []))||"—"}</div>
+            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);white-space:pre-wrap;">${escapeHtml(caseRec.interview?.interviewSituation || caseRec.interview?.problemPresented || caseRec.summary || "")||"—"}</div>
           </div>
         </div>
       </div>
@@ -229,124 +308,153 @@ function extractSpecificNeed(rawText, purposeLabel) {
   return '';
 }
 function rewriteProblemPresented(rawProblem, purpose, clientFullName, clientData = {}, household = []) {
-  if (!rawProblem || !rawProblem.trim()) return "";
-  let p = rawProblem.trim();
-  const clientRef = clientFullName || "The client";
-  const clientSex = (clientData.sex || "").toLowerCase();
-  const purposeLabel = purpose || "Financial Assistance";
+  // --- Grammar utility helpers ---
+  const capitaliseSentences = function(text) {
+    return text.replace(/(^|[.!?]\s+)([a-z])/g, function(m, sep, letter) {
+      return sep + letter.toUpperCase();
+    });
+  };
+  const fixFirstPerson = function(text) {
+    // standalone lowercase "i" -> "I"
+    return text.replace(/(?<![a-zA-Z])i(?![a-zA-Z])/g, 'I');
+  };
+  const fixArticles = function(text) {
+    text = text.replace(/\ba\s+([AEIOUaeiou][a-z])/g, 'an $1');
+    text = text.replace(/\ban\s+([^AEIOUaeiou\s])/g, 'a $1');
+    return text;
+  };
+  const fixSpacing = function(text) {
+    text = text.replace(/\s+([.,!?;:])/g, '$1');
+    text = text.replace(/([.!?;:])([^\s"'\d)\]])/g, '$1 $2');
+    text = text.replace(/\s{2,}/g, ' ');
+    return text.trim();
+  };
+  const fixCommonPhrases = function(text) {
+    text = text.replace(/\bchemo\s*therapy\b/gi, 'chemotherapy');
+    text = text.replace(/\bNEPHRO?S?CLEROSIS\b/gi, 'nephrosclerosis');
+    text = text.replace(/\bdiabetes\s+mellitus\b/gi, 'Diabetes Mellitus');
+    text = text.replace(/\bchronic\s+kidney\s+disease\b/gi, 'Chronic Kidney Disease');
+    text = text.replace(/\brenal\s+failure\b/gi, 'Renal Failure');
+    text = text.replace(/\bSocial Case Study\b(?!\s+Report)/gi, 'Social Case Study Report');
+    text = text.replace(/\b(financial|medical|burial|educational|food\s*\/?\s*relief|livelihood)\s+assistance\b/gi, function(m) {
+      return m.replace(/\b\w/g, c => c.toUpperCase());
+    });
+    text = text.replace(/\bAssistance\s*\/?\s*Support\b/gi, 'Assistance');
+    text = text.replace(/\b(her|his|their|my)\s+(mother|father|sister|brother|wife|husband|son|daughter|spouse|parent)\s+(maintenance|treatment|medication|hemodialysis|dialysis|surgery|therapy|operation|hospitalization|care|chemotherapy|session|checkup|check-up|medicine)\b/gi, '$1 $2\'s $3');
+    text = text.replace(/\bneeded\s+in\b/gi, 'needed for');
+    text = text.replace(/\bneeded\s+due\s+to\b/gi, 'needed for');
+    text = text.replace(/\bPlease\s+see\s+(the\s+)?attachments?\b/gi, 'Please see the attached documents');
+    text = text.replace(/\bPlease\s+see\s+(the\s+)?attachments?\s+for\b/gi, 'Please see the attached documents for');
+    text = text.replace(/\bthru\b/gi, 'through');
+    text = text.replace(/\bw\/\b/g, 'with');
+    text = text.replace(/\bw\/o\b/g, 'without');
+    text = text.replace(/\basst\.?\b/gi, 'assistance');
+    text = text.replace(/\bpls\b/gi, 'please');
+    text = text.replace(/\bwrt\b/gi, 'with regard to');
+    text = text.replace(/\bpursuant\s+of\b/gi, 'pursuant to');
+    text = text.replace(/\bin\s+regards\s+to\b/gi, 'with regard to');
+    text = text.replace(/\bin\s+relation\s+of\b/gi, 'in relation to');
+    text = text.replace(/\bwould like to request\b/gi, 'is requesting');
+    text = text.replace(/\bwants to request\b/gi, 'is requesting');
+    // Fix comma-splice: "...Medical Assistance, she is also requesting" -> "...Medical Assistance. She is also requesting"
+    text = text.replace(/([a-z]),\s*(she|he|they|the patient|the client|the deceased)\s+is/gi, '$1. $2 is');
+    return text;
+  };
 
-  // Use first household member as the visitor
+
+  if (!rawProblem || !rawProblem.trim()) return "";
+  const purposeLabel = purpose || "Financial Assistance";
+  const clientRef = clientFullName || "The client";
   const visitor = (household || [])[0] || {};
   const visitorRelationship = (visitor.relationship || "").trim().toLowerCase();
-
-  const possessive = clientSex === 'male' ? 'his' : 'her';
 
   // Map purpose to the correct subject term
   const subjectMap = {
     'medical assistance': { subject: 'patient', possessive: "patient's" },
     'burial assistance':  { subject: 'deceased', possessive: "deceased's" },
   };
-  const defaultSubject = { subject: 'client', possessive: "client's" };
-  const subjectInfo = subjectMap[purposeLabel.toLowerCase()] || defaultSubject;
+  const subjectInfo = subjectMap[purposeLabel.toLowerCase()] || { subject: 'client', possessive: "client's" };
 
-  // --- Phase 1: Fix terminology ---
+  // Possessive adjective used for the need phrase, e.g. "for her tuition fee"
+  const clientSex = (clientData.sex || clientData.gender || "").toLowerCase();
+  const possAdj = clientSex === 'male' ? 'his' : clientSex === 'female' ? 'her' : "the client's";
 
-  // Medical terminology
-  p = p.replace(/\bchemo\s*therapy\b/gi, "chemotherapy");
-  p = p.replace(/\bNEPHRO?S?CLEROSIS\b/gi, "nephrosclerosis");
+  // Fix "assistance for tuition fee" -> "assistance for her tuition fee"
+  const fixNeedPhrase = function(phrase) {
+    return phrase.replace(
+      /\bfor\s+(tuition\s+fees?|tuition|school\s+fees?|medication|medicines?|dialysis|hemodialysis|treatment|hospitalization|surgery|operation|maintenance|therapy|checkups?|check-ups?|daily\s+expenses?|expenses?|costs?|fees?)\b/gi,
+      function(m, item) { return "for " + possAdj + " " + item.toLowerCase(); }
+    );
+  };
 
-  // Fix "Social Case Study" → "Social Case Study Report"
-  p = p.replace(/\bSocial Case Study\b(?!\s+Report)/gi, "Social Case Study Report");
+  // --- Phase 1: Grammar / terminology fixes (preserve the officer's wording) ---
 
-  // Fix assistance type casing
-  p = p.replace(/\b(financial|medical|burial|educational|food\s*\/?\s*relief|livelihood)\s+assistance\b/gi, function(m) {
-    return m.replace(/\b\w/g, c => c.toUpperCase());
-  });
-  p = p.replace(/\bAssistance\s*\/?\s*Support\b/gi, "Assistance");
+  let p = rawProblem.trim();
+  p = fixCommonPhrases(p);
+  p = fixFirstPerson(p);
+  p = fixArticles(p);
+  p = fixSpacing(p);
+  p = capitaliseSentences(p);
+  // Ensure text ends with a sentence-ending punctuation
+  if (p && !/[.!?]$/.test(p)) p = p + '.';
 
-  // Generic possessive fix for any family member + medical term
-  p = p.replace(/\b(her|his|their|my)\s+(mother|father|sister|brother|wife|husband|son|daughter|spouse|parent)\s+(maintenance|treatment|medication|hemodialysis|dialysis|surgery|therapy|operation|hospitalization|care|chemotherapy|session|checkup|check-up|medicine)\b/gi,
-    "$1 $2's $3");
+  // --- Phase 2: Analyse the typed text ---
 
-  // Fix "needed in" / "needed due to"
-  p = p.replace(/\bneeded\s+in\b/gi, "needed for");
-  p = p.replace(/\bneeded\s+due\s+to\b/gi, "needed for");
+  // Does the typed text already tell the visit story?
+  const hasVisit = /\b(visited|went to|came to|approached|personally visited|goes to|went personally)\b/i.test(p);
+  // Bare need statement, e.g. "need financial assistance for tuition fee"
+  const bareNeed = p.match(/^(?:i\s+|we\s+)?need(?:s|ed)?\s+(?:a\s+|an\s+|the\s+)?/i);
+  // e.g. "financial assistance for tuition fee" (no "need" verb)
+  const startsWithAssistance = /^(?:financial|medical|burial|educational|food\s*\/?\s*relief|livelihood)\s+assistance\b/i.test(p);
 
-  // Fix "Please see" grammar
-  p = p.replace(/\bPlease\s+see\s+(the\s+)?attachments?\b/gi, "Please see the attached documents");
-  p = p.replace(/\bPlease\s+see\s+the\s+attachments?\s+for\b/gi, "Please see the attached documents for");
-  p = p.replace(/\bPlease\s+see\s+attachments?\s+for\b/gi, "Please see the attached documents for");
+  // --- Phase 3: Build the opening sentence ---
 
-  // Ensure proper punctuation before "Please see"
-  p = p.replace(/([^\.\!])\s+Please see/g, '$1. Please see');
-  p = p.replace(/\.\.\./g, '...');
-
-  // Fix double spaces
-  p = p.replace(/\s+/g, ' ').trim();
-
-  // --- Phase 2: Detect patterns ---
-
-  const hasVisitMention = /\b(visited|went to|came to|approached|personally visited|goes to|went personally)\b/i.test(p);
-  const hasRequestMention = /\b(request|ask|asking|seeking|requesting|to obtain|in obtaining|for)\b/i.test(p);
-  const hasSocialCaseMention = /\b(social case study report|social case study)\b/i.test(p);
-
-  // Check if raw text starts with a person's name (no relationship words before "visited")
-  const nameBeforeVisit = p.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\s+(?:personally\s+)?(?:visited|went to|came to|approached)/i);
-  const typedName = nameBeforeVisit ? nameBeforeVisit[1].trim() : "";
-
-  // --- Phase 3: Remove redundant sentences ---
-
-  // Remove standalone "Need X Assistance/ Support" that duplicates the purpose
-  const assistTypes = ["Financial", "Medical", "Burial", "Educational", "Food / Relief", "Food/Relief", "Livelihood"];
-  const purposeType = assistTypes.find(t => purposeLabel.toLowerCase().includes(t.toLowerCase())) || "";
-  if (purposeType) {
-    const redundantPattern = new RegExp("(?:^|\\.\\s*)\\b(?:Need|Needs|Needed|I need|We need)\\s+" + purposeType.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "(?:\\s*\\/\\s*Support)?\\.?\\s*", "gi");
-    p = p.replace(redundantPattern, '');
-  }
-  // Also catch "Need X Assistance" with extra words
-  p = p.replace(/(?:^|\.\\s*)\b(?:Need|Needs|Needed)\s+(?:a\s+)?(?:Financial|Medical|Burial|Educational|Food\s*\/?\s*Relief|Livelihood)\s+Assistance(?:\s*\/?\s*Support)?\.?\s*/gi, '');
-  // Remove orphaned "Need Support" / "Need Help"
-  p = p.replace(/(?:^|\.\s*)\b(?:Need|Needs|Needed)\s+(?:a\s+)?(?:Support|Help)\.?\s*/gi, '');
-  p = p.replace(/\s+/g, ' ').trim();
-
-  // --- Phase 4: Build final output ---
-
-  let paraphrased = "";
-  const need = extractSpecificNeed(rawProblem, purposeLabel);
-  const needPhrase = need ? ` for ${purposeLabel} for ${need}` : ` for ${purposeLabel}`;
-
-  if (hasVisitMention || hasRequestMention) {
-    if (visitorRelationship) {
-      if (typedName) {
-        paraphrased = `The ${subjectInfo.possessive} ${visitorRelationship} personally visited our office to request assistance in obtaining a Social Case Study Report${needPhrase}.`;
-      } else {
-        paraphrased = `The ${subjectInfo.possessive} ${visitorRelationship} personally visited our office to request assistance in obtaining a Social Case Study Report${needPhrase}.`;
-      }
-    } else {
-      paraphrased = p;
-    }
+  let opening;
+  if (hasVisit) {
+    // Keep the officer's own words — they already describe who came and why
+    opening = fixNeedPhrase(p);
   } else {
-    if (visitorRelationship) {
-      paraphrased = `The ${subjectInfo.possessive} ${visitorRelationship} personally visited our office to request assistance in obtaining a Social Case Study Report${needPhrase}.`;
+    const who = visitorRelationship
+      ? `The ${subjectInfo.possessive} ${visitorRelationship}`
+      : clientRef;
+    opening = `${who} personally visited our office to request assistance in obtaining a Social Case Study Report for ${purposeLabel}.`;
+  }
+
+  // --- Phase 4: Build the need sentence straight from the typed text ---
+
+  let needSentence = '';
+  if (!hasVisit && p) {
+    if (bareNeed) {
+      // "need financial assistance for tuition fee" -> "The client needs Financial Assistance for her tuition fee"
+      const rest = fixNeedPhrase(p.slice(bareNeed[0].length).trim());
+      needSentence = `The ${subjectInfo.subject} needs ${rest.charAt(0).toUpperCase()}${rest.slice(1)}`;
+    } else if (startsWithAssistance) {
+      // "financial assistance for tuition fee" -> "The client needs Financial Assistance for her tuition fee"
+      needSentence = `The ${subjectInfo.subject} needs ${fixNeedPhrase(p.charAt(0).toUpperCase() + p.slice(1))}`;
     } else {
-      paraphrased = `${clientRef} personally visited our office to request assistance in obtaining a Social Case Study Report for ${purposeLabel}.`;
+      // Full typed sentence — keep it verbatim (grammar-fixed)
+      needSentence = fixNeedPhrase(p.charAt(0).toUpperCase() + p.slice(1));
     }
   }
 
-  // --- Phase 5: Ensure closing sentence ---
+  // --- Phase 5: Combine ---
 
-  const alreadyHasClosing = /\b(please see|attached documents|supporting documents|for your (reference|review)|supporting this request)\b/i.test(paraphrased);
-  if (!alreadyHasClosing) {
-    paraphrased = paraphrased.replace(/\.?\s*$/, '') + '. Please see the attached documents for your reference.';
+  let paraphrased = opening + (needSentence ? ' ' + needSentence : '');
+
+  // --- Phase 6: Ensure closing sentence ---
+
+  if (!/\b(please see|attached documents|supporting documents|for your (reference|review)|supporting this request)\b/i.test(paraphrased)) {
+    paraphrased = paraphrased.replace(/\.\s*$/, '') + '. Please see the attached documents for your reference.';
   }
 
-  // --- Phase 6: Final cleanup ---
+  // --- Phase 7: Final cleanup ---
 
+  paraphrased = capitaliseSentences(paraphrased);
   paraphrased = paraphrased.replace(/\s+/g, ' ').trim();
   paraphrased = paraphrased.replace(/\.\./g, '.');
   paraphrased = paraphrased.replace(/,\s*\./g, '.');
   paraphrased = paraphrased.replace(/\.\s*\./g, '.');
-  // Capitalize first letter
+  paraphrased = paraphrased.replace(/\.\s*$/, '.');
   if (paraphrased) paraphrased = paraphrased.charAt(0).toUpperCase() + paraphrased.slice(1);
 
   return paraphrased;
@@ -501,6 +609,7 @@ function blankIntake(name){
   const today = todayISO();
   return {
     id: uid(),
+    caseId: null,
     status: "Draft",
     createdAt: today,
     updatedAt: today,
@@ -517,10 +626,90 @@ function blankIntake(name){
   };
 }
 
-function proceedToIntake(){
-  draftIntake = blankIntake(view.eligClientName || '');
-  sessionStorage.setItem('intake_clientName', view.eligClientName || '');
+function proceedToIntake(caseId = null, clientName = null){
+  const name = clientName || view.eligClientName || '';
+  draftIntake = blankIntake(name);
+  sessionStorage.setItem('intake_clientName', name);
+  if(caseId){
+    sessionStorage.setItem('intake_caseId', caseId);
+  } else {
+    sessionStorage.removeItem('intake_caseId');
+  }
   window.location.href = '/admin/social-case/intake';
+}
+
+async function submitForEncoding(){
+  const name = (view.eligClientName || '').trim();
+  if(!name){
+    Swal.fire({icon:'warning', title:'No client selected', text:'Please search and select a client first.', confirmButtonColor:'#1A237E'});
+    return;
+  }
+
+  const confirm = await Swal.fire({
+    title: 'Submit for Case Encoding?',
+    html: `Forward <strong>${escapeHtml(name)}</strong> to the case encoder for encoding?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Submit',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#1A237E',
+    cancelButtonColor: '#6B7280',
+    background: '#ffffff',
+    customClass: { popup: 'rounded-4 shadow-lg' }
+  });
+
+  if(!confirm.isConfirmed) return;
+
+  try {
+    const response = await fetch('/admin/social-case/api/eligibility/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({client_name: name, override: !!view.eligOverride})
+    });
+
+    const data = await response.json();
+    if(!response.ok){
+      Swal.fire({
+        title: 'Cannot Submit',
+        html: escapeHtml(data.error || 'Failed to submit the client. Please try again.'),
+        icon: 'error',
+        confirmButtonColor: '#DC2626'
+      });
+      return;
+    }
+
+    logActivity('created', 'Client forwarded for case encoding', {
+      clientName: data.case?.client?.name || name,
+      controlNo: data.case?.case_number || ''
+    });
+
+    Swal.fire({
+      title: 'Forwarded!',
+      text: data.message || 'Client passed eligibility and was forwarded for case encoding.',
+      icon: 'success',
+      confirmButtonColor: '#1A237E'
+    });
+
+    await loadCases();
+
+    setView({eligMatch: null, selectedClient: null, eligClientName: '', checkerResult: null, eligOverride: false});
+    const searchInput = document.getElementById('elig-name');
+    if(searchInput) searchInput.value = '';
+    const results = document.getElementById('searchResults');
+    if(results) results.style.display = 'none';
+    const status = document.getElementById('eligibilityStatus');
+    if(status) status.innerHTML = '';
+
+    if(CAN_ENCODE) renderEncoderQueue();
+    lucide.createIcons();
+  } catch(e){
+    console.error('Error submitting eligibility:', e);
+    Swal.fire({title:'Error', text:'Failed to submit the client. Please try again.', icon:'error', confirmButtonColor:'#DC2626'});
+  }
 }
 
 function updateWorkflowStep(stepNumber){
@@ -581,6 +770,10 @@ function saveNewCase(){
   })
   .then(data => {
     console.log('Case saved:', data);
+    logActivity('created', 'New case created', {
+      clientName: draftIntake.client?.name,
+      controlNo: draftIntake.controlNo
+    });
     updateWorkflowStep(4);
     draftIntake = null;
     window.location.href = `/admin/social-case/detail/${data.id}`;
@@ -595,22 +788,32 @@ function saveNewCase(){
 function advanceStatus(caseRec){
   const idx = STATUSES.indexOf(caseRec.status);
   if(idx < STATUSES.length-1){
+    const oldStatus = caseRec.status;
     caseRec.status = STATUSES[idx+1];
     caseRec.updatedAt = todayISO();
     caseRec.statusHistory.push({status:caseRec.status, date: todayISO()});
     if(caseRec.status === "Released"){ caseRec.releasedDate = todayISO(); }
     saveCases();
+    logActivity('updated', `Status changed from ${oldStatus} to ${caseRec.status}`, {
+      clientName: caseRec.client?.name,
+      controlNo: caseRec.controlNo
+    });
     renderCaseDetail();
   }
 }
 function revertStatus(caseRec){
   const idx = STATUSES.indexOf(caseRec.status);
   if(idx > 0){
+    const oldStatus = caseRec.status;
     caseRec.status = STATUSES[idx-1];
     caseRec.updatedAt = todayISO();
     caseRec.statusHistory.push({status:caseRec.status+" (reverted)", date: todayISO()});
     if(caseRec.status !== "Released"){ caseRec.releasedDate = null; }
     saveCases();
+    logActivity('updated', `Status reverted from ${oldStatus} to ${caseRec.status}`, {
+      clientName: caseRec.client?.name,
+      controlNo: caseRec.controlNo
+    });
     renderCaseDetail();
   }
 }
@@ -662,6 +865,10 @@ function deleteCase(id, fromList = false){
         })
         .then(async data => {
           console.log('Case archived:', data);
+          logActivity('archived', 'Case archived', {
+            clientName: caseRec.client?.name,
+            controlNo: caseRec.controlNo
+          });
           await Swal.fire({
             title: 'Archived!',
             text: 'The case has been archived successfully.',
@@ -759,10 +966,14 @@ function renderArchive(){
   
   if(archivedCases.length === 0){
     const hasFilters = q || f || b;
-    table.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted)">
-      <i data-lucide="${hasFilters ? 'search-x' : 'archive'}" style="width:32px;height:32px;margin-bottom:8px"></i>
-      <div>${hasFilters ? 'No matching archived cases' : 'No archived cases'}</div>
-      <div style="font-size:12px;margin-top:4px">${hasFilters ? 'Try adjusting your search or filter' : 'Archived cases will appear here'}</div>
+    table.innerHTML = `<tr class="empty-row"><td colspan="6" class="empty-cell">
+      <div class="empty-state-content">
+        <div class="empty-icon-wrap">
+          <i data-lucide="${hasFilters ? 'search-x' : 'archive'}"></i>
+        </div>
+        <div class="empty-title">${hasFilters ? 'No matching archived cases' : 'No archived cases'}</div>
+        <div class="empty-subtitle">${hasFilters ? 'Try adjusting your search or filter' : 'Archived cases will appear here'}</div>
+      </div>
     </td></tr>`;
     const pagInfo = document.getElementById('archivePaginationInfo');
     if(pagInfo) pagInfo.textContent = 'Showing 0 of 0 Archived Cases';
@@ -866,6 +1077,10 @@ function restoreCase(id){
         .then(response => response.json())
         .then(async data => {
           console.log('Case restored:', data);
+          logActivity('restored', 'Case restored from archive', {
+            clientName: caseRec.client?.name,
+            controlNo: caseRec.controlNo
+          });
           await Swal.fire({
             title: 'Restored!',
             text: 'The case has been restored and moved back to the active list.',
@@ -903,29 +1118,38 @@ async function loadDashboard(){
   }
 }
 
+function dashboardCases(){
+  return cases.filter(c => {
+    const isDone = c.status === 'Printed' || c.status === 'Released';
+    const hasPurpose = c.purpose != null && String(c.purpose).trim() !== '' && c.purpose !== 'null';
+    return isDone && hasPurpose;
+  });
+}
+
 function renderDashboard(){
+  const done = dashboardCases();
   const byStatus = {};
-  STATUSES.forEach(s=> byStatus[s] = cases.filter(c=>c.status===s).length);
-  const nearingEligible = cases.filter(c=>{
+  STATUSES.forEach(s=> byStatus[s] = done.filter(c=>c.status===s).length);
+  const nearingEligible = done.filter(c=>{
     if(!c.releasedDate) return false;
     const e = eligibilityInfo(c);
     return !e.eligible && e.daysLeft <= 30;
   }).sort((a,b)=> eligibilityInfo(a).daysLeft - eligibilityInfo(b).daysLeft);
 
-  const recent = [...cases].sort((a,b)=> new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0,6);
+  const recent = [...done].sort((a,b)=> new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0,6);
 
   // Calculate KPIs
-  const uniqueClients = new Set(cases.map(c => c.client.name.toLowerCase())).size;
+  const uniqueClients = new Set(done.map(c => c.client.name.toLowerCase())).size;
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
-  const casesThisMonth = cases.filter(c => {
+  const casesThisMonth = done.filter(c => {
     const caseDate = new Date(c.createdAt);
     return caseDate.getMonth() === currentMonth && caseDate.getFullYear() === currentYear;
   }).length;
   const today = todayISO();
-  const releasedToday = cases.filter(c => c.status === 'Released' && c.releasedDate === today).length;
-  const totalPrintedOrReleased = cases.filter(c => c.status === 'Released' || c.status === 'Printed' || c.releasedDate).length;
-  const successRate = cases.length > 0 ? Math.round((totalPrintedOrReleased / cases.length) * 100) : 0;
+  const releasedToday = done.filter(c => c.status === 'Released' && c.releasedDate === today).length;
+  const totalPrintedOrReleased = done.length;
+  const successRate = done.length > 0 ? 100 : 0;
 
   // Update KPIs with null checks
   const updateElement = (id, value) => {
@@ -938,8 +1162,8 @@ function renderDashboard(){
   updateElement('releasedToday', releasedToday);
   updateElement('totalReleased', totalPrintedOrReleased);
 
-  // Recent activity feed
-  renderActivityFeed(recent);
+  // Recent activity feed - use localStorage activities
+  renderActivityFeed();
 }
 
 function updateTrend(elementId, count, isMonthly = false){
@@ -991,9 +1215,11 @@ function renderTodayActivities(byStatus){
     </div>`).join("");
 }
 
-function renderActivityFeed(recent){
+async function renderActivityFeed(recent = null){
   const container = document.getElementById('activityFeed');
-  if(!recent.length){
+  const activities = recent ? recent : await getActivities();
+  
+  if(!activities.length){
     container.innerHTML = `<div style="text-align:center;padding:32px 20px;color:var(--text-muted)">
       <i data-lucide="inbox" style="width:32px;height:32px;margin:0 auto 8px;display:block;color:#D1D5DB"></i>
       <span style="font-size:13px">No recent activities</span>
@@ -1001,30 +1227,78 @@ function renderActivityFeed(recent){
     return;
   }
   
-  const statusConfig = {
-    'Draft':    {icon:'file-edit', bg:'var(--background)', color:'var(--text-muted)'},
-    'Review':   {icon:'clock',     bg:'var(--warning-bg, #FEF3C7)', color:'var(--warning, #D97706)'},
-    'Approved': {icon:'check-circle', bg:'var(--success-bg)', color:'var(--success)'},
-    'Printed':  {icon:'printer',   bg:'var(--info-bg)', color:'var(--info)'},
-    'Released': {icon:'send',      bg:'var(--purple-bg)', color:'var(--purple)'}
+  // If recent is provided (old behavior from cases data), use old rendering
+  if(recent) {
+    const statusConfig = {
+      'Draft':    {icon:'file-edit', bg:'var(--background)', color:'var(--text-muted)'},
+      'Review':   {icon:'clock',     bg:'var(--warning-bg, #FEF3C7)', color:'var(--warning, #D97706)'},
+      'Approved': {icon:'check-circle', bg:'var(--success-bg)', color:'var(--success)'},
+      'Printed':  {icon:'printer',   bg:'var(--info-bg)', color:'var(--info)'},
+      'Released': {icon:'send',      bg:'var(--purple-bg)', color:'var(--purple)'}
+    };
+    
+    container.innerHTML = recent.slice(0,10).map(c=>{
+      const cfg = statusConfig[c.status] || statusConfig['Draft'];
+      const clientName = escapeHtml(c.client.name) || 'Unnamed client';
+      const controlNo = escapeHtml(c.controlNo) || '—';
+      const timeAgo = getTimeAgo(c.updatedAt);
+      return `
+      <div class="activity-item">
+        <div class="activity-icon" style="background:${cfg.bg};color:${cfg.color}">
+          <i data-lucide="${cfg.icon}"></i>
+        </div>
+        <div class="activity-content">
+          <div class="activity-text"><strong>${clientName}</strong>'s case is ${c.status.toLowerCase()}</div>
+          <div class="activity-time">${controlNo} &middot; ${timeAgo}</div>
+        </div>
+      </div>`;
+    }).join("");
+    return;
+  }
+  
+  // New behavior using database activities
+  const actionConfig = {
+    'created': {icon:'plus-circle', bg:'var(--success-bg)', color:'var(--success)'},
+    'updated': {icon:'edit', bg:'var(--info-bg)', color:'var(--info)'},
+    'viewed': {icon:'eye', bg:'var(--background)', color:'var(--text-muted)'},
+    'archived': {icon:'archive', bg:'var(--danger-bg)', color:'var(--danger)'},
+    'restored': {icon:'rotate-ccw', bg:'var(--success-bg)', color:'var(--success)'},
+    'deleted': {icon:'trash-2', bg:'var(--danger-bg)', color:'var(--danger)'},
+    'printed': {icon:'printer', bg:'var(--purple-bg)', color:'var(--purple)'},
+    'released': {icon:'send', bg:'var(--success-bg)', color:'var(--success)'}
   };
   
-  container.innerHTML = recent.slice(0,10).map(c=>{
-    const cfg = statusConfig[c.status] || statusConfig['Draft'];
-    const clientName = escapeHtml(c.client.name) || 'Unnamed client';
-    const controlNo = escapeHtml(c.controlNo) || '—';
-    const timeAgo = getTimeAgo(c.updatedAt);
+  // Show all relevant activities: new case, archived, restored, printed, released, etc.
+  const displayActivities = activities.filter(a => 
+    ['created', 'updated', 'archived', 'restored', 'printed', 'released', 'deleted'].includes(a.action)
+  );
+  
+  if(!displayActivities.length){
+    container.innerHTML = `<div style="text-align:center;padding:32px 20px;color:var(--text-muted)">
+      <i data-lucide="inbox" style="width:32px;height:32px;margin:0 auto 8px;display:block;color:#D1D5DB"></i>
+      <span style="font-size:13px">No recent activities</span>
+    </div>`;
+    return;
+  }
+  
+  container.innerHTML = displayActivities.slice(0,10).map(a=>{
+    const cfg = actionConfig[a.action] || actionConfig['updated'];
+    const timeAgo = getTimeAgo(a.timestamp);
+    const caseInfo = a.caseInfo ? `<strong>${escapeHtml(a.caseInfo.clientName || 'Unknown')}</strong> (${escapeHtml(a.caseInfo.controlNo || 'N/A')})` : '';
     return `
     <div class="activity-item">
       <div class="activity-icon" style="background:${cfg.bg};color:${cfg.color}">
         <i data-lucide="${cfg.icon}"></i>
       </div>
       <div class="activity-content">
-        <div class="activity-text"><strong>${clientName}</strong>'s case is ${c.status.toLowerCase()}</div>
-        <div class="activity-time">${controlNo} &middot; ${timeAgo}</div>
+        <div class="activity-text">${a.details}${caseInfo ? ' - ' + caseInfo : ''}</div>
+        <div class="activity-time">${timeAgo} &middot; ${formatDateTime(a.timestamp)}</div>
       </div>
     </div>`;
   }).join("");
+  
+  // Create Lucide icons for the activity feed
+  lucide.createIcons();
 }
 
 function confirmClearActivities(){
@@ -1041,18 +1315,36 @@ function confirmClearActivities(){
     customClass: { popup: 'rounded-4 shadow-lg' }
   }).then((result) => {
     if(result.isConfirmed){
-      document.getElementById('activityFeed').innerHTML = `<div style="text-align:center;padding:32px 20px;color:var(--text-muted)">
-        <i data-lucide="inbox" style="width:32px;height:32px;margin:0 auto 8px;display:block;color:#D1D5DB"></i>
-        <span style="font-size:13px">No recent activities</span>
-      </div>`;
+      clearActivities();
+      renderActivityFeed();
       lucide.createIcons();
     }
   });
 }
 
 function getTimeAgo(dateStr){
+  if(!dateStr || dateStr === 'null' || dateStr === '') return 'Unknown';
   const now = new Date();
-  const date = new Date(dateStr+"T00:00:00");
+  let date;
+  
+  // Try parsing the date with different formats
+  try {
+    // Handle ISO datetime strings (with T) and date strings (without T)
+    if(dateStr.includes('T') || dateStr.includes('Z')) {
+      date = new Date(dateStr);
+    } else {
+      date = new Date(dateStr+"T00:00:00");
+    }
+    
+    if(isNaN(date.getTime())) {
+      console.warn('Invalid date format:', dateStr);
+      return 'Unknown';
+    }
+  } catch(e) {
+    console.warn('Error parsing date:', dateStr, e);
+    return 'Unknown';
+  }
+  
   const diff = Math.floor((now - date) / (1000 * 60));
   if(diff < 1) return 'Just now';
   if(diff < 60) return `${diff} minute${diff > 1 ? 's' : ''} ago`;
@@ -1062,12 +1354,21 @@ function getTimeAgo(dateStr){
   return `${days} day${days > 1 ? 's' : ''} ago`;
 }
 
+function formatDateTime(dateStr){
+  if(!dateStr || dateStr === 'null' || dateStr === '') return 'Unknown';
+  const date = new Date(dateStr);
+  if(isNaN(date.getTime())) return 'Unknown';
+  const d = date.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  const t = date.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit', hour12:true});
+  return `${d} ${t}`;
+}
+
 function initCharts(){
   // Assistance Type Chart
   const assistanceCtx = document.getElementById('assistanceChart');
   if(assistanceCtx){
     const purposeCounts = {};
-    cases.forEach(c => {
+    dashboardCases().forEach(c => {
       purposeCounts[c.purpose] = (purposeCounts[c.purpose] || 0) + 1;
     });
     const labels = Object.keys(purposeCounts);
@@ -1157,9 +1458,57 @@ function initCharts(){
 /* ---------------- Rendering: New case ---------------- */
 async function loadNewCase(){
   await loadCases();
-  view = {tab:"newCase", newCaseStep:"search", eligClientName:"", eligOverride:false, eligMatch:null, selectedClient:null};
+  view = {tab:"newCase", newCaseStep:"search", eligClientName:"", eligOverride:false, eligMatch:null, selectedClient:null, checkerResult:null};
   renderNewCase();
+  if(CAN_ENCODE) renderEncoderQueue();
   lucide.createIcons();
+}
+
+function renderEncoderQueue(){
+  const container = document.getElementById('encoderQueue');
+  if(!container) return;
+
+  const waiting = cases.filter(c => c.eligibilityStatus === 'eligible' && c.status === 'Draft' && c.eligibleBy && !(c.interview && c.interview.interviewSituation));
+
+  if(waiting.length === 0){
+    container.innerHTML = `
+      <div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">
+        <i data-lucide="inbox" style="width:28px;height:28px;margin:0 auto 8px;display:block;color:#D1D5DB"></i>
+        No clients are waiting for case encoding.
+      </div>`;
+    lucide.createIcons();
+    return;
+  }
+
+  container.innerHTML = waiting.map(c => `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:var(--surface)">
+      <div style="min-width:0">
+        <div style="font-weight:600;color:#111827;font-size:14px">${escapeHtml(c.client?.name || 'Unnamed')}</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px">
+          ${escapeHtml(String(c.client?.age || ''))} • ${escapeHtml(c.client?.sex || c.client?.gender || '')} • ${escapeHtml(c.client?.address || c.client?.barangay || '—')}
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">
+          Forwarded by ${escapeHtml(c.eligibleByUser?.name || 'Eligibility Checker')}${c.eligibleAt ? ' • ' + fmtDate(c.eligibleAt) : ''}
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button class="btn primary btn-sm" onclick="startEncodingFromQueue('${c.id}', '${escapeHtml(c.client?.name || '')}')">
+          <i data-lucide="pen-line" style="width:14px;height:14px"></i> Encode
+        </button>
+      </div>
+    </div>`).join('');
+
+  lucide.createIcons();
+}
+
+async function startEncodingFromQueue(caseId, clientName){
+  if(!clientName || clientName === 'Unnamed'){
+    Swal.fire({icon:'warning', title:'Missing client name', text:'This case has no client name to pre-fill. Please encode it manually.', confirmButtonColor:'#1A237E'});
+    return;
+  }
+  sessionStorage.setItem('intake_caseId', caseId);
+  sessionStorage.setItem('intake_clientName', clientName);
+  window.location.href = '/admin/social-case/intake';
 }
 
 function renderNewCase(){
@@ -1172,20 +1521,23 @@ function renderNewCase(){
   if(searchInput && view.eligClientName){
     searchInput.value = view.eligClientName;
   }
-  
+
+  // Pure eligibility checkers use the server-side result card only
+  if(IS_PURE_ELIGIBILITY_CHECKER){
+    if(view.checkerResult){
+      renderCheckerEligibilityResult(view.checkerResult);
+    }
+    return;
+  }
+
   // Render search results if available
   if(view.eligClientName && view.eligClientName.length >= 2){
     renderSearchResults(view.eligClientName);
   }
   
-  // Render client summary if selected
+  // Render eligibility status if selected
   if(view.selectedClient){
-    renderClientSummary(view.selectedClient);
-  }
-  
-  // Render eligibility status if checked
-  if(view.eligMatch !== undefined && view.eligMatch !== null){
-    renderEligibilityStatus(view.eligMatch);
+    renderEligibilityStatus(view.eligMatch !== undefined && view.eligMatch !== null ? view.eligMatch : view.selectedClient);
   }
 }
 
@@ -1319,10 +1671,6 @@ function selectClient(caseId){
   const searchResults = document.getElementById('searchResults');
   if(searchResults) searchResults.style.display = 'none';
   
-  // Hide client summary
-  const clientSummary = document.getElementById('clientSummary');
-  if(clientSummary) clientSummary.style.display = 'none';
-  
   // Check eligibility for this client name
   const eligibility = checkEligibility(c.client.name);
   
@@ -1336,24 +1684,6 @@ function selectClient(caseId){
   renderEligibilityStatus(match);
   
   lucide.createIcons();
-}
-
-function renderClientSummary(client){
-  const container = document.getElementById('clientSummary');
-  if(!container) return;
-  
-  container.style.display = 'block';
-  
-  // Get initials for avatar
-  const name = client.client.name || 'Unknown';
-  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
-  
-  document.getElementById('clientAvatar').textContent = initials;
-  document.getElementById('clientNameDisplay').textContent = name;
-  document.getElementById('clientAge').textContent = client.client.age || '—';
-  document.getElementById('clientSex').textContent = client.client.sex || '—';
-  document.getElementById('clientBarangay').textContent = client.client.address || client.client.barangay || '—';
-  document.getElementById('clientLastCase').textContent = fmtDate(client.releasedDate || client.createdAt) || '—';
 }
 
 function renderEligibilityStatus(match){
@@ -1371,28 +1701,20 @@ function renderEligibilityStatus(match){
         <div class="status-desc">
           ${match ? `No Social Case Study within the last 6 months. Last case study was released on ${fmtDate(match.releasedDate)}.` : 'No prior case study found for this client.'}
         </div>
-        <button class="btn primary" style="margin-top:16px;width:100%" onclick="proceedToIntake()">
-          <i data-lucide="arrow-right" style="width:16px;height:16px"></i> Continue to Case Encoding
-        </button>
+        ${IS_PURE_ELIGIBILITY_CHECKER
+          ? `<button class="btn primary" style="margin-top:16px;width:100%" onclick="submitForEncoding()"><i data-lucide="send" style="width:16px;height:16px"></i> Submit for Case Encoding</button>`
+          : `<button class="btn primary" style="margin-top:16px;width:100%" onclick="proceedToIntake()"><i data-lucide="arrow-right" style="width:16px;height:16px"></i> Continue to Case Encoding</button>`}
       </div>
     `;
     
     // Update last case study in summary
-    const lastCaseEl = document.getElementById('clientLastCase');
-    if(lastCaseEl && match){
-      lastCaseEl.textContent = fmtDate(match.releasedDate);
-    }
+    // (client summary removed - no longer shown)
   }else{
     // Not eligible - Show SweetAlert popup
-    const clientNameEl = document.getElementById('clientNameDisplay');
-    const clientAgeEl = document.getElementById('clientAge');
-    const clientSexEl = document.getElementById('clientSex');
-    const clientBarangayEl = document.getElementById('clientBarangay');
-    
-    const clientName = clientNameEl ? clientNameEl.textContent : 'Unknown';
-    const clientAge = clientAgeEl ? clientAgeEl.textContent : '-';
-    const clientSex = clientSexEl ? clientSexEl.textContent : '-';
-    const clientBarangay = clientBarangayEl ? clientBarangayEl.textContent : '-';
+    const clientName = (match && (match.client?.name || view.eligClientName)) || 'Unknown';
+    const clientAge = match?.client?.age || '-';
+    const clientSex = match?.client?.sex || match?.client?.gender || '-';
+    const clientBarangay = match?.client?.address || match?.client?.barangay || '-';
     
     Swal.fire({
       title: `<strong>${clientName}</strong>`,
@@ -1447,16 +1769,17 @@ function renderEligibilityStatus(match){
             </div>
           </div>
           
+          ${CAN_ENCODE ? `
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
             <input type="checkbox" id="overrideCheck" ${view.eligOverride ? 'checked' : ''} style="width: 18px; height: 18px; cursor: pointer;">
             <label for="overrideCheck" style="font-size: 13px; color: #374151; cursor: pointer;">Override and proceed anyway (requires supervisor approval)</label>
-          </div>
+          </div>` : ''}
         </div>
       `,
       icon: 'warning',
       iconColor: '#DC2626',
-      showCancelButton: true,
-      confirmButtonText: 'Continue to Case Encoding',
+      showCancelButton: CAN_ENCODE,
+      confirmButtonText: CAN_ENCODE ? 'Continue to Case Encoding' : 'OK',
       cancelButtonText: 'Cancel',
       confirmButtonColor: '#1E3A8A',
       cancelButtonColor: '#6B7280',
@@ -1465,6 +1788,7 @@ function renderEligibilityStatus(match){
         title: 'swal2-title-custom'
       },
       didOpen: () => {
+        if(!CAN_ENCODE) return;
         const overrideCheck = document.getElementById('overrideCheck');
         const confirmBtn = Swal.getConfirmButton();
         
@@ -1481,6 +1805,7 @@ function renderEligibilityStatus(match){
         confirmBtn.style.opacity = view.eligOverride ? '1' : '0.5';
       },
       preConfirm: () => {
+        if(!CAN_ENCODE) return true;
         if(!view.eligOverride){
           Swal.showValidationMessage('Please check the override checkbox to proceed');
           return false;
@@ -1489,12 +1814,6 @@ function renderEligibilityStatus(match){
         return false;
       }
     });
-    
-    // Update last case study in summary
-    const lastCaseEl = document.getElementById('clientLastCase');
-    if(lastCaseEl){
-      lastCaseEl.textContent = fmtDate(match.releasedDate);
-    }
     
     // Clear the container since we're using SweetAlert
     container.innerHTML = '';
@@ -1537,8 +1856,143 @@ async function startEligibilityCheck(){
   await loadCases();
   
   view.eligClientName = name;
-  renderSearchResults(name);
+
+  // Start fresh for each search: drop any previously selected client / match result
+  view.selectedClient = null;
+  view.eligMatch = null;
+  view.checkerResult = null;
+
+  if(IS_PURE_ELIGIBILITY_CHECKER){
+    await runServerEligibilityCheck(name);
+  } else {
+    renderSearchResults(name);
+  }
   lucide.createIcons();
+}
+
+async function runServerEligibilityCheck(name){
+  const results = document.getElementById('searchResults');
+  const status = document.getElementById('eligibilityStatus');
+
+  const btn = document.querySelector('button[onclick^="startEligibilityCheck"]');
+  if(btn) btn.disabled = true;
+  if(status) status.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-muted)"><i data-lucide="loader-2" style="width:20px;height:20px;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px"></i> Checking eligibility...</div>';
+
+  try {
+    const response = await fetch('/admin/social-case/api/eligibility/check', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({client_name: name})
+    });
+
+    const data = await response.json();
+    if(!response.ok){
+      throw new Error(data.error || 'Eligibility check failed');
+    }
+
+    renderCheckerEligibilityResult(data);
+    view.checkerResult = data;
+  } catch(e){
+    console.error('Eligibility check error:', e);
+    if(status){
+      status.innerHTML = '';
+    }
+    Swal.fire({icon:'error', title:'Check Failed', text:'Unable to complete the eligibility check. Please try again.', confirmButtonColor:'#DC2626'});
+  } finally {
+    if(btn) btn.disabled = false;
+    if(results) results.style.display = 'none';
+    lucide.createIcons();
+  }
+}
+
+function renderCheckerEligibilityResult(data){
+  const status = document.getElementById('eligibilityStatus');
+  const results = document.getElementById('searchResults');
+  if(results) results.style.display = 'none';
+
+  if(!status) return;
+
+  if(!data.eligible){
+    const reason = data.blocking
+      ? `Received ${escapeHtml(data.blocking.assistance_type)} assistance on ${fmtDate(data.blocking.release_date)}.`
+      : 'An approved / released assistance was provided within the last 6 months.';
+    status.innerHTML = `
+      <div class="eligibility-card" style="border-color:#DC2626;background:#FEF2F2">
+        <div class="status-icon" style="color:#DC2626"><i data-lucide="x-circle" style="width:24px;height:24px"></i></div>
+        <div class="status-title" style="color:#DC2626">Not Eligible</div>
+        <div class="status-desc">
+          ${reason}<br>
+          ${data.eligible_again_date ? `<strong>Eligible again on:</strong> ${fmtDate(data.eligible_again_date)}` : ''}
+        </div>
+      </div>`;
+    lucide.createIcons();
+    return;
+  }
+
+  if(data.existing_case){
+    const ec = data.existing_case;
+    const statusBadge = `<span class="badge ${STATUS_CLASS[ec.status] || 'b-draft'}">${escapeHtml(ec.status || '—')}</span>`;
+    if(summary) summary.style.display = 'none';
+    status.innerHTML = `
+      <div class="eligibility-card" style="border-color:#D97706;background:#FFFBEB">
+        <div class="status-icon" style="color:#D97706"><i data-lucide="alert-circle" style="width:24px;height:24px"></i></div>
+        <div class="status-title" style="color:#B45309">Already Has an Active Case</div>
+        <div class="status-desc">
+          <strong style="color:#111827">${escapeHtml(ec.case_number || 'Unknown case')}</strong> ${statusBadge}<br>
+          This client already has an active case record and cannot be forwarded for a new case encoding. Please review the existing case instead.
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <a class="btn primary" style="flex:1;text-decoration:none;justify-content:center" href="/admin/social-case/detail/${encodeURIComponent(ec.id)}">
+            <i data-lucide="eye" style="width:16px;height:16px"></i> View Existing Case
+          </a>
+          <button class="btn" style="flex:1;justify-content:center" onclick="resetEligibilityCheck()">
+            <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> Search Again
+          </button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:14px;background:${view.eligOverride ? '#FEF3C7' : '#FFFFFF'};border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;">
+          <input type="checkbox" id="overrideActive" ${view.eligOverride ? 'checked' : ''} style="width:16px;height:16px;cursor:pointer;">
+          <label for="overrideActive" style="font-size:13px;color:#374151;cursor:pointer;margin:0">Override and forward anyway (requires approval)</label>
+        </div>
+        <button class="btn primary" id="overrideSubmitBtn" style="margin-top:12px;width:100%;justify-content:center" ${view.eligOverride ? '' : 'disabled'} onclick="submitForEncoding()">
+          <i data-lucide="send" style="width:16px;height:16px"></i> Submit for Case Encoding (Override)
+        </button>
+      </div>`;
+
+    const overrideCheck = document.getElementById('overrideActive');
+    const overrideSubmitBtn = document.getElementById('overrideSubmitBtn');
+    if(overrideCheck && overrideSubmitBtn){
+      overrideCheck.addEventListener('change', (e) => {
+        setView({eligOverride: e.target.checked});
+        overrideSubmitBtn.disabled = !e.target.checked;
+        overrideSubmitBtn.style.opacity = e.target.checked ? '1' : '0.5';
+      });
+    }
+  } else {
+    status.innerHTML = `
+      <div class="eligibility-card eligible">
+        <div class="status-icon"><i data-lucide="check-circle" style="width:24px;height:24px"></i></div>
+        <div class="status-title">Eligible</div>
+        <div class="status-desc">This client passed eligibility checking and can be forwarded for case encoding.</div>
+        <button class="btn primary" style="margin-top:16px;width:100%" onclick="submitForEncoding()">
+          <i data-lucide="send" style="width:16px;height:16px"></i> Submit for Case Encoding
+        </button>
+      </div>`;
+  }
+  lucide.createIcons();
+}
+
+function resetEligibilityCheck(){
+  setView({eligClientName: '', eligMatch: null, selectedClient: null, checkerResult: null, eligOverride: false});
+  const searchInput = document.getElementById('elig-name');
+  if(searchInput) searchInput.value = '';
+  const results = document.getElementById('searchResults');
+  if(results) results.style.display = 'none';
+  const status = document.getElementById('eligibilityStatus');
+  if(status) status.innerHTML = '';
 }
 
 function proceedWithNewClient(clientName){
@@ -1555,13 +2009,121 @@ function proceedWithNewClient(clientName){
 window.proceedWithNewClient = proceedWithNewClient;
 
 /* ---------------- Rendering: Intake form ---------------- */
+function editCaseFromDetail(caseId){
+  sessionStorage.setItem('intake_caseId', caseId);
+  sessionStorage.setItem('intake_clientName', getCase(caseId)?.client?.name || '');
+  window.location.href = `/admin/social-case/intake?caseId=${encodeURIComponent(caseId)}`;
+}
+
 async function loadIntakeForm(){
   await loadCases();
   const savedName = sessionStorage.getItem('intake_clientName') || '';
   sessionStorage.removeItem('intake_clientName');
+  const urlParams = new URLSearchParams(window.location.search);
+  const caseId = urlParams.get('caseId') || sessionStorage.getItem('intake_caseId') || null;
+  sessionStorage.removeItem('intake_caseId');
   draftIntake = blankIntake(savedName);
+  draftIntake.caseId = caseId;
+  if(caseId){
+    const existing = getCase(caseId);
+    if(existing){
+      draftIntake = caseToIntake(existing);
+    } else {
+      try {
+        const response = await fetch(`/admin/social-case/api/cases/${caseId}`);
+        if(response.ok){
+          const caseData = await response.json();
+          draftIntake = caseToIntake(convertKeys(caseData, snakeToCamel));
+        }
+      } catch(e){
+        console.error('Failed to load case for intake:', e);
+      }
+    }
+  }
   renderIntakeForm();
   lucide.createIcons();
+}
+
+function caseToIntake(c){
+  const today = todayISO();
+  const client = c.client || {};
+  const interview = c.interview || {};
+  const signers = c.signers || {};
+  const agencies = (c.agencies && c.agencies.length ? c.agencies : (c.submittedTo ? String(c.submittedTo).split(',').map(s => s.trim()).filter(Boolean) : []));
+  return {
+    id: c.id || uid(),
+    caseId: c.id,
+    status: c.status || 'Draft',
+    createdAt: c.createdAt || today,
+    updatedAt: c.updatedAt || today,
+    controlNo: c.controlNo || c.caseNumber || generateControlNo(today),
+    client: {
+      name: client.name || client.fullName || client.full_name || '',
+      age: client.age || '',
+      sex: client.sex || client.gender || '',
+      address: client.address || client.barangay || '',
+      birthdate: client.birthdate ? String(client.birthdate).slice(0, 10) : '',
+      birthplace: client.birthplace || '',
+      religion: client.religion || '',
+      education: client.education || '',
+      civilStatus: client.civilStatus || client.civil_status || '',
+      occupation: client.occupation || '',
+      income: client.income || '',
+      contact: client.contact || client.contactNumber || client.contact_number || ''
+    },
+    household: (() => {
+      const rows = (c.familyMembers || c.household || []).filter(m => m && (m.fullName || m.full_name || m.name)).map(m => ({
+        name: m.fullName || m.full_name || m.name || '',
+        relationship: m.relationship || '',
+        age: m.age || '',
+        education: m.education || '',
+        occupation: m.occupation || '',
+        income: m.monthlyIncome || m.income || ''
+      }));
+      if(rows.length === 0){
+        rows.push({name:'', relationship:'', age:'', education:'', occupation:'', income:''});
+      }
+      return rows;
+    })(),
+    interview: {
+      reportDate: c.interviewDate || interview.reportDate || interview.report_date || today,
+      problemPresented: interview.interviewSituation || interview.interview_situation || interview.problemPresented || c.summary || '',
+      homeCondition: interview.interviewHousehold || interview.interview_household || interview.homeCondition || '',
+      socioEconomic: interview.interviewNotes || interview.interview_notes || interview.socioEconomic || '',
+      evaluation: interview.socialWorkerAssessment || interview.social_worker_assessment || interview.evaluation || '',
+      recommendation: interview.recommendation || ''
+    },
+    signers: {
+      preparedByName: signers.preparedByName || c.officer?.name || '',
+      preparedByTitle: signers.preparedByTitle || 'MSWDO Staff',
+      notedByName: signers.notedByName || c.encoder?.name || '',
+      notedByTitle: signers.notedByTitle || 'MSWDO Head',
+      notedByLicense: signers.notedByLicense || ''
+    },
+    purpose: c.purpose || PURPOSES[0],
+    agencies: agencies,
+    requirements: DEFAULT_REQUIREMENTS.map(r => ({name: r, submitted: false})),
+    statusHistory: c.statusHistory || [{status: c.status || 'Draft', date: today}],
+    releasedDate: c.releasedDate || null
+  };
+}
+
+function updateClientAge(){
+  const bd = draftIntake.client.birthdate;
+  const ageInput = document.getElementById('clientAgeInput');
+  if (bd && bd.trim()) {
+    const b = new Date(bd + 'T00:00:00');
+    if (!isNaN(b.getTime())) {
+      const today = new Date();
+      let age = today.getFullYear() - b.getFullYear();
+      const m = today.getMonth() - b.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < b.getDate())) age--;
+      draftIntake.client.age = age;
+    }
+  } else {
+    draftIntake.client.age = '';
+  }
+  if (ageInput) ageInput.value = draftIntake.client.age;
 }
 
 function renderIntakeForm(){
@@ -1569,11 +2131,13 @@ function renderIntakeForm(){
   if(!container) return;
 
   const d = draftIntake;
+  d.signers.preparedByTitle = "MSWDO Staff";
+  d.signers.notedByTitle = "MSWDO Head";
   container.innerHTML = `
   <div class="panel">
     <h3>Report details</h3>
     <div class="field-row">
-      <div class="field"><label>Control no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.controlNo)}" oninput="draftIntake.controlNo=this.value"></div>
+      <div class="field field-control-no"><label>Control no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.controlNo)}" oninput="draftIntake.controlNo=this.value" placeholder="Control no."></div>
       <div class="field"><label>Report date <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.interview.reportDate}" oninput="draftIntake.interview.reportDate=this.value"></div>
     </div>
   </div>
@@ -1582,7 +2146,7 @@ function renderIntakeForm(){
     <h3>I. Identifying information</h3>
       <div class="field"><label>Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value" required maxlength="255" placeholder="Enter full name"></div>
       <div class="field-row">
-        <div class="field"><label>Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="number" value="${escapeHtml(String(d.client.age))}" oninput="draftIntake.client.age=this.value" min="0" max="150" placeholder="Enter age"></div>
+        <div class="field"><label>Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="number" id="clientAgeInput" value="${escapeHtml(String(d.client.age))}" min="0" max="150" placeholder="Auto-computed" readonly style="background:#F3F4F6;cursor:not-allowed"></div>
         <div class="field"><label>Sex <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
           <select oninput="draftIntake.client.sex=this.value" required>
             ${["","Male","Female"].map(o=>`<option ${d.client.sex===o?'selected':''}>${o}</option>`).join("")}
@@ -1598,11 +2162,11 @@ function renderIntakeForm(){
       </div>
       <div class="field-sep"></div>
       <div class="field-row">
-        <div class="field"><label>Birthdate <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value"></div>
-        <div class="field"><label>Birthplace <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value" placeholder="Enter birthplace"></div>
+        <div class="field"><label>Birthdate <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value; updateClientAge()"></div>
+        <div class="field"><label>Birthplace <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value" placeholder="Birthplace"></div>
       </div>
       <div class="field"><label>Religion <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.religion)}" oninput="draftIntake.client.religion=this.value" placeholder="Enter religion"></div>
-      <div class="field"><label>Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.education)}" oninput="draftIntake.client.education=this.value" placeholder="Enter educational attainment"></div>
+      <div class="field"><label>Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.education)}" oninput="draftIntake.client.education=this.value" placeholder="Educational attainment"></div>
       <div class="field-sep"></div>
       <div class="field-row">
         <div class="field"><label>Civil status <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
@@ -1610,10 +2174,10 @@ function renderIntakeForm(){
             ${["","Single","Married","Widowed","Separated"].map(o=>`<option ${d.client.civilStatus===o?'selected':''}>${o}</option>`).join("")}
           </select>
         </div>
-        <div class="field"><label>Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="Enter occupation (N/A if none)"></div>
+        <div class="field"><label>Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="Enter occupation"></div>
       </div>
       <div class="field-row">
-        <div class="field"><label>Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.income)}" oninput="draftIntake.client.income=this.value" placeholder="Enter income (N/A if none)"></div>
+        <div class="field"><label>Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.income)}" oninput="draftIntake.client.income=this.value" placeholder="Income (N/A if none)"></div>
         <div class="field"><label>Contact no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="tel" value="${escapeHtml(d.client.contact)}" oninput="draftIntake.client.contact=this.value" pattern="09[0-9]{9}" maxlength="11" placeholder="e.g. 09171234567" title="Must be a valid PH mobile number (09xxxxxxxxx)"></div>
       </div>
   </div>
@@ -1623,12 +2187,12 @@ function renderIntakeForm(){
     ${d.household.map((m,i)=>`
       <div class="grid3" style="margin-bottom:8px;align-items:end;padding-bottom:8px;border-bottom:1px solid var(--surface-sunken)">
         <div class="field" style="margin-bottom:0"><label>${i===0?'Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value" placeholder="Enter name"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Relationship <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.relationship)}" oninput="draftIntake.household[${i}].relationship=this.value" placeholder="Enter relationship"></div>
+        <div class="field" style="margin-bottom:0"><label>${i===0?'Relationship <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><select oninput="draftIntake.household[${i}].relationship=this.value"><option value="">Select relationship</option>${RELATIONSHIPS.map(o=>`<option ${m.relationship===o?'selected':''}>${o}</option>`).join("")}</select></div>
         <div class="field" style="margin-bottom:0"><label>${i===0?'Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="number" value="${escapeHtml(String(m.age))}" oninput="draftIntake.household[${i}].age=this.value" min="0" max="150" placeholder="Enter age"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value" placeholder="Enter educational attainment"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="Enter occupation (N/A if none)"></div>
+        <div class="field" style="margin-bottom:0"><label>${i===0?'Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value" placeholder="Educational attainment"></div>
+        <div class="field" style="margin-bottom:0"><label>${i===0?'Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="Enter occupation"></div>
         <div class="field" style="margin-bottom:0;display:flex;gap:6px">
-          <div style="flex:1"><label>${i===0?'Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.income)}" oninput="draftIntake.household[${i}].income=this.value" placeholder="Enter income (N/A if none)"></div>
+          <div style="flex:1"><label>${i===0?'Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.income)}" oninput="draftIntake.household[${i}].income=this.value" placeholder="Income (N/A if none)"></div>
           ${i>0?`<button class="btn ghost btn-sm" style="align-self:flex-end" onclick="draftIntake.household.splice(${i},1); renderIntakeForm();"><i data-lucide="x" style="width:16px;height:16px"></i></button>`:""}
         </div>
       </div>`).join("")}
@@ -1643,10 +2207,10 @@ function renderIntakeForm(){
   <div class="panel">
     <h3>Signatories</h3>
       <div class="field"><label>Prepared by (name) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.preparedByName)}" oninput="draftIntake.signers.preparedByName=this.value" required maxlength="255" placeholder="Enter prepared by name"></div>
-      <div class="field"><label>Prepared by (title) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.preparedByTitle)}" oninput="draftIntake.signers.preparedByTitle=this.value" placeholder="Enter prepared by title"></div>
+      <div class="field"><label>Prepared by (title)</label><input type="text" value="MSWDO Staff" readonly style="background:#F3F4F6;cursor:not-allowed"></div>
       <div class="field-sep"></div>
       <div class="field"><label>Noted by (name) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.notedByName)}" oninput="draftIntake.signers.notedByName=this.value" required maxlength="255" placeholder="Enter noted by name"></div>
-      <div class="field"><label>Noted by (title) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.notedByTitle)}" oninput="draftIntake.signers.notedByTitle=this.value" placeholder="Enter noted by title"></div>
+      <div class="field"><label>Noted by (title)</label><input type="text" value="MSWDO Head" readonly style="background:#F3F4F6;cursor:not-allowed"></div>
   </div>
 
   <div class="panel">
@@ -1679,26 +2243,16 @@ function renderIntakeForm(){
   `;
   
   // Add real-time input validation after form renders
+  updateClientAge();
+
   setTimeout(() => {
     const contactInput = document.querySelector('input[oninput*="draftIntake.client.contact"]');
-    const clientAgeInput = document.querySelector('input[oninput*="draftIntake.client.age"]');
     
     // Contact number validation - PH format (09xxxxxxxxx)
     if (contactInput) {
       contactInput.addEventListener('input', function(e) {
         let value = this.value.replace(/[^0-9]/g, '');
         if (value.length > 11) value = value.substring(0, 11);
-        if (this.value !== value) {
-          this.value = value;
-        }
-      });
-    }
-    
-    // Client age validation - digits only, 0-150
-    if (clientAgeInput) {
-      clientAgeInput.addEventListener('input', function(e) {
-        let value = this.value.replace(/[^0-9]/g, '');
-        if (value !== '' && parseInt(value) > 150) value = '150';
         if (this.value !== value) {
           this.value = value;
         }
@@ -1812,18 +2366,18 @@ function showIntakeSummaryModal(){
   const missingReqs  = d.requirements.filter(r => !r.submitted).map(r => escapeHtml(r.name));
   const selectedAgencies = AGENCIES.filter(a => d.agencies.includes(a.key));
 
-  const householdRows = d.household.map((m, i) => `
+  const householdLabels = ['Name','Relationship','Age','Education','Occupation','Income'];
+  const householdValues = m => [m.name, m.relationship, m.age, m.education, m.occupation, m.income];
+  const householdRows = d.household.map((m, i) => {
+    const td = 'padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6;word-break:break-word;overflow-wrap:anywhere';
+    return `
     <tr>
-      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.name)}</td>
-      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.relationship)}</td>
-      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.age)}</td>
-      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.education)}</td>
-      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.occupation)}</td>
-      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6">${val(m.income)}</td>
-    </tr>`);
+      ${householdValues(m).map((v, j) => `<td data-label="${householdLabels[j]}" style="${td}">${val(v)}</td>`).join('')}
+    </tr>`;
+  });
 
   const sectionTitle = (label, icon='') => `
-    <div style="display:flex;align-items:center;gap:8px;margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid #E5E7EB">
+    <div class="section-title" style="display:flex;align-items:center;gap:8px;margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid #E5E7EB">
       ${icon ? `<div style="width:28px;height:28px;background:#EEF2FF;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <i data-lucide="${icon}" style="width:14px;height:14px;color:#4338CA"></i>
       </div>` : ''}
@@ -1833,7 +2387,7 @@ function showIntakeSummaryModal(){
   const infoRow = (label, value) => `
     <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
       <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.04em">${label}</span>
-      <span style="font-size:14px;color:#111827;font-weight:500">${value}</span>
+      <span style="font-size:14px;color:#111827;font-weight:500;word-break:break-word;overflow-wrap:anywhere">${value}</span>
     </div>`;
 
   const modal = document.createElement('div');
@@ -1845,12 +2399,40 @@ function showIntakeSummaryModal(){
       @keyframes fadeIn { from{opacity:0} to{opacity:1} }
       @keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
       #intakeSummaryModal .modal-box { animation: slideUp 0.25s ease; }
+      @media (max-width:768px) {
+        #intakeSummaryModal .family-table thead { display:none; }
+        #intakeSummaryModal .family-table,
+        #intakeSummaryModal .family-table tbody,
+        #intakeSummaryModal .family-table tr,
+        #intakeSummaryModal .family-table td { display:block; width:100%; }
+        #intakeSummaryModal .family-table tr {
+          padding:10px 14px; border-bottom:1px solid #E5E7EB;
+          background:#F9FAFB;
+        }
+        #intakeSummaryModal .family-table tr:last-child { border-bottom:none; }
+        #intakeSummaryModal .family-table td {
+          padding:6px 0 !important; border-bottom:none !important;
+          display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+        }
+        #intakeSummaryModal .family-table td::before {
+          content:attr(data-label);
+          flex:0 0 auto;
+          font-size:11px; font-weight:700; color:#6B7280;
+          text-transform:uppercase; letter-spacing:0.04em;
+          padding-top:1px; text-align:left;
+        }
+        #intakeSummaryModal .family-table td.family-empty::before { content:none; }
+        #intakeSummaryModal .family-table td.family-empty { display:block; text-align:center; padding:16px !important; }
+        #intakeSummaryModal .family-table td > * { text-align:right; word-break:break-word; }
+      }
       .field-error input, .field-error select, .field-error textarea {
         border-color: #DC2626 !important;
         box-shadow: 0 0 0 1px #DC2626;
       }
       @media (max-width:768px) {
-        #intakeSummaryModal .modal-box { max-height:100vh; border-radius:0; height:100%; }
+        #intakeSummaryModal { padding:0 !important; align-items:stretch !important; }
+        #intakeSummaryModal .modal-box { max-width:100% !important; max-height:100vh !important; border-radius:0 !important; height:100% !important; width:100% !important; }
+        #intakeSummaryModal .modal-box, #intakeSummaryModal .modal-body, #intakeSummaryModal .modal-body * { word-break:break-word; overflow-wrap:anywhere; }
         #intakeSummaryModal .modal-header { padding:14px 16px !important; }
         #intakeSummaryModal .modal-body { padding:16px !important; }
         #intakeSummaryModal .modal-footer { padding:14px 16px !important; flex-direction:column !important; }
@@ -1860,30 +2442,36 @@ function showIntakeSummaryModal(){
         #intakeSummaryModal .info-grid { grid-template-columns:1fr 1fr !important; gap:12px !important; }
         #intakeSummaryModal .signatories-grid { grid-template-columns:1fr !important; gap:12px !important; }
         #intakeSummaryModal .agencies-grid { grid-template-columns:1fr !important; gap:12px !important; }
-        #intakeSummaryModal .reqs-grid { grid-template-columns:1fr !important; gap:6px !important; }
-        #intakeSummaryModal .control-banner { flex-direction:column !important; align-items:flex-start !important; gap:4px !important; padding:12px 14px !important; }
+        #intakeSummaryModal .reqs-grid { grid-template-columns:1fr 1fr !important; gap:8px !important; }
+        #intakeSummaryModal .control-banner { flex-direction:column !important; align-items:flex-start !important; gap:6px !important; padding:12px 14px !important; }
+        #intakeSummaryModal .control-banner > div { width:100%; word-break:break-word; overflow-wrap:anywhere; }
         #intakeSummaryModal .modal-title { font-size:15px !important; }
         #intakeSummaryModal .modal-subtitle { font-size:11px !important; }
         #intakeSummaryModal .footer-info { display:none !important; }
+        #intakeSummaryModal .section-title h3 { font-size:12px !important; }
       }
       @media (max-width:480px) {
         #intakeSummaryModal .info-grid { grid-template-columns:1fr !important; }
+        #intakeSummaryModal .reqs-grid { grid-template-columns:1fr !important; }
+        #intakeSummaryModal .modal-header { gap:8px; }
+        #intakeSummaryModal .modal-header .modal-title-block { min-width:0; }
+        #intakeSummaryModal .modal-footer .footer-actions { flex-direction:column; }
       }
     </style>
     <div class="modal-box" style="background:#FFFFFF;border-radius:16px;width:100%;max-width:780px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(15,23,42,0.18);overflow:hidden">
 
       <!-- Modal Header -->
       <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #E5E7EB;background:#FAFAFA;flex-shrink:0">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:36px;height:36px;background:#4338CA;border-radius:8px;display:flex;align-items:center;justify-content:center">
+        <div style="display:flex;align-items:center;gap:12px;min-width:0">
+          <div style="width:36px;height:36px;background:#4338CA;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
             <i data-lucide="file-check" style="width:18px;height:18px;color:#fff"></i>
           </div>
-          <div>
-            <div class="modal-title" style="font-size:17px;font-weight:700;color:#111827;font-family:Inter,sans-serif">Review Case Summary</div>
-            <div class="modal-subtitle" style="font-size:12px;color:#6B7280;margin-top:1px">Please verify all information before saving</div>
+          <div class="modal-title-block" style="min-width:0">
+            <div class="modal-title" style="font-size:17px;font-weight:700;color:#111827;font-family:Inter,sans-serif;word-break:break-word">Review Case Summary</div>
+            <div class="modal-subtitle" style="font-size:12px;color:#6B7280;margin-top:1px;word-break:break-word">Please verify all information before saving</div>
           </div>
         </div>
-        <button onclick="closeIntakeSummaryModal()" style="width:32px;height:32px;border:none;background:#F3F4F6;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-size:18px;color:#6B7280;line-height:1" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='#F3F4F6'">
+        <button onclick="closeIntakeSummaryModal()" style="width:32px;height:32px;border:none;background:#F3F4F6;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-size:18px;color:#6B7280;line-height:1;flex-shrink:0" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='#F3F4F6'">
           &times;
         </button>
       </div>
@@ -1922,17 +2510,17 @@ function showIntakeSummaryModal(){
 
         <!-- Family Composition -->
         ${sectionTitle('II. Family Composition', 'users')}
-        <div style="overflow-x:auto;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
-          <table style="width:100%;border-collapse:collapse">
+        <div style="border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+          <table class="family-table" style="width:100%;border-collapse:collapse">
             <thead>
               <tr style="background:#F9FAFB">
-                ${['Name','Relationship','Age','Education','Occupation','Income'].map(h =>
+                ${householdLabels.map(h =>
                   `<th style="padding:9px 12px;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.04em;text-align:left;border-bottom:1px solid #E5E7EB">${h}</th>`
                 ).join('')}
               </tr>
             </thead>
             <tbody>
-              ${householdRows.length ? householdRows.join('') : `<tr><td colspan="6" style="padding:16px;text-align:center;color:#9CA3AF;font-size:13px">No family members added</td></tr>`}
+              ${householdRows.length ? householdRows.join('') : `<tr><td colspan="6" class="family-empty" style="padding:16px;text-align:center;color:#9CA3AF;font-size:13px">No family members added</td></tr>`}
             </tbody>
           </table>
         </div>
@@ -1940,11 +2528,7 @@ function showIntakeSummaryModal(){
         <!-- Narrative Sections -->
         ${sectionTitle('Narrative Sections', 'align-left')}
         ${[
-          ['III. Problem Presented', d.interview.problemPresented],
-          ['IV. Home Condition', d.interview.homeCondition],
-          ['V. Socio-Economic Condition', d.interview.socioEconomic],
-          ['VI. Evaluation', d.interview.evaluation],
-          ['VII. Recommendation', d.interview.recommendation]
+          ['III. Problem Presented', d.interview.problemPresented]
         ].map(([label, content]) => `
           <div style="margin-bottom:14px">
             <div style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:5px">${label}</div>
@@ -2023,13 +2607,15 @@ function renderCaseList(){
 
   // Get filter values
   const searchQuery = (document.getElementById('searchInput')?.value || "").toLowerCase();
-  const statusFilter = document.getElementById('statusFilter')?.value || "All";
-  const assistanceFilter = document.getElementById('assistanceFilter')?.value || "All";
-  const barangayFilter = document.getElementById('barangayFilter')?.value || "All";
+  const statusFilter = filterState.status || "All";
+  const assistanceFilter = filterState.assistance || "All";
+  const barangayFilter = filterState.barangay || "All";
 
   // Filter cases (exclude archived – those live on the archive page)
+  // Only show cases the encoder has picked up: encoded at intake, or already printed
   let filtered = cases.filter(c => {
     if(c.status === 'Archived') return false;
+    if(c.encodedBy == null && c.status !== 'Printed') return false;
     const matchesSearch = !searchQuery || 
       (c.client?.name || '').toLowerCase().includes(searchQuery) || 
       c.controlNo.toLowerCase().includes(searchQuery) ||
@@ -2058,18 +2644,42 @@ function renderCaseList(){
   const emptyState = document.getElementById('emptyState');
   const table = document.getElementById('dataTable');
 
-  if(paginatedCases.length === 0 && filtered.length === 0){
-    table.style.display = 'none';
-    emptyState.style.display = 'block';
+  if(table) table.style.display = 'table';
+  if(emptyState) emptyState.style.display = 'none';
+
+  if(paginatedCases.length === 0){
+    tableBody.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="8" class="empty-cell">
+          <div class="empty-state-content">
+            <div class="empty-icon-wrap">
+              <i data-lucide="folder-open"></i>
+            </div>
+            <div class="empty-title">No Social Case Studies Found</div>
+            <div class="empty-subtitle">Create your first Social Case Study to begin managing case records.</div>
+            <a href="/admin/social-case/new" style="background:var(--primary);color:#fff;border:none;display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:10px 16px;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none;">
+              <i data-lucide="plus" style="width:16px;height:16px"></i> Create New Case
+            </a>
+          </div>
+        </td>
+      </tr>
+    `;
   }else{
-    table.style.display = 'table';
-    emptyState.style.display = 'none';
-    tableBody.innerHTML = paginatedCases.map(c => `
+    tableBody.innerHTML = paginatedCases.map(c => {
+      const eligLabel = c.eligibilityStatus || 'pending';
+      const eligConfig = {
+        'pending':   {label:'Pending Eligibility', cls:'b-draft'},
+        'eligible':  {label:'Eligible', cls:'b-approved'},
+        'ineligible':{label:'Ineligible', cls:'b-archived'}
+      };
+      const elig = eligConfig[eligLabel] || eligConfig.pending;
+      return `
       <tr>
         <td data-label="Control No."><span class="control-no">${escapeHtml(c.controlNo)||"—"}</span></td>
         <td data-label="Client">${escapeHtml(c.client?.name)||"<span class=muted>Unnamed</span>"}</td>
         <td data-label="Type">${escapeHtml(c.purpose)}</td>
-        <td data-label="Barangay">Biluso</td>
+        <td data-label="Barangay">${escapeHtml(c.client?.address || c.client?.barangay || '—')}</td>
+        <td data-label="Eligibility"><span class="badge ${elig.cls}">${elig.label}</span></td>
         <td data-label="Status"><span class="badge ${STATUS_CLASS[c.status]}">${c.status}</span></td>
         <td data-label="Created">${fmtDate(c.createdAt)}</td>
         <td data-label="Action">
@@ -2077,32 +2687,30 @@ function renderCaseList(){
             <button style="background-color: #1A237E; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); showCaseDetailsModal('${c.id}')" title="View">
               <i data-lucide="eye" style="width:16px;height:16px; color:#ffffff;"></i>
             </button>
-            ${c.status === 'Approved' ? `
+            ${CAN_ENCODE && c.status === 'Approved' ? `
               <button style="background-color: #FBC02D; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); window.location.href='/admin/social-case/document/${c.id}/PCSO'" title="Print">
                 <i data-lucide="printer" style="width:16px;height:16px; color:#121858;"></i>
               </button>
             ` : ''}
-            ${c.status !== 'Archived' ? `
+            ${CAN_ENCODE && c.status !== 'Archived' ? `
               <button style="background-color: #dc3545; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); deleteCase('${c.id}', true)" title="Archive">
                 <i data-lucide="archive" style="width:16px;height:16px; color:#ffffff;"></i>
               </button>
-            ` : `
-              <span style="font-size:11px;color:#9CA3AF;font-style:italic;padding:0 4px;display:flex;align-items:center;">Archived</span>
-            `}
+            ` : ''}
           </div>
         </td>
-      </tr>
-    `).join("");
+      </tr>`;
+    }).join("");
   }
 
   // Update pagination info
   const paginationInfo = document.getElementById('paginationInfo');
   if(filtered.length === 0){
-    paginationInfo.textContent = 'Showing 0 of 0 Social Case Studies';
+    paginationInfo.textContent = 'Showing 0 of 0 Records';
   }else{
     const showingFrom = startIndex + 1;
     const showingTo = Math.min(endIndex, filtered.length);
-    paginationInfo.textContent = `Showing ${showingFrom}–${showingTo} of ${filtered.length} Social Case Studies`;
+    paginationInfo.textContent = `Showing ${showingFrom}–${showingTo} of ${filtered.length} Records`;
   }
 
   // Update pagination controls
@@ -2136,14 +2744,22 @@ function resetFilters(){
   const searchInput = document.getElementById('searchInput');
   if(searchInput) searchInput.value = '';
   
-  const statusFilter = document.getElementById('statusFilter');
-  if(statusFilter) statusFilter.value = 'All';
+  filterState = { status: 'All', assistance: 'All', barangay: 'All' };
   
-  const assistanceFilter = document.getElementById('assistanceFilter');
-  if(assistanceFilter) assistanceFilter.value = 'All';
+  document.getElementById('statusLabel').textContent = 'All Status';
+  document.getElementById('assistanceLabel').textContent = 'All Types';
+  document.getElementById('barangayLabel').textContent = 'All Barangays';
   
-  const barangayFilter = document.getElementById('barangayFilter');
-  if(barangayFilter) barangayFilter.value = 'All';
+  var statusBtn = document.getElementById('statusBtn');
+  if(statusBtn) { statusBtn.classList.remove('active'); statusBtn.removeAttribute('data-filter'); }
+  var assistanceBtn = document.getElementById('assistanceBtn');
+  if(assistanceBtn) { assistanceBtn.classList.remove('active'); assistanceBtn.removeAttribute('data-filter'); }
+  var barangayBtn = document.getElementById('barangayBtn');
+  if(barangayBtn) { barangayBtn.classList.remove('active'); barangayBtn.removeAttribute('data-filter'); }
+  
+  highlightStatusOpt();
+  highlightAssistanceOpt();
+  highlightBarangayOpt();
   
   view.caseListPage = 1;
   renderCaseList();
@@ -2202,6 +2818,10 @@ async function markAsPrinted(caseId){
     .then(response => response.json())
     .then(async data => {
       console.log('Case marked as approved and released:', data);
+      logActivity('printed', 'Case document printed', {
+        clientName: caseRec.client?.name,
+        controlNo: caseRec.controlNo
+      });
       // Reload cases from server to get latest data
       await loadCases();
     })
@@ -2211,18 +2831,40 @@ async function markAsPrinted(caseId){
   }
 }
 
+function removePrintArtifacts(){
+  const s = document.getElementById('printStyle');
+  if(s) s.remove();
+  const pc = document.getElementById('printOnlyContainer');
+  if(pc) pc.remove();
+}
+
+function reloadAfterPrint(){
+  let done = false;
+  const reload = () => {
+    if(done) return;
+    done = true;
+    setTimeout(() => location.reload(), 500);
+  };
+  window.addEventListener('afterprint', reload);
+  window.addEventListener('focus', reload, { once: true });
+}
+
 async function printDocument(){
   const c = getCase(view.caseId);
   if(!c) return;
   
-  // Get the list of agencies from the case
+  // Clear any leftover print-only DOM from a previous print. The print-only
+  // container/style are intentionally left mounted after printing (see below),
+  // so every print call must start clean.
+  removePrintArtifacts();
   const agencies = c.agencies || (c.submittedTo ? c.submittedTo.split(',').map(s => s.trim()).filter(Boolean) : []);
   
   if(agencies.length === 0) {
-    // If no agencies selected, just print the current preview
+    // If no agencies selected, just print the current preview.
+    // Nothing is mutated here, so no cleanup or reload is needed.
     await markAsPrinted(view.caseId);
     window.print();
-    setTimeout(() => location.reload(), 2000);
+    reloadAfterPrint();
     return;
   }
   
@@ -2360,7 +3002,7 @@ async function printDocument(){
     printContainer.style.position = 'fixed';
     printContainer.style.top = '0';
     printContainer.style.left = '0';
-    printContainer.style.width = '210mm';
+    printContainer.style.width = '215.9mm';
     printContainer.style.height = 'auto';
     printContainer.style.zIndex = '999999';
     printContainer.style.background = 'white';
@@ -2374,7 +3016,7 @@ async function printDocument(){
     printStyle.textContent = `
       @media print {
         @page {
-          size: 210mm 297mm;
+          size: 215.9mm 279.4mm;
           margin: 0;
         }
         * {
@@ -2384,7 +3026,7 @@ async function printDocument(){
         html, body {
           margin: 0 !important;
           padding: 0 !important;
-          width: 210mm !important;
+          width: 215.9mm !important;
           height: auto !important;
           background: white !important;
           overflow: visible !important;
@@ -2393,7 +3035,7 @@ async function printDocument(){
         #printOnlyContainer { 
           display: block !important; 
           position: relative !important;
-          width: 210mm !important;
+          width: 215.9mm !important;
           height: auto !important;
           margin: 0 !important;
           padding: 0 !important;
@@ -2401,30 +3043,35 @@ async function printDocument(){
           overflow: visible !important;
         }
         .page {
-          width: 210mm !important;
-          height: 297mm !important;
+          width: 215.9mm !important;
+          height: 279.4mm !important;
           margin: 0 !important;
-          padding: 10mm 25.4mm 32.5mm 25.4mm !important;
+          padding: 12.7mm 25.4mm 32.4mm 25.4mm !important;
           background: white !important;
           position: relative !important;
           box-shadow: none !important;
           overflow: hidden !important;
           border: none !important;
+          transform: none !important;
+          zoom: 1 !important;
         }
       }
     `;
     document.head.appendChild(printStyle);
     
     await markAsPrinted(view.caseId);
+
+    // window.print() is non-blocking on mobile/tablet browsers, and even desktop
+    // browsers emit 'afterprint' / print-media changes when the dialog closes —
+    // which is not the same as the print job finishing. Removing #printOnlyContainer
+    // or #printStyle (or re-rendering the page) around the print call races the
+    // print job and can blank the output or let the app chrome (navbar, sidebar,
+    // mobile-header) leak into it. So the print-only DOM is left mounted: it is
+    // display:none on screen and only styled under @media print, so it is invisible
+    // on the page, and the next printDocument() call clears it.
     window.print();
-    
-    // Clean up after printing
-    setTimeout(() => {
-      document.head.removeChild(printStyle);
-      document.body.removeChild(printContainer);
-      location.reload();
-    }, 2000);
-    
+    reloadAfterPrint();
+
   } catch(error) {
     console.error('Error generating print document:', error);
     alert('Failed to generate print document. Please try again.');
@@ -2453,6 +3100,10 @@ async function reprintCase(caseId){
   .then(response => response.json())
   .then(async data => {
     console.log('Case updated for reprint:', data);
+    logActivity('printed', 'Case document reprinted', {
+      clientName: caseRec.client?.name,
+      controlNo: caseRec.controlNo
+    });
     // Reload case data from server to get latest data
     await loadCaseDetail(caseId);
     // Show success message
@@ -2513,10 +3164,10 @@ function downloadWord(){
       <style>
         body { margin: 0; padding: 0; }
         .page { 
-          width: 210mm; 
-          min-height: 297mm; 
+          width: 215.9mm; 
+          min-height: 279.4mm; 
           margin: 0; 
-          padding: 10mm 25.4mm 32.5mm 25.4mm; 
+          padding: 12.7mm 25.4mm 32.4mm 25.4mm; 
           background: white; 
           position: relative; 
           page-break-after: always; 
@@ -2550,7 +3201,7 @@ function downloadWord(){
         .footer { display: flex; justify-content: space-between; margin-top: 32px; }
         .signature { text-align: center; }
         .signature b { display: block; margin-top: 32px; }
-        .document-footer { position: absolute; bottom: 15mm; left: 18mm; right: 18mm; display: flex; justify-content: space-between; font-size: 11px; }
+        .document-footer { position: absolute; bottom: 12.7mm; left: 25.4mm; right: 25.4mm; display: flex; justify-content: space-between; font-size: 11px; }
         .doc-address { text-align: center; }
       </style>
     </head>
@@ -2706,14 +3357,14 @@ function renderCaseDetail(){
       @media print {
         @page {
           margin: 0;
-          size: auto;
+          size: 215.9mm 279.4mm;
         }
         body {
           background: white !important;
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
         }
-        .sidebar, header, .doc-toolbar, .no-print,
+        .sidebar, .mobile-header, header, .doc-toolbar, .no-print,
         .hamburger-btn, .sidebar-overlay,
         .detail-header, .header-actions, .template-tabs,
         .preview-header, .info-banner, .status-badge {
@@ -2747,11 +3398,12 @@ function renderCaseDetail(){
           padding: 0 !important;
         }
         .page {
-          height: 297mm !important;
+          height: 279.4mm !important;
           min-height: 0 !important;
           margin: 0 !important;
           box-shadow: none !important;
           transform: none !important;
+          zoom: 1 !important;
           overflow: hidden !important;
           page-break-after: always;
         }
@@ -2760,7 +3412,7 @@ function renderCaseDetail(){
         }
         .document-footer {
           position: absolute !important;
-          bottom: 32.5mm !important;
+          bottom: 12.7mm !important;
           page-break-inside: avoid !important;
         }
         .footer {
@@ -3041,6 +3693,12 @@ function renderCaseDetail(){
               Reprint
             </button>
           ` : ''}
+          ${CAN_ENCODE ? `
+            <button class="header-btn" style="background:#1A237E;color:white;border-color:#1A237E;" onclick="editCaseFromDetail('${c.id}')">
+              <i data-lucide="edit" style="width:16px;height:16px;"></i>
+              Edit
+            </button>
+          ` : ''}
           <button class="header-btn" style="background:#059669;color:white;border-color:#059669;" onclick="printDocument()">
             <i data-lucide="printer" style="width:16px;height:16px;"></i>
             Print
@@ -3248,12 +3906,12 @@ async function loadDocumentPreview(caseId){
     const docStyles = `
       <style>
         .page {
-          width: 210mm;
-          height: 297mm;
+          width: 215.9mm;
+          height: 279.4mm;
           margin: 20px auto;
           background: white;
           position: relative;
-          padding: 10mm 25.4mm 32.5mm 25.4mm;
+          padding: 12.7mm 25.4mm 32.4mm 25.4mm;
           box-shadow: 0 0 12px rgba(0,0,0,.25);
           overflow: hidden;
         }
@@ -3397,7 +4055,7 @@ async function loadDocumentPreview(caseId){
         }
         .page .document-footer {
           position: absolute;
-          bottom: 32.5mm;
+          bottom: 12.7mm;
           left: 25.4mm;
           right: 25.4mm;
           border-top: 1px solid #7f7f7f;
@@ -3416,11 +4074,17 @@ async function loadDocumentPreview(caseId){
           justify-content: space-between;
           font-style: italic;
         }
-        @media(max-width:800px){
-          .document-viewer .page-wrap{overflow:hidden}
+        @media (max-width: 767px) {
+          .document-viewer .page { zoom: 0.38; }
         }
-        @media(max-width:480px){
-          .document-viewer .page-wrap{overflow:hidden}
+        @media (min-width: 768px) and (max-width: 991px) {
+          .document-viewer .page { zoom: 0.60; }
+        }
+        @media (min-width: 992px) and (max-width: 1199px) {
+          .document-viewer .page { zoom: 0.80; }
+        }
+        @media (min-width: 1200px) {
+          .document-viewer .page { zoom: 1; }
         }
       </style>
     `;
@@ -3431,31 +4095,15 @@ async function loadDocumentPreview(caseId){
     }).join('');
     container.innerHTML = docStyles + pagesHtml;
 
-    function scaleDocumentPages(){
-      const vw = window.innerWidth;
-      let scale = 1;
-      if(vw <= 480) scale = 0.35;
-      else if(vw <= 768) scale = 0.50;
-      else if(vw <= 1024) scale = 0.65;
-      else scale = 1;
-      const pages = container.querySelectorAll('.page');
-      pages.forEach(p => {
-        if(scale < 1){
-          const naturalHeight = p.offsetHeight;
-          p.style.transform = 'scale(' + scale + ')';
-          p.style.transformOrigin = 'top center';
-          p.style.marginBottom = '-' + (naturalHeight * (1 - scale)) + 'px';
-          p.parentElement.style.height = (naturalHeight * scale) + 'px';
-        } else {
-          p.style.transform = '';
-          p.style.transformOrigin = '';
-          p.style.marginBottom = '';
-          p.parentElement.style.height = '';
-        }
-      });
-    }
-    scaleDocumentPages();
-    window.addEventListener('resize', scaleDocumentPages);
+    // Responsive scaling is handled entirely by the CSS `zoom` media queries
+    // above, so clear any legacy inline transform/wrap-height from previous versions.
+    container.querySelectorAll('.page').forEach(p => {
+      p.style.transform = '';
+      p.style.transformOrigin = '';
+      p.style.margin = '';
+      p.style.marginBottom = '';
+      if (p.parentElement) p.parentElement.style.height = '';
+    });
 
     console.log('Document preview rendered successfully');
   } catch (error) {
@@ -3579,12 +4227,12 @@ async function renderDocument(){
   const toolbarHtml = `
   <style>
     .page {
-      width: 210mm;
-      min-height: 297mm;
+      width: 215.9mm;
+      min-height: 279.4mm;
       margin: 20px auto;
       background: white;
       position: relative;
-      padding: 31.5mm 25.4mm 32.5mm 25.4mm;
+      padding: 12.7mm 25.4mm 32.4mm 25.4mm;
       box-shadow: 0 0 12px rgba(0,0,0,.25);
     }
     .watermark {
@@ -3705,9 +4353,9 @@ async function renderDocument(){
     .signature small { font-size: 12px; }
     .document-footer {
       position: absolute;
-      bottom: 12mm;
-      left: 18mm;
-      right: 18mm;
+      bottom: 12.7mm;
+      left: 25.4mm;
+      right: 25.4mm;
       border-top: 1px solid #7f7f7f;
       padding-top: 5px;
       font-size: 12px;
@@ -3724,18 +4372,30 @@ async function renderDocument(){
       justify-content: space-between;
       font-style: italic;
     }
+    @media (max-width: 767px) {
+      #documentContent .page { zoom: 0.38; }
+    }
+    @media (min-width: 768px) and (max-width: 991px) {
+      #documentContent .page { zoom: 0.60; }
+    }
+    @media (min-width: 992px) and (max-width: 1199px) {
+      #documentContent .page { zoom: 0.80; }
+    }
+    @media (min-width: 1200px) {
+      #documentContent .page { zoom: 1; }
+    }
     @media print {
-      @page { margin: 0; size: auto; }
+      @page { margin: 0; size: 215.9mm 279.4mm; }
       html, body, .app, .main { overflow: visible !important; height: auto !important; }
       .no-print { display: none !important; }
-      .sidebar, .page-head, .toolbar-row, header { display: none !important; }
+      .sidebar, .mobile-header, .page-head, .toolbar-row, header { display: none !important; }
       .main { padding: 0; max-width: none; margin: 0; }
       body { background: #fff; }
-      .page { height: 297mm !important; min-height: 0 !important; margin: 0 !important; padding: 10mm 25.4mm 32.5mm 25.4mm !important; box-shadow: none !important; overflow: hidden !important; page-break-after: always; break-after: page; }
+      .page { height: 279.4mm !important; min-height: 0 !important; margin: 0 !important; padding: 12.7mm 25.4mm 32.4mm 25.4mm !important; box-shadow: none !important; overflow: hidden !important; zoom: 1 !important; page-break-after: always; break-after: page; }
       .page:last-child { page-break-after: avoid; break-after: avoid; }
     }
   </style>
-  <div class="doc-toolbar no-print" style="box-shadow:var(--shadow);max-width:210mm;margin:0 auto 20px;">
+  <div class="doc-toolbar no-print" style="box-shadow:var(--shadow);max-width:215.9mm;margin:0 auto 20px;">
     <button class="btn ghost btn-sm" onclick="window.location.href='/admin/social-case/detail/${c.id}'"><i data-lucide="arrow-left" style="width:16px;height:16px"></i> Back to case</button>
     <div style="display:flex;gap:10px;align-items:center;">
       <span style="font-size:13px;font-weight:500;color:var(--text-secondary);white-space:nowrap;">Print Copy:</span>

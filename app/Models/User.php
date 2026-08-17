@@ -56,6 +56,11 @@ class User extends Authenticatable
         return $this->hasMany(\App\Models\SocialCase\SocialCaseStudy::class, 'encoded_by');
     }
 
+    public function eligibilityCheckedCases(): HasMany
+    {
+        return $this->hasMany(\App\Models\SocialCase\SocialCaseStudy::class, 'eligible_by');
+    }
+
     public function releasedPayouts(): HasMany
     {
         return $this->hasMany(\App\Models\Senior\BirthdayPayout::class, 'released_by');
