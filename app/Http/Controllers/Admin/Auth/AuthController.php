@@ -30,34 +30,6 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'Invalid email or password.'])->withInput();
         }
 
-<<<<<<< HEAD
-        $moduleRoleMap = [
-            'Social Case Study' => ['social_worker'],
-            'Senior Citizen' => ['staff', 'Senior Citizen officer'],
-            'Financial Assistance Officer' => ['staff', 'Financial assistance officer', 'financialstep1', 'financialstep2'],
-            'Financial Step 1' => ['staff', 'financialstep1', 'Financial assistance officer'],
-            'Financial Step 2' => ['staff', 'financialstep2', 'Financial assistance officer'],
-            'Admin' => ['admin'],
-        ];
-
-        $moduleRedirects = [
-            'Social Case Study' => 'admin.social-case.dashboard',
-            'Senior Citizen' => 'admin.senior',
-            'Financial Assistance Officer' => 'admin.financial.dashboard',
-            'Financial Step 1' => 'admin.financial.dashboard',
-            'Financial Step 2' => 'admin.financial.dashboard',
-            'Admin' => 'admin.dashboard',
-        ];
-
-        $selectedModule = $request->role;
-        $allowedRoles = (array) ($moduleRoleMap[$selectedModule] ?? []);
-
-        if (! empty($allowedRoles) && ! in_array($user->role->value, $allowedRoles, true)) {
-            return back()->withErrors(['role' => "This account is not authorized for the selected role."])->withInput();
-        }
-
-=======
->>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
         session([
             'admin_user_id' => $user->id,
             'admin_user_name' => $user->name,

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,12 +65,12 @@
             transition: transform .3s ease;
             transform: translateX(-100%);
         }
-<<<<<<< HEAD
 
-=======
-        .sidebar.show { transform: translateX(0); }
->>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
-        .sidebar-brand {
+        <<<<<<< HEAD=======.sidebar.show {
+            transform: translateX(0);
+        }
+
+        >>>>>>>5c79a03401b44599faa0ee97242d93d2ff55b903 .sidebar-brand {
             padding: 1.5rem;
             border-bottom: 1px solid rgba(255, 255, 255, .1);
             color: #fff;
@@ -372,114 +373,7 @@
            RESPONSIVE BREAKPOINTS
            ══════════════════════════════════════════════ */
 
-<<<<<<< HEAD
-        /* ── Large Desktop (≥ 1536px) ── */
-        @media (min-width: 1536px) {
-            .stat-cards-grid {
-                gap: 2rem;
-            }
-        }
-
-        /* ── Tablet Landscape / Small Laptop (< 1024px) ── */
-        @media (max-width: 1023px) {
-            .sidebar {
-                transform: translateX(-100%);
-                z-index: 1001;
-            }
-
-            .sidebar.show {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-            }
-
-            .stat-cards-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .top-navbar {
-                padding: 1rem 1.25rem;
-            }
-
-            .reports-actions {
-                flex-wrap: wrap;
-                gap: 0.5rem;
-            }
-        }
-
-        /* ── Tablet Portrait (< 768px) ── */
-        @media (max-width: 767px) {
-            .top-navbar {
-                padding: 0.75rem 1rem;
-            }
-
-            .navbar-title {
-                font-size: 0.95rem;
-            }
-
-            .navbar-datetime {
-                display: none;
-            }
-
-            .stat-cards-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-
-            .stat-card {
-                padding: 1rem;
-            }
-
-            .stat-icon {
-                width: 44px;
-                height: 44px;
-                font-size: 1.1rem;
-            }
-
-            .stat-value {
-                font-size: 1.5rem;
-            }
-
-            .stat-label {
-                font-size: 0.75rem;
-            }
-
-            .chart-container {
-                height: 250px;
-            }
-
-            .card-body {
-                padding: 1rem;
-            }
-
-            .card-header {
-                padding: 1rem;
-                font-size: 1rem;
-            }
-
-            .table th,
-            .table td {
-                padding: 0.625rem 0.75rem;
-                font-size: 0.8125rem;
-            }
-
-            .reports-actions .btn {
-                font-size: 0.75rem;
-                padding: 0.375rem 0.625rem;
-            }
-
-            .reports-summary-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* ── Mobile (< 480px) ── */
-=======
         /* ── Small phones (0–479px) ── */
->>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
         @media (max-width: 479px) {
             .stat-cards-grid {
                 grid-template-columns: 1fr;
@@ -504,42 +398,92 @@
             }
         }
 
-<<<<<<< HEAD
-=======
+        <<<<<<< HEAD=======
+
         /* ── sm: Small tablets (768px+) ── */
         @media (min-width: 768px) {
-            .navbar-datetime { display: block; }
-            .stat-cards-grid { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
-            .stat-card { padding: 1.25rem; }
-            .card-body { padding: 1.25rem; }
-            .reports-summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .navbar-datetime {
+                display: block;
+            }
+
+            .stat-cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.25rem;
+            }
+
+            .stat-card {
+                padding: 1.25rem;
+            }
+
+            .card-body {
+                padding: 1.25rem;
+            }
+
+            .reports-summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         /* ── md: Large tablets (992px+) ── */
         @media (min-width: 992px) {
-            .stat-cards-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
-            .stat-card { padding: 1.5rem; }
-            .stat-value { font-size: 2rem; }
-            .reports-summary-grid { grid-template-columns: repeat(3, 1fr); }
-            .chart-container { height: 300px; }
+            .stat-cards-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.5rem;
+            }
+
+            .stat-card {
+                padding: 1.5rem;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .reports-summary-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .chart-container {
+                height: 300px;
+            }
         }
 
         /* ── lg: Desktops (1200px+) ── */
         @media (min-width: 1200px) {
-            .sidebar { transform: translateX(0); z-index: 1000; }
-            .sidebar.show { transform: translateX(0); }
-            .main-content { margin-left: 260px; width: calc(100% - 260px); }
-            .top-navbar { padding: 1rem 2rem; }
-            .navbar-title { font-size: 1.1rem; }
+            .sidebar {
+                transform: translateX(0);
+                z-index: 1000;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 260px;
+                width: calc(100% - 260px);
+            }
+
+            .top-navbar {
+                padding: 1rem 2rem;
+            }
+
+            .navbar-title {
+                font-size: 1.1rem;
+            }
         }
 
         /* ── Large Desktop (≥ 1536px) ── */
         @media (min-width: 1536px) {
-            .stat-cards-grid { gap: 2rem; }
+            .stat-cards-grid {
+                gap: 2rem;
+            }
         }
->>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
+
+        >>>>>>>5c79a03401b44599faa0ee97242d93d2ff55b903
     </style>
 </head>
+
 <body>
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
@@ -563,14 +507,16 @@
         <nav class="top-navbar">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
-                    <button class="btn btn-link d-lg-none d-xl-none me-3" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                    <button class="btn btn-link d-lg-none d-xl-none me-3" onclick="toggleSidebar()"
+                        aria-label="Toggle sidebar">
                         <i class="fas fa-bars"></i>
                     </button>
                     <h5 class="mb-0 me-4">Dashboard</h5>
                 </div>
                 <div class="d-flex align-items-center">
                     <div class="me-4 text-muted small navbar-datetime" id="currentDateTime"></div>
-                    <div class="activity-avatar" style="width: 35px; height: 35px; font-size: 0.875rem;">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
+                    <div class="activity-avatar" style="width: 35px; height: 35px; font-size: 0.875rem;">{{
+                        strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
                 </div>
             </div>
         </nav>
@@ -691,7 +637,8 @@
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <div class="activity-avatar me-2">{{ substr($staff['name'], 0, 1) }}{{ substr($staff['name'], strpos($staff['name'], ' ') + 1, 1) }}</div>
+                                                <div class="activity-avatar me-2">{{ substr($staff['name'], 0, 1) }}{{
+                                                    substr($staff['name'], strpos($staff['name'], ' ') + 1, 1) }}</div>
                                                 <span>{{ $staff['name'] }}</span>
                                                 @if($staff['rate'] >= 92)
                                                 <span class="badge badge-high ms-2">Top</span>
@@ -718,12 +665,16 @@
                     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                         <h6 class="mb-0">Reports Summary</h6>
                         <div class="d-flex flex-wrap gap-2 reports-actions">
-                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-file-pdf me-1"></i> PDF</button>
-                            <button class="btn btn-sm btn-outline-success"><i class="fas fa-file-excel me-1"></i> Excel</button>
-                            <button class="btn btn-sm btn-primary"><i class="fas fa-chart-bar me-1"></i> Analytics</button>
+                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-file-pdf me-1"></i>
+                                PDF</button>
+                            <button class="btn btn-sm btn-outline-success"><i class="fas fa-file-excel me-1"></i>
+                                Excel</button>
+                            <button class="btn btn-sm btn-primary"><i class="fas fa-chart-bar me-1"></i>
+                                Analytics</button>
                         </div>
                     </div>
-                    <div class="reports-summary-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                    <div class="reports-summary-grid"
+                        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
                         <div class="p-3 bg-light rounded">
                             <small class="text-muted">Cases This Month</small>
                             <h4 class="mb-0">{{ $reportsSummary['casesThisMonth'] }}</h4>
@@ -857,28 +808,6 @@
     </form>
 
     <script>
-<<<<<<< HEAD
-        document.addEventListener('DOMContentLoaded', function() {
-            @if($justLoggedIn ?? false)
-            var adminName = "{{ session('admin_user_name') ?? 'Admin' }}";
-            Swal.fire({
-                title: 'Welcome Admin!'
-                , text: adminName
-                , icon: 'success'
-                , confirmButtonColor: '#1A237E'
-                , confirmButtonText: 'Continue'
-                , background: '#ffffff'
-                , customClass: {
-                    popup: 'rounded-4 shadow-lg'
-                }
-                , timer: 3000
-                , timerProgressBar: true
-            });
-            @endif
-        });
-
-=======
->>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
         function confirmLogout(event) {
             event.preventDefault();
             Swal.fire({
@@ -901,4 +830,5 @@
 
     </script>
 </body>
+
 </html>
