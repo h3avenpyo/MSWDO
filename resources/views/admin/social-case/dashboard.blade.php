@@ -91,6 +91,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     @php
         $dashRole = (string) session('admin_user_role');
         $dashIsChecker = in_array($dashRole, ['eligibility_checker'], true);
+        $dashIsEncoder = in_array($dashRole, ['social_worker', 'admin'], true);
     @endphp
     @if($dashIsChecker)
     <div style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin-bottom:24px">
@@ -98,6 +99,14 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div>
             <div style="font-weight:700;color:#4338CA;font-size:14px">Eligibility Checking Only</div>
             <div style="font-size:13px;color:#4F46E5">Your account only performs client eligibility checks and forwards eligible clients for case encoding. You cannot encode or modify Social Case Study information.</div>
+        </div>
+    </div>
+    @elseif($dashIsEncoder)
+    <div style="background:#ECFDF5;border:1px solid #A7F3D0;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin-bottom:24px">
+        <i data-lucide="file-pen-line" style="width:20px;height:20px;color:#059669;flex-shrink:0"></i>
+        <div>
+            <div style="font-weight:700;color:#065F46;font-size:14px">Case Encoding Account</div>
+            <div style="font-size:13px;color:#047857">Your account is authorized to encode, update, print, and process Social Case Studies for eligible clients.</div>
         </div>
     </div>
     @endif
