@@ -32,6 +32,21 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     </div>
 </div>
 
+<style>
+    .main {
+        padding-top: 14px !important;
+    }
+    @media (max-width: 767px) {
+        .main {
+            padding-top: 68px !important;
+        }
+    }
+    .main > header {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+</style>
+
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <i data-lucide="file-text" style="width:24px;height:24px"></i>
@@ -63,7 +78,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             $initials = strtoupper(substr($userName, 0, 2));
         }
     @endphp
-    <header class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none mb-6 sm:mb-8 lg:mb-3">
+    <header class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none mb-4 lg:mb-2">
         <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Welcome, {{ $userName }}</h1>
         <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
             <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime">Thursday, July 16, 2026 at 01:51 PM</div>

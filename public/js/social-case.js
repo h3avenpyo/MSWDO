@@ -682,6 +682,11 @@ async function submitForEncoding(){
       return;
     }
 
+    logActivity('created', 'Client forwarded for case encoding', {
+      clientName: data.case?.client?.name || name,
+      controlNo: data.case?.case_number || ''
+    });
+
     Swal.fire({
       title: 'Forwarded!',
       text: data.message || 'Client passed eligibility and was forwarded for case encoding.',
@@ -1072,7 +1077,7 @@ function restoreCase(id){
         .then(response => response.json())
         .then(async data => {
           console.log('Case restored:', data);
-          logActivity('updated', 'Case restored from archive', {
+          logActivity('restored', 'Case restored from archive', {
             clientName: caseRec.client?.name,
             controlNo: caseRec.controlNo
           });
@@ -1257,15 +1262,18 @@ async function renderActivityFeed(recent = null){
     'updated': {icon:'edit', bg:'var(--info-bg)', color:'var(--info)'},
     'viewed': {icon:'eye', bg:'var(--background)', color:'var(--text-muted)'},
     'archived': {icon:'archive', bg:'var(--danger-bg)', color:'var(--danger)'},
+    'restored': {icon:'rotate-ccw', bg:'var(--success-bg)', color:'var(--success)'},
     'deleted': {icon:'trash-2', bg:'var(--danger-bg)', color:'var(--danger)'},
     'printed': {icon:'printer', bg:'var(--purple-bg)', color:'var(--purple)'},
     'released': {icon:'send', bg:'var(--success-bg)', color:'var(--success)'}
   };
   
-  // Only show activities after a case has been printed/released
-  const doneActivities = activities.filter(a => a.action === 'printed' || a.action === 'released');
+  // Show all relevant activities: new case, archived, restored, printed, released, etc.
+  const displayActivities = activities.filter(a => 
+    ['created', 'updated', 'archived', 'restored', 'printed', 'released', 'deleted'].includes(a.action)
+  );
   
-  if(!doneActivities.length){
+  if(!displayActivities.length){
     container.innerHTML = `<div style="text-align:center;padding:32px 20px;color:var(--text-muted)">
       <i data-lucide="inbox" style="width:32px;height:32px;margin:0 auto 8px;display:block;color:#D1D5DB"></i>
       <span style="font-size:13px">No recent activities</span>
@@ -1273,7 +1281,7 @@ async function renderActivityFeed(recent = null){
     return;
   }
   
-  container.innerHTML = doneActivities.slice(0,10).map(a=>{
+  container.innerHTML = displayActivities.slice(0,10).map(a=>{
     const cfg = actionConfig[a.action] || actionConfig['updated'];
     const timeAgo = getTimeAgo(a.timestamp);
     const caseInfo = a.caseInfo ? `<strong>${escapeHtml(a.caseInfo.clientName || 'Unknown')}</strong> (${escapeHtml(a.caseInfo.controlNo || 'N/A')})` : '';

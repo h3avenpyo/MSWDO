@@ -68,6 +68,105 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         white-space:nowrap;
         padding:6px 10px;
     }
+
+    /* Base empty state styles matching Archive page */
+    .empty-row {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .empty-cell {
+        padding: 2.5rem 1rem !important;
+        border: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+    }
+    .empty-cell::before { display: none !important; }
+    .empty-state-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .empty-icon-wrap {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: #F3F4F6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        color: #9CA3AF;
+    }
+    .empty-icon-wrap svg {
+        width: 32px;
+        height: 32px;
+    }
+    .empty-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 4px;
+    }
+    .empty-subtitle {
+        font-size: 0.875rem;
+        color: #6B7280;
+    }
+
+    /* Tablet (768-1199px): empty state stays a full-width centered row */
+    @media (min-width: 768px) and (max-width: 1199px) {
+        #submittedTable tbody tr.empty-row { display: table-row !important; background: transparent !important; border: none !important; box-shadow: none !important; margin: 0 !important; }
+        #submittedTable tbody tr.empty-row td.empty-cell {
+            display: table-cell !important;
+            padding: 2.5rem 1.5rem !important;
+            border: none !important;
+            text-align: center !important;
+        }
+        #submittedTable tbody tr.empty-row td.empty-cell::before { display: none !important; }
+        #submittedTable tbody tr.empty-row td.empty-cell .empty-state-content { align-items: center; justify-content: center; }
+    }
+
+    @media (min-width: 1200px) {
+        #submittedTable tbody tr.empty-row { display: table-row !important; background: transparent !important; border: none !important; box-shadow: none !important; margin: 0 !important; }
+        #submittedTable tbody tr.empty-row td.empty-cell {
+            display: table-cell !important;
+            padding: 3rem 1.5rem !important;
+            border: none !important;
+            text-align: center !important;
+        }
+        #submittedTable tbody tr.empty-row td.empty-cell::before { display: none !important; }
+
+        .empty-icon-wrap {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            background: #EEF2FF;
+            color: #1A237E;
+        }
+        .empty-icon-wrap svg {
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .empty-title {
+            font-size: 1.35rem !important;
+            font-weight: 700 !important;
+            color: #111827 !important;
+            margin-bottom: 8px !important;
+        }
+        .empty-subtitle {
+            font-size: 0.95rem !important;
+            color: #6B7280 !important;
+            max-width: 400px;
+            line-height: 1.5;
+        }
+    }
 </style>
 
 <div class="sidebar" id="sidebar">
@@ -143,10 +242,15 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                         </td>
                     </tr>
                     @empty
-                    <tr>
-                        <td colspan="5" style="text-align:center;padding:40px;color:#9CA3AF;">
-                            <i data-lucide="inbox" style="width:28px;height:28px;margin:0 auto 8px;display:block;color:#D1D5DB"></i>
-                            No clients are waiting for case encoding.
+                    <tr class="empty-row">
+                        <td colspan="5" class="empty-cell">
+                            <div class="empty-state-content">
+                                <div class="empty-icon-wrap">
+                                    <i data-lucide="send"></i>
+                                </div>
+                                <div class="empty-title">No submitted cases</div>
+                                <div class="empty-subtitle">Submitted cases will appear here</div>
+                            </div>
                         </td>
                     </tr>
                     @endforelse
@@ -161,11 +265,44 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 <script src="{{ asset('js/social-case.js') . '?v=' . filemtime(public_path('js/social-case.js')) }}"></script>
 <script>
     function filterSubmitted(){
-        var query = (document.getElementById('submittedSearch').value || '').toLowerCase();
-        document.querySelectorAll('#submittedTable tbody tr').forEach(function(row){
+        var query = (document.getElementById('submittedSearch').value || '').trim().toLowerCase();
+        var dataRows = document.querySelectorAll('#submittedTable tbody tr:not(.empty-row)');
+        var visibleCount = 0;
+
+        dataRows.forEach(function(row){
             var name = (row.getAttribute('data-name') || '').toLowerCase();
-            row.style.display = (!query || name.indexOf(query) !== -1) ? '' : 'none';
+            var match = (!query || name.indexOf(query) !== -1);
+            row.style.display = match ? '' : 'none';
+            if(match) visibleCount++;
         });
+
+        var emptyRow = document.querySelector('#submittedTable tbody tr.empty-row');
+        if (dataRows.length > 0) {
+            if (visibleCount === 0) {
+                if (!emptyRow) {
+                    emptyRow = document.createElement('tr');
+                    emptyRow.className = 'empty-row';
+                    emptyRow.innerHTML = '<td colspan="5" class="empty-cell">' +
+                        '<div class="empty-state-content">' +
+                        '<div class="empty-icon-wrap"><i data-lucide="search-x"></i></div>' +
+                        '<div class="empty-title">No matching submitted cases</div>' +
+                        '<div class="empty-subtitle">Try adjusting your search</div>' +
+                        '</div></td>';
+                    document.querySelector('#submittedTable tbody').appendChild(emptyRow);
+                } else {
+                    emptyRow.style.display = '';
+                    emptyRow.querySelector('.empty-title').textContent = 'No matching submitted cases';
+                    emptyRow.querySelector('.empty-subtitle').textContent = 'Try adjusting your search';
+                    var iconWrap = emptyRow.querySelector('.empty-icon-wrap');
+                    if (iconWrap) iconWrap.innerHTML = '<i data-lucide="search-x"></i>';
+                }
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } else {
+                if (emptyRow) {
+                    emptyRow.style.display = 'none';
+                }
+            }
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function(){
