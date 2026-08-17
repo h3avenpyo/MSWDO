@@ -21,7 +21,6 @@ class FamilyMember extends Model
     ];
 
     protected $casts = [
-        'monthly_income' => 'decimal:2',
         'is_dependent' => 'boolean',
     ];
 

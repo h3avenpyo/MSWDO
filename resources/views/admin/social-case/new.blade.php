@@ -40,7 +40,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     <ul class="sidebar-menu">
         <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
         <li><a href="/admin/social-case/new" class="active"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>New case</span></a></li>
-        @if((string) session('admin_user_role') !== 'eligibility_checker')
+        @if((string) session('admin_user_role') === 'eligibility_checker')
+        <li><a href="#" onclick="return false" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for eligibility checker accounts"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
+        @else
         <li><a href="/admin/social-case/submitted"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
         @endif
         <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i><span>All cases</span></a></li>
@@ -125,34 +127,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
                 <!-- Search Results -->
                 <div id="searchResults" class="search-results" style="display:none;"></div>
-            </div>
-
-            <!-- Client Summary (shown after selection) -->
-            <div id="clientSummary" class="client-summary" style="display:none;">
-                <div class="client-summary-header">
-                    <div>
-                        <div class="client-name" id="clientNameDisplay">Juan Dela Cruz</div>
-                        <div style="font-size:12px;color:var(--text-muted)">Selected Client</div>
-                    </div>
-                </div>
-                <div class="client-info-grid">
-                    <div class="client-info-item">
-                        <span class="client-info-label">Age</span>
-                        <span class="client-info-value" id="clientAge">52</span>
-                    </div>
-                    <div class="client-info-item">
-                        <span class="client-info-label">Sex</span>
-                        <span class="client-info-value" id="clientSex">Male</span>
-                    </div>
-                    <div class="client-info-item">
-                        <span class="client-info-label">Barangay</span>
-                        <span class="client-info-value" id="clientBarangay">Biluso</span>
-                    </div>
-                    <div class="client-info-item">
-                        <span class="client-info-label">Last Case Study</span>
-                        <span class="client-info-value" id="clientLastCase">None</span>
-                    </div>
-                </div>
             </div>
 
             <!-- Eligibility Status -->

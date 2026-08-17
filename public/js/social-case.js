@@ -668,7 +668,7 @@ async function submitForEncoding(){
         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
         'Accept': 'application/json'
       },
-      body: JSON.stringify({client_name: name})
+      body: JSON.stringify({client_name: name, override: !!view.eligOverride})
     });
 
     const data = await response.json();
@@ -691,13 +691,11 @@ async function submitForEncoding(){
 
     await loadCases();
 
-    setView({eligMatch: null, selectedClient: null, eligClientName: '', checkerResult: null});
+    setView({eligMatch: null, selectedClient: null, eligClientName: '', checkerResult: null, eligOverride: false});
     const searchInput = document.getElementById('elig-name');
     if(searchInput) searchInput.value = '';
     const results = document.getElementById('searchResults');
     if(results) results.style.display = 'none';
-    const summary = document.getElementById('clientSummary');
-    if(summary) summary.style.display = 'none';
     const status = document.getElementById('eligibilityStatus');
     if(status) status.innerHTML = '';
 
@@ -1115,29 +1113,38 @@ async function loadDashboard(){
   }
 }
 
+function dashboardCases(){
+  return cases.filter(c => {
+    const isDone = c.status === 'Printed' || c.status === 'Released';
+    const hasPurpose = c.purpose != null && String(c.purpose).trim() !== '' && c.purpose !== 'null';
+    return isDone && hasPurpose;
+  });
+}
+
 function renderDashboard(){
+  const done = dashboardCases();
   const byStatus = {};
-  STATUSES.forEach(s=> byStatus[s] = cases.filter(c=>c.status===s).length);
-  const nearingEligible = cases.filter(c=>{
+  STATUSES.forEach(s=> byStatus[s] = done.filter(c=>c.status===s).length);
+  const nearingEligible = done.filter(c=>{
     if(!c.releasedDate) return false;
     const e = eligibilityInfo(c);
     return !e.eligible && e.daysLeft <= 30;
   }).sort((a,b)=> eligibilityInfo(a).daysLeft - eligibilityInfo(b).daysLeft);
 
-  const recent = [...cases].sort((a,b)=> new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0,6);
+  const recent = [...done].sort((a,b)=> new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0,6);
 
   // Calculate KPIs
-  const uniqueClients = new Set(cases.map(c => c.client.name.toLowerCase())).size;
+  const uniqueClients = new Set(done.map(c => c.client.name.toLowerCase())).size;
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
-  const casesThisMonth = cases.filter(c => {
+  const casesThisMonth = done.filter(c => {
     const caseDate = new Date(c.createdAt);
     return caseDate.getMonth() === currentMonth && caseDate.getFullYear() === currentYear;
   }).length;
   const today = todayISO();
-  const releasedToday = cases.filter(c => c.status === 'Released' && c.releasedDate === today).length;
-  const totalPrintedOrReleased = cases.filter(c => c.status === 'Released' || c.status === 'Printed' || c.releasedDate).length;
-  const successRate = cases.length > 0 ? Math.round((totalPrintedOrReleased / cases.length) * 100) : 0;
+  const releasedToday = done.filter(c => c.status === 'Released' && c.releasedDate === today).length;
+  const totalPrintedOrReleased = done.length;
+  const successRate = done.length > 0 ? 100 : 0;
 
   // Update KPIs with null checks
   const updateElement = (id, value) => {
@@ -1255,7 +1262,18 @@ async function renderActivityFeed(recent = null){
     'released': {icon:'send', bg:'var(--success-bg)', color:'var(--success)'}
   };
   
-  container.innerHTML = activities.slice(0,10).map(a=>{
+  // Only show activities after a case has been printed/released
+  const doneActivities = activities.filter(a => a.action === 'printed' || a.action === 'released');
+  
+  if(!doneActivities.length){
+    container.innerHTML = `<div style="text-align:center;padding:32px 20px;color:var(--text-muted)">
+      <i data-lucide="inbox" style="width:32px;height:32px;margin:0 auto 8px;display:block;color:#D1D5DB"></i>
+      <span style="font-size:13px">No recent activities</span>
+    </div>`;
+    return;
+  }
+  
+  container.innerHTML = doneActivities.slice(0,10).map(a=>{
     const cfg = actionConfig[a.action] || actionConfig['updated'];
     const timeAgo = getTimeAgo(a.timestamp);
     const caseInfo = a.caseInfo ? `<strong>${escapeHtml(a.caseInfo.clientName || 'Unknown')}</strong> (${escapeHtml(a.caseInfo.controlNo || 'N/A')})` : '';
@@ -1342,7 +1360,7 @@ function initCharts(){
   const assistanceCtx = document.getElementById('assistanceChart');
   if(assistanceCtx){
     const purposeCounts = {};
-    cases.forEach(c => {
+    dashboardCases().forEach(c => {
       purposeCounts[c.purpose] = (purposeCounts[c.purpose] || 0) + 1;
     });
     const labels = Object.keys(purposeCounts);
@@ -1509,14 +1527,9 @@ function renderNewCase(){
     renderSearchResults(view.eligClientName);
   }
   
-  // Render client summary if selected
+  // Render eligibility status if selected
   if(view.selectedClient){
-    renderClientSummary(view.selectedClient);
-  }
-  
-  // Render eligibility status if checked
-  if(view.eligMatch !== undefined && view.eligMatch !== null){
-    renderEligibilityStatus(view.eligMatch);
+    renderEligibilityStatus(view.eligMatch !== undefined && view.eligMatch !== null ? view.eligMatch : view.selectedClient);
   }
 }
 
@@ -1650,10 +1663,6 @@ function selectClient(caseId){
   const searchResults = document.getElementById('searchResults');
   if(searchResults) searchResults.style.display = 'none';
   
-  // Hide client summary
-  const clientSummary = document.getElementById('clientSummary');
-  if(clientSummary) clientSummary.style.display = 'none';
-  
   // Check eligibility for this client name
   const eligibility = checkEligibility(c.client.name);
   
@@ -1667,22 +1676,6 @@ function selectClient(caseId){
   renderEligibilityStatus(match);
   
   lucide.createIcons();
-}
-
-function renderClientSummary(client){
-  const container = document.getElementById('clientSummary');
-  if(!container) return;
-  
-  container.style.display = 'block';
-  
-  // Get name for display
-  const name = client.client.name || 'Unknown';
-  
-  document.getElementById('clientNameDisplay').textContent = name;
-  document.getElementById('clientAge').textContent = client.client.age || '—';
-  document.getElementById('clientSex').textContent = client.client.sex || '—';
-  document.getElementById('clientBarangay').textContent = client.client.address || client.client.barangay || '—';
-  document.getElementById('clientLastCase').textContent = fmtDate(client.releasedDate || client.createdAt) || '—';
 }
 
 function renderEligibilityStatus(match){
@@ -1707,21 +1700,13 @@ function renderEligibilityStatus(match){
     `;
     
     // Update last case study in summary
-    const lastCaseEl = document.getElementById('clientLastCase');
-    if(lastCaseEl && match){
-      lastCaseEl.textContent = fmtDate(match.releasedDate);
-    }
+    // (client summary removed - no longer shown)
   }else{
     // Not eligible - Show SweetAlert popup
-    const clientNameEl = document.getElementById('clientNameDisplay');
-    const clientAgeEl = document.getElementById('clientAge');
-    const clientSexEl = document.getElementById('clientSex');
-    const clientBarangayEl = document.getElementById('clientBarangay');
-    
-    const clientName = clientNameEl ? clientNameEl.textContent : 'Unknown';
-    const clientAge = clientAgeEl ? clientAgeEl.textContent : '-';
-    const clientSex = clientSexEl ? clientSexEl.textContent : '-';
-    const clientBarangay = clientBarangayEl ? clientBarangayEl.textContent : '-';
+    const clientName = (match && (match.client?.name || view.eligClientName)) || 'Unknown';
+    const clientAge = match?.client?.age || '-';
+    const clientSex = match?.client?.sex || match?.client?.gender || '-';
+    const clientBarangay = match?.client?.address || match?.client?.barangay || '-';
     
     Swal.fire({
       title: `<strong>${clientName}</strong>`,
@@ -1822,12 +1807,6 @@ function renderEligibilityStatus(match){
       }
     });
     
-    // Update last case study in summary
-    const lastCaseEl = document.getElementById('clientLastCase');
-    if(lastCaseEl){
-      lastCaseEl.textContent = fmtDate(match.releasedDate);
-    }
-    
     // Clear the container since we're using SweetAlert
     container.innerHTML = '';
   }
@@ -1869,6 +1848,11 @@ async function startEligibilityCheck(){
   await loadCases();
   
   view.eligClientName = name;
+
+  // Start fresh for each search: drop any previously selected client / match result
+  view.selectedClient = null;
+  view.eligMatch = null;
+  view.checkerResult = null;
 
   if(IS_PURE_ELIGIBILITY_CHECKER){
     await runServerEligibilityCheck(name);
@@ -1918,25 +1902,9 @@ async function runServerEligibilityCheck(name){
 }
 
 function renderCheckerEligibilityResult(data){
-  const summary = document.getElementById('clientSummary');
   const status = document.getElementById('eligibilityStatus');
   const results = document.getElementById('searchResults');
   if(results) results.style.display = 'none';
-
-  const client = data.client;
-
-  if(summary){
-    if(client){
-      summary.style.display = 'block';
-      document.getElementById('clientNameDisplay').textContent = client.full_name || client.name || view.eligClientName;
-      document.getElementById('clientAge').textContent = client.age || '—';
-      document.getElementById('clientSex').textContent = client.sex || client.gender || '—';
-      document.getElementById('clientBarangay').textContent = client.address || client.barangay || '—';
-      document.getElementById('clientLastCase').textContent = data.last_assistance_date ? fmtDate(data.last_assistance_date) : 'None';
-    } else {
-      summary.style.display = 'none';
-    }
-  }
 
   if(!status) return;
 
@@ -1977,7 +1945,24 @@ function renderCheckerEligibilityResult(data){
             <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> Search Again
           </button>
         </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:14px;background:${view.eligOverride ? '#FEF3C7' : '#FFFFFF'};border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;">
+          <input type="checkbox" id="overrideActive" ${view.eligOverride ? 'checked' : ''} style="width:16px;height:16px;cursor:pointer;">
+          <label for="overrideActive" style="font-size:13px;color:#374151;cursor:pointer;margin:0">Override and forward anyway (requires approval)</label>
+        </div>
+        <button class="btn primary" id="overrideSubmitBtn" style="margin-top:12px;width:100%;justify-content:center" ${view.eligOverride ? '' : 'disabled'} onclick="submitForEncoding()">
+          <i data-lucide="send" style="width:16px;height:16px"></i> Submit for Case Encoding (Override)
+        </button>
       </div>`;
+
+    const overrideCheck = document.getElementById('overrideActive');
+    const overrideSubmitBtn = document.getElementById('overrideSubmitBtn');
+    if(overrideCheck && overrideSubmitBtn){
+      overrideCheck.addEventListener('change', (e) => {
+        setView({eligOverride: e.target.checked});
+        overrideSubmitBtn.disabled = !e.target.checked;
+        overrideSubmitBtn.style.opacity = e.target.checked ? '1' : '0.5';
+      });
+    }
   } else {
     status.innerHTML = `
       <div class="eligibility-card eligible">
@@ -1998,8 +1983,6 @@ function resetEligibilityCheck(){
   if(searchInput) searchInput.value = '';
   const results = document.getElementById('searchResults');
   if(results) results.style.display = 'none';
-  const summary = document.getElementById('clientSummary');
-  if(summary) summary.style.display = 'none';
   const status = document.getElementById('eligibilityStatus');
   if(status) status.innerHTML = '';
 }
@@ -2018,6 +2001,12 @@ function proceedWithNewClient(clientName){
 window.proceedWithNewClient = proceedWithNewClient;
 
 /* ---------------- Rendering: Intake form ---------------- */
+function editCaseFromDetail(caseId){
+  sessionStorage.setItem('intake_caseId', caseId);
+  sessionStorage.setItem('intake_clientName', getCase(caseId)?.client?.name || '');
+  window.location.href = `/admin/social-case/intake?caseId=${encodeURIComponent(caseId)}`;
+}
+
 async function loadIntakeForm(){
   await loadCases();
   const savedName = sessionStorage.getItem('intake_clientName') || '';
@@ -2027,8 +2016,88 @@ async function loadIntakeForm(){
   sessionStorage.removeItem('intake_caseId');
   draftIntake = blankIntake(savedName);
   draftIntake.caseId = caseId;
+  if(caseId){
+    const existing = getCase(caseId);
+    if(existing){
+      draftIntake = caseToIntake(existing);
+    } else {
+      try {
+        const response = await fetch(`/admin/social-case/api/cases/${caseId}`);
+        if(response.ok){
+          const caseData = await response.json();
+          draftIntake = caseToIntake(convertKeys(caseData, snakeToCamel));
+        }
+      } catch(e){
+        console.error('Failed to load case for intake:', e);
+      }
+    }
+  }
   renderIntakeForm();
   lucide.createIcons();
+}
+
+function caseToIntake(c){
+  const today = todayISO();
+  const client = c.client || {};
+  const interview = c.interview || {};
+  const signers = c.signers || {};
+  const agencies = (c.agencies && c.agencies.length ? c.agencies : (c.submittedTo ? String(c.submittedTo).split(',').map(s => s.trim()).filter(Boolean) : []));
+  return {
+    id: c.id || uid(),
+    caseId: c.id,
+    status: c.status || 'Draft',
+    createdAt: c.createdAt || today,
+    updatedAt: c.updatedAt || today,
+    controlNo: c.controlNo || c.caseNumber || generateControlNo(today),
+    client: {
+      name: client.name || client.fullName || client.full_name || '',
+      age: client.age || '',
+      sex: client.sex || client.gender || '',
+      address: client.address || client.barangay || '',
+      birthdate: client.birthdate ? String(client.birthdate).slice(0, 10) : '',
+      birthplace: client.birthplace || '',
+      religion: client.religion || '',
+      education: client.education || '',
+      civilStatus: client.civilStatus || client.civil_status || '',
+      occupation: client.occupation || '',
+      income: client.income || '',
+      contact: client.contact || client.contactNumber || client.contact_number || ''
+    },
+    household: (() => {
+      const rows = (c.familyMembers || c.household || []).filter(m => m && (m.fullName || m.full_name || m.name)).map(m => ({
+        name: m.fullName || m.full_name || m.name || '',
+        relationship: m.relationship || '',
+        age: m.age || '',
+        education: m.education || '',
+        occupation: m.occupation || '',
+        income: m.monthlyIncome || m.income || ''
+      }));
+      if(rows.length === 0){
+        rows.push({name:'', relationship:'', age:'', education:'', occupation:'', income:''});
+      }
+      return rows;
+    })(),
+    interview: {
+      reportDate: c.interviewDate || interview.reportDate || interview.report_date || today,
+      problemPresented: interview.interviewSituation || interview.interview_situation || interview.problemPresented || c.summary || '',
+      homeCondition: interview.interviewHousehold || interview.interview_household || interview.homeCondition || '',
+      socioEconomic: interview.interviewNotes || interview.interview_notes || interview.socioEconomic || '',
+      evaluation: interview.socialWorkerAssessment || interview.social_worker_assessment || interview.evaluation || '',
+      recommendation: interview.recommendation || ''
+    },
+    signers: {
+      preparedByName: signers.preparedByName || c.officer?.name || '',
+      preparedByTitle: signers.preparedByTitle || 'MSWDO Staff',
+      notedByName: signers.notedByName || c.encoder?.name || '',
+      notedByTitle: signers.notedByTitle || 'MSWDO Head',
+      notedByLicense: signers.notedByLicense || ''
+    },
+    purpose: c.purpose || PURPOSES[0],
+    agencies: agencies,
+    requirements: DEFAULT_REQUIREMENTS.map(r => ({name: r, submitted: false})),
+    statusHistory: c.statusHistory || [{status: c.status || 'Draft', date: today}],
+    releasedDate: c.releasedDate || null
+  };
 }
 
 function updateClientAge(){
@@ -2535,8 +2604,10 @@ function renderCaseList(){
   const barangayFilter = filterState.barangay || "All";
 
   // Filter cases (exclude archived – those live on the archive page)
+  // Only show cases the encoder has picked up: encoded at intake, or already printed
   let filtered = cases.filter(c => {
     if(c.status === 'Archived') return false;
+    if(c.encodedBy == null && c.status !== 'Printed') return false;
     const matchesSearch = !searchQuery || 
       (c.client?.name || '').toLowerCase().includes(searchQuery) || 
       c.controlNo.toLowerCase().includes(searchQuery) ||
@@ -2759,6 +2830,17 @@ function removePrintArtifacts(){
   if(pc) pc.remove();
 }
 
+function reloadAfterPrint(){
+  let done = false;
+  const reload = () => {
+    if(done) return;
+    done = true;
+    setTimeout(() => location.reload(), 500);
+  };
+  window.addEventListener('afterprint', reload);
+  window.addEventListener('focus', reload, { once: true });
+}
+
 async function printDocument(){
   const c = getCase(view.caseId);
   if(!c) return;
@@ -2767,8 +2849,6 @@ async function printDocument(){
   // container/style are intentionally left mounted after printing (see below),
   // so every print call must start clean.
   removePrintArtifacts();
-  
-  // Get the list of agencies from the case
   const agencies = c.agencies || (c.submittedTo ? c.submittedTo.split(',').map(s => s.trim()).filter(Boolean) : []);
   
   if(agencies.length === 0) {
@@ -2776,6 +2856,7 @@ async function printDocument(){
     // Nothing is mutated here, so no cleanup or reload is needed.
     await markAsPrinted(view.caseId);
     window.print();
+    reloadAfterPrint();
     return;
   }
   
@@ -2981,6 +3062,7 @@ async function printDocument(){
     // display:none on screen and only styled under @media print, so it is invisible
     // on the page, and the next printDocument() call clears it.
     window.print();
+    reloadAfterPrint();
 
   } catch(error) {
     console.error('Error generating print document:', error);
@@ -3601,6 +3683,12 @@ function renderCaseDetail(){
             <button class="header-btn primary" onclick="reprintCase('${c.id}')">
               <i data-lucide="printer" style="width:16px;height:16px;"></i>
               Reprint
+            </button>
+          ` : ''}
+          ${CAN_ENCODE ? `
+            <button class="header-btn" style="background:#1A237E;color:white;border-color:#1A237E;" onclick="editCaseFromDetail('${c.id}')">
+              <i data-lucide="edit" style="width:16px;height:16px;"></i>
+              Edit
             </button>
           ` : ''}
           <button class="header-btn" style="background:#059669;color:white;border-color:#059669;" onclick="printDocument()">

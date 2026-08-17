@@ -187,9 +187,11 @@ class SocialCaseController extends Controller
     {
         $request->validate([
             'client_name' => 'required|string|max:255',
+            'override' => 'sometimes|boolean',
         ]);
 
         $name = trim($request->input('client_name'));
+        $override = $request->boolean('override');
         $clientId = $this->findOrCreateClient(['name' => $name]);
         $client = \App\Models\Client::find($clientId);
 
@@ -207,7 +209,7 @@ class SocialCaseController extends Controller
             ->orderByDesc('created_at')
             ->first();
 
-        if ($activeCase) {
+        if ($activeCase && ! $override) {
             return response()->json([
                 'eligible' => true,
                 'existing_case' => [
@@ -217,7 +219,7 @@ class SocialCaseController extends Controller
                     'eligibility_status' => $activeCase->eligibility_status,
                 ],
                 'message' => 'Client already has an active case record.',
-            ]);
+            ], 409);
         }
 
         $case = DB::transaction(function () use ($client) {
@@ -363,7 +365,7 @@ class SocialCaseController extends Controller
                     'age'                  => is_numeric($member['age'] ?? null) ? (int) $member['age'] : null,
                     'education'            => $member['education'] ?? null,
                     'occupation'           => $member['occupation'] ?? null,
-                    'monthly_income'       => is_numeric($member['income'] ?? null) ? $member['income'] : null,
+                    'monthly_income'       => $member['income'] ?? null,
                 ]);
             }
 
