@@ -511,6 +511,8 @@
                                 <option value="" disabled selected>▼ Select Role / Assignment</option>
                                 <option value="Senior Citizen officer" {{ old('role') == 'Senior Citizen officer' ? 'selected' : '' }}>Senior Citizen Officer</option>
                                 <option value="Financial assistance officer" {{ old('role') == 'Financial assistance officer' ? 'selected' : '' }}>Financial Assistance Officer</option>
+                                <option value="financialstep1" {{ old('role') == 'financialstep1' ? 'selected' : '' }}>Financial Assistance Step 1</option>
+                                <option value="financialstep2" {{ old('role') == 'financialstep2' ? 'selected' : '' }}>Financial Assistance Step 2</option>
                                 <option value="social_worker" {{ old('role') == 'social_worker' ? 'selected' : '' }}>Social Worker</option>
                                 <option value="encoder" {{ old('role') == 'encoder' ? 'selected' : '' }}>Encoder</option>
                                 <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Staff</option>

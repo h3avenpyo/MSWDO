@@ -54,8 +54,32 @@ class DashboardController extends Controller
         return view('admin.dashboard', $data);
     }
 
-    public function financial()
+    public function financialDashboard()
     {
-        return view('admin.financial');
+        $totalIntakes = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class) 
+            ? \App\Models\SocialCase\BeneficiaryIntake::count() 
+            : 0;
+        $recentIntakes = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class) 
+            ? \App\Models\SocialCase\BeneficiaryIntake::latest()->take(5)->get() 
+            : collect();
+
+        return view('admin.financial.financial-dashboard', compact('totalIntakes', 'recentIntakes'));
+    }
+
+    public function financialStep1()
+    {
+        $totalIntakes = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class) 
+            ? \App\Models\SocialCase\BeneficiaryIntake::count() 
+            : 0;
+        $recentIntakes = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class) 
+            ? \App\Models\SocialCase\BeneficiaryIntake::latest()->paginate(10)
+            : collect();
+
+        return view('admin.financial.financialstep1', compact('totalIntakes', 'recentIntakes'));
+    }
+
+    public function financialStep2()
+    {
+        return view('admin.financial.financialstep2');
     }
 }

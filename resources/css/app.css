@@ -8,6 +8,20 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Shadows (subtle only) */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.09), 0 4px 8px rgba(0, 0, 0, 0.05);
+
+    /* Border radius scale */
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 18px;
+    --radius-full: 9999px;
 }
 
 :root {
@@ -19,6 +33,33 @@
     --secondary-text: #6B7280;
     --border-color: #E5E7EB;
     --card-white: #FFFFFF;
+
+    /* Design Tokens from UI/UX Design Policy */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.09), 0 4px 8px rgba(0, 0, 0, 0.05);
+
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 18px;
+    --radius-full: 9999px;
+
+    --transition-fast: 100ms ease;
+    --transition-base: 180ms ease;
+    --transition-slow: 320ms ease;
+}
+
+button, a, [role="button"] {
+    transition:
+      color          var(--transition-base, 180ms ease),
+      background-color var(--transition-base, 180ms ease),
+      border-color   var(--transition-base, 180ms ease),
+      box-shadow     var(--transition-base, 180ms ease),
+      transform      var(--transition-base, 180ms ease),
+      opacity        var(--transition-base, 180ms ease);
 }
 
 body {
@@ -92,3 +133,39 @@ section {
     transform: translateY(-6px);
     box-shadow: 0 20px 45px -20px rgba(21, 61, 107, 0.25);
 }
+
+/* Glassmorphism utility for floating badges */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Custom Float Animations for Background Shapes & Badges */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(-50%) translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-50%) translateY(-15px) rotate(2deg);
+    }
+}
+
+@keyframes float-delayed {
+    0%, 100% {
+        transform: translateY(-50%) translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-50%) translateY(15px) rotate(-2deg);
+    }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+    animation: float-delayed 7s ease-in-out infinite;
+}
+

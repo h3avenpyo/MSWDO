@@ -7,7 +7,9 @@ use App\Http\Controllers\Admin\Auth\AuthController;
 use App\Http\Controllers\Admin\Auth\EmailCodeController;
 use App\Http\Controllers\Admin\Auth\OfficerController;
 use App\Http\Controllers\Admin\SocialCase\SocialCaseController;
-use App\Http\Controllers\Admin\SocialCase\BeneficiaryIntakeController;
+use App\Http\Controllers\Admin\SocialCase\SocialCaseIntakeController;
+use App\Http\Controllers\Admin\Financial\FinancialDashboardController;
+use App\Http\Controllers\Admin\Financial\FinancialIntakeController;
 use App\Http\Controllers\Admin\Senior\SeniorController;
 use App\Http\Controllers\Admin\Senior\BirthdayController;
 use App\Http\Controllers\Admin\Senior\BirthdayPayoutController;
@@ -25,6 +27,8 @@ Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.log
 Route::post('/admin/clear-welcome', [AuthController::class, 'clearWelcome'])->name('admin.clear-welcome');
 
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+
+// Social Case Module Routes
 Route::middleware(['admin.auth'])->group(function () {
     Route::prefix('admin/social-case')->name('admin.social-case.')->group(function () {
         // Shared routes (both eligibility checker and case encoder)
@@ -68,7 +72,14 @@ Route::middleware(['admin.auth'])->group(function () {
 
 Route::get('/admin/add-officers', [OfficerController::class, 'addOfficers'])->name('admin.add-officers');
 Route::post('/admin/add-officers', [OfficerController::class, 'storeOfficer'])->name('admin.officers.store');
-Route::get('/admin/financial', [DashboardController::class, 'financial'])->name('admin.financial');
+
+// Financial Module Routes
+Route::get('/admin/financial/dashboard', [FinancialDashboardController::class, 'financialDashboard'])->name('admin.financial.dashboard');
+Route::get('/admin/financial/financialstep1', [FinancialDashboardController::class, 'financialStep1'])->name('admin.financial.financialstep1');
+Route::get('/admin/financial/financialstep2', [FinancialDashboardController::class, 'financialStep2'])->name('admin.financial.financialstep2');
+Route::get('/admin/financial/financialstep1statistics', [FinancialDashboardController::class, 'statistics'])->name('admin.financial.financialstep1statistics');
+
+// Senior Citizens Module Routes
 Route::get('/admin/senior', [SeniorController::class, 'senior'])->name('admin.senior');
 Route::post('/admin/senior/clear-activities', [SeniorController::class, 'clearRecentActivities'])->name('admin.senior.clear-activities');
 Route::get('/admin/senior/registration', [SeniorController::class, 'seniorRegistration'])->name('admin.senior.registration');
@@ -105,12 +116,18 @@ Route::get('/admin/senior/export-pdf', [SeniorController::class, 'exportSeniorsP
 Route::get('/admin/multi-database', [MultiDatabaseDemoController::class, 'index'])->name('admin.multi-database.index');
 Route::post('/admin/multi-database', [MultiDatabaseDemoController::class, 'store'])->name('admin.multi-database.store');
 
-// Beneficiary Intake Routes (admin session required)
+// Financial Assistance Intake Routes (admin session required)
 Route::middleware(['admin.auth'])->group(function () {
     Route::prefix('admin/beneficiary-intake')->name('admin.beneficiary-intake.')->group(function () {
-        Route::get('/', [BeneficiaryIntakeController::class, 'index'])->name('index');
-        Route::get('/create/{client?}', [BeneficiaryIntakeController::class, 'create'])->name('create');
-        Route::post('/', [BeneficiaryIntakeController::class, 'store'])->name('store');
-        Route::get('/{intake}', [BeneficiaryIntakeController::class, 'show'])->name('show');
+        Route::get('/', [FinancialIntakeController::class, 'index'])->name('index');
+        Route::get('/create/{client?}', [FinancialIntakeController::class, 'create'])->name('create');
+        Route::post('/', [FinancialIntakeController::class, 'store'])->name('store');
+        Route::post('/check-duplicate', [FinancialIntakeController::class, 'checkDuplicate'])->name('check-duplicate');
+        Route::get('/transmittal', [FinancialIntakeController::class, 'transmittalReport'])->name('transmittal');
+        Route::post('/transmittal', [FinancialIntakeController::class, 'transmittalReport'])->name('transmittal.generate');
+        Route::get('/{intake}', [FinancialIntakeController::class, 'show'])->name('show');
+        Route::get('/{intake}/edit', [FinancialIntakeController::class, 'edit'])->name('edit');
+        Route::put('/{intake}', [FinancialIntakeController::class, 'update'])->name('update');
+        Route::delete('/{intake}', [FinancialIntakeController::class, 'destroy'])->name('destroy');
     });
 });

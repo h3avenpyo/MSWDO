@@ -3,9 +3,10 @@
 namespace App\Http\Requests\SocialCase;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 
-class StoreBeneficiaryIntakeRequest extends FormRequest
+class UpdateBeneficiaryIntakeRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -40,9 +41,11 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
 
     public function rules(): array
     {
+        $intakeId = $this->route('intake')?->id ?? $this->route('intake');
+
         return [
             'client_id' => ['nullable', 'integer', 'exists:clients,id'],
-            'control_number' => ['required', 'string', 'max:50', 'unique:beneficiary_intakes,control_number'],
+            'control_number' => ['required', 'string', 'max:50', Rule::unique('beneficiary_intakes', 'control_number')->ignore($intakeId)],
             'client_type' => ['required', 'in:New,Returning'],
             'date_processed' => ['required', 'date'],
             'time_start' => ['nullable', 'string', 'max:20'],

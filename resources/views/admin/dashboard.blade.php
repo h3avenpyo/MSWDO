@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +22,12 @@
             --border: #E5E7EB;
         }
 
-        *, *::before, *::after { box-sizing: border-box; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
         body {
             background-color: var(--background);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -35,12 +41,15 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 999;
             -webkit-backdrop-filter: blur(2px);
             backdrop-filter: blur(2px);
         }
-        .sidebar-overlay.active { display: block; }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
 
         /* ── Sidebar ── */
         .sidebar {
@@ -48,17 +57,22 @@
             width: 260px;
             min-height: 100vh;
             position: fixed;
-            left: 0; top: 0;
+            left: 0;
+            top: 0;
             z-index: 1000;
             display: flex;
             flex-direction: column;
             transition: transform .3s ease;
             transform: translateX(-100%);
         }
-        .sidebar.show { transform: translateX(0); }
-        .sidebar-brand {
+
+        <<<<<<< HEAD=======.sidebar.show {
+            transform: translateX(0);
+        }
+
+        >>>>>>>5c79a03401b44599faa0ee97242d93d2ff55b903 .sidebar-brand {
             padding: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,.1);
+            border-bottom: 1px solid rgba(255, 255, 255, .1);
             color: #fff;
             font-weight: 700;
             font-size: 1.1rem;
@@ -66,16 +80,25 @@
             align-items: center;
             gap: .65rem;
         }
-        .sidebar-brand i { font-size: 1.3rem; color: var(--accent); }
+
+        .sidebar-brand i {
+            font-size: 1.3rem;
+            color: var(--accent);
+        }
+
         .sidebar-menu {
             list-style: none;
             margin: 0;
             padding: 1rem 0;
             flex: 1;
         }
-        .sidebar-menu li { margin-bottom: .2rem; }
+
+        .sidebar-menu li {
+            margin-bottom: .2rem;
+        }
+
         .sidebar-menu a {
-            color: rgba(255,255,255,.75);
+            color: rgba(255, 255, 255, .75);
             padding: .75rem 1.5rem;
             display: flex;
             align-items: center;
@@ -85,9 +108,23 @@
             border-left: 3px solid transparent;
             transition: all .2s ease;
         }
-        .sidebar-menu a:hover { background: rgba(255,255,255,.1); color: var(--accent); }
-        .sidebar-menu a.active { background: rgba(255,255,255,.1); color: var(--accent); border-left-color: var(--accent); }
-        .sidebar-menu a i { width: 20px; text-align: center; font-size: .95rem; }
+
+        .sidebar-menu a:hover {
+            background: rgba(255, 255, 255, .1);
+            color: var(--accent);
+        }
+
+        .sidebar-menu a.active {
+            background: rgba(255, 255, 255, .1);
+            color: var(--accent);
+            border-left-color: var(--accent);
+        }
+
+        .sidebar-menu a i {
+            width: 20px;
+            text-align: center;
+            font-size: .95rem;
+        }
 
         /* ── Main Content ── */
         .main-content {
@@ -126,11 +163,15 @@
             background-color: var(--cards);
             border: 1px solid var(--border);
             border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             margin-bottom: 1.5rem;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
         /* ── Stat Cards Grid ── */
         .stat-cards-grid {
@@ -139,13 +180,20 @@
             gap: 1.5rem;
             margin-bottom: 1.5rem;
         }
+
         .stat-card {
             padding: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
-        .stat-content { display: flex; flex-direction: column; justify-content: center; }
+
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
         .stat-icon {
             width: 56px;
             height: 56px;
@@ -156,21 +204,65 @@
             font-size: 1.4rem;
             flex-shrink: 0;
         }
-        .stat-icon.primary { background-color: rgba(37, 99, 235, 0.1); color: var(--primary); }
-        .stat-icon.warning { background-color: rgba(245, 158, 11, 0.1); color: var(--accent); }
-        .stat-icon.success { background-color: rgba(20, 184, 166, 0.1); color: var(--secondary); }
-        .stat-icon.info { background-color: rgba(37, 99, 235, 0.1); color: var(--primary); }
-        .stat-value { font-size: 2rem; font-weight: 700; margin: 0; line-height: 1; }
-        .stat-label { color: #6B7280; font-size: 0.875rem; margin: 0 0 0.5rem 0; font-weight: 500; }
-        .stat-change { font-size: 0.75rem; margin-top: 0.5rem; }
-        .stat-change.positive { color: var(--secondary); }
-        .stat-change.negative { color: var(--danger); }
+
+        .stat-icon.primary {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-icon.warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--accent);
+        }
+
+        .stat-icon.success {
+            background-color: rgba(20, 184, 166, 0.1);
+            color: var(--secondary);
+        }
+
+        .stat-icon.info {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: #6B7280;
+            font-size: 0.875rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 500;
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-change.positive {
+            color: var(--secondary);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
 
         /* ── Charts ── */
-        .chart-container { position: relative; height: 300px; }
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
 
         /* ── Table ── */
-        .table { margin-bottom: 0; }
+        .table {
+            margin-bottom: 0;
+        }
+
         .table th {
             background-color: var(--background);
             font-weight: 600;
@@ -179,32 +271,103 @@
             letter-spacing: 0.05em;
             padding: 1rem;
         }
-        .table td { padding: 1rem; vertical-align: middle; }
 
-        .badge { padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
-        .badge-high { background-color: rgba(220, 38, 38, 0.1); color: var(--danger); }
-        .badge-medium { background-color: rgba(245, 158, 11, 0.1); color: var(--accent); }
-        .badge-low { background-color: rgba(20, 184, 166, 0.1); color: var(--secondary); }
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-high {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: var(--danger);
+        }
+
+        .badge-medium {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--accent);
+        }
+
+        .badge-low {
+            background-color: rgba(20, 184, 166, 0.1);
+            color: var(--secondary);
+        }
 
         /* ── Activity ── */
-        .activity-item { display: flex; align-items: center; padding: 1rem; border-bottom: 1px solid #E5E7EB; }
-        .activity-item:last-child { border-bottom: none; }
-        .activity-avatar {
-            width: 40px; height: 40px; border-radius: 50%;
-            background-color: var(--primary); color: white;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 600; margin-right: 1rem; flex-shrink: 0;
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #E5E7EB;
         }
-        .activity-content h6 { margin: 0; font-size: 0.875rem; }
-        .activity-content p { margin: 0; color: #6B7280; font-size: 0.75rem; }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .activity-content h6 {
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        .activity-content p {
+            margin: 0;
+            color: #6B7280;
+            font-size: 0.75rem;
+        }
 
         /* ── Animations ── */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-in { animation: fadeIn 0.5s ease forwards; }
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-4 {
+            animation-delay: 0.4s;
+        }
 
         /* ══════════════════════════════════════════════
            RESPONSIVE BREAKPOINTS
@@ -212,46 +375,115 @@
 
         /* ── Small phones (0–479px) ── */
         @media (max-width: 479px) {
-            .stat-cards-grid { grid-template-columns: 1fr; }
-            .stat-card { flex-direction: column; text-align: center; gap: 0.75rem; }
-            .top-navbar h5 { font-size: 0.875rem; }
-            .reports-summary-grid { grid-template-columns: 1fr; }
-            .reports-actions { justify-content: center; }
+            .stat-cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.75rem;
+            }
+
+            .top-navbar h5 {
+                font-size: 0.875rem;
+            }
+
+            .reports-summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .reports-actions {
+                justify-content: center;
+            }
         }
+
+        <<<<<<< HEAD=======
 
         /* ── sm: Small tablets (768px+) ── */
         @media (min-width: 768px) {
-            .navbar-datetime { display: block; }
-            .stat-cards-grid { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
-            .stat-card { padding: 1.25rem; }
-            .card-body { padding: 1.25rem; }
-            .reports-summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .navbar-datetime {
+                display: block;
+            }
+
+            .stat-cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.25rem;
+            }
+
+            .stat-card {
+                padding: 1.25rem;
+            }
+
+            .card-body {
+                padding: 1.25rem;
+            }
+
+            .reports-summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         /* ── md: Large tablets (992px+) ── */
         @media (min-width: 992px) {
-            .stat-cards-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
-            .stat-card { padding: 1.5rem; }
-            .stat-value { font-size: 2rem; }
-            .reports-summary-grid { grid-template-columns: repeat(3, 1fr); }
-            .chart-container { height: 300px; }
+            .stat-cards-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.5rem;
+            }
+
+            .stat-card {
+                padding: 1.5rem;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .reports-summary-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .chart-container {
+                height: 300px;
+            }
         }
 
         /* ── lg: Desktops (1200px+) ── */
         @media (min-width: 1200px) {
-            .sidebar { transform: translateX(0); z-index: 1000; }
-            .sidebar.show { transform: translateX(0); }
-            .main-content { margin-left: 260px; width: calc(100% - 260px); }
-            .top-navbar { padding: 1rem 2rem; }
-            .navbar-title { font-size: 1.1rem; }
+            .sidebar {
+                transform: translateX(0);
+                z-index: 1000;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 260px;
+                width: calc(100% - 260px);
+            }
+
+            .top-navbar {
+                padding: 1rem 2rem;
+            }
+
+            .navbar-title {
+                font-size: 1.1rem;
+            }
         }
 
         /* ── Large Desktop (≥ 1536px) ── */
         @media (min-width: 1536px) {
-            .stat-cards-grid { gap: 2rem; }
+            .stat-cards-grid {
+                gap: 2rem;
+            }
         }
+
+        >>>>>>>5c79a03401b44599faa0ee97242d93d2ff55b903
     </style>
 </head>
+
 <body>
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
@@ -275,14 +507,16 @@
         <nav class="top-navbar">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
-                    <button class="btn btn-link d-lg-none d-xl-none me-3" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                    <button class="btn btn-link d-lg-none d-xl-none me-3" onclick="toggleSidebar()"
+                        aria-label="Toggle sidebar">
                         <i class="fas fa-bars"></i>
                     </button>
                     <h5 class="mb-0 me-4">Dashboard</h5>
                 </div>
                 <div class="d-flex align-items-center">
                     <div class="me-4 text-muted small navbar-datetime" id="currentDateTime"></div>
-                    <div class="activity-avatar" style="width: 35px; height: 35px; font-size: 0.875rem;">{{ strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
+                    <div class="activity-avatar" style="width: 35px; height: 35px; font-size: 0.875rem;">{{
+                        strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
                 </div>
             </div>
         </nav>
@@ -356,9 +590,9 @@
                                     <td class="d-none d-lg-table-cell">{{ $officer->phone ?? '-' }}</td>
                                     <td>
                                         @if($officer->status == 'active')
-                                            <span class="badge badge-low">Active</span>
+                                        <span class="badge badge-low">Active</span>
                                         @else
-                                            <span class="badge badge-high">Inactive</span>
+                                        <span class="badge badge-high">Inactive</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -403,7 +637,8 @@
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <div class="activity-avatar me-2">{{ substr($staff['name'], 0, 1) }}{{ substr($staff['name'], strpos($staff['name'], ' ') + 1, 1) }}</div>
+                                                <div class="activity-avatar me-2">{{ substr($staff['name'], 0, 1) }}{{
+                                                    substr($staff['name'], strpos($staff['name'], ' ') + 1, 1) }}</div>
                                                 <span>{{ $staff['name'] }}</span>
                                                 @if($staff['rate'] >= 92)
                                                 <span class="badge badge-high ms-2">Top</span>
@@ -430,12 +665,16 @@
                     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                         <h6 class="mb-0">Reports Summary</h6>
                         <div class="d-flex flex-wrap gap-2 reports-actions">
-                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-file-pdf me-1"></i> PDF</button>
-                            <button class="btn btn-sm btn-outline-success"><i class="fas fa-file-excel me-1"></i> Excel</button>
-                            <button class="btn btn-sm btn-primary"><i class="fas fa-chart-bar me-1"></i> Analytics</button>
+                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-file-pdf me-1"></i>
+                                PDF</button>
+                            <button class="btn btn-sm btn-outline-success"><i class="fas fa-file-excel me-1"></i>
+                                Excel</button>
+                            <button class="btn btn-sm btn-primary"><i class="fas fa-chart-bar me-1"></i>
+                                Analytics</button>
                         </div>
                     </div>
-                    <div class="reports-summary-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                    <div class="reports-summary-grid"
+                        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
                         <div class="p-3 bg-light rounded">
                             <small class="text-muted">Cases This Month</small>
                             <h4 class="mb-0">{{ $reportsSummary['casesThisMonth'] }}</h4>
@@ -507,7 +746,14 @@
 
         function updateDateTime() {
             var now = new Date();
-            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            var options = {
+                weekday: 'long'
+                , year: 'numeric'
+                , month: 'long'
+                , day: 'numeric'
+                , hour: '2-digit'
+                , minute: '2-digit'
+            };
             var el = document.getElementById('currentDateTime');
             if (el) el.textContent = now.toLocaleDateString('en-US', options);
         }
@@ -520,31 +766,41 @@
             var duration = 2000;
             var step = target / (duration / 16);
             var current = 0;
+
             function updateCounter() {
                 current += step;
-                if (current < target) { counter.textContent = Math.floor(current); requestAnimationFrame(updateCounter); }
-                else { counter.textContent = target; }
+                if (current < target) {
+                    counter.textContent = Math.floor(current);
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    counter.textContent = target;
+                }
             }
             updateCounter();
         });
 
         var caseCtx = document.getElementById('caseDistributionChart').getContext('2d');
         new Chart(caseCtx, {
-            type: 'pie',
-            data: {
-                labels: @json(array_keys($caseDistribution)),
-                datasets: [{
-                    data: @json(array_values($caseDistribution)),
-                    backgroundColor: ['#1A237E', '#D32F2F', '#FBC02D', '#1F2937', '#6B7280'],
-                    borderWidth: 0
+            type: 'pie'
+            , data: {
+                labels: @json(array_keys($caseDistribution))
+                , datasets: [{
+                    data: @json(array_values($caseDistribution))
+                    , backgroundColor: ['#1A237E', '#D32F2F', '#FBC02D', '#1F2937', '#6B7280']
+                    , borderWidth: 0
                 }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom' } }
+            }
+            , options: {
+                responsive: true
+                , maintainAspectRatio: false
+                , plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
             }
         });
+
     </script>
 
     <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
@@ -555,20 +811,24 @@
         function confirmLogout(event) {
             event.preventDefault();
             Swal.fire({
-                title: 'Are you sure?',
-                text: 'Do you really want to log out?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#1A237E',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, log out',
-                cancelButtonText: 'Cancel',
-                background: '#ffffff',
-                customClass: { popup: 'rounded-4 shadow-lg' }
+                title: 'Are you sure?'
+                , text: 'Do you really want to log out?'
+                , icon: 'warning'
+                , showCancelButton: true
+                , confirmButtonColor: '#1A237E'
+                , cancelButtonColor: '#d33'
+                , confirmButtonText: 'Yes, log out'
+                , cancelButtonText: 'Cancel'
+                , background: '#ffffff'
+                , customClass: {
+                    popup: 'rounded-4 shadow-lg'
+                }
             }).then(function(result) {
                 if (result.isConfirmed) document.getElementById('logout-form').submit();
             });
         }
+
     </script>
 </body>
+
 </html>
