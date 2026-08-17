@@ -108,7 +108,6 @@
         <li><a href="/admin/senior/birthdays" class="{{ ($active ?? '') === 'birthdays' ? 'active' : '' }}"><i data-lucide="cake" style="width:20px;height:20px"></i><span>Birthday Beneficiaries</span></a></li>
         <li><a href="/admin/senior/payouts-history" class="{{ ($active ?? '') === 'payouts' ? 'active' : '' }}"><i data-lucide="history" style="width:20px;height:20px"></i><span>Payout History</span></a></li>
         <li><a href="/admin/senior/statistics" class="{{ ($active ?? '') === 'statistics' ? 'active' : '' }}"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i><span>Statistics</span></a></li>
-        <li><a href="/admin/senior/reports" class="{{ ($active ?? '') === 'reports' ? 'active' : '' }}"><i data-lucide="file-text" style="width:20px;height:20px"></i><span>Reports</span></a></li>
         <li><a href="/admin/senior/archive" class="{{ ($active ?? '') === 'archive' ? 'active' : '' }}"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
         <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a></li>
     </ul>

@@ -5,8 +5,13 @@
     </div>
     <ul class="sidebar-menu">
         <li>
+            <a href="/admin/dashboard" class="{{ request()->is('admin/dashboard') ? 'active' : '' }}">
+                <i class="fas fa-home"></i> Main Dashboard
+            </a>
+        </li>
+        <li>
             <a href="/admin/financial/dashboard" class="{{ request()->is('admin/financial/dashboard') ? 'active' : '' }}">
-                <i class="fas fa-th-large"></i> Dashboard
+                <i class="fas fa-th-large"></i> Financial Dashboard
             </a>
         </li>
         <li>

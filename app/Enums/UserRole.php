@@ -18,8 +18,8 @@ enum UserRole: string
     {
         return match ($this) {
             self::Admin => 'Administrator',
-            self::SocialWorker => 'Social Worker',
-            self::EligibilityChecker => 'Eligibility Checker',
+            self::SocialWorker => 'Social Case Worker (Encoder)',
+            self::EligibilityChecker => 'Social Case Worker (Checker)',
             self::Encoder => 'Encoder',
             self::Staff => 'Staff',
             self::SeniorCitizenOfficer => 'Senior Citizen Officer',

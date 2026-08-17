@@ -513,7 +513,8 @@
                                 <option value="Financial assistance officer" {{ old('role') == 'Financial assistance officer' ? 'selected' : '' }}>Financial Assistance Officer</option>
                                 <option value="financialstep1" {{ old('role') == 'financialstep1' ? 'selected' : '' }}>Financial Assistance Step 1</option>
                                 <option value="financialstep2" {{ old('role') == 'financialstep2' ? 'selected' : '' }}>Financial Assistance Step 2</option>
-                                <option value="social_worker" {{ old('role') == 'social_worker' ? 'selected' : '' }}>Social Worker</option>
+                                <option value="eligibility_checker" {{ old('role') == 'eligibility_checker' ? 'selected' : '' }}>Social Case Worker (Checker)</option>
+                                <option value="social_worker" {{ old('role') == 'social_worker' ? 'selected' : '' }}>Social Case Worker (Encoder)</option>
                                 <option value="encoder" {{ old('role') == 'encoder' ? 'selected' : '' }}>Encoder</option>
                                 <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Staff</option>
                                 <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrator</option>

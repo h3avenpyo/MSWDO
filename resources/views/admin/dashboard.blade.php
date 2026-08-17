@@ -1,834 +1,359 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MSWDO Admin Dashboard</title>
-    @vite(['resources/css/admin-compat.css'])
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        :root {
-            --primary: #1A237E;
-            --primary-dark: #121858;
-            --secondary: #6B7280;
-            --accent: #FBC02D;
-            --danger: #D32F2F;
-            --background: #F8FAFC;
-            --cards: #FFFFFF;
-            --text: #1F2937;
-            --sidebar-bg: #1A237E;
-            --border: #E5E7EB;
-        }
-
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--background);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-        }
-
-        /* ── Sidebar Overlay ── */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            -webkit-backdrop-filter: blur(2px);
-            backdrop-filter: blur(2px);
-        }
-
-        .sidebar-overlay.active {
-            display: block;
-        }
-
-        /* ── Sidebar ── */
-        .sidebar {
-            background: var(--sidebar-bg);
-            width: 260px;
-            min-height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transition: transform .3s ease;
-            transform: translateX(-100%);
-        }
-
-        <<<<<<< HEAD=======.sidebar.show {
-            transform: translateX(0);
-        }
-
-        >>>>>>>5c79a03401b44599faa0ee97242d93d2ff55b903 .sidebar-brand {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, .1);
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: .65rem;
-        }
-
-        .sidebar-brand i {
-            font-size: 1.3rem;
-            color: var(--accent);
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            margin: 0;
-            padding: 1rem 0;
-            flex: 1;
-        }
-
-        .sidebar-menu li {
-            margin-bottom: .2rem;
-        }
-
-        .sidebar-menu a {
-            color: rgba(255, 255, 255, .75);
-            padding: .75rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            text-decoration: none;
-            font-size: .9rem;
-            border-left: 3px solid transparent;
-            transition: all .2s ease;
-        }
-
-        .sidebar-menu a:hover {
-            background: rgba(255, 255, 255, .1);
-            color: var(--accent);
-        }
-
-        .sidebar-menu a.active {
-            background: rgba(255, 255, 255, .1);
-            color: var(--accent);
-            border-left-color: var(--accent);
-        }
-
-        .sidebar-menu a i {
-            width: 20px;
-            text-align: center;
-            font-size: .95rem;
-        }
-
-        /* ── Main Content ── */
-        .main-content {
-            margin-left: 260px;
-            padding: 0;
-            min-height: 100vh;
-            transition: margin-left 0.3s ease;
-        }
-
-        .top-navbar {
-            background-color: var(--cards);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--danger);
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 0.7rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* ── Cards ── */
-        .card {
-            background-color: var(--cards);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            margin-bottom: 1.5rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        /* ── Stat Cards Grid ── */
-        .stat-cards-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .stat-card {
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .stat-content {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            flex-shrink: 0;
-        }
-
-        .stat-icon.primary {
-            background-color: rgba(37, 99, 235, 0.1);
-            color: var(--primary);
-        }
-
-        .stat-icon.warning {
-            background-color: rgba(245, 158, 11, 0.1);
-            color: var(--accent);
-        }
-
-        .stat-icon.success {
-            background-color: rgba(20, 184, 166, 0.1);
-            color: var(--secondary);
-        }
-
-        .stat-icon.info {
-            background-color: rgba(37, 99, 235, 0.1);
-            color: var(--primary);
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            margin: 0;
-            line-height: 1;
-        }
-
-        .stat-label {
-            color: #6B7280;
-            font-size: 0.875rem;
-            margin: 0 0 0.5rem 0;
-            font-weight: 500;
-        }
-
-        .stat-change {
-            font-size: 0.75rem;
-            margin-top: 0.5rem;
-        }
-
-        .stat-change.positive {
-            color: var(--secondary);
-        }
-
-        .stat-change.negative {
-            color: var(--danger);
-        }
-
-        /* ── Charts ── */
-        .chart-container {
-            position: relative;
-            height: 300px;
-        }
-
-        /* ── Table ── */
-        .table {
-            margin-bottom: 0;
-        }
-
-        .table th {
-            background-color: var(--background);
-            font-weight: 600;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 1rem;
-        }
-
-        .table td {
-            padding: 1rem;
-            vertical-align: middle;
-        }
-
-        .badge {
-            padding: 0.35rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .badge-high {
-            background-color: rgba(220, 38, 38, 0.1);
-            color: var(--danger);
-        }
-
-        .badge-medium {
-            background-color: rgba(245, 158, 11, 0.1);
-            color: var(--accent);
-        }
-
-        .badge-low {
-            background-color: rgba(20, 184, 166, 0.1);
-            color: var(--secondary);
-        }
-
-        /* ── Activity ── */
-        .activity-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid #E5E7EB;
-        }
-
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-
-        .activity-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            margin-right: 1rem;
-            flex-shrink: 0;
-        }
-
-        .activity-content h6 {
-            margin: 0;
-            font-size: 0.875rem;
-        }
-
-        .activity-content p {
-            margin: 0;
-            color: #6B7280;
-            font-size: 0.75rem;
-        }
-
-        /* ── Animations ── */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease forwards;
-        }
-
-        .delay-1 {
-            animation-delay: 0.1s;
-        }
-
-        .delay-2 {
-            animation-delay: 0.2s;
-        }
-
-        .delay-3 {
-            animation-delay: 0.3s;
-        }
-
-        .delay-4 {
-            animation-delay: 0.4s;
-        }
-
-        /* ══════════════════════════════════════════════
-           RESPONSIVE BREAKPOINTS
-           ══════════════════════════════════════════════ */
-
-        /* ── Small phones (0–479px) ── */
-        @media (max-width: 479px) {
-            .stat-cards-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stat-card {
-                flex-direction: column;
-                text-align: center;
-                gap: 0.75rem;
-            }
-
-            .top-navbar h5 {
-                font-size: 0.875rem;
-            }
-
-            .reports-summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .reports-actions {
-                justify-content: center;
-            }
-        }
-
-        <<<<<<< HEAD=======
-
-        /* ── sm: Small tablets (768px+) ── */
-        @media (min-width: 768px) {
-            .navbar-datetime {
-                display: block;
-            }
-
-            .stat-cards-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1.25rem;
-            }
-
-            .stat-card {
-                padding: 1.25rem;
-            }
-
-            .card-body {
-                padding: 1.25rem;
-            }
-
-            .reports-summary-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* ── md: Large tablets (992px+) ── */
-        @media (min-width: 992px) {
-            .stat-cards-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 1.5rem;
-            }
-
-            .stat-card {
-                padding: 1.5rem;
-            }
-
-            .stat-value {
-                font-size: 2rem;
-            }
-
-            .reports-summary-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .chart-container {
-                height: 300px;
-            }
-        }
-
-        /* ── lg: Desktops (1200px+) ── */
-        @media (min-width: 1200px) {
-            .sidebar {
-                transform: translateX(0);
-                z-index: 1000;
-            }
-
-            .sidebar.show {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 260px;
-                width: calc(100% - 260px);
-            }
-
-            .top-navbar {
-                padding: 1rem 2rem;
-            }
-
-            .navbar-title {
-                font-size: 1.1rem;
-            }
-        }
-
-        /* ── Large Desktop (≥ 1536px) ── */
-        @media (min-width: 1536px) {
-            .stat-cards-grid {
-                gap: 2rem;
-            }
-        }
-
-        >>>>>>>5c79a03401b44599faa0ee97242d93d2ff55b903
-    </style>
-</head>
-
-<body>
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-brand">
-            <i class="fas fa-building"></i>
-            <span>MSWDO Admin</span>
+@extends('admin.social-case.layout')
+@section('title', 'MSWDO Admin Dashboard')
+
+@section('content')
+@php
+$logo = null;
+if(file_exists(public_path('images/mswdo-logo.png'))){
+    $logo='mswdo-logo.png';
+}else{
+    $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+    if(!empty($files)) $logo=basename($files[0]);
+}
+$adminName = session('admin_user_name') ?? 'Admin User';
+$words = explode(' ', $adminName);
+$initials = count($words) >= 2
+    ? strtoupper(substr($words[0],0,1).substr($words[1],0,1))
+    : strtoupper(substr($adminName,0,2));
+@endphp
+
+{{-- Mobile Header --}}
+<div class="mobile-header">
+    <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+        </svg>
+    </button>
+    <div class="mobile-header-brand">
+        <div class="mobile-brand-text">
+            <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+            <p class="mobile-brand-subtitle">Admin Dashboard</p>
         </div>
-        <ul class="sidebar-menu">
-            <li><a href="/admin/dashboard" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="#"><i class="fas fa-hand-holding-usd"></i> Financial Assistance</a></li>
-            <li><a href="#"><i class="fas fa-user-friends"></i> Senior Citizen</a></li>
-            <li><a href="/admin/add-officers"><i class="fas fa-user-shield"></i> Add Officers</a></li>
-            <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
+        <div class="mobile-logo">
+            @if($logo)
+            <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+            @endif
+        </div>
     </div>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+</div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Top Navigation -->
-        <nav class="top-navbar">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    <button class="btn btn-link d-lg-none d-xl-none me-3" onclick="toggleSidebar()"
-                        aria-label="Toggle sidebar">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h5 class="mb-0 me-4">Dashboard</h5>
-                </div>
-                <div class="d-flex align-items-center">
-                    <div class="me-4 text-muted small navbar-datetime" id="currentDateTime"></div>
-                    <div class="activity-avatar" style="width: 35px; height: 35px; font-size: 0.875rem;">{{
-                        strtoupper(substr((session('admin_user_name') ?? 'Admin User'), 0, 2)) }}</div>
-                </div>
-            </div>
-        </nav>
+<style>
+    .main { padding-top: 14px !important; }
+    @media (max-width: 767.98px) { .main { padding-top: 72px !important; } }
+    .main > header { margin-top: 0 !important; padding-top: 0 !important; }
 
-        <!-- Dashboard Content -->
-        <div class="p-4">
-            <!-- Overview Cards -->
-            <div class="stat-cards-grid">
-                <div class="card animate-fade-in" style="padding: 0;">
-                    <div class="stat-card">
-                        <div class="stat-icon primary"><i class="fas fa-folder"></i></div>
-                        <div class="stat-content">
-                            <p class="stat-label">Total Cases</p>
-                            <h3 class="counter stat-value" data-target="{{ $totalCases }}">0</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="card animate-fade-in delay-1" style="padding: 0;">
-                    <div class="stat-card">
-                        <div class="stat-icon warning"><i class="fas fa-clock"></i></div>
-                        <div class="stat-content">
-                            <p class="stat-label">Pending Cases</p>
-                            <h3 class="counter stat-value" data-target="{{ $pendingCases }}">0</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="card animate-fade-in delay-2" style="padding: 0;">
-                    <div class="stat-card">
-                        <div class="stat-icon success"><i class="fas fa-check-circle"></i></div>
-                        <div class="stat-content">
-                            <p class="stat-label">Resolved Cases</p>
-                            <h3 class="counter stat-value" data-target="{{ $resolvedCases }}">0</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="card animate-fade-in delay-3" style="padding: 0;">
-                    <div class="stat-card">
-                        <div class="stat-icon info"><i class="fas fa-users"></i></div>
-                        <div class="stat-content">
-                            <p class="stat-label">Total Users</p>
-                            <h3 class="counter stat-value" data-target="{{ $totalUsers }}">0</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    /* ── Module Quick-Access Cards ── */
+    .module-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .module-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid #E5E7EB;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+        transition: transform .15s, box-shadow .15s;
+    }
+    .module-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.1); text-decoration: none; color: inherit; }
+    .module-card-icon {
+        width: 48px; height: 48px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .module-card-icon svg { width: 24px; height: 24px; }
+    .module-card-icon.blue   { background: #EEF2FF; color: #4338CA; }
+    .module-card-icon.green  { background: #ECFDF5; color: #059669; }
+    .module-card-icon.orange { background: #FFF7ED; color: #C2410C; }
+    .module-card-icon.purple { background: #F5F3FF; color: #7C3AED; }
+    .module-card-label { font-size: 0.75rem; color: #6B7280; font-weight: 500; margin: 0 0 2px; }
+    .module-card-title { font-size: 0.95rem; font-weight: 700; color: #111827; margin: 0; }
+    .module-card-arrow { margin-left: auto; color: #9CA3AF; }
 
-            <!-- Officers Table -->
-            <div class="mb-4">
-                <div class="card p-4 animate-fade-in">
-                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-                        <h6 class="mb-0">Officers Directory</h6>
-                        <a href="/admin/add-officers" class="btn btn-sm btn-primary">Add Officer</a>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th class="d-none d-md-table-cell">Email</th>
-                                    <th>Role</th>
-                                    <th class="d-none d-lg-table-cell">Contact</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($officers as $officer)
-                                <tr>
-                                    <td>{{ $officer->name }}</td>
-                                    <td class="d-none d-md-table-cell">{{ $officer->email }}</td>
-                                    <td>{{ $officer->role?->label() ?? $officer->role }}</td>
-                                    <td class="d-none d-lg-table-cell">{{ $officer->phone ?? '-' }}</td>
-                                    <td>
-                                        @if($officer->status == 'active')
-                                        <span class="badge badge-low">Active</span>
-                                        @else
-                                        <span class="badge badge-high">Inactive</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">No officers created yet.</td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    /* ── Card Panel ── */
+    .card-panel {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #E5E7EB;
+        padding: 1.5rem;
+        box-shadow: 0 1px 4px rgba(0,0,0,.04);
+        margin-bottom: 1.5rem;
+    }
 
-            <!-- Case Distribution & Staff Performance -->
-            <div class="row mb-4">
-                <div class="col-lg-4 mb-4">
-                    <div class="card p-4 animate-fade-in">
-                        <h6 class="mb-4">Case Distribution</h6>
-                        <div class="chart-container">
-                            <canvas id="caseDistributionChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-8 mb-4">
-                    <div class="card p-4 animate-fade-in delay-1">
-                        <h6 class="mb-4">Staff Performance</h6>
-                        <div style="overflow-x: auto;">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Officer Name</th>
-                                        <th class="d-none d-sm-table-cell">Assigned</th>
-                                        <th class="d-none d-sm-table-cell">Completed</th>
-                                        <th>Pending</th>
-                                        <th class="d-none d-md-table-cell">Rate</th>
-                                        <th class="d-none d-md-table-cell">Avg Time</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($staffPerformance as $staff)
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="activity-avatar me-2">{{ substr($staff['name'], 0, 1) }}{{
-                                                    substr($staff['name'], strpos($staff['name'], ' ') + 1, 1) }}</div>
-                                                <span>{{ $staff['name'] }}</span>
-                                                @if($staff['rate'] >= 92)
-                                                <span class="badge badge-high ms-2">Top</span>
-                                                @endif
-                                            </div>
-                                        </td>
-                                        <td class="d-none d-sm-table-cell">{{ $staff['assigned'] }}</td>
-                                        <td class="d-none d-sm-table-cell">{{ $staff['completed'] }}</td>
-                                        <td>{{ $staff['pending'] }}</td>
-                                        <td class="d-none d-md-table-cell">{{ $staff['rate'] }}%</td>
-                                        <td class="d-none d-md-table-cell">{{ $staff['avgTime'] }}</td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    /* ── Action Buttons ── */
+    .action-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+        border: 1px solid #E5E7EB; background: #F9FAFB; color: #374151;
+        cursor: pointer; transition: all .15s; text-decoration: none;
+    }
+    .action-btn:hover { background: #F3F4F6; border-color: #D1D5DB; }
+    .action-btn.primary { background: #1A237E; color: #fff; border-color: #1A237E; }
+    .action-btn.primary:hover { background: #121858; }
 
-            <!-- Reports Summary -->
-            <div class="mb-4">
-                <div class="card p-4 animate-fade-in">
-                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-                        <h6 class="mb-0">Reports Summary</h6>
-                        <div class="d-flex flex-wrap gap-2 reports-actions">
-                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-file-pdf me-1"></i>
-                                PDF</button>
-                            <button class="btn btn-sm btn-outline-success"><i class="fas fa-file-excel me-1"></i>
-                                Excel</button>
-                            <button class="btn btn-sm btn-primary"><i class="fas fa-chart-bar me-1"></i>
-                                Analytics</button>
-                        </div>
-                    </div>
-                    <div class="reports-summary-grid"
-                        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-                        <div class="p-3 bg-light rounded">
-                            <small class="text-muted">Cases This Month</small>
-                            <h4 class="mb-0">{{ $reportsSummary['casesThisMonth'] }}</h4>
-                        </div>
-                        <div class="p-3 bg-light rounded">
-                            <small class="text-muted">Closed This Month</small>
-                            <h4 class="mb-0">{{ $reportsSummary['closedThisMonth'] }}</h4>
-                        </div>
-                        <div class="p-3 bg-light rounded">
-                            <small class="text-muted">Pending Cases</small>
-                            <h4 class="mb-0">{{ $reportsSummary['pendingCases'] }}</h4>
-                        </div>
-                        <div class="p-3 bg-light rounded">
-                            <small class="text-muted">Generated Reports</small>
-                            <h4 class="mb-0">{{ $reportsSummary['generatedReports'] }}</h4>
-                        </div>
-                        <div class="p-3 bg-light rounded">
-                            <small class="text-muted">Financial Released</small>
-                            <h4 class="mb-0">₱{{ number_format($reportsSummary['financialReleased'], 2) }}</h4>
-                        </div>
-                    </div>
-                </div>
+    /* ── Data Table ── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    .data-table th { background: #F8FAFC; color: #6B7280; font-weight: 600; font-size: 0.75rem;
+        text-transform: uppercase; letter-spacing: .05em; padding: .75rem 1rem; text-align: left;
+        border-bottom: 1px solid #E5E7EB; white-space: nowrap; }
+    .data-table td { padding: .75rem 1rem; border-bottom: 1px solid #F3F4F6; color: #374151; vertical-align: middle; }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover td { background: #F8FAFC; }
+
+    /* ── Status Badges ── */
+    .badge-status { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px;
+        font-size: 0.72rem; font-weight: 700; letter-spacing: .04em; }
+    .badge-status.active   { background: #DCFCE7; color: #15803D; }
+    .badge-status.inactive { background: #FEE2E2; color: #DC2626; }
+
+    /* ── Reports Summary Grid ── */
+    .reports-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+    }
+    .report-stat-box {
+        background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 10px;
+        padding: 1rem 1.25rem;
+    }
+    .report-stat-box .stat-title { font-size: 0.75rem; color: #6B7280; font-weight: 500; margin-bottom: 6px; }
+    .report-stat-box .stat-num   { font-size: 1.6rem; font-weight: 700; color: #111827; }
+</style>
+
+{{-- Admin Sidebar --}}
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <i data-lucide="layout-grid" style="width:24px;height:24px"></i>
+        <span>MSWDO Admin</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="/admin/dashboard" class="active"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
+        <li><a href="/admin/social-case/dashboard"><i data-lucide="folder-open" style="width:20px;height:20px"></i><span>Social Case Study</span></a></li>
+        <li><a href="/admin/financial/dashboard"><i data-lucide="circle-dollar-sign" style="width:20px;height:20px"></i><span>Financial Assistance</span></a></li>
+        <li><a href="/admin/senior"><i data-lucide="users" style="width:20px;height:20px"></i><span>Senior Citizen</span></a></li>
+        <li><a href="/admin/add-officers"><i data-lucide="user-check" style="width:20px;height:20px"></i><span>Add Officers</span></a></li>
+        <li style="border-top:1px solid rgba(255,255,255,.1);margin-top:.5rem;padding-top:.5rem;">
+            <a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a>
+        </li>
+    </ul>
+</div>
+
+<div class="main">
+    {{-- Page Header --}}
+    <header class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none mb-6">
+        <div>
+            <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Admin Dashboard</h1>
+            <p class="text-sm text-slate-500 mt-1 font-medium">MSWDO Silang — System Overview</p>
+        </div>
+        <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
+            <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime">Loading date...</div>
+            <div class="w-11 h-11 rounded-full bg-[#1A237E] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(26,35,126,0.3)] hover:scale-105 select-none" title="Admin: {{ $adminName }}">
+                {{ $initials }}
             </div>
+        </div>
+    </header>
+
+    {{-- Stat Cards --}}
+    <div class="stat-cards" style="margin-bottom:1.5rem;">
+        <div class="stat-card stat-card-blue">
+            <div class="stat-card-content">
+                <div class="stat-card-label">TOTAL CASES</div>
+                <div class="stat-card-value counter" data-target="{{ $totalCases }}">0</div>
+            </div>
+            <div class="stat-card-icon"><i data-lucide="folder"></i></div>
+        </div>
+        <div class="stat-card stat-card-green">
+            <div class="stat-card-content">
+                <div class="stat-card-label">RESOLVED CASES</div>
+                <div class="stat-card-value counter" data-target="{{ $resolvedCases }}">0</div>
+            </div>
+            <div class="stat-card-icon"><i data-lucide="check-circle"></i></div>
+        </div>
+        <div class="stat-card stat-card-purple">
+            <div class="stat-card-content">
+                <div class="stat-card-label">PENDING CASES</div>
+                <div class="stat-card-value counter" data-target="{{ $pendingCases }}">0</div>
+            </div>
+            <div class="stat-card-icon"><i data-lucide="clock"></i></div>
+        </div>
+        <div class="stat-card stat-card-teal">
+            <div class="stat-card-content">
+                <div class="stat-card-label">TOTAL OFFICERS</div>
+                <div class="stat-card-value counter" data-target="{{ $totalUsers }}">0</div>
+            </div>
+            <div class="stat-card-icon"><i data-lucide="users"></i></div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        function toggleSidebar() {
-            var sidebar = document.getElementById('sidebar');
-            var overlay = document.getElementById('sidebarOverlay');
-            if (sidebar.classList.contains('show')) {
-                sidebar.classList.remove('show');
-                if (overlay) overlay.classList.remove('active');
-                document.body.style.overflow = '';
-            } else {
-                sidebar.classList.add('show');
-                if (overlay) overlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
+    {{-- Module Quick Access --}}
+    <div class="module-cards">
+        <a href="/admin/social-case/dashboard" class="module-card">
+            <div class="module-card-icon blue"><i data-lucide="folder-open"></i></div>
+            <div>
+                <p class="module-card-label">Module</p>
+                <p class="module-card-title">Social Case Study</p>
+            </div>
+            <div class="module-card-arrow"><i data-lucide="arrow-right" style="width:16px;height:16px"></i></div>
+        </a>
+        <a href="/admin/financial/dashboard" class="module-card">
+            <div class="module-card-icon green"><i data-lucide="circle-dollar-sign"></i></div>
+            <div>
+                <p class="module-card-label">Module</p>
+                <p class="module-card-title">Financial Assistance</p>
+            </div>
+            <div class="module-card-arrow"><i data-lucide="arrow-right" style="width:16px;height:16px"></i></div>
+        </a>
+        <a href="/admin/senior" class="module-card">
+            <div class="module-card-icon orange"><i data-lucide="users"></i></div>
+            <div>
+                <p class="module-card-label">Module</p>
+                <p class="module-card-title">Senior Citizen</p>
+            </div>
+            <div class="module-card-arrow"><i data-lucide="arrow-right" style="width:16px;height:16px"></i></div>
+        </a>
+        <a href="/admin/add-officers" class="module-card">
+            <div class="module-card-icon purple"><i data-lucide="user-check"></i></div>
+            <div>
+                <p class="module-card-label">Management</p>
+                <p class="module-card-title">Add Officers</p>
+            </div>
+            <div class="module-card-arrow"><i data-lucide="arrow-right" style="width:16px;height:16px"></i></div>
+        </a>
+    </div>
+
+    {{-- Officers Directory --}}
+    <div class="card-panel" style="margin-bottom:1.5rem;">
+        <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+            <div>
+                <h3 class="text-base font-bold text-slate-800 m-0 flex items-center gap-2">
+                    <i data-lucide="user-check" class="w-5 h-5 text-indigo-600"></i> Officers Directory
+                </h3>
+                <p class="text-xs text-slate-500 m-0 mt-0.5">All registered system accounts</p>
+            </div>
+            <a href="/admin/add-officers" class="action-btn primary" style="text-decoration:none;">
+                <i data-lucide="plus" class="w-4 h-4"></i> Add Officer
+            </a>
+        </div>
+        <div style="overflow-x:auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Contact</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($officers as $officer)
+                    <tr>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                                    {{ strtoupper(substr($officer->name, 0, 2)) }}
+                                </div>
+                                <span class="font-medium text-slate-800">{{ $officer->name }}</span>
+                            </div>
+                        </td>
+                        <td class="text-slate-600 text-sm">{{ $officer->email }}</td>
+                        <td class="text-slate-700 text-sm">{{ $officer->role?->label() ?? $officer->role }}</td>
+                        <td class="text-slate-600 text-sm">{{ $officer->phone ?? '—' }}</td>
+                        <td>
+                            @php $statusVal = is_object($officer->status) ? $officer->status->value : $officer->status; @endphp
+                            @if($statusVal === 'active')
+                                <span class="badge-status active">Active</span>
+                            @else
+                                <span class="badge-status inactive">Inactive</span>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="text-center py-8 text-slate-400 font-medium">No officers have been added yet.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {{-- Reports Summary --}}
+    <div class="card-panel">
+        <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+            <div>
+                <h3 class="text-base font-bold text-slate-800 m-0 flex items-center gap-2">
+                    <i data-lucide="file-bar-chart-2" class="w-5 h-5 text-indigo-600"></i> Reports Summary
+                </h3>
+                <p class="text-xs text-slate-500 m-0 mt-0.5">Key activity &amp; financial performance indicators</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button class="action-btn"><i data-lucide="file-text" class="w-4 h-4 text-red-600"></i> PDF</button>
+                <button class="action-btn"><i data-lucide="table" class="w-4 h-4 text-emerald-600"></i> Excel</button>
+                <button class="action-btn primary"><i data-lucide="bar-chart-3" class="w-4 h-4"></i> Analytics</button>
+            </div>
+        </div>
+        <div class="reports-grid">
+            <div class="report-stat-box">
+                <div class="stat-title">Cases This Month</div>
+                <div class="stat-num">{{ $reportsSummary['casesThisMonth'] ?? 0 }}</div>
+            </div>
+            <div class="report-stat-box">
+                <div class="stat-title">Closed This Month</div>
+                <div class="stat-num">{{ $reportsSummary['closedThisMonth'] ?? 0 }}</div>
+            </div>
+            <div class="report-stat-box">
+                <div class="stat-title">Pending Cases</div>
+                <div class="stat-num">{{ $reportsSummary['pendingCases'] ?? 0 }}</div>
+            </div>
+            <div class="report-stat-box">
+                <div class="stat-title">Generated Reports</div>
+                <div class="stat-num">{{ $reportsSummary['generatedReports'] ?? 0 }}</div>
+            </div>
+            <div class="report-stat-box">
+                <div class="stat-title">Financial Released</div>
+                <div class="stat-num">₱{{ number_format($reportsSummary['financialReleased'] ?? 0, 2) }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Date/time
+    function updateDateTime() {
+        const now = new Date();
+        const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'2-digit', hour12:true };
+        const el = document.getElementById('currentDateTime');
+        if (el) el.textContent = now.toLocaleDateString('en-US', opts).replace(',', ' at');
+    }
+    updateDateTime();
+    setInterval(updateDateTime, 60000);
+
+    // Lucide icons
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // Counter animation
+    document.querySelectorAll('.counter').forEach(function (counter) {
+        var target = parseInt(counter.getAttribute('data-target')) || 0;
+        if (target === 0) { counter.textContent = '0'; return; }
+        var step = target / (1800 / 16);
+        var current = 0;
+        function tick() {
+            current += step;
+            if (current < target) { counter.textContent = Math.floor(current); requestAnimationFrame(tick); }
+            else { counter.textContent = target; }
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            var overlay = document.getElementById('sidebarOverlay');
-            if (overlay) overlay.addEventListener('click', toggleSidebar);
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    var sidebar = document.getElementById('sidebar');
-                    if (sidebar && sidebar.classList.contains('show')) toggleSidebar();
-                }
-            });
-            document.querySelectorAll('.sidebar-menu a').forEach(function(link) {
-                link.addEventListener('click', function() {
-                    if (window.innerWidth < 1200) toggleSidebar();
-                });
-            });
-            window.addEventListener('resize', function() {
-                if (window.innerWidth >= 1200) {
-                    var sidebar = document.getElementById('sidebar');
-                    var overlay = document.getElementById('sidebarOverlay');
-                    if (sidebar && sidebar.classList.contains('show')) {
-                        sidebar.classList.remove('show');
-                        if (overlay) overlay.classList.remove('active');
-                        document.body.style.overflow = '';
-                    }
-                }
-            });
-        });
-
-        function updateDateTime() {
-            var now = new Date();
-            var options = {
-                weekday: 'long'
-                , year: 'numeric'
-                , month: 'long'
-                , day: 'numeric'
-                , hour: '2-digit'
-                , minute: '2-digit'
-            };
-            var el = document.getElementById('currentDateTime');
-            if (el) el.textContent = now.toLocaleDateString('en-US', options);
-        }
-        updateDateTime();
-        setInterval(updateDateTime, 60000);
-
-        var counters = document.querySelectorAll('.counter');
-        counters.forEach(function(counter) {
-            var target = parseInt(counter.getAttribute('data-target'));
-            var duration = 2000;
-            var step = target / (duration / 16);
-            var current = 0;
-
-            function updateCounter() {
-                current += step;
-                if (current < target) {
-                    counter.textContent = Math.floor(current);
-                    requestAnimationFrame(updateCounter);
-                } else {
-                    counter.textContent = target;
-                }
-            }
-            updateCounter();
-        });
-
-        var caseCtx = document.getElementById('caseDistributionChart').getContext('2d');
-        new Chart(caseCtx, {
-            type: 'pie'
-            , data: {
-                labels: @json(array_keys($caseDistribution))
-                , datasets: [{
-                    data: @json(array_values($caseDistribution))
-                    , backgroundColor: ['#1A237E', '#D32F2F', '#FBC02D', '#1F2937', '#6B7280']
-                    , borderWidth: 0
-                }]
-            }
-            , options: {
-                responsive: true
-                , maintainAspectRatio: false
-                , plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-
-    </script>
-
-    <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
-        @csrf
-    </form>
-
-    <script>
-        function confirmLogout(event) {
-            event.preventDefault();
-            Swal.fire({
-                title: 'Are you sure?'
-                , text: 'Do you really want to log out?'
-                , icon: 'warning'
-                , showCancelButton: true
-                , confirmButtonColor: '#1A237E'
-                , cancelButtonColor: '#d33'
-                , confirmButtonText: 'Yes, log out'
-                , cancelButtonText: 'Cancel'
-                , background: '#ffffff'
-                , customClass: {
-                    popup: 'rounded-4 shadow-lg'
-                }
-            }).then(function(result) {
-                if (result.isConfirmed) document.getElementById('logout-form').submit();
-            });
-        }
-
-    </script>
-</body>
-
-</html>
+        tick();
+    });
+});
+</script>
+@endpush
