@@ -1,777 +1,490 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MSWDO – Add Officers</title>
-    @vite(['resources/css/admin-compat.css'])
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        /* ── Design tokens ── */
-        :root {
-            --primary:      #1A237E;
-            --primary-dark: #121858;
-            --secondary:    #6B7280;
-            --accent:       #FBC02D;
-            --danger:       #D32F2F;
-            --violet:       #1A237E;
-            --background:   #F8FAFC;
-            --cards:        #FFFFFF;
-            --text:         #1F2937;
-            --muted:        #6B7280;
-            --sidebar-bg:   #1A237E;
-            --border:       #E5E7EB;
-        }
+@extends('admin.layout')
+@section('title', 'MSWDO – Add Officers')
+@section('page_title', 'Add Officers')
 
-        /* ── Base ── */
-        *, *::before, *::after { box-sizing: border-box; }
-        body {
-            margin: 0;
-            padding: 0;
-            background: var(--background);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text);
-        }
+@section('content')
+@php
+$adminName = session('admin_user_name') ?? 'Admin User';
+$words = explode(' ', $adminName);
+$initials = count($words) >= 2
+    ? strtoupper(substr($words[0],0,1).substr($words[1],0,1))
+    : strtoupper(substr($adminName,0,2));
+@endphp
 
-        /* ── Sidebar ── */
-        .sidebar {
-            background: var(--sidebar-bg);
-            width: 260px;
-            min-height: 100vh;
-            position: fixed;
-            left: 0; top: 0;
-            z-index: 1001;
-            display: flex;
-            flex-direction: column;
-            transition: transform .3s ease;
-            transform: translateX(-100%);
-        }
-        .sidebar.show { transform: translateX(0); }
-        .sidebar-brand {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,.1);
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: .65rem;
-        }
-        .sidebar-brand i { font-size: 1.3rem; color: var(--accent); }
-        .sidebar-menu {
-            list-style: none;
-            margin: 0;
-            padding: 1rem 0;
-            flex: 1;
-        }
-        .sidebar-menu li { margin-bottom: .2rem; }
-        .sidebar-menu a {
-            color: rgba(255,255,255,.75);
-            padding: .75rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            text-decoration: none;
-            font-size: .9rem;
-            border-left: 3px solid transparent;
-            transition: all .2s ease;
-        }
-        .sidebar-menu a:hover { 
-            background: rgba(255,255,255,.1); 
-            color: var(--accent); 
-        }
-        .sidebar-menu a.active {
-            background: rgba(255,255,255,.1);
-            color: var(--accent);
-            border-left-color: var(--accent);
-        }
-        .sidebar-menu a i { width: 20px; text-align: center; font-size: .95rem; }
+<style>
+    /* ── Minimalist Form & Card ── */
+    .form-card {
+        background: var(--surface);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .form-label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .form-control, .form-select {
+        width: 100%;
+        background: #F8FAFC;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.65rem 0.85rem;
+        font-size: 0.875rem;
+        color: var(--text-primary);
+        outline: none;
+        transition: border-color .2s, box-shadow .2s;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+        background: #fff;
+    }
 
-        /* ── Main content ── */
-        .main-content {
-            margin-left: 260px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+    /* ── Dropdown select – distinct look ── */
+    .select-dropdown-wrap {
+        position: relative;
+    }
+    .select-dropdown-wrap .form-select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background: linear-gradient(135deg, #EFF6FF 0%, #F8FAFC 100%);
+        border: 1.5px solid #CBD5E1;
+        border-left: 3px solid var(--primary);
+        padding-right: 2.8rem;
+        cursor: pointer;
+        transition: all .25s ease;
+    }
+    .select-dropdown-wrap .form-select:hover {
+        border-color: var(--primary);
+        box-shadow: 0 2px 8px rgba(26, 35, 126, .12);
+    }
+    .select-dropdown-wrap .form-select:focus {
+        border-color: var(--primary);
+        border-left: 3px solid var(--primary);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(26, 35, 126, .1);
+    }
+    .select-dropdown-wrap::after {
+        content: '';
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 6px solid var(--primary);
+        pointer-events: none;
+        transition: transform .2s ease;
+    }
+    .select-dropdown-wrap:focus-within::after {
+        transform: translateY(-50%) rotate(180deg);
+    }
 
-        /* ── Top-bar ── */
-        .top-navbar {
-            background-color: var(--cards);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .page-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
-        .breadcrumb-nav { font-size: .8rem; color: var(--muted); margin: 0; }
-        .breadcrumb-nav a { color: var(--primary); text-decoration: none; }
-        .btn-icon {
-            background: var(--background);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            width: 38px; height: 38px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--muted);
-            cursor: pointer;
-            transition: all .2s;
-        }
-        .btn-icon:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .select-hint {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        margin-top: 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    .select-hint svg {
+        width: 13px;
+        height: 13px;
+        color: var(--primary);
+        flex-shrink: 0;
+    }
 
-        /* ── Page body ── */
-        .page-body { padding: 2rem; flex: 1; }
+    .btn-submit {
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.65rem 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .2s;
+    }
+    .btn-submit:hover {
+        background: var(--primary-dark);
+    }
 
-        /* ── Minimalist Form & Card ── */
-        .form-card {
-            background: var(--cards);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,.05);
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-        .form-label {
-            font-size: .82rem;
-            font-weight: 600;
-            color: #475569;
-            margin-bottom: .4rem;
-        }
-        .form-control, .form-select {
-            background: var(--background);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: .6rem .85rem;
-            font-size: .875rem;
-            color: var(--text);
-            outline: none;
-            transition: border-color .2s;
-        }
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary);
-            box-shadow: none;
-            background: #fff;
-        }
+    /* ── Table Card ── */
+    .officers-table-wrap {
+        background: var(--surface);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        padding: 1.5rem;
+    }
+    .gov-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+        margin-top: 1rem;
+    }
+    .gov-table th {
+        background: #F8FAFC;
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid var(--border);
+        text-align: left;
+        white-space: nowrap;
+    }
+    .gov-table td {
+        padding: 0.85rem 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #F1F5F9;
+        color: var(--text-primary);
+    }
+    .gov-table tr:hover td { background: #F8FAFC; }
+    .gov-table tr:last-child td { border-bottom: none; }
 
-        /* ── Dropdown select – distinct look ── */
-        .select-dropdown-wrap {
-            position: relative;
-        }
-        .select-dropdown-wrap .form-select {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background: linear-gradient(135deg, #EFF6FF 0%, #F1F5F9 100%);
-            border: 1.5px solid #CBD5E1;
-            border-left: 3px solid var(--primary);
-            padding-right: 2.8rem;
-            cursor: pointer;
-            transition: all .25s ease;
-        }
-        .select-dropdown-wrap .form-select:hover {
-            border-color: var(--primary);
-            box-shadow: 0 2px 8px rgba(37, 99, 235, .12);
-        }
-        .select-dropdown-wrap .form-select:focus {
-            border-color: var(--primary);
-            border-left: 3px solid var(--primary);
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
-        }
-        /* Custom chevron icon */
-        .select-dropdown-wrap::after {
-            content: '';
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-top: 6px solid var(--primary);
-            pointer-events: none;
-            transition: transform .2s ease;
-        }
-        .select-dropdown-wrap:focus-within::after {
-            transform: translateY(-50%) rotate(180deg);
-        }
+    /* ── Table Action Buttons matching Dashboard Theme ── */
+    .table-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .table-action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        text-decoration: none;
+    }
+    .table-action-btn svg {
+        width: 15px;
+        height: 15px;
+    }
+    .table-action-btn.btn-edit {
+        background: #EEF2FF;
+        color: #4338CA;
+        border-color: #C7D2FE;
+    }
+    .table-action-btn.btn-edit:hover {
+        background: #4338CA;
+        color: #FFFFFF;
+        border-color: #4338CA;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(67, 56, 202, 0.2);
+    }
+    .table-action-btn.btn-deactivate {
+        background: #FEF2F2;
+        color: #DC2626;
+        border-color: #FECACA;
+    }
+    .table-action-btn.btn-deactivate:hover {
+        background: #DC2626;
+        color: #FFFFFF;
+        border-color: #DC2626;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(220, 38, 38, 0.2);
+    }
 
-        .select-hint {
-            font-size: .72rem;
-            color: var(--muted);
-            margin-top: .3rem;
-            display: flex;
-            align-items: center;
-            gap: .3rem;
-        }
-        .select-hint i {
-            font-size: .65rem;
-            color: var(--primary);
-        }
-        .btn-submit {
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: .65rem 1.5rem;
-            font-size: .875rem;
-            font-weight: 600;
-            transition: all .2s;
-        }
-        .btn-submit:hover {
-            background: var(--primary-dark);
-        }
+    .avatar-initial {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: #FFFFFF;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+    }
 
-        /* Minimalist Table */
-        .officers-table-wrap {
-            background: var(--cards);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,.05);
-            padding: 1.5rem;
-        }
-        .gov-table-wrap {
-            border: none;
-            border-top: 1px solid #E2E8F0;
-            border-bottom: 1px solid #E2E8F0;
-            overflow: hidden;
-            margin-top: 1rem;
-        }
-        .gov-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: .85rem;
-            margin: 0;
-        }
-        .gov-table thead tr.official-header th {
-            background: #FFFFFF;
-            color: #475569;
-            font-size: .78rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: .05em;
-            padding: .9rem .75rem;
-            border-bottom: 2px solid #E2E8F0;
-            text-align: left;
-            white-space: nowrap;
-        }
-        .gov-table tbody tr.brgy-row {
-            border-bottom: 1px solid #F1F5F9;
-            transition: background .1s ease;
-        }
-        .gov-table tbody tr.brgy-row:hover { background: #F8FAFC; }
-        .gov-table tbody td {
-            padding: .85rem .75rem;
-            vertical-align: middle;
-            border: none;
-            color: var(--text);
-        }
-        .status-badge {
-            display: inline-block;
-            padding: .2rem .5rem;
-            border-radius: 6px;
-            font-size: .72rem;
-            font-weight: 600;
-        }
-        .badge-active { background: rgba(20, 184, 166, 0.1); color: var(--secondary); }
-        .badge-inactive { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
-        
-        .avatar-initial {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: #fff;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: .82rem;
-        }
+    .badge-status {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: .04em;
+    }
+    .badge-status.active { background: #DCFCE7; color: #15803D; }
+    .badge-status.inactive { background: #FEE2E2; color: #DC2626; }
 
-        /* ── Password toggle eye ── */
-        .pw-input-wrap {
-            position: relative;
-        }
-        .pw-input-wrap .form-control {
-            padding-right: 2.6rem;
-        }
-        .pw-toggle {
-            position: absolute;
-            right: .75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            padding: 0;
-            cursor: pointer;
-            color: #94A3B8;
-            font-size: .9rem;
-            transition: color .2s ease;
-            line-height: 1;
-        }
-        .pw-toggle:hover {
-            color: var(--primary);
-        }
+    /* ── Password strength feedback ── */
+    .pw-checklist {
+        list-style: none;
+        margin: 0.5rem 0 0 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.25rem 0.75rem;
+    }
+    .pw-checklist li {
+        font-size: 0.74rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: color .25s ease;
+    }
+    .pw-checklist li .circle-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #CBD5E1;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+    .pw-checklist li.met {
+        color: #16a34a;
+        font-weight: 600;
+    }
+    .pw-checklist li.met .circle-dot {
+        background: #16a34a;
+    }
+    .pw-match-msg {
+        font-size: 0.74rem;
+        margin-top: 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        transition: all .25s ease;
+    }
+    .pw-match-msg.match { color: #059669; font-weight: 600; }
+    .pw-match-msg.no-match { color: var(--danger); }
+</style>
 
-        /* ── Password strength feedback ── */
-        .pw-feedback {
-            margin-top: .5rem;
-            padding: .75rem 1rem;
-            background: #F8FAFC;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            transition: all .3s ease;
-        }
-
-        .pw-checklist {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: .25rem .75rem;
-        }
-        .pw-checklist li {
-            font-size: .74rem;
-            color: var(--muted);
-            display: flex;
-            align-items: center;
-            gap: .4rem;
-            transition: color .25s ease;
-        }
-        .pw-checklist li i {
-            font-size: .65rem;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all .25s ease;
-            background: #E2E8F0;
-            color: #94A3B8;
-            flex-shrink: 0;
-        }
-        .pw-checklist li.met {
-            color: #16a34a;
-            background: #f0fdf4;
-            border-radius: 6px;
-            padding: 0.15rem 0.35rem;
-        }
-        .pw-checklist li.met i {
-            background: #86efac;
-            color: #166534;
-        }
-        .pw-match-msg {
-            font-size: .74rem;
-            margin-top: .35rem;
-            display: flex;
-            align-items: center;
-            gap: .3rem;
-            transition: all .25s ease;
-        }
-        .pw-match-msg.match { color: #059669; }
-        .pw-match-msg.no-match { color: var(--danger); }
-
-        /* ── Animations ── */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(14px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        .fade-up { animation: fadeUp .5s ease both; }
-
-        /* ── Sidebar Overlay ── */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-            -webkit-backdrop-filter: blur(2px);
-            backdrop-filter: blur(2px);
-        }
-        .sidebar-overlay.active { display: block; }
-
-        /* ── Sidebar off-canvas by default (xs: 0–767px) ── */
-        .sidebar { transform: translateX(-100%); z-index: 1001; }
-        .sidebar.show { transform: translateX(0); }
-        .main-content { margin-left: 0; }
-        .top-navbar { padding: 0.75rem 1.25rem; }
-
-        /* ── Responsive ── */
-        @media (max-width: 479px) {
-            .page-body { padding: 0.75rem; }
-            .form-card { padding: 1rem; }
-            .officers-table-wrap { padding: 1rem; }
-            .gov-table th, .gov-table td { font-size: 0.75rem; padding: 0.4rem; }
-        }
-        @media (min-width: 768px) {
-            .page-body { padding: 1.5rem; }
-            .pw-checklist { grid-template-columns: 1fr 1fr; }
-        }
-        @media (min-width: 992px) {
-            .top-navbar { padding: 1rem 2rem; }
-        }
-        @media (min-width: 1200px) {
-            .sidebar { transform: translateX(0); z-index: 1000; }
-            .sidebar.show { transform: translateX(0); }
-            .main-content { margin-left: 260px; }
-        }
-    </style>
-</head>
-<body>
-
-<!-- ======================== SIDEBAR ======================== -->
-<div class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <i class="fas fa-building"></i>
-        <span>MSWDO Admin</span>
+{{-- Page Header --}}
+<header class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none mb-6">
+    <div>
+        <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Officers Directory</h1>
+        <p class="text-sm text-slate-500 mt-1 font-medium">MSWDO Silang — Manage Staff &amp; Officer Accounts</p>
     </div>
-    <ul class="sidebar-menu">
-        <li><a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
-        <li><a href="#"><i class="fas fa-hand-holding-usd"></i> Financial Assistance</a></li>
-        <!-- <li><a href="#"><i class="fas fa-file-alt"></i> Social Case Study</a></li> -->
-        <li><a href="#"><i class="fas fa-user-friends"></i> Senior Citizen</a></li>
-        <li><a href="/admin/add-officers" class="active"><i class="fas fa-user-shield"></i> Add Officers</a></li>
-        <li><a href="#" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-    </ul>
-</div>
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
+        <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime">Loading date...</div>
+        <div class="w-11 h-11 rounded-full bg-[#1A237E] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(26,35,126,0.3)] hover:scale-105 select-none" title="Admin: {{ $adminName }}">
+            {{ $initials }}
+        </div>
+    </div>
+</header>
 
-<!-- ======================== MAIN ======================== -->
-<div class="main-content">
+<!-- Form Card -->
+<div class="form-card">
+    <div class="mb-4">
+        <h2 class="text-lg font-bold text-slate-800 m-0">Create Officer Account</h2>
+        <p class="text-xs text-slate-500 mt-1">Register a new social worker or administrator to access the MSWDO platform.</p>
+    </div>
 
-    <!-- Top-bar -->
-    <nav class="top-navbar">
-        <div class="d-flex align-items-center gap-3">
-            <button class="btn-icon d-lg-none" onclick="toggleSidebar()" aria-label="Toggle sidebar">
-                <i class="fas fa-bars"></i>
-            </button>
+    @if(session('success'))
+        <div class="p-3 mb-4 rounded-lg bg-green-50 text-green-700 text-sm border border-green-200" id="successAlert">{{ session('success') }}</div>
+    @endif
+
+    @if($errors->any())
+        <div class="p-3 mb-4 rounded-lg bg-red-50 text-red-700 text-sm border border-red-200" id="errorAlert">
+            <ul class="list-disc pl-5 m-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('admin.officers.store') }}" enctype="multipart/form-data">
+        @csrf
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-                <p class="page-title">Officers Directory</p>
-                <p class="breadcrumb-nav">
-                    <a href="/admin/dashboard">Dashboard</a> / Add Officers
+                <label class="form-label">Full Name</label>
+                <input type="text" name="name" class="form-control" placeholder="Enter full name" value="{{ old('name') }}" required>
+            </div>
+            <div>
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control" placeholder="Enter email address" value="{{ old('email') }}" required>
+            </div>
+            <div>
+                <label class="form-label">Role / Assignment</label>
+                <div class="select-dropdown-wrap">
+                    <select class="form-select" name="role" id="roleSelect" required>
+                        <option value="" disabled selected>▼ Select Role / Assignment</option>
+                        <option value="Senior Citizen officer" {{ old('role') == 'Senior Citizen officer' ? 'selected' : '' }}>Senior Citizen Officer</option>
+                        <option value="Financial assistance officer" {{ old('role') == 'Financial assistance officer' ? 'selected' : '' }}>Financial Assistance Officer</option>
+                        <option value="financialstep1" {{ old('role') == 'financialstep1' ? 'selected' : '' }}>Financial Assistance Step 1</option>
+                        <option value="financialstep2" {{ old('role') == 'financialstep2' ? 'selected' : '' }}>Financial Assistance Step 2</option>
+                        <option value="eligibility_checker" {{ old('role') == 'eligibility_checker' ? 'selected' : '' }}>Social Case Worker (Checker)</option>
+                        <option value="social_worker" {{ old('role') == 'social_worker' ? 'selected' : '' }}>Social Case Worker (Encoder)</option>
+                        <option value="encoder" {{ old('role') == 'encoder' ? 'selected' : '' }}>Encoder</option>
+                        <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Staff</option>
+                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrator</option>
+                    </select>
+                </div>
+                <p class="select-hint">
+                    <i data-lucide="info"></i>
+                    <span>Click to open the dropdown and choose a role</span>
                 </p>
             </div>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <div id="currentDateTime" class="text-muted small d-none d-md-block"></div>
-            <button class="btn-icon" title="Refresh" onclick="location.reload()">
-                <i class="fas fa-rotate-right"></i>
-            </button>
-        </div>
-    </nav>
-
-    <!-- Page Body -->
-    <div class="page-body">
-
-        <!-- Form Card -->
-        <div class="form-card fade-up">
-            <h2 class="h5 fw-bold mb-1">Create Officer Account</h2>
-            <p class="text-muted small mb-4">Register a new social worker or administrator to access the MSWDO platform.</p>
-
-            @if(session('success'))
-                <div class="alert alert-success" id="successAlert">{{ session('success') }}</div>
-            @endif
-
-            @if($errors->any())
-                <div class="alert alert-danger" id="errorAlert">
-                    <ul class="mb-0">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
+            <div>
+                <label class="form-label">Contact Number</label>
+                <input type="text" name="phone" class="form-control" placeholder="e.g. 0917XXXXXXX" value="{{ old('phone') }}">
+            </div>
+            <div>
+                <label class="form-label">Password</label>
+                <input type="password" id="passwordInput" name="password" class="form-control" placeholder="Create password" required oninput="checkPassword()">
+                <div id="pwFeedback" class="mt-2" style="display:none;">
+                    <ul class="pw-checklist">
+                        <li id="reqLength"><span class="circle-dot"></span> At least 8 characters</li>
+                        <li id="reqUpper"><span class="circle-dot"></span> One uppercase letter</li>
+                        <li id="reqLower"><span class="circle-dot"></span> One lowercase letter</li>
+                        <li id="reqNumber"><span class="circle-dot"></span> One number</li>
+                        <li id="reqSpecial"><span class="circle-dot"></span> One special character</li>
                     </ul>
                 </div>
-            @endif
-
-            <form method="POST" action="{{ route('admin.officers.store') }}">
-                @csrf
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" name="name" class="form-control" placeholder="Enter full name" value="{{ old('name') }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" name="email" class="form-control" placeholder="Enter email address" value="{{ old('email') }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Role / Assignment</label>
-                        <div class="select-dropdown-wrap">
-                            <select class="form-select" name="role" id="roleSelect" required>
-                                <option value="" disabled selected>▼ Select Role / Assignment</option>
-                                <option value="Senior Citizen officer" {{ old('role') == 'Senior Citizen officer' ? 'selected' : '' }}>Senior Citizen Officer</option>
-                                <option value="Financial assistance officer" {{ old('role') == 'Financial assistance officer' ? 'selected' : '' }}>Financial Assistance Officer</option>
-                                <option value="financialstep1" {{ old('role') == 'financialstep1' ? 'selected' : '' }}>Financial Assistance Step 1</option>
-                                <option value="financialstep2" {{ old('role') == 'financialstep2' ? 'selected' : '' }}>Financial Assistance Step 2</option>
-                                <option value="eligibility_checker" {{ old('role') == 'eligibility_checker' ? 'selected' : '' }}>Social Case Worker (Checker)</option>
-                                <option value="social_worker" {{ old('role') == 'social_worker' ? 'selected' : '' }}>Social Case Worker (Encoder)</option>
-                                <option value="encoder" {{ old('role') == 'encoder' ? 'selected' : '' }}>Encoder</option>
-                                <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Staff</option>
-                                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrator</option>
-                            </select>
-                        </div>
-                        <p class="select-hint"><i class="fas fa-info-circle"></i> Click to open the dropdown and choose a role</p>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Contact Number</label>
-                        <input type="text" name="phone" class="form-control" placeholder="e.g. 0917XXXXXXX" value="{{ old('phone') }}">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Password</label>
-                        <input type="password" id="passwordInput" name="password" class="form-control" placeholder="Create password" required oninput="checkPassword()">
-                        <div id="pwFeedback" class="mt-2" style="display:none;">
-                            <ul class="pw-checklist">
-                                <li id="reqLength"><i class="fas fa-circle"></i> At least 8 characters</li>
-                                <li id="reqUpper"><i class="fas fa-circle"></i> One uppercase letter</li>
-                                <li id="reqLower"><i class="fas fa-circle"></i> One lowercase letter</li>
-                                <li id="reqNumber"><i class="fas fa-circle"></i> One number</li>
-                                <li id="reqSpecial"><i class="fas fa-circle"></i> One special character</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Confirm Password</label>
-                        <input type="password" id="confirmPasswordInput" name="password_confirmation" class="form-control" placeholder="Confirm password" required oninput="checkPassword()">
-                        <div id="pwMatchMsg" class="pw-match-msg" style="display:none;"></div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Status</label>
-                        <select class="form-select" name="status" required>
-                            <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Signature Position</label>
-                        <select class="form-select" name="signature_position">
-                            <option value="">None</option>
-                            <option value="osca_head" {{ old('signature_position') == 'osca_head' ? 'selected' : '' }}>OSCA Head</option>
-                            <option value="mswdo_officer" {{ old('signature_position') == 'mswdo_officer' ? 'selected' : '' }}>MSWDO Officer</option>
-                        </select>
-                        <p class="select-hint"><i class="fas fa-info-circle"></i> Select if this officer's signature should appear on ID cards</p>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Signature Image</label>
-                        <input type="file" name="signature_image" class="form-control" accept="image/*">
-                        <p class="select-hint"><i class="fas fa-info-circle"></i> Upload signature image (PNG, JPG) for ID cards</p>
-                    </div>
-                    <div class="col-12 mt-4 text-end">
-                        <button type="button" class="btn btn-light me-2 border" onclick="location.href='/admin/dashboard'">Cancel</button>
-                        <button type="submit" class="btn-submit">Add Officer</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <!-- Directory Table -->
-        <div class="officers-table-wrap fade-up" style="animation-delay: 0.1s;">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <div>
-                    <h3 class="h6 fw-bold mb-1">MSWDO Active Officers</h3>
-                    <p class="text-muted small mb-0">Registered system accounts and status indicators.</p>
-                </div>
-                <div style="position:relative;">
-                    <input type="text" class="form-control form-control-sm" placeholder="Search officer..." style="max-width:200px; width:100%; padding-left: 2rem;" oninput="filterTable(this.value)">
-                    <i class="fas fa-search text-muted" style="position:absolute; left: .7rem; top:50%; transform:translateY(-50%); font-size: .8rem;"></i>
-                </div>
             </div>
-
-            <div class="gov-table-wrap" style="overflow-x: auto;">
-                <table class="gov-table" id="officersTable">
-                    <thead>
-                        <tr class="official-header">
-                            <th>Officer</th>
-                            <th class="d-none d-md-table-cell">Email</th>
-                            <th>Role</th>
-                            <th class="d-none d-lg-table-cell">Contact</th>
-                            <th class="d-none d-sm-table-cell">Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="officersTableBody">
-                        @forelse($officers as $officer)
-                            <tr class="brgy-row">
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="avatar-initial">{{ strtoupper(substr($officer->name ?? 'O', 0, 2)) }}</div>
-                                        <span class="fw-semibold">{{ $officer->name ?? 'Officer' }}</span>
-                                    </div>
-                                </td>
-                                <td class="d-none d-md-table-cell">{{ $officer->email ?? '-' }}</td>
-                                <td>{{ $officer->role?->label() ?? $officer->role ?? '-' }}</td>
-                                <td class="d-none d-lg-table-cell">{{ $officer->phone ?? '-' }}</td>
-                                <td class="d-none d-sm-table-cell"><span class="status-badge badge-active">Active</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-link text-primary p-0 me-2" type="button"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-sm btn-link text-danger p-0" type="button"><i class="fas fa-ban"></i></button>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center text-muted py-4">No officers yet.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <div>
+                <label class="form-label">Confirm Password</label>
+                <input type="password" id="confirmPasswordInput" name="password_confirmation" class="form-control" placeholder="Confirm password" required oninput="checkPassword()">
+                <div id="pwMatchMsg" class="pw-match-msg" style="display:none;"></div>
+            </div>
+            <div>
+                <label class="form-label">Status</label>
+                <select class="form-select" name="status" required>
+                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label">Signature Position</label>
+                <select class="form-select" name="signature_position">
+                    <option value="">None</option>
+                    <option value="osca_head" {{ old('signature_position') == 'osca_head' ? 'selected' : '' }}>OSCA Head</option>
+                    <option value="mswdo_officer" {{ old('signature_position') == 'mswdo_officer' ? 'selected' : '' }}>MSWDO Officer</option>
+                </select>
+                <p class="select-hint">
+                    <i data-lucide="info"></i>
+                    <span>Select if this officer's signature should appear on ID cards</span>
+                </p>
+            </div>
+            <div class="md:col-span-2">
+                <label class="form-label">Signature Image</label>
+                <input type="file" name="signature_image" class="form-control" accept="image/*">
+                <p class="select-hint">
+                    <i data-lucide="info"></i>
+                    <span>Upload signature image (PNG, JPG) for ID cards</span>
+                </p>
+            </div>
+            <div class="md:col-span-2 mt-2 flex justify-end gap-2">
+                <button type="button" class="px-4 py-2 text-sm font-semibold rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition" onclick="location.href='/admin/dashboard'">Cancel</button>
+                <button type="submit" class="btn-submit">Add Officer</button>
             </div>
         </div>
+    </form>
+</div>
 
-    </div><!-- /page-body -->
-</div><!-- /main-content -->
+<!-- Directory Table -->
+<div class="officers-table-wrap">
+    <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
+        <div>
+            <h3 class="text-base font-bold text-slate-800 m-0 flex items-center gap-2">
+                <i data-lucide="user-check" style="width: 20px; height: 20px; color: var(--primary);"></i>
+                <span>MSWDO Active Officers</span>
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Registered system accounts and status indicators.</p>
+        </div>
+        <div style="position: relative;">
+            <input type="text" class="form-control text-xs" placeholder="Search officer..." style="max-width: 220px; padding-left: 2.2rem; height: 38px;" oninput="filterTable(this.value)">
+            <i data-lucide="search" style="width: 15px; height: 15px; position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: #94A3B8; pointer-events: none;"></i>
+        </div>
+    </div>
 
-<!-- ======================== SCRIPTS ======================== -->
+    <div style="overflow-x: auto;">
+        <table class="gov-table" id="officersTable">
+            <thead>
+                <tr>
+                    <th>Officer</th>
+                    <th class="hidden md:table-cell">Email</th>
+                    <th>Role</th>
+                    <th class="hidden lg:table-cell">Contact</th>
+                    <th class="hidden sm:table-cell">Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="officersTableBody">
+                @forelse($officers as $officer)
+                    <tr>
+                        <td>
+                            <div class="flex items-center gap-2.5">
+                                <div class="avatar-initial">{{ strtoupper(substr($officer->name ?? 'O', 0, 2)) }}</div>
+                                <span class="font-semibold text-slate-800">{{ $officer->name ?? 'Officer' }}</span>
+                            </div>
+                        </td>
+                        <td class="hidden md:table-cell text-slate-600 text-sm">{{ $officer->email ?? '-' }}</td>
+                        <td class="text-slate-700 text-sm font-medium">{{ $officer->role?->label() ?? $officer->role ?? '-' }}</td>
+                        <td class="hidden lg:table-cell text-slate-600 text-sm">{{ $officer->phone ?? '-' }}</td>
+                        <td class="hidden sm:table-cell">
+                            @php $statusVal = is_object($officer->status) ? $officer->status->value : $officer->status; @endphp
+                            @if($statusVal === 'active' || empty($statusVal))
+                                <span class="badge-status active">Active</span>
+                            @else
+                                <span class="badge-status inactive">Inactive</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <button type="button" class="table-action-btn btn-edit" title="Edit Officer">
+                                    <i data-lucide="pencil"></i>
+                                </button>
+                                <button type="button" class="table-action-btn btn-deactivate" title="Deactivate Officer">
+                                    <i data-lucide="ban"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center text-slate-400 py-6">No officers registered yet.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+@endsection
+
+@push('scripts')
 <script>
-    function toggleSidebar() {
-        var sidebar = document.getElementById('sidebar');
-        var overlay = document.getElementById('sidebarOverlay');
-        if (sidebar.classList.contains('show')) {
-            sidebar.classList.remove('show');
-            if (overlay) overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        } else {
-            sidebar.classList.add('show');
-            if (overlay) overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
-        var overlay = document.getElementById('sidebarOverlay');
-        if (overlay) overlay.addEventListener('click', toggleSidebar);
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                var sb = document.getElementById('sidebar');
-                if (sb && sb.classList.contains('show')) toggleSidebar();
-            }
-        });
-        document.querySelectorAll('.sidebar-menu a').forEach(function(link) {
-            link.addEventListener('click', function() {
-                if (window.innerWidth < 1200) toggleSidebar();
-            });
-        });
-        window.addEventListener('resize', function() {
-            if (window.innerWidth >= 1200) {
-                var sb = document.getElementById('sidebar');
-                var ov = document.getElementById('sidebarOverlay');
-                if (sb && sb.classList.contains('show')) {
-                    sb.classList.remove('show');
-                    if (ov) ov.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            }
-        });
-    });
-
-    function updateDateTime() {
-        const now = new Date();
-        const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' };
-        const el = document.getElementById('currentDateTime');
-        if (el) el.textContent = now.toLocaleDateString('en-PH', opts);
-    }
-    updateDateTime();
-    setInterval(updateDateTime, 60000);
-
-    function filterTable(query) {
-        const q = query.toLowerCase().trim();
-        const rows = document.querySelectorAll('#officersTableBody tr');
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(q) ? '' : 'none';
-        });
-    }
-    // ── Password strength checker ──
-    function checkPassword() {
-        const pw = document.getElementById('passwordInput').value;
-        const feedback = document.getElementById('pwFeedback');
-
-        if (pw.length === 0) {
-            feedback.style.display = 'none';
-            return;
+        // Date/time
+        function updateDateTime() {
+            const now = new Date();
+            const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'2-digit', hour12:true };
+            const el = document.getElementById('currentDateTime');
+            if (el) el.textContent = now.toLocaleDateString('en-US', opts).replace(',', ' at');
         }
-        feedback.style.display = 'block';
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
 
-        const checks = {
-            length:  pw.length >= 8,
-            upper:   /[A-Z]/.test(pw),
-            lower:   /[a-z]/.test(pw),
-            number:  /[0-9]/.test(pw),
-            special: /[^A-Za-z0-9]/.test(pw)
-        };
+        if (typeof lucide !== 'undefined') lucide.createIcons();
 
-        toggleReq('reqLength',  checks.length);
-        toggleReq('reqUpper',   checks.upper);
-        toggleReq('reqLower',   checks.lower);
-        toggleReq('reqNumber',  checks.number);
-        toggleReq('reqSpecial', checks.special);
-
-        if (document.getElementById('confirmPasswordInput').value.length > 0) {
-            checkPasswordMatch();
-        }
-    }
-
-    function toggleReq(id, met) {
-        const el = document.getElementById(id);
-        const icon = el.querySelector('i');
-        if (met) {
-            el.classList.add('met');
-            icon.className = 'fas fa-check';
-        } else {
-            el.classList.remove('met');
-            icon.className = 'fas fa-circle';
-        }
-    }
-
-    function checkPasswordMatch() {
-        const pw = document.getElementById('passwordInput').value;
-        const cpw = document.getElementById('confirmPasswordInput').value;
-        const msg = document.getElementById('pwMatchMsg');
-
-        if (cpw.length === 0) {
-            msg.style.display = 'none';
-            return;
-        }
-        msg.style.display = 'flex';
-
-        if (pw === cpw) {
-            msg.className = 'pw-match-msg match';
-            msg.innerHTML = '<i class="fas fa-check-circle"></i> Passwords match';
-        } else {
-            msg.className = 'pw-match-msg no-match';
-            msg.innerHTML = '<i class="fas fa-times-circle"></i> Passwords do not match';
-        }
-    }
-
-    function togglePassword(inputId, btn) {
-        const input = document.getElementById(inputId);
-        const icon = btn.querySelector('i');
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.className = 'fas fa-eye-slash';
-            btn.title = 'Hide password';
-        } else {
-            input.type = 'password';
-            icon.className = 'fas fa-eye';
-            btn.title = 'Show password';
-        }
-    }
-
-    // Auto-hide success alert after 3 seconds
-    document.addEventListener('DOMContentLoaded', function() {
         // Show success popup if officer was just created
         @if($officerCreated ?? false)
             Swal.fire({
                 title: 'Officer Added Successfully!',
-                // text: 'Officer created successfully',
                 icon: 'success',
                 confirmButtonColor: '#1A237E',
                 confirmButtonText: 'Continue',
@@ -806,35 +519,72 @@
             }, 3000);
         }
     });
-</script>
 
-<!-- Hidden form for secure POST logout -->
-<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
-    @csrf
-</form>
-
-<script>
-    function confirmLogout(event) {
-        event.preventDefault();
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'Do you really want to log out?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#1A237E',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, log out',
-            cancelButtonText: 'Cancel',
-            background: '#ffffff',
-            customClass: {
-                popup: 'rounded-4 shadow-lg'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('logout-form').submit();
-            }
+    function filterTable(query) {
+        const q = query.toLowerCase().trim();
+        const rows = document.querySelectorAll('#officersTableBody tr');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(q) ? '' : 'none';
         });
     }
+
+    function checkPassword() {
+        const pw = document.getElementById('passwordInput').value;
+        const feedback = document.getElementById('pwFeedback');
+
+        if (pw.length === 0) {
+            feedback.style.display = 'none';
+            return;
+        }
+        feedback.style.display = 'block';
+
+        const checks = {
+            length:  pw.length >= 8,
+            upper:   /[A-Z]/.test(pw),
+            lower:   /[a-z]/.test(pw),
+            number:  /[0-9]/.test(pw),
+            special: /[^A-Za-z0-9]/.test(pw)
+        };
+
+        toggleReq('reqLength',  checks.length);
+        toggleReq('reqUpper',   checks.upper);
+        toggleReq('reqLower',   checks.lower);
+        toggleReq('reqNumber',  checks.number);
+        toggleReq('reqSpecial', checks.special);
+
+        if (document.getElementById('confirmPasswordInput').value.length > 0) {
+            checkPasswordMatch();
+        }
+    }
+
+    function toggleReq(id, met) {
+        const el = document.getElementById(id);
+        if (met) {
+            el.classList.add('met');
+        } else {
+            el.classList.remove('met');
+        }
+    }
+
+    function checkPasswordMatch() {
+        const pw = document.getElementById('passwordInput').value;
+        const cpw = document.getElementById('confirmPasswordInput').value;
+        const msg = document.getElementById('pwMatchMsg');
+
+        if (cpw.length === 0) {
+            msg.style.display = 'none';
+            return;
+        }
+        msg.style.display = 'flex';
+
+        if (pw === cpw) {
+            msg.className = 'pw-match-msg match';
+            msg.innerHTML = '<span>✓ Passwords match</span>';
+        } else {
+            msg.className = 'pw-match-msg no-match';
+            msg.innerHTML = '<span>✕ Passwords do not match</span>';
+        }
+    }
 </script>
-</body>
-</html>
+@endpush
