@@ -40,6 +40,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     <ul class="sidebar-menu">
         <li><a href="/admin/social-case/dashboard" class="active"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
         <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>New case</span></a></li>
+        @if((string) session('admin_user_role') !== 'eligibility_checker')
+        <li><a href="/admin/social-case/submitted"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
+        @endif
         <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i><span>All cases</span></a></li>
         <li><a href="/admin/social-case/archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
         <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a></li>
@@ -67,6 +70,20 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             </div>
         </div>
     </header>
+
+    @php
+        $dashRole = (string) session('admin_user_role');
+        $dashIsChecker = in_array($dashRole, ['eligibility_checker'], true);
+    @endphp
+    @if($dashIsChecker)
+    <div style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin-bottom:24px">
+        <i data-lucide="shield-check" style="width:20px;height:20px;color:#4338CA;flex-shrink:0"></i>
+        <div>
+            <div style="font-weight:700;color:#4338CA;font-size:14px">Eligibility Checking Only</div>
+            <div style="font-size:13px;color:#4F46E5">Your account only performs client eligibility checks and forwards eligible clients for case encoding. You cannot encode or modify Social Case Study information.</div>
+        </div>
+    </div>
+    @endif
 
     <!-- Modern Statistic Cards -->
     <div class="stat-cards">

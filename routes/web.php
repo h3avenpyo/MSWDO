@@ -27,25 +27,41 @@ Route::post('/admin/clear-welcome', [AuthController::class, 'clearWelcome'])->na
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 Route::middleware(['admin.auth'])->group(function () {
     Route::prefix('admin/social-case')->name('admin.social-case.')->group(function () {
+        // Shared routes (both eligibility checker and case encoder)
         Route::get('/welcome', [SocialCaseController::class, 'socialCaseWelcome'])->name('welcome');
         Route::get('/dashboard', [SocialCaseController::class, 'socialCaseDashboard'])->name('dashboard');
         Route::get('/new', [SocialCaseController::class, 'socialCaseNew'])->name('new');
-        Route::get('/intake', [SocialCaseController::class, 'socialCaseIntake'])->name('intake');
         Route::get('/cases', [SocialCaseController::class, 'socialCaseCases'])->name('cases');
         Route::get('/archive', [SocialCaseController::class, 'socialCaseArchive'])->name('archive');
         Route::get('/detail/{caseId}', [SocialCaseController::class, 'socialCaseDetail'])->name('detail');
         Route::get('/document/{caseId}/{agency}', [SocialCaseController::class, 'socialCaseDocument'])->name('document');
 
-        // API routes for CRUD operations
+        // Read-only API (shared)
         Route::get('/api/cases', [SocialCaseController::class, 'getCases'])->name('api.cases');
-        Route::post('/api/cases', [SocialCaseController::class, 'storeCase'])->name('api.store');
         Route::get('/api/cases/{id}', [SocialCaseController::class, 'getCase'])->name('api.show');
-        Route::put('/api/cases/{id}', [SocialCaseController::class, 'updateCase'])->name('api.update');
-        Route::delete('/api/cases/{id}', [SocialCaseController::class, 'deleteCase'])->name('api.delete');
-
-        // Activity logging routes
-        Route::post('/api/activities', [SocialCaseController::class, 'logActivity'])->name('api.activities.log');
         Route::get('/api/activities', [SocialCaseController::class, 'getActivities'])->name('api.activities.get');
+
+        // Eligibility checker only (social2@mwsdo.test)
+        Route::middleware('role:admin,eligibility_checker')->group(function () {
+            Route::post('/api/eligibility/check', [SocialCaseController::class, 'checkEligibility'])->name('api.eligibility.check');
+            Route::post('/api/eligibility/submit', [SocialCaseController::class, 'submitEligibility'])->name('api.eligibility.submit');
+        });
+
+        // Case encoder only (social@mwsdo.test)
+        Route::middleware('role:admin,social_worker')->group(function () {
+            Route::get('/intake', [SocialCaseController::class, 'socialCaseIntake'])->name('intake');
+            Route::get('/submitted', [SocialCaseController::class, 'socialCaseSubmitted'])->name('submitted');
+        });
+
+        // Write API (case encoder only - creating, updating, archiving cases)
+        Route::middleware('role:admin,social_worker')->group(function () {
+            Route::post('/api/cases', [SocialCaseController::class, 'storeCase'])->name('api.store');
+            Route::put('/api/cases/{id}', [SocialCaseController::class, 'updateCase'])->name('api.update');
+            Route::delete('/api/cases/{id}', [SocialCaseController::class, 'deleteCase'])->name('api.delete');
+        });
+
+        // Activity logging (shared write - both roles log their own actions)
+        Route::post('/api/activities', [SocialCaseController::class, 'logActivity'])->name('api.activities.log');
         Route::post('/api/activities/clear', [SocialCaseController::class, 'clearActivities'])->name('api.activities.clear');
     });
 });

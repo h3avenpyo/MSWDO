@@ -21,6 +21,10 @@ class SocialCaseStudy extends Model
         'submitted_to',
         'encoded_by',
         'status',
+        'eligibility_status',
+        'eligible_by',
+        'eligible_at',
+        'ineligible_reason',
         'summary',
         'interview_date',
         'workflow_step',
@@ -42,6 +46,7 @@ class SocialCaseStudy extends Model
         'interview_date' => 'date',
         'assistance_date' => 'date',
         'released_at' => 'datetime',
+        'eligible_at' => 'datetime',
         'requirements_complete' => 'boolean',
         'interview_complete' => 'boolean',
         'evaluation_complete' => 'boolean',
@@ -76,6 +81,11 @@ class SocialCaseStudy extends Model
     public function encoder(): BelongsTo
     {
         return $this->belongsTo(User::class, 'encoded_by');
+    }
+
+    public function eligibleByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'eligible_by');
     }
 
     public function releasedByUser(): BelongsTo
@@ -116,5 +126,20 @@ class SocialCaseStudy extends Model
     public function rejections(): HasMany
     {
         return $this->hasMany(CaseRejection::class);
+    }
+
+    public function scopePendingEligibility($query)
+    {
+        return $query->where('eligibility_status', 'pending');
+    }
+
+    public function scopeEligibleForEncoding($query)
+    {
+        return $query->where('eligibility_status', 'eligible');
+    }
+
+    public function scopeIneligible($query)
+    {
+        return $query->where('eligibility_status', 'ineligible');
     }
 }

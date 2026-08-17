@@ -40,6 +40,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     <ul class="sidebar-menu">
         <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
         <li><a href="/admin/social-case/new" class="active"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>New case</span></a></li>
+        @if((string) session('admin_user_role') !== 'eligibility_checker')
+        <li><a href="/admin/social-case/submitted"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
+        @endif
         <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i><span>All cases</span></a></li>
         <li><a href="/admin/social-case/archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
         <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a></li>
@@ -60,7 +63,18 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     @endphp
     <!-- Page Sub-Header -->
     <div class="mb-6">
-        <p class="text-[#6B7280] text-sm m-0">Step 1 of 2 — Search for an existing client and verify eligibility before starting a new Social Case Study.</p>
+        @if($canCheckEligibility && !$canEncode)
+            <div style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin-bottom:16px">
+                <i data-lucide="shield-check" style="width:20px;height:20px;color:#4338CA;flex-shrink:0"></i>
+                <div>
+                    <div style="font-weight:700;color:#4338CA;font-size:14px">Eligibility Checking Only</div>
+                    <div style="font-size:13px;color:#4F46E5">Your account is responsible for verifying client eligibility. Eligible clients are forwarded to the case encoder for Social Case Study encoding.</div>
+                </div>
+            </div>
+            <p class="text-[#6B7280] text-sm m-0">Search for an existing client, verify their eligibility, then submit eligible clients for case encoding.</p>
+        @else
+            <p class="text-[#6B7280] text-sm m-0">Step 1 of 2 — Search for an existing client and verify eligibility before starting a new Social Case Study. Clients forwarded by the eligibility checker are listed below.</p>
+        @endif
     </div>
 
     <!-- Progress Stepper -->
@@ -72,9 +86,23 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="step-connector"></div>
         <div class="step inactive">
             <div class="step-number">2</div>
-            <span>Case Encoding</span>
+            <span>{{ $canEncode ? 'Case Encoding' : 'Forward to Encoder' }}</span>
         </div>
     </div>
+
+    @if($canEncode)
+    <!-- Encoder Queue: clients forwarded by the eligibility checker -->
+    <div class="panel" style="margin-bottom:24px">
+        <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+            <i data-lucide="inbox" style="width:18px;height:18px;color:var(--icon-blue)"></i>
+            Clients For Case Encoding
+        </h3>
+        <p style="font-size:13px;color:var(--text-muted);margin:0 0 12px">Clients that already passed eligibility checking and are waiting to be encoded.</p>
+        <div id="encoderQueue" style="max-height:280px;overflow-y:auto">
+            <div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">Loading...</div>
+        </div>
+    </div>
+    @endif
 
     <!-- Two Column Layout -->
     <div class="two-column">
@@ -102,7 +130,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             <!-- Client Summary (shown after selection) -->
             <div id="clientSummary" class="client-summary" style="display:none;">
                 <div class="client-summary-header">
-                    <div class="client-avatar" id="clientAvatar">JD</div>
                     <div>
                         <div class="client-name" id="clientNameDisplay">Juan Dela Cruz</div>
                         <div style="font-size:12px;color:var(--text-muted)">Selected Client</div>
@@ -158,6 +185,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                         <div class="workflow-step-number">2</div>
                         <span>Check Eligibility</span>
                     </div>
+                    @if($canEncode)
                     <div class="workflow-step-arrow"><i data-lucide="arrow-down" style="width:12px;height:12px"></i></div>
                     <div class="workflow-step" id="workflowStep3">
                         <div class="workflow-step-number">3</div>
@@ -168,6 +196,13 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                         <div class="workflow-step-number">4</div>
                         <span>Complete Encoding</span>
                     </div>
+                    @else
+                    <div class="workflow-step-arrow"><i data-lucide="arrow-down" style="width:12px;height:12px"></i></div>
+                    <div class="workflow-step" id="workflowStep3">
+                        <div class="workflow-step-number">3</div>
+                        <span>Submit to Case Encoder</span>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>

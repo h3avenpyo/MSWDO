@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="user-role" content="{{ session('admin_user_role') }}">
+    <meta name="user-name" content="{{ session('admin_user_name') ?? 'Social Case Study Officer' }}">
     <title>@yield('title', 'Social Case Study System')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2312,6 +2314,29 @@
             }
         });
     });
+
+    (function () {
+        var roleMeta = document.querySelector('meta[name="user-role"]');
+        var role = roleMeta ? roleMeta.getAttribute('content') : '';
+        var disabledHrefs = [];
+        if (role === 'eligibility_checker') {
+            disabledHrefs = ['/admin/social-case/cases', '/admin/social-case/archive'];
+        } else if (role === 'social_worker') {
+            disabledHrefs = ['/admin/social-case/new'];
+        }
+        disabledHrefs.forEach(function (fragment) {
+            document.querySelectorAll('.sidebar-menu a').forEach(function (a) {
+                var href = a.getAttribute('href') || '';
+                if (href.indexOf(fragment) !== -1) {
+                    a.setAttribute('aria-disabled', 'true');
+                    a.style.pointerEvents = 'none';
+                    a.style.opacity = '0.45';
+                    a.style.cursor = 'not-allowed';
+                    a.addEventListener('click', function (e) { e.preventDefault(); });
+                }
+            });
+        });
+    })();
 </script>
 </body>
 </html>

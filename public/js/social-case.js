@@ -28,6 +28,12 @@ let view = {tab:"dashboard", caseId:null, docAgency:null, newCaseStep:"search", 
 let selectedAgency = "PCSO";
 let draftIntake = null;
 
+/* ---------------- Role / permission helpers ---------------- */
+const CURRENT_USER_ROLE = (document.querySelector('meta[name="user-role"]')?.content || '').toLowerCase();
+const CAN_CHECK_ELIGIBILITY = CURRENT_USER_ROLE === 'eligibility_checker' || CURRENT_USER_ROLE === 'admin';
+const CAN_ENCODE = CURRENT_USER_ROLE === 'social_worker' || CURRENT_USER_ROLE === 'admin';
+const IS_PURE_ELIGIBILITY_CHECKER = CAN_CHECK_ELIGIBILITY && !CAN_ENCODE;
+
 /* ---- Activity Tracking ---- */
 async function logActivity(action, details, caseInfo = null) {
   try {
@@ -603,6 +609,7 @@ function blankIntake(name){
   const today = todayISO();
   return {
     id: uid(),
+    caseId: null,
     status: "Draft",
     createdAt: today,
     updatedAt: today,
@@ -619,10 +626,87 @@ function blankIntake(name){
   };
 }
 
-function proceedToIntake(){
-  draftIntake = blankIntake(view.eligClientName || '');
-  sessionStorage.setItem('intake_clientName', view.eligClientName || '');
+function proceedToIntake(caseId = null, clientName = null){
+  const name = clientName || view.eligClientName || '';
+  draftIntake = blankIntake(name);
+  sessionStorage.setItem('intake_clientName', name);
+  if(caseId){
+    sessionStorage.setItem('intake_caseId', caseId);
+  } else {
+    sessionStorage.removeItem('intake_caseId');
+  }
   window.location.href = '/admin/social-case/intake';
+}
+
+async function submitForEncoding(){
+  const name = (view.eligClientName || '').trim();
+  if(!name){
+    Swal.fire({icon:'warning', title:'No client selected', text:'Please search and select a client first.', confirmButtonColor:'#1A237E'});
+    return;
+  }
+
+  const confirm = await Swal.fire({
+    title: 'Submit for Case Encoding?',
+    html: `Forward <strong>${escapeHtml(name)}</strong> to the case encoder for encoding?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Submit',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#1A237E',
+    cancelButtonColor: '#6B7280',
+    background: '#ffffff',
+    customClass: { popup: 'rounded-4 shadow-lg' }
+  });
+
+  if(!confirm.isConfirmed) return;
+
+  try {
+    const response = await fetch('/admin/social-case/api/eligibility/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({client_name: name})
+    });
+
+    const data = await response.json();
+    if(!response.ok){
+      Swal.fire({
+        title: 'Cannot Submit',
+        html: escapeHtml(data.error || 'Failed to submit the client. Please try again.'),
+        icon: 'error',
+        confirmButtonColor: '#DC2626'
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: 'Forwarded!',
+      text: data.message || 'Client passed eligibility and was forwarded for case encoding.',
+      icon: 'success',
+      confirmButtonColor: '#1A237E'
+    });
+
+    await loadCases();
+
+    setView({eligMatch: null, selectedClient: null, eligClientName: '', checkerResult: null});
+    const searchInput = document.getElementById('elig-name');
+    if(searchInput) searchInput.value = '';
+    const results = document.getElementById('searchResults');
+    if(results) results.style.display = 'none';
+    const summary = document.getElementById('clientSummary');
+    if(summary) summary.style.display = 'none';
+    const status = document.getElementById('eligibilityStatus');
+    if(status) status.innerHTML = '';
+
+    if(CAN_ENCODE) renderEncoderQueue();
+    lucide.createIcons();
+  } catch(e){
+    console.error('Error submitting eligibility:', e);
+    Swal.fire({title:'Error', text:'Failed to submit the client. Please try again.', icon:'error', confirmButtonColor:'#DC2626'});
+  }
 }
 
 function updateWorkflowStep(stepNumber){
@@ -1348,9 +1432,57 @@ function initCharts(){
 /* ---------------- Rendering: New case ---------------- */
 async function loadNewCase(){
   await loadCases();
-  view = {tab:"newCase", newCaseStep:"search", eligClientName:"", eligOverride:false, eligMatch:null, selectedClient:null};
+  view = {tab:"newCase", newCaseStep:"search", eligClientName:"", eligOverride:false, eligMatch:null, selectedClient:null, checkerResult:null};
   renderNewCase();
+  if(CAN_ENCODE) renderEncoderQueue();
   lucide.createIcons();
+}
+
+function renderEncoderQueue(){
+  const container = document.getElementById('encoderQueue');
+  if(!container) return;
+
+  const waiting = cases.filter(c => c.eligibilityStatus === 'eligible' && c.status === 'Draft' && c.eligibleBy && !(c.interview && c.interview.interviewSituation));
+
+  if(waiting.length === 0){
+    container.innerHTML = `
+      <div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">
+        <i data-lucide="inbox" style="width:28px;height:28px;margin:0 auto 8px;display:block;color:#D1D5DB"></i>
+        No clients are waiting for case encoding.
+      </div>`;
+    lucide.createIcons();
+    return;
+  }
+
+  container.innerHTML = waiting.map(c => `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:var(--surface)">
+      <div style="min-width:0">
+        <div style="font-weight:600;color:#111827;font-size:14px">${escapeHtml(c.client?.name || 'Unnamed')}</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px">
+          ${escapeHtml(String(c.client?.age || ''))} • ${escapeHtml(c.client?.sex || c.client?.gender || '')} • ${escapeHtml(c.client?.address || c.client?.barangay || '—')}
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">
+          Forwarded by ${escapeHtml(c.eligibleByUser?.name || 'Eligibility Checker')}${c.eligibleAt ? ' • ' + fmtDate(c.eligibleAt) : ''}
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button class="btn primary btn-sm" onclick="startEncodingFromQueue('${c.id}', '${escapeHtml(c.client?.name || '')}')">
+          <i data-lucide="pen-line" style="width:14px;height:14px"></i> Encode
+        </button>
+      </div>
+    </div>`).join('');
+
+  lucide.createIcons();
+}
+
+async function startEncodingFromQueue(caseId, clientName){
+  if(!clientName || clientName === 'Unnamed'){
+    Swal.fire({icon:'warning', title:'Missing client name', text:'This case has no client name to pre-fill. Please encode it manually.', confirmButtonColor:'#1A237E'});
+    return;
+  }
+  sessionStorage.setItem('intake_caseId', caseId);
+  sessionStorage.setItem('intake_clientName', clientName);
+  window.location.href = '/admin/social-case/intake';
 }
 
 function renderNewCase(){
@@ -1363,7 +1495,15 @@ function renderNewCase(){
   if(searchInput && view.eligClientName){
     searchInput.value = view.eligClientName;
   }
-  
+
+  // Pure eligibility checkers use the server-side result card only
+  if(IS_PURE_ELIGIBILITY_CHECKER){
+    if(view.checkerResult){
+      renderCheckerEligibilityResult(view.checkerResult);
+    }
+    return;
+  }
+
   // Render search results if available
   if(view.eligClientName && view.eligClientName.length >= 2){
     renderSearchResults(view.eligClientName);
@@ -1535,11 +1675,9 @@ function renderClientSummary(client){
   
   container.style.display = 'block';
   
-  // Get initials for avatar
+  // Get name for display
   const name = client.client.name || 'Unknown';
-  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
   
-  document.getElementById('clientAvatar').textContent = initials;
   document.getElementById('clientNameDisplay').textContent = name;
   document.getElementById('clientAge').textContent = client.client.age || '—';
   document.getElementById('clientSex').textContent = client.client.sex || '—';
@@ -1562,9 +1700,9 @@ function renderEligibilityStatus(match){
         <div class="status-desc">
           ${match ? `No Social Case Study within the last 6 months. Last case study was released on ${fmtDate(match.releasedDate)}.` : 'No prior case study found for this client.'}
         </div>
-        <button class="btn primary" style="margin-top:16px;width:100%" onclick="proceedToIntake()">
-          <i data-lucide="arrow-right" style="width:16px;height:16px"></i> Continue to Case Encoding
-        </button>
+        ${IS_PURE_ELIGIBILITY_CHECKER
+          ? `<button class="btn primary" style="margin-top:16px;width:100%" onclick="submitForEncoding()"><i data-lucide="send" style="width:16px;height:16px"></i> Submit for Case Encoding</button>`
+          : `<button class="btn primary" style="margin-top:16px;width:100%" onclick="proceedToIntake()"><i data-lucide="arrow-right" style="width:16px;height:16px"></i> Continue to Case Encoding</button>`}
       </div>
     `;
     
@@ -1638,16 +1776,17 @@ function renderEligibilityStatus(match){
             </div>
           </div>
           
+          ${CAN_ENCODE ? `
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
             <input type="checkbox" id="overrideCheck" ${view.eligOverride ? 'checked' : ''} style="width: 18px; height: 18px; cursor: pointer;">
             <label for="overrideCheck" style="font-size: 13px; color: #374151; cursor: pointer;">Override and proceed anyway (requires supervisor approval)</label>
-          </div>
+          </div>` : ''}
         </div>
       `,
       icon: 'warning',
       iconColor: '#DC2626',
-      showCancelButton: true,
-      confirmButtonText: 'Continue to Case Encoding',
+      showCancelButton: CAN_ENCODE,
+      confirmButtonText: CAN_ENCODE ? 'Continue to Case Encoding' : 'OK',
       cancelButtonText: 'Cancel',
       confirmButtonColor: '#1E3A8A',
       cancelButtonColor: '#6B7280',
@@ -1656,6 +1795,7 @@ function renderEligibilityStatus(match){
         title: 'swal2-title-custom'
       },
       didOpen: () => {
+        if(!CAN_ENCODE) return;
         const overrideCheck = document.getElementById('overrideCheck');
         const confirmBtn = Swal.getConfirmButton();
         
@@ -1672,6 +1812,7 @@ function renderEligibilityStatus(match){
         confirmBtn.style.opacity = view.eligOverride ? '1' : '0.5';
       },
       preConfirm: () => {
+        if(!CAN_ENCODE) return true;
         if(!view.eligOverride){
           Swal.showValidationMessage('Please check the override checkbox to proceed');
           return false;
@@ -1728,8 +1869,139 @@ async function startEligibilityCheck(){
   await loadCases();
   
   view.eligClientName = name;
-  renderSearchResults(name);
+
+  if(IS_PURE_ELIGIBILITY_CHECKER){
+    await runServerEligibilityCheck(name);
+  } else {
+    renderSearchResults(name);
+  }
   lucide.createIcons();
+}
+
+async function runServerEligibilityCheck(name){
+  const results = document.getElementById('searchResults');
+  const status = document.getElementById('eligibilityStatus');
+
+  const btn = document.querySelector('button[onclick^="startEligibilityCheck"]');
+  if(btn) btn.disabled = true;
+  if(status) status.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-muted)"><i data-lucide="loader-2" style="width:20px;height:20px;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px"></i> Checking eligibility...</div>';
+
+  try {
+    const response = await fetch('/admin/social-case/api/eligibility/check', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({client_name: name})
+    });
+
+    const data = await response.json();
+    if(!response.ok){
+      throw new Error(data.error || 'Eligibility check failed');
+    }
+
+    renderCheckerEligibilityResult(data);
+    view.checkerResult = data;
+  } catch(e){
+    console.error('Eligibility check error:', e);
+    if(status){
+      status.innerHTML = '';
+    }
+    Swal.fire({icon:'error', title:'Check Failed', text:'Unable to complete the eligibility check. Please try again.', confirmButtonColor:'#DC2626'});
+  } finally {
+    if(btn) btn.disabled = false;
+    if(results) results.style.display = 'none';
+    lucide.createIcons();
+  }
+}
+
+function renderCheckerEligibilityResult(data){
+  const summary = document.getElementById('clientSummary');
+  const status = document.getElementById('eligibilityStatus');
+  const results = document.getElementById('searchResults');
+  if(results) results.style.display = 'none';
+
+  const client = data.client;
+
+  if(summary){
+    if(client){
+      summary.style.display = 'block';
+      document.getElementById('clientNameDisplay').textContent = client.full_name || client.name || view.eligClientName;
+      document.getElementById('clientAge').textContent = client.age || '—';
+      document.getElementById('clientSex').textContent = client.sex || client.gender || '—';
+      document.getElementById('clientBarangay').textContent = client.address || client.barangay || '—';
+      document.getElementById('clientLastCase').textContent = data.last_assistance_date ? fmtDate(data.last_assistance_date) : 'None';
+    } else {
+      summary.style.display = 'none';
+    }
+  }
+
+  if(!status) return;
+
+  if(!data.eligible){
+    const reason = data.blocking
+      ? `Received ${escapeHtml(data.blocking.assistance_type)} assistance on ${fmtDate(data.blocking.release_date)}.`
+      : 'An approved / released assistance was provided within the last 6 months.';
+    status.innerHTML = `
+      <div class="eligibility-card" style="border-color:#DC2626;background:#FEF2F2">
+        <div class="status-icon" style="color:#DC2626"><i data-lucide="x-circle" style="width:24px;height:24px"></i></div>
+        <div class="status-title" style="color:#DC2626">Not Eligible</div>
+        <div class="status-desc">
+          ${reason}<br>
+          ${data.eligible_again_date ? `<strong>Eligible again on:</strong> ${fmtDate(data.eligible_again_date)}` : ''}
+        </div>
+      </div>`;
+    lucide.createIcons();
+    return;
+  }
+
+  if(data.existing_case){
+    const ec = data.existing_case;
+    const statusBadge = `<span class="badge ${STATUS_CLASS[ec.status] || 'b-draft'}">${escapeHtml(ec.status || '—')}</span>`;
+    if(summary) summary.style.display = 'none';
+    status.innerHTML = `
+      <div class="eligibility-card" style="border-color:#D97706;background:#FFFBEB">
+        <div class="status-icon" style="color:#D97706"><i data-lucide="alert-circle" style="width:24px;height:24px"></i></div>
+        <div class="status-title" style="color:#B45309">Already Has an Active Case</div>
+        <div class="status-desc">
+          <strong style="color:#111827">${escapeHtml(ec.case_number || 'Unknown case')}</strong> ${statusBadge}<br>
+          This client already has an active case record and cannot be forwarded for a new case encoding. Please review the existing case instead.
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <a class="btn primary" style="flex:1;text-decoration:none;justify-content:center" href="/admin/social-case/detail/${encodeURIComponent(ec.id)}">
+            <i data-lucide="eye" style="width:16px;height:16px"></i> View Existing Case
+          </a>
+          <button class="btn" style="flex:1;justify-content:center" onclick="resetEligibilityCheck()">
+            <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> Search Again
+          </button>
+        </div>
+      </div>`;
+  } else {
+    status.innerHTML = `
+      <div class="eligibility-card eligible">
+        <div class="status-icon"><i data-lucide="check-circle" style="width:24px;height:24px"></i></div>
+        <div class="status-title">Eligible</div>
+        <div class="status-desc">This client passed eligibility checking and can be forwarded for case encoding.</div>
+        <button class="btn primary" style="margin-top:16px;width:100%" onclick="submitForEncoding()">
+          <i data-lucide="send" style="width:16px;height:16px"></i> Submit for Case Encoding
+        </button>
+      </div>`;
+  }
+  lucide.createIcons();
+}
+
+function resetEligibilityCheck(){
+  setView({eligClientName: '', eligMatch: null, selectedClient: null, checkerResult: null, eligOverride: false});
+  const searchInput = document.getElementById('elig-name');
+  if(searchInput) searchInput.value = '';
+  const results = document.getElementById('searchResults');
+  if(results) results.style.display = 'none';
+  const summary = document.getElementById('clientSummary');
+  if(summary) summary.style.display = 'none';
+  const status = document.getElementById('eligibilityStatus');
+  if(status) status.innerHTML = '';
 }
 
 function proceedWithNewClient(clientName){
@@ -1750,7 +2022,11 @@ async function loadIntakeForm(){
   await loadCases();
   const savedName = sessionStorage.getItem('intake_clientName') || '';
   sessionStorage.removeItem('intake_clientName');
+  const urlParams = new URLSearchParams(window.location.search);
+  const caseId = urlParams.get('caseId') || sessionStorage.getItem('intake_caseId') || null;
+  sessionStorage.removeItem('intake_caseId');
   draftIntake = blankIntake(savedName);
+  draftIntake.caseId = caseId;
   renderIntakeForm();
   lucide.createIcons();
 }
@@ -2295,7 +2571,7 @@ function renderCaseList(){
   if(paginatedCases.length === 0){
     tableBody.innerHTML = `
       <tr class="empty-row">
-        <td colspan="7" class="empty-cell">
+        <td colspan="8" class="empty-cell">
           <div class="empty-state-content">
             <div class="empty-icon-wrap">
               <i data-lucide="folder-open"></i>
@@ -2310,12 +2586,21 @@ function renderCaseList(){
       </tr>
     `;
   }else{
-    tableBody.innerHTML = paginatedCases.map(c => `
+    tableBody.innerHTML = paginatedCases.map(c => {
+      const eligLabel = c.eligibilityStatus || 'pending';
+      const eligConfig = {
+        'pending':   {label:'Pending Eligibility', cls:'b-draft'},
+        'eligible':  {label:'Eligible', cls:'b-approved'},
+        'ineligible':{label:'Ineligible', cls:'b-archived'}
+      };
+      const elig = eligConfig[eligLabel] || eligConfig.pending;
+      return `
       <tr>
         <td data-label="Control No."><span class="control-no">${escapeHtml(c.controlNo)||"—"}</span></td>
         <td data-label="Client">${escapeHtml(c.client?.name)||"<span class=muted>Unnamed</span>"}</td>
         <td data-label="Type">${escapeHtml(c.purpose)}</td>
         <td data-label="Barangay">${escapeHtml(c.client?.address || c.client?.barangay || '—')}</td>
+        <td data-label="Eligibility"><span class="badge ${elig.cls}">${elig.label}</span></td>
         <td data-label="Status"><span class="badge ${STATUS_CLASS[c.status]}">${c.status}</span></td>
         <td data-label="Created">${fmtDate(c.createdAt)}</td>
         <td data-label="Action">
@@ -2323,22 +2608,20 @@ function renderCaseList(){
             <button style="background-color: #1A237E; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); showCaseDetailsModal('${c.id}')" title="View">
               <i data-lucide="eye" style="width:16px;height:16px; color:#ffffff;"></i>
             </button>
-            ${c.status === 'Approved' ? `
+            ${CAN_ENCODE && c.status === 'Approved' ? `
               <button style="background-color: #FBC02D; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); window.location.href='/admin/social-case/document/${c.id}/PCSO'" title="Print">
                 <i data-lucide="printer" style="width:16px;height:16px; color:#121858;"></i>
               </button>
             ` : ''}
-            ${c.status !== 'Archived' ? `
+            ${CAN_ENCODE && c.status !== 'Archived' ? `
               <button style="background-color: #dc3545; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); deleteCase('${c.id}', true)" title="Archive">
                 <i data-lucide="archive" style="width:16px;height:16px; color:#ffffff;"></i>
               </button>
-            ` : `
-              <span style="font-size:11px;color:#9CA3AF;font-style:italic;padding:0 4px;display:flex;align-items:center;">Archived</span>
-            `}
+            ` : ''}
           </div>
         </td>
-      </tr>
-    `).join("");
+      </tr>`;
+    }).join("");
   }
 
   // Update pagination info
