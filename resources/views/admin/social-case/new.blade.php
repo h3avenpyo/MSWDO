@@ -32,6 +32,39 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     </div>
 </div>
 
+<style>
+    /* new.blade.php scoped */
+    .main { padding-top: 14px !important; }
+    @media (max-width: 767.98px) { .main { padding-top: 72px !important; } }
+    .role-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 18px;
+        border-radius: 10px;
+        margin-bottom: 16px;
+    }
+    .role-banner i, .role-banner svg { flex-shrink: 0; margin-top: 2px; }
+    .role-banner-text { flex: 1; min-width: 0; }
+    .role-banner-title { font-weight: 700; font-size: 14px; line-height: 1.4; }
+    .role-banner-subtitle {
+        font-size: 13px;
+        line-height: 1.5;
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+    .page-subtitle {
+        color: #6B7280;
+        font-size: 0.875rem;
+        margin: 0;
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        line-height: 1.5;
+    }
+</style>
+
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <i data-lucide="file-text" style="width:24px;height:24px"></i>
@@ -64,18 +97,18 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         }
     @endphp
     <!-- Page Sub-Header -->
-    <div class="mb-6">
+    <div style="margin-bottom:20px;">
         @if($canCheckEligibility && !$canEncode)
-            <div style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin-bottom:16px">
-                <i data-lucide="shield-check" style="width:20px;height:20px;color:#4338CA;flex-shrink:0"></i>
-                <div>
-                    <div style="font-weight:700;color:#4338CA;font-size:14px">Eligibility Checking Only</div>
-                    <div style="font-size:13px;color:#4F46E5">Your account is responsible for verifying client eligibility. Eligible clients are forwarded to the case encoder for Social Case Study encoding.</div>
+            <div class="role-banner" style="background:#EEF2FF;border:1px solid #C7D2FE;">
+                <i data-lucide="shield-check" style="width:20px;height:20px;color:#4338CA;"></i>
+                <div class="role-banner-text">
+                    <div class="role-banner-title" style="color:#4338CA;">Eligibility Checking Only</div>
+                    <div class="role-banner-subtitle" style="color:#4F46E5;">Your account is responsible for verifying client eligibility. Eligible clients are forwarded to the case encoder for Social Case Study encoding.</div>
                 </div>
             </div>
-            <p class="text-[#6B7280] text-sm m-0">Search for an existing client, verify their eligibility, then submit eligible clients for case encoding.</p>
+            <p class="page-subtitle">Search for an existing client, verify their eligibility, then submit eligible clients for case encoding.</p>
         @else
-            <p class="text-[#6B7280] text-sm m-0">Step 1 of 2 — Search for an existing client and verify eligibility before starting a new Social Case Study. Clients forwarded by the eligibility checker are listed below.</p>
+            <p class="page-subtitle">Step 1 of 2 — Search for an existing client and verify eligibility before starting a new Social Case Study. Clients forwarded by the eligibility checker are listed below.</p>
         @endif
     </div>
 

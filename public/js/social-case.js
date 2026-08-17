@@ -978,7 +978,13 @@ function renderArchive(){
     const pagInfo = document.getElementById('archivePaginationInfo');
     if(pagInfo) pagInfo.textContent = 'Showing 0 of 0 Archived Cases';
     const pagControls = document.getElementById('archivePaginationControls');
-    if(pagControls) pagControls.innerHTML = '';
+    if(pagControls) {
+      pagControls.innerHTML = `
+        <button class="sc-page-btn" disabled><i data-lucide="chevron-left" style="width:14px;height:14px"></i> Previous</button>
+        <button class="sc-page-btn active" disabled>1</button>
+        <button class="sc-page-btn" disabled>Next <i data-lucide="chevron-right" style="width:14px;height:14px"></i></button>
+      `;
+    }
   } else {
     // Pagination
     const pageSize = 10;
@@ -2650,7 +2656,7 @@ function renderCaseList(){
   if(paginatedCases.length === 0){
     tableBody.innerHTML = `
       <tr class="empty-row">
-        <td colspan="8" class="empty-cell">
+        <td colspan="7" class="empty-cell">
           <div class="empty-state-content">
             <div class="empty-icon-wrap">
               <i data-lucide="folder-open"></i>
@@ -2666,20 +2672,12 @@ function renderCaseList(){
     `;
   }else{
     tableBody.innerHTML = paginatedCases.map(c => {
-      const eligLabel = c.eligibilityStatus || 'pending';
-      const eligConfig = {
-        'pending':   {label:'Pending Eligibility', cls:'b-draft'},
-        'eligible':  {label:'Eligible', cls:'b-approved'},
-        'ineligible':{label:'Ineligible', cls:'b-archived'}
-      };
-      const elig = eligConfig[eligLabel] || eligConfig.pending;
       return `
       <tr>
         <td data-label="Control No."><span class="control-no">${escapeHtml(c.controlNo)||"—"}</span></td>
         <td data-label="Client">${escapeHtml(c.client?.name)||"<span class=muted>Unnamed</span>"}</td>
         <td data-label="Type">${escapeHtml(c.purpose)}</td>
         <td data-label="Barangay">${escapeHtml(c.client?.address || c.client?.barangay || '—')}</td>
-        <td data-label="Eligibility"><span class="badge ${elig.cls}">${elig.label}</span></td>
         <td data-label="Status"><span class="badge ${STATUS_CLASS[c.status]}">${c.status}</span></td>
         <td data-label="Created">${fmtDate(c.createdAt)}</td>
         <td data-label="Action">

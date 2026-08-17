@@ -33,17 +33,53 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 </div>
 
 <style>
+    /* Dashboard-scoped overrides */
     .main {
         padding-top: 14px !important;
     }
-    @media (max-width: 767px) {
+    @media (max-width: 767.98px) {
         .main {
-            padding-top: 68px !important;
+            padding-top: 72px !important;
         }
     }
     .main > header {
         margin-top: 0 !important;
         padding-top: 0 !important;
+    }
+    /* Role banners: never clip text, flex-wrap on mobile */
+    .role-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 18px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        flex-wrap: nowrap;
+    }
+    .role-banner i, .role-banner svg {
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    .role-banner-text {
+        flex: 1;
+        min-width: 0;
+    }
+    .role-banner-title {
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+    .role-banner-subtitle {
+        font-size: 13px;
+        line-height: 1.5;
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+    @media (max-width: 575.98px) {
+        .role-banner { padding: 12px 14px; gap: 10px; }
+        .role-banner-title { font-size: 13px; }
+        .role-banner-subtitle { font-size: 12px; }
     }
 </style>
 
@@ -94,19 +130,19 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         $dashIsEncoder = in_array($dashRole, ['social_worker', 'admin'], true);
     @endphp
     @if($dashIsChecker)
-    <div style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin-bottom:24px">
-        <i data-lucide="shield-check" style="width:20px;height:20px;color:#4338CA;flex-shrink:0"></i>
-        <div>
-            <div style="font-weight:700;color:#4338CA;font-size:14px">Eligibility Checking Only</div>
-            <div style="font-size:13px;color:#4F46E5">Your account only performs client eligibility checks and forwards eligible clients for case encoding. You cannot encode or modify Social Case Study information.</div>
+    <div class="role-banner" style="background:#EEF2FF;border:1px solid #C7D2FE;">
+        <i data-lucide="shield-check" style="width:20px;height:20px;color:#4338CA;"></i>
+        <div class="role-banner-text">
+            <div class="role-banner-title" style="color:#4338CA;">Eligibility Checking Only</div>
+            <div class="role-banner-subtitle" style="color:#4F46E5;">Your account only performs client eligibility checks and forwards eligible clients for case encoding. You cannot encode or modify Social Case Study information.</div>
         </div>
     </div>
     @elseif($dashIsEncoder)
-    <div style="background:#ECFDF5;border:1px solid #A7F3D0;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin-bottom:24px">
-        <i data-lucide="file-pen-line" style="width:20px;height:20px;color:#059669;flex-shrink:0"></i>
-        <div>
-            <div style="font-weight:700;color:#065F46;font-size:14px">Case Encoding Account</div>
-            <div style="font-size:13px;color:#047857">Your account is authorized to encode, update, print, and process Social Case Studies for eligible clients.</div>
+    <div class="role-banner" style="background:#ECFDF5;border:1px solid #A7F3D0;">
+        <i data-lucide="file-pen-line" style="width:20px;height:20px;color:#059669;"></i>
+        <div class="role-banner-text">
+            <div class="role-banner-title" style="color:#065F46;">Case Encoding Account</div>
+            <div class="role-banner-subtitle" style="color:#047857;">Your account is authorized to encode, update, print, and process Social Case Studies for eligible clients.</div>
         </div>
     </div>
     @endif

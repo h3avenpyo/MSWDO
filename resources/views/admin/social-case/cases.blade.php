@@ -33,344 +33,250 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 </div>
 
 <style>
-    html,body{overflow-x:hidden!important;overflow-y:auto!important}
-    .app{min-height:auto!important}
-    .main{display:flex!important;flex-direction:column!important;overflow-x:hidden!important;overflow-y:auto!important}
-    @media (min-width:1200px){
-        html,body{overflow:hidden!important}
-        .app{height:100vh!important;overflow:hidden!important}
-        .main{height:100vh!important;overflow:hidden!important;overflow-x:hidden!important;overflow-y:hidden!important}
-    }
-    #searchInput:focus{border-color:#1A237E;box-shadow:0 0 0 3px rgba(26,35,126,.08)}
-    .status-opt.selected,.assistance-opt.selected,.barangay-opt.selected{background:#F3F4F6;font-weight:600}
-    .status-opt:not(.selected):hover,.assistance-opt:not(.selected):hover,.barangay-opt:not(.selected):hover{background:#F3F4F6}
-    
-    /* Color-coded filter buttons when active */
-    #barangayBtn.active {
-        border-color: #059669;
-        background: #ECFDF5;
-        color: #065F46;
-    }
-    #barangayBtn.active i[data-lucide="map-pin"] { color: #059669; }
-    
-    #statusBtn.active {
-        border-color: #1A237E;
-        background: #EEF2FF;
-    }
-    #statusBtn.active i[data-lucide="filter"] { color: #1A237E; }
-
-    #assistanceBtn.active {
-        border-color: #1A237E;
-        background: #EEF2FF;
-    }
-    #assistanceBtn.active i[data-lucide="filter"] { color: #1A237E; }
-
-    /* Archive: card layout for table (mobile first) */
-    .archive-panel-wrap { padding: 1rem !important; margin-bottom: 1rem !important; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); }
-    .archive-filter-bar { flex-direction: column !important; gap: 10px !important; padding: 12px !important; }
-    .archive-filter-bar > div { min-width: 0 !important; max-width: none !important; width: 100% !important; }
-    .archive-filter-row-inline { flex-wrap: wrap; gap: 8px; }
-    .archive-filter-row-inline > div { min-width: 0 !important; flex: 1; }
-    .archive-table-wrap { border: none !important; overflow: visible !important; }
-    .archive-table { width: 100%; }
-    .archive-table thead { display: none; }
-    .archive-table tbody tr {
-        display: block;
-        background: var(--surface);
-        border: 1px solid #D1D5DB;
-        border-radius: 10px;
-        margin-bottom: 10px;
-        padding: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-    .archive-table tbody td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 6px 0;
-        border: none;
-        font-size: 0.82rem;
-        gap: 8px;
-    }
-    .archive-table tbody td:not(:last-child) {
-        border-bottom: 1px solid var(--border);
-    }
-    .archive-table tbody td::before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: var(--text-secondary);
-        font-size: 0.72rem;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
-        flex-shrink: 0;
-        min-width: 70px;
-    }
-    .archive-table tbody td[data-label="Action"] {
-        justify-content: flex-end;
-        padding-top: 8px;
-        border-bottom: none;
-    }
-    .archive-table tbody td[data-label="Action"]::before { display: none; }
-    .archive-table tbody td:not([data-label]) { justify-content: center; text-align: center; }
-    .archive-table tbody td:not([data-label])::before { display: none; }
-    .archive-table tbody td .actions { justify-content: flex-end; }
-    .archive-table tbody td .badge { font-size: 0.7rem; }
-    .sc-pagination { gap: 8px; margin-top: 1rem; }
-    .sc-page-btn { height: 34px; min-width: 34px; font-size: 0.8rem; padding: 0 0.5rem; }
-
-    @media (min-width: 768px) and (max-width: 991px) {
-        .archive-panel-wrap { padding: revert !important; margin-bottom: 0 !important; }
-        .archive-filter-bar { flex-direction: row !important; gap: 8px !important; padding: 10px 12px !important; flex-wrap: nowrap; }
-        .archive-filter-bar > div { min-width: initial; max-width: initial; width: initial; }
-        .archive-filter-bar > div:first-child { max-width: 200px; flex: 0 0 auto; }
-        .archive-filter-row-inline { gap: 8px; flex-wrap: nowrap; flex: 1; min-width: 0; }
-        .archive-filter-row-inline > div { min-width: 0 !important; flex: 1; }
-        .archive-table-wrap { border: initial; overflow: auto; }
-        .archive-table thead { display: table-header-group; }
-        .archive-table tbody tr {
-            display: table-row;
-            background: transparent;
-            border: none;
-            border-radius: 0;
-            margin-bottom: 0;
-            padding: 0;
-            box-shadow: none;
-        }
-        .archive-table tbody td {
-            display: table-cell;
-            padding: 0.5rem 0.6rem;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.82rem;
-        }
-        .archive-table tbody td::before { content: none; }
-        .archive-table tbody td[data-label="Action"] {
-            padding-top: 0.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-        .archive-table tbody td[data-label="Action"]::before { content: none; }
-        .archive-table tbody td:not([data-label]) { text-align: initial; }
-        .archive-table tbody td:not([data-label])::before { content: none; }
-        .archive-table tbody td .badge { font-size: inherit; }
-        .sc-pagination { gap: 0.5rem; margin-top: 0; }
-        .sc-page-btn { height: auto; min-width: auto; font-size: inherit; padding: 0.5rem 0.75rem; }
-    }
-    @media (min-width: 992px) and (max-width: 1199px) {
-        .archive-panel-wrap { padding: revert !important; margin-bottom: 0 !important; }
-        .archive-filter-bar { flex-direction: row !important; gap: 12px !important; padding: 14px 16px !important; flex-wrap: nowrap; }
-        .archive-filter-bar > div { min-width: initial; max-width: initial; width: initial; }
-        .archive-filter-row-inline { gap: 10px; flex-wrap: nowrap; }
-        .archive-filter-row-inline > div { min-width: 140px; }
-        .archive-table-wrap { border: initial; overflow: auto; }
-        .archive-table thead { display: table-header-group; }
-        .archive-table tbody tr {
-            display: table-row;
-            background: transparent;
-            border: none;
-            border-radius: 0;
-            margin-bottom: 0;
-            padding: 0;
-            box-shadow: none;
-        }
-        .archive-table tbody td {
-            display: table-cell;
-            padding: 0.75rem 0.8rem;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.88rem;
-        }
-        .archive-table tbody td::before { content: none; }
-        .archive-table tbody td[data-label="Action"] {
-            padding-top: 0.75rem;
-            border-bottom: 1px solid var(--border);
-        }
-        .archive-table tbody td[data-label="Action"]::before { content: none; }
-        .archive-table tbody td:not([data-label]) { text-align: initial; }
-        .archive-table tbody td:not([data-label])::before { content: none; }
-        .archive-table tbody td .badge { font-size: inherit; }
-        .sc-pagination { gap: 0.5rem; margin-top: 0; }
-        .sc-page-btn { height: auto; min-width: auto; font-size: inherit; padding: 0.5rem 0.75rem; }
-    }
-
-    /* Base empty state styles */
-    .empty-row {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-    .empty-cell {
-        padding: 2.5rem 1rem !important;
-        border: none !important;
+    /* ── Cases page resets ── */
+    html, body { overflow-x: hidden !important; overflow-y: auto !important; }
+    .main {
         display: flex !important;
         flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        width: 100% !important;
+        padding-top: 14px !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
     }
-    .empty-cell::before { display: none !important; }
-    .empty-state-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
-    .empty-icon-wrap {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        background: #F3F4F6;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 16px;
-        color: #9CA3AF;
-    }
-    .empty-icon-wrap svg {
-        width: 32px;
-        height: 32px;
-    }
-    .empty-title {
-        font-size: 1.125rem;
-        font-weight: 700;
-        color: #1F2937;
-        margin-bottom: 4px;
-    }
-    .empty-subtitle {
-        font-size: 0.875rem;
-        color: #6B7280;
-    }
+    @media (max-width: 767.98px) { .main { padding-top: 72px !important; } }
 
-    /* Tablet (768-1199px): empty state stays a full-width centered row */
-    @media (min-width: 768px) and (max-width: 1199px) {
-        .archive-table tbody tr.empty-row { display: table-row !important; background: transparent !important; border: none !important; box-shadow: none !important; margin: 0 !important; }
-        .archive-table tbody tr.empty-row td.empty-cell {
-            display: table-cell !important;
-            padding: 2.5rem 1.5rem !important;
-            border: none !important;
-            text-align: center !important;
-        }
-        .archive-table tbody tr.empty-row td.empty-cell::before { display: none !important; }
-        .archive-table tbody tr.empty-row td.empty-cell .empty-state-content { align-items: center; justify-content: center; }
-    }
+    /* ── Subtitle ── */
+    .cases-subtitle { color: #6B7280; font-size: 0.85rem; margin: 0 0 10px; white-space: normal; overflow-wrap: break-word; line-height: 1.4; }
 
-    @media (min-width: 1200px) {
-        /* ── Panel & wrap: grow to fill all remaining height ── */
-        .archive-panel-wrap { padding: 1rem !important; margin-bottom: 0 !important; flex: 1 !important; min-height: 0 !important; overflow: hidden !important; display: flex !important; flex-direction: column !important; }
-        .archive-table-wrap { flex: 1 !important; min-height: 0 !important; border: 1px solid var(--border) !important; overflow: auto !important; border-radius: 8px !important; }
+    /* ── Filter bar ── */
+    .cases-filter-bar { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 12px 14px; background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; }
+    .filter-item { display: flex; flex-direction: column; justify-content: flex-end; position: relative; }
+    .filter-label { display: block; font-size: 0.72rem; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; line-height: 1; white-space: nowrap; }
+    
+    .filter-search { flex: 1.4 1 200px; min-width: 170px; max-width: 280px; }
+    .search-input-wrap { display: flex; align-items: center; height: 40px; }
+    .search-input-wrap input { flex: 1; height: 40px; border: 1px solid #D1D5DB; border-right: none; border-radius: 6px 0 0 6px; padding: 0 0.85rem; font-size: 0.85rem; color: #111827; background: #fff; outline: none; transition: border-color .15s, box-shadow .15s; }
+    .search-input-wrap input:focus { border-color: #1A237E; box-shadow: 0 0 0 3px rgba(26,35,126,.08); }
+    .search-input-wrap button { background: #1A237E; color: #fff; border: none; padding: 0 1rem; border-radius: 0 6px 6px 0; cursor: pointer; height: 40px; display: flex; align-items: center; justify-content: center; transition: background .15s; }
+    .search-input-wrap button:hover { background: #121858; }
 
-        /* ── Restore standard table display ── */
-        .archive-table { display: table !important; width: 100% !important; }
-        .archive-table thead { display: table-header-group !important; }
-        .archive-table tbody { display: table-row-group !important; }
-        .archive-table tbody tr {
-            display: table-row !important;
-            background: transparent !important;
-            border: none !important;
-            border-radius: 0 !important;
-            margin-bottom: 0 !important;
-            padding: 0 !important;
-            box-shadow: none !important;
-        }
-        .archive-table tbody td {
-            display: table-cell !important;
-            padding: 0.9rem 1rem !important;
-            border-bottom: 1px solid var(--border) !important;
-            font-size: 0.9rem !important;
-            justify-content: unset !important;
-            gap: 0 !important;
-        }
-        .archive-table tbody td::before { content: none !important; display: none !important; }
-        .archive-table tbody td[data-label="Action"] {
-            justify-content: flex-start !important;
-            padding-top: 0.9rem !important;
-            border-bottom: 1px solid var(--border) !important;
-        }
-        .archive-table tbody td[data-label="Action"]::before { display: none !important; }
-        .archive-table tbody td:not([data-label]) { text-align: left !important; }
-        .archive-table tbody td:not([data-label])::before { display: none !important; }
-        .archive-table tbody td .badge { font-size: inherit !important; }
+    .filter-dropdown { flex: 1 1 125px; min-width: 120px; }
+    .filter-select-btn { display: flex; align-items: center; gap: 6px; padding: 0 10px; height: 40px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 0.83rem; cursor: pointer; background: #fff; transition: border-color .15s, box-shadow .15s; }
+    .filter-select-btn:hover { border-color: #9CA3AF; }
+    .filter-select-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #111827; font-weight: 500; }
+    .filter-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 50; max-height: 260px; overflow-y: auto; padding: 4px; }
 
-        /* ── Empty row (keep it centered across the full table row) ── */
-        .archive-table tbody tr.empty-row { display: table-row !important; background: transparent !important; border: none !important; box-shadow: none !important; margin: 0 !important; }
-        .archive-table tbody tr.empty-row td.empty-cell {
-            display: table-cell !important;
-            padding: 3rem 1.5rem !important;
-            border: none !important;
-            text-align: center !important;
-        }
-        .archive-table tbody tr.empty-row td.empty-cell::before { display: none !important; }
+    .filter-reset { flex: 0 0 auto; }
+    .filter-reset-btn { height: 40px; padding: 0 0.85rem; border: 1px solid #EF4444; border-radius: 6px; background: #fff; color: #EF4444; font-size: 0.813rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: all .15s; }
+    .filter-reset-btn:hover { background: #FEE2E2; }
 
-        .empty-icon-wrap {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 20px;
-            background: #EEF2FF;
-            color: #1A237E;
-        }
-        .empty-icon-wrap svg {
-            width: 40px !important;
-            height: 40px !important;
-        }
-        .empty-title {
-            font-size: 1.35rem !important;
-            font-weight: 700 !important;
-            color: #111827 !important;
-            margin-bottom: 8px !important;
-        }
-        .empty-subtitle {
-            font-size: 0.95rem !important;
-            color: #6B7280 !important;
-            max-width: 400px;
-            line-height: 1.5;
-        }
+    /* ── Dropdown options ── */
+    .status-opt.selected, .assistance-opt.selected, .barangay-opt.selected { background: #EEF2FF; color: #1A237E; font-weight: 600; }
+    .status-opt:hover, .assistance-opt:hover, .barangay-opt:hover { background: #F3F4F6; }
+    #statusBtn.active   { border-color: #1A237E; background: #EEF2FF; }
+    #assistanceBtn.active { border-color: #1A237E; background: #EEF2FF; }
+    #barangayBtn.active { border-color: #059669; background: #ECFDF5; color: #065F46; }
 
-        /* ── Filter bar ── */
-        .archive-filter-bar {
-            flex-direction: row !important;
-            flex-wrap: nowrap !important;
-            align-items: flex-end !important;
-            gap: 14px !important;
-            padding: 14px 18px !important;
+    /* ── Panel / wrap ── */
+    .cases-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 0; padding: 0; }
+    .cases-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; }
+
+    /* ── Table base ── */
+    #dataTable { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: auto; }
+    #dataTable thead tr { background: #F8FAFC; border-bottom: 2px solid #E2E8F0; }
+    #dataTable thead th { padding: 12px 14px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; white-space: nowrap; text-align: left; border-bottom: 2px solid #E2E8F0; }
+    #dataTable tbody tr { border-bottom: 1px solid #F1F5F9; transition: background .15s; }
+    #dataTable tbody tr:last-child { border-bottom: none; }
+    #dataTable tbody tr:hover { background: #F8FAFC; }
+    #dataTable tbody td { padding: 12px 14px; font-size: 0.875rem; color: #1E293B; vertical-align: middle; border-bottom: 1px solid #F1F5F9; }
+    
+    /* Column specific spacing */
+    #dataTable tbody td[data-label="Control No."] { min-width: 125px; white-space: nowrap; font-family: 'Courier New', monospace; font-size: 0.813rem; font-weight: 600; color: #1E293B; }
+    #dataTable tbody td[data-label="Client"] { min-width: 160px; max-width: 240px; font-weight: 600; color: #0F172A; white-space: normal; word-break: break-word; }
+    #dataTable tbody td[data-label="Type"] { min-width: 130px; white-space: nowrap; color: #334155; }
+    #dataTable tbody td[data-label="Barangay"] { min-width: 120px; white-space: nowrap; color: #475569; }
+
+    #dataTable tbody td[data-label="Status"] { min-width: 110px; white-space: nowrap; }
+    #dataTable tbody td[data-label="Created"] { min-width: 105px; white-space: nowrap; color: #64748B; font-size: 0.813rem; }
+    #dataTable tbody td[data-label="Action"] { min-width: 120px; white-space: nowrap; }
+
+    /* Badge & Button styling */
+    .badge { display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; line-height: 1.2; }
+    .actions { display: inline-flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
+    .actions button { width: 32px; height: 32px; min-width: 32px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; padding: 0 !important; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease; border: none; }
+    .actions button:hover { transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.15); opacity: 0.95; }
+    .actions button:active { transform: translateY(0); }
+
+    .control-no { font-family: 'Courier New', monospace; font-size: 0.78rem; color: #374151; font-weight: 600; }
+    .muted { color: #9CA3AF; font-style: italic; }
+
+    /* ── Pagination ── */
+    .sc-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-shrink: 0; padding: 4px 0; flex-wrap: wrap; }
+    .sc-pagination-info { font-size: 0.813rem; color: #6B7280; font-weight: 500; }
+    .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
+    .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
+    .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
+    .sc-page-btn.active { background: #1A237E; color: #fff; border-color: #1A237E; font-weight: 700; }
+    .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Empty state ── */
+    .empty-row { background: transparent !important; border: none !important; box-shadow: none !important; }
+    .empty-cell { padding: 3rem 1rem !important; text-align: center !important; border: none !important; }
+    .empty-cell::before { display: none !important; content: none !important; }
+    .empty-state-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .empty-icon-wrap { width: 72px; height: 72px; border-radius: 50%; background: #EEF2FF; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: #1A237E; }
+    .empty-icon-wrap svg { width: 36px; height: 36px; }
+    .empty-title { font-size: 1.125rem; font-weight: 700; color: #1F2937; margin-bottom: 6px; }
+    .empty-subtitle { font-size: 0.875rem; color: #6B7280; line-height: 1.5; max-width: 360px; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       MOBILE, TABLET & COLLAPSED SIDEBAR (< 1200px): CARD LAYOUT
+    ═══════════════════════════════════════════════════════════════ */
+    @media (max-width: 1199.98px) {
+        .cases-panel { background: transparent; border: none; padding: 0; box-shadow: none; }
+        .cases-table-wrap { overflow: visible; border: none; background: transparent; }
+
+        #dataTable, 
+        #dataTable thead, 
+        #dataTable tbody, 
+        #dataTable tbody tr, 
+        #dataTable tbody td { 
+            display: block !important; 
+            width: 100% !important; 
         }
-        /* Search box: fixed width, never shrinks */
-        .archive-filter-bar > div:first-child {
-            flex: 0 0 280px !important;
-            max-width: 280px !important;
-            width: 280px !important;
+        #dataTable { min-width: 0 !important; }
+        #dataTable thead { display: none !important; }
+
+        #dataTable tbody tr:not(.empty-row) { 
+            background: #ffffff !important; 
+            border: 1px solid #E2E8F0 !important; 
+            border-radius: 12px !important; 
+            margin-bottom: 12px !important; 
+            padding: 14px 18px !important; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important; 
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
-        /* Row that holds the dropdowns: stretch to fill remaining space */
-        .archive-filter-row-inline {
-            flex: 1 1 0 !important;
-            flex-wrap: nowrap !important;
-            gap: 12px !important;
-            min-width: 0 !important;
-        }
-        /* Each dropdown fills equal fraction */
-        .archive-filter-row-inline > div {
-            flex: 1 1 0 !important;
-            min-width: 140px !important;
-            max-width: none !important;
+        #dataTable tbody tr:not(.empty-row):hover { 
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
         }
 
-        /* ── Pagination: pinned at the bottom of .main, centered ── */
-        .sc-pagination { flex-direction: column !important; justify-content: center !important; align-items: center !important; gap: 8px !important; margin-top: 12px !important; flex-shrink: 0 !important; padding-bottom: 4px !important; }
-        .sc-page-btn { height: 38px; min-width: 38px; font-size: 0.875rem; padding: 0 0.75rem; }
+        #dataTable tbody td { 
+            display: flex !important; 
+            justify-content: space-between !important; 
+            align-items: center !important; 
+            padding: 8px 0 !important; 
+            border-bottom: 1px solid #F1F5F9 !important; 
+            font-size: 0.875rem !important; 
+            gap: 12px !important; 
+            white-space: normal !important; 
+            word-break: break-word !important; 
+            max-width: none !important; 
+            overflow: visible !important; 
+            min-width: 0 !important; 
+        }
+        #dataTable tbody td:last-child { 
+            border-bottom: none !important; 
+        }
+        #dataTable tbody td::before { 
+            content: attr(data-label) !important; 
+            font-weight: 700 !important; 
+            font-size: 0.72rem !important; 
+            text-transform: uppercase !important; 
+            letter-spacing: 0.04em !important; 
+            color: #64748B !important; 
+            flex-shrink: 0 !important; 
+            min-width: 100px !important; 
+            display: block !important; 
+        }
+        #dataTable tbody td[data-label="Action"] { 
+            justify-content: flex-end !important; 
+            padding-top: 12px !important; 
+            border-bottom: none !important; 
+        }
+        #dataTable tbody td[data-label="Action"]::before { 
+            display: none !important; 
+        }
+
+        #dataTable tbody tr.empty-row { 
+            border: none !important; 
+            box-shadow: none !important; 
+            background: transparent !important; 
+            padding: 0 !important; 
+        }
+        #dataTable tbody tr.empty-row td { 
+            border-bottom: none !important; 
+            justify-content: center !important; 
+        }
+        #dataTable tbody tr.empty-row td::before { 
+            display: none !important; 
+        }
     }
-    .barangay-opt:hover, .status-opt:hover, .assistance-opt:hover {
-        background: #F3F4F6;
+
+    /* Mobile-specific filter & pagination (< 768px) */
+    @media (max-width: 767.98px) {
+        .cases-filter-bar { 
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px; 
+            padding: 10px 12px; 
+            margin-bottom: 10px;
+        }
+        .filter-search { max-width: none; width: 100%; min-width: 0; }
+        .filter-dropdown { width: 100%; min-width: 0; }
+        .filter-reset { width: 100%; }
+        .filter-reset-btn { width: 100% !important; justify-content: center !important; }
+
+        .sc-pagination { flex-direction: column; align-items: center; gap: 8px; }
+        .sc-pagination-controls { justify-content: center; }
     }
-    .barangay-opt.selected, .status-opt.selected, .assistance-opt.selected {
-        background: #EEF2FF;
-        color: #1A237E;
-        font-weight: 600;
+    @media (min-width: 480px) and (max-width: 767.98px) {
+        .cases-filter-bar {
+            grid-template-columns: 1fr 1fr;
+        }
+        .filter-search { grid-column: 1 / -1; }
+        .filter-reset { grid-column: 1 / -1; }
     }
     @media (max-width: 479px) {
-        .archive-panel-wrap { padding: 0.75rem !important; }
-        .archive-table tbody td::before { min-width: 60px; font-size: 0.68rem; }
-        .archive-table tbody td { font-size: 0.78rem; }
+        #dataTable tbody td::before { min-width: 75px; font-size: 0.68rem; }
+        #dataTable tbody td { font-size: 0.813rem !important; }
+    }
+
+    /* Collapsed Sidebar Filter & Pagination (768px - 1199.98px) */
+    @media (min-width: 768px) and (max-width: 1199.98px) {
+        .cases-filter-bar { gap: 8px 10px; padding: 10px 14px; margin-bottom: 12px; flex-wrap: wrap; }
+        .filter-search { flex: 1 1 190px; min-width: 170px; max-width: 250px; }
+        .filter-dropdown { flex: 1 1 120px; min-width: 115px; }
+        .filter-reset { flex: 0 0 auto; }
+
+        .sc-pagination { flex-direction: row; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    }
+
+    /* ══════════════════════════════════
+       LARGE DESKTOP (1200px+): FULL TABLE
+    ══════════════════════════════════ */
+    @media (min-width: 1200px) {
+        html, body { overflow: hidden !important; }
+        .app { height: 100vh !important; overflow: hidden !important; }
+        .main { height: 100vh !important; overflow: hidden !important; }
+
+        .cases-filter-bar { flex-wrap: nowrap; gap: 10px; padding: 12px 16px; margin-bottom: 12px; }
+        .filter-search { flex: 0 0 260px; max-width: 260px; }
+        .filter-dropdown { flex: 1; min-width: 130px; }
+        .filter-reset { flex: 0 0 auto; }
+
+        .cases-panel { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+        .cases-table-wrap { flex: 1; min-height: 0; overflow: auto; border: 1px solid #E5E7EB; border-radius: 8px; }
+        #dataTable { min-width: 1000px; width: 100%; table-layout: auto; }
+        #dataTable thead th { padding: 12px 16px; font-size: 0.75rem; }
+        #dataTable tbody td { padding: 12px 16px; font-size: 0.875rem; }
+        #dataTable tbody td::before { display: none !important; content: none !important; }
+        #dataTable tbody tr.empty-row td.empty-cell { white-space: normal !important; overflow: visible !important; max-width: none !important; }
+
+        .sc-pagination { flex-direction: row; justify-content: space-between; margin-top: 12px; flex-shrink: 0; }
+        .sc-page-btn { height: 38px; }
     }
 </style>
+
 
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
@@ -393,73 +299,67 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
 <div class="main">
     <!-- Page Sub-Header -->
-    <div class="mb-6">
-        <p class="text-[#6B7280] text-sm m-0">View and manage all registered social case study records.</p>
-    </div>
+    <p class="cases-subtitle">View and manage all registered social case study records.</p>
 
     <!-- Search and Filter Bar -->
-    <div class="archive-filter-bar" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px">
-        <div style="max-width:280px;width:100%;flex-shrink:0;display:flex;flex-direction:column;justify-content:flex-end">
-            <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Search</label>
-            <div style="display:flex;align-items:center;height:44px;">
-                <input type="text" id="searchInput" placeholder="Search name, control no..."
-                       oninput="applyFilters()"
-                       style="flex:1;height:44px;border:1px solid #E5E7EB;border-right:none;border-radius:6px 0 0 6px;padding:0 1rem;font-size:0.875rem;color:#111827;background:#fff;transition:all .2s ease;outline:none;">
-                <button type="button" onclick="applyFilters()" style="background:#1A237E;color:#fff;border:none;padding:0 1.25rem;border-radius:0 6px 6px 0;cursor:pointer;height:44px;display:flex;align-items:center;justify-content:center;transition:background .2s;">
+    <div class="cases-filter-bar">
+        <div class="filter-item filter-search">
+            <label class="filter-label">Search</label>
+            <div class="search-input-wrap">
+                <input type="text" id="searchInput" placeholder="Search name, control no..." oninput="applyFilters()">
+                <button type="button" onclick="applyFilters()" title="Search">
                     <i data-lucide="search" style="width:16px;height:16px"></i>
                 </button>
             </div>
         </div>
-        <div class="archive-filter-row-inline" style="display:flex;gap:10px;flex:1;min-width:0">
-            <div style="position:relative;flex:1;min-width:130px;display:flex;flex-direction:column;justify-content:flex-end" id="statusDropdown">
-                <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Filter by Status</label>
-                <div onclick="toggleStatusMenu()" style="display:flex;align-items:center;gap:8px;padding:0 12px;height:44px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="statusBtn">
-                    <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
-                    <span id="statusLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Status</span>
-                    <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
-                </div>
-                <div id="statusMenu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;max-height:260px;overflow-y:auto;padding:4px"></div>
+        <div class="filter-item filter-dropdown" id="statusDropdown">
+            <label class="filter-label">Filter by Status</label>
+            <div onclick="toggleStatusMenu()" class="filter-select-btn" id="statusBtn">
+                <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
+                <span id="statusLabel" class="filter-select-label">All Status</span>
+                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
             </div>
-            <div style="position:relative;flex:1;min-width:130px;display:flex;flex-direction:column;justify-content:flex-end" id="assistanceDropdown">
-                <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Filter by Type</label>
-                <div onclick="toggleAssistanceMenu()" style="display:flex;align-items:center;gap:8px;padding:0 12px;height:44px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="assistanceBtn">
-                    <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
-                    <span id="assistanceLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Types</span>
-                    <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
-                </div>
-                <div id="assistanceMenu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;max-height:260px;overflow-y:auto;padding:4px"></div>
+            <div id="statusMenu" class="filter-menu" style="display:none"></div>
+        </div>
+        <div class="filter-item filter-dropdown" id="assistanceDropdown">
+            <label class="filter-label">Filter by Type</label>
+            <div onclick="toggleAssistanceMenu()" class="filter-select-btn" id="assistanceBtn">
+                <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
+                <span id="assistanceLabel" class="filter-select-label">All Types</span>
+                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
             </div>
-            <div style="position:relative;flex:1;min-width:130px;display:flex;flex-direction:column;justify-content:flex-end" id="barangayDropdown">
-                <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Filter by Barangay</label>
-                <div onclick="toggleBarangayMenu()" style="display:flex;align-items:center;gap:8px;padding:0 12px;height:44px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="barangayBtn">
-                    <i data-lucide="map-pin" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
-                    <span id="barangayLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Barangays</span>
-                    <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
-                </div>
-                <div id="barangayMenu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;max-height:260px;overflow-y:auto;padding:4px"></div>
+            <div id="assistanceMenu" class="filter-menu" style="display:none"></div>
+        </div>
+        <div class="filter-item filter-dropdown" id="barangayDropdown">
+            <label class="filter-label">Filter by Barangay</label>
+            <div onclick="toggleBarangayMenu()" class="filter-select-btn" id="barangayBtn">
+                <i data-lucide="map-pin" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
+                <span id="barangayLabel" class="filter-select-label">All Barangays</span>
+                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
             </div>
-            <div style="flex:0 0 auto;display:flex;flex-direction:column;justify-content:flex-end">
-                <button type="button" onclick="resetFilters()" style="width:fit-content;height:44px;padding:0 1rem;border:1px solid #EF4444;border-radius:8px;background:#fff;color:#EF4444;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-                    <i data-lucide="x" style="width:14px;height:14px"></i> Reset
-                </button>
-            </div>
+            <div id="barangayMenu" class="filter-menu" style="display:none"></div>
+        </div>
+        <div class="filter-item filter-reset">
+            <button type="button" class="filter-reset-btn" onclick="resetFilters()">
+                <i data-lucide="x" style="width:14px;height:14px"></i> Reset
+            </button>
         </div>
     </div>
 
     <!-- Table Panel -->
-    <div class="panel archive-panel-wrap">
-        <div class="archive-table-wrap">
-            <table class="archive-table" id="dataTable">
+    <div class="cases-panel">
+        <div class="cases-table-wrap">
+            <table id="dataTable">
                 <thead>
                     <tr>
-                        <th style="width:14%">Control No.</th>
-                        <th style="width:20%">Client</th>
-                        <th style="width:16%">Assistance Type</th>
-                        <th style="width:13%">Barangay</th>
-                        <th style="width:13%">Eligibility</th>
-                        <th style="width:11%">Status</th>
-                        <th style="width:12%">Created</th>
-                        <th style="width:14%">Action</th>
+                        <th>Control No.</th>
+                        <th>Client</th>
+                        <th>Type</th>
+                        <th>Barangay</th>
+
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="casesTableBody"></tbody>
