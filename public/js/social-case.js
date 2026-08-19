@@ -2841,7 +2841,20 @@ function reloadAfterPrint(){
   const reload = () => {
     if(done) return;
     done = true;
-    setTimeout(() => location.reload(), 500);
+
+    // Show SweetAlert success message after printing
+    Swal.fire({
+      icon: 'success',
+      title: 'Printed Successfully',
+      text: 'Social case study has been printed successfully.',
+      timer: 3000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      customClass: { popup: 'rounded-4 shadow-lg' }
+    }).then(() => {
+      // Reload page after SweetAlert closes
+      location.reload();
+    });
   };
   window.addEventListener('afterprint', reload);
   window.addEventListener('focus', reload, { once: true });
