@@ -139,6 +139,56 @@ $initials = count($words) >= 2
         box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
         background: #fff;
     }
+
+    /* ── Mobile: stacked card rows (no horizontal scroll) ── */
+    @media (max-width: 767.98px) {
+        .officers-table-wrap { padding: 1rem; }
+        .officers-scroll { overflow: visible !important; }
+        .gov-table { display: block; width: 100%; margin-top: 0.75rem; }
+        .gov-table thead { display: none; }
+        .gov-table tbody { display: block; }
+        .gov-table tbody tr {
+            display: block;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            padding: 10px 12px;
+            box-shadow: var(--shadow);
+        }
+        .gov-table tbody tr:last-child { margin-bottom: 0; }
+        .gov-table tbody td {
+            display: flex !important;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            white-space: normal;
+            word-break: break-word;
+            text-align: right;
+        }
+        .gov-table tbody td:last-child { border-bottom: none; }
+        .gov-table tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            flex-shrink: 0;
+            min-width: 70px;
+            text-align: left;
+        }
+        .gov-table tbody td[data-label="Action"] {
+            justify-content: flex-end;
+            border-bottom: none;
+            padding-top: 10px;
+        }
+        .gov-table tbody td[data-label="Action"]::before { display: none !important; }
+        .table-actions { justify-content: flex-end; }
+    }
 </style>
 
 {{-- Page Header --}}
@@ -175,7 +225,7 @@ $initials = count($words) >= 2
         </div>
     </div>
 
-    <div style="overflow-x: auto;">
+    <div class="officers-scroll">
         <table class="gov-table" id="officersTable">
             <thead>
                 <tr>
@@ -190,14 +240,14 @@ $initials = count($words) >= 2
             <tbody id="officersTableBody">
                 @forelse($officers as $officer)
                     <tr>
-                        <td>
+                        <td data-label="Officer">
                             <div class="flex items-center gap-2.5">
                                 <div class="avatar-initial">{{ strtoupper(substr($officer->name ?? 'O', 0, 2)) }}</div>
                                 <span class="font-semibold text-slate-800">{{ $officer->name ?? 'Officer' }}</span>
                             </div>
                         </td>
-                        <td class="hidden md:table-cell text-slate-600 text-sm">{{ $officer->email ?? '-' }}</td>
-                        <td class="text-slate-700 text-sm font-medium">
+                        <td data-label="Email" class="hidden md:table-cell text-slate-600 text-sm">{{ $officer->email ?? '-' }}</td>
+                        <td data-label="Role" class="text-slate-700 text-sm font-medium">
                             @php
                                 $roleLabel = $officer->role;
                                 if (is_object($officer->role) && method_exists($officer->role, 'label')) {
@@ -221,8 +271,8 @@ $initials = count($words) >= 2
                             @endphp
                             {{ $roleLabel }}
                         </td>
-                        <td class="hidden lg:table-cell text-slate-600 text-sm">{{ $officer->phone ?? '-' }}</td>
-                        <td class="hidden sm:table-cell">
+                        <td data-label="Contact" class="hidden lg:table-cell text-slate-600 text-sm">{{ $officer->phone ?? '-' }}</td>
+                        <td data-label="Status" class="hidden sm:table-cell">
                             @php $statusVal = is_object($officer->status) ? $officer->status->value : $officer->status; @endphp
                             @if($statusVal === 'active' || empty($statusVal))
                                 <span class="badge-status active">Active</span>
@@ -230,7 +280,7 @@ $initials = count($words) >= 2
                                 <span class="badge-status inactive">Inactive</span>
                             @endif
                         </td>
-                        <td>
+                        <td data-label="Action">
                             @php $statusVal = is_object($officer->status) ? $officer->status->value : $officer->status; @endphp
                             <div class="table-actions">
                                 <a href="{{ route('admin.officers.edit', $officer->id) }}" class="table-action-btn btn-edit" title="Edit Officer">

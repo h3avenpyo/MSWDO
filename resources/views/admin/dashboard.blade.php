@@ -61,6 +61,74 @@ $initials = count($words) >= 2
     }
     .report-stat-box .stat-title { font-size: 0.75rem; color: #6B7280; font-weight: 500; margin-bottom: 6px; }
     .report-stat-box .stat-num   { font-size: 1.6rem; font-weight: 700; color: #111827; }
+
+    /* ── Responsive Breakpoints ── */
+    @media (max-width: 1024px) {
+        /* Tablet: Service breakdown - 2 cards per row */
+        .service-breakdown-row {
+            flex-direction: column !important;
+        }
+        .service-breakdown-row > .card-panel {
+            width: 100% !important;
+            min-height: auto !important;
+            min-width: 0 !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        /* Mobile: Service breakdown - 1 card per row */
+        .service-breakdown-row {
+            flex-direction: column !important;
+            gap: 1rem !important;
+        }
+        .service-breakdown-row > .card-panel {
+            width: 100% !important;
+            min-height: auto !important;
+            min-width: 0 !important;
+            padding: 1rem !important;
+        }
+        .service-breakdown-row .sb-stats-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem !important;
+        }
+        .service-breakdown-row .sb-stats-grid > div {
+            height: auto !important;
+            padding: 0.875rem !important;
+        }
+
+        /* Mobile: Reports summary - 2 per row */
+        .reports-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+
+        /* Mobile: Recent cases table */
+        .card-panel table {
+            font-size: 0.75rem;
+        }
+        .card-panel table th,
+        .card-panel table td {
+            padding: 0.75rem 0.5rem !important;
+        }
+
+        /* Mobile: Action buttons */
+        .action-btn {
+            padding: 5px 10px;
+            font-size: 0.75rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        /* Small mobile: Reports summary - 1 per row */
+        .reports-grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        /* Small mobile: Hide less important columns */
+        .card-panel table th:nth-child(4),
+        .card-panel table td:nth-child(4) {
+            display: none;
+        }
+    }
 </style>
 
 {{-- Page Header --}}
@@ -88,7 +156,7 @@ $initials = count($words) >= 2
 </div>
 
 <div style="display:flex; flex-direction:column; gap:1.5rem; margin-bottom:2rem;">
-    @php 
+    @php
         $servicesArray = $serviceBreakdown instanceof \Illuminate\Support\Collection ? $serviceBreakdown->toArray() : $serviceBreakdown;
         $serviceKeys = array_keys($servicesArray);
         $topKeys = array_slice($serviceKeys, 0, 3);
@@ -96,15 +164,15 @@ $initials = count($words) >= 2
     @endphp
 
     <!-- Top row: 3 cards -->
-    <div style="display:flex; gap:1.5rem;">
+    <div class="service-breakdown-row" style="display:flex; gap:1.5rem; flex-wrap:wrap;">
         @foreach($topKeys as $serviceName)
         @php $stats = $servicesArray[$serviceName]; @endphp
-        <div class="card-panel" style="flex:1; margin-bottom:0; padding:1.5rem; min-height:280px;">
+        <div class="card-panel" style="flex:1; min-width:300px; margin-bottom:0; padding:1.5rem; min-height:280px;">
             <div class="flex items-center justify-between mb-4">
                 <h4 class="text-lg font-bold text-slate-800 m-0">{{ $serviceName }}</h4>
                 <span class="text-sm text-slate-500 font-medium">Total: {{ $stats['total'] }}</span>
             </div>
-            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem; align-items:stretch;">
+            <div class="sb-stats-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem; align-items:stretch;">
                 @php
                     $label1 = 'Active';
                     $label2 = 'Pending';
@@ -161,15 +229,15 @@ $initials = count($words) >= 2
     </div>
 
     <!-- Bottom row: 2 cards with full width -->
-    <div style="display:flex; gap:1.5rem;">
+    <div class="service-breakdown-row" style="display:flex; gap:1.5rem; flex-wrap:wrap;">
         @foreach($bottomKeys as $serviceName)
         @php $stats = $servicesArray[$serviceName]; @endphp
-        <div class="card-panel" style="flex:1; margin-bottom:0; padding:1.5rem; min-height:280px;">
+        <div class="card-panel" style="flex:1; min-width:300px; margin-bottom:0; padding:1.5rem; min-height:280px;">
             <div class="flex items-center justify-between mb-4">
                 <h4 class="text-lg font-bold text-slate-800 m-0">{{ $serviceName }}</h4>
                 <span class="text-sm text-slate-500 font-medium">Total: {{ $stats['total'] }}</span>
             </div>
-            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem; align-items:stretch;">
+            <div class="sb-stats-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem; align-items:stretch;">
                 @php
                     $label1 = 'Active';
                     $label2 = 'Pending';

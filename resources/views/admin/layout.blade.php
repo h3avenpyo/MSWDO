@@ -362,6 +362,12 @@
         .stat-card-purple .stat-card-icon { background: var(--purple-bg); color: var(--icon-purple); }
         .stat-card-teal .stat-card-icon { background: #CCFBF1; color: var(--icon-teal); }
         .stat-card-orange .stat-card-icon { background: #FFF7ED; color: #F59E0B; }
+
+        /* Hide page-header date/time + avatar on small screens */
+        @media (max-width: 767.98px) {
+            header #currentDateTime,
+            header [title^="Admin:"] { display: none !important; }
+        }
     </style>
     @stack('styles')
 </head>

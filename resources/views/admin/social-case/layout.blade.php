@@ -2311,6 +2311,12 @@
             .chart-canvas { min-height: 0 !important; height: 100%; flex: 1; }
             .activity-feed { flex: 1; min-height: 0; max-height: none; overflow-y: auto; padding-right: 8px; }
         }
+
+        /* Hide page-header date/time + avatar on small screens */
+        @media (max-width: 767.98px) {
+            header #currentDateTime,
+            header [title^="User Profile:"] { display: none !important; }
+        }
     </style>
 </head>
 <body>

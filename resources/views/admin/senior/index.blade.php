@@ -523,6 +523,12 @@
             .stat-card { height: auto !important; min-height: 0 !important; }
             .stat-card-value { font-size: 24px !important; }
         }
+
+        /* Hide page-header date/time + avatar on small screens */
+        @media (max-width: 767.98px) {
+            header #currentDateTime,
+            header [title^="User Profile:"] { display: none !important; }
+        }
     </style>
 </head>
 <body>
