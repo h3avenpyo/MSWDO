@@ -1848,11 +1848,12 @@
             min-width: 0;
         }
         .mobile-logo {
-            width: 56px;
-            height: 56px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             background: #FBC02D;
-            padding: 4px;
+            padding: 3px;
+            box-sizing: border-box;
             flex-shrink: 0;
         }
         .mobile-logo-img {
