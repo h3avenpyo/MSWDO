@@ -63,32 +63,51 @@ class AuthController extends Controller
         return response()->json(['ok' => true]);
     }
 
+    /**
+     * Lightweight account-status poll used by authenticated pages to detect
+     * forced logout. If the session account is inactive (or no longer exists),
+     * the session is invalidated server-side so the user can no longer access
+     * protected pages or perform authenticated actions.
+     */
     public function checkAccountStatus(Request $request)
     {
-        // Log for debugging
-        \Log::info('Account status check called', [
-            'session_user_id' => session('admin_user_id'),
-            'all_session' => session()->all()
-        ]);
-
-        if (!session('admin_user_id')) {
-            return response()->json(['deactivated' => false, 'message' => 'No user in session']);
+        if (! session('admin_user_id')) {
+            return response()->json(['deactivated' => false, 'authenticated' => false]);
         }
 
         $user = User::find(session('admin_user_id'));
-        if (!$user) {
-            return response()->json(['deactivated' => true, 'message' => 'User not found']);
+
+        if (! $user) {
+            $this->invalidateAdminSession($request);
+
+            return response()->json(['deactivated' => true, 'authenticated' => true]);
         }
 
         $status = is_object($user->status) ? $user->status->value : $user->status;
         $isDeactivated = $status === 'inactive';
 
-        \Log::info('Account status check result', [
-            'user_id' => $user->id,
-            'status' => $status,
-            'is_deactivated' => $isDeactivated
-        ]);
+        if ($isDeactivated) {
+            $this->invalidateAdminSession($request);
+        }
 
-        return response()->json(['deactivated' => $isDeactivated, 'status' => $status]);
+        return response()->json([
+            'deactivated' => $isDeactivated,
+            'authenticated' => true,
+        ]);
+    }
+
+    /**
+     * Clear the admin session keys, regenerate the session id and CSRF token.
+     */
+    protected function invalidateAdminSession(Request $request): void
+    {
+        $request->session()->forget([
+            'admin_user_id',
+            'admin_user_name',
+            'admin_user_role',
+            'admin_just_logged_in',
+        ]);
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
     }
 }

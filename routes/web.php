@@ -25,10 +25,7 @@ Route::post('/admin/login/code/send', [EmailCodeController::class, 'send'])->nam
 Route::post('/admin/login/code/verify', [EmailCodeController::class, 'verify'])->name('admin.login.code.verify');
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 Route::post('/admin/clear-welcome', [AuthController::class, 'clearWelcome'])->name('admin.clear-welcome');
-
-Route::middleware(['admin.auth'])->group(function () {
-    Route::get('/admin/check-account-status', [AuthController::class, 'checkAccountStatus'])->name('admin.check-account-status');
-});
+Route::get('/admin/check-account-status', [AuthController::class, 'checkAccountStatus'])->name('admin.check-account-status');
 
 Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');

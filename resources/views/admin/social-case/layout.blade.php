@@ -2325,6 +2325,7 @@
     @yield('content')
     <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 </div>
+@include('admin.partials.account-status')
 @stack('scripts')
 <script>
     function confirmLogout(event) {

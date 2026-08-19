@@ -67,7 +67,7 @@ class OfficerController extends Controller
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'phone' => $request->phone,
-            'status' => $request->status,
+            'status' => $request->status === 'active' ? \App\Enums\UserStatus::Active : \App\Enums\UserStatus::Inactive,
             'signature_position' => $request->signature_position,
             'signature_image' => $signatureImagePath,
         ]);
@@ -120,7 +120,7 @@ class OfficerController extends Controller
             'email' => $request->email,
             'role' => $request->role,
             'phone' => $request->phone,
-            'status' => $request->status,
+            'status' => $request->status === 'active' ? \App\Enums\UserStatus::Active : \App\Enums\UserStatus::Inactive,
             'signature_position' => $request->signature_position,
             'signature_image' => $signatureImagePath,
         ]);

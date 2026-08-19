@@ -69,5 +69,7 @@
     <!-- External Module Script -->
     <script src="{{ asset('js/financialstep1.js') }}"></script>
     @yield('page-scripts')
+
+    @include('admin.partials.account-status')
 </body>
 </html>

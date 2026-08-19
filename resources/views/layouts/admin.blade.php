@@ -41,5 +41,7 @@
     <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
         @csrf
     </form>
+
+    @include('admin.partials.account-status')
 </body>
 </html>

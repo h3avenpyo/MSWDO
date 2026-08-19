@@ -11,6 +11,13 @@ class EnsureAdminAuthenticated
     public function handle(Request $request, Closure $next): Response
     {
         if (! session('admin_user_id')) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'error' => 'unauthenticated',
+                    'message' => 'Your session has expired. Please log in again.',
+                ], 401);
+            }
+
             return redirect()->route('admin.login.form');
         }
 
