@@ -3684,23 +3684,23 @@ function renderCaseDetail(){
             </div>
           </div>
         </div>
-        <div class="header-actions">
+        <div class="header-actions" style="display:flex;gap:8px;align-items:center;">
+          <button class="header-btn" style="background:#059669;color:white;border-color:#059669;width:120px;flex-shrink:0;" onclick="printDocument()">
+            <i data-lucide="printer" style="width:16px;height:16px;"></i>
+            Print
+          </button>
           ${(c.status === 'Approved' || c.status === 'Released' || c.status === 'Printed') ? `
-            <button class="header-btn primary" onclick="reprintCase('${c.id}')">
+            <button class="header-btn primary" style="width:120px;flex-shrink:0;" onclick="reprintCase('${c.id}')">
               <i data-lucide="printer" style="width:16px;height:16px;"></i>
               Reprint
             </button>
           ` : ''}
           ${CAN_ENCODE ? `
-            <button class="header-btn" style="background:#1A237E;color:white;border-color:#1A237E;" onclick="editCaseFromDetail('${c.id}')">
+            <button class="header-btn" style="background:#1A237E;color:white;border-color:#1A237E;width:120px;flex-shrink:0;" onclick="editCaseFromDetail('${c.id}')">
               <i data-lucide="edit" style="width:16px;height:16px;"></i>
               Edit
             </button>
           ` : ''}
-          <button class="header-btn" style="background:#059669;color:white;border-color:#059669;" onclick="printDocument()">
-            <i data-lucide="printer" style="width:16px;height:16px;"></i>
-            Print
-          </button>
 
         </div>
       </div>
