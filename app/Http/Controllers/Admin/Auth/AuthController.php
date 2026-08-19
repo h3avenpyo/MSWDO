@@ -146,6 +146,7 @@ class AuthController extends Controller
         PasswordResetRequest::create([
             'email' => $request->email,
             'token' => $token,
+            'requested_from_url' => rtrim($request->getSchemeAndHttpHost(), '/'),
             'status' => 'pending',
             'expires_at' => now()->addHours(24),
         ]);

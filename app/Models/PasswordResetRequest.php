@@ -10,6 +10,7 @@ class PasswordResetRequest extends Model
     protected $fillable = [
         'email',
         'token',
+        'requested_from_url',
         'status',
         'expires_at',
         'processed_at',

@@ -44,9 +44,11 @@ class PasswordResetManagementController extends Controller
         $resetRequest->notes = $request->notes;
         $resetRequest->save();
 
-        // Send email with reset link (base it on APP_URL so the link matches
-        // the current deployment: localhost for local dev, LAN IP for phone testing)
-        $resetLink = rtrim(config('app.url'), '/') . route('admin.password.reset', $resetRequest->token, false);
+        // Send email with reset link. Prefer the URL the user requested from
+        // (e.g. the phone's LAN host http://192.168.1.5:8000) so the link is
+        // reachable from their device; fall back to APP_URL.
+        $baseUrl = $resetRequest->requested_from_url ?: rtrim(config('app.url'), '/');
+        $resetLink = $baseUrl . route('admin.password.reset', $resetRequest->token, false);
         try {
             Mail::to($resetRequest->email)->send(new PasswordResetMail($resetLink, $resetRequest->email));
             return back()->with('success', 'Password reset request approved. Email with reset link has been sent to the user.');
