@@ -18,12 +18,6 @@ class DashboardController extends Controller
             session()->forget('admin_just_logged_in');
         }
 
-        $officers = User::
-            where('email', '!=', 'admin@mswdo.test')
-            ->select('id', 'name', 'email', 'role', 'phone', 'created_at', 'status')
-            ->orderByDesc('created_at')
-            ->get();
-
         // Fetch service breakdown statistics
         $serviceBreakdown = $this->getServiceBreakdown();
 
@@ -48,7 +42,6 @@ class DashboardController extends Controller
                 'generatedReports' => 0,
                 'financialReleased' => 0,
             ],
-            'officers' => $officers,
             'justLoggedIn' => $justLoggedIn,
             'serviceBreakdown' => $serviceBreakdown,
             'recentCases' => $recentCases,
@@ -152,15 +145,21 @@ class DashboardController extends Controller
 
         // Get recent Social Case Studies
         if (class_exists(\App\Models\SocialCase\SocialCaseStudy::class)) {
-            $socialCases = \App\Models\SocialCase\SocialCaseStudy::with('client')
+            $socialCases = \App\Models\SocialCase\SocialCaseStudy::with('client', 'officer')
                 ->latest('updated_at')
                 ->take(5)
                 ->get()
                 ->map(function ($case) {
+                    $officerName = 'Not assigned';
+                    if ($case->officer) {
+                        $officerName = $case->officer->name ?? 'Not assigned';
+                    } elseif ($case->social_worker_name) {
+                        $officerName = $case->social_worker_name;
+                    }
                     return [
                         'client' => $case->client ? $case->client->full_name ?? 'Unknown' : 'Unknown',
                         'service' => 'Social Case Study',
-                        'officer' => $case->social_worker_name ?? 'Not assigned',
+                        'officer' => $officerName,
                         'status' => ucfirst($case->status),
                         'updated' => $case->updated_at->format('M d, Y'),
                     ];
@@ -170,19 +169,25 @@ class DashboardController extends Controller
 
         // Get recent Financial Assistance cases
         if (class_exists(\App\Models\SocialCase\BeneficiaryIntake::class)) {
-            $financialCases = \App\Models\SocialCase\BeneficiaryIntake::with('socialCaseStudy')
+            $financialCases = \App\Models\SocialCase\BeneficiaryIntake::with('socialCaseStudy.officer')
                 ->latest('updated_at')
                 ->take(5)
                 ->get()
                 ->map(function ($intake) {
                     $status = 'Unknown';
+                    $officerName = 'Not assigned';
                     if ($intake->socialCaseStudy) {
                         $status = ucfirst($intake->socialCaseStudy->status);
+                        if ($intake->socialCaseStudy->officer) {
+                            $officerName = $intake->socialCaseStudy->officer->name ?? 'Not assigned';
+                        } elseif ($intake->socialCaseStudy->social_worker_name) {
+                            $officerName = $intake->socialCaseStudy->social_worker_name;
+                        }
                     }
                     return [
                         'client' => $intake->client_name ?? 'Unknown',
                         'service' => 'Financial Assistance',
-                        'officer' => $intake->socialCaseStudy->social_worker_name ?? 'Not assigned',
+                        'officer' => $officerName,
                         'status' => $status,
                         'updated' => $intake->updated_at->format('M d, Y'),
                     ];
@@ -192,16 +197,23 @@ class DashboardController extends Controller
 
         // Get recent Senior Citizen records
         if (class_exists(\App\Models\Senior\SeniorCitizenRecord::class)) {
-            $seniorCases = \App\Models\Senior\SeniorCitizenRecord::latest('updated_at')
+            $seniorCases = \App\Models\Senior\SeniorCitizenRecord::with('createdBy')
+                ->latest('updated_at')
                 ->take(5)
                 ->get()
                 ->map(function ($senior) {
+                    $officerName = 'N/A';
+                    if ($senior->createdBy) {
+                        $officerName = $senior->createdBy->name ?? 'Unknown';
+                    }
                     return [
                         'client' => $senior->full_name ?? 'Unknown',
                         'service' => 'Senior Citizen',
-                        'officer' => 'N/A',
-                        'status' => ucfirst($senior->status),
-                        'updated' => $senior->updated_at->format('M d, Y'),
+                        'officer' => $officerName,
+                        'status' => $senior->status instanceof \App\Enums\SeniorStatus
+                            ? $senior->status->label()
+                            : ucfirst((string) $senior->status),
+                        'updated' => $senior->updated_at ? $senior->updated_at->format('F j, Y') : 'N/A',
                     ];
                 });
             $recentCases = $recentCases->concat($seniorCases);

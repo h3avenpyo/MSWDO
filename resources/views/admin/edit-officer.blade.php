@@ -1,6 +1,6 @@
 @extends('admin.layout')
-@section('title', 'MSWDO – Add Officers')
-@section('page_title', 'Add Officers')
+@section('title', 'MSWDO – Edit Officer')
+@section('page_title', 'Edit Officer')
 
 @section('content')
 @php
@@ -119,56 +119,13 @@ $initials = count($words) >= 2
     .btn-submit:hover {
         background: var(--primary-dark);
     }
-
-    /* ── Password strength feedback ── */
-    .pw-checklist {
-        list-style: none;
-        margin: 0.5rem 0 0 0;
-        padding: 0;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.25rem 0.75rem;
-    }
-    .pw-checklist li {
-        font-size: 0.74rem;
-        color: var(--text-muted);
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        transition: color .25s ease;
-    }
-    .pw-checklist li .circle-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #CBD5E1;
-        display: inline-block;
-        flex-shrink: 0;
-    }
-    .pw-checklist li.met {
-        color: #16a34a;
-        font-weight: 600;
-    }
-    .pw-checklist li.met .circle-dot {
-        background: #16a34a;
-    }
-    .pw-match-msg {
-        font-size: 0.74rem;
-        margin-top: 0.35rem;
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-        transition: all .25s ease;
-    }
-    .pw-match-msg.match { color: #059669; font-weight: 600; }
-    .pw-match-msg.no-match { color: var(--danger); }
 </style>
 
 {{-- Page Header --}}
 <header class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none mb-6">
     <div>
-        <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Officers Directory</h1>
-        <p class="text-sm text-slate-500 mt-1 font-medium">MSWDO Silang — Manage Staff &amp; Officer Accounts</p>
+        <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Edit Officer</h1>
+        <p class="text-sm text-slate-500 mt-1 font-medium">MSWDO Silang — Update Officer Information</p>
     </div>
     <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
         <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime">Loading date...</div>
@@ -181,8 +138,8 @@ $initials = count($words) >= 2
 <!-- Form Card -->
 <div class="form-card">
     <div class="mb-4">
-        <h2 class="text-lg font-bold text-slate-800 m-0">Create Officer Account</h2>
-        <p class="text-xs text-slate-500 mt-1">Register a new social worker or administrator to access the MSWDO platform.</p>
+        <h2 class="text-lg font-bold text-slate-800 m-0">Edit Officer Account</h2>
+        <p class="text-xs text-slate-500 mt-1">Update officer information and account settings.</p>
     </div>
 
     @if(session('success'))
@@ -199,31 +156,32 @@ $initials = count($words) >= 2
         </div>
     @endif
 
-    <form method="POST" action="{{ route('admin.officers.store') }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ route('admin.officers.update', $officer->id) }}" enctype="multipart/form-data">
+        @method('PUT')
         @csrf
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="form-label">Full Name</label>
-                <input type="text" name="name" class="form-control" placeholder="Enter full name" value="{{ old('name') }}" required>
+                <input type="text" name="name" class="form-control" placeholder="Enter full name" value="{{ old('name', $officer->name) }}" required>
             </div>
             <div>
                 <label class="form-label">Email Address</label>
-                <input type="email" name="email" class="form-control" placeholder="Enter email address" value="{{ old('email') }}" required>
+                <input type="email" name="email" class="form-control" placeholder="Enter email address" value="{{ old('email', $officer->email) }}" required>
             </div>
             <div>
                 <label class="form-label">Role / Assignment</label>
                 <div class="select-dropdown-wrap">
                     <select class="form-select" name="role" id="roleSelect" required>
-                        <option value="" disabled selected>▼ Select Role / Assignment</option>
-                        <option value="Senior Citizen officer" {{ old('role') == 'Senior Citizen officer' ? 'selected' : '' }}>Senior Citizen Officer</option>
-                        <option value="Financial assistance officer" {{ old('role') == 'Financial assistance officer' ? 'selected' : '' }}>Financial Assistance Officer</option>
-                        <option value="financialstep1" {{ old('role') == 'financialstep1' ? 'selected' : '' }}>Financial Assistance Step 1</option>
-                        <option value="financialstep2" {{ old('role') == 'financialstep2' ? 'selected' : '' }}>Financial Assistance Step 2</option>
-                        <option value="eligibility_checker" {{ old('role') == 'eligibility_checker' ? 'selected' : '' }}>Social Case Worker (Checker)</option>
-                        <option value="social_worker" {{ old('role') == 'social_worker' ? 'selected' : '' }}>Social Case Worker (Encoder)</option>
-                        <option value="encoder" {{ old('role') == 'encoder' ? 'selected' : '' }}>Encoder</option>
-                        <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Staff</option>
-                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrator</option>
+                        <option value="" disabled>Select Role / Assignment</option>
+                        <option value="Senior Citizen officer" {{ old('role', $officer->role) == 'Senior Citizen officer' ? 'selected' : '' }}>Senior Citizen Officer</option>
+                        <option value="Financial assistance officer" {{ old('role', $officer->role) == 'Financial assistance officer' ? 'selected' : '' }}>Financial Assistance Officer</option>
+                        <option value="financialstep1" {{ old('role', $officer->role) == 'financialstep1' ? 'selected' : '' }}>Financial Assistance Step 1</option>
+                        <option value="financialstep2" {{ old('role', $officer->role) == 'financialstep2' ? 'selected' : '' }}>Financial Assistance Step 2</option>
+                        <option value="eligibility_checker" {{ old('role', $officer->role) == 'eligibility_checker' ? 'selected' : '' }}>Social Case Worker (Checker)</option>
+                        <option value="social_worker" {{ old('role', $officer->role) == 'social_worker' ? 'selected' : '' }}>Social Case Worker (Encoder)</option>
+                        <option value="encoder" {{ old('role', $officer->role) == 'encoder' ? 'selected' : '' }}>Encoder</option>
+                        <option value="staff" {{ old('role', $officer->role) == 'staff' ? 'selected' : '' }}>Staff</option>
+                        <option value="admin" {{ old('role', $officer->role) == 'admin' ? 'selected' : '' }}>Administrator</option>
                     </select>
                 </div>
                 <p class="select-hint">
@@ -233,39 +191,21 @@ $initials = count($words) >= 2
             </div>
             <div>
                 <label class="form-label">Contact Number</label>
-                <input type="text" name="phone" class="form-control" placeholder="e.g. 0917XXXXXXX" value="{{ old('phone') }}">
-            </div>
-            <div>
-                <label class="form-label">Password</label>
-                <input type="password" id="passwordInput" name="password" class="form-control" placeholder="Create password" required oninput="checkPassword()">
-                <div id="pwFeedback" class="mt-2" style="display:none;">
-                    <ul class="pw-checklist">
-                        <li id="reqLength"><span class="circle-dot"></span> At least 8 characters</li>
-                        <li id="reqUpper"><span class="circle-dot"></span> One uppercase letter</li>
-                        <li id="reqLower"><span class="circle-dot"></span> One lowercase letter</li>
-                        <li id="reqNumber"><span class="circle-dot"></span> One number</li>
-                        <li id="reqSpecial"><span class="circle-dot"></span> One special character</li>
-                    </ul>
-                </div>
-            </div>
-            <div>
-                <label class="form-label">Confirm Password</label>
-                <input type="password" id="confirmPasswordInput" name="password_confirmation" class="form-control" placeholder="Confirm password" required oninput="checkPassword()">
-                <div id="pwMatchMsg" class="pw-match-msg" style="display:none;"></div>
+                <input type="text" name="phone" class="form-control" placeholder="e.g. 0917XXXXXXX" value="{{ old('phone', $officer->phone) }}">
             </div>
             <div>
                 <label class="form-label">Status</label>
                 <select class="form-select" name="status" required>
-                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                    <option value="active" {{ old('status', $officer->status) == 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ old('status', $officer->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
             </div>
             <div>
                 <label class="form-label">Signature Position</label>
                 <select class="form-select" name="signature_position">
                     <option value="">None</option>
-                    <option value="osca_head" {{ old('signature_position') == 'osca_head' ? 'selected' : '' }}>OSCA Head</option>
-                    <option value="mswdo_officer" {{ old('signature_position') == 'mswdo_officer' ? 'selected' : '' }}>MSWDO Officer</option>
+                    <option value="osca_head" {{ old('signature_position', $officer->signature_position) == 'osca_head' ? 'selected' : '' }}>OSCA Head</option>
+                    <option value="mswdo_officer" {{ old('signature_position', $officer->signature_position) == 'mswdo_officer' ? 'selected' : '' }}>MSWDO Officer</option>
                 </select>
                 <p class="select-hint">
                     <i data-lucide="info"></i>
@@ -275,14 +215,20 @@ $initials = count($words) >= 2
             <div class="md:col-span-2">
                 <label class="form-label">Signature Image</label>
                 <input type="file" name="signature_image" class="form-control" accept="image/*">
+                @if($officer->signature_image)
+                    <p class="select-hint">
+                        <i data-lucide="check"></i>
+                        <span>Current signature: {{ basename($officer->signature_image) }}</span>
+                    </p>
+                @endif
                 <p class="select-hint">
                     <i data-lucide="info"></i>
                     <span>Upload signature image (PNG, JPG) for ID cards</span>
                 </p>
             </div>
             <div class="md:col-span-2 mt-2 flex justify-end gap-2">
-                <button type="button" class="px-4 py-2 text-sm font-semibold rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition" onclick="location.href='/admin/dashboard'">Cancel</button>
-                <button type="submit" class="btn-submit">Add Officer</button>
+                <button type="button" class="px-4 py-2 text-sm font-semibold rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition" onclick="location.href='/admin/officers-directory'">Cancel</button>
+                <button type="submit" class="btn-submit">Update Officer</button>
             </div>
         </div>
     </form>
@@ -303,22 +249,6 @@ $initials = count($words) >= 2
         setInterval(updateDateTime, 60000);
 
         if (typeof lucide !== 'undefined') lucide.createIcons();
-
-        // Show success popup if officer was just created
-        @if($officerCreated ?? false)
-            Swal.fire({
-                title: 'Officer Added Successfully!',
-                icon: 'success',
-                confirmButtonColor: '#1A237E',
-                confirmButtonText: 'Continue',
-                background: '#ffffff',
-                customClass: {
-                    popup: 'rounded-4 shadow-lg'
-                },
-                timer: 3000,
-                timerProgressBar: true
-            });
-        @endif
 
         const successAlert = document.getElementById('successAlert');
         if (successAlert) {
@@ -342,63 +272,5 @@ $initials = count($words) >= 2
             }, 3000);
         }
     });
-
-    function checkPassword() {
-        const pw = document.getElementById('passwordInput').value;
-        const feedback = document.getElementById('pwFeedback');
-
-        if (pw.length === 0) {
-            feedback.style.display = 'none';
-            return;
-        }
-        feedback.style.display = 'block';
-
-        const checks = {
-            length:  pw.length >= 8,
-            upper:   /[A-Z]/.test(pw),
-            lower:   /[a-z]/.test(pw),
-            number:  /[0-9]/.test(pw),
-            special: /[^A-Za-z0-9]/.test(pw)
-        };
-
-        toggleReq('reqLength',  checks.length);
-        toggleReq('reqUpper',   checks.upper);
-        toggleReq('reqLower',   checks.lower);
-        toggleReq('reqNumber',  checks.number);
-        toggleReq('reqSpecial', checks.special);
-
-        if (document.getElementById('confirmPasswordInput').value.length > 0) {
-            checkPasswordMatch();
-        }
-    }
-
-    function toggleReq(id, met) {
-        const el = document.getElementById(id);
-        if (met) {
-            el.classList.add('met');
-        } else {
-            el.classList.remove('met');
-        }
-    }
-
-    function checkPasswordMatch() {
-        const pw = document.getElementById('passwordInput').value;
-        const cpw = document.getElementById('confirmPasswordInput').value;
-        const msg = document.getElementById('pwMatchMsg');
-
-        if (cpw.length === 0) {
-            msg.style.display = 'none';
-            return;
-        }
-        msg.style.display = 'flex';
-
-        if (pw === cpw) {
-            msg.className = 'pw-match-msg match';
-            msg.innerHTML = '<span>✓ Passwords match</span>';
-        } else {
-            msg.className = 'pw-match-msg no-match';
-            msg.innerHTML = '<span>✕ Passwords do not match</span>';
-        }
-    }
 </script>
 @endpush

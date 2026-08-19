@@ -412,8 +412,14 @@
             </li>
             <li>
                 <a href="/admin/add-officers" class="{{ request()->is('admin/add-officers*') ? 'active' : '' }}">
-                    <i data-lucide="user-check"></i>
+                    <i data-lucide="user-plus"></i>
                     <span>Add Officers</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/officers-directory" class="{{ request()->is('admin/officers-directory*') ? 'active' : '' }}">
+                    <i data-lucide="users"></i>
+                    <span>Officers Directory</span>
                 </a>
             </li>
             <li style="border-top:1px solid rgba(255,255,255,.1);margin-top:.5rem;padding-top:.5rem;">
@@ -476,9 +482,75 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+        console.log('Admin layout loaded - starting account status check');
+
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
+
+        // Check for account deactivation on page load
+        @if(session('account_deactivated'))
+            Swal.fire({
+                title: 'Account Deactivated',
+                text: 'Your account has been deactivated by an administrator. You have been logged out.',
+                icon: 'error',
+                confirmButtonColor: '#DC2626',
+                confirmButtonText: 'OK',
+                background: '#ffffff',
+                customClass: { popup: 'rounded-4 shadow-lg' },
+                allowOutsideClick: false
+            }).then(() => {
+                window.location.href = '/admin';
+            });
+        @endif
+
+        // Periodic check for account status (every 15 seconds)
+        var checkInterval = setInterval(function() {
+            console.log('Checking account status...');
+            var csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) {
+                console.error('CSRF token meta tag not found');
+                return;
+            }
+
+            fetch('/admin/check-account-status', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken.content
+                },
+                credentials: 'same-origin'
+            })
+            .then(function(response) {
+                console.log('Status check response:', response);
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                console.log('Status check data:', data);
+                if (data.deactivated) {
+                    clearInterval(checkInterval);
+                    Swal.fire({
+                        title: 'Account Deactivated',
+                        text: 'Your account has been deactivated by an administrator. You will be logged out.',
+                        icon: 'error',
+                        confirmButtonColor: '#DC2626',
+                        confirmButtonText: 'OK',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' },
+                        allowOutsideClick: false
+                    }).then(function() {
+                        window.location.href = '/admin';
+                    });
+                }
+            })
+            .catch(function(error) {
+                console.log('Account status check failed:', error);
+            });
+        }, 15000); // Check every 15 seconds
 
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {

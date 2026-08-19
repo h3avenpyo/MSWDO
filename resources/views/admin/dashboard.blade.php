@@ -283,64 +283,6 @@ $initials = count($words) >= 2
     </div>
 </div>
 
-
-{{-- Officers Directory --}}
-<div class="card-panel" style="margin-bottom:1.5rem;">
-    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-        <div>
-            <h3 class="text-base font-bold text-slate-800 m-0 flex items-center gap-2">
-                <i data-lucide="user-check" class="w-5 h-5 text-indigo-600"></i> Officers Directory
-            </h3>
-            <p class="text-xs text-slate-500 m-0 mt-0.5">All registered system accounts</p>
-        </div>
-        <a href="/admin/add-officers" class="action-btn primary" style="text-decoration:none;">
-            <i data-lucide="plus" class="w-4 h-4"></i> Add Officer
-        </a>
-    </div>
-    <div style="overflow-x:auto;">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Contact</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($officers as $officer)
-                <tr>
-                    <td>
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-full bg-[#1A237E] text-white font-bold text-xs flex items-center justify-center flex-shrink-0">
-                                {{ strtoupper(substr($officer->name, 0, 2)) }}
-                            </div>
-                            <span class="font-medium text-slate-800">{{ $officer->name }}</span>
-                        </div>
-                    </td>
-                    <td class="text-slate-600 text-sm">{{ $officer->email }}</td>
-                    <td class="text-slate-700 text-sm">{{ $officer->role?->label() ?? $officer->role }}</td>
-                    <td class="text-slate-600 text-sm">{{ $officer->phone ?? '—' }}</td>
-                    <td>
-                        @php $statusVal = is_object($officer->status) ? $officer->status->value : $officer->status; @endphp
-                        @if($statusVal === 'active')
-                            <span class="badge-status active">Active</span>
-                        @else
-                            <span class="badge-status inactive">Inactive</span>
-                        @endif
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="text-center py-8 text-slate-400 font-medium">No officers have been added yet.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
-
 {{-- Reports Summary --}}
 <div class="card-panel">
     <div class="flex justify-between items-center mb-4 flex-wrap gap-2">

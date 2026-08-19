@@ -26,10 +26,16 @@ Route::post('/admin/login/code/verify', [EmailCodeController::class, 'verify'])-
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 Route::post('/admin/clear-welcome', [AuthController::class, 'clearWelcome'])->name('admin.clear-welcome');
 
-Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+Route::middleware(['admin.auth'])->group(function () {
+    Route::get('/admin/check-account-status', [AuthController::class, 'checkAccountStatus'])->name('admin.check-account-status');
+});
+
+Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+});
 
 // Social Case Module Routes
-Route::middleware(['admin.auth'])->group(function () {
+Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::prefix('admin/social-case')->name('admin.social-case.')->group(function () {
         // Shared routes (both eligibility checker and case encoder)
         Route::get('/welcome', [SocialCaseController::class, 'socialCaseWelcome'])->name('welcome');
@@ -70,54 +76,65 @@ Route::middleware(['admin.auth'])->group(function () {
     });
 });
 
-Route::get('/admin/add-officers', [OfficerController::class, 'addOfficers'])->name('admin.add-officers');
-Route::post('/admin/add-officers', [OfficerController::class, 'storeOfficer'])->name('admin.officers.store');
+Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
+    Route::get('/admin/add-officers', [OfficerController::class, 'addOfficers'])->name('admin.add-officers');
+    Route::post('/admin/add-officers', [OfficerController::class, 'storeOfficer'])->name('admin.officers.store');
+    Route::get('/admin/officers-directory', [OfficerController::class, 'officersDirectory'])->name('admin.officers-directory');
+    Route::get('/admin/officers/{id}/edit', [OfficerController::class, 'editOfficer'])->name('admin.officers.edit');
+    Route::put('/admin/officers/{id}', [OfficerController::class, 'updateOfficer'])->name('admin.officers.update');
+    Route::post('/admin/officers/{id}/deactivate', [OfficerController::class, 'deactivateOfficer'])->name('admin.officers.deactivate');
+    Route::post('/admin/officers/{id}/activate', [OfficerController::class, 'activateOfficer'])->name('admin.officers.activate');
+});
 
 // Financial Module Routes
-Route::get('/admin/financial/dashboard', [FinancialDashboardController::class, 'financialDashboard'])->name('admin.financial.dashboard');
-Route::get('/admin/financial/financialstep1', [FinancialDashboardController::class, 'financialStep1'])->name('admin.financial.financialstep1');
-Route::get('/admin/financial/financialstep2', [FinancialDashboardController::class, 'financialStep2'])->name('admin.financial.financialstep2');
-Route::get('/admin/financial/financialstep1statistics', [FinancialDashboardController::class, 'statistics'])->name('admin.financial.financialstep1statistics');
+Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
+    Route::get('/admin/financial/dashboard', [FinancialDashboardController::class, 'financialDashboard'])->name('admin.financial.dashboard');
+    Route::get('/admin/financial/financialstep1', [FinancialDashboardController::class, 'financialStep1'])->name('admin.financial.financialstep1');
+    Route::get('/admin/financial/financialstep2', [FinancialDashboardController::class, 'financialStep2'])->name('admin.financial.financialstep2');
+    Route::get('/admin/financial/financialstep1statistics', [FinancialDashboardController::class, 'statistics'])->name('admin.financial.financialstep1statistics');
+});
 
 // Senior Citizens Module Routes
-Route::get('/admin/senior', [SeniorController::class, 'senior'])->name('admin.senior');
-Route::post('/admin/senior/clear-activities', [SeniorController::class, 'clearRecentActivities'])->name('admin.senior.clear-activities');
-Route::get('/admin/senior/registration', [SeniorController::class, 'seniorRegistration'])->name('admin.senior.registration');
-Route::post('/admin/senior/registration', [SeniorController::class, 'storeSeniorRegistration'])->name('admin.senior.registration.store');
-Route::get('/admin/senior/masterlist', [SeniorController::class, 'seniorMasterlist'])->name('admin.senior.masterlist');
-Route::get('/admin/senior/archive', [SeniorController::class, 'seniorArchiveList'])->name('admin.senior.archive.list');
-Route::post('/admin/senior/archive/{id}', [SeniorController::class, 'archiveSenior'])->name('admin.senior.archive');
-Route::post('/admin/senior/unarchive/{id}', [SeniorController::class, 'unarchiveSenior'])->name('admin.senior.unarchive');
-Route::get('/admin/senior/profile/{id}/json', [SeniorController::class, 'seniorProfileJson'])->name('admin.senior.profile.json');
-Route::prefix('admin/senior/birthdays')->name('admin.senior.birthdays')->group(function () {
-    Route::get('/', [BirthdayController::class, 'index']);
-    Route::get('/data', [BirthdayController::class, 'data'])->name('.data');
-    Route::get('/profile/{id}', [BirthdayController::class, 'profile'])->name('.profile');
-    Route::get('/by-barangay', [BirthdayController::class, 'dataByBarangay'])->name('.by-barangay');
-    Route::get('/export/pdf', [BirthdayController::class, 'exportPdf'])->name('.export.pdf');
-    Route::get('/export/csv', [BirthdayController::class, 'exportCsv'])->name('.export.csv');
-    Route::get('/print', [BirthdayController::class, 'printView'])->name('.print');
-    Route::post('/generate-payouts', [BirthdayController::class, 'generatePayouts'])->name('.generate-payouts');
-    Route::post('/release-payout/{id}', [BirthdayController::class, 'releasePayout'])->name('.release-payout');
-    Route::post('/bulk-release', [BirthdayController::class, 'bulkRelease'])->name('.bulk-release');
-    Route::post('/print-bulk', [BirthdayController::class, 'printBulkReleased'])->name('.print-bulk');
-    Route::post('/generate-all', [BirthdayController::class, 'generateAllPayouts'])->name('.generate-all');
-    Route::post('/release-all', [BirthdayController::class, 'releaseAllPayouts'])->name('.release-all');
-    Route::post('/generate-barangay', [BirthdayController::class, 'generateBarangayPayouts'])->name('.generate-barangay');
-    Route::post('/release-barangay', [BirthdayController::class, 'releaseBarangayPayouts'])->name('.release-barangay');
+Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
+    Route::get('/admin/senior', [SeniorController::class, 'senior'])->name('admin.senior');
+    Route::post('/admin/senior/clear-activities', [SeniorController::class, 'clearRecentActivities'])->name('admin.senior.clear-activities');
+    Route::get('/admin/senior/registration', [SeniorController::class, 'seniorRegistration'])->name('admin.senior.registration');
+    Route::post('/admin/senior/registration', [SeniorController::class, 'storeSeniorRegistration'])->name('admin.senior.registration.store');
+    Route::get('/admin/senior/masterlist', [SeniorController::class, 'seniorMasterlist'])->name('admin.senior.masterlist');
+    Route::get('/admin/senior/archive', [SeniorController::class, 'seniorArchiveList'])->name('admin.senior.archive.list');
+    Route::post('/admin/senior/archive/{id}', [SeniorController::class, 'archiveSenior'])->name('admin.senior.archive');
+    Route::post('/admin/senior/unarchive/{id}', [SeniorController::class, 'unarchiveSenior'])->name('admin.senior.unarchive');
+    Route::get('/admin/senior/profile/{id}/json', [SeniorController::class, 'seniorProfileJson'])->name('admin.senior.profile.json');
+    Route::prefix('admin/senior/birthdays')->name('admin.senior.birthdays')->group(function () {
+        Route::get('/', [BirthdayController::class, 'index']);
+        Route::get('/data', [BirthdayController::class, 'data'])->name('.data');
+        Route::get('/profile/{id}', [BirthdayController::class, 'profile'])->name('.profile');
+        Route::get('/by-barangay', [BirthdayController::class, 'dataByBarangay'])->name('.by-barangay');
+        Route::get('/export/pdf', [BirthdayController::class, 'exportPdf'])->name('.export.pdf');
+        Route::get('/export/csv', [BirthdayController::class, 'exportCsv'])->name('.export.csv');
+        Route::get('/print', [BirthdayController::class, 'printView'])->name('.print');
+        Route::post('/generate-payouts', [BirthdayController::class, 'generatePayouts'])->name('.generate-payouts');
+        Route::post('/release-payout/{id}', [BirthdayController::class, 'releasePayout'])->name('.release-payout');
+        Route::post('/bulk-release', [BirthdayController::class, 'bulkRelease'])->name('.bulk-release');
+        Route::post('/print-bulk', [BirthdayController::class, 'printBulkReleased'])->name('.print-bulk');
+        Route::post('/generate-all', [BirthdayController::class, 'generateAllPayouts'])->name('.generate-all');
+        Route::post('/release-all', [BirthdayController::class, 'releaseAllPayouts'])->name('.release-all');
+        Route::post('/generate-barangay', [BirthdayController::class, 'generateBarangayPayouts'])->name('.generate-barangay');
+        Route::post('/release-barangay', [BirthdayController::class, 'releaseBarangayPayouts'])->name('.release-barangay');
+    });
+    Route::get('/admin/senior/statistics', [SeniorAnalyticsController::class, 'index'])->name('admin.senior.analytics');
+    Route::get('/admin/senior/reports', [SeniorController::class, 'senior'])->name('admin.senior.reports');
+    Route::get('/admin/senior/payouts-history', [BirthdayPayoutController::class, 'history'])->name('admin.senior.payouts-history');
+    Route::post('/admin/senior/bulk-archive', [SeniorController::class, 'bulkArchive'])->name('admin.senior.bulk-archive');
+    Route::post('/admin/senior/bulk-restore', [SeniorController::class, 'bulkRestore'])->name('admin.senior.bulk-restore');
+    Route::get('/admin/senior/export', [SeniorController::class, 'exportSeniors'])->name('admin.senior.export');
+    Route::get('/admin/senior/export-pdf', [SeniorController::class, 'exportSeniorsPdf'])->name('admin.senior.export-pdf');
+    Route::get('/admin/multi-database', [MultiDatabaseDemoController::class, 'index'])->name('admin.multi-database.index');
+    Route::post('/admin/multi-database', [MultiDatabaseDemoController::class, 'store'])->name('admin.multi-database.store');
 });
-Route::get('/admin/senior/statistics', [SeniorAnalyticsController::class, 'index'])->name('admin.senior.analytics');
-Route::get('/admin/senior/reports', [SeniorController::class, 'senior'])->name('admin.senior.reports');
-Route::get('/admin/senior/payouts-history', [BirthdayPayoutController::class, 'history'])->name('admin.senior.payouts-history');
-Route::post('/admin/senior/bulk-archive', [SeniorController::class, 'bulkArchive'])->name('admin.senior.bulk-archive');
-Route::post('/admin/senior/bulk-restore', [SeniorController::class, 'bulkRestore'])->name('admin.senior.bulk-restore');
-Route::get('/admin/senior/export', [SeniorController::class, 'exportSeniors'])->name('admin.senior.export');
-Route::get('/admin/senior/export-pdf', [SeniorController::class, 'exportSeniorsPdf'])->name('admin.senior.export-pdf');
-Route::get('/admin/multi-database', [MultiDatabaseDemoController::class, 'index'])->name('admin.multi-database.index');
-Route::post('/admin/multi-database', [MultiDatabaseDemoController::class, 'store'])->name('admin.multi-database.store');
 
 // Financial Assistance Intake Routes (admin session required)
-Route::middleware(['admin.auth'])->group(function () {
+Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::prefix('admin/beneficiary-intake')->name('admin.beneficiary-intake.')->group(function () {
         Route::get('/', [FinancialIntakeController::class, 'index'])->name('index');
         Route::get('/create/{client?}', [FinancialIntakeController::class, 'create'])->name('create');

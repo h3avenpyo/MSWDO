@@ -134,40 +134,6 @@ class SeniorController extends Controller
             return back()->withErrors(['full_name' => 'A senior citizen with this name already exists.'])->withInput();
         }
 
-        $qrCodeData = $request->control_number;
-        $qrCodePath = 'uploads/qr_codes/' . time() . '_qr.png';
-
-        try {
-            $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($qrCodeData);
-            $qrCodeImage = file_get_contents($qrCodeUrl);
-            if ($qrCodeImage !== false) {
-                if (!file_exists(public_path('uploads/qr_codes'))) {
-                    mkdir(public_path('uploads/qr_codes'), 0755, true);
-                }
-                file_put_contents(public_path($qrCodePath), $qrCodeImage);
-            } else {
-                $qrCodePath = null;
-            }
-        } catch (\Exception $e) {
-            $qrCodePath = null;
-        }
-
-        $avatarPath = 'uploads/avatars/' . time() . '_avatar.png';
-        try {
-            $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($request->full_name) . "&background=1A237E&color=fff&size=128";
-            $avatarImage = file_get_contents($avatarUrl);
-            if ($avatarImage !== false) {
-                if (!file_exists(public_path('uploads/avatars'))) {
-                    mkdir(public_path('uploads/avatars'), 0755, true);
-                }
-                file_put_contents(public_path($avatarPath), $avatarImage);
-            } else {
-                $avatarPath = null;
-            }
-        } catch (\Exception $e) {
-            $avatarPath = null;
-        }
-
         $senior = SeniorCitizenRecord::create([
             'year_applied' => $request->year_applied,
             'control_number' => $request->control_number,
@@ -184,9 +150,7 @@ class SeniorController extends Controller
             'remarks' => $request->remarks,
             'created_by' => session('admin_user_id'),
             'status' => 'active',
-            'qr_code' => $qrCodeData,
-            'qr_code_image' => $qrCodePath,
-            'avatar_image' => $avatarPath,
+            'qr_code' => $request->control_number,
         ]);
 
         $this->logActivity('registered', $senior->full_name, $senior->control_number);

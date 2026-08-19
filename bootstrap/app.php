@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin.auth' => \App\Http\Middleware\EnsureAdminAuthenticated::class,
             'role' => \App\Http\Middleware\EnsureRole::class,
+            'check.account.status' => \App\Http\Middleware\CheckAccountStatus::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

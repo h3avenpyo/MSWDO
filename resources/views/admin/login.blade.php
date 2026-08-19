@@ -982,33 +982,59 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // ══════════════════════════════════════════════
-        //  Welcome popup — shown once per browser
+        //  Account Deactivated Alert
         // ══════════════════════════════════════════════
-        (function showWelcomeOnce() {
-            if (localStorage.getItem('mswdo_welcome_seen')) return;
-            function tryPopup() {
-                if (typeof Swal === 'undefined') { setTimeout(tryPopup, 100); return; }
-                localStorage.setItem('mswdo_welcome_seen', '1');
-                Swal.fire({
-                    title: 'Welcome to MSWDO Silang Portal!',
-                    html: '<div style="text-align:center;line-height:1.7;color:#475569;font-size:15px">' +
-                          '<p style="margin:0 0 8px">Your centralized platform for social welfare management.</p>' +
-                          '<p style="margin:0;font-size:13px;color:#94A3B8">Sign in below with your account to continue.</p>' +
-                          '</div>',
-                    icon: 'info',
-                    confirmButtonColor: '#1D4ED8',
-                    confirmButtonText: 'Get Started',
-                    background: '#ffffff',
-                    customClass: { popup: 'rounded-4 shadow-lg' },
-                    allowOutsideClick: false
-                });
-            }
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', function() { setTimeout(tryPopup, 800); });
-            } else {
-                setTimeout(tryPopup, 800);
-            }
-        })();
+        @if(session('account_deactivated'))
+            (function showDeactivatedAlert() {
+                function tryPopup() {
+                    if (typeof Swal === 'undefined') { setTimeout(tryPopup, 100); return; }
+                    Swal.fire({
+                        title: 'Account Deactivated',
+                        text: 'Your account has been deactivated. Please contact the administrator.',
+                        icon: 'error',
+                        confirmButtonColor: '#DC2626',
+                        confirmButtonText: 'OK',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' },
+                        allowOutsideClick: false
+                    });
+                }
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', function() { setTimeout(tryPopup, 500); });
+                } else {
+                    setTimeout(tryPopup, 500);
+                }
+            })();
+        @else
+            // ══════════════════════════════════════════════
+            //  Welcome popup — shown once per browser
+            // ══════════════════════════════════════════════
+            (function showWelcomeOnce() {
+                if (localStorage.getItem('mswdo_welcome_seen')) return;
+                function tryPopup() {
+                    if (typeof Swal === 'undefined') { setTimeout(tryPopup, 100); return; }
+                    localStorage.setItem('mswdo_welcome_seen', '1');
+                    Swal.fire({
+                        title: 'Welcome to MSWDO Silang Portal!',
+                        html: '<div style="text-align:center;line-height:1.7;color:#475569;font-size:15px">' +
+                              '<p style="margin:0 0 8px">Your centralized platform for social welfare management.</p>' +
+                              '<p style="margin:0;font-size:13px;color:#94A3B8">Sign in below with your account to continue.</p>' +
+                              '</div>',
+                        icon: 'info',
+                        confirmButtonColor: '#1D4ED8',
+                        confirmButtonText: 'Get Started',
+                        background: '#ffffff',
+                        customClass: { popup: 'rounded-4 shadow-lg' },
+                        allowOutsideClick: false
+                    });
+                }
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', function() { setTimeout(tryPopup, 800); });
+                } else {
+                    setTimeout(tryPopup, 800);
+                }
+            })();
+        @endif
 
         // ══════════════════════════════════════════════
         //  Inline error helper

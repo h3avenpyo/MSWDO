@@ -19,11 +19,18 @@ class OfficerController extends Controller
             session()->forget('officer_created');
         }
 
+        return view('admin.add-officers', compact('officerCreated'));
+    }
+
+    public function officersDirectory()
+    {
         $officers = User::
-            orderByDesc('created_at')
+            where('email', '!=', 'admin@mswdo.test')
+            ->select('id', 'name', 'email', 'role', 'phone', 'created_at', 'status')
+            ->orderByDesc('created_at')
             ->get();
 
-        return view('admin.add-officers', compact('officers', 'officerCreated'));
+        return view('admin.officers-directory', compact('officers'));
     }
 
     public function storeOfficer(Request $request)
@@ -66,5 +73,74 @@ class OfficerController extends Controller
         ]);
 
         return redirect()->route('admin.add-officers')->with('success', 'Officer created successfully.')->with('officer_created', true);
+    }
+
+    public function editOfficer($id)
+    {
+        $officer = User::findOrFail($id);
+        return view('admin.edit-officer', compact('officer'));
+    }
+
+    public function updateOfficer(Request $request, $id)
+    {
+        $officer = User::findOrFail($id);
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255', function ($attribute, $value, $fail) use ($officer) {
+                $exists = User::
+                    whereRaw('LOWER(name) = ?', [strtolower($value)])
+                    ->where('id', '!=', $officer->id)
+                    ->exists();
+                if ($exists) {
+                    $fail('An officer with this name already exists.');
+                }
+            }],
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($officer->id)],
+            'role' => ['required', Rule::enum(UserRole::class)],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'status' => ['required', 'in:active,inactive'],
+            'signature_position' => ['nullable', 'in:osca_head,mswdo_officer'],
+            'signature_image' => ['nullable', 'image', 'max:2048'],
+        ]);
+
+        $signatureImagePath = $officer->signature_image;
+        if ($request->hasFile('signature_image')) {
+            // Delete old signature if exists
+            if ($officer->signature_image && file_exists(public_path($officer->signature_image))) {
+                unlink(public_path($officer->signature_image));
+            }
+            $file = $request->file('signature_image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('images/signatures'), $filename);
+            $signatureImagePath = 'images/signatures/' . $filename;
+        }
+
+        $officer->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'role' => $request->role,
+            'phone' => $request->phone,
+            'status' => $request->status,
+            'signature_position' => $request->signature_position,
+            'signature_image' => $signatureImagePath,
+        ]);
+
+        return redirect()->route('admin.officers-directory')->with('success', 'Officer updated successfully.');
+    }
+
+    public function deactivateOfficer($id)
+    {
+        $officer = User::findOrFail($id);
+        $officer->status = \App\Enums\UserStatus::Inactive;
+        $officer->save();
+        return redirect()->route('admin.officers-directory')->with('success', 'Officer deactivated successfully.');
+    }
+
+    public function activateOfficer($id)
+    {
+        $officer = User::findOrFail($id);
+        $officer->status = \App\Enums\UserStatus::Active;
+        $officer->save();
+        return redirect()->route('admin.officers-directory')->with('success', 'Officer activated successfully.');
     }
 }
