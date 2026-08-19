@@ -540,8 +540,7 @@
         }
         use App\Models\Senior\SeniorCitizenRecord;
         $bdayToday = SeniorCitizenRecord::where('status','active')->whereNotNull('birth_date')->whereRaw("MONTH(birth_date) = ? AND DAY(birth_date) = ?", [now()->format('n'), now()->format('j')])->count();
-        $bdayWeek = SeniorCitizenRecord::where('status','active')->whereNotNull('birth_date')->where(function($q){ $s=now();$e=now()->addDays(7);$sMD=$s->format('m-d');$eMD=$e->format('m-d');if($sMD<=$eMD){$q->whereRaw("DATE_FORMAT(birth_date,'%m-%d') BETWEEN ? AND ?",[$sMD,$eMD]);}else{$q->whereRaw("DATE_FORMAT(birth_date,'%m-%d') >= ?",[$sMD])->orWhereRaw("DATE_FORMAT(birth_date,'%m-%d') <= ?",[$eMD]);}})->count();
-        $bdayNextMonth = SeniorCitizenRecord::where('status','active')->whereNotNull('birth_date')->whereRaw("MONTH(birth_date) = ?", [now()->addMonth()->format('n')])->count();
+        $archivedSeniors = SeniorCitizenRecord::where('status','archived')->whereNotNull('birth_date')->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')->count();
     @endphp
 
     <!-- Main Content -->
@@ -582,6 +581,15 @@
                     <div class="stat-card-icon"><i data-lucide="check-circle"></i></div>
                 </div>
             </a>
+            <a href="/admin/senior/archive" style="text-decoration:none">
+                <div class="stat-card stat-card-purple">
+                    <div class="stat-card-content">
+                        <div class="stat-card-label">ARCHIVED</div>
+                        <div class="stat-card-value">{{ $archivedSeniors ?? 0 }}</div>
+                    </div>
+                    <div class="stat-card-icon"><i data-lucide="archive"></i></div>
+                </div>
+            </a>
             <a href="/admin/senior/birthdays" style="text-decoration:none">
                 <div class="stat-card stat-card-red">
                     <div class="stat-card-content">
@@ -591,22 +599,13 @@
                     <div class="stat-card-icon"><i data-lucide="cake"></i></div>
                 </div>
             </a>
-            <a href="/admin/senior/birthdays" style="text-decoration:none">
+            <a href="/admin/senior/payouts-history" style="text-decoration:none">
                 <div class="stat-card stat-card-orange">
                     <div class="stat-card-content">
-                        <div class="stat-card-label">NEXT 7 DAYS</div>
-                        <div class="stat-card-value">{{ $bdayWeek }}</div>
+                        <div class="stat-card-label">TOTAL PAYOUT</div>
+                        <div class="stat-card-value">₱{{ number_format($totalAmountReleased ?? 0, 2) }}</div>
                     </div>
-                    <div class="stat-card-icon"><i data-lucide="calendar-days"></i></div>
-                </div>
-            </a>
-            <a href="/admin/senior/birthdays" style="text-decoration:none">
-                <div class="stat-card stat-card-purple">
-                    <div class="stat-card-content">
-                        <div class="stat-card-label">NEXT MONTH</div>
-                        <div class="stat-card-value">{{ $bdayNextMonth }}</div>
-                    </div>
-                    <div class="stat-card-icon"><i data-lucide="calendar"></i></div>
+                    <div class="stat-card-icon"><i data-lucide="wallet"></i></div>
                 </div>
             </a>
         </div>

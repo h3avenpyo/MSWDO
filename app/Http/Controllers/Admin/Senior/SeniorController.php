@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Senior;
 use App\Http\Controllers\Controller;
 use App\Models\Senior\SeniorCitizenRecord;
 use App\Models\Senior\SeniorActivityLog;
+use App\Models\Senior\BirthdayPayout;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +25,8 @@ class SeniorController extends Controller
         $totalSeniors = SeniorCitizenRecord::whereNotNull('birth_date')->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')->count();
         $activeSeniors = SeniorCitizenRecord::where('status', 'active')->whereNotNull('birth_date')->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')->count();
         $pendingSeniors = SeniorCitizenRecord::where('status', 'pending')->whereNotNull('birth_date')->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')->count();
+        $archivedSeniors = SeniorCitizenRecord::where('status', 'archived')->whereNotNull('birth_date')->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')->count();
+        $totalAmountReleased = BirthdayPayout::where('status', 'released')->sum('amount');
         $recentSeniors = SeniorCitizenRecord::
             whereNotNull('birth_date')
             ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')
@@ -63,6 +66,8 @@ class SeniorController extends Controller
             'totalSeniors' => $totalSeniors,
             'activeSeniors' => $activeSeniors,
             'pendingSeniors' => $pendingSeniors,
+            'archivedSeniors' => $archivedSeniors,
+            'totalAmountReleased' => $totalAmountReleased,
             'recentSeniors' => $recentSeniors,
             'barangayDistribution' => $barangayDistribution,
             'recentActivities' => $recentActivities,

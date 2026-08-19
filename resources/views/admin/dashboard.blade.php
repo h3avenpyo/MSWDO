@@ -77,35 +77,209 @@ $initials = count($words) >= 2
     </div>
 </header>
 
-{{-- Stat Cards --}}
-<div class="stat-cards" style="margin-bottom:1.5rem;">
-    <div class="stat-card stat-card-blue">
-        <div class="stat-card-content">
-            <div class="stat-card-label">TOTAL CASES</div>
-            <div class="stat-card-value counter" data-target="{{ $totalCases }}">0</div>
-        </div>
-        <div class="stat-card-icon"><i data-lucide="folder"></i></div>
+{{-- Service Breakdown --}}
+<div class="flex justify-between items-center mb-6 flex-wrap gap-2">
+    <div>
+        <h3 class="text-xl font-bold text-slate-800 m-0 flex items-center gap-2">
+            <i data-lucide="grid" class="w-6 h-6 text-indigo-600"></i> Service Breakdown
+        </h3>
+        <p class="text-sm text-slate-500 m-0 mt-1">Status breakdown across all services</p>
     </div>
-    <div class="stat-card stat-card-green">
-        <div class="stat-card-content">
-            <div class="stat-card-label">RESOLVED CASES</div>
-            <div class="stat-card-value counter" data-target="{{ $resolvedCases }}">0</div>
+</div>
+
+<div style="display:flex; flex-direction:column; gap:1.5rem; margin-bottom:2rem;">
+    @php 
+        $servicesArray = $serviceBreakdown instanceof \Illuminate\Support\Collection ? $serviceBreakdown->toArray() : $serviceBreakdown;
+        $serviceKeys = array_keys($servicesArray);
+        $topKeys = array_slice($serviceKeys, 0, 3);
+        $bottomKeys = array_slice($serviceKeys, 3, 2);
+    @endphp
+
+    <!-- Top row: 3 cards -->
+    <div style="display:flex; gap:1.5rem;">
+        @foreach($topKeys as $serviceName)
+        @php $stats = $servicesArray[$serviceName]; @endphp
+        <div class="card-panel" style="flex:1; margin-bottom:0; padding:1.5rem; min-height:280px;">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-lg font-bold text-slate-800 m-0">{{ $serviceName }}</h4>
+                <span class="text-sm text-slate-500 font-medium">Total: {{ $stats['total'] }}</span>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem; align-items:stretch;">
+                @php
+                    $label1 = 'Active';
+                    $label2 = 'Pending';
+                    $label3 = 'Overdue';
+                    $label4 = 'Completed';
+
+                    if ($serviceName === 'Social Case Study') {
+                        $label1 = 'Total Clients';
+                        $label2 = 'Cases This Month';
+                        $label3 = 'Released Today';
+                        $label4 = 'Total Released';
+                    } elseif ($serviceName === 'Financial Assistance') {
+                        $label1 = 'Total Intakes';
+                        $label2 = 'Pending';
+                        $label3 = 'Step 1 Approved';
+                        $label4 = 'Ready Step 2';
+                    } elseif ($serviceName === 'Senior Citizen') {
+                        $label1 = 'Total Seniors';
+                        $label2 = 'Active Seniors';
+                        $label3 = 'Archived';
+                        $label4 = 'Total Payout';
+                    } elseif ($serviceName === 'VAWC' || $serviceName === 'BCPC') {
+                        $label1 = 'Total Cases';
+                        $label2 = 'Active Cases';
+                        $label3 = 'Overdue';
+                        $label4 = 'Resolved';
+                    }
+                @endphp
+                <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:12px; padding:1.25rem; display:flex; flex-direction:column; justify-content:center; height:100px;">
+                    <div class="text-sm text-slate-500 mb-2 font-medium">{{ $label1 }}</div>
+                    <div class="text-2xl font-bold text-slate-800">{{ $stats['active'] }}</div>
+                </div>
+                <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:12px; padding:1.25rem; display:flex; flex-direction:column; justify-content:center; height:100px;">
+                    <div class="text-sm text-slate-500 mb-2 font-medium">{{ $label2 }}</div>
+                    <div class="text-2xl font-bold text-slate-800">{{ $stats['pending'] }}</div>
+                </div>
+                <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:12px; padding:1.25rem; display:flex; flex-direction:column; justify-content:center; height:100px;">
+                    <div class="text-sm text-slate-500 mb-2 font-medium">{{ $label3 }}</div>
+                    <div class="text-2xl font-bold @if($stats['overdue'] > 0) text-red-600 @else text-slate-800 @endif">{{ $stats['overdue'] }}</div>
+                </div>
+                <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:12px; padding:1.25rem; display:flex; flex-direction:column; justify-content:center; height:100px;">
+                    <div class="text-sm text-slate-500 mb-2 font-medium">{{ $label4 }}</div>
+                    <div class="text-2xl font-bold text-green-600">
+                        @if($serviceName === 'Senior Citizen')
+                            ₱{{ number_format($stats['completed'], 2) }}
+                        @else
+                            {{ $stats['completed'] }}
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="stat-card-icon"><i data-lucide="check-circle"></i></div>
+        @endforeach
     </div>
-    <div class="stat-card stat-card-purple">
-        <div class="stat-card-content">
-            <div class="stat-card-label">PENDING CASES</div>
-            <div class="stat-card-value counter" data-target="{{ $pendingCases }}">0</div>
+
+    <!-- Bottom row: 2 cards with full width -->
+    <div style="display:flex; gap:1.5rem;">
+        @foreach($bottomKeys as $serviceName)
+        @php $stats = $servicesArray[$serviceName]; @endphp
+        <div class="card-panel" style="flex:1; margin-bottom:0; padding:1.5rem; min-height:280px;">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-lg font-bold text-slate-800 m-0">{{ $serviceName }}</h4>
+                <span class="text-sm text-slate-500 font-medium">Total: {{ $stats['total'] }}</span>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem; align-items:stretch;">
+                @php
+                    $label1 = 'Active';
+                    $label2 = 'Pending';
+                    $label3 = 'Overdue';
+                    $label4 = 'Completed';
+
+                    if ($serviceName === 'Social Case Study') {
+                        $label1 = 'Total Clients';
+                        $label2 = 'Cases This Month';
+                        $label3 = 'Released Today';
+                        $label4 = 'Total Released';
+                    } elseif ($serviceName === 'Financial Assistance') {
+                        $label1 = 'Total Intakes';
+                        $label2 = 'Pending';
+                        $label3 = 'Step 1 Approved';
+                        $label4 = 'Ready Step 2';
+                    } elseif ($serviceName === 'Senior Citizen') {
+                        $label1 = 'Total Seniors';
+                        $label2 = 'Active Seniors';
+                        $label3 = 'Archived';
+                        $label4 = 'Total Payout';
+                    } elseif ($serviceName === 'VAWC' || $serviceName === 'BCPC') {
+                        $label1 = 'Total Cases';
+                        $label2 = 'Active Cases';
+                        $label3 = 'Overdue';
+                        $label4 = 'Resolved';
+                    }
+                @endphp
+                <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:12px; padding:1.25rem; display:flex; flex-direction:column; justify-content:center; height:100px;">
+                    <div class="text-sm text-slate-500 mb-2 font-medium">{{ $label1 }}</div>
+                    <div class="text-2xl font-bold text-slate-800">{{ $stats['active'] }}</div>
+                </div>
+                <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:12px; padding:1.25rem; display:flex; flex-direction:column; justify-content:center; height:100px;">
+                    <div class="text-sm text-slate-500 mb-2 font-medium">{{ $label2 }}</div>
+                    <div class="text-2xl font-bold text-slate-800">{{ $stats['pending'] }}</div>
+                </div>
+                <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:12px; padding:1.25rem; display:flex; flex-direction:column; justify-content:center; height:100px;">
+                    <div class="text-sm text-slate-500 mb-2 font-medium">{{ $label3 }}</div>
+                    <div class="text-2xl font-bold @if($stats['overdue'] > 0) text-red-600 @else text-slate-800 @endif">{{ $stats['overdue'] }}</div>
+                </div>
+                <div style="background:#F8FAFC; border:1px solid #E5E7EB; border-radius:12px; padding:1.25rem; display:flex; flex-direction:column; justify-content:center; height:100px;">
+                    <div class="text-sm text-slate-500 mb-2 font-medium">{{ $label4 }}</div>
+                    <div class="text-2xl font-bold text-green-600">
+                        @if($serviceName === 'Senior Citizen')
+                            ₱{{ number_format($stats['completed'], 2) }}
+                        @else
+                            {{ $stats['completed'] }}
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="stat-card-icon"><i data-lucide="clock"></i></div>
+        @endforeach
     </div>
-    <div class="stat-card stat-card-teal">
-        <div class="stat-card-content">
-            <div class="stat-card-label">TOTAL OFFICERS</div>
-            <div class="stat-card-value counter" data-target="{{ $totalUsers }}">0</div>
+</div>
+
+{{-- Recent Cases --}}
+<div class="card-panel" style="margin-bottom:1.5rem;">
+    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="text-xl font-bold text-slate-800 m-0 flex items-center gap-2">
+                <i data-lucide="clock" class="w-6 h-6 text-indigo-600"></i> Recent Cases
+            </h3>
+            <p class="text-sm text-slate-500 m-0 mt-1">Latest updated cases across all services</p>
         </div>
-        <div class="stat-card-icon"><i data-lucide="users"></i></div>
+    </div>
+
+    <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="background:#F8FAFC; border-bottom:2px solid #E5E7EB;">
+                    <th style="padding:1rem; text-align:left; font-weight:600; color:#475569; font-size:0.875rem;">Client</th>
+                    <th style="padding:1rem; text-align:left; font-weight:600; color:#475569; font-size:0.875rem;">Service</th>
+                    <th style="padding:1rem; text-align:left; font-weight:600; color:#475569; font-size:0.875rem;">Officer</th>
+                    <th style="padding:1rem; text-align:left; font-weight:600; color:#475569; font-size:0.875rem;">Status</th>
+                    <th style="padding:1rem; text-align:left; font-weight:600; color:#475569; font-size:0.875rem;">Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if($recentCases && $recentCases->count() > 0)
+                    @foreach($recentCases as $case)
+                    <tr style="border-bottom:1px solid #E5E7EB; transition:background-color 0.2s;">
+                        <td style="padding:1rem; color:#1E293B; font-size:0.875rem;">{{ $case['client'] }}</td>
+                        <td style="padding:1rem; color:#475569; font-size:0.875rem;">{{ $case['service'] }}</td>
+                        <td style="padding:1rem; color:#475569; font-size:0.875rem;">{{ $case['officer'] }}</td>
+                        <td style="padding:1rem;">
+                            @php
+                                $statusColor = '#64748B';
+                                if($case['status'] === 'Active' || $case['status'] === 'Resolved') {
+                                    $statusColor = '#10B981';
+                                } elseif($case['status'] === 'Pending') {
+                                    $statusColor = '#F59E0B';
+                                } elseif($case['status'] === 'Overdue' || $case['status'] === 'Rejected') {
+                                    $statusColor = '#EF4444';
+                                }
+                            @endphp
+                            <span style="background:{{ $statusColor }}; color:white; padding:0.25rem 0.75rem; border-radius:9999px; font-size:0.75rem; font-weight:500;">{{ $case['status'] }}</span>
+                        </td>
+                        <td style="padding:1rem; color:#64748B; font-size:0.875rem;">{{ $case['updated'] }}</td>
+                    </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td colspan="5" style="padding:2rem; text-align:center; color:#94A3B8; font-size:0.875rem;">
+                            No recent cases found
+                        </td>
+                    </tr>
+                @endif
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -221,21 +395,11 @@ document.addEventListener('DOMContentLoaded', function () {
     setInterval(updateDateTime, 60000);
 
     // Lucide icons
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-
-    // Counter animation
-    document.querySelectorAll('.counter').forEach(function (counter) {
-        var target = parseInt(counter.getAttribute('data-target')) || 0;
-        if (target === 0) { counter.textContent = '0'; return; }
-        var step = target / (1800 / 16);
-        var current = 0;
-        function tick() {
-            current += step;
-            if (current < target) { counter.textContent = Math.floor(current); requestAnimationFrame(tick); }
-            else { counter.textContent = target; }
-        }
-        tick();
-    });
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+        // Re-create icons after a short delay to ensure dynamic icons are rendered
+        setTimeout(() => lucide.createIcons(), 100);
+    }
 });
 </script>
 @endpush
