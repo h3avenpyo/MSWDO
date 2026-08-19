@@ -422,6 +422,12 @@
                     <span>Officers Directory</span>
                 </a>
             </li>
+            <li>
+                <a href="/admin/password-reset-management" class="{{ request()->is('admin/password-reset-management*') ? 'active' : '' }}">
+                    <i data-lucide="key"></i>
+                    <span>Password Resets</span>
+                </a>
+            </li>
             <li style="border-top:1px solid rgba(255,255,255,.1);margin-top:.5rem;padding-top:.5rem;">
                 <a href="#" onclick="confirmLogout(event)">
                     <i data-lucide="log-out"></i>

@@ -877,7 +877,7 @@
                                 <input type="checkbox" name="remember" class="remember-checkbox">
                                 Remember me
                             </label>
-                            <a href="#" class="forgot-password">Forgot password?</a>
+                            <a href="{{ route('admin.forgot-password') }}" class="forgot-password">Forgot password?</a>
                         </div>
 
                         <button type="submit" class="submit-button">

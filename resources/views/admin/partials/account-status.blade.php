@@ -93,4 +93,40 @@
         start();
     }
 })();
+
+// Show session flash messages
+@if(session('account_deactivated'))
+    (function() {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Account Deactivated',
+                text: 'Your account has been deactivated by an administrator. You have been logged out.',
+                icon: 'error',
+                confirmButtonColor: '#DC2626',
+                confirmButtonText: 'OK',
+                background: '#ffffff',
+                customClass: { popup: 'rounded-4 shadow-lg' },
+                allowOutsideClick: false
+            }).then(function() {
+                window.location.href = '/admin';
+            });
+        }
+    })();
+@endif
+
+@if(session('success'))
+    (function() {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Success',
+                text: '{{ session('success') }}',
+                icon: 'success',
+                confirmButtonColor: '#16A34A',
+                confirmButtonText: 'OK',
+                background: '#ffffff',
+                customClass: { popup: 'rounded-4 shadow-lg' }
+            });
+        }
+    })();
+@endif
 </script>

@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\Senior\SeniorController;
 use App\Http\Controllers\Admin\Senior\BirthdayController;
 use App\Http\Controllers\Admin\Senior\BirthdayPayoutController;
 use App\Http\Controllers\Admin\Senior\SeniorAnalyticsController;
+use App\Http\Controllers\Admin\Auth\PasswordResetManagementController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,6 +27,12 @@ Route::post('/admin/login/code/verify', [EmailCodeController::class, 'verify'])-
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 Route::post('/admin/clear-welcome', [AuthController::class, 'clearWelcome'])->name('admin.clear-welcome');
 Route::get('/admin/check-account-status', [AuthController::class, 'checkAccountStatus'])->name('admin.check-account-status');
+
+// Forgot Password Routes
+Route::get('/admin/forgot-password', [AuthController::class, 'showForgotPassword'])->name('admin.forgot-password');
+Route::post('/admin/forgot-password', [AuthController::class, 'sendResetLink'])->name('admin.password.send-link');
+Route::get('/admin/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('admin.password.reset');
+Route::post('/admin/reset-password', [AuthController::class, 'resetPassword'])->name('admin.password.update');
 
 Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -81,6 +88,12 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::put('/admin/officers/{id}', [OfficerController::class, 'updateOfficer'])->name('admin.officers.update');
     Route::post('/admin/officers/{id}/deactivate', [OfficerController::class, 'deactivateOfficer'])->name('admin.officers.deactivate');
     Route::post('/admin/officers/{id}/activate', [OfficerController::class, 'activateOfficer'])->name('admin.officers.activate');
+
+    // Password Reset Management
+    Route::get('/admin/password-reset-management', [PasswordResetManagementController::class, 'index'])->name('admin.password-reset-management');
+    Route::post('/admin/password-reset/{id}/approve', [PasswordResetManagementController::class, 'approve'])->name('admin.password-reset.approve');
+    Route::post('/admin/password-reset/{id}/reject', [PasswordResetManagementController::class, 'reject'])->name('admin.password-reset.reject');
+    Route::delete('/admin/password-reset/{id}', [PasswordResetManagementController::class, 'delete'])->name('admin.password-reset.delete');
 });
 
 // Financial Module Routes
