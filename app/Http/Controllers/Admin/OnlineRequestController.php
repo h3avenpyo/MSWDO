@@ -79,4 +79,43 @@ class OnlineRequestController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Request archived successfully']);
     }
+
+    public function accept($id)
+    {
+        $request = OnlineRequest::with('attachments')->find($id);
+        if (!$request) {
+            return response()->json(['success' => false, 'message' => 'Request not found'], 404);
+        }
+
+        if ($request->status === 'approved') {
+            return response()->json(['success' => false, 'message' => 'Request is already approved'], 400);
+        }
+
+        $request->status = 'approved';
+        $request->save();
+
+        // Send email notification
+        try {
+            \Mail::raw(
+                "Dear {$request->first_name} {$request->last_name},\n\n" .
+                "Congratulations! Your online service request has been approved.\n\n" .
+                "Request Details:\n" .
+                "- Service Type: " . ucfirst(str_replace('_', ' ', $request->service_type)) . "\n" .
+                "- Assistance Type: " . ucfirst(str_replace('_', ' ', $request->assistance_type)) . "\n" .
+                "- Barangay: {$request->barangay}\n\n" .
+                "Please bring the hardcopy of the required documents to the MSWDO office for further processing.\n\n" .
+                "Thank you,\n" .
+                "MSWDO Silang",
+                function ($message) use ($request) {
+                    $message->to($request->email)
+                        ->subject('Your Service Request Has Been Approved - MSWDO Silang');
+                }
+            );
+        } catch (\Exception $e) {
+            // Log error but don't fail the request
+            \Log::error('Failed to send email: ' . $e->getMessage());
+        }
+
+        return response()->json(['success' => true, 'message' => 'Request accepted successfully and email notification sent']);
+    }
 }

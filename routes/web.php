@@ -63,9 +63,14 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::middleware('role:admin,eligibility_checker')->group(function () {
             Route::post('/api/eligibility/check', [SocialCaseController::class, 'checkEligibility'])->name('api.eligibility.check');
             Route::post('/api/eligibility/submit', [SocialCaseController::class, 'submitEligibility'])->name('api.eligibility.submit');
+        });
+
+        // Social case module routes (eligibility checker and social worker only)
+        Route::middleware('role:eligibility_checker,social_worker')->group(function () {
             Route::get('/online-requests', [OnlineRequestController::class, 'index'])->name('online-requests');
             Route::get('/online-requests/{id}', [OnlineRequestController::class, 'show'])->name('online-requests.show');
             Route::post('/online-requests/{id}/archive', [OnlineRequestController::class, 'archive'])->name('online-requests.archive');
+            Route::post('/online-requests/{id}/accept', [OnlineRequestController::class, 'accept'])->name('online-requests.accept');
         });
 
         // Case encoder only (social@mwsdo.test)

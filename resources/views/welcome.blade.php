@@ -1573,6 +1573,7 @@ scrollBtn.addEventListener('click', () => {
 
 // Service Request Modal
 function openServiceRequestModal() {
+    selectedFiles = [];
     // Step 1: Who needs assistance + Beneficiary Information
     Swal.fire({
         title: 'Online Service Request',
@@ -1851,48 +1852,8 @@ function openServiceRequestModal() {
                                 uploadArea.style.background = '#F8FAFC';
                                 uploadArea.style.borderColor = '#1A237E';
                                 
-                                const files = e.dataTransfer.files;
-                                
-                                // Validate file types
-                                const validTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png'];
-                                const validFiles = [];
-                                
-                                for (let i = 0; i < files.length; i++) {
-                                    const file = files[i];
-                                    const extension = '.' + file.name.split('.').pop().toLowerCase();
-                                    
-                                    if (validTypes.includes(extension)) {
-                                        validFiles.push(file);
-                                    } else {
-                                        Swal.fire({
-                                            title: 'Invalid File Type',
-                                            text: file.name + ' is not a supported file type.',
-                                            icon: 'warning',
-                                            confirmButtonColor: '#1A237E',
-                                            confirmButtonText: 'OK'
-                                        });
-                                    }
-                                }
-                                
-                                if (validFiles.length > 0) {
-                                    // Get existing files and add new ones
-                                    const dataTransfer = new DataTransfer();
-                                    
-                                    // Add existing files
-                                    if (documentsInput.files.length > 0) {
-                                        for (let i = 0; i < documentsInput.files.length; i++) {
-                                            dataTransfer.items.add(documentsInput.files[i]);
-                                        }
-                                    }
-                                    
-                                    // Add new files
-                                    for (let i = 0; i < validFiles.length; i++) {
-                                        dataTransfer.items.add(validFiles[i]);
-                                    }
-                                    
-                                    documentsInput.files = dataTransfer.files;
-                                    handleFileSelection(documentsInput);
-                                }
+                                addFilesToStore(e.dataTransfer.files);
+                                syncFileInput(documentsInput);
                             });
                         }
                     }, 100);
@@ -1918,7 +1879,8 @@ function openServiceRequestModal() {
                     return { 
                         service_type: serviceType, 
                         assistance_type: assistanceType, 
-                        situation: situation
+                        situation: situation,
+                        files: selectedFiles.slice()
                     };
                 }
             }).then((result2) => {
@@ -1928,19 +1890,17 @@ function openServiceRequestModal() {
                     Object.keys(result.value).forEach(key => {
                         formData.append(key, result.value[key]);
                     });
-                    Object.keys(result2.value).forEach(key => {
-                        formData.append(key, result2.value[key]);
+                    const { files: requestFiles, ...requestData } = result2.value;
+                    Object.keys(requestData).forEach(key => {
+                        formData.append(key, requestData[key]);
                     });
                     
-                    // Add files directly from the input element
-                    const documentsInput = Swal.getPopup().querySelector('#documents');
-                    if (documentsInput && documentsInput.files.length > 0) {
-                        for (let i = 0; i < documentsInput.files.length; i++) {
-                            formData.append('documents[]', documentsInput.files[i]);
+                    // Add selected files (captured in preConfirm before the modal closed)
+                    if (requestFiles && requestFiles.length > 0) {
+                        for (let i = 0; i < requestFiles.length; i++) {
+                            formData.append('documents[]', requestFiles[i]);
                         }
                     }
-
-                    console.log('Submitting data:', formData); // Debug log
 
                     // Send data to backend
                     fetch('/service-request', {
@@ -1996,17 +1956,54 @@ function openServiceRequestModal() {
 </script>
 
 <script>
+let selectedFiles = [];
+
 function handleFileSelection(input) {
-    console.log('Files selected:', input.files.length);
-    console.log('Files:', input.files);
+    addFilesToStore(input.files);
+    syncFileInput(input);
+}
+
+function addFilesToStore(newFiles) {
+    const validTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png'];
+    for (let i = 0; i < newFiles.length; i++) {
+        const file = newFiles[i];
+        const extension = '.' + file.name.split('.').pop().toLowerCase();
+        
+        if (!validTypes.includes(extension)) {
+            Swal.fire({
+                title: 'Invalid File Type',
+                text: file.name + ' is not a supported file type.',
+                icon: 'warning',
+                confirmButtonColor: '#1A237E',
+                confirmButtonText: 'OK'
+            });
+            continue;
+        }
+        
+        const duplicate = selectedFiles.some(existing =>
+            existing.name === file.name &&
+            existing.size === file.size &&
+            existing.lastModified === file.lastModified
+        );
+        
+        if (!duplicate) {
+            selectedFiles.push(file);
+        }
+    }
+}
+
+function syncFileInput(input) {
+    const dataTransfer = new DataTransfer();
+    for (let i = 0; i < selectedFiles.length; i++) {
+        dataTransfer.items.add(selectedFiles[i]);
+    }
+    input.files = dataTransfer.files;
     updateFileList(input);
 }
 
 function updateFileList(input) {
     const fileList = document.getElementById('fileList');
     fileList.innerHTML = '';
-    
-    console.log('Updating file list with', input.files.length, 'files');
     
     if (input.files.length > 0) {
         const fileListHtml = document.createElement('div');

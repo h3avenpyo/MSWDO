@@ -140,6 +140,10 @@
         background: #E5E7EB;
         color: #6B7280;
     }
+    .badge-status.approved {
+        background: #DCFCE7;
+        color: #15803D;
+    }
     
     /* Pagination */
     .sc-pagination {
@@ -364,6 +368,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <li><a href="/admin/social-case/archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
         @if((string) session('admin_user_role') === 'eligibility_checker')
         <li><a href="/admin/social-case/online-requests" class="active"><i data-lucide="file-text" style="width:20px;height:20px"></i><span>Online Requests</span></a></li>
+        @elseif((string) session('admin_user_role') === 'social_worker')
+        <li><a href="#" onclick="return false" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for social worker accounts"><i data-lucide="file-text" style="width:20px;height:20px"></i><span>Online Requests</span></a></li>
         @endif
         <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a></li>
     </ul>
@@ -414,8 +420,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                             <button class="btn primary btn-sm" onclick="viewOnlineRequest({{ $request->id }})" title="View">
                                 <i data-lucide="eye" style="width:14px;height:14px"></i>
                             </button>
-                            @if($request->status !== 'archived')
-                            <button class="btn secondary btn-sm" onclick="archiveOnlineRequest({{ $request->id }})" title="Archive">
+                            @if($request->status !== 'archived' && $request->status !== 'approved')
+                            <button class="btn btn-sm" onclick="archiveOnlineRequest({{ $request->id }})" title="Archive" style="background: #DC2626; color: white; border: none;">
                                 <i data-lucide="archive" style="width:14px;height:14px"></i>
                             </button>
                             @endif
@@ -494,6 +500,8 @@ function viewOnlineRequest(id) {
     fetch(`/admin/social-case/online-requests/${id}`)
         .then(response => response.json())
         .then(data => {
+            const showAcceptButton = data.status !== 'approved' && data.status !== 'archived';
+            
             Swal.fire({
                 title: '<div style="display: flex; align-items: center; gap: 10px;"><i data-lucide="file-text" style="width: 24px; height: 24px; color: #1A237E;"></i><span>Online Request Details</span></div>',
                 html: `
@@ -563,13 +571,53 @@ function viewOnlineRequest(id) {
                     </div>
                 `,
                 icon: false,
-                confirmButtonText: 'Close',
-                confirmButtonColor: '#1A237E',
+                showCancelButton: true,
+                showConfirmButton: showAcceptButton,
+                confirmButtonText: 'Accept Request',
+                cancelButtonText: 'Close',
+                confirmButtonColor: '#15803D',
+                cancelButtonColor: '#6B7280',
                 width: '600px',
                 didOpen: () => {
                     if (typeof lucide !== 'undefined') {
                         lucide.createIcons();
                     }
+                },
+                preConfirm: () => {
+                    if (!showAcceptButton) {
+                        return false;
+                    }
+                    return new Promise((resolve) => {
+                        Swal.fire({
+                            title: 'Accept Request',
+                            text: 'Are you sure you want to accept this request? This will send an email notification to the applicant.',
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, Accept',
+                            cancelButtonText: 'Cancel',
+                            confirmButtonColor: '#15803D',
+                            cancelButtonColor: '#6B7280'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Call the accept function
+                                acceptOnlineRequest(id).then(resolve);
+                            } else {
+                                resolve(false);
+                            }
+                        });
+                    });
+                }
+            }).then((result) => {
+                if (result.isConfirmed && result.value === true) {
+                    Swal.fire({
+                        title: 'Request Accepted',
+                        text: 'The request has been accepted and an email notification has been sent.',
+                        icon: 'success',
+                        confirmButtonColor: '#15803D',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload();
+                    });
                 }
             });
         })
@@ -581,6 +629,41 @@ function viewOnlineRequest(id) {
                 confirmButtonText: 'OK'
             });
         });
+}
+
+function acceptOnlineRequest(id) {
+    return new Promise((resolve) => {
+        fetch(`/admin/social-case/online-requests/${id}/accept`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                resolve(true);
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: data.message || 'Failed to accept request',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                resolve(false);
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                title: 'Error',
+                text: 'Failed to accept request',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            resolve(false);
+        });
+    });
 }
 
 function archiveOnlineRequest(id) {
