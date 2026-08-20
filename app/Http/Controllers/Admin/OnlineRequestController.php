@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\OnlineRequest;
+use App\Models\Client;
 use Illuminate\Http\Request;
 
 class OnlineRequestController extends Controller
@@ -11,8 +12,34 @@ class OnlineRequestController extends Controller
     public function index()
     {
         $onlineRequests = OnlineRequest::where('status', '!=', 'archived')
+            ->whereNull('case_id')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+
+        $sixMonthsAgo = now()->subMonths(6);
+
+        $onlineRequests->getCollection()->transform(function ($req) use ($sixMonthsAgo) {
+            $name = strtolower(trim($req->first_name . ' ' . $req->last_name));
+
+            $client = Client::whereRaw('LOWER(CONCAT(first_name, " ", last_name)) = ?', [$name])->first();
+            $req->warning_existing = (bool) $client;
+
+            $req->warning_recent = false;
+            if ($client && $client->assistanceRecords()
+                    ->where('release_date', '>=', $sixMonthsAgo->toDateString())
+                    ->exists()) {
+                $req->warning_recent = true;
+            }
+            if (!$req->warning_recent) {
+                $req->warning_recent = OnlineRequest::where('id', '!=', $req->id)
+                    ->whereRaw('LOWER(CONCAT(first_name, " ", last_name)) = ?', [$name])
+                    ->where('created_at', '>=', $sixMonthsAgo)
+                    ->exists();
+            }
+
+            return $req;
+        });
+
         return view('admin.social-case.online-requests', compact('onlineRequests'));
     }
 
@@ -117,5 +144,53 @@ class OnlineRequestController extends Controller
         }
 
         return response()->json(['success' => true, 'message' => 'Request accepted successfully and email notification sent']);
+    }
+
+    public function decline(Request $request, $id)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:500',
+        ]);
+
+        $onlineRequest = OnlineRequest::find($id);
+        if (!$onlineRequest) {
+            return response()->json(['success' => false, 'message' => 'Request not found'], 404);
+        }
+
+        if ($onlineRequest->status === 'rejected') {
+            return response()->json(['success' => false, 'message' => 'Request is already declined'], 400);
+        }
+
+        $reason = trim($request->input('reason'));
+
+        $onlineRequest->status = 'rejected';
+        $onlineRequest->notes = $reason;
+        $onlineRequest->save();
+
+        // Send decline email notification
+        try {
+            \Mail::raw(
+                "Dear {$onlineRequest->first_name} {$onlineRequest->last_name},\n\n" .
+                "We regret to inform you that your online service request has been declined.\n\n" .
+                "Request Details:\n" .
+                "- Service Type: " . ucfirst(str_replace('_', ' ', $onlineRequest->service_type)) . "\n" .
+                "- Assistance Type: " . ucfirst(str_replace('_', ' ', $onlineRequest->assistance_type)) . "\n" .
+                "- Barangay: {$onlineRequest->barangay}\n\n" .
+                "Reason for Decline:\n" .
+                "{$reason}\n\n" .
+                "If you have any questions, please visit the MSWDO Silang office for assistance.\n\n" .
+                "Thank you,\n" .
+                "MSWDO Silang",
+                function ($message) use ($onlineRequest) {
+                    $message->to($onlineRequest->email)
+                        ->subject('Your Service Request Has Been Declined - MSWDO Silang');
+                }
+            );
+        } catch (\Exception $e) {
+            // Log error but don't fail the request
+            \Log::error('Failed to send decline email: ' . $e->getMessage());
+        }
+
+        return response()->json(['success' => true, 'message' => 'Request declined successfully']);
     }
 }

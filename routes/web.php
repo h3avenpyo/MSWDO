@@ -71,6 +71,7 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
             Route::get('/online-requests/{id}', [OnlineRequestController::class, 'show'])->name('online-requests.show');
             Route::post('/online-requests/{id}/archive', [OnlineRequestController::class, 'archive'])->name('online-requests.archive');
             Route::post('/online-requests/{id}/accept', [OnlineRequestController::class, 'accept'])->name('online-requests.accept');
+            Route::post('/online-requests/{id}/decline', [OnlineRequestController::class, 'decline'])->name('online-requests.decline');
         });
 
         // Case encoder only (social@mwsdo.test)

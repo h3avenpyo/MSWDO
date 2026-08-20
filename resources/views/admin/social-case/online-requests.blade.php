@@ -144,6 +144,41 @@
         background: #DCFCE7;
         color: #15803D;
     }
+
+    /* Warning indicator */
+    .warning-sign {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: 8px;
+        color: #DC2626;
+        cursor: help;
+        vertical-align: middle;
+        animation: warningFloat 2s ease-in-out infinite;
+    }
+    .warning-sign svg { width: 28px; height: 28px; }
+    .warning-sign:hover { color: #B91C1C; }
+    @keyframes warningFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-4px); }
+    }
+    .warning-tooltip {
+        position: absolute;
+        background: #1F2937;
+        color: #fff;
+        font-size: 0.75rem;
+        padding: 6px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+        max-width: 260px;
+        z-index: 50;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity .15s;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        line-height: 1.4;
+    }
+    .warning-sign:hover .warning-tooltip { opacity: 1; }
     
     /* Pagination */
     .sc-pagination {
@@ -400,7 +435,19 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                     @forelse($onlineRequests as $request)
                     <tr>
                         <td data-label="Name">
-                            <div>{{ $request->first_name }} {{ $request->last_name }}</div>
+                            <div style="display:flex;align-items:center;flex-wrap:wrap;position:relative;">
+                                <span>{{ $request->first_name }} {{ $request->last_name }}</span>
+                                @if($request->warning_existing || $request->warning_recent)
+                                <span class="warning-sign" title="@if($request->warning_existing)Client already exists in records.@endif @if($request->warning_recent)Has request history within the last 6 months.@endif" style="position:relative;">
+                                    <i data-lucide="alert-triangle" style="width:28px;height:28px"></i>
+                                    <span class="warning-tooltip" style="top:100%;left:0;margin-top:6px;">
+                                        @if($request->warning_existing && $request->warning_recent)Client already exists in records and has request history within the last 6 months.
+                                        @elseif($request->warning_existing)This client name already exists in the records.
+                                        @elseHas request history within the last 6 months.@endif
+                                    </span>
+                                </span>
+                                @endif
+                            </div>
                             <div class="text-xs text-slate-500">{{ $request->email }}</div>
                         </td>
                         <td data-label="Contact">{{ $request->contact_number }}</td>
@@ -501,6 +548,7 @@ function viewOnlineRequest(id) {
         .then(response => response.json())
         .then(data => {
             const showAcceptButton = data.status !== 'approved' && data.status !== 'archived';
+            const showDeclineButton = data.status !== 'rejected' && data.status !== 'archived' && data.status !== 'approved';
             
             Swal.fire({
                 title: '<div style="display: flex; align-items: center; gap: 10px;"><i data-lucide="file-text" style="width: 24px; height: 24px; color: #1A237E;"></i><span>Online Request Details</span></div>',
@@ -573,9 +621,12 @@ function viewOnlineRequest(id) {
                 icon: false,
                 showCancelButton: true,
                 showConfirmButton: showAcceptButton,
+                showDenyButton: showDeclineButton,
                 confirmButtonText: 'Accept Request',
+                denyButtonText: 'Decline',
                 cancelButtonText: 'Close',
                 confirmButtonColor: '#15803D',
+                denyButtonColor: '#DC2626',
                 cancelButtonColor: '#6B7280',
                 width: '600px',
                 didOpen: () => {
@@ -618,6 +669,8 @@ function viewOnlineRequest(id) {
                     }).then(() => {
                         location.reload();
                     });
+                } else if (result.isDenied) {
+                    declineOnlineRequest(id);
                 }
             });
         })
@@ -629,6 +682,100 @@ function viewOnlineRequest(id) {
                 confirmButtonText: 'OK'
             });
         });
+}
+
+function declineOnlineRequest(id) {
+    const reasons = [
+        'Incomplete requirements',
+        'Duplicate request',
+        'Ineligible for assistance',
+        'Incorrect information',
+        'Outside coverage area',
+        'Other'
+    ];
+    const reasonOptions = reasons.map(function (r, i) {
+        return '<option value="' + r + '"' + (i === 0 ? ' selected' : '') + '>' + r + '</option>';
+    }).join('');
+
+    Swal.fire({
+        title: 'Decline Request',
+        html: '<div style="text-align:left">' +
+                '<p style="font-size:14px;color:#374151;margin:0 0 14px;">Please select a reason for declining this request. The applicant will be notified via email.</p>' +
+                '<label style="display:block;font-size:11px;color:#6B7280;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Reason</label>' +
+                '<select id="declineReason" style="width:100%;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;color:#111827;background:#fff;margin-bottom:14px;">' + reasonOptions + '</select>' +
+                '<label id="otherReasonLabel" style="display:none;font-size:11px;color:#6B7280;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Specify reason</label>' +
+                '<textarea id="otherReason" style="display:none;width:100%;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;color:#111827;min-height:70px;resize:vertical;" placeholder="Enter the reason..."></textarea>' +
+              '</div>',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Decline',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#DC2626',
+        cancelButtonColor: '#6B7280',
+        didOpen: function () {
+            var select = document.getElementById('declineReason');
+            var otherLabel = document.getElementById('otherReasonLabel');
+            var otherText = document.getElementById('otherReason');
+            select.addEventListener('change', function () {
+                var showOther = select.value === 'Other';
+                otherLabel.style.display = showOther ? 'block' : 'none';
+                otherText.style.display = showOther ? 'block' : 'none';
+            });
+        },
+        preConfirm: function () {
+            var select = document.getElementById('declineReason');
+            var otherText = document.getElementById('otherReason');
+            var reason = select ? select.value : '';
+            if (reason === 'Other') {
+                reason = (otherText ? otherText.value : '').trim();
+                if (!reason) {
+                    Swal.showValidationMessage('Please specify a reason');
+                    return false;
+                }
+            }
+            return reason;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const reason = result.value;
+            fetch(`/admin/social-case/online-requests/${id}/decline`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ reason: reason })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Declined!',
+                        text: 'Online request has been declined and the applicant has been notified via email.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message || 'Failed to decline request',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Failed to decline request',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+        }
+    });
 }
 
 function acceptOnlineRequest(id) {
