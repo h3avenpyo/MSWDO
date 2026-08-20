@@ -206,6 +206,7 @@ $initials = count($words) >= 2
                     <option value="">None</option>
                     <option value="osca_head" {{ old('signature_position', $officer->signature_position) == 'osca_head' ? 'selected' : '' }}>OSCA Head</option>
                     <option value="mswdo_officer" {{ old('signature_position', $officer->signature_position) == 'mswdo_officer' ? 'selected' : '' }}>MSWDO Officer</option>
+                    <option value="mswdo_staff" {{ old('signature_position', $officer->signature_position) == 'mswdo_staff' ? 'selected' : '' }}>MSWDO Staff</option>
                 </select>
                 <p class="select-hint">
                     <i data-lucide="info"></i>

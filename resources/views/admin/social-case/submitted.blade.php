@@ -190,6 +190,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .submitted-filter-bar { padding: 10px 12px; margin-bottom: 10px; }
         .submitted-filter-search { max-width: none; width: 100%; }
 
+        .accepted-section-header { text-align: center; }
+
         .sc-pagination { flex-direction: column; align-items: center; gap: 8px; }
         .sc-pagination-controls { justify-content: center; }
     }
@@ -256,12 +258,25 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         #acceptedOnlineTable, #acceptedOnlineTable thead, #acceptedOnlineTable tbody, #acceptedOnlineTable tbody tr, #acceptedOnlineTable tbody td { display: block !important; width: 100% !important; }
         #acceptedOnlineTable { min-width: 0 !important; }
         #acceptedOnlineTable thead { display: none !important; }
-        #acceptedOnlineTable tbody tr:not(.empty-row) { background: #ffffff !important; border: 1px solid #E2E8F0 !important; border-radius: 12px !important; margin-bottom: 12px !important; padding: 14px 18px !important; box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important; }
-        #acceptedOnlineTable tbody td { display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 8px 0 !important; border-bottom: 1px solid #F1F5F9 !important; font-size: 0.875rem !important; gap: 12px !important; white-space: normal !important; word-break: break-word !important; max-width: none !important; min-width: 0 !important; }
+
+        #acceptedOnlineTable tbody tr:not(.empty-row) { background: #ffffff !important; border: 1px solid #E2E8F0 !important; border-radius: 12px !important; margin-bottom: 12px !important; padding: 14px 18px !important; box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+        #acceptedOnlineTable tbody tr:not(.empty-row):hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important; }
+
+        #acceptedOnlineTable tbody td { display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 8px 0 !important; border-bottom: 1px solid #F1F5F9 !important; font-size: 0.875rem !important; gap: 12px !important; white-space: normal !important; word-break: break-word !important; max-width: none !important; overflow: visible !important; min-width: 0 !important; }
         #acceptedOnlineTable tbody td:last-child { border-bottom: none !important; }
-        #acceptedOnlineTable tbody td::before { content: attr(data-label); font-weight: 700; font-size: 0.72rem; color: #64748B; text-transform: uppercase; letter-spacing: 0.04em; min-width: 100px; flex-shrink: 0; }
-        #acceptedOnlineTable tbody td[data-label="Action"] { justify-content: flex-end !important; border-bottom: none !important; }
+        #acceptedOnlineTable tbody td::before { content: attr(data-label) !important; font-weight: 700 !important; font-size: 0.72rem !important; color: #64748B !important; text-transform: uppercase !important; letter-spacing: 0.04em !important; min-width: 100px !important; flex-shrink: 0 !important; display: block !important; }
+        #acceptedOnlineTable tbody td[data-label="Action"] { justify-content: flex-end !important; padding-top: 12px !important; border-bottom: none !important; }
         #acceptedOnlineTable tbody td[data-label="Action"]::before { display: none !important; }
+        #acceptedOnlineTable tbody td[data-label="Action"] .btn { width: auto !important; min-width: 100px !important; }
+
+        #acceptedOnlineTable tbody tr.empty-row { border: none !important; box-shadow: none !important; background: transparent !important; padding: 0 !important; }
+        #acceptedOnlineTable tbody tr.empty-row td { border-bottom: none !important; justify-content: center !important; }
+        #acceptedOnlineTable tbody tr.empty-row td::before { display: none !important; }
+    }
+
+    @media (max-width: 479px) {
+        #acceptedOnlineTable tbody td::before { min-width: 75px; font-size: 0.68rem; }
+        #acceptedOnlineTable tbody td { font-size: 0.813rem !important; }
     }
 </style>
 
@@ -436,6 +451,11 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                 </table>
             </div>
         </div>
+        <!-- Pagination -->
+        <div class="sc-pagination">
+            <div class="sc-pagination-info" id="acceptedPaginationInfo">Showing 0 of 0 Records</div>
+            <div class="sc-pagination-controls" id="acceptedPaginationControls"></div>
+        </div>
     </div>
 </div>
 @endsection
@@ -540,6 +560,64 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     function goToSubmittedPage(page) {
         _submittedPage = page;
         renderSubmitted();
+    }
+
+    var _acceptedPage = 1;
+    var _acceptedPageSize = 10;
+
+    function getAcceptedRows() {
+        return Array.from(document.querySelectorAll('#acceptedOnlineTable tbody tr:not(.empty-row)'));
+    }
+
+    function renderAccepted() {
+        var allRows = getAcceptedRows();
+
+        var totalPages = Math.max(1, Math.ceil(allRows.length / _acceptedPageSize));
+        if (_acceptedPage > totalPages) _acceptedPage = totalPages;
+
+        var startIndex = (_acceptedPage - 1) * _acceptedPageSize;
+        var endIndex   = startIndex + _acceptedPageSize;
+        var pageRows   = allRows.slice(startIndex, endIndex);
+
+        allRows.forEach(function(r) { r.style.display = 'none'; });
+        pageRows.forEach(function(r) { r.style.display = ''; });
+
+        // Pagination info
+        var infoEl = document.getElementById('acceptedPaginationInfo');
+        if (infoEl) {
+            if (allRows.length === 0) {
+                infoEl.textContent = 'Showing 0 of 0 Records';
+            } else {
+                infoEl.textContent = 'Showing ' + (startIndex + 1) + '\u2013' + Math.min(endIndex, allRows.length) + ' of ' + allRows.length + ' Records';
+            }
+        }
+
+        // Pagination controls
+        var controls = document.getElementById('acceptedPaginationControls');
+        if (controls) {
+            var btns = '';
+            btns += '<button class="sc-page-btn" ' + (_acceptedPage <= 1 ? 'disabled' : '') +
+                    ' onclick="goToAcceptedPage(' + (_acceptedPage - 1) + ')">' +
+                    '<i data-lucide="chevron-left" style="width:14px;height:14px"></i> Previous</button>';
+            var maxBtns = 5;
+            var sp = Math.max(1, _acceptedPage - Math.floor(maxBtns / 2));
+            var ep = Math.min(totalPages, sp + maxBtns - 1);
+            if (ep - sp < maxBtns - 1) sp = Math.max(1, ep - maxBtns + 1);
+            for (var i = sp; i <= ep; i++) {
+                btns += '<button class="sc-page-btn ' + (i === _acceptedPage ? 'active' : '') +
+                        '" onclick="goToAcceptedPage(' + i + ')">' + i + '</button>';
+            }
+            btns += '<button class="sc-page-btn" ' + (_acceptedPage >= totalPages ? 'disabled' : '') +
+                    ' onclick="goToAcceptedPage(' + (_acceptedPage + 1) + ')">Next ' +
+                    '<i data-lucide="chevron-right" style="width:14px;height:14px"></i></button>';
+            controls.innerHTML = btns;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+    }
+
+    function goToAcceptedPage(page) {
+        _acceptedPage = page;
+        renderAccepted();
     }
 
     function viewAcceptedOnlineRequest(btn) {
@@ -653,6 +731,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     document.addEventListener('DOMContentLoaded', function(){
         if(typeof lucide !== 'undefined') lucide.createIcons();
         renderSubmitted();
+        renderAccepted();
     });
 </script>
 @endpush

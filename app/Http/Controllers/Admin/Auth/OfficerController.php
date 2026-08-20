@@ -49,7 +49,7 @@ class OfficerController extends Controller
             'role' => ['required', Rule::enum(UserRole::class)],
             'phone' => ['nullable', 'string', 'max:20'],
             'status' => ['required', 'in:active,inactive'],
-            'signature_position' => ['nullable', 'in:osca_head,mswdo_officer'],
+            'signature_position' => ['nullable', 'in:osca_head,mswdo_officer,mswdo_staff'],
             'signature_image' => ['nullable', 'image', 'max:2048'],
         ]);
 
@@ -99,7 +99,7 @@ class OfficerController extends Controller
             'role' => ['required', Rule::enum(UserRole::class)],
             'phone' => ['nullable', 'string', 'max:20'],
             'status' => ['required', 'in:active,inactive'],
-            'signature_position' => ['nullable', 'in:osca_head,mswdo_officer'],
+            'signature_position' => ['nullable', 'in:osca_head,mswdo_officer,mswdo_staff'],
             'signature_image' => ['nullable', 'image', 'max:2048'],
         ]);
 
