@@ -178,15 +178,55 @@
             .archive-table tbody tr.empty-row td.empty-cell::before{display:none !important;}
         }
 
-        /* ── Large Mobile (576–767px): stacked filters ── */
-        @media (min-width:576px) and (max-width:767px){
-            .section-spacing{margin-bottom:18px;}
-            #summaryGrid{grid-template-columns:1fr;gap:12px;}
-            .bulk-actions-row{flex-direction:column;gap:8px;}
-            .mobile-select-all{display:flex;}
+        /* ── Bulk Actions & Export Styling ── */
+        .bulk-actions-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            min-width: 0;
+            width: 100%;
+        }
+        .bulk-actions-row .btn-export,
+        .bulk-actions-row .btn-clear {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+        .bulk-actions-row #bulkActionDropdown {
+            display: inline-block;
+            position: relative;
+        }
+        .bulk-actions-row #bulkActionButton {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            width: 100%;
+        }
+        .selected-count-badge {
+            background: #3730A3;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            margin-left: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* ── Mobile (<768px): table → stacked cards ── */
+        /* ── Tablet & Small Desktop (768–1199px) ── */
+        @media (min-width:768px) and (max-width:1199px){
+            .bulk-field {
+                grid-column: 1 / -1;
+            }
+            .bulk-actions-row {
+                justify-content: flex-start;
+            }
+        }
+
+        /* ── Mobile (<768px) ── */
         @media (max-width:767px){
             .archive-panel-wrap{padding:.75rem;}
             .archive-table-wrap{border:none;border-radius:0;overflow:visible;}
@@ -205,6 +245,47 @@
             .archive-table tbody td.empty-cell::before{display:none !important;}
             .action-btn{width:44px;height:44px;}
             .mobile-select-all{display:flex;}
+            
+            /* Responsive Filter Buttons */
+            .desktop-only-label { display: none !important; }
+            .bulk-field { grid-column: 1 / -1; margin-top: 2px; }
+            .bulk-actions-row {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 8px;
+                width: 100%;
+            }
+            .bulk-actions-row .btn-export {
+                flex: 1 1 calc(50% - 4px);
+                min-width: 120px;
+                height: 42px;
+                min-height: 42px;
+                padding: 0 10px;
+                font-size: 13px;
+            }
+            .bulk-actions-row #bulkActionDropdown {
+                flex: 1 1 calc(50% - 4px);
+                min-width: 120px;
+            }
+            .bulk-actions-row #bulkActionButton {
+                height: 42px;
+                min-height: 42px;
+                padding: 0 10px;
+                font-size: 13px;
+            }
+            .bulk-actions-row .btn-clear {
+                flex: 1 1 100%;
+                height: 40px;
+                min-height: 40px;
+                padding: 0 10px;
+                font-size: 13px;
+            }
+            .dropdown-menu {
+                right: 0;
+                left: 0;
+                min-width: 100%;
+            }
         }
 
         /* ── Small Mobile (<480px) ── */
@@ -213,10 +294,171 @@
             #summaryGrid{grid-template-columns:1fr;gap:10px;}
             .archive-table tbody td{font-size:.75rem;}
             .archive-table tbody td::before{font-size:.65rem;min-width:70px;}
+            .bulk-actions-row .btn-export,
+            .bulk-actions-row #bulkActionDropdown {
+                flex: 1 1 100%;
+                width: 100%;
+            }
         }
 
-        /* ── Modal ── */
-        #seniorModal{transition:opacity .2s ease;}
+        /* ── Modal Styles ── */
+        .senior-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+            transition: opacity 0.2s ease;
+        }
+        .senior-modal-dialog {
+            background: var(--background);
+            border-radius: 14px;
+            width: 100%;
+            max-width: 780px;
+            max-height: 75vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        .senior-modal-header {
+            background: #1A237E;
+            color: #ffffff;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .senior-modal-title {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #ffffff;
+        }
+        .senior-modal-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+        }
+        .senior-modal-close:hover { opacity: 1; }
+        .senior-modal-body {
+            padding: 16px 20px;
+            overflow-y: auto;
+            flex: 1;
+            -webkit-overflow-scrolling: touch;
+        }
+        .senior-modal-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .senior-modal-col-full {
+            grid-column: 1 / -1;
+        }
+        .senior-modal-col-span2 {
+            grid-column: span 2;
+        }
+        .senior-modal-field {
+            margin-bottom: 0;
+        }
+        .senior-modal-label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            display: block;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .senior-modal-value {
+            background: var(--surface);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-weight: 500;
+            border: 1px solid var(--border);
+            font-size: 0.813rem;
+            color: var(--text-primary);
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+        }
+        .senior-modal-footer {
+            padding: 10px 20px;
+            border-top: 1px solid var(--border);
+            background: var(--surface);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        /* Modal Responsive Breakpoints */
+        @media (max-width: 991.98px) {
+            .senior-modal-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .senior-modal-col-span2 {
+                grid-column: 1 / -1;
+            }
+        }
+        @media (max-width: 575.98px) {
+            .senior-modal-backdrop {
+                padding: 8px;
+            }
+            .senior-modal-dialog {
+                max-height: 82vh;
+                border-radius: 12px;
+            }
+            .senior-modal-header {
+                padding: 10px 14px;
+            }
+            .senior-modal-title {
+                font-size: 0.9rem;
+            }
+            .senior-modal-body {
+                padding: 12px 12px;
+            }
+            .senior-modal-grid {
+                grid-template-columns: 1fr !important;
+                gap: 8px;
+            }
+            .senior-modal-col-full,
+            .senior-modal-col-span2 {
+                grid-column: 1 / -1 !important;
+            }
+            .senior-modal-label {
+                font-size: 0.7rem;
+            }
+            .senior-modal-value {
+                padding: 5px 8px;
+                font-size: 0.8rem;
+                min-height: 30px;
+            }
+            .senior-modal-footer {
+                padding: 8px 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -321,16 +563,16 @@
                                 <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
                             </select>
                         </div>
-                        <div class="filter-field">
-                            <label class="filter-label">&nbsp;</label>
+                        <div class="filter-field bulk-field">
+                            <label class="filter-label desktop-only-label">&nbsp;</label>
                             <div class="bulk-actions-row">
                                 <a href="#" class="btn btn-export" onclick="exportPdf(event)">
-                                    <i data-lucide="file-output"></i> Export PDF
+                                    <i data-lucide="file-output"></i> <span>Export PDF</span>
                                 </a>
                                 <div class="dropdown" id="bulkActionDropdown">
                                     <button id="bulkActionButton" class="btn btn-bulk" onclick="toggleDropdown()" disabled>
-                                        <i data-lucide="archive"></i> Bulk Actions
-                                        <span id="selectedCount" style="background:#3730A3;color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:4px;">0</span>
+                                        <i data-lucide="archive"></i> <span>Bulk Actions</span>
+                                        <span id="selectedCount" class="selected-count-badge">0</span>
                                     </button>
                                     <div class="dropdown-menu" id="bulkDropdownMenu">
                                         <a class="dropdown-item" href="#" onclick="bulkArchive()"><i data-lucide="archive" style="width:14px;height:14px"></i> Archive Selected</a>
@@ -339,7 +581,7 @@
                                 </div>
                                 @if(request('search') || request('barangay'))
                                     <a href="{{ route('admin.senior.masterlist') }}" class="btn btn-clear">
-                                        <i data-lucide="x"></i> Clear
+                                        <i data-lucide="x"></i> <span>Clear</span>
                                     </a>
                                 @endif
                             </div>
@@ -436,79 +678,79 @@
 </div>
 
 <!-- ======================== MODAL ======================== -->
-<div id="seniorModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;padding:16px;z-index:9999;backdrop-filter:blur(4px);">
-    <div style="background:var(--background);border-radius:16px;width:100%;max-width:800px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.12);overflow:hidden;">
-        <div style="background:#1A237E;color:white;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
-            <h5 style="margin:0;font-size:1.1rem;font-weight:600;display:flex;align-items:center;gap:8px;">
+<div id="seniorModal" class="senior-modal-backdrop">
+    <div class="senior-modal-dialog">
+        <div class="senior-modal-header">
+            <h5 class="senior-modal-title">
                 <i data-lucide="user-circle" style="width:20px;height:20px;"></i>
                 Senior Citizen Details
             </h5>
-            <button onclick="closeModal()" style="background:none;border:none;color:white;cursor:pointer;opacity:0.8;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+            <button onclick="closeModal()" class="senior-modal-close" aria-label="Close modal">
                 <i data-lucide="x" style="width:24px;height:24px;"></i>
             </button>
         </div>
-        <div style="padding:24px;overflow-y:auto;flex:1;">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;margin-bottom:16px;">
-                <div style="margin-bottom:8px;">
-                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Control Number</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalControlNumber">—</div>
+        <div class="senior-modal-body">
+            <div class="senior-modal-grid">
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Control Number</label>
+                    <div class="senior-modal-value" id="modalControlNumber">—</div>
                 </div>
-                <div style="margin-bottom:8px;">
-                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Year Applied</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalYearApplied">—</div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Year Applied</label>
+                    <div class="senior-modal-value" id="modalYearApplied">—</div>
                 </div>
-                <div style="margin-bottom:8px;">
-                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Status</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalStatus">—</div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Status</label>
+                    <div class="senior-modal-value" id="modalStatus">—</div>
                 </div>
-                <div style="margin-bottom:8px;grid-column:1/-1;">
-                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Full Name</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalFullName">—</div>
+                <div class="senior-modal-field senior-modal-col-full">
+                    <label class="senior-modal-label">Full Name</label>
+                    <div class="senior-modal-value" id="modalFullName">—</div>
                 </div>
-                <div style="margin-bottom:8px;grid-column:1/-1;">
-                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Address</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalAddress">—</div>
+                <div class="senior-modal-field senior-modal-col-full">
+                    <label class="senior-modal-label">Address</label>
+                    <div class="senior-modal-value" id="modalAddress">—</div>
                 </div>
-                <div style="margin-bottom:8px;">
-                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Barangay</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalBarangay">—</div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Barangay</label>
+                    <div class="senior-modal-value" id="modalBarangay">—</div>
                 </div>
-                <div style="margin-bottom:8px;">
-                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Birth Date</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalBirthDate">—</div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Birth Date</label>
+                    <div class="senior-modal-value" id="modalBirthDate">—</div>
                 </div>
-                <div style="margin-bottom:8px;">
-                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Month</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalMonth">—</div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Month</label>
+                    <div class="senior-modal-value" id="modalMonth">—</div>
                 </div>
-                <div style="margin-bottom:8px;">
-                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Age</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalAge">—</div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Age</label>
+                    <div class="senior-modal-value" id="modalAge">—</div>
                 </div>
-                <div style="margin-bottom:8px;">
-                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Sex</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalSex">—</div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Sex</label>
+                    <div class="senior-modal-value" id="modalSex">—</div>
                 </div>
-                <div style="margin-bottom:8px;">
-                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Contact Number</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalContactNumber">—</div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Contact Number</label>
+                    <div class="senior-modal-value" id="modalContactNumber">—</div>
                 </div>
-                <div style="margin-bottom:8px;">
-                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">PhilSys Number</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalPhilsysNumber">—</div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">PhilSys Number</label>
+                    <div class="senior-modal-value" id="modalPhilsysNumber">—</div>
                 </div>
-                <div style="margin-bottom:8px;grid-column:span 2;">
-                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">RRN Number</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);word-break:break-word;overflow-wrap:anywhere;" id="modalRrnNumber">—</div>
+                <div class="senior-modal-field senior-modal-col-span2">
+                    <label class="senior-modal-label">RRN Number</label>
+                    <div class="senior-modal-value" id="modalRrnNumber">—</div>
                 </div>
-                <div style="margin-bottom:8px;grid-column:1/-1;">
-                    <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Remarks</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);white-space:pre-wrap;" id="modalRemarks">—</div>
+                <div class="senior-modal-field senior-modal-col-full">
+                    <label class="senior-modal-label">Remarks</label>
+                    <div class="senior-modal-value" id="modalRemarks" style="white-space:pre-wrap;">—</div>
                 </div>
             </div>
         </div>
-        <div style="padding:16px 24px;border-top:1px solid var(--border);background:var(--surface);display:flex;justify-content:flex-end;gap:12px;">
-            <button onclick="closeModal()" style="padding:8px 16px;background:var(--background);border:1px solid var(--border);border-radius:6px;font-weight:500;color:var(--text-primary);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='var(--background)'">Close</button>
+        <div class="senior-modal-footer">
+            <button onclick="closeModal()" class="btn">Close</button>
         </div>
     </div>
 </div>
