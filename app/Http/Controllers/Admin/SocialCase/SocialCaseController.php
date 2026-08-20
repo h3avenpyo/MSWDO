@@ -111,7 +111,8 @@ class SocialCaseController extends Controller
         $submitted = SocialCaseStudy::with('client', 'eligibleByUser')
             ->where('eligibility_status', 'eligible')
             ->whereNotNull('eligible_by')
-            ->where('status', 'Draft')
+            ->whereNull('encoded_by')
+            ->whereNotIn('status', ['Review', 'Approved', 'Printed', 'Released', 'Archived'])
             ->orderByDesc('eligible_at')
             ->get();
 

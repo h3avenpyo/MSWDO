@@ -629,7 +629,7 @@ function blankIntake(name){
   return {
     id: uid(),
     caseId: null,
-    status: "Draft",
+    status: "Review",
     createdAt: today,
     updatedAt: today,
     controlNo: generateControlNo(today),
@@ -640,7 +640,7 @@ function blankIntake(name){
     purpose: PURPOSES[0],
     agencies: [],
     requirements: DEFAULT_REQUIREMENTS.map(r=>({name:r, submitted:false})),
-    statusHistory: [{status:"Draft", date: today}],
+    statusHistory: [{status:"Review", date: today}],
     releasedDate: null
   };
 }
@@ -2086,7 +2086,7 @@ function caseToIntake(c){
   return {
     id: c.id || uid(),
     caseId: c.id,
-    status: c.status || 'Draft',
+    status: (c.status === 'Draft' ? 'Review' : c.status) || 'Review',
     createdAt: c.createdAt || today,
     updatedAt: c.updatedAt || today,
     controlNo: c.controlNo || c.caseNumber || generateControlNo(today),
