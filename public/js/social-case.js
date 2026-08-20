@@ -30,6 +30,7 @@ let draftIntake = null;
 
 /* ---------------- Role / permission helpers ---------------- */
 const CURRENT_USER_ROLE = (document.querySelector('meta[name="user-role"]')?.content || '').toLowerCase();
+const CURRENT_USER_NAME = (document.querySelector('meta[name="user-name"]')?.content || '').trim();
 const CAN_CHECK_ELIGIBILITY = CURRENT_USER_ROLE === 'eligibility_checker' || CURRENT_USER_ROLE === 'admin';
 const CAN_ENCODE = CURRENT_USER_ROLE === 'social_worker' || CURRENT_USER_ROLE === 'admin';
 const IS_PURE_ELIGIBILITY_CHECKER = CAN_CHECK_ELIGIBILITY && !CAN_ENCODE;
@@ -617,7 +618,7 @@ function blankIntake(name){
     client: {name: name||"", age:"", sex:"", address:"", birthdate:"", birthplace:"", religion:"", education:"", civilStatus:"", occupation:"", income:"", contact:""},
     household: [{name:"", relationship:"", age:"", education:"", occupation:"", income:""}],
     interview: {reportDate: today, problemPresented:"", homeCondition:"", socioEconomic:"", evaluation:"", recommendation:""},
-    signers: {preparedByName:"", preparedByTitle:"MSWDO Staff", notedByName:"", notedByTitle:"MSWDO Head", notedByLicense:""},
+    signers: {preparedByName: CURRENT_USER_NAME, preparedByTitle:"MSWDO Staff", notedByName: CURRENT_USER_NAME, notedByTitle:"MSWDO Head", notedByLicense:""},
     purpose: PURPOSES[0],
     agencies: [],
     requirements: DEFAULT_REQUIREMENTS.map(r=>({name:r, submitted:false})),
@@ -2025,10 +2026,22 @@ async function loadIntakeForm(){
   await loadCases();
   const savedName = sessionStorage.getItem('intake_clientName') || '';
   sessionStorage.removeItem('intake_clientName');
+  const savedAddress = sessionStorage.getItem('intake_clientAddress') || '';
+  const savedContact = sessionStorage.getItem('intake_clientContact') || '';
+  const savedAge = sessionStorage.getItem('intake_clientAge') || '';
+  const savedBirthdate = sessionStorage.getItem('intake_clientBirthdate') || '';
+  sessionStorage.removeItem('intake_clientAddress');
+  sessionStorage.removeItem('intake_clientContact');
+  sessionStorage.removeItem('intake_clientAge');
+  sessionStorage.removeItem('intake_clientBirthdate');
   const urlParams = new URLSearchParams(window.location.search);
   const caseId = urlParams.get('caseId') || sessionStorage.getItem('intake_caseId') || null;
   sessionStorage.removeItem('intake_caseId');
   draftIntake = blankIntake(savedName);
+  if(savedAddress) draftIntake.client.address = savedAddress;
+  if(savedContact) draftIntake.client.contact = savedContact;
+  if(savedAge) draftIntake.client.age = savedAge;
+  if(savedBirthdate) draftIntake.client.birthdate = savedBirthdate;
   draftIntake.caseId = caseId;
   if(caseId){
     const existing = getCase(caseId);
@@ -2046,6 +2059,8 @@ async function loadIntakeForm(){
       }
     }
   }
+  if(!draftIntake.signers.preparedByName || !draftIntake.signers.preparedByName.trim()) draftIntake.signers.preparedByName = CURRENT_USER_NAME;
+  if(!draftIntake.signers.notedByName || !draftIntake.signers.notedByName.trim()) draftIntake.signers.notedByName = CURRENT_USER_NAME;
   renderIntakeForm();
   lucide.createIcons();
 }
@@ -2244,7 +2259,7 @@ function renderIntakeForm(){
 
   <div class="intake-actions" style="display:flex;gap:12px;margin-top:20px;justify-content:flex-end">
     <button class="btn primary" onclick="reviewIntake()"><i data-lucide="eye" style="width:16px;height:16px"></i> Review & Save</button>
-    <button class="btn" style="background-color: #dc3545; color: white; border: 1px solid #dc3545;" onclick="window.location.href='/admin/social-case/new'"><i data-lucide="x" style="width:16px;height:16px"></i> Cancel</button>
+    <button class="btn" style="background-color: #dc3545; color: white; border: 1px solid #dc3545;" onclick="window.location.href='/admin/social-case/submitted'"><i data-lucide="x" style="width:16px;height:16px"></i> Cancel</button>
   </div>
   `;
   

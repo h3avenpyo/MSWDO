@@ -8,6 +8,7 @@ use App\Models\SocialCase\SocialCaseActivityLog;
 use App\Models\SocialCase\EligibilityAuditLog;
 use App\Models\Client;
 use App\Models\User;
+use App\Models\OnlineRequest;
 use App\Services\SocialCase\EligibilityChecker;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -67,7 +68,12 @@ class SocialCaseController extends Controller
             ->orderByDesc('eligible_at')
             ->get();
 
-        return view('admin.social-case.submitted', compact('submitted'));
+        $acceptedOnlineRequests = OnlineRequest::with('attachments')
+            ->where('status', 'approved')
+            ->orderByDesc('updated_at')
+            ->get();
+
+        return view('admin.social-case.submitted', compact('submitted', 'acceptedOnlineRequests'));
     }
 
     public function socialCaseDetail($caseId)
