@@ -138,6 +138,48 @@
         }
         .sidebar-menu a i{width:20px;text-align:center;}
 
+        /* ---------- Sidebar Dropdown ---------- */
+        .sidebar-dropdown {
+            position: relative;
+        }
+        .sidebar-dropdown-toggle {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sidebar-dropdown-toggle i:last-child {
+            transition: transform 0.2s ease;
+        }
+        .sidebar-dropdown.open .sidebar-dropdown-toggle i:last-child {
+            transform: rotate(180deg);
+        }
+        .sidebar-dropdown-menu {
+            display: none;
+            background: rgba(0, 0, 0, 0.2);
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .sidebar-dropdown.open .sidebar-dropdown-menu {
+            display: block;
+        }
+        .sidebar-dropdown-menu li {
+            margin: 0;
+        }
+        .sidebar-dropdown-menu a {
+            padding: 0.6rem 1.5rem 0.6rem 3rem;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.65);
+        }
+        .sidebar-dropdown-menu a:hover {
+            color: var(--accent-yellow);
+        }
+        .sidebar-dropdown-menu a.active {
+            color: var(--accent-yellow);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         /* ---------- Dashboard Grid ---------- */
         .dashboard-grid{
             display:grid;

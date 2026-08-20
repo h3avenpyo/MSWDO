@@ -1,6 +1,6 @@
 @extends('admin.social-case.layout')
-@section('title', 'Online Requests')
-@section('page_title', 'Online Requests')
+@section('title', 'Pending Online Requests')
+@section('page_title', 'Pending Online Requests')
 
 @section('content')
 <style>
@@ -233,6 +233,31 @@
         cursor: not-allowed;
     }
     
+    /* Status Badge */
+    .badge-status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+    .badge-pending {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+    .badge-approved {
+        background: #DCFCE7;
+        color: #15803D;
+    }
+    .badge-rejected {
+        background: #FEE2E2;
+        color: #DC2626;
+    }
+    .badge-archived {
+        background: #E5E7EB;
+        color: #6B7280;
+    }
+    
     /* Empty State */
     .empty-row {
         background: transparent !important;
@@ -240,9 +265,11 @@
         box-shadow: none !important;
     }
     .empty-cell {
-        padding: 3rem 1rem !important;
+        padding: 0 !important;
         text-align: center !important;
         border: none !important;
+        vertical-align: middle !important;
+        height: 100%;
     }
     .empty-cell::before {
         display: none !important;
@@ -254,6 +281,9 @@
         align-items: center;
         justify-content: center;
         text-align: center;
+        gap: 12px;
+        padding: 2rem 1rem;
+        margin-top: 120px;
     }
     .empty-icon-wrap {
         width: 72px;
@@ -263,7 +293,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 16px;
         color: #1A237E;
     }
     .empty-icon-wrap svg {
@@ -274,11 +303,12 @@
         font-size: 1.125rem;
         font-weight: 700;
         color: #1F2937;
-        margin-bottom: 6px;
+        margin: 0;
     }
     .empty-subtitle {
         font-size: 0.875rem;
         color: #6B7280;
+        margin: 0;
         line-height: 1.5;
         max-width: 360px;
     }
@@ -376,7 +406,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     <div class="mobile-header-brand">
         <div class="mobile-brand-text">
             <h1 class="mobile-brand-title">MSWDO SILANG</h1>
-            <p class="mobile-brand-subtitle">Online Requests</p>
+            <p class="mobile-brand-subtitle">Pending Online Requests</p>
         </div>
         <div class="mobile-logo">
             @if($logo)
@@ -401,18 +431,32 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         @endif
         <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i><span>All cases</span></a></li>
         <li><a href="/admin/social-case/archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
-        @if((string) session('admin_user_role') === 'eligibility_checker')
-        <li><a href="/admin/social-case/online-requests" class="active"><i data-lucide="file-text" style="width:20px;height:20px"></i><span>Online Requests</span></a></li>
-        @elseif((string) session('admin_user_role') === 'social_worker')
-        <li><a href="#" onclick="return false" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for social worker accounts"><i data-lucide="file-text" style="width:20px;height:20px"></i><span>Online Requests</span></a></li>
+        @if((string) session('admin_user_role') === 'eligibility_checker' || (string) session('admin_user_role') === 'social_worker')
+        <li class="sidebar-dropdown open" id="onlineRequestsDropdown">
+            <a href="#" class="sidebar-dropdown-toggle" onclick="toggleDropdown('onlineRequestsDropdown'); return false;">
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <i data-lucide="file-text" style="width:20px;height:20px"></i>
+                    <span>Online Requests</span>
+                </div>
+                <i data-lucide="chevron-down" style="width:16px;height:16px"></i>
+            </a>
+            <ul class="sidebar-dropdown-menu">
+                <li><a href="/admin/social-case/online-requests" class="active">Pending Requests</a></li>
+                <li><a href="/admin/social-case/online-requests/accepted">Accepted Requests</a></li>
+                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests</a></li>
+            </ul>
+        </li>
         @endif
         <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a></li>
     </ul>
 </div>
 
 <div class="main">
+    <header class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none mb-4 lg:mb-2">
+        <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Pending Online Requests</h1>
+    </header>
     <div style="margin-bottom:10px;">
-        <p class="text-sm text-slate-500 m-0">View and manage online service requests from the public.</p>
+        <p class="text-sm text-slate-500 m-0">View and manage pending online service requests from the public.</p>
     </div>
 
     <!-- Table Panel -->
@@ -426,7 +470,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                         <th>Service Type</th>
                         <th>Assistance Type</th>
                         <th>Barangay</th>
-                        <th>Status</th>
                         <th>Date</th>
                         <th>Action</th>
                     </tr>
@@ -437,16 +480,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                         <td data-label="Name">
                             <div style="display:flex;align-items:center;flex-wrap:wrap;position:relative;">
                                 <span>{{ $request->first_name }} {{ $request->last_name }}</span>
-                                @if($request->warning_existing || $request->warning_recent)
-                                <span class="warning-sign" title="@if($request->warning_existing)Client already exists in records.@endif @if($request->warning_recent)Has request history within the last 6 months.@endif" style="position:relative;">
-                                    <i data-lucide="alert-triangle" style="width:28px;height:28px"></i>
-                                    <span class="warning-tooltip" style="top:100%;left:0;margin-top:6px;">
-                                        @if($request->warning_existing && $request->warning_recent)Client already exists in records and has request history within the last 6 months.
-                                        @elseif($request->warning_existing)This client name already exists in the records.
-                                        @elseHas request history within the last 6 months.@endif
-                                    </span>
-                                </span>
-                                @endif
+                                <span class="badge-status badge-pending" style="margin-left: 8px;">Pending</span>
                             </div>
                             <div class="text-xs text-slate-500">{{ $request->email }}</div>
                         </td>
@@ -454,11 +488,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                         <td data-label="Service Type">{{ ucfirst(str_replace('_', ' ', $request->service_type)) }}</td>
                         <td data-label="Assistance Type">{{ ucfirst(str_replace('_', ' ', $request->assistance_type)) }}</td>
                         <td data-label="Barangay">{{ $request->barangay }}</td>
-                        <td data-label="Status">
-                            <span class="badge-status {{ $request->status }}">
-                                {{ ucfirst($request->status) }}
-                            </span>
-                        </td>
                         <td data-label="Date">
                             <div>{{ $request->created_at->format('M d, Y') }}</div>
                             <div class="text-xs text-slate-400">{{ $request->created_at->format('g:i A') }}</div>
@@ -467,22 +496,20 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                             <button class="btn primary btn-sm" onclick="viewOnlineRequest({{ $request->id }})" title="View">
                                 <i data-lucide="eye" style="width:14px;height:14px"></i>
                             </button>
-                            @if($request->status !== 'archived' && $request->status !== 'approved')
                             <button class="btn btn-sm" onclick="archiveOnlineRequest({{ $request->id }})" title="Archive" style="background: #DC2626; color: white; border: none;">
                                 <i data-lucide="archive" style="width:14px;height:14px"></i>
                             </button>
-                            @endif
                         </td>
                     </tr>
                     @empty
                     <tr class="empty-row">
-                        <td colspan="8" class="empty-cell">
+                        <td colspan="7" class="empty-cell">
                             <div class="empty-state-content">
                                 <div class="empty-icon-wrap">
-                                    <i data-lucide="inbox"></i>
+                                    <i data-lucide="clock"></i>
                                 </div>
-                                <div class="empty-title">No requests yet</div>
-                                <div class="empty-subtitle">Online service requests will appear here once users submit them through the website.</div>
+                                <div class="empty-title">No pending requests</div>
+                                <div class="empty-subtitle">Pending online service requests will appear here once users submit them through the website.</div>
                             </div>
                         </td>
                     </tr>
@@ -536,6 +563,13 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
 @push('scripts')
 <script>
+function toggleDropdown(id) {
+    const dropdown = document.getElementById(id);
+    if (dropdown) {
+        dropdown.classList.toggle('open');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
@@ -650,8 +684,41 @@ function viewOnlineRequest(id) {
                             cancelButtonColor: '#6B7280'
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                // Call the accept function
                                 acceptOnlineRequest(id).then(resolve);
+                            } else {
+                                resolve(false);
+                            }
+                        });
+                    });
+                },
+                preDeny: () => {
+                    if (!showDeclineButton) {
+                        return false;
+                    }
+                    return new Promise((resolve) => {
+                        Swal.fire({
+                            title: 'Decline Request',
+                            html: `
+                                <input type="text" id="declineReason" class="swal2-input" placeholder="Enter reason for decline" style="width: 100%; margin: 10px 0;">
+                            `,
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, Decline',
+                            cancelButtonText: 'Cancel',
+                            confirmButtonColor: '#DC2626',
+                            cancelButtonColor: '#6B7280',
+                            preConfirm: () => {
+                                const reason = document.getElementById('declineReason').value;
+                                if (!reason || reason.trim() === '') {
+                                    Swal.showValidationMessage('Please enter a reason for decline');
+                                    return false;
+                                }
+                                return reason;
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                const reason = document.getElementById('declineReason').value;
+                                declineOnlineRequest(id, reason).then(resolve);
                             } else {
                                 resolve(false);
                             }
@@ -669,8 +736,16 @@ function viewOnlineRequest(id) {
                     }).then(() => {
                         location.reload();
                     });
-                } else if (result.isDenied) {
-                    declineOnlineRequest(id);
+                } else if (result.isDismissed && result.dismiss === Swal.DismissReason.deny && result.value === true) {
+                    Swal.fire({
+                        title: 'Request Declined',
+                        text: 'The request has been declined and an email notification has been sent.',
+                        icon: 'success',
+                        confirmButtonColor: '#DC2626',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload();
+                    });
                 }
             });
         })
@@ -684,97 +759,47 @@ function viewOnlineRequest(id) {
         });
 }
 
-function declineOnlineRequest(id) {
-    const reasons = [
-        'Incomplete requirements',
-        'Duplicate request',
-        'Ineligible for assistance',
-        'Incorrect information',
-        'Outside coverage area',
-        'Other'
-    ];
-    const reasonOptions = reasons.map(function (r, i) {
-        return '<option value="' + r + '"' + (i === 0 ? ' selected' : '') + '>' + r + '</option>';
-    }).join('');
+function declineOnlineRequest(id, reason) {
+    if (!reason || reason.trim() === '') {
+        Swal.fire({
+            title: 'Error',
+            text: 'Reason for decline is required',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return Promise.resolve(false);
+    }
 
-    Swal.fire({
-        title: 'Decline Request',
-        html: '<div style="text-align:left">' +
-                '<p style="font-size:14px;color:#374151;margin:0 0 14px;">Please select a reason for declining this request. The applicant will be notified via email.</p>' +
-                '<label style="display:block;font-size:11px;color:#6B7280;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Reason</label>' +
-                '<select id="declineReason" style="width:100%;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;color:#111827;background:#fff;margin-bottom:14px;">' + reasonOptions + '</select>' +
-                '<label id="otherReasonLabel" style="display:none;font-size:11px;color:#6B7280;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Specify reason</label>' +
-                '<textarea id="otherReason" style="display:none;width:100%;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;color:#111827;min-height:70px;resize:vertical;" placeholder="Enter the reason..."></textarea>' +
-              '</div>',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, Decline',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: '#DC2626',
-        cancelButtonColor: '#6B7280',
-        didOpen: function () {
-            var select = document.getElementById('declineReason');
-            var otherLabel = document.getElementById('otherReasonLabel');
-            var otherText = document.getElementById('otherReason');
-            select.addEventListener('change', function () {
-                var showOther = select.value === 'Other';
-                otherLabel.style.display = showOther ? 'block' : 'none';
-                otherText.style.display = showOther ? 'block' : 'none';
-            });
+    return fetch(`/admin/social-case/online-requests/${id}/decline`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
-        preConfirm: function () {
-            var select = document.getElementById('declineReason');
-            var otherText = document.getElementById('otherReason');
-            var reason = select ? select.value : '';
-            if (reason === 'Other') {
-                reason = (otherText ? otherText.value : '').trim();
-                if (!reason) {
-                    Swal.showValidationMessage('Please specify a reason');
-                    return false;
-                }
-            }
-            return reason;
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const reason = result.value;
-            fetch(`/admin/social-case/online-requests/${id}/decline`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ reason: reason })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        title: 'Declined!',
-                        text: 'Online request has been declined and the applicant has been notified via email.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Error',
-                        text: data.message || 'Failed to decline request',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            })
-            .catch(error => {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Failed to decline request',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
+        body: JSON.stringify({ reason: reason })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            return true;
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: data.message || 'Failed to decline request',
+                icon: 'error',
+                confirmButtonText: 'OK'
             });
+            return false;
         }
+    })
+    .catch(error => {
+        Swal.fire({
+            title: 'Error',
+            text: 'Failed to decline request',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return false;
     });
 }
 

@@ -11,7 +11,7 @@ class OnlineRequestController extends Controller
 {
     public function index()
     {
-        $onlineRequests = OnlineRequest::where('status', '!=', 'archived')
+        $onlineRequests = OnlineRequest::where('status', 'pending')
             ->whereNull('case_id')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
@@ -44,6 +44,42 @@ class OnlineRequestController extends Controller
     }
 
     public function show($id)
+    {
+        $request = OnlineRequest::with('attachments')->find($id);
+        if (!$request) {
+            return response()->json(['error' => 'Request not found'], 404);
+        }
+        
+        $attachmentsHtml = '';
+        if ($request->attachments->count() > 0) {
+            $attachmentsHtml = '<div style="margin-top: 12px;"><h4 style="margin: 0 0 8px 0; color: #1A237E; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Attached Files</h4><ul style="margin: 0; padding-left: 20px;">';
+            foreach ($request->attachments as $attachment) {
+                $fileUrl = asset('storage/' . $attachment->file_path);
+                $attachmentsHtml .= '<li style="margin-bottom: 4px;"><a href="' . $fileUrl . '" target="_blank" style="color: #1A237E; text-decoration: underline;">' . $attachment->file_name . '</a> (' . $this->formatFileSize($attachment->file_size) . ')</li>';
+            }
+            $attachmentsHtml .= '</ul></div>';
+        } else {
+            $attachmentsHtml = '<div style="margin-top: 12px;"><p style="margin: 0; font-size: 14px; color: #6B7280;">No files attached</p></div>';
+        }
+        
+        return response()->json([
+            'id' => $request->id,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'contact_number' => $request->contact_number,
+            'service_type' => ucfirst(str_replace('_', ' ', $request->service_type)),
+            'assistance_type' => ucfirst(str_replace('_', ' ', $request->assistance_type)),
+            'barangay' => $request->barangay,
+            'status' => ucfirst($request->status),
+            'created_at' => $request->created_at->format('M d, Y g:i A'),
+            'situation' => $request->situation ?? 'N/A',
+            'notes' => $request->notes ?? 'N/A',
+            'attachments_html' => $attachmentsHtml
+        ]);
+    }
+
+    public function showDetails($id)
     {
         $request = OnlineRequest::with('attachments')->find($id);
         if (!$request) {
@@ -125,12 +161,13 @@ class OnlineRequestController extends Controller
         try {
             \Mail::raw(
                 "Dear {$request->first_name} {$request->last_name},\n\n" .
-                "Congratulations! Your online service request has been approved.\n\n" .
+                "We are pleased to inform you that your online service request has been approved.\n\n" .
                 "Request Details:\n" .
                 "- Service Type: " . ucfirst(str_replace('_', ' ', $request->service_type)) . "\n" .
                 "- Assistance Type: " . ucfirst(str_replace('_', ' ', $request->assistance_type)) . "\n" .
                 "- Barangay: {$request->barangay}\n\n" .
                 "Please bring the hardcopy of the required documents to the MSWDO office for further processing.\n\n" .
+                "If you have any questions, please visit the MSWDO Silang office for assistance.\n\n" .
                 "Thank you,\n" .
                 "MSWDO Silang",
                 function ($message) use ($request) {
@@ -146,9 +183,9 @@ class OnlineRequestController extends Controller
         return response()->json(['success' => true, 'message' => 'Request accepted successfully and email notification sent']);
     }
 
-    public function decline(Request $request, $id)
+    public function decline(Request $httpRequest, $id)
     {
-        $request->validate([
+        $httpRequest->validate([
             'reason' => 'required|string|max:500',
         ]);
 
@@ -161,7 +198,7 @@ class OnlineRequestController extends Controller
             return response()->json(['success' => false, 'message' => 'Request is already declined'], 400);
         }
 
-        $reason = trim($request->input('reason'));
+        $reason = trim($httpRequest->input('reason'));
 
         $onlineRequest->status = 'rejected';
         $onlineRequest->notes = $reason;
@@ -192,5 +229,24 @@ class OnlineRequestController extends Controller
         }
 
         return response()->json(['success' => true, 'message' => 'Request declined successfully']);
+    }
+
+    public function accepted()
+    {
+        $acceptedRequests = OnlineRequest::where('status', 'approved')
+            ->whereNull('case_id')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
+
+        return view('admin.social-case.online-requests-accepted', compact('acceptedRequests'));
+    }
+
+    public function rejected()
+    {
+        $rejectedRequests = OnlineRequest::where('status', 'rejected')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
+
+        return view('admin.social-case.online-requests-rejected', compact('rejectedRequests'));
     }
 }
