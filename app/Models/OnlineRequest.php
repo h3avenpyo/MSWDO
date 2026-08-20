@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\SocialCase\SocialCaseStudy;
 use Illuminate\Database\Eloquent\Model;
 
 class OnlineRequest extends Model
@@ -21,6 +22,7 @@ class OnlineRequest extends Model
         'status',
         'notes',
         'processed_by',
+        'case_id',
     ];
 
     protected $casts = [
@@ -30,5 +32,10 @@ class OnlineRequest extends Model
     public function attachments()
     {
         return $this->hasMany(OnlineRequestAttachment::class);
+    }
+
+    public function case()
+    {
+        return $this->belongsTo(SocialCaseStudy::class, 'case_id');
     }
 }

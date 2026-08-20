@@ -70,6 +70,12 @@ class SocialCaseController extends Controller
 
         $acceptedOnlineRequests = OnlineRequest::with('attachments')
             ->where('status', 'approved')
+            ->where(function ($q) {
+                $q->whereNull('case_id')
+                  ->orWhereHas('case', function ($cq) {
+                      $cq->whereNotIn('status', ['Printed', 'Released']);
+                  });
+            })
             ->orderByDesc('updated_at')
             ->get();
 
@@ -261,6 +267,7 @@ class SocialCaseController extends Controller
 
         $data = $request->validate([
             'case_id'                         => 'nullable|integer|exists:social_case_studies,id',
+            'online_request_id'               => 'nullable|integer|exists:online_requests,id',
             'control_no'                      => 'nullable|string|max:50',
             'status'                          => 'required|string|max:50',
             'client'                          => 'required|array',
@@ -373,6 +380,10 @@ class SocialCaseController extends Controller
                     'occupation'           => $member['occupation'] ?? null,
                     'monthly_income'       => $member['income'] ?? null,
                 ]);
+            }
+
+            if (!empty($data['online_request_id'])) {
+                \App\Models\OnlineRequest::where('id', $data['online_request_id'])->update(['case_id' => $case->id]);
             }
 
             return $case;

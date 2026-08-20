@@ -734,6 +734,11 @@ function updateWorkflowStep(stepNumber){
 function saveNewCase(){
   // Convert camelCase JS keys to snake_case for the Laravel API
   const payload = convertKeys(draftIntake, camelToSnake);
+  const onlineRequestId = sessionStorage.getItem('intake_onlineRequestId');
+  if (onlineRequestId) {
+    payload.online_request_id = onlineRequestId;
+    sessionStorage.removeItem('intake_onlineRequestId');
+  }
   console.log('Saving case (payload):', payload);
   fetch('/admin/social-case/api/cases', {
     method: 'POST',

@@ -382,6 +382,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                         @forelse($acceptedOnlineRequests as $req)
                         @php
                         $details = [
+                            'id' => $req->id,
                             'first_name' => $req->first_name,
                             'last_name' => $req->last_name,
                             'email' => $req->email,
@@ -608,6 +609,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         sessionStorage.setItem('intake_clientContact', details.contact_number || '');
         sessionStorage.setItem('intake_clientBirthdate', details.dob || '');
         sessionStorage.setItem('intake_clientAge', computeAgeFromDob(details.dob) || '');
+        sessionStorage.setItem('intake_onlineRequestId', details.id || '');
         sessionStorage.removeItem('intake_caseId');
         window.location.href = '/admin/social-case/intake';
     }
