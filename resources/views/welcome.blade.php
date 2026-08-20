@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MSWDO Silang</title>
     <meta name="description" content="Municipal Social Welfare and Development Office - Municipality of Silang">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
 
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800"
@@ -12,6 +13,8 @@
 
     @vite(['resources/css/app.css','resources/js/app.js'])
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
 </head>
 <body class="bg-[#F8FAFC] text-[#1F2937] antialiased">
@@ -28,7 +31,6 @@
         <li><a href="#home"><i data-lucide="home" style="width:20px;height:20px"></i> Home</a></li>
         <li><a href="#services"><i data-lucide="briefcase" style="width:20px;height:20px"></i> Services</a></li>
         <li><a href="#about"><i data-lucide="info" style="width:20px;height:20px"></i> About</a></li>
-        <li><a href="#programs"><i data-lucide="megaphone" style="width:20px;height:20px"></i> Programs</a></li>
         <li><a href="#contact"><i data-lucide="mail" style="width:20px;height:20px"></i> Contact</a></li>
     </ul>
     <div class="sidebar-foot">
@@ -99,7 +101,6 @@
         <li><a href="#home">Home</a></li>
         <li><a href="#services">Services</a></li>
         <li><a href="#about">About</a></li>
-        <li><a href="#programs">Programs</a></li>
         <li><a href="#contact">Contact</a></li>
         <li><a href="/admin" class="navbar-login-btn">Login</a></li>
     </ul>
@@ -571,121 +572,7 @@ Release Assistance
 
 </section>
 
-<!-- ===================================== -->
-<!-- LATEST ANNOUNCEMENTS -->
-<!-- ===================================== -->
 
-<section id="programs" class="py-24 bg-offwhite">
-
-<div class="max-w-7xl mx-auto px-6">
-
-<div class="text-center">
-
-<h2 class="text-4xl font-bold">
-
-Latest Announcements
-
-</h2>
-
-<p class="text-secondary mt-4">
-
-Stay updated with MSWDO activities and schedules.
-
-</p>
-
-</div>
-
-<div class="grid lg:grid-cols-3 gap-8 mt-14">
-
-<div class="rounded-2xl shadow-lg overflow-hidden">
-
-<div class="bg-primary h-3"></div>
-
-<div class="p-8">
-
-<span class="text-sm text-primary font-semibold">
-
-June 2026
-
-</span>
-
-<h3 class="text-2xl font-bold mt-3">
-
-Senior Citizen Pension Distribution
-
-</h3>
-
-<p class="text-secondary mt-4">
-
-The payout schedule for qualified senior citizens will begin this month.
-
-</p>
-
-</div>
-
-</div>
-
-<div class="welcome-card rounded-2xl shadow-lg overflow-hidden">
-
-<div class="bg-warm-gold h-3"></div>
-
-<div class="p-8">
-
-<span class="text-sm text-warm-gold font-semibold">
-
-June 2026
-
-</span>
-
-<h3 class="text-2xl font-bold mt-3">
-
-Financial Assistance Applications
-
-</h3>
-
-<p class="text-secondary mt-4">
-
-Qualified residents may now submit their applications online.
-
-</p>
-
-</div>
-
-</div>
-
-<div class="welcome-card rounded-2xl shadow-lg overflow-hidden">
-
-<div class="bg-accent h-3"></div>
-
-<div class="p-8">
-
-<span class="text-sm text-accent font-semibold">
-
-June 2026
-
-</span>
-
-<h3 class="text-2xl font-bold mt-3">
-
-VAWC Awareness Seminar
-
-</h3>
-
-<p class="text-secondary mt-4">
-
-Join our advocacy program promoting safe families and communities.
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
 
 <!-- ===================================== -->
 <!-- CALL TO ACTION -->
@@ -724,6 +611,14 @@ class="border border-offwhite px-8 py-4 rounded-xl text-white hover:bg-offwhite 
 View Services
 
 </a>
+
+<button onclick="openServiceRequestModal()" class="online-request-btn">
+
+<i data-lucide="file-text" style="width:20px;height:20px;margin-right:8px;"></i>
+
+Online Service Request
+
+</button>
 
 </div>
 
@@ -822,6 +717,40 @@ body{padding-left:0!important;padding-top:80px!important;}
     max-width: 36rem;
     margin: 0 auto;
     line-height: 1.7;
+}
+.online-request-btn {
+    display: inline-flex;
+    align-items: center;
+    background: #FBC02D;
+    color: #1A237E;
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+.online-request-btn:hover {
+    background: #FFD54F;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(251, 192, 45, 0.3);
+}
+
+/* Service Request Modal Styles */
+.service-request-modal .swal2-popup {
+    border-radius: 16px;
+    padding: 2rem;
+}
+.service-request-modal .swal2-title {
+    color: #1A237E;
+    font-size: 24px;
+    font-weight: 700;
+}
+.service-request-modal input,
+.service-request-modal select {
+    font-family: inherit;
 }
 .contact-grid {
     display: grid;
@@ -1053,25 +982,6 @@ body{padding-left:0!important;padding-top:80px!important;}
 }
 </style>
 
-<section id="contact" class="contact-section">
-    <div class="contact-container">
-        <div class="contact-header">
-            <span class="contact-subtitle">Get In Touch</span>
-            <h2 class="contact-title">Contact Us</h2>
-            <p class="contact-description">
-                Reach out to the Municipal Social Welfare and Development Office. We're here to help and answer any questions you may have.
-            </p>
-            <div class="mt-10 flex flex-wrap justify-center gap-6">
-                <a href="#contact" class="bg-warm-gold px-8 py-4 rounded-xl font-bold hover:scale-105 transition">
-                    Contact MSWDO
-                </a>
-                <a href="#services"
-                    class="border border-offwhite px-8 py-4 rounded-xl text-white hover:bg-offwhite hover:text-primary transition">
-                    View Services
-                </a>
-            </div>
-        </div>
-    </section> --}}
     <!-- ===================================== -->
     <!-- CONTACT SECTION -->
     <!-- ===================================== -->
@@ -1661,6 +1571,477 @@ scrollBtn.addEventListener('click', () => {
 
 });
 
+// Service Request Modal
+function openServiceRequestModal() {
+    // Step 1: Who needs assistance + Beneficiary Information
+    Swal.fire({
+        title: 'Online Service Request',
+        html: `
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <div style="text-align: left; padding: 10px;">
+                <div style="margin-bottom: 25px;">
+                    <h3 style="color: #1A237E; font-size: 18px; font-weight: 700; margin-bottom: 10px;">Who needs assistance?</h3>
+                    <label style="color: #64748B; font-size: 14px; font-weight: 500; display: block; margin-bottom: 8px;">Who is this request for?</label>
+                    <select id="requestFor" style="width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 14px; background: #F8FAFC;">
+                        <option value="">Select an option</option>
+                        <option value="myself">Myself</option>
+                        <option value="child">My child</option>
+                        <option value="parent">My parent</option>
+                        <option value="family">Another family member</option>
+                        <option value="assisting">Someone I am assisting</option>
+                    </select>
+                </div>
+                <div>
+                    <h3 style="color: #1A237E; font-size: 18px; font-weight: 700; margin-bottom: 15px;">Beneficiary Information</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label style="color: #64748B; font-size: 13px; font-weight: 500; display: block; margin-bottom: 6px;">First name</label>
+                            <input type="text" id="firstName" placeholder="Enter first name" style="width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 14px; background: #F8FAFC;">
+                        </div>
+                        <div>
+                            <label style="color: #64748B; font-size: 13px; font-weight: 500; display: block; margin-bottom: 6px;">Last name</label>
+                            <input type="text" id="lastName" placeholder="Enter last name" style="width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 14px; background: #F8FAFC;">
+                        </div>
+                    </div>
+                    <div style="margin-top: 12px;">
+                        <label style="color: #64748B; font-size: 13px; font-weight: 500; display: block; margin-bottom: 6px;">Date of birth</label>
+                        <input type="date" id="dob" placeholder="Select date of birth" style="width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 14px; background: #F8FAFC;">
+                    </div>
+                    <div style="margin-top: 12px;">
+                        <label style="color: #64748B; font-size: 13px; font-weight: 500; display: block; margin-bottom: 6px;">Barangay</label>
+                        <select id="barangay" style="width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 14px; background: #F8FAFC;">
+                            <option value="">Select barangay</option>
+                            <option value="ACACIA">Acacia</option>
+                            <option value="ADLAS">Adlas</option>
+                            <option value="ANAHAW 1">Anahaw I</option>
+                            <option value="ANAHAW 2">Anahaw 2</option>
+                            <option value="BALITE I">Balite I</option>
+                            <option value="BALITE II">Balite II</option>
+                            <option value="BALUBAD">Balubad</option>
+                            <option value="BANABA">Banaba</option>
+                            <option value="BATAS">Batas</option>
+                            <option value="BIGA 1">Biga 1</option>
+                            <option value="BIGA 2">Biga 2</option>
+                            <option value="BILUSO">Biluso</option>
+                            <option value="BUCAL">Bucal</option>
+                            <option value="BUHO">Buho</option>
+                            <option value="BULIHAN">Bulihan</option>
+                            <option value="CABANGAAN">Cabangaan</option>
+                            <option value="CARMEN">Carmen</option>
+                            <option value="HOYO">Hoyo</option>
+                            <option value="HUKAY">Hukay</option>
+                            <option value="IBA">Iba</option>
+                            <option value="INCHICAN">Inchican</option>
+                            <option value="IPIL 1">Ipil I</option>
+                            <option value="IPIL 2">Ipil 2</option>
+                            <option value="KALUBKOB">Kalubkob</option>
+                            <option value="KAONG">Kaong</option>
+                            <option value="LALAAN I">Lalaan I</option>
+                            <option value="LALAAN II">Lalaan II</option>
+                            <option value="LITLIT">Litlit</option>
+                            <option value="LUCSUHIN">Lucsuhin</option>
+                            <option value="LUMIL">Lumil</option>
+                            <option value="MAGUYAM">Maguyam</option>
+                            <option value="MALABAG">Malabag</option>
+                            <option value="MALAKING TATIAO">Malaking Tatiao</option>
+                            <option value="MATAAS NA BUROL">Mataas na Burol</option>
+                            <option value="MUNTING ILOG">Munting Ilog</option>
+                            <option value="NARRA I">Narra I</option>
+                            <option value="NARRA II">Narra II</option>
+                            <option value="NARRA III">Narra III</option>
+                            <option value="PALIGAWAN">Paligawan</option>
+                            <option value="PASONG LANGKA">Pasong Langka</option>
+                            <option value="POBLACION 1">Poblacion 1</option>
+                            <option value="POBLACION 2">Poblacion 2</option>
+                            <option value="POBLACION 3">Poblacion 3</option>
+                            <option value="POBLACION 4">Poblacion 4</option>
+                            <option value="POBLACION 5">Poblacion 5</option>
+                            <option value="POOC I">Pooc I</option>
+                            <option value="POOC II">Pooc II</option>
+                            <option value="PULONG BUNGA">Pulong Bunga</option>
+                            <option value="PULONG SAGING">Pulong Saging</option>
+                            <option value="PUTING KAHOY">Putting Kahoy</option>
+                            <option value="SABUTAN">Sabutan</option>
+                            <option value="SAN MIGUEL I">San Miguel I</option>
+                            <option value="SAN MIGUEL II">San Miguel II</option>
+                            <option value="SAN VICENTE I">San Vicente I</option>
+                            <option value="SAN VICENTE II">San Vicente II</option>
+                            <option value="SANTOL">Santol</option>
+                            <option value="TARTARIA">Tartaria</option>
+                            <option value="TIBIG">Tibig</option>
+                            <option value="TOLEDO">Toledo</option>
+                            <option value="TUBUAN 1">Tubuan 1</option>
+                            <option value="TUBUAN 2">Tubuan 2</option>
+                            <option value="TUBUAN 3">Tubuan 3</option>
+                            <option value="ULAT">Ulat</option>
+                            <option value="YAKAL">Yakal</option>
+                        </select>
+                    </div>
+                    <div style="margin-top: 12px;">
+                        <label style="color: #64748B; font-size: 13px; font-weight: 500; display: block; margin-bottom: 6px;">Contact number</label>
+                        <input type="text" id="contactNumber" placeholder="Enter contact number" style="width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 14px; background: #F8FAFC;">
+                    </div>
+                    <div style="margin-top: 12px;">
+                        <label style="color: #64748B; font-size: 13px; font-weight: 500; display: block; margin-bottom: 6px;">Email address</label>
+                        <input type="email" id="email" placeholder="Enter email address" style="width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 14px; background: #F8FAFC;">
+                    </div>
+                    <div style="margin-top: 12px;">
+                        <label style="color: #64748B; font-size: 13px; font-weight: 500; display: block; margin-bottom: 6px;">Address</label>
+                        <input type="text" id="address" placeholder="Enter address" style="width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 14px; background: #F8FAFC;">
+                    </div>
+                </div>
+            </div>
+        `,
+        width: '600px',
+        confirmButtonText: 'Next',
+        confirmButtonColor: '#1A237E',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        cancelButtonColor: '#64748B',
+        customClass: {
+            popup: 'service-request-modal'
+        },
+        preConfirm: () => {
+            const requestFor = Swal.getPopup().querySelector('#requestFor').value;
+            const firstName = Swal.getPopup().querySelector('#firstName').value;
+            const lastName = Swal.getPopup().querySelector('#lastName').value;
+            const dob = Swal.getPopup().querySelector('#dob').value;
+            const barangay = Swal.getPopup().querySelector('#barangay').value;
+            const contactNumber = Swal.getPopup().querySelector('#contactNumber').value;
+            const email = Swal.getPopup().querySelector('#email').value;
+            const address = Swal.getPopup().querySelector('#address').value;
+
+            if (!requestFor) {
+                Swal.showValidationMessage('Please select who this request is for');
+                return false;
+            }
+            if (!firstName || !lastName) {
+                Swal.showValidationMessage('Please enter both first and last name');
+                return false;
+            }
+            if (!dob) {
+                Swal.showValidationMessage('Please enter date of birth');
+                return false;
+            }
+            if (!barangay) {
+                Swal.showValidationMessage('Please enter barangay');
+                return false;
+            }
+            if (!contactNumber) {
+                Swal.showValidationMessage('Please enter contact number');
+                return false;
+            }
+            if (!email || email.trim() === '') {
+                Swal.showValidationMessage('Please enter email address');
+                return false;
+            }
+
+            return { 
+                request_for: requestFor, 
+                first_name: firstName, 
+                last_name: lastName, 
+                dob: dob, 
+                barangay: barangay, 
+                contact_number: contactNumber, 
+                email: email, 
+                address: address 
+            };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Step 2: Service Details
+            Swal.fire({
+                title: 'Service Request Details',
+                html: `
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <div style="text-align: left; padding: 10px;">
+                        <div style="margin-bottom: 25px;">
+                            <h3 style="color: #1A237E; font-size: 18px; font-weight: 700; margin-bottom: 10px;">Type of Service</h3>
+                            <label style="color: #64748B; font-size: 14px; font-weight: 500; display: block; margin-bottom: 8px;">What type of service do you need?</label>
+                            <select id="serviceType" style="width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 14px; background: #F8FAFC;">
+                                <option value="">Select service type</option>
+                                <option value="financial_assistance">Financial Assistance</option>
+                                <option value="social_case_study">Social Case Study</option>
+                                <option value="senior_citizen">Senior Citizen Services</option>
+                                <option value="vawc">VAWC Services</option>
+                                <option value="bcpc">BCPC Services</option>
+                                <option value="others">Others</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 25px;">
+                            <h3 style="color: #1A237E; font-size: 18px; font-weight: 700; margin-bottom: 10px;">Assistance Type</h3>
+                            <label style="color: #64748B; font-size: 14px; font-weight: 500; display: block; margin-bottom: 8px;">What type of assistance do you need?</label>
+                            <select id="assistanceType" style="width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 14px; background: #F8FAFC;">
+                                <option value="">Select assistance type</option>
+                                <option value="medical">Medical Assistance</option>
+                                <option value="educational">Educational Assistance</option>
+                                <option value="food">Food Assistance</option>
+                                <option value="transportation">Transportation Assistance</option>
+                                <option value="burial">Burial Assistance</option>
+                                <option value="livelihood">Livelihood Assistance</option>
+                                <option value="emergency">Emergency Assistance</option>
+                                <option value="others">Others</option>
+                            </select>
+                        </div>
+                        <div>
+                            <h3 style="color: #1A237E; font-size: 18px; font-weight: 700; margin-bottom: 10px;">Situation Description</h3>
+                            <label style="color: #64748B; font-size: 14px; font-weight: 500; display: block; margin-bottom: 8px;">Please provide a brief description of the client's situation</label>
+                            <textarea id="situation" rows="4" placeholder="Describe the situation..." style="width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 14px; background: #F8FAFC; resize: vertical;"></textarea>
+                        </div>
+                        <div style="margin-top: 25px;">
+                            <h3 style="color: #1A237E; font-size: 18px; font-weight: 700; margin-bottom: 10px;">Upload Documents</h3>
+                            <label style="color: #64748B; font-size: 14px; font-weight: 500; display: block; margin-bottom: 8px;">Upload any supporting documents (optional)</label>
+                            <div id="uploadArea" style="border: 2px dashed #1A237E; border-radius: 8px; padding: 20px; text-align: center; background: #F8FAFC; cursor: pointer; transition: all 0.3s ease;">
+                                <div style="margin-bottom: 10px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#1A237E" style="width: 40px; height: 40px; margin: 0 auto;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                                    </svg>
+                                </div>
+                                <p style="color: #1A237E; font-size: 16px; font-weight: 600; margin: 0 0 6px 0;">Click to upload files</p>
+                                <p style="color: #64748B; font-size: 13px; margin: 0;">or drag and drop files here</p>
+                                <p style="color: #64748B; font-size: 12px; margin-top: 8px;">Accepted formats: PDF, DOC, DOCX, JPG, JPEG, PNG</p>
+                                <p style="color: #64748B; font-size: 12px;">Maximum file size: 10MB per file</p>
+                            </div>
+                            <input type="file" id="documents" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;" onchange="handleFileSelection(this)">
+                            <div id="fileList" style="margin-top: 12px;"></div>
+                        </div>
+                    </div>
+                `,
+                width: '600px',
+                confirmButtonText: 'Submit Request',
+                confirmButtonColor: '#1A237E',
+                showCancelButton: true,
+                cancelButtonText: 'Back',
+                cancelButtonColor: '#64748B',
+                customClass: {
+                    popup: 'service-request-modal'
+                },
+                didOpen: () => {
+                    // Initialize drag and drop after modal opens
+                    setTimeout(() => {
+                        const uploadArea = document.getElementById('uploadArea');
+                        const documentsInput = document.getElementById('documents');
+                        
+                        if (uploadArea && documentsInput) {
+                            // Click handler
+                            uploadArea.addEventListener('click', () => {
+                                documentsInput.click();
+                            });
+                            
+                            // Change handler
+                            documentsInput.addEventListener('change', () => {
+                                handleFileSelection(documentsInput);
+                            });
+                            
+                            // Drag and drop handlers
+                            uploadArea.addEventListener('dragover', (e) => {
+                                e.preventDefault();
+                                uploadArea.style.background = '#EEF2FF';
+                                uploadArea.style.borderColor = '#1A237E';
+                            });
+                            
+                            uploadArea.addEventListener('dragleave', (e) => {
+                                e.preventDefault();
+                                uploadArea.style.background = '#F8FAFC';
+                                uploadArea.style.borderColor = '#1A237E';
+                            });
+                            
+                            uploadArea.addEventListener('drop', (e) => {
+                                e.preventDefault();
+                                uploadArea.style.background = '#F8FAFC';
+                                uploadArea.style.borderColor = '#1A237E';
+                                
+                                const files = e.dataTransfer.files;
+                                
+                                // Validate file types
+                                const validTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png'];
+                                const validFiles = [];
+                                
+                                for (let i = 0; i < files.length; i++) {
+                                    const file = files[i];
+                                    const extension = '.' + file.name.split('.').pop().toLowerCase();
+                                    
+                                    if (validTypes.includes(extension)) {
+                                        validFiles.push(file);
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Invalid File Type',
+                                            text: file.name + ' is not a supported file type.',
+                                            icon: 'warning',
+                                            confirmButtonColor: '#1A237E',
+                                            confirmButtonText: 'OK'
+                                        });
+                                    }
+                                }
+                                
+                                if (validFiles.length > 0) {
+                                    // Get existing files and add new ones
+                                    const dataTransfer = new DataTransfer();
+                                    
+                                    // Add existing files
+                                    if (documentsInput.files.length > 0) {
+                                        for (let i = 0; i < documentsInput.files.length; i++) {
+                                            dataTransfer.items.add(documentsInput.files[i]);
+                                        }
+                                    }
+                                    
+                                    // Add new files
+                                    for (let i = 0; i < validFiles.length; i++) {
+                                        dataTransfer.items.add(validFiles[i]);
+                                    }
+                                    
+                                    documentsInput.files = dataTransfer.files;
+                                    handleFileSelection(documentsInput);
+                                }
+                            });
+                        }
+                    }, 100);
+                },
+                preConfirm: () => {
+                    const serviceType = Swal.getPopup().querySelector('#serviceType').value;
+                    const assistanceType = Swal.getPopup().querySelector('#assistanceType').value;
+                    const situation = Swal.getPopup().querySelector('#situation').value;
+
+                    if (!serviceType) {
+                        Swal.showValidationMessage('Please select a service type');
+                        return false;
+                    }
+                    if (!assistanceType) {
+                        Swal.showValidationMessage('Please select an assistance type');
+                        return false;
+                    }
+                    if (!situation) {
+                        Swal.showValidationMessage('Please provide a brief description of the situation');
+                        return false;
+                    }
+
+                    return { 
+                        service_type: serviceType, 
+                        assistance_type: assistanceType, 
+                        situation: situation
+                    };
+                }
+            }).then((result2) => {
+                if (result2.isConfirmed) {
+                    // Combine both steps data
+                    const formData = new FormData();
+                    Object.keys(result.value).forEach(key => {
+                        formData.append(key, result.value[key]);
+                    });
+                    Object.keys(result2.value).forEach(key => {
+                        formData.append(key, result2.value[key]);
+                    });
+                    
+                    // Add files directly from the input element
+                    const documentsInput = Swal.getPopup().querySelector('#documents');
+                    if (documentsInput && documentsInput.files.length > 0) {
+                        for (let i = 0; i < documentsInput.files.length; i++) {
+                            formData.append('documents[]', documentsInput.files[i]);
+                        }
+                    }
+
+                    console.log('Submitting data:', formData); // Debug log
+
+                    // Send data to backend
+                    fetch('/service-request', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Response data:', data);
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Request Submitted',
+                                text: 'Your service request has been submitted successfully. An MSWDO officer will review your request.',
+                                icon: 'success',
+                                confirmButtonColor: '#1A237E',
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: data.message || 'There was an error submitting your request. Please try again.',
+                                icon: 'error',
+                                confirmButtonColor: '#DC2626',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'There was an error submitting your request. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#DC2626',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+                } else if (result2.dismiss === Swal.DismissReason.cancel) {
+                    // If cancelled, go back to step 1
+                    openServiceRequestModal();
+                }
+            });
+        }
+    });
+}
+
+</script>
+
+<script>
+function handleFileSelection(input) {
+    console.log('Files selected:', input.files.length);
+    console.log('Files:', input.files);
+    updateFileList(input);
+}
+
+function updateFileList(input) {
+    const fileList = document.getElementById('fileList');
+    fileList.innerHTML = '';
+    
+    console.log('Updating file list with', input.files.length, 'files');
+    
+    if (input.files.length > 0) {
+        const fileListHtml = document.createElement('div');
+        fileListHtml.style.cssText = 'background: #F8FAFC; border-radius: 8px; padding: 12px; border: 1px solid #E2E8F0;';
+        
+        const title = document.createElement('h4');
+        title.textContent = 'Selected Files (' + input.files.length + ')';
+        title.style.cssText = 'margin: 0 0 10px 0; color: #1A237E; font-size: 14px; font-weight: 700;';
+        fileListHtml.appendChild(title);
+        
+        const list = document.createElement('ul');
+        list.style.cssText = 'margin: 0; padding-left: 20px;';
+        
+        for (let i = 0; i < input.files.length; i++) {
+            const file = input.files[i];
+            const listItem = document.createElement('li');
+            listItem.style.cssText = 'margin-bottom: 6px; color: #1F2937; font-size: 13px;';
+            listItem.textContent = file.name + ' (' + formatFileSize(file.size) + ')';
+            list.appendChild(listItem);
+        }
+        
+        fileListHtml.appendChild(list);
+        fileList.appendChild(fileListHtml);
+    }
+}
+
+function formatFileSize(bytes) {
+    if (bytes >= 1048576) {
+        return (bytes / 1048576).toFixed(2) + ' MB';
+    } else if (bytes >= 1024) {
+        return (bytes / 1024).toFixed(2) + ' KB';
+    } else {
+        return bytes + ' bytes';
+    }
+}
 </script>
 
 </body>

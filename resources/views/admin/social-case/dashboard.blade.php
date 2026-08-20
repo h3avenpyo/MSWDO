@@ -98,6 +98,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         @endif
         <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i><span>All cases</span></a></li>
         <li><a href="/admin/social-case/archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
+        @if((string) session('admin_user_role') === 'eligibility_checker')
+        <li><a href="/admin/social-case/online-requests"><i data-lucide="file-text" style="width:20px;height:20px"></i><span>Online Requests</span></a></li>
+        @endif
         <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a></li>
     </ul>
 </div>

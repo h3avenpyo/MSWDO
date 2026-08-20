@@ -15,10 +15,14 @@ use App\Http\Controllers\Admin\Senior\BirthdayController;
 use App\Http\Controllers\Admin\Senior\BirthdayPayoutController;
 use App\Http\Controllers\Admin\Senior\SeniorAnalyticsController;
 use App\Http\Controllers\Admin\Auth\PasswordResetManagementController;
+use App\Http\Controllers\Admin\OnlineRequestController;
+use App\Http\Controllers\ServiceRequestController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/service-request', [ServiceRequestController::class, 'store'])->name('service-request.store');
 
 Route::get('/admin', [AuthController::class, 'showLogin'])->name('admin.login.form');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login');
@@ -59,6 +63,9 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::middleware('role:admin,eligibility_checker')->group(function () {
             Route::post('/api/eligibility/check', [SocialCaseController::class, 'checkEligibility'])->name('api.eligibility.check');
             Route::post('/api/eligibility/submit', [SocialCaseController::class, 'submitEligibility'])->name('api.eligibility.submit');
+            Route::get('/online-requests', [OnlineRequestController::class, 'index'])->name('online-requests');
+            Route::get('/online-requests/{id}', [OnlineRequestController::class, 'show'])->name('online-requests.show');
+            Route::post('/online-requests/{id}/archive', [OnlineRequestController::class, 'archive'])->name('online-requests.archive');
         });
 
         // Case encoder only (social@mwsdo.test)
