@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="user-role" content="{{ session('admin_user_role') }}">
     <meta name="user-name" content="{{ session('admin_user_name') ?? 'Social Case Study Officer' }}">
+    <meta name="admin-name" content="{{ optional(\App\Models\User::where('role', 'admin')->first())->name ?? '' }}">
     <title>@yield('title', 'Social Case Study System')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

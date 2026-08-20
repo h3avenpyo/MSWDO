@@ -31,6 +31,7 @@ let draftIntake = null;
 /* ---------------- Role / permission helpers ---------------- */
 const CURRENT_USER_ROLE = (document.querySelector('meta[name="user-role"]')?.content || '').toLowerCase();
 const CURRENT_USER_NAME = (document.querySelector('meta[name="user-name"]')?.content || '').trim();
+const ADMIN_NAME = (document.querySelector('meta[name="admin-name"]')?.content || '').trim();
 const CAN_CHECK_ELIGIBILITY = CURRENT_USER_ROLE === 'eligibility_checker' || CURRENT_USER_ROLE === 'admin';
 const CAN_ENCODE = CURRENT_USER_ROLE === 'social_worker' || CURRENT_USER_ROLE === 'admin';
 const IS_PURE_ELIGIBILITY_CHECKER = CAN_CHECK_ELIGIBILITY && !CAN_ENCODE;
@@ -618,7 +619,7 @@ function blankIntake(name){
     client: {name: name||"", age:"", sex:"", address:"", birthdate:"", birthplace:"", religion:"", education:"", civilStatus:"", occupation:"", income:"", contact:""},
     household: [{name:"", relationship:"", age:"", education:"", occupation:"", income:""}],
     interview: {reportDate: today, problemPresented:"", homeCondition:"", socioEconomic:"", evaluation:"", recommendation:""},
-    signers: {preparedByName: CURRENT_USER_NAME, preparedByTitle:"MSWDO Staff", notedByName: CURRENT_USER_NAME, notedByTitle:"MSWDO Head", notedByLicense:""},
+    signers: {preparedByName: CURRENT_USER_NAME, preparedByTitle:"MSWDO Staff", notedByName: ADMIN_NAME || CURRENT_USER_NAME, notedByTitle:"MSWDO Head", notedByLicense:""},
     purpose: PURPOSES[0],
     agencies: [],
     requirements: DEFAULT_REQUIREMENTS.map(r=>({name:r, submitted:false})),
@@ -1948,7 +1949,6 @@ function renderCheckerEligibilityResult(data){
   if(data.existing_case){
     const ec = data.existing_case;
     const statusBadge = `<span class="badge ${STATUS_CLASS[ec.status] || 'b-draft'}">${escapeHtml(ec.status || '—')}</span>`;
-    if(summary) summary.style.display = 'none';
     status.innerHTML = `
       <div class="eligibility-card" style="border-color:#D97706;background:#FFFBEB">
         <div class="status-icon" style="color:#D97706"><i data-lucide="alert-circle" style="width:24px;height:24px"></i></div>
@@ -2065,7 +2065,7 @@ async function loadIntakeForm(){
     }
   }
   if(!draftIntake.signers.preparedByName || !draftIntake.signers.preparedByName.trim()) draftIntake.signers.preparedByName = CURRENT_USER_NAME;
-  if(!draftIntake.signers.notedByName || !draftIntake.signers.notedByName.trim()) draftIntake.signers.notedByName = CURRENT_USER_NAME;
+  if(!draftIntake.signers.notedByName || !draftIntake.signers.notedByName.trim()) draftIntake.signers.notedByName = ADMIN_NAME || CURRENT_USER_NAME;
   renderIntakeForm();
   lucide.createIcons();
 }
