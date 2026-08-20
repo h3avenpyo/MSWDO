@@ -70,19 +70,26 @@
         .view-all-btn{background:none;border:none;color:var(--primary);cursor:pointer;font-size:12px;margin-top:8px;padding:0;}
 
         /* ── Modal ── */
-        .modal-overlay{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px;}
+        .modal-overlay{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);}
         .modal-overlay.show{display:flex;}
-        .modal-box{background:var(--surface);border-radius:16px;width:100%;max-width:800px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15);}
-        .modal-header-bar{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);background:var(--primary);color:white;border-radius:16px 16px 0 0;}
-        .modal-header-bar h4{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;margin:0;}
-        .modal-header-bar h4 svg{width:20px;height:20px;}
+        .modal-box{background:var(--surface);border-radius:14px;width:100%;max-width:780px;max-height:75vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15);}
+        .modal-header-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);background:#1A237E;color:white;}
+        .modal-header-bar h4{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px;margin:0;color:white;}
         .modal-close-btn{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);border:none;color:white;cursor:pointer;transition:all .15s ease;}
         .modal-close-btn:hover{background:rgba(255,255,255,.25);}
-        .modal-close-btn svg{width:16px;height:16px;}
-        .modal-body-scroll{padding:24px;overflow-y:auto;max-height:60vh;}
+        .modal-body-scroll{padding:20px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;}
         .modal-body-scroll table{width:100%;border-collapse:collapse;}
-        .modal-body-scroll th{padding:16px;text-align:left;background:var(--background);border-bottom:2px solid var(--border);font-size:15px;font-weight:600;color:var(--text-secondary);white-space:nowrap;}
-        .modal-body-scroll td{padding:16px;border-bottom:1px solid var(--border);font-size:15px;}
+        .modal-body-scroll th{padding:12px 14px;text-align:left;background:var(--background);border-bottom:2px solid var(--border);font-size:13px;font-weight:600;color:var(--text-secondary);white-space:nowrap;}
+        .modal-body-scroll td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13.5px;}
+
+        @media (max-width: 575.98px) {
+            .modal-overlay{padding:8px;}
+            .modal-box{max-height:82vh;border-radius:12px;}
+            .modal-header-bar{padding:10px 14px;}
+            .modal-header-bar h4{font-size:14px;}
+            .modal-body-scroll{padding:12px;}
+            .modal-body-scroll th, .modal-body-scroll td{padding:8px 10px;font-size:12px;}
+        }
 
         .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto;}
         @keyframes spin{to{transform:rotate(360deg);}}
@@ -368,15 +375,15 @@
 </div>
 
 <!-- Celebrants Modal -->
-<div id="celebrantsModal" class="modal-overlay" style="padding:20px;">
-    <div class="modal-box" style="width:800px !important;max-width:800px !important;">
-        <div class="modal-header-bar" style="padding:24px 28px !important;">
-            <h4 style="font-size:18px !important;"><i data-lucide="users" style="width:24px;height:24px"></i> <span id="modalBarangayName">Barangay</span> - All Celebrants</h4>
+<div id="celebrantsModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header-bar">
+            <h4><i data-lucide="users" style="width:20px;height:20px"></i> <span id="modalBarangayName">Barangay</span> - All Celebrants</h4>
             <button class="modal-close-btn" onclick="closeCelebrantsModal()">
                 <i data-lucide="x" style="width:18px;height:18px"></i>
             </button>
         </div>
-        <div class="modal-body-scroll" id="modalBody" style="padding:28px !important;">
+        <div class="modal-body-scroll" id="modalBody">
             <!-- Content will be populated by JavaScript -->
         </div>
     </div>

@@ -690,13 +690,13 @@
 
 
 <!-- Barangay Distribution Modal -->
-<div id="barangayModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.style.display='none'">
-    <div style="background:var(--surface);border-radius:16px;width:100%;max-width:800px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15)">
-        <div class="flex items-center justify-between px-6 py-4" style="background:var(--accent-yellow);color:var(--primary)">
-            <h4 class="font-bold flex items-center gap-2 m-0"><i data-lucide="map-pin" style="width:20px;height:20px"></i> All Barangays Distribution</h4>
-            <button onclick="document.getElementById('barangayModal').style.display='none'" class="w-8 h-8 rounded-full flex items-center justify-center" style="background:rgba(0,0,0,.1);border:none;color:var(--primary)"><i data-lucide="x" style="width:16px;height:16px"></i></button>
+<div id="barangayModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)" onclick="if(event.target===this)this.style.display='none'">
+    <div style="background:var(--surface);border-radius:14px;width:100%;max-width:780px;max-height:75vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15)">
+        <div class="flex items-center justify-between px-5 py-3" style="background:#1A237E;color:#ffffff">
+            <h4 class="font-semibold flex items-center gap-2 m-0 text-white" style="font-size:1rem"><i data-lucide="map-pin" style="width:20px;height:20px"></i> All Barangays Distribution</h4>
+            <button onclick="document.getElementById('barangayModal').style.display='none'" class="w-8 h-8 rounded-full flex items-center justify-center" style="background:rgba(255,255,255,.15);border:none;color:#ffffff;cursor:pointer"><i data-lucide="x" style="width:16px;height:16px"></i></button>
         </div>
-        <div class="p-6 overflow-auto" style="max-height:60vh">
+        <div class="p-5 overflow-auto" style="flex:1;max-height:60vh;-webkit-overflow-scrolling:touch">
             <div id="barangayModalCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px"></div>
         </div>
     </div>

@@ -190,20 +190,20 @@ function showCaseDetailsModal(caseId){
         #caseDetailsModal .cs-modal-body{padding:12px!important}
       }
     </style>
-    <div class="cs-modal-box" style="background:var(--background);border-radius:16px;width:100%;max-width:800px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.12);overflow:hidden;">
+    <div class="cs-modal-box" style="background:var(--background);border-radius:14px;width:100%;max-width:780px;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.15);overflow:hidden;">
       <!-- Header -->
-      <div class="cs-modal-header" style="background:#1A237E;color:white;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
-        <h5 style="margin:0;font-size:1.1rem;font-weight:600;display:flex;align-items:center;gap:8px;">
+      <div class="cs-modal-header" style="background:#1A237E;color:white;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+        <h5 style="margin:0;font-size:1.05rem;font-weight:600;display:flex;align-items:center;gap:8px;">
           <i data-lucide="user-circle" style="width:20px;height:20px;"></i>
           Social Case Study Details
         </h5>
-        <button onclick="document.getElementById('caseDetailsModal').remove()" style="background:none;border:none;color:white;cursor:pointer;opacity:0.8;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
-          <i data-lucide="x" style="width:24px;height:24px;"></i>
+        <button onclick="document.getElementById('caseDetailsModal').remove()" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.15);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;color:white;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+          <i data-lucide="x" style="width:18px;height:18px;"></i>
         </button>
       </div>
       
       <!-- Body -->
-      <div class="cs-modal-body" style="padding:24px;overflow-y:auto;flex:1;">
+      <div class="cs-modal-body" style="padding:20px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;">
         <div class="cs-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;margin-bottom:16px;">
           
           <div style="margin-bottom:8px;">
@@ -2491,34 +2491,34 @@ function showIntakeSummaryModal(){
         #intakeSummaryModal .modal-footer .footer-actions { flex-direction:column; }
       }
     </style>
-    <div class="modal-box" style="background:#FFFFFF;border-radius:16px;width:100%;max-width:780px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(15,23,42,0.18);overflow:hidden">
+    <div class="modal-box" style="background:#FFFFFF;border-radius:14px;width:100%;max-width:780px;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.15);overflow:hidden">
 
       <!-- Modal Header -->
-      <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #E5E7EB;background:#FAFAFA;flex-shrink:0">
+      <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#1A237E;color:#FFFFFF;flex-shrink:0">
         <div style="display:flex;align-items:center;gap:12px;min-width:0">
-          <div style="width:36px;height:36px;background:#4338CA;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <i data-lucide="file-check" style="width:18px;height:18px;color:#fff"></i>
+          <div style="width:34px;height:34px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i data-lucide="file-check" style="width:18px;height:18px;color:#ffffff"></i>
           </div>
           <div class="modal-title-block" style="min-width:0">
-            <div class="modal-title" style="font-size:17px;font-weight:700;color:#111827;font-family:Inter,sans-serif;word-break:break-word">Review Case Summary</div>
-            <div class="modal-subtitle" style="font-size:12px;color:#6B7280;margin-top:1px;word-break:break-word">Please verify all information before saving</div>
+            <div class="modal-title" style="font-size:16px;font-weight:600;color:#FFFFFF;word-break:break-word">Review Case Summary</div>
+            <div class="modal-subtitle" style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:1px;word-break:break-word">Please verify all information before saving</div>
           </div>
         </div>
-        <button onclick="closeIntakeSummaryModal()" style="width:32px;height:32px;border:none;background:#F3F4F6;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-size:18px;color:#6B7280;line-height:1;flex-shrink:0" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='#F3F4F6'">
+        <button onclick="closeIntakeSummaryModal()" aria-label="Close modal" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.15);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-size:18px;color:#FFFFFF;line-height:1;flex-shrink:0" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
           &times;
         </button>
       </div>
 
       <!-- Modal Body -->
-      <div class="modal-body" style="overflow-y:auto;padding:24px;flex:1">
+      <div class="modal-body" style="overflow-y:auto;padding:20px;flex:1;-webkit-overflow-scrolling:touch">
 
         <!-- Control No + Date Banner -->
-        <div class="control-banner" style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:8px">
-          <div style="font-size:13px;color:#4338CA">
+        <div class="control-banner" style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:8px">
+          <div style="font-size:13px;color:#1A237E">
             <span style="font-weight:600;text-transform:uppercase;letter-spacing:0.04em">Control No.&nbsp;</span>
             <span style="font-family:monospace;font-size:15px;font-weight:700">${val(d.controlNo)}</span>
           </div>
-          <div style="font-size:13px;color:#4338CA">
+          <div style="font-size:13px;color:#1A237E">
             <span style="font-weight:600">Report Date:&nbsp;</span>
             <span>${fmtDateLocal(d.interview.reportDate)}</span>
           </div>
@@ -2581,7 +2581,7 @@ function showIntakeSummaryModal(){
         ${sectionTitle('Agencies & Purpose', 'building-2')}
         <div class="agencies-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
           ${infoRow('Purpose / Type of Assistance', val(d.purpose))}
-          ${infoRow('Agencies Selected', selectedAgencies.length ? selectedAgencies.map(a => `<span style="display:inline-block;background:#EEF2FF;color:#4338CA;font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;margin:1px">${escapeHtml(a.name)}</span>`).join(' ') : '<span style="color:#9CA3AF;font-style:italic">None selected</span>')}
+          ${infoRow('Agencies Selected', selectedAgencies.length ? selectedAgencies.map(a => `<span style="display:inline-block;background:#EEF2FF;color:#1A237E;font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;margin:1px">${escapeHtml(a.name)}</span>`).join(' ') : '<span style="color:#9CA3AF;font-style:italic">None selected</span>')}
         </div>
 
         <!-- Requirements -->
@@ -2598,16 +2598,16 @@ function showIntakeSummaryModal(){
       </div>
 
       <!-- Modal Footer -->
-      <div class="modal-footer" style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-top:1px solid #E5E7EB;background:#FAFAFA;flex-shrink:0;gap:12px;flex-wrap:wrap">
+      <div class="modal-footer" style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid #E5E7EB;background:#FAFAFA;flex-shrink:0;gap:12px;flex-wrap:wrap">
         <div class="footer-info" style="font-size:12px;color:#6B7280">
           <i data-lucide="info" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;color:#9CA3AF"></i>
           Review all fields before saving. This action cannot be undone easily.
         </div>
         <div class="footer-actions" style="display:flex;gap:10px">
-          <button class="btn-edit" onclick="closeIntakeSummaryModal()" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:1.5px solid #D1D5DB;background:#FFFFFF;color:#374151;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;transition:all 0.15s;font-family:Inter,sans-serif" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='#FFFFFF'">
+          <button class="btn-edit" onclick="closeIntakeSummaryModal()" style="display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border:1.5px solid #D1D5DB;background:#FFFFFF;color:#374151;font-size:13.5px;font-weight:600;border-radius:8px;cursor:pointer;transition:all 0.15s;font-family:inherit" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='#FFFFFF'">
             <i data-lucide="pencil" style="width:15px;height:15px"></i> Edit
           </button>
-          <button class="btn-save" onclick="closeIntakeSummaryModal(); saveNewCase();" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border:none;background:#4338CA;color:#FFFFFF;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;transition:all 0.15s;font-family:Inter,sans-serif" onmouseover="this.style.background='#3730A3'" onmouseout="this.style.background='#4338CA'">
+          <button class="btn-save" onclick="closeIntakeSummaryModal(); saveNewCase();" style="display:inline-flex;align-items:center;gap:8px;padding:9px 22px;border:none;background:#1A237E;color:#FFFFFF;font-size:13.5px;font-weight:600;border-radius:8px;cursor:pointer;transition:all 0.15s;font-family:inherit" onmouseover="this.style.background='#121858'" onmouseout="this.style.background='#1A237E'">
             <i data-lucide="save" style="width:15px;height:15px"></i> Save Case
           </button>
         </div>

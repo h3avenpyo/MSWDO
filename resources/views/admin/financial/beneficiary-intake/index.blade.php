@@ -179,12 +179,12 @@
 <!-- Transmittal Options Generator Modal -->
 <div class="modal fade" id="transmittalModal" tabindex="-1" aria-labelledby="transmittalModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-4 border-0 shadow">
-            <div class="modal-header border-bottom-0 pb-0">
-                <h5 class="modal-title fw-bold" id="transmittalModalLabel" style="color: #1A237E;">
-                    <i class="fas fa-file-invoice me-2 text-primary"></i>Generate Transmittal Report
+        <div class="modal-content rounded-4 border-0 shadow overflow-hidden">
+            <div class="modal-header py-3 px-4 text-white" style="background:#1A237E">
+                <h5 class="modal-title fw-bold text-white m-0" id="transmittalModalLabel" style="font-size:1.05rem">
+                    <i class="fas fa-file-invoice me-2"></i>Generate Transmittal Report
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ route('admin.beneficiary-intake.transmittal') }}" method="GET" target="_blank"
                 id="transmittalForm">
