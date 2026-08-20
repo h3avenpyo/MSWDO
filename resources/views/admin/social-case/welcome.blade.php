@@ -949,7 +949,7 @@
                 , {
                     tab: "newCase"
                     , icon: "ti-user-plus"
-                    , label: "New case"
+                    , label: "Client Eligibility"
                 }
                 , {
                     tab: "caseList"
@@ -986,7 +986,7 @@
             return `
   <div class="page-head">
     <div><h1>Dashboard</h1><p>Overview of all social case study requests.</p></div>
-    <button class="btn primary" onclick="setView({tab:'newCase'})"><i class="ti ti-plus" aria-hidden="true"></i> New case</button>
+    <button class="btn primary" onclick="setView({tab:'newCase'})"><i class="ti ti-plus" aria-hidden="true"></i> Client Eligibility</button>
   </div>
   <div class="cards">
     <div class="stat-card"><div class="num">${cases.length}</div><div class="label">Total cases</div></div>
@@ -1023,11 +1023,11 @@
   </div>`;
         }
 
-        /* ---------------- Rendering: New case ---------------- */
+        /* ---------------- Rendering: Client Eligibility ---------------- */
         function renderNewCase() {
             if (view.newCaseStep === "search") {
                 return `
-    <div class="page-head"><div><h1>New case</h1><p>Step 1 of 2 — check eligibility before starting intake.</p></div></div>
+    <div class="page-head"><div><h1>Client Eligibility</h1><p>Step 1 of 2 — check eligibility before starting intake.</p></div></div>
     <div class="panel" style="max-width:520px">
       <h3>Search client</h3>
       <div class="field">
@@ -1079,7 +1079,7 @@
         function renderIntakeForm() {
             const d = draftIntake;
             return `
-  <div class="page-head"><div><h1>New case — intake</h1><p>Step 2 of 2 — one form, used to populate every agency template.</p></div>
+  <div class="page-head"><div><h1>Client Eligibility — Intake</h1><p>Step 2 of 2 — one form, used to populate every agency template.</p></div>
     <button class="btn ghost" onclick="setView({newCaseStep:'search'})"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back</button>
   </div>
 

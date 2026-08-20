@@ -115,11 +115,11 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .empty-row { background: transparent !important; border: none !important; box-shadow: none !important; }
     .empty-cell { padding: 3rem 1rem !important; text-align: center !important; border: none !important; }
     .empty-cell::before { display: none !important; content: none !important; }
-    .empty-state-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-    .empty-icon-wrap { width: 72px; height: 72px; border-radius: 50%; background: #EEF2FF; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: #1A237E; }
+    .empty-state-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 2rem 1rem; margin-top: 80px; }
+    .empty-icon-wrap { width: 72px; height: 72px; border-radius: 50%; background: #EEF2FF; display: flex; align-items: center; justify-content: center; color: #1A237E; }
     .empty-icon-wrap svg { width: 36px; height: 36px; }
-    .empty-title { font-size: 1.125rem; font-weight: 700; color: #1F2937; margin-bottom: 6px; }
-    .empty-subtitle { font-size: 0.875rem; color: #6B7280; line-height: 1.5; max-width: 360px; }
+    .empty-title { font-size: 1.125rem; font-weight: 700; color: #1F2937; margin: 0; }
+    .empty-subtitle { font-size: 0.875rem; color: #6B7280; margin: 0; line-height: 1.5; max-width: 360px; }
 
     /* ═══════════════════════════════════════════════════════════════
        MOBILE, TABLET & COLLAPSED SIDEBAR (< 1200px): CARD LAYOUT
@@ -277,7 +277,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     </div>
     <ul class="sidebar-menu">
         <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
-        <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>New case</span></a></li>
+        <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>Client Eligibility</span></a></li>
         @if((string) session('admin_user_role') === 'eligibility_checker')
         <li><a href="#" onclick="return false" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for eligibility checker accounts"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
         @else
@@ -285,9 +285,24 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         @endif
         <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i><span>All cases</span></a></li>
         <li><a href="/admin/social-case/archive" class="active"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
-        @if((string) session('admin_user_role') === 'eligibility_checker' || (string) session('admin_user_role') === 'social_worker')
+        @if((string) session('admin_user_role') === 'eligibility_checker')
         <li class="sidebar-dropdown" id="onlineRequestsDropdown">
             <a href="#" class="sidebar-dropdown-toggle" onclick="toggleDropdown('onlineRequestsDropdown'); return false;">
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <i data-lucide="file-text" style="width:20px;height:20px"></i>
+                    <span>Online Requests</span>
+                </div>
+                <i data-lucide="chevron-down" style="width:16px;height:16px"></i>
+            </a>
+            <ul class="sidebar-dropdown-menu">
+                <li><a href="/admin/social-case/online-requests">Pending Requests</a></li>
+                <li><a href="/admin/social-case/online-requests/accepted">Accepted Requests</a></li>
+                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests</a></li>
+            </ul>
+        </li>
+        @elseif((string) session('admin_user_role') === 'social_worker')
+        <li class="sidebar-dropdown" id="onlineRequestsDropdown">
+            <a href="#" class="sidebar-dropdown-toggle" onclick="return false;" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for case encoding accounts">
                 <div style="display:flex;align-items:center;gap:0.75rem;">
                     <i data-lucide="file-text" style="width:20px;height:20px"></i>
                     <span>Online Requests</span>

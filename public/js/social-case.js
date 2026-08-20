@@ -136,6 +136,23 @@ async function loadCases(){
     cases = [];
   }
 }
+
+async function loadEligibilityData(){
+  try {
+    console.log('Loading eligibility data from API...');
+    const response = await fetch('/admin/social-case/api/eligibility-data');
+    console.log('Response status:', response.status);
+    const data = await response.json();
+    console.log('Eligibility data loaded (raw):', data);
+    // Convert snake_case API keys to camelCase used by the JS front-end
+    cases = (data || []).map(c => convertKeys(c, snakeToCamel));
+    console.log('Eligibility data loaded (converted):', cases);
+    console.log('Total records:', cases.length);
+  } catch(e) {
+    console.error('Failed to load eligibility data:', e);
+    cases = [];
+  }
+}
 async function saveCases(){
   // No longer needed - cases are saved via API
 }
@@ -1121,8 +1138,16 @@ function restoreCase(id){
 async function loadDashboard(){
   console.log('Loading dashboard...');
   try {
-    await loadCases();
-    console.log('Dashboard cases loaded:', cases.length);
+    const userRole = document.querySelector('meta[name="user-role"]')?.content;
+    const isEligibilityChecker = userRole === 'eligibility_checker';
+
+    if (isEligibilityChecker) {
+      await loadEligibilityData();
+    } else {
+      await loadCases();
+    }
+
+    console.log('Dashboard data loaded:', cases.length);
     renderDashboard();
     lucide.createIcons();
     initCharts();
@@ -1140,40 +1165,22 @@ function dashboardCases(){
 }
 
 function renderDashboard(){
-  const done = dashboardCases();
-  const byStatus = {};
-  STATUSES.forEach(s=> byStatus[s] = done.filter(c=>c.status===s).length);
-  const nearingEligible = done.filter(c=>{
-    if(!c.releasedDate) return false;
-    const e = eligibilityInfo(c);
-    return !e.eligible && e.daysLeft <= 30;
-  }).sort((a,b)=> eligibilityInfo(a).daysLeft - eligibilityInfo(b).daysLeft);
+  const userRole = document.querySelector('meta[name="user-role"]')?.content;
+  const isEligibilityChecker = userRole === 'eligibility_checker';
 
-  const recent = [...done].sort((a,b)=> new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0,6);
+  if (!isEligibilityChecker) {
+    // Case Encoder Dashboard - only render charts
+    const done = dashboardCases();
+    const byStatus = {};
+    STATUSES.forEach(s=> byStatus[s] = done.filter(c=>c.status===s).length);
+    const nearingEligible = done.filter(c=>{
+      if(!c.releasedDate) return false;
+      const e = eligibilityInfo(c);
+      return !e.eligible && e.daysLeft <= 30;
+    }).sort((a,b)=> eligibilityInfo(a).daysLeft - eligibilityInfo(b).daysLeft);
 
-  // Calculate KPIs
-  const uniqueClients = new Set(done.map(c => c.client.name.toLowerCase())).size;
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-  const casesThisMonth = done.filter(c => {
-    const caseDate = new Date(c.createdAt);
-    return caseDate.getMonth() === currentMonth && caseDate.getFullYear() === currentYear;
-  }).length;
-  const today = todayISO();
-  const releasedToday = done.filter(c => c.status === 'Released' && c.releasedDate === today).length;
-  const totalPrintedOrReleased = done.length;
-  const successRate = done.length > 0 ? 100 : 0;
-
-  // Update KPIs with null checks
-  const updateElement = (id, value) => {
-    const el = document.getElementById(id);
-    if(el) el.textContent = value;
-  };
-  
-  updateElement('totalClients', uniqueClients);
-  updateElement('casesThisMonth', casesThisMonth);
-  updateElement('releasedToday', releasedToday);
-  updateElement('totalReleased', totalPrintedOrReleased);
+    const recent = [...done].sort((a,b)=> new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0,6);
+  }
 
   // Recent activity feed - use localStorage activities
   renderActivityFeed();

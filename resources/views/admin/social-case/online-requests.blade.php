@@ -384,6 +384,39 @@
             flex-shrink: 0;
         }
     }
+
+    /* ── Sidebar Badge Styling ── */
+    .sidebar-badge {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: auto;
+    }
+
+    .badge-count {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 24px !important;
+        height: 24px !important;
+        border-radius: 50% !important;
+        font-size: 0.7rem !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+        color: #fff !important;
+    }
+
+    .badge-pending {
+        background: #F59E0B !important;
+    }
+
+    .badge-accepted {
+        background: #10B981 !important;
+    }
+
+    .badge-rejected {
+        background: #EF4444 !important;
+    }
 </style>
 
 <!-- Mobile Header -->
@@ -423,7 +456,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     </div>
     <ul class="sidebar-menu">
         <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
-        <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>New case</span></a></li>
+        <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>Client Eligibility</span></a></li>
         @if((string) session('admin_user_role') === 'eligibility_checker')
         <li><a href="#" onclick="return false" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for eligibility checker accounts"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
         @else
@@ -441,9 +474,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                 <i data-lucide="chevron-down" style="width:16px;height:16px"></i>
             </a>
             <ul class="sidebar-dropdown-menu">
-                <li><a href="/admin/social-case/online-requests" class="active">Pending Requests</a></li>
-                <li><a href="/admin/social-case/online-requests/accepted">Accepted Requests</a></li>
-                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests</a></li>
+                <li><a href="/admin/social-case/online-requests" class="active">Pending Requests <span class="badge-count badge-pending" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#F59E0B;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['pending'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/accepted">Accepted Requests <span class="badge-count badge-accepted" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#10B981;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['accepted'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests <span class="badge-count badge-rejected" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#EF4444;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['rejected'] ?? 0 }}</span></a></li>
             </ul>
         </li>
         @endif
@@ -480,7 +513,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                         <td data-label="Name">
                             <div style="display:flex;align-items:center;flex-wrap:wrap;position:relative;">
                                 <span>{{ $request->first_name }} {{ $request->last_name }}</span>
-                                <span class="badge-status badge-pending" style="margin-left: 8px;">Pending</span>
                             </div>
                             <div class="text-xs text-slate-500">{{ $request->email }}</div>
                         </td>
@@ -684,7 +716,9 @@ function viewOnlineRequest(id) {
                             cancelButtonColor: '#6B7280'
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                acceptOnlineRequest(id).then(resolve);
+                                acceptOnlineRequest(id).then((success) => {
+                                    resolve(success);
+                                });
                             } else {
                                 resolve(false);
                             }
@@ -727,15 +761,7 @@ function viewOnlineRequest(id) {
                 }
             }).then((result) => {
                 if (result.isConfirmed && result.value === true) {
-                    Swal.fire({
-                        title: 'Request Accepted',
-                        text: 'The request has been accepted and an email notification has been sent.',
-                        icon: 'success',
-                        confirmButtonColor: '#15803D',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        location.reload();
-                    });
+                    location.reload();
                 } else if (result.isDismissed && result.dismiss === Swal.DismissReason.deny && result.value === true) {
                     Swal.fire({
                         title: 'Request Declined',
@@ -770,6 +796,17 @@ function declineOnlineRequest(id, reason) {
         return Promise.resolve(false);
     }
 
+    Swal.fire({
+        title: 'Processing',
+        text: 'Please wait while we process your request...',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     return fetch(`/admin/social-case/online-requests/${id}/decline`, {
         method: 'POST',
         headers: {
@@ -781,8 +818,21 @@ function declineOnlineRequest(id, reason) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            Swal.close();
+            Swal.fire({
+                title: 'Success!',
+                text: 'Request has been declined successfully.',
+                icon: 'success',
+                confirmButtonColor: '#10B981',
+                confirmButtonText: 'OK',
+                timer: 1500,
+                timerProgressBar: true
+            }).then(() => {
+                location.reload();
+            });
             return true;
         } else {
+            Swal.close();
             Swal.fire({
                 title: 'Error',
                 text: data.message || 'Failed to decline request',
@@ -793,6 +843,7 @@ function declineOnlineRequest(id, reason) {
         }
     })
     .catch(error => {
+        Swal.close();
         Swal.fire({
             title: 'Error',
             text: 'Failed to decline request',
@@ -805,6 +856,17 @@ function declineOnlineRequest(id, reason) {
 
 function acceptOnlineRequest(id) {
     return new Promise((resolve) => {
+        Swal.fire({
+            title: 'Processing',
+            text: 'Please wait while we process your request...',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         fetch(`/admin/social-case/online-requests/${id}/accept`, {
             method: 'POST',
             headers: {
@@ -815,8 +877,21 @@ function acceptOnlineRequest(id) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                Swal.close();
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Request has been accepted successfully.',
+                    icon: 'success',
+                    confirmButtonColor: '#10B981',
+                    confirmButtonText: 'OK',
+                    timer: 1500,
+                    timerProgressBar: true
+                }).then(() => {
+                    location.reload();
+                });
                 resolve(true);
             } else {
+                Swal.close();
                 Swal.fire({
                     title: 'Error',
                     text: data.message || 'Failed to accept request',
@@ -827,6 +902,7 @@ function acceptOnlineRequest(id) {
             }
         })
         .catch(error => {
+            Swal.close();
             Swal.fire({
                 title: 'Error',
                 text: 'Failed to accept request',

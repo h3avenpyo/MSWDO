@@ -26,7 +26,43 @@ class SocialCaseController extends Controller
         if ($justLoggedIn) {
             session()->forget('admin_just_logged_in');
         }
-        return view('admin.social-case.dashboard', compact('justLoggedIn'));
+
+        $role = (string) session('admin_user_role');
+        $isEligibilityChecker = in_array($role, ['eligibility_checker'], true);
+
+        // Calculate dashboard stats from database
+        $stats = [
+            'pending_eligibility' => 0,
+            'eligible_clients' => 0,
+            'forwarded_to_encoder' => 0,
+            'rejected_clients' => 0,
+            'total_clients' => 0,
+            'for_encoding' => 0,
+            'released_today' => 0,
+            'total_released' => 0,
+        ];
+
+        if ($isEligibilityChecker) {
+            // Eligibility checker stats - use eligibility_status instead of rejected_at
+            $stats['pending_eligibility'] = SocialCaseStudy::where('eligibility_status', 'pending')->count();
+            $stats['eligible_clients'] = SocialCaseStudy::where('eligibility_status', 'eligible')->count();
+            $stats['forwarded_to_encoder'] = SocialCaseStudy::where('eligibility_status', 'eligible')
+                ->whereNotNull('eligible_by')
+                ->count();
+            $stats['rejected_clients'] = SocialCaseStudy::where('eligibility_status', 'ineligible')->count();
+        } else {
+            // Case encoder stats
+            $stats['total_clients'] = Client::count();
+            $stats['for_encoding'] = SocialCaseStudy::where('eligibility_status', 'eligible')
+                ->where('status', 'Draft')
+                ->count();
+            $stats['released_today'] = SocialCaseStudy::where('status', 'Released')
+                ->whereDate('released_at', today())
+                ->count();
+            $stats['total_released'] = SocialCaseStudy::whereIn('status', ['Printed', 'Released'])->count();
+        }
+
+        return view('admin.social-case.dashboard', compact('justLoggedIn', 'stats'));
     }
 
     public function socialCaseNew()
@@ -53,7 +89,18 @@ class SocialCaseController extends Controller
 
     public function socialCaseCases()
     {
-        return view('admin.social-case.cases');
+        // Get online request counts for badge
+        $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
+        $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->count();
+
+        $onlineRequestCounts = [
+            'pending' => $pendingCount,
+            'accepted' => $acceptedCount,
+            'rejected' => $rejectedCount,
+        ];
+
+        return view('admin.social-case.cases', compact('onlineRequestCounts'));
     }
 
     /**
@@ -79,7 +126,18 @@ class SocialCaseController extends Controller
             ->orderByDesc('updated_at')
             ->get();
 
-        return view('admin.social-case.submitted', compact('submitted', 'acceptedOnlineRequests'));
+        // Get online request counts for badge
+        $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
+        $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->count();
+
+        $onlineRequestCounts = [
+            'pending' => $pendingCount,
+            'accepted' => $acceptedCount,
+            'rejected' => $rejectedCount,
+        ];
+
+        return view('admin.social-case.submitted', compact('submitted', 'acceptedOnlineRequests', 'onlineRequestCounts'));
     }
 
     public function socialCaseDetail($caseId)
@@ -101,6 +159,22 @@ class SocialCaseController extends Controller
         $cases->each(function ($case) {
             $case->client_name = $case->client ? $case->client->full_name : '';
             $case->client_barangay = $case->client ? $case->client->barangay : '';
+        });
+
+        return response()->json($cases);
+    }
+
+    public function getEligibilityData()
+    {
+        $cases = SocialCaseStudy::with('client', 'officer', 'encoder', 'eligibleByUser', 'releasedByUser', 'interview', 'familyMembers')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $cases->each(function ($case) {
+            $case->client_name = $case->client ? $case->client->full_name : '';
+            $case->client_barangay = $case->client ? $case->client->barangay : '';
+            $case->eligible_at = $case->eligible_at ? $case->eligible_at->format('Y-m-d H:i:s') : null;
+            $case->rejected_at = $case->rejected_at ? $case->rejected_at->format('Y-m-d H:i:s') : null;
         });
 
         return response()->json($cases);

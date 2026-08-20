@@ -40,7 +40,18 @@ class OnlineRequestController extends Controller
             return $req;
         });
 
-        return view('admin.social-case.online-requests', compact('onlineRequests'));
+        // Get online request counts for badge
+        $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
+        $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->count();
+
+        $onlineRequestCounts = [
+            'pending' => $pendingCount,
+            'accepted' => $acceptedCount,
+            'rejected' => $rejectedCount,
+        ];
+
+        return view('admin.social-case.online-requests', compact('onlineRequests', 'onlineRequestCounts'));
     }
 
     public function show($id)
@@ -238,7 +249,18 @@ class OnlineRequestController extends Controller
             ->orderBy('updated_at', 'desc')
             ->paginate(10);
 
-        return view('admin.social-case.online-requests-accepted', compact('acceptedRequests'));
+        // Get online request counts for badge
+        $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
+        $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->count();
+
+        $onlineRequestCounts = [
+            'pending' => $pendingCount,
+            'accepted' => $acceptedCount,
+            'rejected' => $rejectedCount,
+        ];
+
+        return view('admin.social-case.online-requests-accepted', compact('acceptedRequests', 'onlineRequestCounts'));
     }
 
     public function rejected()
@@ -247,6 +269,17 @@ class OnlineRequestController extends Controller
             ->orderBy('updated_at', 'desc')
             ->paginate(10);
 
-        return view('admin.social-case.online-requests-rejected', compact('rejectedRequests'));
+        // Get online request counts for badge
+        $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
+        $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->count();
+
+        $onlineRequestCounts = [
+            'pending' => $pendingCount,
+            'accepted' => $acceptedCount,
+            'rejected' => $rejectedCount,
+        ];
+
+        return view('admin.social-case.online-requests-rejected', compact('rejectedRequests', 'onlineRequestCounts'));
     }
 }

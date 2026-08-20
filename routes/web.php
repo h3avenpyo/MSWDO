@@ -58,6 +58,7 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::get('/api/cases', [SocialCaseController::class, 'getCases'])->name('api.cases');
         Route::get('/api/cases/{id}', [SocialCaseController::class, 'getCase'])->name('api.show');
         Route::get('/api/activities', [SocialCaseController::class, 'getActivities'])->name('api.activities.get');
+        Route::get('/api/eligibility-data', [SocialCaseController::class, 'getEligibilityData'])->name('api.eligibility-data');
 
         // Eligibility checker only (social2@mwsdo.test)
         Route::middleware('role:admin,eligibility_checker')->group(function () {
@@ -65,8 +66,8 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
             Route::post('/api/eligibility/submit', [SocialCaseController::class, 'submitEligibility'])->name('api.eligibility.submit');
         });
 
-        // Social case module routes (eligibility checker and social worker only)
-        Route::middleware('role:eligibility_checker,social_worker')->group(function () {
+        // Social case module routes (eligibility checker only)
+        Route::middleware('role:eligibility_checker')->group(function () {
             Route::get('/online-requests', [OnlineRequestController::class, 'index'])->name('online-requests');
             Route::get('/online-requests/accepted', [OnlineRequestController::class, 'accepted'])->name('online-requests.accepted');
             Route::get('/online-requests/rejected', [OnlineRequestController::class, 'rejected'])->name('online-requests.rejected');

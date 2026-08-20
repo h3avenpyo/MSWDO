@@ -90,7 +90,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     </div>
     <ul class="sidebar-menu">
         <li><a href="/admin/social-case/dashboard" class="active"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
-        <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>New case</span></a></li>
+        <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>Client Eligibility</span></a></li>
         @if((string) session('admin_user_role') === 'eligibility_checker')
         <li><a href="#" onclick="return false" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for eligibility checker accounts"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
         @else
@@ -98,9 +98,24 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         @endif
         <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i><span>All cases</span></a></li>
         <li><a href="/admin/social-case/archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
-        @if((string) session('admin_user_role') === 'eligibility_checker' || (string) session('admin_user_role') === 'social_worker')
+        @if((string) session('admin_user_role') === 'eligibility_checker')
         <li class="sidebar-dropdown" id="onlineRequestsDropdown">
             <a href="#" class="sidebar-dropdown-toggle" onclick="toggleDropdown('onlineRequestsDropdown'); return false;">
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <i data-lucide="file-text" style="width:20px;height:20px"></i>
+                    <span>Online Requests</span>
+                </div>
+                <i data-lucide="chevron-down" style="width:16px;height:16px"></i>
+            </a>
+            <ul class="sidebar-dropdown-menu">
+                <li><a href="/admin/social-case/online-requests">Pending Requests</a></li>
+                <li><a href="/admin/social-case/online-requests/accepted">Accepted Requests</a></li>
+                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests</a></li>
+            </ul>
+        </li>
+        @elseif((string) session('admin_user_role') === 'social_worker')
+        <li class="sidebar-dropdown" id="onlineRequestsDropdown">
+            <a href="#" class="sidebar-dropdown-toggle" onclick="return false;" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for case encoding accounts">
                 <div style="display:flex;align-items:center;gap:0.75rem;">
                     <i data-lucide="file-text" style="width:20px;height:20px"></i>
                     <span>Online Requests</span>
@@ -163,12 +178,53 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     </div>
     @endif
 
-    <!-- Modern Statistic Cards -->
+    @if($dashIsChecker)
+    <!-- Modern Statistic Cards for Eligibility Checker -->
+    <div class="stat-cards">
+        <div class="stat-card stat-card-blue">
+            <div class="stat-card-content">
+                <div class="stat-card-label">PENDING ELIGIBILITY CHECKS</div>
+                <div class="stat-card-value">{{ $stats['pending_eligibility'] ?? 0 }}</div>
+            </div>
+            <div class="stat-card-icon">
+                <i data-lucide="clock"></i>
+            </div>
+        </div>
+        <div class="stat-card stat-card-green">
+            <div class="stat-card-content">
+                <div class="stat-card-label">ELIGIBLE CLIENTS</div>
+                <div class="stat-card-value">{{ $stats['eligible_clients'] ?? 0 }}</div>
+            </div>
+            <div class="stat-card-icon">
+                <i data-lucide="check-circle"></i>
+            </div>
+        </div>
+        <div class="stat-card stat-card-purple">
+            <div class="stat-card-content">
+                <div class="stat-card-label">FORWARDED TO ENCODER</div>
+                <div class="stat-card-value">{{ $stats['forwarded_to_encoder'] ?? 0 }}</div>
+            </div>
+            <div class="stat-card-icon">
+                <i data-lucide="send"></i>
+            </div>
+        </div>
+        <div class="stat-card stat-card-teal">
+            <div class="stat-card-content">
+                <div class="stat-card-label">REJECTED</div>
+                <div class="stat-card-value">{{ $stats['rejected_clients'] ?? 0 }}</div>
+            </div>
+            <div class="stat-card-icon">
+                <i data-lucide="x-circle"></i>
+            </div>
+        </div>
+    </div>
+    @elseif($dashIsEncoder)
+    <!-- Modern Statistic Cards for Case Encoder -->
     <div class="stat-cards">
         <div class="stat-card stat-card-blue">
             <div class="stat-card-content">
                 <div class="stat-card-label">TOTAL CLIENTS</div>
-                <div class="stat-card-value" id="totalClients">0</div>
+                <div class="stat-card-value">{{ $stats['total_clients'] ?? 0 }}</div>
             </div>
             <div class="stat-card-icon">
                 <i data-lucide="users"></i>
@@ -176,8 +232,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         </div>
         <div class="stat-card stat-card-green">
             <div class="stat-card-content">
-                <div class="stat-card-label">CASES THIS MONTH</div>
-                <div class="stat-card-value" id="casesThisMonth">0</div>
+                <div class="stat-card-label">FOR ENCODING</div>
+                <div class="stat-card-value">{{ $stats['for_encoding'] ?? 0 }}</div>
             </div>
             <div class="stat-card-icon">
                 <i data-lucide="calendar"></i>
@@ -186,7 +242,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="stat-card stat-card-purple">
             <div class="stat-card-content">
                 <div class="stat-card-label">RELEASED TODAY</div>
-                <div class="stat-card-value" id="releasedToday">0</div>
+                <div class="stat-card-value">{{ $stats['released_today'] ?? 0 }}</div>
             </div>
             <div class="stat-card-icon">
                 <i data-lucide="check-circle"></i>
@@ -195,13 +251,14 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="stat-card stat-card-teal">
             <div class="stat-card-content">
                 <div class="stat-card-label">TOTAL RELEASED</div>
-                <div class="stat-card-value" id="totalReleased">0</div>
+                <div class="stat-card-value">{{ $stats['total_released'] ?? 0 }}</div>
             </div>
             <div class="stat-card-icon">
                 <i data-lucide="send"></i>
             </div>
         </div>
     </div>
+    @endif
 
     <!-- Dashboard Grid -->
     <div class="dashboard-grid">

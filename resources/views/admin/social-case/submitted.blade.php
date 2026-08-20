@@ -58,7 +58,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     /* ── Panel / wrap ── */
     .submitted-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 0; padding: 0; }
-    .submitted-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; }
+    .submitted-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; height: 500px !important; overflow-y: auto; }
 
     /* ── Table base ── */
     #submittedTable { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: auto; }
@@ -102,7 +102,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     ═══════════════════════════════════════════════════════════════ */
     @media (max-width: 1199.98px) {
         .submitted-panel { background: transparent; border: none; padding: 0; box-shadow: none; }
-        .submitted-table-wrap { overflow: visible; border: none; background: transparent; }
+        .submitted-table-wrap { overflow: visible; border: none; background: transparent; height: auto !important; }
 
         #submittedTable, 
         #submittedTable thead, 
@@ -220,7 +220,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .submitted-filter-search { max-width: 320px; }
 
         .submitted-panel { flex: 0 0 auto; overflow: visible; }
-        .submitted-table-wrap { flex: 0 0 auto; overflow: visible; border: 1px solid #E5E7EB; border-radius: 8px; }
+        .submitted-table-wrap { flex: 0 0 auto; overflow: auto; border: 1px solid #E5E7EB; border-radius: 8px; height: 500px !important; }
         #submittedTable { min-width: 900px; width: 100%; table-layout: auto; }
         #submittedTable thead th { padding: 12px 16px; font-size: 0.75rem; }
         #submittedTable tbody td { padding: 12px 16px; font-size: 0.875rem; }
@@ -236,7 +236,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .accepted-section-header { margin-bottom: 10px; }
     .accepted-section-title { font-size: 1.05rem; font-weight: 800; color: #1A237E; margin: 0 0 4px; letter-spacing: -0.01em; }
     .accepted-online-panel { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden; }
-    .accepted-online-table-wrap { overflow-x: auto; width: 100%; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; max-height: 460px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .accepted-online-table-wrap { overflow-x: auto; width: 100%; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; height: 500px !important; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     #acceptedOnlineTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; }
     #acceptedOnlineTable thead tr { background: #F8FAFC; border-bottom: 2px solid #E2E8F0; }
     #acceptedOnlineTable thead th { padding: 12px 14px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; white-space: nowrap; text-align: left; border-bottom: 2px solid #E2E8F0; }
@@ -254,7 +254,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     @media (max-width: 1199.98px) {
         .accepted-online-panel { background: transparent; border: none; }
-        .accepted-online-table-wrap { overflow: visible; border: none; background: transparent; max-height: none; }
+        .accepted-online-table-wrap { overflow: visible; border: none; background: transparent; height: auto !important; }
         #acceptedOnlineTable, #acceptedOnlineTable thead, #acceptedOnlineTable tbody, #acceptedOnlineTable tbody tr, #acceptedOnlineTable tbody td { display: block !important; width: 100% !important; }
         #acceptedOnlineTable { min-width: 0 !important; }
         #acceptedOnlineTable thead { display: none !important; }
@@ -278,6 +278,39 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         #acceptedOnlineTable tbody td::before { min-width: 75px; font-size: 0.68rem; }
         #acceptedOnlineTable tbody td { font-size: 0.813rem !important; }
     }
+
+    /* ── Sidebar Badge Styling ── */
+    .sidebar-badge {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: auto;
+    }
+
+    .badge-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        font-size: 0.7rem;
+        font-weight: 700;
+        line-height: 1;
+        color: #fff;
+    }
+
+    .badge-pending {
+        background: #F59E0B;
+    }
+
+    .badge-accepted {
+        background: #10B981;
+    }
+
+    .badge-rejected {
+        background: #EF4444;
+    }
 </style>
 
 <div class="sidebar" id="sidebar">
@@ -287,7 +320,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     </div>
     <ul class="sidebar-menu">
         <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
-        <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>New case</span></a></li>
+        <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>Client Eligibility</span></a></li>
         @if((string) session('admin_user_role') === 'eligibility_checker')
         <li><a href="#" onclick="return false" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for eligibility checker accounts"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
         @else
@@ -295,7 +328,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         @endif
         <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i><span>All cases</span></a></li>
         <li><a href="/admin/social-case/archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
-        @if((string) session('admin_user_role') === 'eligibility_checker' || (string) session('admin_user_role') === 'social_worker')
+        @if((string) session('admin_user_role') === 'eligibility_checker')
         <li class="sidebar-dropdown" id="onlineRequestsDropdown">
             <a href="#" class="sidebar-dropdown-toggle" onclick="toggleDropdown('onlineRequestsDropdown'); return false;">
                 <div style="display:flex;align-items:center;gap:0.75rem;">
@@ -305,9 +338,24 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                 <i data-lucide="chevron-down" style="width:16px;height:16px"></i>
             </a>
             <ul class="sidebar-dropdown-menu">
-                <li><a href="/admin/social-case/online-requests">Pending Requests</a></li>
-                <li><a href="/admin/social-case/online-requests/accepted">Accepted Requests</a></li>
-                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests</a></li>
+                <li><a href="/admin/social-case/online-requests">Pending Requests <span class="badge-count badge-pending" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#F59E0B;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['pending'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/accepted">Accepted Requests <span class="badge-count badge-accepted" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#10B981;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['accepted'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests <span class="badge-count badge-rejected" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#EF4444;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['rejected'] ?? 0 }}</span></a></li>
+            </ul>
+        </li>
+        @elseif((string) session('admin_user_role') === 'social_worker')
+        <li class="sidebar-dropdown" id="onlineRequestsDropdown">
+            <a href="#" class="sidebar-dropdown-toggle" onclick="return false;" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for case encoding accounts">
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <i data-lucide="file-text" style="width:20px;height:20px"></i>
+                    <span>Online Requests</span>
+                </div>
+                <i data-lucide="chevron-down" style="width:16px;height:16px"></i>
+            </a>
+            <ul class="sidebar-dropdown-menu">
+                <li><a href="/admin/social-case/online-requests">Pending Requests <span class="badge-count badge-pending" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#F59E0B;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['pending'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/accepted">Accepted Requests <span class="badge-count badge-accepted" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#10B981;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['accepted'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests <span class="badge-count badge-rejected" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#EF4444;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['rejected'] ?? 0 }}</span></a></li>
             </ul>
         </li>
         @endif

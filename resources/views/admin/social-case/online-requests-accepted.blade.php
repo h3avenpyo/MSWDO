@@ -56,9 +56,6 @@
     #onlineRequestsTable tbody tr:last-child {
         border-bottom: none;
     }
-    #onlineRequestsTable tbody tr:hover {
-        background: #F8FAFC;
-    }
     #onlineRequestsTable tbody td {
         padding: 12px 14px;
         font-size: 0.875rem;
@@ -140,11 +137,11 @@
         width: 72px;
         height: 72px;
         border-radius: 50%;
-        background: #DCFCE7;
+        background: #EEF2FF;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #15803D;
+        color: #1A237E;
     }
     .empty-icon-wrap svg {
         width: 36px;
@@ -234,6 +231,39 @@
         padding: 6px 12px;
         font-size: 13px;
     }
+
+    /* ── Sidebar Badge Styling ── */
+    .sidebar-badge {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: auto;
+    }
+
+    .badge-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        font-size: 0.7rem;
+        font-weight: 700;
+        line-height: 1;
+        color: #fff;
+    }
+
+    .badge-pending {
+        background: #F59E0B;
+    }
+
+    .badge-accepted {
+        background: #10B981;
+    }
+
+    .badge-rejected {
+        background: #EF4444;
+    }
 </style>
 
 @php
@@ -272,7 +302,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     </div>
     <ul class="sidebar-menu">
         <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
-        <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>New case</span></a></li>
+        <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>Client Eligibility</span></a></li>
         @if((string) session('admin_user_role') === 'eligibility_checker')
         <li><a href="#" onclick="return false" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for eligibility checker accounts"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
         @else
@@ -290,9 +320,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                 <i data-lucide="chevron-down" style="width:16px;height:16px"></i>
             </a>
             <ul class="sidebar-dropdown-menu">
-                <li><a href="/admin/social-case/online-requests">Pending Requests</a></li>
-                <li><a href="/admin/social-case/online-requests/accepted" class="active">Accepted Requests</a></li>
-                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests</a></li>
+                <li><a href="/admin/social-case/online-requests">Pending Requests <span class="badge-count badge-pending" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#F59E0B;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['pending'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/accepted" class="active">Accepted Requests <span class="badge-count badge-accepted" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#10B981;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['accepted'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests <span class="badge-count badge-rejected" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#EF4444;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['rejected'] ?? 0 }}</span></a></li>
             </ul>
         </li>
         @endif
@@ -328,7 +358,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                         <td data-label="Name">
                             <div style="display:flex;align-items:center;flex-wrap:wrap;position:relative;">
                                 <span>{{ $req->first_name }} {{ $req->last_name }}</span>
-                                <span class="status-badge status-approved" style="margin-left: 8px;">Approved</span>
                             </div>
                             <div class="text-xs text-slate-500">{{ $req->email }}</div>
                         </td>

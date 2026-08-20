@@ -180,6 +180,39 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
+        /* ---------- Sidebar Badge Styling ---------- */
+        .sidebar-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: auto;
+        }
+
+        .badge-count {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 24px !important;
+            height: 24px !important;
+            border-radius: 50% !important;
+            font-size: 0.7rem !important;
+            font-weight: 700 !important;
+            line-height: 1 !important;
+            color: #fff !important;
+        }
+
+        .badge-pending {
+            background: #F59E0B !important;
+        }
+
+        .badge-accepted {
+            background: #10B981 !important;
+        }
+
+        .badge-rejected {
+            background: #EF4444 !important;
+        }
+
         /* ---------- Dashboard Grid ---------- */
         .dashboard-grid{
             display:grid;
