@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,6 +11,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="icon" type="image/x-icon" href="{{ asset('IserveIcon.ico') }}">
 </head>
+
 <body class="bg-[#F8FAFC] text-[#1F2937] antialiased">
     <!-- ========================= -->
     <!-- NAVBAR -->
@@ -21,18 +23,18 @@
                 <a href="#" class="flex items-center gap-4">
                     <div class="h-14 w-14 rounded-full p-1">
                         @php
-                            $logo = null;
-                            if (file_exists(public_path('images/mswdo-logo.png'))) {
-                                $logo = 'mswdo-logo.png';
-                            } else {
-                                $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
-                                if (!empty($files)) {
-                                    $logo = basename($files[0]);
-                                }
-                            }
+                        $logo = null;
+                        if (file_exists(public_path('images/mswdo-logo.png'))) {
+                        $logo = 'mswdo-logo.png';
+                        } else {
+                        $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
+                        if (!empty($files)) {
+                        $logo = basename($files[0]);
+                        }
+                        }
                         @endphp
                         @if ($logo)
-                            <img src="{{ asset('images/' . $logo) }}" class="rounded-full h-full w-full object-cover">
+                        <img src="{{ asset('images/' . $logo) }}" class="rounded-full h-full w-full object-cover">
                         @endif
                     </div>
                     <div>
@@ -85,7 +87,8 @@
     <section id="home" class="relative overflow-hidden pt-40 pb-56 border-b border-slate-200/50 bg-[#F8FAFC]">
         <!-- Hero Background Image -->
         <div class="absolute inset-0 z-0 pointer-events-none select-none">
-            <img src="{{ asset('images/background.png') }}" class="w-full h-full object-cover object-center" alt="Hero Background">
+            <img src="{{ asset('images/background.png') }}" class="w-full h-full object-cover object-center"
+                alt="Hero Background">
         </div>
 
         <!-- Faint Watermark Background Logos (90% transparency) -->
@@ -105,12 +108,12 @@
                     <span class="text-[#FBC02D] mx-1">&bull;</span>
                     <span class="text-[#D32F2F]">Municipality of Silang</span>
                 </p>
-                
+
                 <!-- Headline -->
                 <h1 class="text-5xl lg:text-7xl font-black text-[#1F2937] leading-[1.15] tracking-tight">
                     <span class="block text-2xl md:text-3xl font-extrabold uppercase tracking-wide mb-2">
                         <span class="">Municipal Social Welfare & Development Office</span>
-                        <span ></span>
+                        <span></span>
                     </span>
                     <span class="block text-[#1A237E] text-6xl md:text-8xl font-black tracking-wider uppercase">
                         SILANG
@@ -124,15 +127,18 @@
 
                 <!-- Description -->
                 <p class="mt-4 text-[#6B7280] text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
-                    Providing compassionate protection, development opportunities, and responsive welfare assistance to support families, children, and seniors in Silang.
+                    Providing compassionate protection, development opportunities, and responsive welfare assistance to
+                    support families, children, and seniors in Silang.
                 </p>
 
                 <!-- CTA Actions -->
                 <div class="mt-10 flex flex-wrap justify-center gap-4">
-                    <a href="#services" class="bg-[#1A237E] text-white px-8 py-4 rounded-xl font-bold hover:bg-[#111827] hover:shadow-lg hover:shadow-blue-900/10 hover:-translate-y-0.5 active:translate-y-0 transition duration-300">
+                    <a href="#services"
+                        class="bg-[#1A237E] text-white px-8 py-4 rounded-xl font-bold hover:bg-[#111827] hover:shadow-lg hover:shadow-blue-900/10 hover:-translate-y-0.5 active:translate-y-0 transition duration-300">
                         Explore Services
                     </a>
-                    <a href="#contact" class="border-2 border-[#CBD5E1] text-[#1F2937] hover:border-[#1A237E] hover:text-[#1A237E] px-8 py-4 rounded-xl font-bold hover:-translate-y-0.5 active:translate-y-0 transition duration-300">
+                    <a href="#contact"
+                        class="border-2 border-[#CBD5E1] text-[#1F2937] hover:border-[#1A237E] hover:text-[#1A237E] px-8 py-4 rounded-xl font-bold hover:-translate-y-0.5 active:translate-y-0 transition duration-300">
                         Contact Us
                     </a>
                 </div>
@@ -145,92 +151,126 @@
     <!-- ========================= -->
     <section id="services" class="py-12 bg-slate-50 relative z-20">
         <div class="max-w-7xl mx-auto px-6">
-            
-            <div class="relative bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(21,61,107,0.08)] p-8 lg:p-12 border border-slate-100 -mt-36 mb-16">
+
+            <div
+                class="relative bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(21,61,107,0.08)] p-8 lg:p-12 border border-slate-100 -mt-36 mb-16">
                 <div class="text-center mb-12">
-                    
+
                     <h2 class="text-3xl font-extrabold text-primary mt-2">Get Started with Our Online Services</h2>
-                    <p class="text-slate-500 mt-2 text-sm max-w-md mx-auto">Providing quality welfare services and assistance programs for every Silangueño.</p>
+                    <p class="text-slate-500 mt-2 text-sm max-w-md mx-auto">Providing quality welfare services and
+                        assistance programs for every Silangueño.</p>
                 </div>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     <!-- Service 1: Financial Assistance -->
-                    <div class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                    <div
+                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
-                            <div class="w-12 h-12 rounded-xl bg-warm-gold/10 text-warm-gold flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-12 9h10.5M5.25 10.5h13.5m-12 3h10.5" />
+                            <div
+                                class="w-12 h-12 rounded-xl bg-warm-gold/10 text-warm-gold flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-12 9h10.5M5.25 10.5h13.5m-12 3h10.5" />
                                 </svg>
                             </div>
                             <h3 class="font-bold text-lg text-primary">Financial Assistance</h3>
                             <p class="text-slate-600 text-xs mt-3 leading-relaxed">
-                                Emergency financial, medical, burial, and transportation assistance for individuals and families in crisis.
+                                Emergency financial, medical, burial, and transportation assistance for individuals and
+                                families in crisis.
                             </p>
                         </div>
-                        <div class="mt-6 flex items-center text-warm-gold font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200">
-                            Apply & Details 
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        <div
+                            class="mt-6 flex items-center text-warm-gold font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200">
+                            Apply & Details
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                                stroke="currentColor" class="w-3.5 h-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
                         </div>
                     </div>
                     <!-- Service 2: Protection & VAWC -->
-                    <div class="group bg-slate-50 hover:bg-white hover:border-accent/40 rounded-2xl p-6 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                    <div
+                        class="group bg-slate-50 hover:bg-white hover:border-accent/40 rounded-2xl p-6 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
-                            <div class="w-12 h-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751A11.956 11.956 0 0 1 12 2.714z" />
+                            <div
+                                class="w-12 h-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751A11.956 11.956 0 0 1 12 2.714z" />
                                 </svg>
                             </div>
                             <h3 class="font-bold text-lg text-primary">Protection & VAWC</h3>
                             <p class="text-slate-600 text-xs mt-3 leading-relaxed">
-                                Counseling, shelter assistance, and immediate protective services for survivors of domestic violence and abuse.
+                                Counseling, shelter assistance, and immediate protective services for survivors of
+                                domestic violence and abuse.
                             </p>
                         </div>
-                        <div class="mt-6 flex items-center text-accent font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200">
-                            Get Support 
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        <div
+                            class="mt-6 flex items-center text-accent font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200">
+                            Get Support
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                                stroke="currentColor" class="w-3.5 h-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
                         </div>
                     </div>
                     <!-- Service 3: Senior & PWD Welfare -->
-                    <div class="group bg-slate-50 hover:bg-white hover:border-primary/40 rounded-2xl p-6 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                    <div
+                        class="group bg-slate-50 hover:bg-white hover:border-primary/40 rounded-2xl p-6 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
-                            <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                            <div
+                                class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                                 </svg>
                             </div>
                             <h3 class="font-bold text-lg text-primary">Senior Citizen</h3>
                             <p class="text-slate-600 text-xs mt-3 leading-relaxed">
-                                Social pension applications, ID issuances, and community-centered assistance programs for senior citizens and PWDs.
+                                Social pension applications, ID issuances, and community-centered assistance programs
+                                for senior citizens and PWDs.
                             </p>
                         </div>
-                        <div class="mt-6 flex items-center text-primary font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200">
-                            Apply Pension 
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        <div
+                            class="mt-6 flex items-center text-primary font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200">
+                            Apply Pension
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                                stroke="currentColor" class="w-3.5 h-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
                         </div>
                     </div>
                     <!-- Service 4: Social Case Study -->
-                    <div class="group bg-slate-50 hover:bg-white hover:border-emerald-500/40 rounded-2xl p-6 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                    <div
+                        class="group bg-slate-50 hover:bg-white hover:border-emerald-500/40 rounded-2xl p-6 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
-                            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                            <div
+                                class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                 </svg>
                             </div>
                             <h3 class="font-bold text-lg text-primary">Social Case Study</h3>
                             <p class="text-slate-600 text-xs mt-3 leading-relaxed">
-                                Formal social case study reports for hospitalization, medicines, burial referrals, and government benefits support.
+                                Formal social case study reports for hospitalization, medicines, burial referrals, and
+                                government benefits support.
                             </p>
                         </div>
-                        <div class="mt-6 flex items-center text-emerald-600 font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200">
-                            Request Report 
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        <div
+                            class="mt-6 flex items-center text-emerald-600 font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200">
+                            Request Report
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                                stroke="currentColor" class="w-3.5 h-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
                         </div>
                     </div>
@@ -494,14 +534,17 @@
             /* Match site off-white */
             border-top: 1px solid #E2E8F0;
         }
+
         .contact-container {
             max-width: 76rem;
             margin: 0 auto;
         }
+
         .contact-header {
             text-align: center;
             margin-bottom: 5rem;
         }
+
         .contact-subtitle {
             color: #B45309;
             /* Deep amber gold */
@@ -512,6 +555,7 @@
             display: block;
             margin-bottom: 0.75rem;
         }
+
         .contact-title {
             font-size: 2.5rem;
             font-weight: 800;
@@ -520,6 +564,7 @@
             margin-bottom: 1.25rem;
             letter-spacing: -0.03em;
         }
+
         .contact-description {
             color: #475569;
             /* Slate secondary */
@@ -528,17 +573,20 @@
             margin: 0 auto;
             line-height: 1.7;
         }
+
         .contact-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 3rem;
             margin-bottom: 4rem;
         }
+
         @media (min-width: 1024px) {
             .contact-grid {
                 grid-template-columns: 1fr 1.2fr;
             }
         }
+
         .contact-card {
             background: #FFFFFF;
             border-radius: 0.75rem;
@@ -547,6 +595,7 @@
             display: flex;
             flex-direction: column;
         }
+
         .card-title {
             font-size: 1.375rem;
             font-weight: 800;
@@ -555,17 +604,20 @@
             margin-bottom: 2.5rem;
             letter-spacing: -0.01em;
         }
+
         .info-list {
             display: flex;
             flex-direction: column;
             gap: 2.5rem;
             flex: 1;
         }
+
         .info-item {
             display: flex;
             align-items: start;
             gap: 1.25rem;
         }
+
         .info-icon {
             width: 1.5rem;
             height: 1.5rem;
@@ -574,9 +626,11 @@
             margin-top: 0.125rem;
             flex-shrink: 0;
         }
+
         .info-content {
             flex: 1;
         }
+
         .info-label {
             font-weight: 700;
             font-size: 0.75rem;
@@ -586,32 +640,38 @@
             /* Amber gold */
             margin-bottom: 0.375rem;
         }
+
         .info-text {
             color: #1F2937;
             font-size: 1.0625rem;
             line-height: 1.5;
         }
+
         .contact-form {
             display: flex;
             flex-direction: column;
             gap: 2rem;
             flex: 1;
         }
+
         .form-row-2 {
             display: grid;
             grid-template-columns: 1fr;
             gap: 1.5rem;
         }
+
         @media (min-width: 640px) {
             .form-row-2 {
                 grid-template-columns: 1fr 1fr;
             }
         }
+
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
         }
+
         .form-field-label {
             font-size: 0.75rem;
             font-weight: 700;
@@ -619,6 +679,7 @@
             letter-spacing: 0.05em;
             color: #475569;
         }
+
         .form-input {
             width: 100%;
             padding: 0.875rem 1rem;
@@ -630,14 +691,17 @@
             color: #1F2937;
             transition: border-color 0.2s ease, background-color 0.2s ease;
         }
+
         .form-input:focus {
             border-color: #1A237E;
             background-color: #FFFFFF;
         }
+
         .form-textarea {
             resize: none;
             min-height: 8rem;
         }
+
         .submit-button {
             background-color: #1A237E;
             /* Brand primary blue */
@@ -657,16 +721,20 @@
             transition: background-color 0.2s ease;
             margin-top: 1rem;
         }
+
         .submit-button:hover {
             background-color: #111827;
         }
+
         .submit-button:active {
             transform: translateY(1px);
         }
+
         .button-icon {
             width: 1.1rem;
             height: 1.1rem;
         }
+
         /* Emergency Card - High Contrast Brand Navy & Gold */
         .emergency-card {
             background-color: #1A237E;
@@ -676,6 +744,7 @@
             color: #FFFFFF;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .emergency-header {
             display: flex;
             flex-direction: column;
@@ -684,6 +753,7 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
             padding-bottom: 1.5rem;
         }
+
         @media (min-width: 640px) {
             .emergency-header {
                 flex-direction: row;
@@ -691,11 +761,13 @@
                 justify-content: space-between;
             }
         }
+
         .emergency-title-wrapper {
             display: flex;
             align-items: center;
             gap: 0.75rem;
         }
+
         .emergency-badge {
             border: 1px solid #FBC02D;
             /* Brand warm gold */
@@ -708,6 +780,7 @@
             letter-spacing: 0.05em;
             align-self: start;
         }
+
         .emergency-title {
             font-size: 1.5rem;
             font-weight: 800;
@@ -715,21 +788,25 @@
             margin: 0;
             letter-spacing: -0.02em;
         }
+
         .emergency-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 1.25rem 3rem;
         }
+
         @media (min-width: 768px) {
             .emergency-grid {
                 grid-template-columns: 1fr 1fr;
             }
         }
+
         @media (min-width: 1200px) {
             .emergency-grid {
                 grid-template-columns: 1fr 1fr 1fr;
             }
         }
+
         .hotline-item {
             font-size: 0.95rem;
             line-height: 1.6;
@@ -739,10 +816,12 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .hotline-label {
             color: #E2E8F0;
             font-weight: 500;
         }
+
         .hotline-value {
             color: #FBC02D;
             /* Brand warm gold */
@@ -766,8 +845,8 @@
                     <h3 class="card-title">Office Information</h3>
                     <div class="info-list">
                         <div class="info-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.75" stroke="currentColor" class="info-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
+                                stroke="currentColor" class="info-icon">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -779,8 +858,8 @@
                             </div>
                         </div>
                         <div class="info-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.75" stroke="currentColor" class="info-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
+                                stroke="currentColor" class="info-icon">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.824-1.802-5.188-4.166-7-7l1.3-1.3c.362-.272.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.11-1.008H5.036a2.25 2.25 0 0 0-2.25 2.25v1.356Z" />
                             </svg>
@@ -790,8 +869,8 @@
                             </div>
                         </div>
                         <div class="info-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.75" stroke="currentColor" class="info-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
+                                stroke="currentColor" class="info-icon">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                             </svg>
@@ -801,8 +880,8 @@
                             </div>
                         </div>
                         <div class="info-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.75" stroke="currentColor" class="info-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
+                                stroke="currentColor" class="info-icon">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
@@ -833,12 +912,13 @@
                         </div>
                         <div class="form-group">
                             <label for="message" class="form-field-label">Your Message</label>
-                            <textarea id="message" name="message" rows="5" required class="form-input form-textarea"></textarea>
+                            <textarea id="message" name="message" rows="5" required
+                                class="form-input form-textarea"></textarea>
                         </div>
                         <button type="submit" class="submit-button">
                             <span>Send Message</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="2" stroke="currentColor" class="button-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" class="button-icon">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
                             </svg>
@@ -992,4 +1072,5 @@
         });
     </script>
 </body>
+
 </html>
