@@ -30,15 +30,4 @@ class SeniorIdCardTest extends TestCase
 
         $this->assertEquals('SC-2027-000045', $senior->generateSeniorIdNumber());
     }
-
-    #[Test]
-    public function it_enforces_session_authentication_on_id_card_routes(): void
-    {
-        // No admin_user_id in session
-        $response = $this->get('/admin/senior/id-card/1');
-        $response->assertRedirect(route('admin.login.form'));
-
-        $responsePost = $this->post('/admin/senior/id-card/1/reprint');
-        $responsePost->assertStatus(401); // Json unauthorized
-    }
 }

@@ -2,182 +2,344 @@
 @section('title', 'Archive - Social Case Study')
 
 @section('content')
+<!-- Mobile Header (visible only on mobile) -->
+@php
+$logo = null;
+if(file_exists(public_path('images/mswdo-logo.png'))){
+    $logo='mswdo-logo.png';
+}else{
+    $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+    if(!empty($files))
+    $logo=basename($files[0]);
+}
+@endphp
+<div class="mobile-header">
+    <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+        </svg>
+    </button>
+    <div class="mobile-header-brand">
+        <div class="mobile-brand-text">
+            <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+            <p class="mobile-brand-subtitle">Archived Records</p>
+        </div>
+        <div class="mobile-logo">
+            @if($logo)
+            <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+            @endif
+        </div>
+    </div>
+</div>
+
 <style>
-    html,body{overflow-x:hidden!important;overflow-y:auto!important}
-    .app{min-height:auto!important}
-    .main{display:flex!important;flex-direction:column!important;overflow-x:hidden!important;overflow-y:auto!important}
-    #archiveSearch:focus{border-color:#1A237E;box-shadow:0 0 0 3px rgba(26,35,126,.08)}
-    .archive-type-opt.selected,.archive-brgy-opt.selected{background:#F3F4F6;font-weight:600}
-    .archive-type-opt:not(.selected):hover,.archive-brgy-opt:not(.selected):hover{background:#F3F4F6}
-    
-    /* Color-coded filter buttons when active */
-    #archiveBrgyBtn.active {
-        border-color: #059669;
-        background: #ECFDF5;
-        color: #065F46;
+    /* ── Archive page resets ── */
+    html, body { overflow-x: hidden !important; overflow-y: auto !important; }
+    .main {
+        display: flex !important;
+        flex-direction: column !important;
+        padding-top: 14px !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
     }
-    #archiveBrgyBtn.active i[data-lucide="map-pin"] { color: #059669; }
-    
-    #archiveTypeBtn.active {
-        border-color: #1A237E;
-        background: #EEF2FF;
+    @media (max-width: 767.98px) { .main { padding-top: 72px !important; } }
+
+    /* ── Subtitle ── */
+    .archive-subtitle { color: #6B7280; font-size: 0.85rem; margin: 0 0 10px; white-space: normal; overflow-wrap: break-word; line-height: 1.4; }
+
+    /* ── Filter bar ── */
+    .archive-filter-bar { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 12px 14px; background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; }
+    .archive-filter-search { flex: 1.4 1 200px; min-width: 170px; max-width: 280px; display: flex; flex-direction: column; justify-content: flex-end; }
+    .archive-filter-label { display: block; font-size: 0.72rem; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; line-height: 1; white-space: nowrap; }
+    .archive-search-wrap { display: flex; align-items: center; height: 40px; }
+    .archive-search-wrap input { flex: 1; height: 40px; border: 1px solid #D1D5DB; border-right: none; border-radius: 6px 0 0 6px; padding: 0 0.85rem; font-size: 0.85rem; color: #111827; background: #fff; outline: none; transition: border-color .15s, box-shadow .15s; }
+    .archive-search-wrap input:focus { border-color: #1A237E; box-shadow: 0 0 0 3px rgba(26,35,126,.08); }
+    .archive-search-wrap button { background: #1A237E; color: #fff; border: none; padding: 0 1rem; border-radius: 0 6px 6px 0; cursor: pointer; height: 40px; display: flex; align-items: center; justify-content: center; transition: background .15s; }
+    .archive-search-wrap button:hover { background: #121858; }
+
+    .archive-filter-dropdown { flex: 1 1 130px; min-width: 125px; position: relative; display: flex; flex-direction: column; justify-content: flex-end; }
+    .archive-select-btn { display: flex; align-items: center; gap: 6px; padding: 0 10px; height: 40px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 0.83rem; cursor: pointer; background: #fff; transition: border-color .15s, box-shadow .15s; }
+    .archive-select-btn:hover { border-color: #9CA3AF; }
+    .archive-select-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #111827; font-weight: 500; }
+    .archive-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 50; max-height: 260px; overflow-y: auto; padding: 4px; }
+
+    .archive-filter-reset { flex: 0 0 auto; display: flex; flex-direction: column; justify-content: flex-end; }
+    .archive-reset-btn { height: 40px; padding: 0 0.85rem; border: 1px solid #EF4444; border-radius: 6px; background: #fff; color: #EF4444; font-size: 0.813rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: all .15s; }
+    .archive-reset-btn:hover { background: #FEE2E2; }
+
+    /* Dropdown options */
+    .archive-type-opt.selected, .archive-brgy-opt.selected { background: #EEF2FF; color: #1A237E; font-weight: 600; }
+    .archive-type-opt:hover, .archive-brgy-opt:hover { background: #F3F4F6; }
+    #archiveBrgyBtn.active { border-color: #059669; background: #ECFDF5; color: #065F46; }
+    #archiveTypeBtn.active { border-color: #1A237E; background: #EEF2FF; }
+
+    /* ── Panel / wrap ── */
+    .archive-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 0; padding: 0; }
+    .archive-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; }
+
+    /* ── Table base ── */
+    .archive-table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: auto; }
+    .archive-table thead tr { background: #F8FAFC; border-bottom: 2px solid #E2E8F0; }
+    .archive-table thead th { padding: 12px 14px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; white-space: nowrap; text-align: left; border-bottom: 2px solid #E2E8F0; }
+    .archive-table tbody tr { border-bottom: 1px solid #F1F5F9; transition: background .15s; }
+    .archive-table tbody tr:last-child { border-bottom: none; }
+    .archive-table tbody tr:hover { background: #F8FAFC; }
+    .archive-table tbody td { padding: 12px 14px; font-size: 0.875rem; color: #1E293B; vertical-align: middle; border-bottom: 1px solid #F1F5F9; }
+
+    /* Column specific spacing */
+    .archive-table tbody td[data-label="Control No"] { min-width: 125px; white-space: nowrap; font-family: 'Courier New', monospace; font-size: 0.813rem; font-weight: 600; color: #1E293B; }
+    .archive-table tbody td[data-label="Client"] { min-width: 160px; max-width: 240px; font-weight: 600; color: #0F172A; white-space: normal; word-break: break-word; }
+    .archive-table tbody td[data-label="Type"], .archive-table tbody td[data-label="Assistance Type"] { min-width: 130px; white-space: nowrap; color: #334155; }
+    .archive-table tbody td[data-label="Status"] { min-width: 110px; white-space: nowrap; }
+    .archive-table tbody td[data-label="Date"] { min-width: 105px; white-space: nowrap; color: #64748B; font-size: 0.813rem; }
+    .archive-table tbody td[data-label="Action"], .archive-table tbody td[data-label="Actions"] { min-width: 120px; white-space: nowrap; }
+
+    /* Badge & Button styling */
+    .badge { display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; line-height: 1.2; }
+    .b-archived { background: #F3F4F6; color: #4B5563; }
+    .actions { display: inline-flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
+    .actions button { width: 32px; height: 32px; min-width: 32px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; padding: 0 !important; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease; border: none; }
+    .actions button:hover { transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.15); opacity: 0.95; }
+    .actions button:active { transform: translateY(0); }
+
+    /* ── Pagination ── */
+    .sc-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-shrink: 0; padding: 4px 0; flex-wrap: wrap; }
+    .sc-pagination-info { font-size: 0.813rem; color: #6B7280; font-weight: 500; }
+    .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
+    .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
+    .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
+    .sc-page-btn.active { background: #1A237E; color: #fff; border-color: #1A237E; font-weight: 700; }
+    .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Empty state ── */
+    .empty-row { background: transparent !important; border: none !important; box-shadow: none !important; }
+    .empty-cell { padding: 3rem 1rem !important; text-align: center !important; border: none !important; }
+    .empty-cell::before { display: none !important; content: none !important; }
+    .empty-state-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .empty-icon-wrap { width: 72px; height: 72px; border-radius: 50%; background: #EEF2FF; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: #1A237E; }
+    .empty-icon-wrap svg { width: 36px; height: 36px; }
+    .empty-title { font-size: 1.125rem; font-weight: 700; color: #1F2937; margin-bottom: 6px; }
+    .empty-subtitle { font-size: 0.875rem; color: #6B7280; line-height: 1.5; max-width: 360px; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       MOBILE, TABLET & COLLAPSED SIDEBAR (< 1200px): CARD LAYOUT
+    ═══════════════════════════════════════════════════════════════ */
+    @media (max-width: 1199.98px) {
+        .archive-panel { background: transparent; border: none; padding: 0; box-shadow: none; }
+        .archive-table-wrap { overflow: visible; border: none; background: transparent; }
+
+        .archive-table, 
+        .archive-table thead, 
+        .archive-table tbody, 
+        .archive-table tbody tr, 
+        .archive-table tbody td { 
+            display: block !important; 
+            width: 100% !important; 
+        }
+        .archive-table { min-width: 0 !important; }
+        .archive-table thead { display: none !important; }
+
+        .archive-table tbody tr:not(.empty-row) { 
+            background: #ffffff !important; 
+            border: 1px solid #E2E8F0 !important; 
+            border-radius: 12px !important; 
+            margin-bottom: 12px !important; 
+            padding: 14px 18px !important; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important; 
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .archive-table tbody tr:not(.empty-row):hover { 
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+        }
+
+        .archive-table tbody td { 
+            display: flex !important; 
+            justify-content: space-between !important; 
+            align-items: center !important; 
+            padding: 8px 0 !important; 
+            border-bottom: 1px solid #F1F5F9 !important; 
+            font-size: 0.875rem !important; 
+            gap: 12px !important; 
+            white-space: normal !important; 
+            word-break: break-word !important; 
+            max-width: none !important; 
+            overflow: visible !important; 
+            min-width: 0 !important; 
+        }
+        .archive-table tbody td:last-child { 
+            border-bottom: none !important; 
+        }
+        .archive-table tbody td::before { 
+            content: attr(data-label) !important; 
+            font-weight: 700 !important; 
+            font-size: 0.72rem !important; 
+            text-transform: uppercase !important; 
+            letter-spacing: 0.04em !important; 
+            color: #64748B !important; 
+            flex-shrink: 0 !important; 
+            min-width: 100px !important; 
+            display: block !important; 
+        }
+        .archive-table tbody td[data-label="Action"], .archive-table tbody td[data-label="Actions"] { 
+            justify-content: flex-end !important; 
+            padding-top: 12px !important; 
+            border-bottom: none !important; 
+        }
+        .archive-table tbody td[data-label="Action"]::before, .archive-table tbody td[data-label="Actions"]::before { 
+            display: none !important; 
+        }
+
+        .archive-table tbody tr.empty-row { 
+            border: none !important; 
+            box-shadow: none !important; 
+            background: transparent !important; 
+            padding: 0 !important; 
+        }
+        .archive-table tbody tr.empty-row td { 
+            border-bottom: none !important; 
+            justify-content: center !important; 
+        }
+        .archive-table tbody tr.empty-row td::before { 
+            display: none !important; 
+        }
     }
-    #archiveTypeBtn.active i[data-lucide="filter"] { color: #1A237E; }
-    
-    /* Type-specific button colors when active */
-    #archiveTypeBtn.active[data-filter="Medical Assistance"]      { border-color:#2563EB; background:#DBEAFE; color:#1E40AF; }
-    #archiveTypeBtn.active[data-filter="Burial Assistance"]       { border-color:#DC2626; background:#FEE2E2; color:#991B1B; }
-    #archiveTypeBtn.active[data-filter="Educational Assistance"]  { border-color:#D97706; background:#FEF3C7; color:#92400E; }
-    #archiveTypeBtn.active[data-filter="Financial Assistance"]    { border-color:#059669; background:#D1FAE5; color:#065F46; }
-    #archiveTypeBtn.active[data-filter="Food / Relief Assistance"]{ border-color:#4F46E5; background:#E0E7FF; color:#3730A3; }
-    #archiveTypeBtn.active[data-filter="Livelihood Assistance"]   { border-color:#DB2777; background:#FCE7F3; color:#9D174D; }
-    #archiveTypeBtn.active[data-filter="Other"]                   { border-color:#6B7280; background:#F3F4F6; color:#374151; }
-    
-    #archiveTypeBtn.active[data-filter] i[data-lucide="filter"]   { color: inherit; }
-    #archiveTypeBtn.active[data-filter] #archiveTypeLabel         { color: inherit; }
 
-    /* Color-coded filter dropdown options */
-    .archive-type-opt[data-value="Medical Assistance"].selected { background:#DBEAFE; color:#1E40AF; }
-    .archive-type-opt[data-value="Burial Assistance"].selected { background:#FEE2E2; color:#991B1B; }
-    .archive-type-opt[data-value="Educational Assistance"].selected { background:#FEF3C7; color:#92400E; }
-    .archive-type-opt[data-value="Financial Assistance"].selected { background:#D1FAE5; color:#065F46; }
-    .archive-type-opt[data-value="Food / Relief Assistance"].selected { background:#E0E7FF; color:#3730A3; }
-    .archive-type-opt[data-value="Livelihood Assistance"].selected { background:#FCE7F3; color:#9D174D; }
-    .archive-type-opt[data-value="Other"].selected { background:#F3F4F6; color:#374151; }
-
-    @media (max-width: 767px) {
-        /* Archive: card layout for table */
-        .archive-panel-wrap { padding: 1rem !important; margin-bottom: 1rem !important; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); }
-        .archive-filter-bar { flex-direction: column !important; gap: 10px !important; padding: 12px !important; }
-        .archive-filter-bar > div { min-width: 0 !important; max-width: none !important; width: 100% !important; }
-        .archive-table-wrap { border: none !important; overflow: visible !important; }
-        .archive-table { width: 100%; }
-        .archive-table thead { display: none; }
-        .archive-table tbody tr {
-            display: block;
-            background: var(--surface);
-            border: 1px solid #D1D5DB;
-            border-radius: 10px;
+    /* Mobile (< 768px) */
+    @media (max-width: 767.98px) {
+        .archive-filter-bar { 
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px; 
+            padding: 10px 12px; 
             margin-bottom: 10px;
-            padding: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        .archive-table tbody td {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-            border: none;
-            font-size: 0.82rem;
-            gap: 8px;
+        .archive-filter-search { max-width: none; width: 100%; min-width: 0; }
+        .archive-filter-dropdown { width: 100%; min-width: 0; }
+        .archive-filter-reset { width: 100%; }
+        .archive-reset-btn { width: 100% !important; justify-content: center !important; }
+
+        .sc-pagination { flex-direction: column; align-items: center; gap: 8px; }
+        .sc-pagination-controls { justify-content: center; }
+    }
+    @media (min-width: 480px) and (max-width: 767.98px) {
+        .archive-filter-bar {
+            grid-template-columns: 1fr 1fr;
         }
-        .archive-table tbody td:not(:last-child) {
-            border-bottom: 1px solid var(--border);
-        }
-        .archive-table tbody td::before {
-            content: attr(data-label);
-            font-weight: 600;
-            color: var(--text-secondary);
-            font-size: 0.72rem;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-            flex-shrink: 0;
-            min-width: 70px;
-        }
-        .archive-table tbody td[data-label="Action"] {
-            justify-content: flex-end;
-            padding-top: 8px;
-            border-bottom: none;
-        }
-        .archive-table tbody td[data-label="Action"]::before { display: none; }
-        .archive-table tbody td:not([data-label]) { justify-content: center; text-align: center; }
-        .archive-table tbody td:not([data-label])::before { display: none; }
-        .archive-table tbody td .actions { justify-content: flex-end; }
-        .archive-table tbody td .badge { font-size: 0.7rem; }
-        .sc-pagination { gap: 8px; margin-top: 1rem; }
-        .sc-page-btn { height: 34px; min-width: 34px; font-size: 0.8rem; padding: 0 0.5rem; }
+        .archive-filter-search { grid-column: 1 / -1; }
+        .archive-filter-reset { grid-column: 1 / -1; }
     }
     @media (max-width: 479px) {
-        .archive-panel-wrap { padding: 0.75rem !important; }
-        .archive-table tbody td::before { min-width: 60px; font-size: 0.68rem; }
-        .archive-table tbody td { font-size: 0.78rem; }
+        .archive-table tbody td::before { min-width: 75px; font-size: 0.68rem; }
+        .archive-table tbody td { font-size: 0.813rem !important; }
+    }
+
+    /* Collapsed Sidebar (768px - 1199.98px) */
+    @media (min-width: 768px) and (max-width: 1199.98px) {
+        .archive-filter-bar { gap: 8px 10px; padding: 10px 14px; margin-bottom: 12px; flex-wrap: wrap; }
+        .archive-filter-search { flex: 1 1 190px; min-width: 170px; max-width: 250px; }
+        .archive-filter-dropdown { flex: 1 1 120px; min-width: 115px; }
+        .archive-filter-reset { flex: 0 0 auto; }
+
+        .sc-pagination { flex-direction: row; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    }
+
+    /* ══════════════════════════════════
+       LARGE DESKTOP (1200px+): FULL TABLE
+    ══════════════════════════════════ */
+    @media (min-width: 1200px) {
+        html, body { overflow: hidden !important; }
+        .app { height: 100vh !important; overflow: hidden !important; }
+        .main { height: 100vh !important; overflow: hidden !important; }
+
+        .archive-filter-bar { flex-wrap: nowrap; gap: 10px; padding: 12px 16px; margin-bottom: 12px; }
+        .archive-filter-search { flex: 0 0 260px; max-width: 260px; }
+        .archive-filter-dropdown { flex: 1; min-width: 130px; }
+        .archive-filter-reset { flex: 0 0 auto; }
+
+        .archive-panel { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+        .archive-table-wrap { flex: 1; min-height: 0; overflow: auto; border: 1px solid #E5E7EB; border-radius: 8px; }
+        .archive-table { min-width: 900px; width: 100%; table-layout: auto; }
+        .archive-table thead th { padding: 12px 16px; font-size: 0.75rem; }
+        .archive-table tbody td { padding: 12px 16px; font-size: 0.875rem; }
+        .archive-table tbody td::before { display: none !important; content: none !important; }
+        .archive-table tbody tr.empty-row td.empty-cell { white-space: normal !important; overflow: visible !important; max-width: none !important; }
+
+        .sc-pagination { flex-direction: row; justify-content: space-between; margin-top: 12px; flex-shrink: 0; }
+        .sc-page-btn { height: 38px; }
     }
 </style>
+
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <i data-lucide="file-text" style="width:24px;height:24px"></i>
         <span>Social Case Study</span>
     </div>
     <ul class="sidebar-menu">
-        <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i> Dashboard</a></li>
-        <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i> New case</a></li>
-        <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i> All cases</a></li>
-        <li><a href="/admin/social-case/archive" class="active"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
-        <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
+        <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
+        <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>New case</span></a></li>
+        @if((string) session('admin_user_role') === 'eligibility_checker')
+        <li><a href="#" onclick="return false" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for eligibility checker accounts"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
+        @else
+        <li><a href="/admin/social-case/submitted"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
+        @endif
+        <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i><span>All cases</span></a></li>
+        <li><a href="/admin/social-case/archive" class="active"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
+        @if((string) session('admin_user_role') === 'eligibility_checker' || (string) session('admin_user_role') === 'social_worker')
+        <li class="sidebar-dropdown" id="onlineRequestsDropdown">
+            <a href="#" class="sidebar-dropdown-toggle" onclick="toggleDropdown('onlineRequestsDropdown'); return false;">
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <i data-lucide="file-text" style="width:20px;height:20px"></i>
+                    <span>Online Requests</span>
+                </div>
+                <i data-lucide="chevron-down" style="width:16px;height:16px"></i>
+            </a>
+            <ul class="sidebar-dropdown-menu">
+                <li><a href="/admin/social-case/online-requests">Pending Requests</a></li>
+                <li><a href="/admin/social-case/online-requests/accepted">Accepted Requests</a></li>
+                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests</a></li>
+            </ul>
+        </li>
+        @endif
+        <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a></li>
     </ul>
 </div>
 
 <div class="main">
-    <!-- Modern Page Header -->
-    @php
-        $userName = session('admin_user_name') ?? 'Admin User';
-        $words = explode(' ', $userName);
-        $initials = '';
-        if (count($words) >= 2) {
-            $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
-        } else {
-            $initials = strtoupper(substr($userName, 0, 2));
-        }
-    @endphp
-    <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
-        <div class="flex items-center">
-            <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Archived Cases</h1>
-        </div>
-        <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-            <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime">Thursday, July 16, 2026 at 01:51 PM</div>
-            <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
-                {{ $initials }}
-            </div>
-        </div>
-    </header>
-
     <!-- Page Sub-Header -->
-    <div class="mb-6">
-        <p class="text-[#6B7280] text-sm m-0">View and manage archived social case study records.</p>
-    </div>
+    <p class="archive-subtitle">View and manage archived social case study records.</p>
 
     <!-- Search and Filter Bar -->
-    <div class="archive-filter-bar" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px">
-        <div style="max-width:280px;width:100%;flex-shrink:0">
-            <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Search by Name</label>
-            <div style="display:flex;align-items:center;height:44px;">
+    <div class="archive-filter-bar">
+        <div class="archive-filter-search">
+            <label class="archive-filter-label">Search by Name</label>
+            <div class="archive-search-wrap">
                 <input type="text" id="archiveSearch" placeholder="Search by name..."
-                       oninput="view.archiveSearch=this.value;view.archivePage=1;renderArchive()"
-                       style="flex:1;height:44px;border:1px solid #E5E7EB;border-right:none;border-radius:6px 0 0 6px;padding:0 1rem;font-size:0.875rem;color:#111827;background:#fff;transition:all .2s ease;outline:none;">
-                <button type="button" onclick="renderArchive()" style="background:#1A237E;color:#fff;border:none;padding:0 1.25rem;border-radius:0 6px 6px 0;cursor:pointer;height:44px;display:flex;align-items:center;justify-content:center;transition:background .2s;">
+                       oninput="view.archiveSearch=this.value;view.archivePage=1;renderArchive()">
+                <button type="button" onclick="renderArchive()" title="Search">
                     <i data-lucide="search" style="width:16px;height:16px"></i>
                 </button>
             </div>
         </div>
-        <div style="position:relative;min-width:180px" id="archiveBrgyDropdown">
-            <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Filter by Barangay</label>
-            <div onclick="toggleArchiveBrgyMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="archiveBrgyBtn">
+        <div class="archive-filter-dropdown" id="archiveBrgyDropdown">
+            <label class="archive-filter-label">Filter by Barangay</label>
+            <div onclick="toggleArchiveBrgyMenu()" class="archive-select-btn" id="archiveBrgyBtn">
                 <i data-lucide="map-pin" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
-                <span id="archiveBrgyLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Barangays</span>
-                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
+                <span id="archiveBrgyLabel" class="archive-select-label">All Barangays</span>
+                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
             </div>
-            <div id="archiveBrgyMenu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;max-height:260px;overflow-y:auto;padding:4px">
+            <div id="archiveBrgyMenu" class="archive-menu" style="display:none">
                 <div class="archive-brgy-opt" data-value="" onclick="selectArchiveBrgy(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Barangays</div>
             </div>
         </div>
-        <div style="position:relative;min-width:180px" id="archiveTypeDropdown">
-            <label style="display:block;font-size:0.75rem;font-weight:600;color:#111827;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Filter by Type</label>
-            <div onclick="toggleArchiveTypeMenu()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s" id="archiveTypeBtn">
+        <div class="archive-filter-dropdown" id="archiveTypeDropdown">
+            <label class="archive-filter-label">Filter by Type</label>
+            <div onclick="toggleArchiveTypeMenu()" class="archive-select-btn" id="archiveTypeBtn">
                 <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
-                <span id="archiveTypeLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111827">All Types</span>
-                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0;transition:transform .2s"></i>
+                <span id="archiveTypeLabel" class="archive-select-label">All Types</span>
+                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
             </div>
-            <div id="archiveTypeMenu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;max-height:260px;overflow-y:auto;padding:4px">
+            <div id="archiveTypeMenu" class="archive-menu" style="display:none">
                 <div class="archive-type-opt" data-value="" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Types</div>
                 <div class="archive-type-opt" data-value="Medical Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Medical Assistance</div>
                 <div class="archive-type-opt" data-value="Burial Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Burial Assistance</div>
@@ -188,27 +350,41 @@
                 <div class="archive-type-opt" data-value="Other" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Other</div>
             </div>
         </div>
+        <div class="archive-filter-reset">
+            <button type="button" class="archive-reset-btn" onclick="resetArchiveFilters()">
+                <i data-lucide="x" style="width:14px;height:14px"></i> Reset
+            </button>
+        </div>
     </div>
 
-    <div class="panel archive-panel-wrap" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;margin-bottom:0">
-        <div class="archive-table-wrap" style="flex:1;overflow:auto;min-height:0;border-radius:8px">
+    <!-- Table Panel -->
+    <div class="archive-panel">
+        <div class="archive-table-wrap">
             <table class="archive-table">
                 <thead><tr><th>Control No</th><th>Client</th><th>Assistance Type</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
                 <tbody id="archiveTable"></tbody>
             </table>
         </div>
+    </div>
 
-        <div class="sc-pagination">
-            <div class="sc-pagination-info" id="archivePaginationInfo">Showing 0 of 0 Archived Cases</div>
-            <div class="sc-pagination-controls" id="archivePaginationControls"></div>
-        </div>
+    <!-- Pagination -->
+    <div class="sc-pagination">
+        <div class="sc-pagination-info" id="archivePaginationInfo">Showing 0 of 0 Archived Cases</div>
+        <div class="sc-pagination-controls" id="archivePaginationControls"></div>
     </div>
 </div>
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/social-case.js') }}"></script>
+<script src="{{ asset('js/social-case.js') . '?v=' . filemtime(public_path('js/social-case.js')) }}"></script>
 <script>
+function toggleDropdown(id) {
+    const dropdown = document.getElementById(id);
+    if (dropdown) {
+        dropdown.classList.toggle('open');
+    }
+}
+
     function toggleArchiveTypeMenu(){
         var menu=document.getElementById('archiveTypeMenu');
         var btn=document.getElementById('archiveTypeBtn');
@@ -286,6 +462,25 @@
             if(o.getAttribute('data-value')===view.archiveBarangay) o.classList.add('selected');
             else o.classList.remove('selected');
         });
+    }
+    function resetArchiveFilters() {
+        // Clear search
+        var searchEl = document.getElementById('archiveSearch');
+        if (searchEl) searchEl.value = '';
+        view.archiveSearch = '';
+        // Reset barangay
+        view.archiveBarangay = '';
+        document.getElementById('archiveBrgyLabel').textContent = 'All Barangays';
+        document.getElementById('archiveBrgyBtn').classList.remove('active');
+        highlightArchiveBrgyOpt();
+        // Reset type
+        view.archiveType = '';
+        document.getElementById('archiveTypeLabel').textContent = 'All Types';
+        document.getElementById('archiveTypeBtn').classList.remove('active');
+        highlightArchiveTypeOpt();
+        // Reset page and re-render
+        view.archivePage = 1;
+        renderArchive();
     }
     document.addEventListener('click',function(e){
         var typeDD=document.getElementById('archiveTypeDropdown');

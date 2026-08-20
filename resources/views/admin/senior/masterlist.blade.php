@@ -15,402 +15,245 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root {
-            --primary: #1A237E;
-            --primary-hover: #121858;
-            --sidebar-bg: #1A237E;
-            --accent-yellow: #FBC02D;
-            --background: #F5F7FB;
-            --surface: #FFFFFF;
-            --border: #E5E7EB;
-            --text-primary: #111827;
-            --text-secondary: #6B7280;
-            --text-muted: #9CA3AF;
-            --success: #16A34A;
-            --success-bg: #ECFDF5;
-            --danger: #DC2626;
-            --danger-bg: #FEF2F2;
-            --info: #3B82F6;
-            --info-bg: #EEF2FF;
-            --purple: #7C3AED;
-            --purple-bg: #F3E8FF;
-            --shadow: 0 10px 30px rgba(15,23,42,.08);
-            --font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        :root{
+            --primary:#1A237E;--primary-hover:#121858;--primary-dark:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--success:#16A34A;--success-bg:#ECFDF5;--danger:#DC2626;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EEF2FF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+        }
+        *,*::before,*::after{box-sizing:border-box;}
+        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);min-height:100%;}
+        body{font-size:14px;line-height:1.5;overflow-x:hidden;}
+        h1,h2,h3,h4,h5{margin:0;font-weight:600;letter-spacing:-0.01em;}
+        button{font-family:inherit;cursor:pointer;}
+        a{text-decoration:none;}
+
+        /* ── Buttons (Flat Design) ── */
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border);border-radius:10px;font-family:var(--font-family);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s ease;padding:10px 20px;background:var(--surface);color:var(--text-primary);box-shadow:none;height:44px;min-height:44px;text-decoration:none;white-space:nowrap;}
+        .btn:hover{border-color:var(--primary);transform:none;}
+        .btn svg{width:16px;height:16px;}
+        .btn-export{background:var(--primary);color:#fff;border-color:var(--primary);}
+        .btn-export:hover{background:var(--primary-hover);border-color:var(--primary-hover);}
+        .btn-bulk{background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE;}
+        .btn-bulk:hover{border-color:#3730A3;transform:none;}
+        .btn-bulk:disabled{opacity:.45;cursor:not-allowed;pointer-events:none;}
+        .btn-clear{background:var(--surface);color:var(--danger);border:1px solid #FECACA;}
+        .btn-clear:hover{border-color:var(--danger);}
+
+        /* ── Dropdown ── */
+        .dropdown{position:relative;display:inline-block;}
+        .dropdown-menu{position:absolute;top:100%;right:0;z-index:50;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.08);min-width:200px;padding:6px;display:none;margin-top:6px;}
+        .dropdown-menu.show{display:block;}
+        .dropdown-item{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:13px;color:var(--text-primary);border-radius:6px;text-decoration:none;cursor:pointer;transition:background .15s;}
+        .dropdown-item:hover{background:var(--background);}
+
+        /* ── Summary / Filters ── */
+        .section-spacing{margin-bottom:28px;}
+        #summaryGrid{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:stretch;}
+        .filter-field{display:flex;flex-direction:column;justify-content:flex-end;min-width:0;gap:3px;}
+        .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;display:block;text-transform:uppercase;letter-spacing:0.05em;height:18px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .filter-select{width:100%;height:44px;min-height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .15s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
+        .filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
+        .input-group{display:flex;align-items:center;}
+        .input-group input{flex:1;min-width:0;height:44px;border:1px solid var(--border);border-right:none;border-radius:8px 0 0 8px;padding:0 1rem;font-size:14px;color:var(--text-primary);background:var(--surface);transition:all .15s ease;font-family:inherit;}
+        .input-group input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(30,58,138,.15);}
+        .search-btn{background:var(--primary);color:#ffffff;border:none;padding:0 1.1rem;border-radius:0 8px 8px 0;cursor:pointer;height:44px;width:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+        .search-btn:hover{background:var(--primary-hover);}
+        .search-btn svg{width:18px;height:18px;}
+        .bulk-actions-row{display:flex;gap:8px;align-items:center;min-width:0;}
+
+        /* ── Archive-style panel & table ── */
+        .archive-panel-wrap{width:100%;padding:1rem;margin-bottom:1rem;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
+        .archive-table-wrap{border:1px solid var(--border);border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+        .archive-table{width:100%;border-collapse:collapse;font-size:14px;}
+        .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--text-secondary);text-align:left;border-bottom:1px solid var(--border);background:var(--background);white-space:nowrap;}
+        .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid var(--border);vertical-align:middle;white-space:normal;word-break:break-word;}
+        .archive-table tbody tr:last-child td{border-bottom:none;}
+        .archive-table input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
+        .archive-table .col-check{width:40px;text-align:center;}
+
+        /* ── Badges ── */
+        .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;}
+        .badge-active{background:var(--success-bg);color:var(--success);}
+        .badge-pending{background:#FEF3C7;color:#92400E;}
+
+        /* ── Action buttons (Flat Design) ── */
+        .actions{display:flex;gap:6px;align-items:center;}
+        .action-btn{width:34px !important;height:34px !important;min-height:34px !important;max-height:34px !important;padding:0 !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;border-radius:8px !important;box-shadow:none !important;cursor:pointer;transition:background .15s ease, border-color .15s ease;}
+        .action-btn:hover{transform:none;}
+        .action-btn svg, .action-btn i{width:16px !important;height:16px !important;}
+
+        /* ── Mobile Select All ── */
+        .mobile-select-all{display:none;align-items:center;gap:8px;padding:10px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-secondary);}
+        .mobile-select-all input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
+
+        /* ── Empty State ── */
+        .empty-row{background:transparent !important;border:none !important;box-shadow:none !important;padding:0 !important;margin:0 !important;}
+        .empty-cell{padding:2.5rem 1rem !important;border:none !important;display:flex !important;flex-direction:column !important;align-items:center !important;justify-content:center !important;width:100% !important;}
+        .empty-cell::before{display:none !important;}
+        .empty-state-content{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+        .empty-icon-wrap{width:64px;height:64px;border-radius:50%;background:#F3F4F6;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:#9CA3AF;}
+        .empty-icon-wrap svg{width:32px;height:32px;}
+        .empty-title{font-size:1.125rem;font-weight:700;color:#1F2937;margin-bottom:4px;}
+        .empty-subtitle{font-size:0.875rem;color:#6B7280;}
+
+        /* ── Pagination info ── */
+        .archive-pagination-info{font-size:0.875rem;color:var(--text-secondary);text-align:center;padding-top:0.75rem;}
+
+        /* ── Pagination links ── */
+        .pagination-wrap{display:flex;justify-content:center;flex-wrap:wrap;padding-top:1rem;margin-top:1rem;border-top:1px solid var(--border);}
+
+        /* ── Filter container ── */
+        .archive-filter-bar{display:block;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;}
+        .archive-filter-bar #summaryGrid{margin-bottom:0;}
+
+        /* ══════════════════════════════════════════════
+           RESPONSIVE BREAKPOINTS
+           ══════════════════════════════════════════════ */
+
+        /* ── Extra Large (1400px+) ── */
+        @media (min-width:1400px){
+            .section-spacing{margin-bottom:32px;}
+            #summaryGrid{grid-template-columns:1fr 1fr auto;gap:16px;}
+            .filter-label{font-size:13px !important;}
+            .filter-select,.input-group input,.search-btn{height:48px !important;min-height:48px !important;}
+            .filter-select{font-size:14px !important;}
+            .input-group input{font-size:15px !important;}
+            .search-btn{width:52px !important;}
+            .archive-table thead th{font-size:13px !important;padding:14px 18px !important;}
+            .archive-table tbody td{font-size:15px !important;padding:16px 18px !important;}
+            .badge{font-size:13px !important;padding:5px 12px !important;}
         }
 
-        *, *::before, *::after { box-sizing: border-box; }
-        html, body { margin: 0; padding: 0; height: 100%; background: var(--background); color: var(--text-primary); font-family: var(--font-family); overflow-x: hidden; overflow-y: auto; }
-        body { font-size: 14px; line-height: 1.5; }
-        h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
-        button { font-family: inherit; cursor: pointer; }
-        input, select, textarea { font-family: inherit; font-size: 14px; }
-        .app { display: flex; min-height: 100vh; }
-
-        /* ---------- Sidebar ---------- */
-        .sidebar {
-            width: 260px; flex-shrink: 0; background: var(--primary); color: #FFFFFF;
-            position: fixed; left: 0; top: 0; height: 100vh; z-index: 1000;
-            display: flex; flex-direction: column; transition: transform .3s ease;
-        }
-        .sidebar-brand {
-            height: 72px; padding: 0 1.5rem; border-bottom: 1px solid rgba(255,255,255,.1);
-            color: #fff; font-weight: 700; font-size: 1.1rem;
-            display: flex; align-items: center; gap: .65rem;
-        }
-        .sidebar-brand i, .sidebar-brand [data-lucide] { width: 24px; height: 24px; color: var(--accent-yellow); }
-        .sidebar-menu { list-style: none; margin: 0; padding: 1rem 0; flex: 1; }
-        .sidebar-menu li { margin-bottom: .2rem; }
-        .sidebar-menu a {
-            color: rgba(255,255,255,.75); padding: .75rem 1.5rem;
-            display: flex; align-items: center; gap: .75rem;
-            text-decoration: none; font-size: .9rem;
-            border-left: 3px solid transparent; transition: all .2s ease;
-        }
-        .sidebar-menu a:hover { background: rgba(255,255,255,.1); color: var(--accent-yellow); }
-        .sidebar-menu a.active { background: rgba(255,255,255,.1); color: var(--accent-yellow); border-left-color: var(--accent-yellow); }
-        .sidebar-menu a i, .sidebar-menu a [data-lucide] { width: 20px; height: 20px; text-align: center; }
-
-        /* ---------- Main ---------- */
-        html, body { overflow-x: hidden; overflow-y: auto; }
-.main {
-    flex: 1; min-width: 0; margin-left: 260px; padding: 32px;
-    max-width: calc(100% - 260px); min-height: 100vh;
-    display: flex; flex-direction: column; overflow-y: auto;
-    overflow-x: hidden;
-}
-
-        /* ---------- Buttons ---------- */
-        .btn {
-            border: 1px solid var(--border); background: var(--surface);
-            color: var(--text-primary); padding: 10px 20px; border-radius: 10px;
-            font-size: 14px; font-weight: 500; display: inline-flex;
-            align-items: center; gap: 8px; box-shadow: var(--shadow);
-            transition: all 0.2s ease; height: 42px; cursor: pointer; text-decoration: none;
-        }
-        .btn:hover { border-color: var(--primary); transform: translateY(-1px); }
-        .btn.primary { background: var(--primary); color: #FFFFFF; border-color: var(--primary); }
-        .btn.primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
-        .btn.danger { background: var(--danger); color: #FFFFFF; border-color: var(--danger); }
-        .btn.danger:hover { background: #B91C1C; border-color: #B91C1C; }
-        .btn.success { background: var(--success); color: #FFFFFF; border-color: var(--success); }
-        .btn.success:hover { background: #15803D; border-color: #15803D; }
-        .btn.warning { background: #F59E0B; color: #FFFFFF; border-color: #F59E0B; }
-        .btn.warning:hover { background: #D97706; border-color: #D97706; }
-        .btn.ghost { background: transparent; box-shadow: none; border-color: transparent; color: var(--text-secondary); }
-        .btn.ghost:hover { background: var(--background); color: var(--text-primary); }
-        .btn:disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
-        .btn-sm { padding: 6px 12px; font-size: 13px; height: 36px; }
-
-        /* ---------- Table Card ---------- */
-        .table-card {
-            background: var(--surface); border-radius: 16px;
-            border: 1px solid var(--border); box-shadow: var(--shadow);
-            padding: 2rem; display: flex; flex-direction: column;
-            overflow: hidden; flex: 1; min-height: 0;
-        }
-        .table-card-title {
-            font-size: 1.25rem; font-weight: 700; color: var(--text-primary);
-            margin-top: 0; margin-bottom: 1.5rem; flex-shrink: 0;
+        /* ── Large Desktop (1200–1399px) ── */
+        @media (min-width:1200px) and (max-width:1399px){
+            .section-spacing{margin-bottom:28px;}
+            #summaryGrid{grid-template-columns:1fr 1fr auto;gap:14px;}
+            .filter-label{font-size:12px !important;}
+            .filter-select,.input-group input,.search-btn{height:46px !important;min-height:46px !important;}
+            .filter-select{font-size:13px !important;}
+            .input-group input{font-size:14px !important;}
+            .search-btn{width:50px !important;}
+            .archive-table thead th{font-size:12px !important;padding:12px 16px !important;}
+            .archive-table tbody td{font-size:14px !important;padding:14px 16px !important;}
         }
 
-        /* ---------- Filter Section ---------- */
-        .filter-section { margin-bottom: 1.5rem; flex-shrink: 0; }
-        .filter-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-        .filter-left { display: flex; gap: 12px; flex: 1; min-width: 0; flex-wrap: wrap; }
-        .filter-right { display: flex; gap: 12px; flex-shrink: 0; }
-        .filter-group { display: flex; flex-direction: column; gap: 4px; }
-        .filter-group.search-group { flex: 1; min-width: 250px; }
-        .filter-group.select-group { min-width: 200px; }
-        .filter-label { font-size: 0.75rem; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; }
-
-        /* ---------- Search Input ---------- */
-        .input-group { display: flex; align-items: center; height: 44px; }
-        .input-group input {
-            flex: 1; height: 44px; border: 1px solid var(--border); border-right: none;
-            border-radius: 6px 0 0 6px; padding: 0 1rem; font-size: 0.875rem;
-            color: var(--text-primary); background: var(--surface); transition: all 0.2s ease;
-        }
-        .input-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,58,138,0.15); }
-        .input-group .search-btn {
-            background-color: var(--primary); color: #ffffff; border: none;
-            padding: 0 1.25rem; border-radius: 0 6px 6px 0; cursor: pointer;
-            height: 44px; display: flex; align-items: center; justify-content: center;
-            transition: background 0.2s;
-        }
-        .input-group .search-btn:hover { background-color: var(--primary-hover); }
-
-        /* ---------- Select ---------- */
-        .filter-select {
-            height: 44px; border: 1px solid var(--border); border-radius: 6px;
-            padding: 0 2.25rem 0 1rem; font-size: 0.875rem; color: var(--text-primary);
-            background: var(--surface); cursor: pointer; width: 100%;
-            appearance: none; -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-            background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 16px 12px;
-            transition: all 0.2s ease;
-        }
-        .filter-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,58,138,0.15); }
-
-        /* ---------- Table Scroll ---------- */
-        .table-scroll { flex: 1; overflow-y: auto; min-height: 0; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; }
-        .table-scroll table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        .table-scroll thead { position: sticky; top: 0; z-index: 1; background: var(--surface); }
-        .table-scroll th {
-            padding: 12px 16px; font-size: 11px; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 0.05em;
-            color: var(--text-secondary); text-align: left; border-bottom: 2px solid var(--border);
-        }
-        .table-scroll td {
-            padding: 14px 16px; font-size: 13px; color: var(--text-primary);
-            border-bottom: 1px solid var(--border); vertical-align: middle;
-        }
-        .table-scroll tr:hover td { background: var(--background); }
-
-        /* ---------- Badge ---------- */
-        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
-        .badge-active { background: var(--success-bg); color: var(--success); }
-        .badge-pending { background: #FEF3C7; color: #92400E; }
-
-        /* ---------- Dropdown ---------- */
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-menu {
-            position: absolute; top: 100%; right: 0; z-index: 50;
-            background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.12); min-width: 200px;
-            padding: 6px; display: none; margin-top: 4px;
-        }
-        .dropdown-menu.show { display: block; }
-        .dropdown-item {
-            display: flex; align-items: center; gap: 8px; padding: 10px 14px;
-            font-size: 13px; color: var(--text-primary); border-radius: 6px;
-            text-decoration: none; cursor: pointer; transition: background 0.15s;
-        }
-        .dropdown-item:hover { background: var(--background); }
-
-        #seniorModal { transition: opacity 0.2s ease; }
-
-        /* ---------- Responsive ---------- */
-        @media (max-width: 1200px) {
-            .main { padding: 24px; }
+        /* ── Medium Desktop (992–1199px) ── */
+        @media (min-width:992px) and (max-width:1199px){
+            .section-spacing{margin-bottom:24px;}
+            #summaryGrid{grid-template-columns:1fr 1fr;gap:14px;}
+            .archive-table thead th{padding:11px 14px !important;}
+            .archive-table tbody td{padding:13px 14px !important;}
+            .empty-icon-wrap{width:56px;height:56px;}
+            .empty-title{font-size:1rem !important;}
         }
 
-        /* ---------- Animations ---------- */
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* ── Sidebar Overlay ── */
-        .sidebar-overlay.active { display: block !important; }
-
-        /* ── Hamburger Button ── */
-        .hamburger-btn {
-            display: none;
-            position: fixed;
-            top: 12px;
-            left: 12px;
-            z-index: 1002;
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            width: 44px;
-            height: 44px;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            transition: background 0.2s;
-        }
-        .hamburger-btn:hover { background: var(--primary-hover); }
-
-        /* ── Responsive: Tablet (< 1024px) ── */
-        @media (max-width: 1023px) {
-            .hamburger-btn { display: flex; }
-            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
-            .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
-            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
-            .dashboard-grid { grid-template-columns: 1fr !important; }
+        /* ── Tablet (768–991px) ── */
+        @media (min-width:768px) and (max-width:991px){
+            .section-spacing{margin-bottom:20px;}
+            #summaryGrid{grid-template-columns:1fr 1fr;gap:12px;}
+            .archive-table thead th{padding:10px 12px !important;}
+            .archive-table tbody td{padding:12px 12px !important;}
         }
 
-        /* ── Responsive: Mobile (< 768px) ── */
-        @media (max-width: 767px) {
-            .mobile-select-all { display: flex !important; }
-            .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
-            .topnav, .top-navbar { padding: 10px 12px !important; }
-            .topnav-datetime, .navbar-datetime { display: none !important; }
-
-            /* ── Filter → stack ── */
-            .filter-section { margin-bottom: 1rem; }
-            .filter-row { flex-direction: column !important; gap: 10px !important; }
-            .filter-left { flex-direction: column !important; gap: 10px !important; width: 100% !important; }
-            .filter-group.search-group, .filter-group.select-group { min-width: 0 !important; width: 100% !important; }
-            .filter-right { width: 100% !important; flex-wrap: wrap !important; gap: 8px !important; display: flex !important; }
-            .filter-right > * { flex: 1 1 calc(50% - 4px) !important; min-width: 0 !important; }
-            .filter-right > a, .filter-right > button, .filter-right .btn, .filter-right > div { width: 100% !important; justify-content: center !important; text-align: center !important; padding: 8px 10px !important; font-size: 12px !important; }
-            .filter-right > a { display: inline-flex !important; align-items: center !important; justify-content: center !important; }
-
-            /* ── Table Card ── */
-            .table-card { padding: 1rem !important; border-radius: 12px !important; }
-            .table-card-title { font-size: 1rem !important; margin-bottom: 1rem !important; }
-
-            /* ── Table → Card layout ── */
-            .table-scroll { border: none !important; overflow: visible !important; border-radius: 0 !important; }
-            .table-scroll table { table-layout: auto !important; width: 100%; }
-            .table-scroll thead { display: none !important; }
-            .table-scroll tbody tr {
-                display: block;
-                background: var(--surface);
-                border: 1px solid #D1D5DB;
-                border-radius: 10px;
-                margin-bottom: 10px;
-                padding: 12px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            }
-            .table-scroll tbody td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 8px 0;
-                border: none;
-                font-size: 0.82rem;
-                gap: 8px;
-            }
-            .table-scroll tbody td:not(:last-child) {
-                border-bottom: 1px solid var(--border);
-            }
-            .table-scroll tbody td::before {
-                content: attr(data-label);
-                font-weight: 600;
-                color: var(--text-secondary);
-                font-size: 0.72rem;
-                text-transform: uppercase;
-                letter-spacing: 0.03em;
-                flex-shrink: 0;
-                min-width: 70px;
-            }
-            .table-scroll tbody td.col-check {
-                justify-content: flex-end;
-                padding: 8px 0 4px;
-                border-bottom: none;
-            }
-            .table-scroll tbody td.col-check::before { display: none; }
-            .table-scroll tbody td[data-label="#"] {
-                display: none !important;
-            }
-            .table-scroll tbody td[data-label="Action"] {
-                justify-content: flex-end;
-                padding-top: 8px;
-                border-bottom: none;
-            }
-            .table-scroll tbody td[data-label="Action"]::before { display: none; }
-            .table-scroll tbody td .badge { font-size: 0.7rem; }
-
-            /* ── Action buttons → smaller for side-by-side ── */
-            .table-scroll tbody td[data-label="Action"] .actions { gap: 6px !important; }
-            .table-scroll tbody td[data-label="Action"] .actions > button,
-            .table-scroll tbody td[data-label="Action"] .actions > a { padding: 4px 8px !important; height: 32px !important; min-width: 32px !important; }
-            .table-scroll tbody td[data-label="Action"] .actions > button[style*="padding:6px 10px"],
-            .table-scroll tbody td[data-label="Action"] .actions > a[style*="padding:6px 10px"] { padding: 4px 8px !important; }
-            .table-scroll tbody td[data-label="Action"] .actions > button[style*="height:34px"],
-            .table-scroll tbody td[data-label="Action"] .actions > a[style*="height:34px"] { height: 32px !important; }
-            .table-scroll tbody td[data-label="Action"] .actions > button[style*="padding:6px 10px"][style*="height:34px"],
-            .table-scroll tbody td[data-label="Action"] .actions > a[style*="padding:6px 10px"][style*="height:34px"] { padding: 4px 8px !important; height: 32px !important; min-width: 32px !important; }
-            .table-scroll tbody td[data-label="Action"] .actions > button i,
-            .table-scroll tbody td[data-label="Action"] .actions > a i { width: 14px !important; height: 14px !important; }
-
-            /* ── Modal ── */
-            #seniorModal > div { max-width: 100% !important; border-radius: 12px !important; max-height: 85vh !important; }
-            #seniorModal > div > div:first-child { padding: 12px 16px !important; }
-            #seniorModal > div > div:first-child h5 { font-size: 0.95rem !important; }
-            #seniorModal > div > div:nth-child(2) { padding: 16px !important; }
-            #seniorModal > div > div:last-child { padding: 12px 16px !important; flex-wrap: wrap !important; gap: 8px !important; }
-            #seniorModal > div > div:last-child button { flex: 1; min-width: 0; justify-content: center; }
+        /* ── Desktop full-height layout (matches archive page) ── */
+        @media (min-width:1200px){
+            html,body{overflow:hidden !important;}
+            .app{height:100vh !important;overflow:hidden !important;}
+            .app .main{height:100vh !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;}
+            .app .main-scroll{flex:1 !important;min-height:0 !important;overflow-y:auto !important;overflow-x:hidden !important;display:flex !important;flex-direction:column !important;}
+            .archive-panel-wrap{padding:1rem !important;margin-bottom:0 !important;flex:1 !important;min-height:0 !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;}
+            .archive-table-wrap{flex:1 !important;min-height:0 !important;border:1px solid var(--border) !important;overflow:auto !important;border-radius:8px !important;}
+            .empty-icon-wrap{width:80px;height:80px;margin-bottom:20px;background:#EEF2FF;color:#1A237E;}
+            .empty-icon-wrap svg{width:40px !important;height:40px !important;}
+            .empty-title{font-size:1.35rem !important;font-weight:700 !important;color:#111827 !important;margin-bottom:8px !important;}
+            .empty-subtitle{font-size:0.95rem !important;color:#6B7280 !important;max-width:400px;line-height:1.5;}
+        }
+        @media (min-width:768px) and (max-width:1199px){
+            .archive-table tbody tr.empty-row{display:table-row !important;background:transparent !important;border:none !important;box-shadow:none !important;margin:0 !important;}
+            .archive-table tbody tr.empty-row td.empty-cell{display:table-cell !important;padding:2.5rem 1.5rem !important;border:none !important;text-align:center !important;}
+            .archive-table tbody tr.empty-row td.empty-cell::before{display:none !important;}
+            .archive-table tbody tr.empty-row td.empty-cell .empty-state-content{align-items:center;justify-content:center;}
+        }
+        @media (min-width:1200px){
+            .archive-table tbody tr.empty-row{display:table-row !important;background:transparent !important;border:none !important;box-shadow:none !important;margin:0 !important;}
+            .archive-table tbody tr.empty-row td.empty-cell{display:table-cell !important;padding:3rem 1.5rem !important;border:none !important;text-align:center !important;}
+            .archive-table tbody tr.empty-row td.empty-cell::before{display:none !important;}
         }
 
-        /* ── Responsive: Small Mobile (< 480px) ── */
-        @media (max-width: 479px) {
-            .stat-card-icon { width: 40px !important; height: 40px !important; }
-            .stat-card-value { font-size: 24px !important; }
-            .stat-cards { gap: 12px !important; }
-            .filter-right > * { flex: 1 1 100% !important; }
-            .table-scroll tbody td { font-size: 0.78rem !important; }
-            .table-scroll tbody td::before { min-width: 60px !important; font-size: 0.68rem !important; }
+        /* ── Large Mobile (576–767px): stacked filters ── */
+        @media (min-width:576px) and (max-width:767px){
+            .section-spacing{margin-bottom:18px;}
+            #summaryGrid{grid-template-columns:1fr;gap:12px;}
+            .bulk-actions-row{flex-direction:column;gap:8px;}
+            .mobile-select-all{display:flex;}
         }
+
+        /* ── Mobile (<768px): table → stacked cards ── */
+        @media (max-width:767px){
+            .archive-panel-wrap{padding:.75rem;}
+            .archive-table-wrap{border:none;border-radius:0;overflow:visible;}
+            .archive-table thead{display:none;}
+            .archive-table tbody tr{display:block;background:var(--surface);border:1px solid #D1D5DB;border-radius:10px;margin-bottom:10px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+            .archive-table tbody tr:last-child{margin-bottom:0;}
+            .archive-table tbody td{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border:none;font-size:.82rem;gap:8px;text-align:right;}
+            .archive-table tbody td:not(:last-child){border-bottom:1px solid var(--border);}
+            .archive-table tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;flex-shrink:0;min-width:80px;text-align:left;}
+            .archive-table tbody td.col-check{justify-content:flex-end;padding:0 0 6px;border-bottom:none;}
+            .archive-table tbody td.col-check::before{display:none;}
+            .archive-table tbody td[data-label="Control No"]{white-space:nowrap;}
+            .archive-table tbody td[data-label="Action"]{justify-content:flex-end;padding-top:8px;border-bottom:none;}
+            .archive-table tbody td[data-label="Action"]::before{display:none;}
+            .archive-table tbody td.empty-cell{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:0 !important;}
+            .archive-table tbody td.empty-cell::before{display:none !important;}
+            .action-btn{width:44px;height:44px;}
+            .mobile-select-all{display:flex;}
+        }
+
+        /* ── Small Mobile (<480px) ── */
+        @media (max-width:479px){
+            .section-spacing{margin-bottom:14px;}
+            #summaryGrid{grid-template-columns:1fr;gap:10px;}
+            .archive-table tbody td{font-size:.75rem;}
+            .archive-table tbody td::before{font-size:.65rem;min-width:70px;}
+        }
+
+        /* ── Modal ── */
+        #seniorModal{transition:opacity .2s ease;}
     </style>
 </head>
 <body>
+<div class="app">
+    @include('admin.senior.partials.navigation', ['active' => 'masterlist', 'mobileSubtitle' => 'Senior Citizen Masterlist'])
 
-<!-- ======================== SIDEBAR ======================== -->
-<div class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <i data-lucide="users" style="width:24px;height:24px"></i>
-        <span>Senior Citizen</span>
-    </div>
-    <ul class="sidebar-menu">
-        <li><a href="/admin/senior"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i> Dashboard</a></li>
-        <li><a href="/admin/senior/registration"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
-        <li><a href="/admin/senior/masterlist" class="active"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
-        <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
-        <li><a href="/admin/senior/birthday-payouts"><i data-lucide="banknote" style="width:20px;height:20px"></i> Birthday Payouts</a></li>
-        <li><a href="/admin/senior/birthday-payouts/history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
-        <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
-        <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
-        <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
-        <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
-    </ul>
-</div>
-<div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
+    <div class="main">
+        @php
+            $userName = session('admin_user_name') ?? 'Admin User';
+            $words = explode(' ', $userName);
+            $initials = '';
+            if (count($words) >= 2) {
+                $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+            } else {
+                $initials = strtoupper(substr($userName, 0, 2));
+            }
+        @endphp
 
-<!-- Hamburger Button (fixed position) -->
-<button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
-    <i data-lucide="menu" style="width:24px;height:24px"></i>
-</button>
+        <div class="main-scroll">
+            <div style="margin-bottom:1.5rem;">
+                <p style="margin:0;font-size:0.875rem;color:#6B7280;">Step 1 of 2 — Search for an existing senior citizen and verify their record before proceeding with a new registration.</p>
+            </div>
 
-<!-- ======================== MAIN ======================== -->
-<div class="main">
-    @php
-        $userName = session('admin_user_name') ?? 'Admin User';
-        $words = explode(' ', $userName);
-        $initials = '';
-        if (count($words) >= 2) {
-            $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
-        } else {
-            $initials = strtoupper(substr($userName, 0, 2));
-        }
-    @endphp
-
-    <!-- Modern Page Header -->
-    <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
-            <div class="flex items-center">
-                <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Senior Citizen Masterlist</h1>
-        </div>
-        <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-            <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime"></div>
-            <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">{{ $initials }}</div>
-        </div>
-    </header>
-
-    <!-- Table Card -->
-    <div class="table-card" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden">
-        <h2 class="table-card-title">Registered Senior Citizens</h2>
-
-        <!-- Filter Section -->
-        <div class="filter-section">
+            {{-- Filter Bar --}}
             <form method="GET" action="{{ route('admin.senior.masterlist') }}" id="filterForm">
-                <div class="filter-row">
-                    <div class="filter-left">
-                        <div class="filter-group search-group">
-                            <label class="filter-label">Search by Name</label>
+                <div class="archive-filter-bar section-spacing">
+                    <div id="summaryGrid">
+                        <div class="filter-field">
+                            <label class="filter-label" for="searchInput">Search by Name</label>
                             <div class="input-group">
-                                <input type="text" name="search" placeholder="Search by name..." value="{{ request('search') }}">
-                                <button type="submit" class="search-btn">
-                                    <i data-lucide="search" style="width:16px;height:16px"></i>
-                                </button>
+                                <input type="text" id="searchInput" name="search" placeholder="Search by name..." value="{{ request('search') }}">
+                                <button type="submit" class="search-btn" aria-label="Search"><i data-lucide="search"></i></button>
                             </div>
                         </div>
-                        <div class="filter-group select-group">
-                            <label class="filter-label">Filter by Barangay</label>
-                            <select class="filter-select" name="barangay" onchange="this.form.submit()">
+                        <div class="filter-field">
+                            <label class="filter-label" for="barangaySelect">Filter by Barangay</label>
+                            <select class="filter-select" id="barangaySelect" name="barangay" onchange="this.form.submit()">
                                 <option value="">All Barangays</option>
                                 <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
                                 <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
@@ -478,104 +321,117 @@
                                 <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
                             </select>
                         </div>
-                    </div>
-
-                    <div class="filter-right">
-                        <a href="/admin/senior/registration" style="height:44px;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:#0f766e;color:white;border:none;cursor:pointer;text-decoration:none;transition:all 0.2s ease;font-family:inherit;">
-                            <i data-lucide="plus" style="width:16px;height:16px"></i> Add New
-                        </a>
-                        <a href="#" style="height:44px;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:#1A237E;color:white;border:none;cursor:pointer;text-decoration:none;transition:all 0.2s ease;font-family:inherit;" onclick="exportPdf(event)">
-                            <i data-lucide="file-output" style="width:16px;height:16px"></i> Export PDF
-                        </a>
-                        <div class="dropdown" id="bulkActionDropdown">
-                            <button id="bulkActionButton" onclick="toggleDropdown()" disabled style="height:44px;font-weight:600;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE;cursor:pointer;transition:all 0.2s ease;font-family:inherit;opacity:0.45;">
-                                <i data-lucide="archive" style="width:14px;height:14px"></i> Bulk Actions <span id="selectedCount" style="background: #3730A3; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: 4px;">0</span>
-                            </button>
-                            <div class="dropdown-menu" id="bulkDropdownMenu">
-                                <a class="dropdown-item" href="#" onclick="bulkArchive()"><i data-lucide="archive" style="width:14px;height:14px"></i> Archive Selected</a>
-                                <a class="dropdown-item" href="#" onclick="bulkExport()"><i data-lucide="download" style="width:14px;height:14px"></i> Export Selected</a>
+                        <div class="filter-field">
+                            <label class="filter-label">&nbsp;</label>
+                            <div class="bulk-actions-row">
+                                <a href="#" class="btn btn-export" onclick="exportPdf(event)">
+                                    <i data-lucide="file-output"></i> Export PDF
+                                </a>
+                                <div class="dropdown" id="bulkActionDropdown">
+                                    <button id="bulkActionButton" class="btn btn-bulk" onclick="toggleDropdown()" disabled>
+                                        <i data-lucide="archive"></i> Bulk Actions
+                                        <span id="selectedCount" style="background:#3730A3;color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:4px;">0</span>
+                                    </button>
+                                    <div class="dropdown-menu" id="bulkDropdownMenu">
+                                        <a class="dropdown-item" href="#" onclick="bulkArchive()"><i data-lucide="archive" style="width:14px;height:14px"></i> Archive Selected</a>
+                                        <a class="dropdown-item" href="#" onclick="bulkExport()"><i data-lucide="download" style="width:14px;height:14px"></i> Export Selected</a>
+                                    </div>
+                                </div>
+                                @if(request('search') || request('barangay'))
+                                    <a href="{{ route('admin.senior.masterlist') }}" class="btn btn-clear">
+                                        <i data-lucide="x"></i> Clear
+                                    </a>
+                                @endif
                             </div>
                         </div>
-                        @if(request('search') || request('barangay'))
-                            <a href="{{ route('admin.senior.masterlist') }}" style="height:44px;display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:white;color:#DC2626;border:1px solid #FECACA;cursor:pointer;text-decoration:none;transition:all 0.2s ease;font-family:inherit;">
-                                <i data-lucide="x" style="width:16px;height:16px"></i> Clear Filters
-                            </a>
-                        @endif
                     </div>
                 </div>
             </form>
-        </div>
 
-        @if($seniors->count() > 0)
-            <!-- Mobile Select All (shown only on mobile since thead is hidden) -->
-            <div class="mobile-select-all" style="display:none;align-items:center;gap:8px;padding:8px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-secondary);">
-                <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)" class="cursor-pointer accent-[#1A237E]" style="width:16px;height:16px">
-                <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
-                <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
-            </div>
-            <div class="table-scroll" style="flex:1;overflow-y:auto;min-height:0;border-radius:8px;border:1px solid var(--border);">
-                <table style="table-layout:fixed;">
-                    <thead>
-                        <tr>
-                            <th class="col-check" style="width:5%;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="cursor:pointer;accent-color:var(--primary);"></th>
-                            <th style="width:12%;">Control No</th>
-                            <th style="width:18%;">Full Name</th>
-                            <th style="width:15%;">Barangay</th>
-                            <th style="width:12%;">Status</th>
-                            <th style="width:20%;">Address</th>
-                            <th style="width:8%;">Age</th>
-                            <th style="width:15%;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($seniors as $senior)
+            @if($seniors->count() > 0)
+                <div class="mobile-select-all">
+                    <input type="checkbox" id="mobileSelectAll" onchange="toggleSelectAllMobile(this.checked)">
+                    <label for="mobileSelectAll" style="cursor:pointer;font-weight:500;">Select all</label>
+                    <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
+                </div>
+            @endif
+
+            <div class="panel archive-panel-wrap">
+                <div class="archive-table-wrap">
+                    <table class="archive-table">
+                        <thead>
                             <tr>
-                                <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()" style="cursor:pointer;accent-color:var(--primary);"></td>
-                                <td data-label="Control No" style="word-wrap:break-word;font-weight:600;">{{ $senior->control_number ?? '-' }}</td>
-                                <td data-label="Full Name" style="word-wrap:break-word;">{{ $senior->full_name ?? '-' }}</td>
-                                <td data-label="Barangay" style="word-wrap:break-word;">{{ $senior->barangay ?? '-' }}</td>
-                                <td data-label="Status">
-                                    <span class="badge {{ $senior->status->value == 'active' ? 'badge-active' : 'badge-pending' }}">
-                                        {{ ucfirst($senior->status->value ?? 'pending') }}
-                                    </span>
-                                </td>
-                                <td data-label="Address" style="word-wrap:break-word;">{{ $senior->address ?? '-' }}</td>
-                                <td data-label="Age" style="word-wrap:break-word;">{{ $senior->age ?? '-' }}</td>
-                                <td data-label="Action">
-                                    <div class="actions" style="display:flex;gap:6px;">
-                                        <button class="btn btn-sm primary" style="padding:4px 8px;height:32px;min-width:32px;" onclick="viewProfile({{ $senior->id }})">
-                                            <i data-lucide="eye" style="width:14px;height:14px"></i>
-                                        </button>
-                                        <a href="{{ route('admin.senior.id-card', $senior->id) }}" class="btn btn-sm warning" style="padding:4px 8px;height:32px;min-width:32px;" title="ID Card">
-                                            <i data-lucide="id-card" style="width:14px;height:14px"></i>
-                                        </a>
-                                        <button class="btn btn-sm danger archive-senior-btn"
-                                            data-id="{{ $senior->id }}"
-                                            data-name="{{ $senior->full_name }}"
-                                            style="padding:4px 8px;height:32px;min-width:32px;">
-                                            <i data-lucide="archive" style="width:14px;height:14px"></i>
-                                        </button>
-                                    </div>
-                                </td>
+                                <th class="col-check"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                                <th>Control No</th>
+                                <th>Full Name</th>
+                                <th>Barangay</th>
+                                <th>Status</th>
+                                <th>Address</th>
+                                <th>Age</th>
+                                <th>Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @forelse($seniors as $senior)
+                                <tr>
+                                    <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()"></td>
+                                    <td data-label="Control No" style="font-weight:600;">{{ $senior->control_number ?? '-' }}</td>
+                                    <td data-label="Full Name">{{ $senior->full_name ?? '-' }}</td>
+                                    <td data-label="Barangay">{{ $senior->barangay ?? '-' }}</td>
+                                    <td data-label="Status">
+                                        <span class="badge {{ $senior->status->value == 'active' ? 'badge-active' : 'badge-pending' }}">
+                                            {{ ucfirst($senior->status->value ?? 'pending') }}
+                                        </span>
+                                    </td>
+                                    <td data-label="Address">{{ $senior->address ?? '-' }}</td>
+                                    <td data-label="Age">{{ $senior->age ?? '-' }}</td>
+                                    <td data-label="Action">
+                                        <div class="actions">
+                                            <button class="action-btn" style="background:var(--primary);border-color:var(--primary);color:#fff;" onclick="viewProfile({{ $senior->id }})" title="View Profile">
+                                                <i data-lucide="eye"></i>
+                                            </button>
+                                            <button class="action-btn archive-senior-btn"
+                                                data-id="{{ $senior->id }}"
+                                                data-name="{{ $senior->full_name }}"
+                                                style="background:var(--danger-bg);border-color:#FECACA;color:var(--danger);"
+                                                title="Archive">
+                                                <i data-lucide="archive"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr class="empty-row">
+                                    <td colspan="8" class="empty-cell">
+                                        <div class="empty-state-content">
+                                            <div class="empty-icon-wrap">
+                                                <i data-lucide="users"></i>
+                                            </div>
+                                            <div class="empty-title">No senior citizens found</div>
+                                            <div class="empty-subtitle">No records match your search criteria</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <!-- Pagination -->
-            <div style="display:flex;justify-content:center;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);">
-                {{ $seniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
+            <div class="archive-pagination-info">
+                @if($seniors->total() === 0)
+                    Showing 0 of 0 Records
+                @else
+                    Showing {{ $seniors->firstItem() }}–{{ $seniors->lastItem() }} of {{ $seniors->total() }} Records
+                @endif
             </div>
-        @else
-            <div style="text-align:center;padding:60px 20px;color:var(--text-secondary);">
-                <i data-lucide="users" style="width:56px;height:56px;color:#D1D5DB;margin:0 auto 12px;display:block"></i>
-                <p style="margin:8px 0 16px;font-size:14px;color:var(--text-muted);">No senior citizens registered yet.</p>
-                <a href="/admin/senior/registration" class="btn primary">
-                    <i data-lucide="plus" style="width:16px;height:16px"></i> Register First Senior Citizen
-                </a>
-            </div>
-        @endif
+
+            @if($seniors->hasPages())
+                <div class="pagination-wrap">
+                    {{ $seniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
+                </div>
+            @endif
+        </div>
     </div>
 </div>
 
@@ -641,9 +497,9 @@
                     <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">PhilSys Number</label>
                     <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalPhilsysNumber">—</div>
                 </div>
-                <div style="margin-bottom:8px;">
+                <div style="margin-bottom:8px;grid-column:span 2;">
                     <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">RRN Number</label>
-                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);" id="modalRrnNumber">—</div>
+                    <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);word-break:break-word;overflow-wrap:anywhere;" id="modalRrnNumber">—</div>
                 </div>
                 <div style="margin-bottom:8px;grid-column:1/-1;">
                     <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Remarks</label>
@@ -653,40 +509,16 @@
         </div>
         <div style="padding:16px 24px;border-top:1px solid var(--border);background:var(--surface);display:flex;justify-content:flex-end;gap:12px;">
             <button onclick="closeModal()" style="padding:8px 16px;background:var(--background);border:1px solid var(--border);border-radius:6px;font-weight:500;color:var(--text-primary);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='var(--background)'">Close</button>
-            <button onclick="window.location.href='/admin/senior/profile/' + currentSeniorId" style="padding:8px 16px;background:#1A237E;border:none;border-radius:6px;font-weight:500;color:white;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.2s;" onmouseover="this.style.background='#3730A3'" onmouseout="this.style.background='#1A237E'">
-                <i data-lucide="user" style="width:16px;height:16px;"></i> Full Profile
-            </button>
         </div>
     </div>
 </div>
 
+<!-- Hidden form for secure POST logout -->
+<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display:none;">
+    @csrf
+</form>
+
 <script>
-    function toggleSidebar() {
-        var sidebar = document.getElementById('sidebar');
-        var overlay = document.getElementById('sidebarOverlay');
-        if (sidebar.classList.contains('show')) {
-            sidebar.classList.remove('show');
-            if (overlay) overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        } else {
-            sidebar.classList.add('show');
-            if (overlay) overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-    }
-
-    function updateDateTime() {
-        const now = new Date();
-        const options = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'2-digit', hour12: true };
-        const el = document.getElementById('currentDateTime');
-        if (el) {
-            const dateTimeStr = now.toLocaleDateString('en-US', options).replace(',', ' at');
-            el.textContent = dateTimeStr;
-        }
-    }
-    updateDateTime();
-    setInterval(updateDateTime, 60000);
-
     // Custom Dropdown
     function toggleDropdown() {
         const menu = document.getElementById('bulkDropdownMenu');
@@ -900,7 +732,6 @@
                 return r.blob();
             })
             .then(blob => {
-                const disposition = '';
                 const filename = 'senior_citizens.pdf';
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
@@ -952,7 +783,6 @@
         });
     }
 
-    // Show popup for archive success/error
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
 
@@ -981,67 +811,6 @@
             });
         @endif
     });
-</script>
-
-<!-- Hidden form for secure POST logout -->
-<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
-    @csrf
-</form>
-
-<script>
-    function confirmLogout(event) {
-        event.preventDefault();
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'Do you really want to log out?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#1A237E',
-            cancelButtonColor: '#EF4444',
-            confirmButtonText: 'Yes, log out',
-            cancelButtonText: 'Cancel',
-            background: '#ffffff',
-            customClass: {
-                popup: 'rounded-4 shadow-lg'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('logout-form').submit();
-            }
-        });
-    }
-</script>
-<script>
-(function() {
-    var overlay = document.getElementById('sidebarOverlay');
-    if (overlay) overlay.addEventListener('click', function() {
-        var sidebar = document.getElementById('sidebar');
-        if (sidebar) sidebar.classList.remove('show');
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
-    });
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            var sidebar = document.getElementById('sidebar');
-            if (sidebar && sidebar.classList.contains('show')) {
-                sidebar.classList.remove('show');
-                if (overlay) overlay.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        }
-    });
-    window.addEventListener('resize', function() {
-        if (window.innerWidth >= 1024) {
-            var sidebar = document.getElementById('sidebar');
-            var ov = document.getElementById('sidebarOverlay');
-            if (sidebar && sidebar.classList.contains('show')) {
-                sidebar.classList.remove('show');
-                if (ov) ov.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        }
-    });
-})();
 </script>
 </body>
 </html>

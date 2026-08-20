@@ -2,24 +2,108 @@
 @section('title', 'Create Social Case Study')
 
 @section('content')
+<!-- Mobile Header (visible only on mobile) -->
+@php
+$logo = null;
+if(file_exists(public_path('images/mswdo-logo.png'))){
+    $logo='mswdo-logo.png';
+}else{
+    $files=glob(public_path('images/*.{png,jpg,jpeg,svg}'),GLOB_BRACE);
+    if(!empty($files))
+    $logo=basename($files[0]);
+}
+@endphp
+<div class="mobile-header">
+    <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mobile-menu-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+        </svg>
+    </button>
+    <div class="mobile-header-brand">
+        <div class="mobile-brand-text">
+            <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+            <p class="mobile-brand-subtitle">Create Social Case Study</p>
+        </div>
+        <div class="mobile-logo">
+            @if($logo)
+            <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+            @endif
+        </div>
+    </div>
+</div>
+
+<style>
+    /* new.blade.php scoped */
+    .main { padding-top: 14px !important; }
+    @media (max-width: 767.98px) { .main { padding-top: 72px !important; } }
+    .role-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 18px;
+        border-radius: 10px;
+        margin-bottom: 16px;
+    }
+    .role-banner i, .role-banner svg { flex-shrink: 0; margin-top: 2px; }
+    .role-banner-text { flex: 1; min-width: 0; }
+    .role-banner-title { font-weight: 700; font-size: 14px; line-height: 1.4; }
+    .role-banner-subtitle {
+        font-size: 13px;
+        line-height: 1.5;
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+    .page-subtitle {
+        color: #6B7280;
+        font-size: 0.875rem;
+        margin: 0;
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        line-height: 1.5;
+    }
+</style>
+
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <i data-lucide="file-text" style="width:24px;height:24px"></i>
         <span>Social Case Study</span>
     </div>
     <ul class="sidebar-menu">
-        <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i> Dashboard</a></li>
-        <li><a href="/admin/social-case/new" class="active"><i data-lucide="user-plus" style="width:20px;height:20px"></i> New case</a></li>
-        <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i> All cases</a></li>
-        <li><a href="/admin/social-case/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
-        <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
+        <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
+        <li><a href="/admin/social-case/new" class="active"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>New case</span></a></li>
+        @if((string) session('admin_user_role') === 'eligibility_checker')
+        <li><a href="#" onclick="return false" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for eligibility checker accounts"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
+        @else
+        <li><a href="/admin/social-case/submitted"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
+        @endif
+        <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i><span>All cases</span></a></li>
+        <li><a href="/admin/social-case/archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
+        @if((string) session('admin_user_role') === 'eligibility_checker' || (string) session('admin_user_role') === 'social_worker')
+        <li class="sidebar-dropdown" id="onlineRequestsDropdown">
+            <a href="#" class="sidebar-dropdown-toggle" onclick="toggleDropdown('onlineRequestsDropdown'); return false;">
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <i data-lucide="file-text" style="width:20px;height:20px"></i>
+                    <span>Online Requests</span>
+                </div>
+                <i data-lucide="chevron-down" style="width:16px;height:16px"></i>
+            </a>
+            <ul class="sidebar-dropdown-menu">
+                <li><a href="/admin/social-case/online-requests">Pending Requests</a></li>
+                <li><a href="/admin/social-case/online-requests/accepted">Accepted Requests</a></li>
+                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests</a></li>
+            </ul>
+        </li>
+        @endif
+        <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a></li>
     </ul>
 </div>
 
 <div class="main">
     <!-- Modern Page Header -->
     @php
-        $userName = session('admin_user_name') ?? 'Admin User';
+        $userName = 'Social Case Study Officer';
         $words = explode(' ', $userName);
         $initials = '';
         if (count($words) >= 2) {
@@ -28,21 +112,20 @@
             $initials = strtoupper(substr($userName, 0, 2));
         }
     @endphp
-    <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
-        <div class="flex items-center">
-            <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Create Social Case Study</h1>
-        </div>
-        <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-            <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime">Thursday, July 16, 2026 at 01:51 PM</div>
-            <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
-                {{ $initials }}
-            </div>
-        </div>
-    </header>
-
     <!-- Page Sub-Header -->
-    <div class="mb-6">
-        <p class="text-[#6B7280] text-sm m-0">Step 1 of 2 — Search for an existing client and verify eligibility before starting a new Social Case Study.</p>
+    <div style="margin-bottom:20px;">
+        @if($canCheckEligibility && !$canEncode)
+            <div class="role-banner" style="background:#EEF2FF;border:1px solid #C7D2FE;">
+                <i data-lucide="shield-check" style="width:20px;height:20px;color:#4338CA;"></i>
+                <div class="role-banner-text">
+                    <div class="role-banner-title" style="color:#4338CA;">Eligibility Checking Only</div>
+                    <div class="role-banner-subtitle" style="color:#4F46E5;">Your account is responsible for verifying client eligibility. Eligible clients are forwarded to the case encoder for Social Case Study encoding.</div>
+                </div>
+            </div>
+            <p class="page-subtitle">Search for an existing client, verify their eligibility, then submit eligible clients for case encoding.</p>
+        @else
+            <p class="page-subtitle">Step 1 of 2 — Search for an existing client and verify eligibility before starting a new Social Case Study. Clients forwarded by the eligibility checker are listed below.</p>
+        @endif
     </div>
 
     <!-- Progress Stepper -->
@@ -54,9 +137,23 @@
         <div class="step-connector"></div>
         <div class="step inactive">
             <div class="step-number">2</div>
-            <span>Case Encoding</span>
+            <span>{{ $canEncode ? 'Case Encoding' : 'Forward to Encoder' }}</span>
         </div>
     </div>
+
+    @if($canEncode)
+    <!-- Encoder Queue: clients forwarded by the eligibility checker -->
+    <div class="panel" style="margin-bottom:24px">
+        <h3 style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+            <i data-lucide="inbox" style="width:18px;height:18px;color:var(--icon-blue)"></i>
+            Clients For Case Encoding
+        </h3>
+        <p style="font-size:13px;color:var(--text-muted);margin:0 0 12px">Clients that already passed eligibility checking and are waiting to be encoded.</p>
+        <div id="encoderQueue" style="max-height:280px;overflow-y:auto">
+            <div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">Loading...</div>
+        </div>
+    </div>
+    @endif
 
     <!-- Two Column Layout -->
     <div class="two-column">
@@ -79,35 +176,6 @@
 
                 <!-- Search Results -->
                 <div id="searchResults" class="search-results" style="display:none;"></div>
-            </div>
-
-            <!-- Client Summary (shown after selection) -->
-            <div id="clientSummary" class="client-summary" style="display:none;">
-                <div class="client-summary-header">
-                    <div class="client-avatar" id="clientAvatar">JD</div>
-                    <div>
-                        <div class="client-name" id="clientNameDisplay">Juan Dela Cruz</div>
-                        <div style="font-size:12px;color:var(--text-muted)">Selected Client</div>
-                    </div>
-                </div>
-                <div class="client-info-grid">
-                    <div class="client-info-item">
-                        <span class="client-info-label">Age</span>
-                        <span class="client-info-value" id="clientAge">52</span>
-                    </div>
-                    <div class="client-info-item">
-                        <span class="client-info-label">Sex</span>
-                        <span class="client-info-value" id="clientSex">Male</span>
-                    </div>
-                    <div class="client-info-item">
-                        <span class="client-info-label">Barangay</span>
-                        <span class="client-info-value" id="clientBarangay">Biluso</span>
-                    </div>
-                    <div class="client-info-item">
-                        <span class="client-info-label">Last Case Study</span>
-                        <span class="client-info-value" id="clientLastCase">None</span>
-                    </div>
-                </div>
             </div>
 
             <!-- Eligibility Status -->
@@ -140,6 +208,7 @@
                         <div class="workflow-step-number">2</div>
                         <span>Check Eligibility</span>
                     </div>
+                    @if($canEncode)
                     <div class="workflow-step-arrow"><i data-lucide="arrow-down" style="width:12px;height:12px"></i></div>
                     <div class="workflow-step" id="workflowStep3">
                         <div class="workflow-step-number">3</div>
@@ -150,6 +219,13 @@
                         <div class="workflow-step-number">4</div>
                         <span>Complete Encoding</span>
                     </div>
+                    @else
+                    <div class="workflow-step-arrow"><i data-lucide="arrow-down" style="width:12px;height:12px"></i></div>
+                    <div class="workflow-step" id="workflowStep3">
+                        <div class="workflow-step-number">3</div>
+                        <span>Submit to Case Encoder</span>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -158,8 +234,15 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/social-case.js') }}"></script>
+<script src="{{ asset('js/social-case.js') . '?v=' . filemtime(public_path('js/social-case.js')) }}"></script>
 <script>
+function toggleDropdown(id) {
+    const dropdown = document.getElementById(id);
+    if (dropdown) {
+        dropdown.classList.toggle('open');
+    }
+}
+
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
         loadNewCase();

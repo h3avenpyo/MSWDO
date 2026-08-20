@@ -13,135 +13,35 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root{--primary:#1A237E;--primary-hover:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+        :root{--primary:#1A237E;--primary-hover:#121858;--primary-dark:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
         *,*::before,*::after{box-sizing:border-box;}
         html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100%;overflow-x:hidden;overflow-y:auto;}
         body{font-size:14px;line-height:1.5;}
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
-        .app{display:flex;min-height:100vh;}
-        .sidebar{width:260px;flex-shrink:0;background:var(--primary);color:#FFF;position:fixed;left:0;top:0;height:100vh;z-index:1000;display:flex;flex-direction:column;transition:transform .3s ease;}
-        .sidebar-brand{height:72px;padding:0 1.5rem;border-bottom:1px solid rgba(255,255,255,.1);color:#fff;font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:.65rem;}
-        .sidebar-brand i,.sidebar-brand [data-lucide]{width:24px;height:24px;color:var(--accent-yellow);}
-        .sidebar-menu{list-style:none;margin:0;padding:1rem 0;flex:1;}
-        .sidebar-menu li{margin-bottom:.2rem;}
-        .sidebar-menu a{color:rgba(255,255,255,.75);padding:.75rem 1.5rem;display:flex;align-items:center;gap:.75rem;text-decoration:none;font-size:.9rem;border-left:3px solid transparent;transition:all .2s ease;}
-        .sidebar-menu a:hover{background:rgba(255,255,255,.1);color:var(--accent-yellow);}
-        .sidebar-menu a.active{background:rgba(255,255,255,.1);color:var(--accent-yellow);border-left-color:var(--accent-yellow);}
-        .sidebar-menu a i,.sidebar-menu a [data-lucide]{width:20px;height:20px;text-align:center;}
-        .main{flex:1;min-width:0;margin-left:260px;padding:32px;max-width:calc(100% - 260px);display:flex;flex-direction:column;min-height:100vh;overflow-y:auto;overflow-x:hidden;}
-        .form-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:32px;flex:1;overflow-y:auto;min-height:0;}
+        .form-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:32px;overflow:visible;}
         .form-label{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.3px;}
-        .form-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text-primary);outline:none;transition:border-color .2s,box-shadow .2s;font-family:var(--font-family);}
+        .form-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text-primary);outline:none;transition:border-color .2s,box-shadow .2s;font-family:var(--font-family);height:44px;}
         .form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.1);}
         .form-input::placeholder{color:var(--text-muted);}
         select.form-input{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right .75rem center;background-size:1rem;padding-right:2.5rem;}
-        textarea.form-input{resize:vertical;min-height:80px;}
+        textarea.form-input{resize:vertical;height:auto;min-height:80px;}
+        input[type="date"].form-input{min-height:44px;appearance:none;-webkit-appearance:none;position:relative;background-image:none;padding-right:14px;}
         .btn{border:1px solid var(--border);background:var(--surface);color:var(--text-primary);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:8px;box-shadow:var(--shadow);transition:all .2s ease;height:42px;cursor:pointer;text-decoration:none;}
         .btn:hover{border-color:var(--primary);transform:translateY(-1px);}
         .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary);}
         .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);}
 
-        /* ── Sidebar Overlay ── */
-        .sidebar-overlay.active { display: block !important; }
-
-        /* ── Hamburger Button ── */
-        .hamburger-btn {
-            display: none;
-            position: fixed;
-            top: 12px;
-            left: 12px;
-            z-index: 1002;
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            width: 44px;
-            height: 44px;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            transition: background 0.2s;
-        }
-        .hamburger-btn:hover { background: var(--primary-hover); }
-
-        /* ── Responsive: Tablet (< 1024px) ── */
-        @media (max-width: 1023px) {
-            .hamburger-btn { display: flex; }
-            .sidebar { transform: translateX(-100%) !important; z-index: 1001 !important; }
-            .sidebar.show { transform: translateX(0) !important; }
-            .main, .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 16px !important; padding-top: 64px !important; }
-            .stat-cards { grid-template-columns: repeat(2, 1fr) !important; }
-            .dashboard-grid { grid-template-columns: 1fr !important; }
-        }
-
-        /* ── Responsive: Mobile (< 768px) ── */
-        @media (max-width: 767px) {
-            .main, .main-content { padding: 12px !important; padding-top: 64px !important; }
-            .stat-cards { grid-template-columns: 1fr !important; }
-            .topnav, .top-navbar { padding: 10px 12px !important; }
-            .topnav-datetime, .navbar-datetime { display: none !important; }
-            .filter-bar, .filter-group { flex-wrap: wrap; }
-            .filter-bar > div, .filter-group > div { min-width: 0 !important; }
-        }
-
-        /* ── Responsive: Small Mobile (< 480px) ── */
-        @media (max-width: 479px) {
-            .stat-card-icon { width: 40px !important; height: 40px !important; }
-            .stat-card-value { font-size: 24px !important; }
-            .stat-cards { gap: 12px !important; }
-        }
+        input[type="date"].form-input{background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3e%3cline x1='16' y1='2' x2='16' y2='6'/%3e%3cline x1='8' y1='2' x2='8' y2='6'/%3e%3cline x1='3' y1='10' x2='21' y2='10'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-right:36px;}
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
     </style>
 </head>
 <body>
 <div class="app">
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-brand">
-            <i data-lucide="users" style="width:24px;height:24px"></i>
-            <span>Senior Citizen</span>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="/admin/senior"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i> Dashboard</a></li>
-            <li><a href="/admin/senior/registration" class="active"><i data-lucide="user-plus" style="width:20px;height:20px"></i> Registration</a></li>
-            <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i> Masterlist</a></li>
-            <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i> Birthday Beneficiaries</a></li>
-            <li><a href="/admin/senior/birthday-payouts"><i data-lucide="banknote" style="width:20px;height:20px"></i> Birthday Payouts</a></li>
-            <li><a href="/admin/senior/birthday-payouts/history"><i data-lucide="history" style="width:20px;height:20px"></i> Payout History</a></li>
-            <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i> Statistics</a></li>
-            <li><a href="/admin/senior/reports"><i data-lucide="file-text" style="width:20px;height:20px"></i> Reports</a></li>
-            <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i> Archive</a></li>
-            <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i> Logout</a></li>
-        </ul>
-    </div>
- <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
-
-    <!-- Hamburger Button (fixed position) -->
-    <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
-        <i data-lucide="menu" style="width:24px;height:24px"></i>
-    </button>
+    @include('admin.senior.partials.navigation', ['active' => 'registration', 'mobileSubtitle' => 'Senior Citizen Registration'])
 
     <!-- Main Content -->
     <div class="main">
-        @php
-            $userName = session('admin_user_name') ?? 'Admin User';
-            $words = explode(' ', $userName);
-            $initials = count($words) >= 2 ? strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1)) : strtoupper(substr($userName, 0, 2));
-        @endphp
-
-        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8">
-            <div class="flex items-center">
-                <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Senior Citizen Registration</h1>
-            </div>
-            <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-                <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime"></div>
-                <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
-                    {{ $initials }}
-                </div>
-            </div>
-        </header>
-
+        <div class="main-scroll">
         <div class="form-card">
             <h2 class="text-lg font-bold mb-1">Register Senior Citizen</h2>
             <p class="text-sm mb-6" style="color:var(--text-secondary)">Fill in the details below to register a new senior citizen.</p>
@@ -263,7 +163,7 @@
                         <label class="form-label">PhilSys Number <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
                         <input type="text" name="philsys_number" class="form-input" placeholder="Enter 12-digit PhilSys number" pattern="[0-9]{12}" maxlength="12" value="{{ old('philsys_number') }}">
                     </div>
-                    <div>
+                    <div class="lg:col-span-2">
                         <label class="form-label">RRN Number <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
                         <input type="text" name="rrn_number" class="form-input" placeholder="Enter 29-digit RRN number" pattern="[0-9]{29}" maxlength="29" value="{{ old('rrn_number') }}">
                     </div>
@@ -280,63 +180,14 @@
                 </div>
             </form>
         </div>
+        </div>
     </div>
 </div>
+
 
 <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display:none">@csrf</form>
 
 <script>
-    function updateDateTime(){
-        const now=new Date();
-        const opts={weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true};
-        document.getElementById('currentDateTime').textContent=now.toLocaleDateString('en-US',opts).replace(',',' at');
-    }
-    updateDateTime();setInterval(updateDateTime,60000);
-
-    function toggleSidebar() {
-        var sidebar = document.getElementById('sidebar');
-        var overlay = document.getElementById('sidebarOverlay');
-        if (sidebar.classList.contains('show')) {
-            sidebar.classList.remove('show');
-            if (overlay) overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        } else {
-            sidebar.classList.add('show');
-            if (overlay) overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-    }
-    (function() {
-        var overlay = document.getElementById('sidebarOverlay');
-        if (overlay) overlay.addEventListener('click', function() {
-            var sidebar = document.getElementById('sidebar');
-            if (sidebar) sidebar.classList.remove('show');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        });
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                var sidebar = document.getElementById('sidebar');
-                if (sidebar && sidebar.classList.contains('show')) {
-                    sidebar.classList.remove('show');
-                    if (overlay) overlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            }
-        });
-        window.addEventListener('resize', function() {
-            if (window.innerWidth >= 1024) {
-                var sidebar = document.getElementById('sidebar');
-                var ov = document.getElementById('sidebarOverlay');
-                if (sidebar && sidebar.classList.contains('show')) {
-                    sidebar.classList.remove('show');
-                    if (ov) ov.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            }
-        });
-    })();
-
     // Input validation - prevent invalid characters
     document.addEventListener('DOMContentLoaded', function() {
         const contactNumberInput = document.querySelector('[name="contact_number"]');
@@ -452,12 +303,23 @@
         }else{controlNumberField.value='';}
     }
 
-    function confirmLogout(e){
-        e.preventDefault();
-        Swal.fire({title:'Are you sure?',text:'Do you really want to log out?',icon:'warning',showCancelButton:true,confirmButtonColor:'#1A237E',cancelButtonColor:'#EF4444',confirmButtonText:'Yes, log out',cancelButtonText:'Cancel',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}}).then(r=>{if(r.isConfirmed)document.getElementById('logout-form').submit();});
+    function toggleMobileMoreNav(){
+        const extra=document.getElementById('mobileNavExtra');
+        const icon=document.getElementById('mobileMoreIcon');
+        if(!extra) return;
+        if(extra.style.display==='none'||extra.style.display===''){
+            extra.style.display='flex';
+            if(icon){icon.setAttribute('data-lucide','chevron-down');lucide.createIcons();}
+        } else {
+            extra.style.display='none';
+            if(icon){icon.setAttribute('data-lucide','chevron-up');lucide.createIcons();}
+        }
     }
 
     lucide.createIcons();
 </script>
 </body>
 </html>
+
+
+
