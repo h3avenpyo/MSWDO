@@ -74,6 +74,7 @@
             @endif
         </div>
     </div>
+    <a href="/admin" class="mobile-login-btn">Login</a>
 </div>
 
 <!-- Desktop Navbar (visible only on laptop/desktop) -->
@@ -100,6 +101,7 @@
         <li><a href="#about">About</a></li>
         <li><a href="#programs">Programs</a></li>
         <li><a href="#contact">Contact</a></li>
+        <li><a href="/admin" class="navbar-login-btn">Login</a></li>
     </ul>
 </nav>
 
@@ -758,6 +760,7 @@ View Services
 .mobile-menu-btn{display:flex;align-items:center;justify-content:center;background:transparent;border:none;outline:none;color:#ffffff;cursor:pointer;padding:8px;flex-shrink:0;margin-right:24px;}
 .mobile-menu-btn:focus{outline:none;}
 .mobile-menu-icon{width:32px;height:32px;}
+.mobile-login-btn{background:transparent;color:#fff;padding:0.5rem 1rem;border-radius:6px;font-weight:600;font-size:0.875rem;text-decoration:none;flex-shrink:0;}
 
 .hamburger-btn{display:flex;}
 .sidebar{transform:translateX(-100%)!important;z-index:1001!important;}
@@ -782,6 +785,7 @@ body{padding-left:0!important;padding-top:80px!important;}
 .navbar-menu li{margin:0;}
 .navbar-menu a{color:#fff;text-decoration:none;font-size:0.95rem;font-weight:500;padding:0.5rem 0;transition:color .2s ease,opacity .2s ease;opacity:0.9;}
 .navbar-menu a:hover{color:#FBC02D;opacity:1;}
+.navbar-login-btn{background:transparent;color:#fff;padding:0.6rem 1.5rem;border-radius:8px;font-weight:600;}
 
 .contact-section {
     padding: 7rem 1.5rem;
