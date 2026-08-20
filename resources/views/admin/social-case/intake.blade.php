@@ -50,31 +50,27 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         @if((string) session('admin_user_role') === 'eligibility_checker')
         <li class="sidebar-dropdown" id="onlineRequestsDropdown">
             <a href="#" class="sidebar-dropdown-toggle" onclick="toggleDropdown('onlineRequestsDropdown'); return false;">
-                <div style="display:flex;align-items:center;gap:0.75rem;">
-                    <i data-lucide="file-text" style="width:20px;height:20px"></i>
-                    <span>Online Requests</span>
-                </div>
-                <i data-lucide="chevron-down" style="width:16px;height:16px"></i>
+                <i data-lucide="file-text" style="width:20px;height:20px"></i>
+                <span>Online Requests</span>
+                <i data-lucide="chevron-down" class="dropdown-chevron" style="width:16px;height:16px;margin-left:auto;"></i>
             </a>
             <ul class="sidebar-dropdown-menu">
-                <li><a href="/admin/social-case/online-requests">Pending Requests</a></li>
-                <li><a href="/admin/social-case/online-requests/accepted">Accepted Requests</a></li>
-                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests</a></li>
+                <li><a href="/admin/social-case/online-requests"><i data-lucide="clock" style="width:18px;height:18px"></i><span>Pending Requests</span><span class="badge-count badge-pending" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#F59E0B;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['pending'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/accepted"><i data-lucide="check-circle" style="width:18px;height:18px"></i><span>Accepted Requests</span><span class="badge-count badge-accepted" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#10B981;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['accepted'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/rejected"><i data-lucide="x-circle" style="width:18px;height:18px"></i><span>Rejected Requests</span><span class="badge-count badge-rejected" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#EF4444;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['rejected'] ?? 0 }}</span></a></li>
             </ul>
         </li>
         @elseif((string) session('admin_user_role') === 'social_worker')
         <li class="sidebar-dropdown" id="onlineRequestsDropdown">
             <a href="#" class="sidebar-dropdown-toggle" onclick="return false;" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for case encoding accounts">
-                <div style="display:flex;align-items:center;gap:0.75rem;">
-                    <i data-lucide="file-text" style="width:20px;height:20px"></i>
-                    <span>Online Requests</span>
-                </div>
-                <i data-lucide="chevron-down" style="width:16px;height:16px"></i>
+                <i data-lucide="file-text" style="width:20px;height:20px"></i>
+                <span>Online Requests</span>
+                <i data-lucide="chevron-down" class="dropdown-chevron" style="width:16px;height:16px;margin-left:auto;"></i>
             </a>
             <ul class="sidebar-dropdown-menu">
-                <li><a href="/admin/social-case/online-requests">Pending Requests</a></li>
-                <li><a href="/admin/social-case/online-requests/accepted">Accepted Requests</a></li>
-                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests</a></li>
+                <li><a href="/admin/social-case/online-requests"><i data-lucide="clock" style="width:18px;height:18px"></i><span>Pending Requests</span><span class="badge-count badge-pending" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#F59E0B;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['pending'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/accepted"><i data-lucide="check-circle" style="width:18px;height:18px"></i><span>Accepted Requests</span><span class="badge-count badge-accepted" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#10B981;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['accepted'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/rejected"><i data-lucide="x-circle" style="width:18px;height:18px"></i><span>Rejected Requests</span><span class="badge-count badge-rejected" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#EF4444;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['rejected'] ?? 0 }}</span></a></li>
             </ul>
         </li>
         @endif

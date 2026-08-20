@@ -4,6 +4,24 @@
 
 @section('content')
 <style>
+    /* Resets & Base Layout */
+    html, body {
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+    }
+    .main {
+        display: flex !important;
+        flex-direction: column !important;
+        padding-top: 14px !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+    }
+    @media (max-width: 767.98px) {
+        .main {
+            padding-top: 72px !important;
+        }
+    }
+
     /* Panel & Table Styles */
     .online-requests-panel {
         background: #fff;
@@ -12,7 +30,6 @@
         overflow: hidden;
         margin-bottom: 0;
         padding: 0;
-        height: 80vh;
         display: flex;
         flex-direction: column;
     }
@@ -23,8 +40,6 @@
         border: 1px solid #E5E7EB;
         border-radius: 8px;
         background: #fff;
-        flex: 1;
-        min-height: 0;
     }
     
     /* Table Base */
@@ -56,6 +71,9 @@
     #onlineRequestsTable tbody tr:last-child {
         border-bottom: none;
     }
+    #onlineRequestsTable tbody tr:hover {
+        background: #F8FAFC;
+    }
     #onlineRequestsTable tbody td {
         padding: 12px 14px;
         font-size: 0.875rem;
@@ -64,41 +82,41 @@
         border-bottom: 1px solid #F1F5F9;
     }
     
-    /* Column specific spacing */
+    /* Column specific spacing (Desktop) */
     #onlineRequestsTable tbody td[data-label="Name"] {
-        min-width: 200px;
+        min-width: 180px;
         font-weight: 600;
         color: #0F172A;
         white-space: normal;
         word-break: break-word;
     }
     #onlineRequestsTable tbody td[data-label="Contact"] {
-        min-width: 140px;
+        min-width: 130px;
         white-space: nowrap;
         color: #475569;
     }
     #onlineRequestsTable tbody td[data-label="Service Type"] {
-        min-width: 150px;
+        min-width: 140px;
         white-space: nowrap;
         color: #475569;
     }
     #onlineRequestsTable tbody td[data-label="Assistance Type"] {
-        min-width: 150px;
+        min-width: 140px;
         white-space: nowrap;
         color: #475569;
     }
     #onlineRequestsTable tbody td[data-label="Barangay"] {
-        min-width: 140px;
+        min-width: 130px;
         white-space: nowrap;
         color: #475569;
     }
     #onlineRequestsTable tbody td[data-label="Date Accepted"] {
-        min-width: 140px;
+        min-width: 130px;
         white-space: nowrap;
         color: #475569;
     }
     #onlineRequestsTable tbody td[data-label="Action"] {
-        min-width: 100px;
+        min-width: 90px;
         white-space: nowrap;
     }
     
@@ -116,12 +134,20 @@
     }
     
     /* Empty State */
+    .empty-row {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
     .empty-cell {
-        padding: 0 !important;
+        padding: 3rem 1rem !important;
         text-align: center !important;
         border: none !important;
         vertical-align: middle !important;
-        height: 100%;
+    }
+    .empty-cell::before {
+        display: none !important;
+        content: none !important;
     }
     .empty-state-content {
         display: flex;
@@ -131,7 +157,7 @@
         text-align: center;
         gap: 12px;
         padding: 2rem 1rem;
-        margin-top: 120px;
+        margin: 20px auto;
     }
     .empty-icon-wrap {
         width: 72px;
@@ -190,10 +216,17 @@
         border-radius: 6px;
         background: #fff;
         color: #374151;
+        font-size: 0.813rem;
+        font-weight: 500;
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
         transition: all 0.2s;
+        text-decoration: none;
     }
-    .sc-page-btn:hover:not(:disabled) {
+    .sc-page-btn:hover:not([disabled]):not(.active) {
         background: #F8FAFC;
         border-color: #CBD5E1;
     }
@@ -201,7 +234,9 @@
         background: #1A237E;
         color: #fff;
         border-color: #1A237E;
+        font-weight: 700;
     }
+    .sc-page-btn[disabled],
     .sc-page-btn:disabled {
         opacity: 0.5;
         cursor: not-allowed;
@@ -219,6 +254,7 @@
         cursor: pointer;
         transition: all 0.2s;
         border: none;
+        text-decoration: none;
     }
     .btn-primary {
         background: #1A237E;
@@ -230,6 +266,178 @@
     .btn-sm {
         padding: 6px 12px;
         font-size: 13px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       MOBILE & TABLET (< 1200px): CARD VIEW
+    ═══════════════════════════════════════════════════════════════ */
+    @media (max-width: 1199.98px) {
+        .online-requests-panel {
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+        }
+        .online-requests-table-wrap {
+            overflow: visible !important;
+            border: none !important;
+            background: transparent !important;
+        }
+        
+        #onlineRequestsTable,
+        #onlineRequestsTable thead,
+        #onlineRequestsTable tbody,
+        #onlineRequestsTable tbody tr,
+        #onlineRequestsTable tbody td {
+            display: block !important;
+            width: 100% !important;
+        }
+        #onlineRequestsTable {
+            min-width: 0 !important;
+        }
+        #onlineRequestsTable thead {
+            display: none !important;
+        }
+        
+        #onlineRequestsTable tbody tr:not(.empty-row) {
+            background: #ffffff !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 12px !important;
+            margin-bottom: 12px !important;
+            padding: 14px 18px !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        #onlineRequestsTable tbody tr:not(.empty-row):hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+        }
+        
+        #onlineRequestsTable tbody td {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 8px 0 !important;
+            border-bottom: 1px solid #F1F5F9 !important;
+            font-size: 0.875rem !important;
+            gap: 12px !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+            max-width: none !important;
+            overflow: visible !important;
+            min-width: 0 !important;
+            text-align: right;
+        }
+        #onlineRequestsTable tbody td:last-child {
+            border-bottom: none !important;
+        }
+        #onlineRequestsTable tbody td::before {
+            content: attr(data-label) !important;
+            font-weight: 700 !important;
+            font-size: 0.75rem !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.04em !important;
+            color: #64748B !important;
+            flex-shrink: 0 !important;
+            min-width: 110px !important;
+            text-align: left;
+            display: block !important;
+        }
+        #onlineRequestsTable tbody td .req-val-wrap {
+            text-align: right;
+        }
+        #onlineRequestsTable tbody td[data-label="Action"] {
+            justify-content: flex-end !important;
+            padding-top: 12px !important;
+            border-bottom: none !important;
+        }
+        #onlineRequestsTable tbody td[data-label="Action"]::before {
+            display: none !important;
+        }
+        
+        #onlineRequestsTable tbody tr.empty-row {
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            padding: 0 !important;
+        }
+        #onlineRequestsTable tbody tr.empty-row td {
+            border-bottom: none !important;
+            justify-content: center !important;
+            text-align: center !important;
+        }
+        #onlineRequestsTable tbody tr.empty-row td::before {
+            display: none !important;
+        }
+    }
+
+    /* Small Screens (< 768px) */
+    @media (max-width: 767.98px) {
+        .sc-pagination {
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .sc-pagination-controls {
+            justify-content: center;
+        }
+    }
+
+    /* Extra Small Devices (< 480px) */
+    @media (max-width: 479px) {
+        #onlineRequestsTable tbody td::before {
+            min-width: 85px !important;
+            font-size: 0.7rem !important;
+        }
+        #onlineRequestsTable tbody td {
+            font-size: 0.813rem !important;
+            padding: 6px 0 !important;
+        }
+        #onlineRequestsTable tbody tr:not(.empty-row) {
+            padding: 12px 14px !important;
+        }
+    }
+
+    /* Large Desktop (>= 1200px) */
+    @media (min-width: 1200px) {
+        html, body {
+            overflow: hidden !important;
+        }
+        .app {
+            height: 100vh !important;
+            overflow: hidden !important;
+        }
+        .main {
+            height: 100vh !important;
+            overflow: hidden !important;
+        }
+        .online-requests-panel {
+            flex: 1;
+            min-height: 0;
+            height: auto;
+        }
+        .online-requests-table-wrap {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+        }
+    }
+
+    /* Responsive Modal Styles */
+    .modal-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+    @media (max-width: 575.98px) {
+        .modal-grid-2 {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+        }
+        .swal2-popup {
+            padding: 14px 10px !important;
+            width: 95vw !important;
+        }
     }
 
     /* ── Sidebar Badge Styling ── */
@@ -313,16 +521,14 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         @if((string) session('admin_user_role') === 'eligibility_checker' || (string) session('admin_user_role') === 'social_worker')
         <li class="sidebar-dropdown open" id="onlineRequestsDropdown">
             <a href="#" class="sidebar-dropdown-toggle" onclick="toggleDropdown('onlineRequestsDropdown'); return false;">
-                <div style="display:flex;align-items:center;gap:0.75rem;">
-                    <i data-lucide="file-text" style="width:20px;height:20px"></i>
-                    <span>Online Requests</span>
-                </div>
-                <i data-lucide="chevron-down" style="width:16px;height:16px"></i>
+                <i data-lucide="file-text" style="width:20px;height:20px"></i>
+                <span>Online Requests</span>
+                <i data-lucide="chevron-down" class="dropdown-chevron" style="width:16px;height:16px;margin-left:auto;"></i>
             </a>
             <ul class="sidebar-dropdown-menu">
-                <li><a href="/admin/social-case/online-requests">Pending Requests <span class="badge-count badge-pending" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#F59E0B;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['pending'] ?? 0 }}</span></a></li>
-                <li><a href="/admin/social-case/online-requests/accepted" class="active">Accepted Requests <span class="badge-count badge-accepted" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#10B981;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['accepted'] ?? 0 }}</span></a></li>
-                <li><a href="/admin/social-case/online-requests/rejected">Rejected Requests <span class="badge-count badge-rejected" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#EF4444;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['rejected'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests"><i data-lucide="clock" style="width:18px;height:18px"></i><span>Pending Requests</span><span class="badge-count badge-pending" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#F59E0B;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['pending'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/accepted" class="active"><i data-lucide="check-circle" style="width:18px;height:18px"></i><span>Accepted Requests</span><span class="badge-count badge-accepted" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#10B981;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['accepted'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/rejected"><i data-lucide="x-circle" style="width:18px;height:18px"></i><span>Rejected Requests</span><span class="badge-count badge-rejected" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#EF4444;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['rejected'] ?? 0 }}</span></a></li>
             </ul>
         </li>
         @endif
@@ -356,20 +562,22 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                     @forelse($acceptedRequests as $req)
                     <tr data-name="{{ $req->first_name }} {{ $req->last_name }}">
                         <td data-label="Name">
-                            <div style="display:flex;align-items:center;flex-wrap:wrap;position:relative;">
-                                <span>{{ $req->first_name }} {{ $req->last_name }}</span>
+                            <div class="req-val-wrap">
+                                <div style="font-weight: 600; color: #0F172A;">{{ $req->first_name }} {{ $req->last_name }}</div>
+                                <div class="text-xs text-slate-500">{{ $req->email }}</div>
                             </div>
-                            <div class="text-xs text-slate-500">{{ $req->email }}</div>
                         </td>
-                        <td data-label="Contact">{{ $req->contact_number }}</td>
-                        <td data-label="Service Type">{{ ucfirst(str_replace('_', ' ', $req->service_type)) }}</td>
-                        <td data-label="Assistance Type">{{ ucfirst(str_replace('_', ' ', $req->assistance_type)) }}</td>
-                        <td data-label="Barangay">{{ $req->barangay }}</td>
-                        <td data-label="Date Accepted">{{ $req->updated_at->format('M d, Y') }}</td>
+                        <td data-label="Contact"><span class="req-val-wrap">{{ $req->contact_number }}</span></td>
+                        <td data-label="Service Type"><span class="req-val-wrap">{{ ucfirst(str_replace('_', ' ', $req->service_type)) }}</span></td>
+                        <td data-label="Assistance Type"><span class="req-val-wrap">{{ ucfirst(str_replace('_', ' ', $req->assistance_type)) }}</span></td>
+                        <td data-label="Barangay"><span class="req-val-wrap">{{ $req->barangay }}</span></td>
+                        <td data-label="Date Accepted"><span class="req-val-wrap">{{ $req->updated_at->format('M d, Y') }}</span></td>
                         <td data-label="Action">
-                            <button class="btn btn-primary btn-sm" onclick="viewOnlineRequest({{ $req->id }})" title="View">
-                                <i data-lucide="eye" style="width:14px;height:14px"></i> View
-                            </button>
+                            <div class="req-val-wrap">
+                                <button class="btn btn-primary btn-sm" onclick="viewOnlineRequest({{ $req->id }})" title="View">
+                                    <i data-lucide="eye" style="width:14px;height:14px"></i> View
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @empty
@@ -392,42 +600,41 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     <!-- Pagination -->
     <div class="sc-pagination">
-            <div class="sc-pagination-info">
-                @if($acceptedRequests->count() > 0)
-                    Showing {{ $acceptedRequests->firstItem() }} to {{ $acceptedRequests->lastItem() }} of {{ $acceptedRequests->total() }} requests
-                @else
-                    Showing 0 of 0 requests
-                @endif
-            </div>
-            <div class="sc-pagination-controls">
-                @if($acceptedRequests->hasPages())
-                    @if($acceptedRequests->onFirstPage())
-                        <span class="sc-page-btn" disabled>Previous</span>
-                    @else
-                        <a href="{{ $acceptedRequests->previousPageUrl() }}" class="sc-page-btn">Previous</a>
-                    @endif
-                    
-                    @foreach($acceptedRequests->getUrlRange(1, $acceptedRequests->lastPage()) as $page => $url)
-                        @if($page == $acceptedRequests->currentPage())
-                            <span class="sc-page-btn active">{{ $page }}</span>
-                        @else
-                            <a href="{{ $url }}" class="sc-page-btn">{{ $page }}</a>
-                        @endif
-                    @endforeach
-                    
-                    @if($acceptedRequests->hasMorePages())
-                        @if($acceptedRequests->onLastPage())
-                            <span class="sc-page-btn" disabled>Next</span>
-                        @else
-                            <a href="{{ $acceptedRequests->nextPageUrl() }}" class="sc-page-btn">Next</a>
-                        @endif
-                    @endif
-                @else
+        <div class="sc-pagination-info">
+            @if($acceptedRequests->count() > 0)
+                Showing {{ $acceptedRequests->firstItem() }} to {{ $acceptedRequests->lastItem() }} of {{ $acceptedRequests->total() }} requests
+            @else
+                Showing 0 of 0 requests
+            @endif
+        </div>
+        <div class="sc-pagination-controls">
+            @if($acceptedRequests->hasPages())
+                @if($acceptedRequests->onFirstPage())
                     <span class="sc-page-btn" disabled>Previous</span>
-                    <span class="sc-page-btn active">1</span>
-                    <span class="sc-page-btn" disabled>Next</span>
+                @else
+                    <a href="{{ $acceptedRequests->previousPageUrl() }}" class="sc-page-btn">Previous</a>
                 @endif
-            </div>
+                
+                @foreach($acceptedRequests->getUrlRange(1, $acceptedRequests->lastPage()) as $page => $url)
+                    @if($page == $acceptedRequests->currentPage())
+                        <span class="sc-page-btn active">{{ $page }}</span>
+                    @else
+                        <a href="{{ $url }}" class="sc-page-btn">{{ $page }}</a>
+                    @endif
+                @endforeach
+                
+                @if($acceptedRequests->hasMorePages())
+                    @if($acceptedRequests->onLastPage())
+                        <span class="sc-page-btn" disabled>Next</span>
+                    @else
+                        <a href="{{ $acceptedRequests->nextPageUrl() }}" class="sc-page-btn">Next</a>
+                    @endif
+                @endif
+            @else
+                <span class="sc-page-btn" disabled>Previous</span>
+                <span class="sc-page-btn active">1</span>
+                <span class="sc-page-btn" disabled>Next</span>
+            @endif
         </div>
     </div>
 </div>
@@ -459,7 +666,7 @@ function viewOnlineRequest(id) {
                     <div style="text-align: left; padding: 10px;">
                         <div style="background: #F8FAFC; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
                             <h4 style="margin: 0 0 12px 0; color: #1A237E; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Personal Information</h4>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="modal-grid-2">
                                 <div>
                                     <span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Full Name</span>
                                     <span style="font-size: 14px; color: #1F2937; font-weight: 500;">${data.first_name} ${data.last_name}</span>
@@ -481,7 +688,7 @@ function viewOnlineRequest(id) {
                         
                         <div style="background: #F8FAFC; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
                             <h4 style="margin: 0 0 12px 0; color: #1A237E; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Service Information</h4>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="modal-grid-2">
                                 <div>
                                     <span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Service Type</span>
                                     <span style="font-size: 14px; color: #1F2937;">${data.service_type}</span>
@@ -493,9 +700,9 @@ function viewOnlineRequest(id) {
                             </div>
                         </div>
                         
-                        <div style="background: #F8FAFC; border-radius: 8px; padding: 16px;">
+                        <div style="background: #F8FAFC; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
                             <h4 style="margin: 0 0 12px 0; color: #1A237E; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Request Details</h4>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="modal-grid-2">
                                 <div>
                                     <span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Status</span>
                                     <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; background: #DCFCE7; color: #15803D;">${data.status}</span>
