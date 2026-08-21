@@ -69,7 +69,7 @@ class AdminRoleLoginTest extends TestCase
             'password' => 'Password123!',
             'role' => 'Financial Assistance Officer',
         ]);
-        $response2->assertRedirect(route('admin.financial.dashboard'));
+        $response2->assertRedirect(route('admin.financial.financialstep2'));
         $this->assertSame($step2User->id, session('admin_user_id'));
         $this->assertSame('financialstep2', session('admin_user_role'));
     }

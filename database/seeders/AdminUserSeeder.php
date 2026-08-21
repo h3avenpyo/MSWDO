@@ -59,7 +59,7 @@ class AdminUserSeeder extends Seeder
             [
                 'name' => 'Financial Assistance Officer',
                 'password' => Hash::make('password'),
-                'role' => 'staff',
+                'role' => 'Financial assistance officer',
                 'status' => 'active',
             ]
         );

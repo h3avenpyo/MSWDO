@@ -4,28 +4,32 @@
         <span>Financial Assistance</span>
     </div>
     <ul class="sidebar-menu">
-        <li>
+        {{-- <li>
             <a href="/admin/dashboard" class="{{ request()->is('admin/dashboard') ? 'active' : '' }}">
                 <i class="fas fa-home"></i> Main Dashboard
             </a>
-        </li>
+        </li> --}}
         <li>
-            <a href="/admin/financial/dashboard" class="{{ request()->is('admin/financial/dashboard') ? 'active' : '' }}">
+            <a href="/admin/financial/dashboard"
+                class="{{ request()->is('admin/financial/dashboard') ? 'active' : '' }}">
                 <i class="fas fa-th-large"></i> Financial Dashboard
             </a>
         </li>
         <li>
-            <a href="/admin/financial/financialstep1" class="{{ request()->is('admin/financial/financialstep1') ? 'active' : '' }}">
+            <a href="/admin/financial/financialstep1"
+                class="{{ request()->is('admin/financial/financialstep1') ? 'active' : '' }}">
                 <i class="fas fa-clipboard-list"></i> Intake &amp; Assessment
             </a>
         </li>
         <li>
-            <a href="/admin/beneficiary-intake" class="{{ request()->is('admin/beneficiary-intake*') ? 'active' : '' }}">
+            <a href="/admin/beneficiary-intake"
+                class="{{ request()->is('admin/beneficiary-intake*') ? 'active' : '' }}">
                 <i class="fas fa-list"></i> Masterlist
             </a>
         </li>
         <li>
-            <a href="{{ route('admin.financial.financialstep1statistics') }}" class="{{ request()->is('admin/financial/financialstep1statistics*') ? 'active' : '' }}">
+            <a href="{{ route('admin.financial.financialstep1statistics') }}"
+                class="{{ request()->is('admin/financial/financialstep1statistics*') ? 'active' : '' }}">
                 <i class="fas fa-chart-pie"></i> Statistics &amp; Analytics
             </a>
         </li>

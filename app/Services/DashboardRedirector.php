@@ -11,7 +11,8 @@ class DashboardRedirector
         return match ($role) {
             UserRole::SocialWorker, UserRole::EligibilityChecker => 'admin.social-case.dashboard',
             UserRole::SeniorCitizenOfficer, UserRole::Staff => 'admin.senior',
-            UserRole::FinancialAssistanceOfficer => 'admin.financial',
+            UserRole::FinancialStep2 => 'admin.financial.financialstep2',
+            UserRole::FinancialAssistanceOfficer, UserRole::FinancialStep1 => 'admin.financial.dashboard',
             UserRole::Admin, UserRole::Encoder => 'admin.dashboard',
         };
     }
