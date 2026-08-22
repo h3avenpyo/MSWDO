@@ -132,7 +132,7 @@ class="relative overflow-hidden bg-gradient-to-r from-[#1A237E] via-[#1A237E] to
 
 <p class="uppercase tracking-[5px] text-warm-gold">
 
-WELCOME TO
+WELCOME to test
 
 </p>
 
