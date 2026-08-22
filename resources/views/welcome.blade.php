@@ -21,11 +21,11 @@
     <!-- NAVBAR -->
     <!-- ========================= -->
     <header class="fixed top-0 z-50 w-full bg-primary bg-opacity-95 backdrop-blur shadow-lg">
-        <div class="max-w-7xl mx-auto px-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
-                <a href="#" class="flex items-center gap-4">
-                    <div class="h-14 w-14 rounded-full p-1">
+                <a href="#" class="flex items-center gap-3 sm:gap-4 shrink-0">
+                    <div class="h-11 w-11 sm:h-14 sm:w-14 rounded-full p-1 shrink-0">
                         @php
                         $logo = null;
                         if (file_exists(public_path('images/mswdo-logo.png'))) {
@@ -42,11 +42,11 @@
                         @endif
                     </div>
                     <div>
-                        <h1 class="text-white font-bold text-lg">
+                        <h1 class="text-white font-bold text-base sm:text-lg tracking-tight leading-tight">
                             MSWDO SILANG
                         </h1>
-                        <p class="text-offwhite text-xs">
-                            Municipal Social Welfare & Development Office
+                        <p class="text-offwhite text-[11px] sm:text-xs leading-tight">
+                            Municipal Social Welfare &amp; Development Office
                         </p>
                     </div>
                 </a>
@@ -61,9 +61,9 @@
                         Login
                     </a>
                 </nav>
-                <button id="menuButton" class="lg:hidden text-white">
+                <button id="menuButton" class="lg:hidden text-white p-2 rounded-lg hover:bg-white/10 transition focus:outline-none" aria-label="Toggle navigation">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-8 h-8">
+                        stroke="currentColor" class="w-7 h-7 sm:w-8 sm:h-8">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
                     </svg>
@@ -71,15 +71,15 @@
             </div>
         </div>
         <!-- Mobile Menu -->
-        <div id="mobileMenu" class="hidden bg-primary text-white lg:hidden">
-            <div class="flex flex-col p-6 gap-4">
-                <a href="#home">Home</a>
-                <a href="#services">Services</a>
-                <a href="#about">About</a>
-                <a href="#programs">Programs</a>
-                <a href="#contact">Contact</a>
+        <div id="mobileMenu" class="hidden bg-primary text-white lg:hidden border-t border-white/10 shadow-xl transition-all duration-300">
+            <div class="flex flex-col p-5 sm:p-6 gap-3 sm:gap-4 text-base font-medium">
+                <a href="#home" class="py-2 px-3 rounded-lg hover:bg-white/10 transition">Home</a>
+                <a href="#services" class="py-2 px-3 rounded-lg hover:bg-white/10 transition">Services</a>
+                <a href="#about" class="py-2 px-3 rounded-lg hover:bg-white/10 transition">About</a>
+                <a href="#programs" class="py-2 px-3 rounded-lg hover:bg-white/10 transition">Programs</a>
+                <a href="#contact" class="py-2 px-3 rounded-lg hover:bg-white/10 transition">Contact</a>
                 <a href="/admin"
-                    class="navbar-login-btn bg-warm-gold text-[#1F2937] px-5 py-2 rounded-full font-semibold hover:bg-[#f4c243] transition">Login</a>
+                    class="navbar-login-btn bg-warm-gold text-[#1F2937] px-5 py-2.5 rounded-full font-semibold hover:bg-[#f4c243] transition text-center mt-2">Login</a>
 
             </div>
         </div>
@@ -87,80 +87,79 @@
     <!-- ========================= -->
     <!-- HERO -->
     <!-- ========================= -->
-    <section id="home" class="relative overflow-hidden pt-40 pb-56 border-b border-slate-200/50 bg-[#F8FAFC]">
+    <section id="home" class="relative overflow-hidden pt-32 sm:pt-36 lg:pt-40 pb-44 sm:pb-48 lg:pb-56 border-b border-slate-200/50 bg-[#F8FAFC]">
         <!-- Hero Background Image -->
         <div class="absolute inset-0 z-0 pointer-events-none select-none">
             <img src="{{ asset('images/background.png') }}" class="w-full h-full object-cover object-center"
                 alt="Hero Background">
         </div>
 
-        <!-- Faint Watermark Background Logos (90% transparency) -->
-        <div class="absolute -left-[1%] top-[22%] w-[35%] max-w-[430px] opacity-90 pointer-events-none select-none">
-            <img src="{{ asset('images/dswdlogo.png') }}" class="w-full h-auto object-contain">
+        <!-- Faint Watermark Background Logos (90% transparency on desktop, gracefully scaled on mobile) -->
+        <div class="absolute -left-[4%] sm:-left-[2%] lg:-left-[1%] top-[16%] sm:top-[20%] lg:top-[22%] w-[42%] sm:w-[35%] lg:w-[35%] max-w-[200px] sm:max-w-[320px] lg:max-w-[430px] opacity-20 sm:opacity-40 lg:opacity-90 pointer-events-none select-none">
+            <img src="{{ asset('images/dswdlogo.png') }}" class="w-full h-auto object-contain" alt="DSWD Logo">
         </div>
-        <div class="absolute -right-[-1%] top-[20%] w-[35%] max-w-[420px] opacity-90 pointer-events-none select-none">
-            <img src="{{ asset('images/silangseal.png') }}" class="w-full h-auto object-contain">
+        <div class="absolute -right-[4%] sm:-right-[2%] lg:-right-[-1%] top-[14%] sm:top-[18%] lg:top-[20%] w-[42%] sm:w-[35%] lg:w-[35%] max-w-[190px] sm:max-w-[310px] lg:max-w-[420px] opacity-20 sm:opacity-40 lg:opacity-90 pointer-events-none select-none">
+            <img src="{{ asset('images/silangseal.png') }}" class="w-full h-auto object-contain" alt="Silang Seal">
         </div>
 
         <!-- Central content -->
-        <div class="relative max-w-7xl mx-auto px-6 z-10">
-            <div class="max-w-3xl mx-auto text-center">
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+            <div class="max-w-4xl mx-auto text-center">
                 <!-- Simple Elegant Eyebrow Tag -->
-                <p class="text-xs md:text-sm font-extrabold tracking-widest uppercase mb-4">
+                <p class="text-xs sm:text-sm md:text-base font-bold tracking-wider uppercase mb-4 sm:mb-5 leading-normal">
                     <span class="text-[#1A237E]">Official Portal</span>
-                    <span class="text-[#FBC02D] mx-1">&bull;</span>
+                    <span class="text-[#FBC02D] mx-1.5 sm:mx-2">&bull;</span>
                     <span class="text-[#D32F2F]">Municipality of Silang</span>
                 </p>
 
                 <!-- Headline -->
-                <h1 class="text-5xl lg:text-7xl font-black text-[#1F2937] leading-[1.15] tracking-tight">
-                    <span class="block text-2xl md:text-3xl font-extrabold uppercase tracking-wide mb-2">
-                        <span class="">Municipal Social Welfare & Development Office</span>
-                        <span></span>
+                <h1 class="tracking-tight">
+                    <span class="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#1F2937] leading-tight mb-2 sm:mb-3">
+                        Municipal Social Welfare &amp; Development Office
                     </span>
-                    <span class="block text-[#1A237E] text-6xl md:text-8xl font-black tracking-wider uppercase">
+                    <span class="block text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-[#1A237E] uppercase tracking-normal leading-none mt-1 sm:mt-2">
                         SILANG
                     </span>
                 </h1>
 
                 <!-- Subtitle -->
-                <p class="text-xl md:text-2xl font-bold text-[#1F2937] mt-6 tracking-tight">
-                    Empowering & Uplifting <span class="text-[#D32F2F]">Every Silangueño</span>, Together.
+                <p class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-[#1F2937] mt-5 sm:mt-6 md:mt-7 tracking-tight leading-snug">
+                    Empowering &amp; Uplifting <span class="text-[#D32F2F] font-extrabold">Every Silangueño</span>, Together.
                 </p>
 
                 <!-- Description -->
-                <p class="mt-4 text-[#6B7280] text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
+                <p class="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg lg:text-xl text-[#6B7280] leading-relaxed max-w-3xl mx-auto font-medium">
                     Providing compassionate protection, development opportunities, and responsive welfare assistance to
                     support families, children, and seniors in Silang.
                 </p>
 
                 <!-- CTA Actions -->
-                <div class="mt-10 flex flex-wrap justify-center gap-4">
+                <div class="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
                     <a href="#services"
-                        class="bg-[#1A237E] text-white px-8 py-4 rounded-xl font-bold hover:bg-[#111827] hover:shadow-lg hover:shadow-blue-900/10 hover:-translate-y-0.5 active:translate-y-0 transition duration-300">
+                        class="w-full sm:w-auto text-center bg-[#1A237E] text-white px-7 sm:px-9 py-3.5 sm:py-4 rounded-xl text-base sm:text-lg font-bold hover:bg-[#111827] hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition duration-200">
                         Explore Services
                     </a>
                     <a href="#contact"
-                        class="border-2 border-[#CBD5E1] text-[#1F2937] hover:border-[#1A237E] hover:text-[#1A237E] px-8 py-4 rounded-xl font-bold hover:-translate-y-0.5 active:translate-y-0 transition duration-300">
+                        class="w-full sm:w-auto text-center border-2 border-[#CBD5E1] text-[#1F2937] hover:border-[#1A237E] hover:text-[#1A237E] px-7 sm:px-9 py-3.5 sm:py-4 rounded-xl text-base sm:text-lg font-bold hover:-translate-y-0.5 active:translate-y-0 transition duration-200">
                         Contact Us
                     </a>
                 </div>
 
             </div>
         </div>
-    </section>>
+    </section>
     <!-- ========================= -->
     <!-- OVERLAPPING QUICK SERVICES -->
     <!-- ========================= -->
     <section id="services" class="py-12 bg-slate-50 relative z-20">
-        <div class="max-w-7xl mx-auto px-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
 
             <div
-                class="relative bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(21,61,107,0.08)] p-8 lg:p-12 border border-slate-100 -mt-36 mb-16">
-                <div class="text-center mb-12">
+                class="relative bg-white rounded-2xl sm:rounded-3xl lg:rounded-[2.5rem] shadow-[0_20px_50px_rgba(21,61,107,0.08)] p-6 sm:p-8 lg:p-12 border border-slate-100 -mt-28 sm:-mt-32 md:-mt-36 mb-16">
+                <div class="text-center mb-8 sm:mb-12">
 
-                    <h2 class="text-3xl font-extrabold text-primary mt-2">Get Started with Our Online Services</h2>
-                    <p class="text-slate-500 mt-2 text-sm max-w-md mx-auto">Providing quality welfare services and
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-primary mt-2">Get Started with Our Online Services</h2>
+                    <p class="text-slate-500 mt-2 text-xs sm:text-sm max-w-md mx-auto">Providing quality welfare services and
                         assistance programs for every Silangueño.</p>
                 </div>
 
@@ -1069,6 +1068,11 @@
         if (menuButton && mobileMenu) {
             menuButton.addEventListener('click', () => {
                 mobileMenu.classList.toggle('hidden');
+            });
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
             });
         }
 
