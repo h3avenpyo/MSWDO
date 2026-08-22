@@ -87,18 +87,18 @@
     <!-- ========================= -->
     <!-- HERO -->
     <!-- ========================= -->
-    <section id="home" class="relative overflow-hidden pt-32 sm:pt-36 lg:pt-40 pb-44 sm:pb-48 lg:pb-56 border-b border-slate-200/50 bg-[#F8FAFC]">
+    <section id="home" class="relative overflow-hidden pt-28 sm:pt-32 md:pt-36 lg:pt-32 xl:pt-40 pb-36 sm:pb-40 md:pb-44 lg:pb-44 xl:pb-56 border-b border-slate-200/50 bg-[#F8FAFC]">
         <!-- Hero Background Image -->
         <div class="absolute inset-0 z-0 pointer-events-none select-none">
             <img src="{{ asset('images/background.png') }}" class="w-full h-full object-cover object-center"
                 alt="Hero Background">
         </div>
 
-        <!-- Faint Watermark Background Logos (90% transparency on desktop, gracefully scaled on mobile) -->
-        <div class="absolute -left-[4%] sm:-left-[2%] lg:-left-[1%] top-[16%] sm:top-[20%] lg:top-[22%] w-[42%] sm:w-[35%] lg:w-[35%] max-w-[200px] sm:max-w-[320px] lg:max-w-[430px] opacity-20 sm:opacity-40 lg:opacity-90 pointer-events-none select-none">
+        <!-- Faint Watermark Background Logos (90% transparency on desktop, vertically centered for 13:3 / laptop screens) -->
+        <div class="absolute -left-[3%] sm:-left-[1%] lg:-left-[1%] top-1/2 -translate-y-1/2 w-[38%] sm:w-[32%] lg:w-[30%] xl:w-[35%] max-w-[180px] sm:max-w-[260px] md:max-w-[320px] lg:max-w-[380px] xl:max-w-[430px] opacity-20 sm:opacity-40 lg:opacity-90 pointer-events-none select-none">
             <img src="{{ asset('images/dswdlogo.png') }}" class="w-full h-auto object-contain" alt="DSWD Logo">
         </div>
-        <div class="absolute -right-[4%] sm:-right-[2%] lg:-right-[-1%] top-[14%] sm:top-[18%] lg:top-[20%] w-[42%] sm:w-[35%] lg:w-[35%] max-w-[190px] sm:max-w-[310px] lg:max-w-[420px] opacity-20 sm:opacity-40 lg:opacity-90 pointer-events-none select-none">
+        <div class="absolute -right-[3%] sm:-right-[1%] lg:-right-[-1%] top-1/2 -translate-y-1/2 w-[38%] sm:w-[32%] lg:w-[30%] xl:w-[35%] max-w-[170px] sm:max-w-[250px] md:max-w-[310px] lg:max-w-[370px] xl:max-w-[420px] opacity-20 sm:opacity-40 lg:opacity-90 pointer-events-none select-none">
             <img src="{{ asset('images/silangseal.png') }}" class="w-full h-auto object-contain" alt="Silang Seal">
         </div>
 
@@ -106,7 +106,7 @@
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
             <div class="max-w-4xl mx-auto text-center">
                 <!-- Simple Elegant Eyebrow Tag -->
-                <p class="text-xs sm:text-sm md:text-base font-bold tracking-wider uppercase mb-4 sm:mb-5 leading-normal">
+                <p class="text-xs sm:text-sm md:text-base font-bold tracking-wider uppercase mb-3 sm:mb-4 lg:mb-3.5 xl:mb-5 leading-normal">
                     <span class="text-[#1A237E]">Official Portal</span>
                     <span class="text-[#FBC02D] mx-1.5 sm:mx-2">&bull;</span>
                     <span class="text-[#D32F2F]">Municipality of Silang</span>
@@ -114,33 +114,33 @@
 
                 <!-- Headline -->
                 <h1 class="tracking-tight">
-                    <span class="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#1F2937] leading-tight mb-2 sm:mb-3">
+                    <span class="block text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-extrabold text-[#1F2937] leading-tight mb-1.5 sm:mb-2 xl:mb-3">
                         Municipal Social Welfare &amp; Development Office
                     </span>
-                    <span class="block text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-[#1A237E] uppercase tracking-normal leading-none mt-1 sm:mt-2">
+                    <span class="block text-4xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-black text-[#1A237E] uppercase tracking-normal leading-none mt-1">
                         SILANG
                     </span>
                 </h1>
 
                 <!-- Subtitle -->
-                <p class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-[#1F2937] mt-5 sm:mt-6 md:mt-7 tracking-tight leading-snug">
+                <p class="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl font-bold text-[#1F2937] mt-4 sm:mt-5 lg:mt-4 xl:mt-6 tracking-tight leading-snug">
                     Empowering &amp; Uplifting <span class="text-[#D32F2F] font-extrabold">Every Silangueño</span>, Together.
                 </p>
 
                 <!-- Description -->
-                <p class="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg lg:text-xl text-[#6B7280] leading-relaxed max-w-3xl mx-auto font-medium">
+                <p class="mt-3 sm:mt-4 lg:mt-3.5 xl:mt-5 text-sm sm:text-base md:text-lg lg:text-base xl:text-xl text-[#6B7280] leading-relaxed max-w-3xl mx-auto font-medium">
                     Providing compassionate protection, development opportunities, and responsive welfare assistance to
                     support families, children, and seniors in Silang.
                 </p>
 
                 <!-- CTA Actions -->
-                <div class="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
+                <div class="mt-6 sm:mt-8 lg:mt-6 xl:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
                     <a href="#services"
-                        class="w-full sm:w-auto text-center bg-[#1A237E] text-white px-7 sm:px-9 py-3.5 sm:py-4 rounded-xl text-base sm:text-lg font-bold hover:bg-[#111827] hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition duration-200">
+                        class="w-full sm:w-auto text-center bg-[#1A237E] text-white px-7 sm:px-8 xl:px-9 py-3 sm:py-3.5 xl:py-4 rounded-xl text-base sm:text-lg font-bold hover:bg-[#111827] hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition duration-200">
                         Explore Services
                     </a>
                     <a href="#contact"
-                        class="w-full sm:w-auto text-center border-2 border-[#CBD5E1] text-[#1F2937] hover:border-[#1A237E] hover:text-[#1A237E] px-7 sm:px-9 py-3.5 sm:py-4 rounded-xl text-base sm:text-lg font-bold hover:-translate-y-0.5 active:translate-y-0 transition duration-200">
+                        class="w-full sm:w-auto text-center border-2 border-[#CBD5E1] text-[#1F2937] hover:border-[#1A237E] hover:text-[#1A237E] px-7 sm:px-8 xl:px-9 py-3 sm:py-3.5 xl:py-4 rounded-xl text-base sm:text-lg font-bold hover:-translate-y-0.5 active:translate-y-0 transition duration-200">
                         Contact Us
                     </a>
                 </div>
@@ -155,7 +155,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
 
             <div
-                class="relative bg-white rounded-2xl sm:rounded-3xl lg:rounded-[2.5rem] shadow-[0_20px_50px_rgba(21,61,107,0.08)] p-6 sm:p-8 lg:p-12 border border-slate-100 -mt-28 sm:-mt-32 md:-mt-36 mb-16">
+                class="relative bg-white rounded-2xl sm:rounded-3xl lg:rounded-[2.5rem] shadow-[0_20px_50px_rgba(21,61,107,0.08)] p-6 sm:p-8 lg:p-12 border border-slate-100 -mt-24 sm:-mt-28 md:-mt-32 lg:-mt-28 xl:-mt-36 mb-16">
                 <div class="text-center mb-8 sm:mb-12">
 
                     <h2 class="text-2xl sm:text-3xl font-extrabold text-primary mt-2">Get Started with Our Online Services</h2>
