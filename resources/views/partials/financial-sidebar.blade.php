@@ -4,11 +4,19 @@
         <span>Financial Assistance</span>
     </div>
     <ul class="sidebar-menu">
-        {{-- <li>
-            <a href="/admin/dashboard" class="{{ request()->is('admin/dashboard') ? 'active' : '' }}">
-                <i class="fas fa-home"></i> Main Dashboard
+        @if(request()->is('admin/financial/financialstep2*') || session('admin_user_role') === 'financialstep2')
+        <li>
+            <a href="/admin/financial/financialstep2"
+                class="{{ request()->is('admin/financial/financialstep2*') ? 'active' : '' }}">
+                <i class="fas fa-th-large"></i> Dashboard
             </a>
-        </li> --}}
+        </li>
+        <li>
+            <a href="#" onclick="confirmLogout(event)">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </li>
+        @else
         <li>
             <a href="/admin/financial/dashboard"
                 class="{{ request()->is('admin/financial/dashboard') ? 'active' : '' }}">
@@ -38,6 +46,7 @@
                 <i class="fas fa-sign-out-alt"></i> Logout
             </a>
         </li>
+        @endif
     </ul>
 </div>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
