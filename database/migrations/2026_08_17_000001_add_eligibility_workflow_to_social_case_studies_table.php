@@ -12,9 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Expand the users.role enum to include the eligibility_checker role
-        // while preserving the existing officer roles.
-        DB::statement("ALTER TABLE users MODIFY role ENUM('admin','social_worker','encoder','staff','eligibility_checker','Senior Citizen officer','Financial assistance officer') NOT NULL DEFAULT 'staff'");
+        // Ensure users.role is string (VARCHAR 50) to support all UserRole enum values without truncation
+        if (Schema::hasColumn('users', 'role')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('role', 50)->default('staff')->change();
+            });
+        }
 
         Schema::table('social_case_studies', function (Blueprint $table) {
             $table->enum('eligibility_status', ['pending', 'eligible', 'ineligible'])
@@ -40,7 +43,5 @@ return new class extends Migration
             $table->dropForeign(['eligible_by']);
             $table->dropColumn(['eligibility_status', 'eligible_by', 'eligible_at', 'ineligible_reason']);
         });
-
-        DB::statement("ALTER TABLE users MODIFY role ENUM('admin','social_worker','encoder','staff','Senior Citizen officer','Financial assistance officer') NOT NULL DEFAULT 'staff'");
     }
 };

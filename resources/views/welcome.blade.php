@@ -61,7 +61,9 @@
                         Login
                     </a>
                 </nav>
-                <button id="menuButton" class="lg:hidden text-white p-2 rounded-lg hover:bg-white/10 transition focus:outline-none" aria-label="Toggle navigation">
+                <button id="menuButton"
+                    class="lg:hidden text-white p-2 rounded-lg hover:bg-white/10 transition focus:outline-none"
+                    aria-label="Toggle navigation">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="w-7 h-7 sm:w-8 sm:h-8">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -71,7 +73,8 @@
             </div>
         </div>
         <!-- Mobile Menu -->
-        <div id="mobileMenu" class="hidden bg-primary text-white lg:hidden border-t border-white/10 shadow-xl transition-all duration-300">
+        <div id="mobileMenu"
+            class="hidden bg-primary text-white lg:hidden border-t border-white/10 shadow-xl transition-all duration-300">
             <div class="flex flex-col p-5 sm:p-6 gap-3 sm:gap-4 text-base font-medium">
                 <a href="#home" class="py-2 px-3 rounded-lg hover:bg-white/10 transition">Home</a>
                 <a href="#services" class="py-2 px-3 rounded-lg hover:bg-white/10 transition">Services</a>
@@ -87,7 +90,8 @@
     <!-- ========================= -->
     <!-- HERO -->
     <!-- ========================= -->
-    <section id="home" class="relative overflow-hidden pt-24 sm:pt-28 lg:pt-24 xl:pt-32 pb-24 sm:pb-28 lg:pb-24 xl:pb-36 border-b border-slate-200/50 bg-[#F8FAFC]">
+    <section id="home"
+        class="relative overflow-hidden pt-24 sm:pt-28 lg:pt-24 xl:pt-32 pb-24 sm:pb-28 lg:pb-24 xl:pb-36 border-b border-slate-200/50 bg-[#F8FAFC]">
         <!-- Hero Background Image -->
         <div class="absolute inset-0 z-0 pointer-events-none select-none">
             <img src="{{ asset('images/background.png') }}" class="w-full h-full object-cover object-center"
@@ -95,10 +99,12 @@
         </div>
 
         <!-- Faint Watermark Background Logos (90% transparent / 10% opacity watermark) -->
-        <div class="absolute left-0 sm:left-2 lg:left-4 xl:left-8 top-1/2 -translate-y-1/2 w-[28%] sm:w-[26%] lg:w-[22%] xl:w-[28%] max-w-[130px] sm:max-w-[180px] md:max-w-[220px] lg:max-w-[260px] xl:max-w-[340px] opacity-10 pointer-events-none select-none">
+        <div
+            class="absolute left-0 sm:left-2 lg:left-4 xl:left-8 top-1/2 -translate-y-1/2 w-[28%] sm:w-[26%] lg:w-[22%] xl:w-[28%] max-w-[130px] sm:max-w-[180px] md:max-w-[220px] lg:max-w-[260px] xl:max-w-[340px] opacity-10 pointer-events-none select-none">
             <img src="{{ asset('images/dswdlogo.png') }}" class="w-full h-auto object-contain" alt="DSWD Logo">
         </div>
-        <div class="absolute right-0 sm:right-2 lg:right-4 xl:right-8 top-1/2 -translate-y-1/2 w-[28%] sm:w-[26%] lg:w-[22%] xl:w-[28%] max-w-[120px] sm:max-w-[170px] md:max-w-[210px] lg:max-w-[250px] xl:max-w-[330px] opacity-10 pointer-events-none select-none">
+        <div
+            class="absolute right-0 sm:right-2 lg:right-4 xl:right-8 top-1/2 -translate-y-1/2 w-[28%] sm:w-[26%] lg:w-[22%] xl:w-[28%] max-w-[120px] sm:max-w-[170px] md:max-w-[210px] lg:max-w-[250px] xl:max-w-[330px] opacity-10 pointer-events-none select-none">
             <img src="{{ asset('images/silangseal.png') }}" class="w-full h-auto object-contain" alt="Silang Seal">
         </div>
 
@@ -106,7 +112,8 @@
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
             <div class="max-w-4xl mx-auto text-center">
                 <!-- Simple Elegant Eyebrow Tag -->
-                <p class="text-xs sm:text-sm font-bold tracking-wider uppercase mb-2 sm:mb-2.5 lg:mb-2 xl:mb-4 leading-normal">
+                <p
+                    class="text-xs sm:text-sm font-bold tracking-wider uppercase mb-2 sm:mb-2.5 lg:mb-2 xl:mb-4 leading-normal">
                     <span class="text-[#1A237E]">Official Portal</span>
                     <span class="text-[#FBC02D] mx-1.5 sm:mx-2">&bull;</span>
                     <span class="text-[#D32F2F]">Municipality of Silang</span>
@@ -114,27 +121,33 @@
 
                 <!-- Headline -->
                 <h1 class="tracking-tight">
-                    <span class="block text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl font-extrabold text-[#1F2937] leading-tight mb-1 sm:mb-1.5">
+                    <span
+                        class="block text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl font-extrabold text-[#1F2937] leading-tight mb-1 sm:mb-1.5">
                         Municipal Social Welfare &amp; Development Office
                     </span>
-                    <span class="block text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-black text-[#1A237E] uppercase tracking-normal leading-none mt-0.5 sm:mt-1">
+                    <span
+                        class="block text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-black text-[#1A237E] uppercase tracking-normal leading-none mt-0.5 sm:mt-1">
                         SILANG
                     </span>
                 </h1>
 
                 <!-- Subtitle -->
-                <p class="text-base sm:text-lg md:text-xl lg:text-lg xl:text-2xl font-bold text-[#1F2937] mt-2.5 sm:mt-3.5 lg:mt-3 xl:mt-5 tracking-tight leading-snug">
-                    Empowering &amp; Uplifting <span class="text-[#D32F2F] font-extrabold">Every Silangueño</span>, Together.
+                <p
+                    class="text-base sm:text-lg md:text-xl lg:text-lg xl:text-2xl font-bold text-[#1F2937] mt-2.5 sm:mt-3.5 lg:mt-3 xl:mt-5 tracking-tight leading-snug">
+                    Empowering &amp; Uplifting <span class="text-[#D32F2F] font-extrabold">Every Silangueño</span>,
+                    Together.
                 </p>
 
                 <!-- Description -->
-                <p class="mt-2 sm:mt-3 lg:mt-2.5 xl:mt-4 text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-[#6B7280] leading-relaxed max-w-2xl xl:max-w-3xl mx-auto font-medium">
+                <p
+                    class="mt-2 sm:mt-3 lg:mt-2.5 xl:mt-4 text-xs sm:text-sm md:text-base lg:text-sm xl:text-base text-[#6B7280] leading-relaxed max-w-2xl xl:max-w-3xl mx-auto font-medium">
                     Providing compassionate protection, development opportunities, and responsive welfare assistance to
                     support families, children, and seniors in Silang.
                 </p>
 
                 <!-- CTA Actions -->
-                <div class="mt-4 sm:mt-6 lg:mt-4 xl:mt-8 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3.5 w-full sm:w-auto">
+                <div
+                    class="mt-4 sm:mt-6 lg:mt-4 xl:mt-8 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3.5 w-full sm:w-auto">
                     <a href="#services"
                         class="w-full sm:w-auto text-center bg-[#1A237E] text-white px-6 sm:px-8 xl:px-9 py-2.5 sm:py-3.5 rounded-xl text-sm sm:text-base xl:text-lg font-bold hover:bg-[#111827] hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition duration-200">
                         Explore Services
@@ -158,8 +171,10 @@
                 class="relative bg-white rounded-2xl sm:rounded-3xl lg:rounded-[2.5rem] shadow-[0_20px_50px_rgba(21,61,107,0.08)] p-6 sm:p-8 lg:p-12 border border-slate-100 -mt-16 sm:-mt-20 lg:-mt-16 xl:-mt-24 mb-16">
                 <div class="text-center mb-8 sm:mb-12">
 
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-primary mt-2">Get Started with Our Online Services</h2>
-                    <p class="text-slate-500 mt-2 text-xs sm:text-sm max-w-md mx-auto">Providing quality welfare services and
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-primary mt-2">Get Started with Our Online
+                        Services</h2>
+                    <p class="text-slate-500 mt-2 text-xs sm:text-sm max-w-md mx-auto">Providing quality welfare
+                        services and
                         assistance programs for every Silangueño.</p>
                 </div>
 
@@ -448,7 +463,7 @@
     <!-- ===================================== -->
     <!-- LATEST ANNOUNCEMENTS -->
     <!-- ===================================== -->
-    <section id="programs" class="py-24 bg-offwhite">
+    {{-- <section id="programs" class="py-24 bg-offwhite">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center">
                 <h2 class="text-4xl font-bold">
@@ -503,7 +518,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
     <!-- ===================================== -->
     <!-- CALL TO ACTION -->
     <!-- ===================================== -->
