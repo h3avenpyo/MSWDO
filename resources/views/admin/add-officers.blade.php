@@ -162,6 +162,131 @@ $initials = count($words) >= 2
     }
     .pw-match-msg.match { color: #059669; font-weight: 600; }
     .pw-match-msg.no-match { color: var(--danger); }
+
+    /* ── Role Selection with Circle Radio Buttons ── */
+    .role-selection-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 0.75rem;
+    }
+    .role-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 0.85rem;
+        background: #F8FAFC;
+        border: 1.5px solid #E2E8F0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+    .role-option:hover {
+        border-color: var(--primary);
+        background: #EFF6FF;
+    }
+    .role-option.selected {
+        border-color: var(--primary);
+        background: #EFF6FF;
+        box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
+    }
+    .role-option input[type="radio"] {
+        display: none;
+    }
+    .role-circle {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #CBD5E1;
+        border-radius: 50%;
+        background: #fff;
+        flex-shrink: 0;
+        transition: all .2s ease;
+        position: relative;
+    }
+    .role-option:hover .role-circle {
+        border-color: var(--primary);
+    }
+    .role-option.selected .role-circle {
+        border-color: var(--primary);
+        background: var(--primary);
+    }
+    .role-option.selected .role-circle::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 6px;
+        height: 6px;
+        background: #fff;
+        border-radius: 50%;
+    }
+    .role-label {
+        font-size: 0.8rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    /* ── Status Selection with Circle Radio Buttons ── */
+    .status-selection {
+        display: flex;
+        gap: 1rem;
+    }
+    .status-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1rem;
+        background: #F8FAFC;
+        border: 1.5px solid #E2E8F0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+    .status-option:hover {
+        border-color: var(--primary);
+        background: #EFF6FF;
+    }
+    .status-option.selected {
+        border-color: var(--primary);
+        background: #EFF6FF;
+        box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
+    }
+    .status-option input[type="radio"] {
+        display: none;
+    }
+    .status-circle {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #CBD5E1;
+        border-radius: 50%;
+        background: #fff;
+        flex-shrink: 0;
+        transition: all .2s ease;
+        position: relative;
+    }
+    .status-option:hover .status-circle {
+        border-color: var(--primary);
+    }
+    .status-option.selected .status-circle {
+        border-color: var(--primary);
+        background: var(--primary);
+    }
+    .status-option.selected .status-circle::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 6px;
+        height: 6px;
+        background: #fff;
+        border-radius: 50%;
+    }
+    .status-label {
+        font-size: 0.8rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
 </style>
 
 {{-- Page Header --}}
@@ -212,23 +337,56 @@ $initials = count($words) >= 2
             </div>
             <div>
                 <label class="form-label">Role / Assignment</label>
-                <div class="select-dropdown-wrap">
-                    <select class="form-select" name="role" id="roleSelect" required>
-                        <option value="" disabled selected>▼ Select Role / Assignment</option>
-                        <option value="Senior Citizen officer" {{ old('role') == 'Senior Citizen officer' ? 'selected' : '' }}>Senior Citizen Officer</option>
-                        <option value="Financial assistance officer" {{ old('role') == 'Financial assistance officer' ? 'selected' : '' }}>Financial Assistance Officer</option>
-                        <option value="financialstep1" {{ old('role') == 'financialstep1' ? 'selected' : '' }}>Financial Assistance Step 1</option>
-                        <option value="financialstep2" {{ old('role') == 'financialstep2' ? 'selected' : '' }}>Financial Assistance Step 2</option>
-                        <option value="eligibility_checker" {{ old('role') == 'eligibility_checker' ? 'selected' : '' }}>Social Case Worker (Checker)</option>
-                        <option value="social_worker" {{ old('role') == 'social_worker' ? 'selected' : '' }}>Social Case Worker (Encoder)</option>
-                        <option value="encoder" {{ old('role') == 'encoder' ? 'selected' : '' }}>Encoder</option>
-                        <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Staff</option>
-                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrator</option>
-                    </select>
+                <div class="role-selection-grid">
+                    <label class="role-option {{ old('role') == 'Senior Citizen officer' ? 'selected' : '' }}">
+                        <input type="radio" name="role" value="Senior Citizen officer" {{ old('role') == 'Senior Citizen officer' ? 'checked' : '' }} required>
+                        <span class="role-circle"></span>
+                        <span class="role-label">Senior Citizen Officer</span>
+                    </label>
+                    <label class="role-option {{ old('role') == 'Financial assistance officer' ? 'selected' : '' }}">
+                        <input type="radio" name="role" value="Financial assistance officer" {{ old('role') == 'Financial assistance officer' ? 'checked' : '' }}>
+                        <span class="role-circle"></span>
+                        <span class="role-label">Financial Assistance Officer</span>
+                    </label>
+                    <label class="role-option {{ old('role') == 'financialstep1' ? 'selected' : '' }}">
+                        <input type="radio" name="role" value="financialstep1" {{ old('role') == 'financialstep1' ? 'checked' : '' }}>
+                        <span class="role-circle"></span>
+                        <span class="role-label">Financial Assistance Step 1</span>
+                    </label>
+                    <label class="role-option {{ old('role') == 'financialstep2' ? 'selected' : '' }}">
+                        <input type="radio" name="role" value="financialstep2" {{ old('role') == 'financialstep2' ? 'checked' : '' }}>
+                        <span class="role-circle"></span>
+                        <span class="role-label">Financial Assistance Step 2</span>
+                    </label>
+                    <label class="role-option {{ old('role') == 'eligibility_checker' ? 'selected' : '' }}">
+                        <input type="radio" name="role" value="eligibility_checker" {{ old('role') == 'eligibility_checker' ? 'checked' : '' }}>
+                        <span class="role-circle"></span>
+                        <span class="role-label">Social Case Worker (Checker)</span>
+                    </label>
+                    <label class="role-option {{ old('role') == 'social_worker' ? 'selected' : '' }}">
+                        <input type="radio" name="role" value="social_worker" {{ old('role') == 'social_worker' ? 'checked' : '' }}>
+                        <span class="role-circle"></span>
+                        <span class="role-label">Social Case Worker (Encoder)</span>
+                    </label>
+                    <label class="role-option {{ old('role') == 'encoder' ? 'selected' : '' }}">
+                        <input type="radio" name="role" value="encoder" {{ old('role') == 'encoder' ? 'checked' : '' }}>
+                        <span class="role-circle"></span>
+                        <span class="role-label">Encoder</span>
+                    </label>
+                    <label class="role-option {{ old('role') == 'staff' ? 'selected' : '' }}">
+                        <input type="radio" name="role" value="staff" {{ old('role') == 'staff' ? 'checked' : '' }}>
+                        <span class="role-circle"></span>
+                        <span class="role-label">Staff</span>
+                    </label>
+                    <label class="role-option {{ old('role') == 'admin' ? 'selected' : '' }}">
+                        <input type="radio" name="role" value="admin" {{ old('role') == 'admin' ? 'checked' : '' }}>
+                        <span class="role-circle"></span>
+                        <span class="role-label">Administrator</span>
+                    </label>
                 </div>
                 <p class="select-hint">
                     <i data-lucide="info"></i>
-                    <span>Click to open the dropdown and choose a role</span>
+                    <span>Select a role by clicking on the circle</span>
                 </p>
             </div>
             <div>
@@ -255,10 +413,18 @@ $initials = count($words) >= 2
             </div>
             <div>
                 <label class="form-label">Status</label>
-                <select class="form-select" name="status" required>
-                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                </select>
+                <div class="status-selection">
+                    <label class="status-option {{ old('status') == 'active' ? 'selected' : '' }}">
+                        <input type="radio" name="status" value="active" {{ old('status') == 'active' ? 'checked' : '' }} required>
+                        <span class="status-circle"></span>
+                        <span class="status-label">Active</span>
+                    </label>
+                    <label class="status-option {{ old('status') == 'inactive' ? 'selected' : '' }}">
+                        <input type="radio" name="status" value="inactive" {{ old('status') == 'inactive' ? 'checked' : '' }}>
+                        <span class="status-circle"></span>
+                        <span class="status-label">Inactive</span>
+                    </label>
+                </div>
             </div>
             <div>
                 <label class="form-label">Signature Position</label>
@@ -304,6 +470,34 @@ $initials = count($words) >= 2
         setInterval(updateDateTime, 60000);
 
         if (typeof lucide !== 'undefined') lucide.createIcons();
+
+        // Role selection visual feedback
+        const roleOptions = document.querySelectorAll('.role-option');
+        roleOptions.forEach(option => {
+            const radio = option.querySelector('input[type="radio"]');
+            option.addEventListener('click', function(e) {
+                roleOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+            });
+            // Initialize selected state
+            if (radio.checked) {
+                option.classList.add('selected');
+            }
+        });
+
+        // Status selection visual feedback
+        const statusOptions = document.querySelectorAll('.status-option');
+        statusOptions.forEach(option => {
+            const radio = option.querySelector('input[type="radio"]');
+            option.addEventListener('click', function(e) {
+                statusOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+            });
+            // Initialize selected state
+            if (radio.checked) {
+                option.classList.add('selected');
+            }
+        });
 
         // Show success popup if officer was just created
         @if($officerCreated ?? false)
