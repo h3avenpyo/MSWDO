@@ -23,6 +23,58 @@ const AGENCIES = [
 const DEFAULT_REQUIREMENTS = ["Valid government-issued ID","Barangay Certificate of Residency / Indigency","Medical certificate or prescription (if medical)","Certificate of No Property / No Income","Death certificate (if burial assistance)"];
 const ELIGIBILITY_DAYS = 180;
 
+/* ── Name Normalization (mirrors PHP normalizeName + parseFullName) ── */
+function normalizeClientName(name){
+  if(!name) return '';
+  return name.trim()
+    .toLowerCase()
+    .replace(/[.,'"'\u2019]/g, '')
+    .replace(/-/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function parseClientName(fullName){
+  const normalized = normalizeClientName(fullName);
+  const parts = normalized.split(/\s+/).filter(Boolean);
+  return {
+    firstName:  parts[0] || '',
+    lastName:   parts.length ? parts[parts.length-1] : '',
+    middleName: parts.length > 2 ? parts.slice(1, -1).join(' ') : '',
+    normalized,
+    parts
+  };
+}
+
+/* Count overlap between input parts and client parts, including
+   concatenated client parts (e.g. "geraldlouis" = "gerald" + "louis"). */
+function countEffectiveOverlap(inputParts, clientParts){
+  let overlap = 0;
+  const usedClient = new Set();
+  for(const ip of inputParts){
+    let matched = false;
+    // 1. Direct match
+    for(let j=0;j<clientParts.length;j++){
+      if(ip===clientParts[j] && !usedClient.has(j)){
+        overlap++; usedClient.add(j); matched=true; break;
+      }
+    }
+    if(matched) continue;
+    // 2. Concatenated consecutive client parts
+    for(let start=0;start<clientParts.length;start++){
+      if(usedClient.has(start)) continue;
+      let concat='';
+      const usedRun=[];
+      for(let j=start;j<clientParts.length;j++){
+        concat+=clientParts[j]; usedRun.push(j);
+        if(concat===ip){ overlap+=usedRun.length; usedRun.forEach(v=>usedClient.add(v)); matched=true; break; }
+        if(concat.length>ip.length) break;
+      }
+      if(matched) break;
+    }
+  }
+  return overlap;
+}
+
 let cases = [];
 let view = {tab:"dashboard", caseId:null, docAgency:null, newCaseStep:"search", eligClientName:"", eligOverride:false, eligMatch:null, caseListPage:1, archivePage:1, archiveSearch:"", archiveFilter:"", archiveBarangay:""};
 let selectedAgency = "PCSO";
@@ -498,29 +550,31 @@ function boldProblemText(text) {
   return t;
 }
 function findLatestByName(name){
-  const n = name.trim().toLowerCase();
+  const n = normalizeClientName(name);
   if(!n) return null;
-  const matches = cases.filter(c => c.client.name.trim().toLowerCase() === n && c.releasedDate);
+  const matches = cases.filter(c => normalizeClientName(c.client.name) === n && c.releasedDate);
   if(!matches.length) return null;
   matches.sort((a,b)=> new Date(b.releasedDate) - new Date(a.releasedDate));
   return matches[0];
 }
 
 function checkEligibility(clientName){
-  const n = clientName.trim().toLowerCase();
-  if(!n) return {eligible: true, reason: ''};
-  
-  // Find all cases for this client (exact name match)
-  const exactMatches = cases.filter(c => c.client.name.toLowerCase().trim() === n);
-  
-  // Also find partial matches (similar names)
-  const partialMatches = cases.filter(c => 
-    c.client.name.toLowerCase().includes(n) && 
-    c.client.name.toLowerCase().trim() !== n
-  );
-  
-  // Combine both for eligibility check
-  const allMatches = [...exactMatches, ...partialMatches];
+  const parsed = parseClientName(clientName);
+  if(!parsed.normalized) return {eligible: true, reason: ''};
+
+  const inputParts = parsed.parts;
+
+  // Find all cases whose normalized name shares at least first+last with the input
+  const allMatches = cases.filter(c => {
+    const cParsed = parseClientName(c.client.name);
+    // Exact normalized full-name match
+    if(cParsed.normalized === parsed.normalized) return true;
+    // Effective overlap (including concatenated parts like "GeraldLouis" = "gerald" + "louis")
+    if(countEffectiveOverlap(inputParts, cParsed.parts) >= 2) return true;
+    // Input is a subset of an existing name (partial entry)
+    if(inputParts.length >= 2 && inputParts.every(p => cParsed.parts.includes(p))) return true;
+    return false;
+  });
   
   if(allMatches.length === 0) {
     return {eligible: true, reason: ''};
@@ -1568,16 +1622,23 @@ function renderSearchResults(query){
   console.log('Searching for:', query);
   console.log('Total cases:', cases.length);
   
-  // Find exact matches first
-  const exactMatches = cases.filter(c => 
-    c.client.name.toLowerCase().trim() === query.toLowerCase().trim()
+  const qParsed = parseClientName(query);
+  
+  // Find exact normalized matches
+  const exactMatches = cases.filter(c =>
+    normalizeClientName(c.client.name) === qParsed.normalized
   );
   
-  // Find partial matches (names that contain the query)
-  const partialMatches = cases.filter(c => 
-    c.client.name.toLowerCase().includes(query.toLowerCase()) &&
-    c.client.name.toLowerCase().trim() !== query.toLowerCase().trim()
-  ).slice(0,5);
+  // Find partial matches: last name match + at least one other overlapping part
+  const partialMatches = cases.filter(c => {
+    const cParsed = parseClientName(c.client.name);
+    if(normalizeClientName(c.client.name) === qParsed.normalized) return false;
+    // Same last name + effective overlap >= 2 (including concatenated parts)
+    if(cParsed.lastName === qParsed.lastName && countEffectiveOverlap(qParsed.parts, cParsed.parts) >= 2) return true;
+    // Input is a subset of the client name
+    if(qParsed.parts.length >= 2 && qParsed.parts.every(p => cParsed.parts.includes(p))) return true;
+    return false;
+  }).slice(0,5);
   
   console.log('Exact matches found:', exactMatches.length);
   console.log('Partial matches found:', partialMatches.length);
@@ -1936,6 +1997,14 @@ function renderCheckerEligibilityResult(data){
 
   if(!status) return;
 
+  const clientName = data.client
+    ? escapeHtml(`${data.client.first_name || ''} ${data.client.middle_name || ''} ${data.client.last_name || ''}`.replace(/\s+/g,' ').trim())
+    : escapeHtml(view.eligClientName || '');
+
+  const matchBadge = data.match_type === 'partial'
+    ? `<span style="display:inline-block;background:#FEF3C7;color:#92400E;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-left:8px">Partial Name Match</span>`
+    : '';
+
   if(!data.eligible){
     const reason = data.blocking
       ? `Received ${escapeHtml(data.blocking.assistance_type)} assistance on ${fmtDate(data.blocking.release_date)}.`
@@ -1945,6 +2014,7 @@ function renderCheckerEligibilityResult(data){
         <div class="status-icon" style="color:#DC2626"><i data-lucide="x-circle" style="width:24px;height:24px"></i></div>
         <div class="status-title" style="color:#DC2626">Not Eligible</div>
         <div class="status-desc">
+          ${clientName ? `<strong style="color:#111827">${clientName}</strong>${matchBadge}<br>` : ''}
           ${reason}<br>
           ${data.eligible_again_date ? `<strong>Eligible again on:</strong> ${fmtDate(data.eligible_again_date)}` : ''}
         </div>
@@ -1961,6 +2031,7 @@ function renderCheckerEligibilityResult(data){
         <div class="status-icon" style="color:#D97706"><i data-lucide="alert-circle" style="width:24px;height:24px"></i></div>
         <div class="status-title" style="color:#B45309">Already Has an Active Case</div>
         <div class="status-desc">
+          ${clientName ? `<strong style="color:#111827">${clientName}</strong>${matchBadge}<br>` : ''}
           <strong style="color:#111827">${escapeHtml(ec.case_number || 'Unknown case')}</strong> ${statusBadge}<br>
           This client already has an active case record and cannot be forwarded for a new case encoding. Please review the existing case instead.
         </div>
@@ -1991,11 +2062,28 @@ function renderCheckerEligibilityResult(data){
       });
     }
   } else {
+    let possibleMatchesHtml = '';
+    if(data.possible_matches && data.possible_matches.length > 0){
+      possibleMatchesHtml = `
+        <div style="margin-top:14px;padding:12px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px">
+          <div style="font-weight:600;font-size:13px;color:#374151;margin-bottom:8px">
+            <i data-lucide="users" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px"></i>
+            Other Possible Matches
+          </div>
+          ${data.possible_matches.map(m => `<div style="font-size:12px;color:#6B7280;padding:4px 0">• ${escapeHtml(m.name)}</div>`).join('')}
+          <div style="font-size:11px;color:#9CA3AF;margin-top:6px">Please verify the client's identity before proceeding.</div>
+        </div>`;
+    }
+
     status.innerHTML = `
       <div class="eligibility-card eligible">
         <div class="status-icon"><i data-lucide="check-circle" style="width:24px;height:24px"></i></div>
         <div class="status-title">Eligible</div>
-        <div class="status-desc">This client passed eligibility checking and can be forwarded for case encoding.</div>
+        <div class="status-desc">
+          ${clientName ? `<strong style="color:#111827">${clientName}</strong>${matchBadge}<br>` : ''}
+          This client passed eligibility checking and can be forwarded for case encoding.
+        </div>
+        ${possibleMatchesHtml}
         <button class="btn primary" style="margin-top:16px;width:100%" onclick="submitForEncoding()">
           <i data-lucide="send" style="width:16px;height:16px"></i> Submit for Case Encoding
         </button>

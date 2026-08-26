@@ -194,6 +194,121 @@ class SocialCaseController extends Controller
      * Server-side eligibility check for a client (6-month assistance rule).
      * Restricted to eligibility checker role via route middleware.
      */
+    /* ── Name Normalization Helpers ──────────────────────────────────── */
+
+    private static function normalizeName(string $name): string
+    {
+        $name = trim($name);
+        $name = mb_strtolower($name, 'UTF-8');
+        $name = str_replace(['.', ',', '"', "'", "\xE2\x80\x99"], '', $name);
+        $name = str_replace('-', ' ', $name);
+        $name = preg_replace('/\s+/', ' ', $name);
+        return trim($name);
+    }
+
+    private static function parseFullName(string $fullName): array
+    {
+        $normalized = self::normalizeName($fullName);
+        $parts = array_values(array_filter(explode(' ', $normalized)));
+
+        $firstName  = $parts[0] ?? '';
+        $lastName   = $parts ? end($parts) : '';
+        $middleName = count($parts) > 2
+            ? implode(' ', array_slice($parts, 1, -1))
+            : '';
+
+        return [
+            'first_name'  => $firstName,
+            'last_name'   => $lastName,
+            'middle_name' => $middleName,
+            'normalized'  => $normalized,
+            'parts'       => $parts,
+        ];
+    }
+
+    private static function findCandidateClients(array $parsed): array
+    {
+        $firstName = $parsed['first_name'];
+        $lastName  = $parsed['last_name'];
+
+        $results = ['exact' => collect(), 'partial' => collect()];
+
+        if ($firstName === '' || $lastName === '') {
+            return $results;
+        }
+
+        // Level 1 — Strong match: normalized first + last name
+        $results['exact'] = Client::whereRaw('LOWER(first_name) = ?', [$firstName])
+            ->whereRaw('LOWER(last_name) = ?', [$lastName])
+            ->get();
+
+        if ($results['exact']->isNotEmpty()) {
+            return $results;
+        }
+
+        // Level 2 — Partial: same last name + overlapping name components
+        if (mb_strlen($lastName) >= 3) {
+            $byLastName = Client::whereRaw('LOWER(last_name) = ?', [$lastName])->get();
+
+            $results['partial'] = $byLastName->filter(function ($client) use ($parsed) {
+                $clientNorm = self::normalizeName(
+                    trim(sprintf('%s %s %s', $client->first_name, $client->middle_name, $client->last_name))
+                );
+                $clientParts = array_values(array_filter(explode(' ', $clientNorm)));
+
+                return self::countEffectiveOverlap($parsed['parts'], $clientParts) >= 2;
+            });
+        }
+
+        return $results;
+    }
+
+    /**
+     * Count how many input parts map to client parts, including
+     * concatenated client parts (e.g. "geraldlouis" = "gerald" + "louis").
+     */
+    private static function countEffectiveOverlap(array $inputParts, array $clientParts): int
+    {
+        $overlap = 0;
+        $usedClient = [];
+
+        foreach ($inputParts as $ip) {
+            // 1. Direct match
+            $matched = false;
+            foreach ($clientParts as $j => $cp) {
+                if ($ip === $cp && ! in_array($j, $usedClient, true)) {
+                    $overlap++;
+                    $usedClient[] = $j;
+                    $matched = true;
+                    break;
+                }
+            }
+            if ($matched) continue;
+
+            // 2. Concatenated consecutive client parts match
+            $n = count($clientParts);
+            for ($start = 0; $start < $n; $start++) {
+                if (in_array($start, $usedClient, true)) continue;
+                $concat = '';
+                $usedInRun = [];
+                for ($j = $start; $j < $n; $j++) {
+                    $concat .= $clientParts[$j];
+                    $usedInRun[] = $j;
+                    if ($concat === $ip) {
+                        // Count as matching the number of parts that were concatenated
+                        $overlap += count($usedInRun);
+                        $usedClient = array_merge($usedClient, $usedInRun);
+                        $matched = true;
+                        break 2;
+                    }
+                    if (strlen($concat) > strlen($ip)) break;
+                }
+            }
+        }
+
+        return $overlap;
+    }
+
     public function checkEligibility(Request $request, EligibilityChecker $checker)
     {
         $request->validate([
@@ -201,36 +316,40 @@ class SocialCaseController extends Controller
         ]);
 
         $name = trim($request->input('client_name'));
-        $nameParts = array_filter(array_map('trim', explode(' ', $name)));
-        $firstName = array_shift($nameParts) ?? '';
-        $lastName = array_pop($nameParts) ?? '';
-
-        $client = Client::whereRaw('LOWER(first_name) = ? AND LOWER(last_name) = ?', [
-            strtolower($firstName),
-            strtolower($lastName),
-        ])->first();
+        $parsed = self::parseFullName($name);
 
         $start = microtime(true);
+        $candidates = self::findCandidateClients($parsed);
+
+        $client    = $candidates['exact']->first();
+        $matchType = $client ? 'exact' : null;
+
+        if (!$client && $candidates['partial']->isNotEmpty()) {
+            $client    = $candidates['partial']->first();
+            $matchType = 'partial';
+        }
 
         $result = [
-            'eligible' => true,
-            'client_found' => (bool) $client,
-            'client' => $client,
+            'eligible'            => true,
+            'client_found'        => (bool) $client,
+            'match_type'          => $matchType,
+            'client'              => $client,
             'eligible_again_date' => null,
-            'last_assistance_date' => null,
-            'blocking' => null,
-            'existing_case' => null,
+            'last_assistance_date'=> null,
+            'blocking'            => null,
+            'existing_case'       => null,
+            'possible_matches'    => [],
         ];
 
         if ($client) {
             $checkResult = $checker->check($client);
 
-            $result['eligible'] = $checkResult['eligible'];
-            $result['eligible_again_date'] = $checkResult['eligibleAgainDate']?->toDateString();
+            $result['eligible']             = $checkResult['eligible'];
+            $result['eligible_again_date']  = $checkResult['eligibleAgainDate']?->toDateString();
             $result['last_assistance_date'] = $checkResult['lastAssistanceDate']?->toDateString();
             $result['blocking'] = $checkResult['blockingRecord'] ? [
                 'assistance_type' => $checkResult['blockingRecord']->assistance_type,
-                'release_date' => $checkResult['blockingRecord']->release_date?->toDateString(),
+                'release_date'    => $checkResult['blockingRecord']->release_date?->toDateString(),
             ] : null;
 
             $activeCase = $client->socialCaseStudies()
@@ -240,26 +359,39 @@ class SocialCaseController extends Controller
 
             if ($activeCase) {
                 $result['existing_case'] = [
-                    'id' => $activeCase->id,
-                    'case_number' => $activeCase->case_number,
-                    'status' => $activeCase->status,
-                    'eligibility_status' => $activeCase->eligibility_status,
+                    'id'                => $activeCase->id,
+                    'case_number'       => $activeCase->case_number,
+                    'status'            => $activeCase->status,
+                    'eligibility_status'=> $activeCase->eligibility_status,
                 ];
+            }
+
+            // Return additional partial matches for verification (skip the primary match)
+            if ($matchType === 'partial' && $candidates['partial']->count() > 1) {
+                $result['possible_matches'] = $candidates['partial']
+                    ->reject(fn($c) => $c->id === $client->id)
+                    ->take(5)
+                    ->map(fn($c) => [
+                        'id'   => $c->id,
+                        'name' => trim(sprintf('%s %s %s', $c->first_name, $c->middle_name, $c->last_name)),
+                    ])
+                    ->values()
+                    ->toArray();
             }
         }
 
         EligibilityAuditLog::create([
-            'client_id' => $client?->id,
-            'client_name' => $name,
-            'officer_id' => session('admin_user_id'),
-            'officer_name' => session('admin_user_name') ?? 'Eligibility Checker',
-            'result' => $result['eligible'] ? 'eligible' : 'ineligible',
-            'result_details' => $result['eligible']
+            'client_id'         => $client?->id,
+            'client_name'       => $name,
+            'officer_id'        => session('admin_user_id'),
+            'officer_name'      => session('admin_user_name') ?? 'Eligibility Checker',
+            'result'            => $result['eligible'] ? 'eligible' : 'ineligible',
+            'result_details'    => $result['eligible']
                 ? 'Client is eligible for assistance.'
                 : 'Client is within the 6-month assistance restriction period.',
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'search_duration_ms' => (int) round((microtime(true) - $start) * 1000),
+            'ip_address'        => $request->ip(),
+            'user_agent'        => $request->userAgent(),
+            'search_duration_ms'=> (int) round((microtime(true) - $start) * 1000),
         ]);
 
         return response()->json($result);
@@ -274,13 +406,26 @@ class SocialCaseController extends Controller
     {
         $request->validate([
             'client_name' => 'required|string|max:255',
-            'override' => 'sometimes|boolean',
+            'override'    => 'sometimes|boolean',
         ]);
 
-        $name = trim($request->input('client_name'));
+        $name     = trim($request->input('client_name'));
         $override = $request->boolean('override');
-        $clientId = $this->findOrCreateClient(['name' => $name]);
-        $client = \App\Models\Client::find($clientId);
+
+        // Use the same normalized matching as checkEligibility
+        $parsed    = self::parseFullName($name);
+        $candidates = self::findCandidateClients($parsed);
+        $client    = $candidates['exact']->first()
+                  ?? $candidates['partial']->first();
+
+        // If no existing client found, create one (same as findOrCreateClient)
+        if (!$client) {
+            $client = Client::create([
+                'first_name'  => $parsed['first_name'],
+                'middle_name' => $parsed['middle_name'] ?: null,
+                'last_name'   => $parsed['last_name'],
+            ]);
+        }
 
         $checkResult = $checker->check($client);
 
@@ -386,6 +531,7 @@ class SocialCaseController extends Controller
         ]);
 
         $clientId = $this->findOrCreateClient($request->input('client'));
+        $client   = Client::find($clientId);
 
         $agencies = $data['agencies'] ?? [];
         $encodedById = session('admin_user_id');
@@ -398,6 +544,32 @@ class SocialCaseController extends Controller
             }
             if ($existing->eligibility_status !== 'eligible') {
                 return response()->json(['error' => 'Only clients that passed eligibility checking can be encoded.'], 403);
+            }
+        } else {
+            // Enforce 6-month eligibility when creating a brand-new case
+            $checker   = app(EligibilityChecker::class);
+            $checkResult = $checker->check($client);
+
+            if (! $checkResult['eligible']) {
+                return response()->json([
+                    'error'   => 'This client already has a Social Case Study request within the last 6 months. '
+                                . ($checkResult['eligibleAgainDate']
+                                    ? ' Eligible again on: ' . $checkResult['eligibleAgainDate']->toDateString()
+                                    : ''),
+                    'eligible'=> false,
+                ], 422);
+            }
+
+            $hasActive = $client->socialCaseStudies()
+                ->where('status', '!=', 'Archived')
+                ->where('eligibility_status', '!=', 'ineligible')
+                ->exists();
+
+            if ($hasActive) {
+                return response()->json([
+                    'error'   => 'This client already has an active Social Case Study. Please use the existing case record.',
+                    'eligible'=> true,
+                ], 409);
             }
         }
 
@@ -470,15 +642,14 @@ class SocialCaseController extends Controller
     private function findOrCreateClient(array $clientData): int
     {
         $fullName = trim($clientData['name'] ?? '');
-        $nameParts = array_filter(array_map('trim', explode(' ', $fullName)));
-        $firstName = array_shift($nameParts) ?? '';
-        $lastName  = array_pop($nameParts) ?? '';
-        $middleName = implode(' ', $nameParts);
+        $parsed   = self::parseFullName($fullName);
+        $firstName  = $parsed['first_name'];
+        $lastName   = $parsed['last_name'];
+        $middleName = $parsed['middle_name'];
 
-        $client = Client::whereRaw('LOWER(first_name) = ? AND LOWER(last_name) = ?', [
-            strtolower($firstName),
-            strtolower($lastName),
-        ])->first();
+        $client = Client::whereRaw('LOWER(first_name) = ?', [$firstName])
+            ->whereRaw('LOWER(last_name) = ?', [$lastName])
+            ->first();
 
         if (!$client) {
             $client = Client::create([
