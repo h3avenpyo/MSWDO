@@ -10,6 +10,7 @@ use App\Models\Client;
 use App\Models\User;
 use App\Models\OnlineRequest;
 use App\Services\SocialCase\EligibilityChecker;
+use App\Services\NameMatcher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -52,7 +53,7 @@ class SocialCaseController extends Controller
             $stats['rejected_clients'] = SocialCaseStudy::where('eligibility_status', 'ineligible')->count();
         } else {
             // Case encoder stats
-            $stats['total_clients'] = Client::count();
+            $stats['total_clients'] = Client::has('socialCaseStudies')->count();
             $stats['for_encoding'] = SocialCaseStudy::where('eligibility_status', 'eligible')
                 ->where('status', 'Draft')
                 ->count();
@@ -191,6 +192,39 @@ class SocialCaseController extends Controller
     }
 
     /**
+     * Return authoritative document-generation values (date + age) that are
+     * computed fresh from the database on every request.  The frontend MUST
+     * use these instead of any cached JS state when generating/reprinting.
+     */
+    public function getDocumentData($id)
+    {
+        $case = SocialCaseStudy::with('client')->find($id);
+        if (!$case) {
+            return response()->json(['error' => 'Case not found'], 404);
+        }
+
+        $client = $case->client;
+        $today  = now()->startOfDay();
+
+        $documentAge = null;
+        if ($client && $client->birthdate) {
+            $birthdate = \Carbon\Carbon::parse($client->birthdate);
+            $documentAge = (int) $birthdate->diffInYears($today, false);
+            // diffInYears with false can return negative for future dates;
+            // clamp to 0 as a safety net.
+            if ($documentAge < 0) {
+                $documentAge = 0;
+            }
+        }
+
+        return response()->json([
+            'document_date'     => $today->toDateString(),
+            'client_age'        => $documentAge,
+            'client_birthdate'  => $client?->birthdate?->toDateString(),
+        ]);
+    }
+
+    /**
      * Server-side eligibility check for a client (6-month assistance rule).
      * Restricted to eligibility checker role via route middleware.
      */
@@ -316,10 +350,10 @@ class SocialCaseController extends Controller
         ]);
 
         $name = trim($request->input('client_name'));
-        $parsed = self::parseFullName($name);
+        $parsed = NameMatcher::parseFullName($name);
 
         $start = microtime(true);
-        $candidates = self::findCandidateClients($parsed);
+        $candidates = NameMatcher::findCandidateClients($parsed);
 
         $client    = $candidates['exact']->first();
         $matchType = $client ? 'exact' : null;
@@ -413,8 +447,8 @@ class SocialCaseController extends Controller
         $override = $request->boolean('override');
 
         // Use the same normalized matching as checkEligibility
-        $parsed    = self::parseFullName($name);
-        $candidates = self::findCandidateClients($parsed);
+        $parsed    = NameMatcher::parseFullName($name);
+        $candidates = NameMatcher::findCandidateClients($parsed);
         $client    = $candidates['exact']->first()
                   ?? $candidates['partial']->first();
 
@@ -642,7 +676,7 @@ class SocialCaseController extends Controller
     private function findOrCreateClient(array $clientData): int
     {
         $fullName = trim($clientData['name'] ?? '');
-        $parsed   = self::parseFullName($fullName);
+        $parsed   = NameMatcher::parseFullName($fullName);
         $firstName  = $parsed['first_name'];
         $lastName   = $parsed['last_name'];
         $middleName = $parsed['middle_name'];

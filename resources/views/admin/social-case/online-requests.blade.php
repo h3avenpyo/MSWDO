@@ -620,7 +620,19 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                     <tr data-name="{{ $request->first_name }} {{ $request->last_name }}">
                         <td data-label="Name">
                             <div class="req-val-wrap">
-                                <div style="font-weight: 600; color: #0F172A;">{{ $request->first_name }} {{ $request->last_name }}</div>
+                                <div style="font-weight: 600; color: #0F172A;">
+                                    {{ $request->first_name }} {{ $request->last_name }}
+                                    @if($request->warning_existing ?? false)
+                                    <span class="warning-sign" style="position: relative; display: inline-flex; align-items: center;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px;">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                        </svg>
+                                        <span class="warning-tooltip" style="position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 8px; white-space: nowrap;">
+                                            Existing Client Found - A client with a matching name already exists in the database. Please verify the applicant's identity.
+                                        </span>
+                                    </span>
+                                    @endif
+                                </div>
                                 <div class="text-xs text-slate-500">{{ $request->email }}</div>
                             </div>
                         </td>

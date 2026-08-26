@@ -75,6 +75,21 @@ function countEffectiveOverlap(inputParts, clientParts){
   return overlap;
 }
 
+/* ── Backend-fresh document data (date + age) ──────────────────────── */
+async function fetchDocumentData(caseId){
+  try {
+    const resp = await fetch(`/admin/social-case/api/cases/${caseId}/document-data`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if(!resp.ok) throw new Error('Failed to fetch document data');
+    return await resp.json();
+  } catch(e) {
+    console.error('fetchDocumentData error:', e);
+    // Fallback: compute age client-side from birthdate
+    return null;
+  }
+}
+
 let cases = [];
 let view = {tab:"dashboard", caseId:null, docAgency:null, newCaseStep:"search", eligClientName:"", eligOverride:false, eligMatch:null, caseListPage:1, archivePage:1, archiveSearch:"", archiveFilter:"", archiveBarangay:""};
 let selectedAgency = "PCSO";
@@ -810,6 +825,10 @@ function saveNewCase(){
   if (onlineRequestId) {
     payload.online_request_id = onlineRequestId;
     sessionStorage.removeItem('intake_onlineRequestId');
+  }
+  // Include case_id if editing an existing case
+  if (draftIntake.caseId) {
+    payload.case_id = draftIntake.caseId;
   }
   console.log('Saving case (payload):', payload);
   fetch('/admin/social-case/api/cases', {
@@ -2983,6 +3002,10 @@ async function printDocument(){
   // container/style are intentionally left mounted after printing (see below),
   // so every print call must start clean.
   removePrintArtifacts();
+
+  // Fetch authoritative document date + age from the backend
+  const docData = await fetchDocumentData(view.caseId);
+
   const agencies = c.agencies || (c.submittedTo ? c.submittedTo.split(',').map(s => s.trim()).filter(Boolean) : []);
   
   if(agencies.length === 0) {
@@ -3025,7 +3048,9 @@ async function printDocument(){
     const recommendationDefault = `Due to the lack of sufficient income and the absence of alternative financial resources to meet the ${_defaultPossessive} needs, the undersigned worker respectfully recommends that the ${_defaultSubject} be considered for assistance from your office to cover the ${_expenseType} required.`;
 
     const clientName = escapeHtml((c.client?.fullName || c.client?.full_name || c.client?.name || c.clientName || c.client_name || "")).toUpperCase() || notProvided;
-    const clientAge = escapeHtml(String(c.client?.age || "")) || notProvided;
+    const clientAge = docData && docData.client_age !== null
+      ? escapeHtml(String(docData.client_age))
+      : (escapeHtml(String(c.client?.age || "")) || notProvided);
     const clientSex = escapeHtml((c.client?.sex || c.client?.gender || "")).toUpperCase() || notProvided;
     const clientAddress = escapeHtml((c.client?.address || "")).toUpperCase() || notProvided;
     const clientBirthdate = c.client?.birthdate ? fmtDate(c.client.birthdate).toUpperCase() : notProvided;
@@ -3036,7 +3061,9 @@ async function printDocument(){
     const clientOccupation = escapeHtml((c.client?.occupation || "")) || notProvided;
     const clientIncome = escapeHtml((c.client?.income || "")) || notProvided;
     const clientContact = escapeHtml((c.client?.contact || c.client?.contactNumber || c.client?.contact_number || "")) || notProvided;
-    const reportDate = fmtDate(c.interviewDate || c.interview?.reportDate || c.createdAt).toUpperCase();
+    const reportDate = docData && docData.document_date
+      ? fmtDate(docData.document_date).toUpperCase()
+      : fmtDate(new Date().toISOString().slice(0,10)).toUpperCase();
     const rawProblem = c.interview?.interviewSituation || c.interview?.interview_situation || c.interview?.problemPresented || "";
     const purpose = c.purpose || "";
     const clientFirstName = (c.client?.firstName || c.client?.first_name || "").trim();
@@ -3207,13 +3234,17 @@ async function printDocument(){
 async function reprintCase(caseId){
   const caseRec = getCase(caseId);
   if(!caseRec) return;
-  
-  // Update the releasedDate to today to show it was reprinted
-  caseRec.releasedDate = todayISO();
-  caseRec.updatedAt = todayISO();
-  
-  // Update in database
-  const payload = convertKeys(caseRec, camelToSnake);
+
+  // Fetch authoritative date + age from backend (not from cached JS state)
+  const docData = await fetchDocumentData(caseId);
+
+  // Only send the minimal fields that change on reprint — do NOT send the
+  // full case payload (which includes stale client sub-object).
+  const payload = {
+    released_at: docData?.document_date || todayISO() + 'T00:00:00',
+    updated_at:  docData?.document_date || todayISO() + 'T00:00:00',
+  };
+
   await fetch(`/admin/social-case/api/cases/${caseId}`, {
     method: 'PUT',
     headers: {
@@ -3228,14 +3259,14 @@ async function reprintCase(caseId){
     console.log('Case updated for reprint:', data);
     logActivity('printed', 'Case document reprinted', {
       clientName: caseRec.client?.name,
-      controlNo: caseRec.controlNo
+      controlNo: caseRec.controlNo,
+      reprintDate: docData?.document_date || todayISO(),
+      clientAge: docData?.client_age ?? null,
     });
-    // Reload case data from server to get latest data
     await loadCaseDetail(caseId);
-    // Show success message
     Swal.fire({
       title: 'Reprint Successful',
-      text: `Case ${caseRec.controlNo} has been updated with today's date (${todayISO()}). You can now print the document.`,
+      html: `Case <strong>${escapeHtml(caseRec.controlNo || '')}</strong> has been updated with today's date (<strong>${escapeHtml(docData?.document_date || todayISO())}</strong>).${docData?.client_age !== null ? '<br>Client age at reprint: <strong>' + escapeHtml(String(docData.client_age)) + '</strong>' : ''}<br><br>You can now print the document.`,
       icon: 'success',
       confirmButtonColor: '#1A237E',
       confirmButtonText: 'OK',
@@ -3903,6 +3934,9 @@ async function loadDocumentPreview(caseId){
   </div>`;
   lucide.createIcons();
 
+  // Fetch authoritative document date + age from the backend
+  const docData = await fetchDocumentData(caseId);
+
   const c = getCase(caseId);
   console.log('Case data:', c);
   if(!c){
@@ -3932,7 +3966,9 @@ async function loadDocumentPreview(caseId){
   const recommendationDefault = `Due to the lack of sufficient income and the absence of alternative financial resources to meet the ${_defaultPossessive2} needs, the undersigned worker respectfully recommends that the ${_defaultSubject2} be considered for assistance from your office to cover the ${_expenseType2} required.`;
 
   const clientName = escapeHtml((c.client?.fullName || c.client?.full_name || c.client?.name || c.clientName || c.client_name || "")).toUpperCase() || notProvided;
-  const clientAge = escapeHtml(String(c.client?.age || "")) || notProvided;
+  const clientAge = docData && docData.client_age !== null
+    ? escapeHtml(String(docData.client_age))
+    : (escapeHtml(String(c.client?.age || "")) || notProvided);
   const clientSex = escapeHtml((c.client?.sex || c.client?.gender || "")).toUpperCase() || notProvided;
   const clientAddress = escapeHtml((c.client?.address || "")).toUpperCase() || notProvided;
   const clientBirthdate = c.client?.birthdate ? fmtDate(c.client.birthdate).toUpperCase() : notProvided;
@@ -3944,7 +3980,9 @@ async function loadDocumentPreview(caseId){
   const clientIncome = escapeHtml((c.client?.income || "")) || notProvided;
   const clientContact = escapeHtml((c.client?.contact || c.client?.contactNumber || c.client?.contact_number || "")) || notProvided;
 
-  const reportDate = fmtDate(c.interviewDate || c.interview?.reportDate || c.createdAt).toUpperCase();
+  const reportDate = docData && docData.document_date
+    ? fmtDate(docData.document_date).toUpperCase()
+    : fmtDate(new Date().toISOString().slice(0,10)).toUpperCase();
 
   const rawProblem = c.interview?.interviewSituation || c.interview?.interview_situation || c.interview?.problemPresented || "";
   const purpose = c.purpose || "";
@@ -4291,6 +4329,9 @@ async function renderDocument(){
   console.log('Client sex:', c.client?.sex);
   if(!c){ container.innerHTML = `<div class="empty">Case not found. Case ID: ${view.caseId}</div>`; return; }
 
+  // Fetch authoritative document date + age from the backend
+  const docData = await fetchDocumentData(view.caseId);
+
   const agenciesToPrint = view.docAgency === 'all'
     ? (c.agencies && c.agencies.length ? c.agencies : ['PCSO'])
     : [view.docAgency];
@@ -4319,7 +4360,9 @@ async function renderDocument(){
   }
 
   const clientName = escapeHtml((c.client?.fullName || c.client?.full_name || c.client?.name || c.clientName || c.client_name || "")).toUpperCase() || notProvided;
-  const clientAge = escapeHtml(String(c.client?.age || "")) || notProvided;
+  const clientAge = docData && docData.client_age !== null
+    ? escapeHtml(String(docData.client_age))
+    : (escapeHtml(String(c.client?.age || "")) || notProvided);
   const clientSex = escapeHtml((c.client?.sex || c.client?.gender || "")).toUpperCase() || notProvided;
   const clientAddress = escapeHtml((c.client?.address || "")).toUpperCase() || notProvided;
   const clientBirthdate = c.client?.birthdate ? fmtDate(c.client.birthdate).toUpperCase() : notProvided;
@@ -4331,7 +4374,9 @@ async function renderDocument(){
   const clientIncome = escapeHtml((c.client?.income || "")) || notProvided;
   const clientContact = escapeHtml((c.client?.contact || c.client?.contactNumber || c.client?.contact_number || "")) || notProvided;
 
-  const reportDate = fmtDate(c.interviewDate || c.interview?.reportDate || c.createdAt).toUpperCase();
+  const reportDate = docData && docData.document_date
+    ? fmtDate(docData.document_date).toUpperCase()
+    : fmtDate(new Date().toISOString().slice(0,10)).toUpperCase();
 
   const rawProblem = c.interview?.interviewSituation || c.interview?.interview_situation || c.interview?.problemPresented || "";
   const purpose = c.purpose || "";
