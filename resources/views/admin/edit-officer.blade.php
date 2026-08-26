@@ -55,22 +55,25 @@ $initials = count($words) >= 2
         appearance: none;
         -webkit-appearance: none;
         -moz-appearance: none;
-        background: linear-gradient(135deg, #EFF6FF 0%, #F8FAFC 100%);
-        border: 1.5px solid #CBD5E1;
-        border-left: 3px solid var(--primary);
-        padding-right: 2.8rem;
+        background: #F8FAFC;
+        border: 1.5px solid #E2E8F0;
+        border-radius: 8px;
+        padding: 0.65rem 2.8rem 0.65rem 0.85rem;
+        font-size: 0.875rem;
+        color: var(--text-primary);
         cursor: pointer;
         transition: all .25s ease;
     }
     .select-dropdown-wrap .form-select:hover {
         border-color: var(--primary);
-        box-shadow: 0 2px 8px rgba(26, 35, 126, .12);
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(26, 35, 126, .08);
     }
     .select-dropdown-wrap .form-select:focus {
         border-color: var(--primary);
-        border-left: 3px solid var(--primary);
         background: #fff;
         box-shadow: 0 0 0 3px rgba(26, 35, 126, .1);
+        outline: none;
     }
     .select-dropdown-wrap::after {
         content: '';
@@ -82,12 +85,16 @@ $initials = count($words) >= 2
         height: 0;
         border-left: 5px solid transparent;
         border-right: 5px solid transparent;
-        border-top: 6px solid var(--primary);
+        border-top: 6px solid #64748B;
         pointer-events: none;
-        transition: transform .2s ease;
+        transition: transform .2s ease, border-color .2s ease;
+    }
+    .select-dropdown-wrap:hover::after {
+        border-top-color: var(--primary);
     }
     .select-dropdown-wrap:focus-within::after {
         transform: translateY(-50%) rotate(180deg);
+        border-top-color: var(--primary);
     }
 
     .select-hint {
@@ -118,6 +125,68 @@ $initials = count($words) >= 2
     }
     .btn-submit:hover {
         background: var(--primary-dark);
+    }
+
+    /* ── Status Selection with Circle Radio Buttons ── */
+    .status-selection {
+        display: flex;
+        gap: 1rem;
+    }
+    .status-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1rem;
+        background: #F8FAFC;
+        border: 1.5px solid #E2E8F0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+    .status-option:hover {
+        border-color: var(--primary);
+        background: #EFF6FF;
+    }
+    .status-option.selected {
+        border-color: var(--primary);
+        background: #EFF6FF;
+        box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
+    }
+    .status-option input[type="radio"] {
+        display: none;
+    }
+    .status-circle {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #CBD5E1;
+        border-radius: 50%;
+        background: #fff;
+        flex-shrink: 0;
+        transition: all .2s ease;
+        position: relative;
+    }
+    .status-option:hover .status-circle {
+        border-color: var(--primary);
+    }
+    .status-option.selected .status-circle {
+        border-color: var(--primary);
+        background: var(--primary);
+    }
+    .status-option.selected .status-circle::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 6px;
+        height: 6px;
+        background: #fff;
+        border-radius: 50%;
+    }
+    .status-label {
+        font-size: 0.8rem;
+        color: var(--text-primary);
+        font-weight: 500;
     }
 </style>
 
@@ -172,7 +241,7 @@ $initials = count($words) >= 2
                 <label class="form-label">Role / Assignment</label>
                 <div class="select-dropdown-wrap">
                     <select class="form-select" name="role" id="roleSelect" required>
-                        <option value="" disabled>Select Role / Assignment</option>
+                        <option value="" disabled selected>Select Role / Assignment</option>
                         <option value="Senior Citizen officer" {{ old('role', $officer->role) == 'Senior Citizen officer' ? 'selected' : '' }}>Senior Citizen Officer</option>
                         <option value="Financial assistance officer" {{ old('role', $officer->role) == 'Financial assistance officer' ? 'selected' : '' }}>Financial Assistance Officer</option>
                         <option value="financialstep1" {{ old('role', $officer->role) == 'financialstep1' ? 'selected' : '' }}>Financial Assistance Step 1</option>
@@ -186,7 +255,7 @@ $initials = count($words) >= 2
                 </div>
                 <p class="select-hint">
                     <i data-lucide="info"></i>
-                    <span>Click to open the dropdown and choose a role</span>
+                    <span>Select a role from the dropdown</span>
                 </p>
             </div>
             <div>
@@ -195,10 +264,18 @@ $initials = count($words) >= 2
             </div>
             <div>
                 <label class="form-label">Status</label>
-                <select class="form-select" name="status" required>
-                    <option value="active" {{ old('status', $officer->status) == 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ old('status', $officer->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                </select>
+                <div class="status-selection">
+                    <label class="status-option {{ old('status', $officer->status) == 'active' ? 'selected' : '' }}">
+                        <input type="radio" name="status" value="active" {{ old('status', $officer->status) == 'active' ? 'checked' : '' }} required>
+                        <span class="status-circle"></span>
+                        <span class="status-label">Active</span>
+                    </label>
+                    <label class="status-option {{ old('status', $officer->status) == 'inactive' ? 'selected' : '' }}">
+                        <input type="radio" name="status" value="inactive" {{ old('status', $officer->status) == 'inactive' ? 'checked' : '' }}>
+                        <span class="status-circle"></span>
+                        <span class="status-label">Inactive</span>
+                    </label>
+                </div>
             </div>
             <div>
                 <label class="form-label">Signature Position</label>
@@ -228,7 +305,7 @@ $initials = count($words) >= 2
                 </p>
             </div>
             <div class="md:col-span-2 mt-2 flex justify-end gap-2">
-                <button type="button" class="px-4 py-2 text-sm font-semibold rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition" onclick="location.href='/admin/officers-directory'">Cancel</button>
+                <button type="button" class="px-4 py-2 text-sm font-semibold rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition" onclick="location.reload()">Cancel</button>
                 <button type="submit" class="btn-submit">Update Officer</button>
             </div>
         </div>
@@ -250,6 +327,20 @@ $initials = count($words) >= 2
         setInterval(updateDateTime, 60000);
 
         if (typeof lucide !== 'undefined') lucide.createIcons();
+
+        // Status selection visual feedback
+        const statusOptions = document.querySelectorAll('.status-option');
+        statusOptions.forEach(option => {
+            const radio = option.querySelector('input[type="radio"]');
+            option.addEventListener('click', function(e) {
+                statusOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+            });
+            // Initialize selected state
+            if (radio.checked) {
+                option.classList.add('selected');
+            }
+        });
 
         const successAlert = document.getElementById('successAlert');
         if (successAlert) {
