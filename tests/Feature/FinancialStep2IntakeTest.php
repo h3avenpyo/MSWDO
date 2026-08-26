@@ -195,7 +195,7 @@ class FinancialStep2IntakeTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee($uniqueCtrl);
-        $response->assertSee('Roberto SantosTest');
+        $response->assertSee('Roberto Gomez SantosTest');
         $response->assertSee('Elena SantosTest');
         $response->assertSee('Biluso');
         $response->assertSee('5,000.00');
@@ -240,7 +240,7 @@ class FinancialStep2IntakeTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee($uniqueCtrl);
-        $response->assertSee('Maria ClaraTest');
+        $response->assertSee('Maria Santos ClaraTest');
         $response->assertSee('456 Mabini St');
         $response->assertSee('Solo Parents');
         $response->assertSee('4,500.00');
@@ -313,14 +313,21 @@ class FinancialStep2IntakeTest extends TestCase
             'beneficiary_first_name' => 'AutoDate',
             'beneficiary_last_name' => 'Tester',
             'beneficiary_birthday' => '1995-06-15',
+            'beneficiary_sex' => 'Male',
+            'beneficiary_civil_status' => 'Single',
+            'beneficiary_contact_number' => '09123456789',
             'beneficiary_street_address' => 'Purok 1',
             'beneficiary_barangay' => 'Biluso',
+            'beneficiary_city' => 'Silang',
+            'beneficiary_province' => 'Cavite',
             'beneficiary_category' => 'PWD',
             'has_representative' => false,
             'service_provided' => 'Financial Assistance',
             'purpose' => 'Hospital Bill',
+            'submitted_to' => 'MSWDO Silang Main Office',
         ]);
 
+        $response->assertRedirect();
         $intake = BeneficiaryIntake::where('control_number', $uniqueCtrl)->first();
         $this->assertNotNull($intake);
         $this->assertEquals(Carbon::today()->format('Y-m-d'), $intake->date_processed->format('Y-m-d'));
@@ -337,8 +344,13 @@ class FinancialStep2IntakeTest extends TestCase
             'beneficiary_first_name' => 'OriginalDate',
             'beneficiary_last_name' => 'Tester',
             'beneficiary_birthday' => '1995-06-15',
+            'beneficiary_sex' => 'Male',
+            'beneficiary_civil_status' => 'Single',
+            'beneficiary_contact_number' => '09123456789',
             'beneficiary_street_address' => 'Purok 1',
             'beneficiary_barangay' => 'Biluso',
+            'beneficiary_city' => 'Silang',
+            'beneficiary_province' => 'Cavite',
             'beneficiary_category' => 'PWD',
             'has_representative' => false,
             'service_provided' => 'Financial Assistance',
@@ -358,14 +370,21 @@ class FinancialStep2IntakeTest extends TestCase
             'beneficiary_first_name' => 'UpdatedName',
             'beneficiary_last_name' => 'Tester',
             'beneficiary_birthday' => '1995-06-15',
+            'beneficiary_sex' => 'Male',
+            'beneficiary_civil_status' => 'Single',
+            'beneficiary_contact_number' => '09123456789',
             'beneficiary_street_address' => 'Purok 1',
             'beneficiary_barangay' => 'Biluso',
+            'beneficiary_city' => 'Silang',
+            'beneficiary_province' => 'Cavite',
             'beneficiary_category' => 'PWD',
             'has_representative' => false,
             'service_provided' => 'Financial Assistance',
             'purpose' => 'Hospital Bill',
+            'submitted_to' => 'MSWDO Silang Main Office',
         ]);
 
+        $response->assertRedirect();
         $intake->refresh();
         $this->assertEquals('UpdatedName', $intake->beneficiary_first_name);
         $this->assertEquals('2025-05-15', $intake->date_processed->format('Y-m-d'));
@@ -385,11 +404,14 @@ class FinancialStep2IntakeTest extends TestCase
             'beneficiary_first_name' => 'TodayBeneficiary',
             'beneficiary_last_name' => 'Tester',
             'beneficiary_birthday' => '1990-01-01',
+            'beneficiary_sex' => 'Male',
             'beneficiary_street_address' => 'Purok 1',
             'beneficiary_barangay' => 'Biluso',
+            'beneficiary_city' => 'Silang',
             'has_representative' => false,
             'service_provided' => 'Financial Assistance',
             'purpose' => 'Medical',
+            'submitted_to' => 'MSWDO Silang Main Office',
         ]);
 
         // Yesterday intake
@@ -400,11 +422,14 @@ class FinancialStep2IntakeTest extends TestCase
             'beneficiary_first_name' => 'YesterdayBeneficiary',
             'beneficiary_last_name' => 'Tester',
             'beneficiary_birthday' => '1990-01-01',
+            'beneficiary_sex' => 'Male',
             'beneficiary_street_address' => 'Purok 1',
             'beneficiary_barangay' => 'Biluso',
+            'beneficiary_city' => 'Silang',
             'has_representative' => false,
             'service_provided' => 'Financial Assistance',
             'purpose' => 'Medical',
+            'submitted_to' => 'MSWDO Silang Main Office',
         ]);
 
         // Tomorrow intake
@@ -415,11 +440,14 @@ class FinancialStep2IntakeTest extends TestCase
             'beneficiary_first_name' => 'TomorrowBeneficiary',
             'beneficiary_last_name' => 'Tester',
             'beneficiary_birthday' => '1990-01-01',
+            'beneficiary_sex' => 'Male',
             'beneficiary_street_address' => 'Purok 1',
             'beneficiary_barangay' => 'Biluso',
+            'beneficiary_city' => 'Silang',
             'has_representative' => false,
             'service_provided' => 'Financial Assistance',
             'purpose' => 'Medical',
+            'submitted_to' => 'MSWDO Silang Main Office',
         ]);
 
         // Normal request

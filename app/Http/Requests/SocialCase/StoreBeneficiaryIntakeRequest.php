@@ -14,11 +14,19 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $benBday = $this->normalizeDate($this->beneficiary_birthday);
+        $repBday = $this->normalizeDate($this->rep_birthday);
+
         $this->merge([
             'has_representative' => $this->boolean('has_representative'),
             'is_client_beneficiary' => $this->boolean('is_client_beneficiary'),
-            'beneficiary_birthday' => $this->normalizeDate($this->beneficiary_birthday),
-            'rep_birthday' => $this->normalizeDate($this->rep_birthday),
+            'beneficiary_birthday' => $benBday,
+            'beneficiary_age' => $this->beneficiary_age ?? (!empty($benBday) ? Carbon::parse($benBday)->age : null),
+            'beneficiary_city' => $this->beneficiary_city ?? 'Silang',
+            'beneficiary_province' => $this->beneficiary_province ?? 'Cavite',
+            'beneficiary_region' => $this->beneficiary_region ?? 'Region IV-A',
+            'rep_birthday' => $repBday,
+            'rep_age' => $this->rep_age ?? (!empty($repBday) ? Carbon::parse($repBday)->age : null),
             'date_processed' => $this->normalizeDate($this->date_processed),
         ]);
     }
