@@ -8,49 +8,54 @@
 $userName = session('admin_user_name') ?? 'Officer';
 @endphp
 
+<!-- Alerts -->
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show rounded-3 mb-4 shadow-xs" role="alert">
+    <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4 shadow-xs" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h4 class="fw-bold mb-1" style="color: #1A237E;">General Intake Form &amp; Assessment (Step 1)</h4>
-        <p class="text-muted small mb-0">Collect beneficiary information, documentary requirements, and social worker assessment.</p>
+        <p class="text-muted small mb-0">Collect beneficiary identifying information, documentary requirements, and social worker assessment.</p>
     </div>
-    <div class="d-flex gap-2">
-        <a href="{{ route('admin.financial.financialstep2') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-            <i class="fas fa-hand-holding-usd me-1"></i> Proceed to Step 2 Verification
-        </a>
-        <a href="{{ route('admin.beneficiary-intake.create') }}" class="btn btn-brand btn-sm rounded-pill px-3">
+    <div class="d-flex gap-2 align-items-center">
+        <a href="{{ route('admin.beneficiary-intake.create') }}" class="btn btn-brand btn-sm rounded-pill px-3 shadow-xs">
             <i class="fas fa-plus me-1"></i> New Client Intake
         </a>
     </div>
 </div>
 
-<!-- Search & Filter Bar -->
+<!-- Search Bar (Restricted to Today's Intakes) -->
 <div class="card border-0 shadow-sm rounded-3 mb-4 p-3 bg-white">
     <form action="{{ route('admin.financial.financialstep1') }}" method="GET" class="row g-2 align-items-end">
-        <div class="col-md-6 col-lg-5">
-            <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search Intake</label>
+        <div class="col-md-9 col-lg-9">
+            <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search Today's Intake ({{ date('F d, Y') }})</label>
             <input type="text" name="search" class="form-control form-control-sm rounded-3" placeholder="Search by Control No, Client Name, Rep, or Barangay..." value="{{ request('search') }}">
         </div>
-        <div class="col-md-3 col-lg-3">
-            <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar me-1"></i> Date Processed</label>
-            <input type="date" name="date" class="form-control form-control-sm rounded-3" value="{{ request('date') }}">
-        </div>
-        <div class="col-md-3 col-lg-4 d-flex gap-2">
-            <button type="submit" class="btn btn-sm btn-primary rounded-3 px-3 fw-semibold" style="background: #1A237E; border-color: #1A237E;">
-                <i class="fas fa-filter me-1"></i> Filter
+        <div class="col-md-3 col-lg-3 d-flex gap-2">
+            <button type="submit" class="btn btn-sm btn-primary rounded-3 px-3 fw-semibold w-100" style="background: #1A237E; border-color: #1A237E;">
+                <i class="fas fa-search me-1"></i> Search
             </button>
-            <a href="{{ route('admin.financial.financialstep1', ['all' => 1]) }}" class="btn btn-sm btn-outline-secondary rounded-3 px-3">
-                View All
-            </a>
-            @if(request()->hasAny(['search', 'date', 'all']))
-            <a href="{{ route('admin.financial.financialstep1') }}" class="btn btn-sm btn-light border rounded-3" title="Reset Filters">
-                <i class="fas fa-redo"></i> Today
+            @if(request()->filled('search'))
+            <a href="{{ route('admin.financial.financialstep1') }}" class="btn btn-sm btn-light border rounded-3 px-3" title="Clear Search">
+                <i class="fas fa-times"></i>
             </a>
             @endif
         </div>
     </form>
 </div>
 
-<!-- Content Workspace: Table Directory & Action Cards -->
+<!-- Content Workspace: Step 1 Table Directory (Isolated to Today's Step 1 Data) -->
 <div class="row g-4">
     <div class="col-12">
         <div class="card animate-fade-in">
@@ -58,16 +63,12 @@ $userName = session('admin_user_name') ?? 'Officer';
                 <div>
                     <h3 class="card-title-clean">
                         @if(request()->filled('search'))
-                            Search Results for "{{ request('search') }}"
-                        @elseif(request()->filled('date'))
-                            Intake Assessments on <span class="fw-bold text-primary">{{ \Carbon\Carbon::parse(request('date'))->format('F d, Y') }}</span>
-                        @elseif(request()->filled('all'))
-                            All General Intake Assessments
+                            Search Results for "{{ request('search') }}" in Today's Intakes &bull; <span class="fw-bold text-primary">{{ date('F d, Y') }}</span>
                         @else
                             Today's Intake Assessments &bull; <span class="fw-bold text-primary">{{ date('F d, Y') }}</span>
                         @endif
                     </h3>
-                    <p class="card-subtitle-clean">General Intake Sheets recorded in the system</p>
+                    <p class="card-subtitle-clean">General Intake Sheets and Assessment Records processed today (Step 1)</p>
                 </div>
                 <a href="{{ route('admin.beneficiary-intake.create') }}" class="btn btn-brand btn-sm rounded-pill px-3">
                     <i class="fas fa-plus me-1"></i> New Client Intake
@@ -81,9 +82,9 @@ $userName = session('admin_user_name') ?? 'Officer';
                                 <th>Control No.</th>
                                 <th>Client / Beneficiary Name</th>
                                 <th>Date Intake</th>
-                                <th>Category / Barangay</th>
-                                <th>Recommended Grant</th>
-                                <th>Status</th>
+                                <th>Category &amp; Barangay</th>
+                                <th>Assistance / Purpose Requested</th>
+                                <th>Intake Status</th>
                                 <th class="text-end">Actions</th>
                             </tr>
                         </thead>
@@ -105,27 +106,23 @@ $userName = session('admin_user_name') ?? 'Officer';
                                     <div class="text-muted small">{{ $intake->beneficiary_barangay ?? 'Silang' }}</div>
                                 </td>
                                 <td>
-                                    @if($intake->recommended_amount)
-                                        <span class="fw-bold text-success">&#8369;{{ number_format($intake->recommended_amount, 2) }}</span>
-                                    @else
-                                        <span class="text-muted small">Pending</span>
-                                    @endif
+                                    <div class="fw-semibold text-dark" style="font-size: 0.85rem;">
+                                        {{ $intake->recommended_assistance_type ?: ($intake->service_provided ?: 'General Assistance') }}
+                                    </div>
+                                    <div class="text-muted small">{{ $intake->display_assistance_purpose }}</div>
                                 </td>
                                 <td>
                                     <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size: var(--text-xs);">
-                                        <i class="fas fa-check-circle me-1"></i>Step 1 Completed
+                                        <i class="fas fa-check-circle me-1"></i>Intake Recorded
                                     </span>
                                 </td>
                                 <td class="text-end">
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('admin.beneficiary-intake.show', $intake) }}" class="btn btn-outline-primary" title="View Details">
-                                            <i class="fas fa-eye"></i>
+                                        <a href="{{ route('admin.beneficiary-intake.show', $intake) }}" class="btn btn-outline-primary" title="View Intake Details">
+                                            <i class="fas fa-eye me-1"></i> View
                                         </a>
-                                        <a href="{{ route('admin.beneficiary-intake.edit', $intake) }}" class="btn btn-outline-secondary" title="Edit Intake">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="{{ route('admin.financial.financialstep2', ['search' => $intake->control_number]) }}" class="btn btn-outline-success" title="Forward to Step 2 Verification">
-                                            <i class="fas fa-hand-holding-usd"></i>
+                                        <a href="{{ route('admin.beneficiary-intake.edit', $intake) }}" class="btn btn-outline-secondary" title="Edit Intake Form">
+                                            <i class="fas fa-edit me-1"></i> Edit
                                         </a>
                                     </div>
                                 </td>
@@ -134,9 +131,9 @@ $userName = session('admin_user_name') ?? 'Officer';
                             <tr>
                                 <td colspan="7" class="p-4">
                                     <div class="empty-state-box text-center py-3">
-                                        <i class="fas fa-calendar-day fa-3x mb-3 text-muted opacity-50 d-block"></i>
-                                        <h4 class="fw-bold mb-1" style="font-size: var(--text-md); color: var(--color-text-primary);">No intake records found</h4>
-                                        <p class="text-muted mb-3" style="font-size: var(--text-sm);">Click "New Client Intake" to create a new assessment record.</p>
+                                        <i class="fas fa-clipboard-list fa-3x mb-3 text-muted opacity-50 d-block"></i>
+                                        <h4 class="fw-bold mb-1" style="font-size: var(--text-md); color: var(--color-text-primary);">No intake records processed today</h4>
+                                        <p class="text-muted mb-3" style="font-size: var(--text-sm);">Only intake records processed on {{ date('F d, Y') }} appear here. Click "New Client Intake" to create an assessment record.</p>
                                         <a href="{{ route('admin.beneficiary-intake.create') }}" class="btn btn-sm btn-primary rounded-pill px-4" style="background: #1A237E;">
                                             <i class="fas fa-plus me-1"></i> New Client Intake
                                         </a>

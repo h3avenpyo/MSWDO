@@ -4,13 +4,91 @@ namespace App\Http\Controllers\Admin\Financial;
 
 use App\Http\Controllers\Controller;
 use App\Models\SocialCase\BeneficiaryIntake;
+use App\Models\User;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class FinancialDashboardController extends Controller
 {
+    /**
+     * Authenticate and authorize Step 2 access from Step 1.
+     */
+    public function authenticateStep2(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ]);
+
+        $identifier = trim($request->input('email'));
+        $user = User::where('email', $identifier)
+            ->orWhere('name', $identifier)
+            ->first();
+
+        if (! $user) {
+            return redirect()->route('admin.financial.financialstep1')
+                ->with('step2_auth_error', 'Invalid credentials. Account not found.')
+                ->with('step2_auth_required', true)
+                ->withInput();
+        }
+
+        // Check account status
+        $status = is_object($user->status) ? $user->status->value : $user->status;
+        if ($status === 'inactive') {
+            return redirect()->route('admin.financial.financialstep1')
+                ->with('step2_auth_error', 'This account has been deactivated. Please contact an administrator.')
+                ->with('step2_auth_required', true)
+                ->withInput();
+        }
+
+        if (! Hash::check($request->password, $user->password)) {
+            return redirect()->route('admin.financial.financialstep1')
+                ->with('step2_auth_error', 'Invalid email or password.')
+                ->with('step2_auth_required', true)
+                ->withInput();
+        }
+
+        // Check if user has permission for Step 2
+        $roleValue = is_object($user->role) ? $user->role->value : $user->role;
+        $roleValueLower = strtolower((string) $roleValue);
+        $allowedRoles = ['admin', 'financialstep2', 'financial assistance officer'];
+
+        if (! in_array($roleValueLower, $allowedRoles, true)) {
+            return redirect()->route('admin.financial.financialstep1')
+                ->with('step2_auth_error', 'Access denied. The provided account is not authorized for Step 2 Verification & Disbursement.')
+                ->with('step2_auth_required', true)
+                ->withInput();
+        }
+
+        // Authorize session for Step 2
+        session([
+            'financial_step2_authorized' => true,
+            'financial_step2_authorized_user' => $user->name,
+            'financial_step2_authorized_role' => $roleValue,
+            'financial_step2_authorized_at' => now()->toDateTimeString(),
+        ]);
+
+        return redirect()->route('admin.financial.financialstep2')
+            ->with('success', 'Step 2 Financial Masterlist access successfully authorized.');
+    }
+
+    /**
+     * Lock Step 2 access and return to Step 1.
+     */
+    public function lockStep2(Request $request)
+    {
+        $request->session()->forget([
+            'financial_step2_authorized',
+            'financial_step2_authorized_user',
+            'financial_step2_authorized_role',
+            'financial_step2_authorized_at',
+        ]);
+
+        return redirect()->route('admin.financial.financialstep1')
+            ->with('success', 'Step 2 access has been locked.');
+    }
     public function financialDashboard()
     {
         $totalIntakes = class_exists(BeneficiaryIntake::class) 
@@ -55,6 +133,9 @@ class FinancialDashboardController extends Controller
         if (class_exists(BeneficiaryIntake::class)) {
             $query = BeneficiaryIntake::with(['client', 'encoderUser']);
 
+            // STRICT SERVER-SIDE FILTER: Only display intake records processed on the current day
+            $query->whereDate('date_processed', $today);
+
             if ($request->filled('search')) {
                 $search = trim($request->search);
                 $query->where(function ($q) use ($search) {
@@ -68,26 +149,10 @@ class FinancialDashboardController extends Controller
                 });
             }
 
-            if ($request->filled('date')) {
-                $date = Carbon::parse($request->date);
-                $query->where(function ($q) use ($date) {
-                    $q->whereDate('created_at', $date)
-                      ->orWhereDate('date_processed', $date);
-                });
-            } elseif (!$request->filled('all') && !$request->filled('search')) {
-                $query->where(function ($q) use ($today) {
-                    $q->whereDate('created_at', $today)
-                      ->orWhereDate('date_processed', $today);
-                });
-            }
+            $todayIntakesCount = BeneficiaryIntake::whereDate('date_processed', $today)->count();
+            $totalIntakes = $todayIntakesCount;
 
-            $totalIntakes = BeneficiaryIntake::count();
-            $todayIntakesCount = BeneficiaryIntake::where(function ($q) use ($today) {
-                $q->whereDate('created_at', $today)
-                  ->orWhereDate('date_processed', $today);
-            })->count();
-
-            $recentIntakes = $query->latest()->paginate(10)->withQueryString();
+            $recentIntakes = $query->latest('id')->paginate(10)->withQueryString();
         } else {
             $totalIntakes = 0;
             $todayIntakesCount = 0;

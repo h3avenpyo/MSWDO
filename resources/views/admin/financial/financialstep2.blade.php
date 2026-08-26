@@ -87,6 +87,20 @@
 $userName = session('admin_user_name') ?? 'Officer';
 @endphp
 
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show rounded-3 mb-4 shadow-xs" role="alert">
+    <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4 shadow-xs" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
 <!-- Step Wizard Header Card -->
 <div class="step-wizard-card animate-fade-in mb-4">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -94,11 +108,17 @@ $userName = session('admin_user_name') ?? 'Officer';
             <h2 class="wizard-heading mb-1"><i class="fas fa-hand-holding-usd me-2"></i>Financial Assistance: Step 2 Masterlist</h2>
             <p class="mb-0 text-white-50" style="font-size: var(--text-sm);">Client General Intake Masterlist &bull; Select a client to proceed to Step 2 Financial Assistance processing</p>
         </div>
-        <div class="d-flex align-items-center">
-            <div class="user-welcome">
+        <div class="d-flex align-items-center gap-2">
+            <div class="user-welcome me-2">
                 <i class="fas fa-user-circle me-1"></i>
-                <span>Hello, {{ $userName }}</span>
+                <span>{{ $userName }}</span>
             </div>
+            <form action="{{ route('admin.financial.step2.lock') }}" method="POST" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-danger btn-sm rounded-pill px-3 shadow-xs" title="Lock Step 2 and return to Step 1">
+                    <i class="fas fa-lock me-1"></i> Lock Step 2
+                </button>
+            </form>
         </div>
     </div>
 
@@ -119,7 +139,7 @@ $userName = session('admin_user_name') ?? 'Officer';
     <div class="step-wizard-nav pt-2">
         <a href="{{ route('admin.financial.financialstep1') }}" class="step-item-pill text-decoration-none">
             <div class="step-circle"><i class="fas fa-check"></i></div>
-            <div class="step-label">Step 1: Intake &amp; Assessment (Completed)</div>
+            <div class="step-label">Step 1: Intake &amp; Assessment</div>
         </a>
         <div class="step-item-pill active">
             <div class="step-circle"><i class="fas fa-list-check"></i></div>

@@ -161,6 +161,9 @@ class FinancialIntakeController extends Controller
     {
         $data = $request->validated();
 
+        // Strictly enforce today's date for Date Processed on creation
+        $data['date_processed'] = Carbon::today()->toDateString();
+
         // Strict 6-Month Validity Policy Check
         $duplicateCheck = $duplicateChecker->checkDuplicate($data);
         if ($duplicateCheck['is_duplicate']) {
@@ -309,6 +312,9 @@ class FinancialIntakeController extends Controller
     public function update(UpdateBeneficiaryIntakeRequest $request, BeneficiaryIntake $intake, FinancialDuplicateChecker $duplicateChecker)
     {
         $data = $request->validated();
+
+        // Prevent modification of Date Processed during edit
+        unset($data['date_processed']);
 
         // Strict 6-Month Validity Policy Check (exclude current record)
         $duplicateCheck = $duplicateChecker->checkDuplicate($data, $intake->id);

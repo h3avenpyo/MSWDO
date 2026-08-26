@@ -74,8 +74,8 @@
                         </div>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Date <span class="required-star">*</span></label>
-                        <input type="date" name="date_processed" class="form-control" value="{{ old('date_processed', $intake->date_processed ? $intake->date_processed->format('Y-m-d') : date('Y-m-d')) }}" required>
+                        <label class="form-label">Date Processed</label>
+                        <input type="text" class="form-control bg-light text-muted fw-bold" value="{{ $intake->date_processed ? $intake->date_processed->format('F d, Y') : 'N/A' }}" readonly tabindex="-1">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Time Start</label>

@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('social_case_studies', function (Blueprint $table) {
-            $table->json('signers')->nullable()->after('requirements_complete');
+            if (!Schema::hasColumn('social_case_studies', 'signers')) {
+                $table->json('signers')->nullable()->after('requirements_complete');
+            }
         });
     }
 
@@ -22,7 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('social_case_studies', function (Blueprint $table) {
-            $table->dropColumn('signers');
+            if (Schema::hasColumn('social_case_studies', 'signers')) {
+                $table->dropColumn('signers');
+            }
         });
     }
 };

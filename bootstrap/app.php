@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin.auth' => \App\Http\Middleware\EnsureAdminAuthenticated::class,
             'role' => \App\Http\Middleware\EnsureRole::class,
             'check.account.status' => \App\Http\Middleware\CheckAccountStatus::class,
+            'financial.step2.auth' => \App\Http\Middleware\Financial\EnsureFinancialStep2Access::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

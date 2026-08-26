@@ -47,7 +47,7 @@ class UpdateBeneficiaryIntakeRequest extends FormRequest
             'client_id' => ['nullable', 'integer', 'exists:clients,id'],
             'control_number' => ['required', 'string', 'max:50', Rule::unique('beneficiary_intakes', 'control_number')->ignore($intakeId)],
             'client_type' => ['required', 'in:New,Returning'],
-            'date_processed' => ['required', 'date'],
+            'date_processed' => ['nullable', 'date'],
             'time_start' => ['nullable', 'string', 'max:20'],
             'time_end' => ['nullable', 'string', 'max:20'],
             'encoder' => ['nullable', 'integer', 'exists:users,id'],
