@@ -108,9 +108,15 @@ class BeneficiaryIntake extends Model
 
     public function getBeneficiaryFullNameAttribute(): ?string
     {
-        $name = trim("{$this->beneficiary_first_name} {$this->beneficiary_middle_name} {$this->beneficiary_last_name} {$this->beneficiary_extension_name}");
-        if (! empty($name)) {
-            return $name;
+        $parts = array_filter([
+            $this->beneficiary_first_name,
+            $this->beneficiary_middle_name,
+            $this->beneficiary_last_name,
+            $this->beneficiary_extension_name,
+        ], fn($p) => !is_null($p) && $p !== '');
+
+        if (! empty($parts)) {
+            return implode(' ', $parts);
         }
         if ($this->is_client_beneficiary && $this->client) {
             return $this->client_full_name;
@@ -123,8 +129,14 @@ class BeneficiaryIntake extends Model
         if (! $this->has_representative) {
             return null;
         }
-        $name = trim("{$this->rep_first_name} {$this->rep_middle_name} {$this->rep_last_name} {$this->rep_extension_name}");
-        return ! empty($name) ? $name : 'N/A';
+        $parts = array_filter([
+            $this->rep_first_name,
+            $this->rep_middle_name,
+            $this->rep_last_name,
+            $this->rep_extension_name,
+        ], fn($p) => !is_null($p) && $p !== '');
+
+        return ! empty($parts) ? implode(' ', $parts) : 'N/A';
     }
 
     public function getBeneficiaryAddressFormattedAttribute(): string

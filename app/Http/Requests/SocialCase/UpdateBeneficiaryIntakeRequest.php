@@ -15,11 +15,19 @@ class UpdateBeneficiaryIntakeRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $benBday = $this->normalizeDate($this->beneficiary_birthday);
+        $repBday = $this->normalizeDate($this->rep_birthday);
+
         $this->merge([
             'has_representative' => $this->boolean('has_representative'),
             'is_client_beneficiary' => $this->boolean('is_client_beneficiary'),
-            'beneficiary_birthday' => $this->normalizeDate($this->beneficiary_birthday),
-            'rep_birthday' => $this->normalizeDate($this->rep_birthday),
+            'beneficiary_birthday' => $benBday,
+            'beneficiary_age' => $this->beneficiary_age ?? (!empty($benBday) ? Carbon::parse($benBday)->age : null),
+            'beneficiary_city' => $this->beneficiary_city ?? 'Silang',
+            'beneficiary_province' => $this->beneficiary_province ?? 'Cavite',
+            'beneficiary_region' => $this->beneficiary_region ?? 'Region IV-A',
+            'rep_birthday' => $repBday,
+            'rep_age' => $this->rep_age ?? (!empty($repBday) ? Carbon::parse($repBday)->age : null),
             'date_processed' => $this->normalizeDate($this->date_processed),
         ]);
     }
@@ -47,7 +55,7 @@ class UpdateBeneficiaryIntakeRequest extends FormRequest
             'client_id' => ['nullable', 'integer', 'exists:clients,id'],
             'control_number' => ['required', 'string', 'max:50', Rule::unique('beneficiary_intakes', 'control_number')->ignore($intakeId)],
             'client_type' => ['required', 'in:New,Returning'],
-            'date_processed' => ['required', 'date'],
+            'date_processed' => ['nullable', 'date'],
             'time_start' => ['nullable', 'string', 'max:20'],
             'time_end' => ['nullable', 'string', 'max:20'],
             'encoder' => ['nullable', 'integer', 'exists:users,id'],

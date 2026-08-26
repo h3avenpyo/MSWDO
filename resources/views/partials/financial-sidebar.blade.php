@@ -36,12 +36,6 @@
             </a>
         </li>
         <li>
-            <a href="/admin/financial/financialstep2"
-                class="{{ request()->is('admin/financial/financialstep2*') ? 'active' : '' }}">
-                <i class="fas fa-hand-holding-usd"></i> Step 2: Financial Masterlist
-            </a>
-        </li>
-        <li>
             <a href="/admin/beneficiary-intake"
                 class="{{ request()->is('admin/beneficiary-intake*') ? 'active' : '' }}">
                 <i class="fas fa-list"></i> All Intakes
