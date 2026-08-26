@@ -44,13 +44,13 @@ class SocialCaseController extends Controller
         ];
 
         if ($isEligibilityChecker) {
-            // Eligibility checker stats - use eligibility_status instead of rejected_at
-            $stats['pending_eligibility'] = SocialCaseStudy::where('eligibility_status', 'pending')->count();
+            // Eligibility checker stats - count online requests instead of social case studies
+            $stats['pending_eligibility'] = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
             $stats['eligible_clients'] = SocialCaseStudy::where('eligibility_status', 'eligible')->count();
             $stats['forwarded_to_encoder'] = SocialCaseStudy::where('eligibility_status', 'eligible')
                 ->whereNotNull('eligible_by')
                 ->count();
-            $stats['rejected_clients'] = SocialCaseStudy::where('eligibility_status', 'ineligible')->count();
+            $stats['rejected_clients'] = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
         } else {
             // Case encoder stats
             $stats['total_clients'] = Client::has('socialCaseStudies')->count();
@@ -63,7 +63,18 @@ class SocialCaseController extends Controller
             $stats['total_released'] = SocialCaseStudy::whereIn('status', ['Printed', 'Released'])->count();
         }
 
-        return view('admin.social-case.dashboard', compact('justLoggedIn', 'stats'));
+        // Get online request counts for badge
+        $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
+        $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
+
+        $onlineRequestCounts = [
+            'pending' => $pendingCount,
+            'accepted' => $acceptedCount,
+            'rejected' => $rejectedCount,
+        ];
+
+        return view('admin.social-case.dashboard', compact('justLoggedIn', 'stats', 'onlineRequestCounts'));
     }
 
     public function socialCaseNew()
@@ -85,7 +96,18 @@ class SocialCaseController extends Controller
 
     public function socialCaseArchive()
     {
-        return view('admin.social-case.archive');
+        // Get online request counts for badge
+        $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
+        $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
+
+        $onlineRequestCounts = [
+            'pending' => $pendingCount,
+            'accepted' => $acceptedCount,
+            'rejected' => $rejectedCount,
+        ];
+
+        return view('admin.social-case.archive', compact('onlineRequestCounts'));
     }
 
     public function socialCaseCases()
@@ -93,7 +115,7 @@ class SocialCaseController extends Controller
         // Get online request counts for badge
         $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
         $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
-        $rejectedCount = OnlineRequest::where('status', 'rejected')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
 
         $onlineRequestCounts = [
             'pending' => $pendingCount,
@@ -131,7 +153,7 @@ class SocialCaseController extends Controller
         // Get online request counts for badge
         $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
         $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
-        $rejectedCount = OnlineRequest::where('status', 'rejected')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
 
         $onlineRequestCounts = [
             'pending' => $pendingCount,

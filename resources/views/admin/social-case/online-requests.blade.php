@@ -857,7 +857,20 @@ function viewOnlineRequest(id) {
                         Swal.fire({
                             title: 'Decline Request',
                             html: `
-                                <input type="text" id="declineReason" class="swal2-input" placeholder="Enter reason for decline" style="width: 100%; margin: 10px 0;">
+                                <div style="text-align: left; margin: 15px 0;">
+                                    <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Select reason for decline:</label>
+                                    <select id="declineReason" class="swal2-input" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 14px;">
+                                        <option value="">-- Select a reason --</option>
+                                        <option value="Incomplete requirements">Incomplete requirements</option>
+                                        <option value="Not eligible for assistance">Not eligible for assistance</option>
+                                        <option value="Duplicate request">Duplicate request</option>
+                                        <option value="Outside service area">Outside service area</option>
+                                        <option value="Information provided is incorrect">Information provided is incorrect</option>
+                                        <option value="Unable to verify identity">Unable to verify identity</option>
+                                        <option value="Other">Other (please specify)</option>
+                                    </select>
+                                    <input type="text" id="declineReasonOther" class="swal2-input" placeholder="Please specify other reason" style="width: 100%; margin-top: 10px; display: none;">
+                                </div>
                             `,
                             icon: 'question',
                             showCancelButton: true,
@@ -865,17 +878,37 @@ function viewOnlineRequest(id) {
                             cancelButtonText: 'Cancel',
                             confirmButtonColor: '#DC2626',
                             cancelButtonColor: '#6B7280',
+                            didOpen: () => {
+                                const select = document.getElementById('declineReason');
+                                const otherInput = document.getElementById('declineReasonOther');
+                                select.addEventListener('change', function() {
+                                    if (this.value === 'Other') {
+                                        otherInput.style.display = 'block';
+                                        otherInput.focus();
+                                    } else {
+                                        otherInput.style.display = 'none';
+                                    }
+                                });
+                            },
                             preConfirm: () => {
                                 const reason = document.getElementById('declineReason').value;
+                                const otherReason = document.getElementById('declineReasonOther').value;
+                                
                                 if (!reason || reason.trim() === '') {
-                                    Swal.showValidationMessage('Please enter a reason for decline');
+                                    Swal.showValidationMessage('Please select a reason for decline');
                                     return false;
                                 }
-                                return reason;
+                                
+                                if (reason === 'Other' && (!otherReason || otherReason.trim() === '')) {
+                                    Swal.showValidationMessage('Please specify the reason');
+                                    return false;
+                                }
+                                
+                                return reason === 'Other' ? otherReason : reason;
                             }
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                const reason = document.getElementById('declineReason').value;
+                                const reason = result.value;
                                 declineOnlineRequest(id, reason).then(resolve);
                             } else {
                                 resolve(false);

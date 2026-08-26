@@ -286,7 +286,7 @@ class OnlineRequestController extends Controller
         // Get online request counts for badge
         $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
         $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
-        $rejectedCount = OnlineRequest::where('status', 'rejected')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
 
         $onlineRequestCounts = [
             'pending' => $pendingCount,
@@ -303,29 +303,10 @@ class OnlineRequestController extends Controller
             ->orderBy('updated_at', 'desc')
             ->paginate(10);
 
-        // Pre-load all potential matching clients in a single query
-        $allClients = Client::all();
-        $clientMap = [];
-        foreach ($allClients as $client) {
-            $normalizedName = NameMatcher::normalizeName($client->first_name . ' ' . $client->last_name);
-            $clientMap[$normalizedName] = $client;
-        }
-
-        $rejectedRequests->getCollection()->transform(function ($req) use ($clientMap) {
-            $fullName = trim($req->first_name . ' ' . $req->last_name);
-            $normalizedName = NameMatcher::normalizeName($fullName);
-
-            // Check for existing client using the normalized name map
-            $client = $clientMap[$normalizedName] ?? NameMatcher::findMatchingClient($fullName);
-            $req->warning_existing = (bool) $client;
-
-            return $req;
-        });
-
         // Get online request counts for badge
         $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
         $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
-        $rejectedCount = OnlineRequest::where('status', 'rejected')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
 
         $onlineRequestCounts = [
             'pending' => $pendingCount,
