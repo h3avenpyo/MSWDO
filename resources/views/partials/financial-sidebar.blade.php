@@ -8,7 +8,13 @@
         <li>
             <a href="/admin/financial/financialstep2"
                 class="{{ request()->is('admin/financial/financialstep2*') ? 'active' : '' }}">
-                <i class="fas fa-th-large"></i> Dashboard
+                <i class="fas fa-hand-holding-usd"></i> Step 2 Masterlist
+            </a>
+        </li>
+        <li>
+            <a href="/admin/beneficiary-intake"
+                class="{{ request()->is('admin/beneficiary-intake*') ? 'active' : '' }}">
+                <i class="fas fa-list"></i> All Intakes
             </a>
         </li>
         <li>
@@ -26,13 +32,19 @@
         <li>
             <a href="/admin/financial/financialstep1"
                 class="{{ request()->is('admin/financial/financialstep1') ? 'active' : '' }}">
-                <i class="fas fa-clipboard-list"></i> Intake &amp; Assessment
+                <i class="fas fa-clipboard-list"></i> Step 1: Intake
+            </a>
+        </li>
+        <li>
+            <a href="/admin/financial/financialstep2"
+                class="{{ request()->is('admin/financial/financialstep2*') ? 'active' : '' }}">
+                <i class="fas fa-hand-holding-usd"></i> Step 2: Financial Masterlist
             </a>
         </li>
         <li>
             <a href="/admin/beneficiary-intake"
                 class="{{ request()->is('admin/beneficiary-intake*') ? 'active' : '' }}">
-                <i class="fas fa-list"></i> Masterlist
+                <i class="fas fa-list"></i> All Intakes
             </a>
         </li>
         <li>

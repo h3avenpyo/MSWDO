@@ -229,26 +229,33 @@ class DashboardController extends Controller
             ? \App\Models\SocialCase\BeneficiaryIntake::count() 
             : 0;
         $recentIntakes = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class) 
-            ? \App\Models\SocialCase\BeneficiaryIntake::latest()->take(5)->get() 
+            ? \App\Models\SocialCase\BeneficiaryIntake::with(['client', 'encoderUser'])->latest()->take(6)->get() 
             : collect();
 
-        return view('admin.financial.financial-dashboard', compact('totalIntakes', 'recentIntakes'));
-    }
-
-    public function financialStep1()
-    {
-        $totalIntakes = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class) 
-            ? \App\Models\SocialCase\BeneficiaryIntake::count() 
+        $today = \Carbon\Carbon::today();
+        $todayIntakes = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class)
+            ? \App\Models\SocialCase\BeneficiaryIntake::where(function ($q) use ($today) {
+                $q->whereDate('created_at', $today)->orWhereDate('date_processed', $today);
+            })->count()
             : 0;
-        $recentIntakes = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class) 
-            ? \App\Models\SocialCase\BeneficiaryIntake::latest()->paginate(10)
-            : collect();
+        $step1Approved = $totalIntakes;
+        $readyForStep2 = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class)
+            ? (\App\Models\SocialCase\BeneficiaryIntake::whereNotNull('recommended_amount')->where('recommended_amount', '>', 0)->count() ?: $totalIntakes)
+            : 0;
+        $totalAmount = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class)
+            ? (\App\Models\SocialCase\BeneficiaryIntake::sum('recommended_amount') ?? 0)
+            : 0;
 
-        return view('admin.financial.financialstep1', compact('totalIntakes', 'recentIntakes'));
+        return view('admin.financial.financial-dashboard', compact('totalIntakes', 'todayIntakes', 'step1Approved', 'readyForStep2', 'totalAmount', 'recentIntakes'));
     }
 
-    public function financialStep2()
+    public function financialStep1(\Illuminate\Http\Request $request)
     {
-        return view('admin.financial.financialstep2');
+        return app(\App\Http\Controllers\Admin\Financial\FinancialDashboardController::class)->financialStep1($request);
+    }
+
+    public function financialStep2(\Illuminate\Http\Request $request)
+    {
+        return app(\App\Http\Controllers\Admin\Financial\FinancialDashboardController::class)->financialStep2($request);
     }
 }

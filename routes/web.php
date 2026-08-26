@@ -118,6 +118,7 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::get('/admin/financial/dashboard', [FinancialDashboardController::class, 'financialDashboard'])->name('admin.financial.dashboard');
     Route::get('/admin/financial/financialstep1', [FinancialDashboardController::class, 'financialStep1'])->name('admin.financial.financialstep1');
     Route::get('/admin/financial/financialstep2', [FinancialDashboardController::class, 'financialStep2'])->name('admin.financial.financialstep2');
+    Route::get('/admin/financial/financialstep2/process/{intake}', [FinancialDashboardController::class, 'financialStep2Process'])->name('admin.financial.financialstep2.process');
     Route::get('/admin/financial/financialstep1statistics', [FinancialDashboardController::class, 'statistics'])->name('admin.financial.financialstep1statistics');
 });
 
