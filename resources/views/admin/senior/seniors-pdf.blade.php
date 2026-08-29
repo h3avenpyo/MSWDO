@@ -185,7 +185,7 @@
             <td class="gov">
                 <div class="gov-line">Republic of the Philippines &bull; Province of Cavite &bull; Municipality of Silang</div>
                 <h2>MUNICIPAL SOCIAL WELFARE AND DEVELOPMENT OFFICE</h2>
-                <div style="font-size: 10px; color: #475569; margin-top: 2px;">Senior Citizens Masterlist Report</div>
+                <div style="font-size: 10px; color: #475569; margin-top: 2px;">{{ isset($isArchived) && $isArchived ? 'Archived Senior Citizens Masterlist Report' : 'Senior Citizens Masterlist Report' }}</div>
             </td>
             <td class="logo-cell">
                 @if($dswdLogo)

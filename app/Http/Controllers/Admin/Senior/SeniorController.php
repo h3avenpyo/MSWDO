@@ -445,10 +445,16 @@ class SeniorController extends Controller
         $ids = $request->get('ids');
         $barangay = $request->get('barangay');
         $search = $request->get('search');
+        $isArchived = $request->boolean('archived');
 
-        $query = SeniorCitizenRecord::where('status', '!=', 'archived')
-            ->whereNotNull('birth_date')
-            ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60');
+        $query = SeniorCitizenRecord::query();
+        if ($isArchived) {
+            $query->where('status', 'archived');
+        } else {
+            $query->where('status', '!=', 'archived')
+                ->whereNotNull('birth_date')
+                ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60');
+        }
 
         if ($ids) {
             $idsArray = explode(',', $ids);
@@ -497,6 +503,7 @@ class SeniorController extends Controller
             'total' => $totalMatching,
             'barangay' => $barangay,
             'search' => $search,
+            'isArchived' => $isArchived,
             'currentPart' => $part,
             'totalParts' => $totalParts,
             'partStart' => $partStart,
@@ -510,7 +517,7 @@ class SeniorController extends Controller
         $pdf->getDomPDF()->set_option('isPhpEnabled', true);
         $pdf->getDomPDF()->set_option('dpi', 96);
 
-        $filename = 'senior_citizens';
+        $filename = $isArchived ? 'archived_senior_citizens' : 'senior_citizens';
         if ($barangay) {
             $filename .= '_' . str_replace(' ', '_', strtolower($barangay));
         }
