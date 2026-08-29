@@ -59,15 +59,16 @@
 
         /* Stat Cards */
         .stat-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-bottom:12px;animation:fadeInUp .6s ease-out;flex-shrink:0;}
-        .stat-cards>a{display:block;width:100%;min-width:0;}
-        @media(min-width:1200px) and (max-width:1399px){.stat-cards{grid-template-columns:repeat(6,1fr);gap:18px;}.stat-cards>a:nth-child(1),.stat-cards>a:nth-child(2),.stat-cards>a:nth-child(3){grid-column:span 2;}.stat-cards>a:nth-child(4),.stat-cards>a:nth-child(5){grid-column:span 3;}}
-        @media(min-width:992px) and (max-width:1199px){.stat-cards{grid-template-columns:repeat(3,1fr);gap:16px;}}
-        @media(min-width:768px) and (max-width:991px){.stat-cards{grid-template-columns:repeat(2,1fr);gap:16px;}}
-        @media(min-width:576px) and (max-width:767px){.stat-cards{grid-template-columns:repeat(2,1fr);gap:12px;}}
-        @media(min-width:375px) and (max-width:575px){.stat-cards{grid-template-columns:1fr 1fr;gap:12px;}}
-        @media(max-width:374px){.stat-cards{grid-template-columns:1fr 1fr;}}
+        .stat-cards>.stat-card{display:flex;width:100%;min-width:0;}
+        @media(min-width:1200px) and (max-width:1399px){.stat-cards{grid-template-columns:repeat(6,1fr);gap:18px;}.stat-cards>.stat-card:nth-child(1),.stat-cards>.stat-card:nth-child(2),.stat-cards>.stat-card:nth-child(3){grid-column:span 2;}.stat-cards>.stat-card:nth-child(4),.stat-cards>.stat-card:nth-child(5){grid-column:span 3;}}
+        @media(min-width:992px) and (max-width:1199px){.stat-cards{grid-template-columns:repeat(2,1fr);gap:16px;}.stat-cards>.stat-card:nth-child(5){grid-column:span 2;}}
+        @media(min-width:768px) and (max-width:991px){.stat-cards{grid-template-columns:repeat(2,1fr);gap:16px;}.stat-cards>.stat-card:nth-child(5){grid-column:span 2;}}
+        @media(min-width:576px) and (max-width:767px){.stat-cards{grid-template-columns:repeat(2,1fr);gap:12px;}.stat-cards>.stat-card:nth-child(5){grid-column:span 2;}}
+        @media(min-width:375px) and (max-width:575px){.stat-cards{grid-template-columns:1fr 1fr;gap:12px;}.stat-cards>.stat-card:nth-child(5){grid-column:1 / -1;}}
+        @media(max-width:374px){.stat-cards{grid-template-columns:1fr 1fr;}.stat-cards>.stat-card:nth-child(5){grid-column:1 / -1;}}
+        @media(max-width:1199.98px){.stat-cards>.stat-card:nth-child(5),.stat-cards>.stat-card.stat-card-orange{grid-column:1 / -1 !important;}}
 
-        .stat-card{width:100%;background:var(--surface);border-radius:24px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;min-height:0;}
+        .stat-card{width:100%;background:var(--surface);border-radius:24px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s ease;position:relative;overflow:hidden;min-height:0;cursor:default;}
         .stat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;transition:all .3s ease;}
         .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);}
         .stat-card-blue::before{background:var(--icon-blue);}
@@ -189,6 +190,9 @@
                 grid-template-columns: 1fr 1fr !important;
                 gap: 12px !important;
                 margin-bottom: 16px !important;
+            }
+            .stat-cards > .stat-card:nth-child(5) {
+                grid-column: 1 / -1 !important;
             }
             .stat-card {
                 width: 100% !important;
@@ -502,6 +506,7 @@
 
             /* Stat cards: 2-col grid */
             .stat-cards { grid-template-columns: repeat(2, 1fr) !important; gap: 16px !important; margin-bottom: 20px !important; }
+            .stat-cards > .stat-card:nth-child(5) { grid-column: 1 / -1 !important; }
 
             /* Dashboard grid: stacked, chart full width */
             .dashboard-grid { grid-template-columns: 1fr !important; gap: 16px !important; margin-bottom: 16px !important; }
@@ -569,51 +574,41 @@
 
         <!-- Stat Cards -->
         <div class="stat-cards">
-            <a href="/admin/senior/masterlist" style="text-decoration:none">
-                <div class="stat-card stat-card-blue">
-                    <div class="stat-card-content">
-                        <div class="stat-card-label">TOTAL SENIORS</div>
-                        <div class="stat-card-value counter" data-target="{{ $totalSeniors }}">{{ $totalSeniors }}</div>
-                    </div>
-                    <div class="stat-card-icon"><i data-lucide="users"></i></div>
+            <div class="stat-card stat-card-blue">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">TOTAL SENIORS</div>
+                    <div class="stat-card-value counter" data-target="{{ $totalSeniors }}">{{ $totalSeniors }}</div>
                 </div>
-            </a>
-            <a href="/admin/senior/masterlist" style="text-decoration:none">
-                <div class="stat-card stat-card-green">
-                    <div class="stat-card-content">
-                        <div class="stat-card-label">ACTIVE SENIORS</div>
-                        <div class="stat-card-value counter" data-target="{{ $activeSeniors }}">{{ $activeSeniors }}</div>
-                    </div>
-                    <div class="stat-card-icon"><i data-lucide="check-circle"></i></div>
+                <div class="stat-card-icon"><i data-lucide="users"></i></div>
+            </div>
+            <div class="stat-card stat-card-green">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">ACTIVE SENIORS</div>
+                    <div class="stat-card-value counter" data-target="{{ $activeSeniors }}">{{ $activeSeniors }}</div>
                 </div>
-            </a>
-            <a href="/admin/senior/archive" style="text-decoration:none">
-                <div class="stat-card stat-card-purple">
-                    <div class="stat-card-content">
-                        <div class="stat-card-label">ARCHIVED</div>
-                        <div class="stat-card-value">{{ $archivedSeniors ?? 0 }}</div>
-                    </div>
-                    <div class="stat-card-icon"><i data-lucide="archive"></i></div>
+                <div class="stat-card-icon"><i data-lucide="check-circle"></i></div>
+            </div>
+            <div class="stat-card stat-card-purple">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">ARCHIVED</div>
+                    <div class="stat-card-value">{{ $archivedSeniors ?? 0 }}</div>
                 </div>
-            </a>
-            <a href="/admin/senior/birthdays" style="text-decoration:none">
-                <div class="stat-card stat-card-red">
-                    <div class="stat-card-content">
-                        <div class="stat-card-label">TODAY'S BIRTHDAYS</div>
-                        <div class="stat-card-value">{{ $bdayToday }}</div>
-                    </div>
-                    <div class="stat-card-icon"><i data-lucide="cake"></i></div>
+                <div class="stat-card-icon"><i data-lucide="archive"></i></div>
+            </div>
+            <div class="stat-card stat-card-red">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">TODAY'S BIRTHDAYS</div>
+                    <div class="stat-card-value">{{ $bdayToday }}</div>
                 </div>
-            </a>
-            <a href="/admin/senior/payouts-history" style="text-decoration:none">
-                <div class="stat-card stat-card-orange">
-                    <div class="stat-card-content">
-                        <div class="stat-card-label">TOTAL PAYOUT</div>
-                        <div class="stat-card-value">₱{{ number_format($totalAmountReleased ?? 0, 2) }}</div>
-                    </div>
-                    <div class="stat-card-icon"><i data-lucide="wallet"></i></div>
+                <div class="stat-card-icon"><i data-lucide="cake"></i></div>
+            </div>
+            <div class="stat-card stat-card-orange">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">TOTAL PAYOUT</div>
+                    <div class="stat-card-value">₱{{ number_format($totalAmountReleased ?? 0, 2) }}</div>
                 </div>
-            </a>
+                <div class="stat-card-icon"><i data-lucide="wallet"></i></div>
+            </div>
         </div>
 
 
