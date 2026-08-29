@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -69,12 +69,12 @@
             vertical-align: middle;
         }
 
-        /* â”€â”€â”€ DATA TABLE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+        /* ─── DATA TABLE ─────────────────────────── */
         .data-table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            font-size: 10px;
+            font-size: 10.5px;
         }
         .data-table thead { display: table-header-group; }
         .data-table tr    { page-break-inside: avoid; }
@@ -82,11 +82,11 @@
         .data-table th {
             background: #1A237E;
             color: #fff;
-            font-size: 9px;
+            font-size: 10px;
             font-weight: bold;
             text-transform: uppercase;
             text-align: center;
-            padding: 5px 4px;
+            padding: 6px 4px;
             border: 1px solid #1A237E;
         }
         .data-table th.tl { text-align: left; }
@@ -96,7 +96,7 @@
             border: 1px solid #94a3b8;
             text-align: center;
             vertical-align: middle;
-            font-size: 10px;
+            font-size: 10.5px;
         }
         .data-table td.tl { text-align: left; }
         .data-table tbody tr:nth-child(even) { background: #f8fafc; }
@@ -105,28 +105,53 @@
             font-weight: bold;
             background: #e8eaf6;
             border-top: 2px solid #1A237E;
-            font-size: 10px;
+            font-size: 10.5px;
         }
 
-        /* â”€â”€â”€ SIGNATURES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+        /* ─── SIGNATURES ─────────────────────────── */
         .sig-table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            margin-top: 14px;
+            margin-top: 16px;
         }
         .sig-table td {
             border: none;
             text-align: center;
-            padding: 0 12px;
+            padding: 0 14px;
             vertical-align: bottom;
         }
-        .sig-space { height: 36px; }
-        .sig-line  { border-top: 1.5px solid #0f172a; margin-bottom: 3px; }
-        .sig-name  { font-size: 10px; font-weight: bold; }
-        .sig-role  { font-size: 9px; color: #374151; }
+        .sig-label {
+            font-size: 10px;
+            font-weight: bold;
+            color: #334155;
+            text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .sig-space {
+            height: 28px;
+        }
+        .sig-name {
+            font-size: 12px;
+            font-weight: bold;
+            color: #0f172a;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+            letter-spacing: 0.3px;
+        }
+        .sig-line {
+            border-top: 1.5px solid #0f172a;
+            margin: 0 auto 3px auto;
+            width: 90%;
+        }
+        .sig-role {
+            font-size: 10.5px;
+            font-weight: 500;
+            color: #334155;
+        }
 
-        /* â”€â”€â”€ PAGE BREAK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+        /* ─── PAGE BREAK ─────────────────────────── */
         .page-break { page-break-after: always; }
     </style>
 </head>
@@ -228,12 +253,30 @@
     </tbody>
 </table>
 
-{{-- â•â• SIGNATURES â•â• --}}
+{{-- ══ SIGNATURES ══ --}}
 <table class="sig-table">
     <tr>
-        <td><div class="sig-space"></div><div class="sig-line"></div><div class="sig-name">Prepared by</div><div class="sig-role">MSWDO Staff</div></td>
-        <td><div class="sig-space"></div><div class="sig-line"></div><div class="sig-name">Checked by</div><div class="sig-role">OSCA Officer</div></td>
-        <td><div class="sig-space"></div><div class="sig-line"></div><div class="sig-name">Approved by</div><div class="sig-role">MSWDO Head</div></td>
+        <td>
+            <div class="sig-label">Prepared by:</div>
+            <div class="sig-space"></div>
+            <div class="sig-name">{{ strtoupper($preparedByName ?? session('admin_user_name') ?? 'MSWDO Staff') }}</div>
+            <div class="sig-line"></div>
+            <div class="sig-role">MSWDO Staff</div>
+        </td>
+        <td>
+            <div class="sig-label">Checked by:</div>
+            <div class="sig-space"></div>
+            <div class="sig-name">{{ strtoupper($checkedByName ?? 'Sir Roc') }}</div>
+            <div class="sig-line"></div>
+            <div class="sig-role">OSCA Officer</div>
+        </td>
+        <td>
+            <div class="sig-label">Approved by:</div>
+            <div class="sig-space"></div>
+            <div class="sig-name">{{ strtoupper($approvedByName ?? 'Fred Calos') }}</div>
+            <div class="sig-line"></div>
+            <div class="sig-role">MSWDO Head</div>
+        </td>
     </tr>
 </table>
 
