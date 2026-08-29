@@ -210,34 +210,78 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     /* Mobile (< 768px) */
     @media (max-width: 767.98px) {
+        /* Switch to 2-column grid:
+           Row 1 — Search (spans both cols)
+           Row 2 — Filter Barangay | Filter Type
+           Row 3 — Clear (spans both cols)
+        */
         .archive-filter-bar {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            padding: 6px;
-            margin-bottom: 6px;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 8px !important;
+            padding: 12px !important;
+            margin-bottom: 10px !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
         }
-        .filter-item { gap: 2px; width: 100%; }
-        .filter-label { font-size: 0.6rem; }
-        .filter-select-btn { height: 32px; padding: 0 6px; font-size: 0.7rem; width: 100%; box-sizing: border-box; }
-        .filter-reset-btn { height: 32px; font-size: 0.7rem; }
-        .filter-search { width: 100%; }
-        .filter-dropdown { width: 100%; }
-        .filter-reset { width: 100%; }
-        .filter-reset-btn { width: 100% !important; justify-content: center !important; }
 
-        .sc-pagination { flex-direction: column; align-items: center; gap: 8px; }
-        .sc-pagination-controls { justify-content: center; }
-    }
-    @media (min-width: 480px) and (max-width: 767.98px) {
-        .archive-filter-bar {
-            grid-template-columns: 1fr 1fr;
+        /* All items: reset flex overrides, let grid size them */
+        .filter-item {
+            gap: 4px !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
         }
-        .filter-search { grid-column: 1 / -1; }
-        .filter-reset { grid-column: 1 / -1; }
+        .filter-label { font-size: 0.68rem !important; }
+
+        /* Search — spans full width (both columns) */
+        .filter-search {
+            grid-column: 1 / -1 !important;
+            min-width: 0 !important;
+        }
+        .filter-search-wrap { width: 100% !important; box-sizing: border-box !important; }
+        .filter-search input {
+            height: 40px !important;
+            font-size: 0.8rem !important;
+            min-width: 0 !important;
+            width: 1% !important;
+            flex: 1 1 auto !important;
+            box-sizing: border-box !important;
+        }
+        .filter-search-btn { height: 40px !important; padding: 0 14px !important; }
+
+        /* Dropdowns — each takes 1 column (2 per row) */
+        .filter-dropdown {
+            min-width: 0 !important;
+            width: 100% !important;
+        }
+        .filter-select-btn {
+            height: 40px !important;
+            padding: 0 10px !important;
+            font-size: 0.8rem !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Clear button — spans full width */
+        .filter-reset {
+            grid-column: 1 / -1 !important;
+            min-width: 0 !important;
+            width: 100% !important;
+        }
+        .filter-reset-btn {
+            height: 40px !important;
+            font-size: 0.8rem !important;
+            width: 100% !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Pagination */
+        .sc-pagination { flex-direction: column !important; align-items: center !important; gap: 8px !important; }
+        .sc-pagination-controls { justify-content: center !important; }
+        .sc-pagination-info { text-align: center !important; }
     }
     @media (max-width: 479px) {
         .archive-table tbody td::before { min-width: 75px; font-size: 0.68rem; }
