@@ -686,13 +686,11 @@ class BirthdayController extends Controller
             'barangayName'
         ))->setPaper('a4', 'portrait')
           ->setOptions([
-              'defaultFont' => 'Times New Roman',
+              'defaultFont'          => 'Arial',
               'isHtml5ParserEnabled' => true,
-              'isRemoteEnabled' => true,
-              'margin-top' => '15mm',
-              'margin-bottom' => '15mm',
-              'margin-left' => '15mm',
-              'margin-right' => '15mm',
+              'isPhpEnabled'         => true,
+              'isFontSubsettingEnabled' => false,
+              'dpi'                  => 96,
           ]);
 
         $filename = strtolower($barangayName) . '-' . strtolower($month) . "-{$year}.pdf";

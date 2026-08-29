@@ -20,30 +20,39 @@
             width: 100%;
             border-collapse: collapse;
             border: none;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
             table-layout: fixed;
         }
         .header-table td {
             border: none;
-            padding: 0;
+            padding: 2px 4px;
             vertical-align: middle;
+        }
+        .logo-cell {
+            width: 80px;
+            text-align: center;
+            vertical-align: middle;
+            padding: 0;
         }
         .gov {
             text-align: center;
-            line-height: 1.2;
+            vertical-align: middle;
+            line-height: 1.3;
             color: #0f172a;
+            padding: 0 6px;
         }
         .gov .gov-line {
-            font-size: 11.5px;
+            font-size: 10px;
             font-weight: 500;
+            color: #374151;
         }
         .gov h2 {
-            margin: 2px 0 0;
+            margin: 3px 0 0;
             font-family: Arial, Helvetica, sans-serif;
             font-size: 14px;
             font-weight: bold;
             color: #1A237E;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
         }
         .line {
             border-top: 2px solid #1A237E;
@@ -126,11 +135,15 @@
     @php
         $silangLogo = '';
         $dswdLogo = '';
+        $mswdoLogo = '';
         if (file_exists(public_path('images/silang.png'))) {
             $silangLogo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/silang.png')));
         }
         if (file_exists(public_path('images/dswd.png'))) {
             $dswdLogo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/dswd.png')));
+        }
+        if (file_exists(public_path('images/mswdo-logo.png'))) {
+            $mswdoLogo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/mswdo-logo.png')));
         }
 
         // Calculate dynamic column widths based on dataset content
@@ -164,18 +177,19 @@
     <!-- Report Header -->
     <table class="header-table">
         <tr>
-            <td style="width: 55px; text-align: left;">
+            <td class="logo-cell">
                 @if($silangLogo)
-                    <img src="{{ $silangLogo }}" style="width: 44px; height: 44px; object-fit: contain;" alt="Silang Logo">
+                    <img src="{{ $silangLogo }}" style="width: 72px; height: 72px; object-fit: contain; display: block; margin: 0 auto;" alt="Silang Seal">
                 @endif
             </td>
             <td class="gov">
                 <div class="gov-line">Republic of the Philippines &bull; Province of Cavite &bull; Municipality of Silang</div>
-                <h2>MUNICIPAL SOCIAL WELFARE AND DEVELOPMENT</h2>
+                <h2>MUNICIPAL SOCIAL WELFARE AND DEVELOPMENT OFFICE</h2>
+                <div style="font-size: 10px; color: #475569; margin-top: 2px;">Senior Citizens Masterlist Report</div>
             </td>
-            <td style="width: 55px; text-align: right;">
+            <td class="logo-cell">
                 @if($dswdLogo)
-                    <img src="{{ $dswdLogo }}" style="width: 44px; height: 44px; object-fit: contain;" alt="DSWD Logo">
+                    <img src="{{ $dswdLogo }}" style="width: 72px; height: 72px; object-fit: contain; display: block; margin: 0 auto;" alt="DSWD Logo">
                 @endif
             </td>
         </tr>
@@ -183,10 +197,6 @@
 
     <div class="line"></div>
     <div class="line2"></div>
-
-    <div class="report-title">
-        <h3>Senior Citizens Masterlist Report</h3>
-    </div>
 
     <table class="info-bar">
         <tr>
