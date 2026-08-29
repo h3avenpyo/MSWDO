@@ -48,26 +48,27 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .cases-subtitle { color: #6B7280; font-size: 0.85rem; margin: 0 0 10px; white-space: normal; overflow-wrap: break-word; line-height: 1.4; }
 
     /* ── Filter bar ── */
-    .cases-filter-bar { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 12px 14px; background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; }
-    .filter-item { display: flex; flex-direction: column; justify-content: flex-end; position: relative; }
-    .filter-label { display: block; font-size: 0.72rem; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; line-height: 1; white-space: nowrap; }
-    
-    .filter-search { flex: 1.4 1 200px; min-width: 170px; max-width: 280px; }
-    .search-input-wrap { display: flex; align-items: center; height: 40px; }
-    .search-input-wrap input { flex: 1; height: 40px; border: 1px solid #D1D5DB; border-right: none; border-radius: 6px 0 0 6px; padding: 0 0.85rem; font-size: 0.85rem; color: #111827; background: #fff; outline: none; transition: border-color .15s, box-shadow .15s; }
-    .search-input-wrap input:focus { border-color: #1A237E; box-shadow: 0 0 0 3px rgba(26,35,126,.08); }
-    .search-input-wrap button { background: #1A237E; color: #fff; border: none; padding: 0 1rem; border-radius: 0 6px 6px 0; cursor: pointer; height: 40px; display: flex; align-items: center; justify-content: center; transition: background .15s; }
-    .search-input-wrap button:hover { background: #121858; }
+    .cases-filter-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 16px; background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; }
+    .filter-item { display: flex; flex-direction: column; gap: 6px; }
+    .filter-label { font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em; }
 
-    .filter-dropdown { flex: 1 1 125px; min-width: 120px; }
-    .filter-select-btn { display: flex; align-items: center; gap: 6px; padding: 0 10px; height: 40px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 0.83rem; cursor: pointer; background: #fff; transition: border-color .15s, box-shadow .15s; }
+    .filter-search { flex: 3 1 400px; min-width: 400px; }
+    .filter-search-wrap { display: flex; width: 100%; }
+    .filter-search input { flex: 1; height: 44px; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; padding: 0 16px; font-size: 0.875rem; color: #111827; background: #fff; outline: none; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
+    .filter-search input:focus { border-color: #1A237E; box-shadow: 0 0 0 3px rgba(26,35,126,.08); }
+    .filter-search input::placeholder { color: #9CA3AF; }
+    .filter-search-btn { height: 44px; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .15s; }
+    .filter-search-btn:hover { background: #121858; }
+
+    .filter-dropdown { flex: 1 1 200px; min-width: 200px; position: relative; }
+    .filter-select-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; height: 44px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 0.875rem; cursor: pointer; background: #fff; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
     .filter-select-btn:hover { border-color: #9CA3AF; }
     .filter-select-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #111827; font-weight: 500; }
     .filter-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 50; max-height: 260px; overflow-y: auto; padding: 4px; }
 
-    .filter-reset { flex: 0 0 auto; }
-    .filter-reset-btn { height: 40px; padding: 0 0.85rem; border: 1px solid #EF4444; border-radius: 6px; background: #fff; color: #EF4444; font-size: 0.813rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: all .15s; }
-    .filter-reset-btn:hover { background: #FEE2E2; }
+    .filter-reset { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; }
+    .filter-reset-btn { height: 44px; padding: 0 20px; border: 1px solid #EF4444; border-radius: 8px; background: #fff; color: #EF4444; font-size: 0.875rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
+    .filter-reset-btn:hover { background: #FEE2E2; border-color: #DC2626; }
 
     /* ── Dropdown options ── */
     .status-opt.selected, .assistance-opt.selected, .barangay-opt.selected { background: #EEF2FF; color: #1A237E; font-weight: 600; }
@@ -214,38 +215,84 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     /* Mobile-specific filter & pagination (< 768px) */
     @media (max-width: 767.98px) {
-        .cases-filter-bar { 
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 8px; 
-            padding: 10px 12px; 
-            margin-bottom: 10px;
-        }
-        .filter-search { max-width: none; width: 100%; min-width: 0; }
-        .filter-dropdown { width: 100%; min-width: 0; }
-        .filter-reset { width: 100%; }
-        .filter-reset-btn { width: 100% !important; justify-content: center !important; }
-
-        .sc-pagination { flex-direction: column; align-items: center; gap: 8px; }
-        .sc-pagination-controls { justify-content: center; }
-    }
-    @media (min-width: 480px) and (max-width: 767.98px) {
+        /* Switch to 2-column grid:
+           Row 1 — Search (spans both cols)
+           Row 2 — Status | Type
+           Row 3 — Barangay | Clear
+        */
         .cases-filter-bar {
-            grid-template-columns: 1fr 1fr;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 8px !important;
+            padding: 12px !important;
+            margin-bottom: 10px !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
         }
-        .filter-search { grid-column: 1 / -1; }
-        .filter-reset { grid-column: 1 / -1; }
-    }
-    @media (max-width: 479px) {
-        #dataTable tbody td::before { min-width: 75px; font-size: 0.68rem; }
-        #dataTable tbody td { font-size: 0.813rem !important; }
+
+        /* All items: reset flex overrides, let grid size them */
+        .filter-item {
+            gap: 4px !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
+        }
+        .filter-label { font-size: 0.68rem !important; }
+
+        /* Search — spans full width (both columns) */
+        .filter-search {
+            grid-column: 1 / -1 !important;
+            min-width: 0 !important;
+        }
+        .filter-search-wrap { width: 100% !important; box-sizing: border-box !important; }
+        .filter-search input {
+            height: 40px !important;
+            font-size: 0.8rem !important;
+            min-width: 0 !important;
+            width: 1% !important;
+            flex: 1 1 auto !important;
+            box-sizing: border-box !important;
+        }
+        .filter-search-btn { height: 40px !important; padding: 0 14px !important; }
+
+        /* Dropdowns — each takes 1 column (2 per row) */
+        .filter-dropdown {
+            min-width: 0 !important;
+            width: 100% !important;
+        }
+        .filter-select-btn {
+            height: 40px !important;
+            padding: 0 10px !important;
+            font-size: 0.8rem !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Clear button — takes 1 column, paired with last dropdown */
+        .filter-reset {
+            min-width: 0 !important;
+            width: 100% !important;
+        }
+        .filter-reset-btn {
+            height: 40px !important;
+            font-size: 0.8rem !important;
+            width: 100% !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Pagination */
+        .sc-pagination { flex-direction: column !important; align-items: center !important; gap: 8px !important; }
+        .sc-pagination-controls { justify-content: center !important; }
+        .sc-pagination-info { text-align: center !important; }
     }
 
     /* Collapsed Sidebar Filter & Pagination (768px - 1199.98px) */
     @media (min-width: 768px) and (max-width: 1199.98px) {
-        .cases-filter-bar { gap: 8px 10px; padding: 10px 14px; margin-bottom: 12px; flex-wrap: wrap; }
-        .filter-search { flex: 1 1 190px; min-width: 170px; max-width: 250px; }
-        .filter-dropdown { flex: 1 1 120px; min-width: 115px; }
+        .cases-filter-bar { gap: 10px; padding: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+        .filter-search { flex: 3 1 350px; min-width: 350px; }
+        .filter-dropdown { flex: 1 1 180px; min-width: 180px; }
         .filter-reset { flex: 0 0 auto; }
 
         .sc-pagination { flex-direction: row; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
@@ -259,9 +306,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .app { height: 100vh !important; overflow: hidden !important; }
         .main { height: 100vh !important; overflow: hidden !important; }
 
-        .cases-filter-bar { flex-wrap: nowrap; gap: 10px; padding: 12px 16px; margin-bottom: 12px; }
-        .filter-search { flex: 0 0 260px; max-width: 260px; }
-        .filter-dropdown { flex: 1; min-width: 130px; }
+        .cases-filter-bar { flex-wrap: nowrap; gap: 12px; padding: 16px; margin-bottom: 12px; }
+        .filter-search { flex: 3 1 400px; min-width: 400px; }
+        .filter-dropdown { flex: 1 1 200px; min-width: 200px; }
         .filter-reset { flex: 0 0 auto; }
 
         .cases-panel { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
@@ -365,17 +412,16 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     <div class="cases-filter-bar">
         <div class="filter-item filter-search">
             <label class="filter-label">Search</label>
-            <div class="search-input-wrap">
+            <div class="filter-search-wrap">
                 <input type="text" id="searchInput" placeholder="Search name, control no..." oninput="applyFilters()">
-                <button type="button" onclick="applyFilters()" title="Search">
-                    <i data-lucide="search" style="width:16px;height:16px"></i>
+                <button type="button" class="filter-search-btn" onclick="applyFilters()">
+                    <i data-lucide="search" style="width:18px;height:18px"></i>
                 </button>
             </div>
         </div>
         <div class="filter-item filter-dropdown" id="statusDropdown">
             <label class="filter-label">Filter by Status</label>
             <div onclick="toggleStatusMenu()" class="filter-select-btn" id="statusBtn">
-                <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
                 <span id="statusLabel" class="filter-select-label">All Status</span>
                 <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
             </div>
@@ -384,7 +430,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="filter-item filter-dropdown" id="assistanceDropdown">
             <label class="filter-label">Filter by Type</label>
             <div onclick="toggleAssistanceMenu()" class="filter-select-btn" id="assistanceBtn">
-                <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
                 <span id="assistanceLabel" class="filter-select-label">All Types</span>
                 <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
             </div>
@@ -393,15 +438,15 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="filter-item filter-dropdown" id="barangayDropdown">
             <label class="filter-label">Filter by Barangay</label>
             <div onclick="toggleBarangayMenu()" class="filter-select-btn" id="barangayBtn">
-                <i data-lucide="map-pin" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
                 <span id="barangayLabel" class="filter-select-label">All Barangays</span>
                 <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
             </div>
             <div id="barangayMenu" class="filter-menu" style="display:none"></div>
         </div>
         <div class="filter-item filter-reset">
+            <label class="filter-label">&nbsp;</label>
             <button type="button" class="filter-reset-btn" onclick="resetFilters()">
-                <i data-lucide="x" style="width:14px;height:14px"></i> Reset
+                <i data-lucide="x" style="width:16px;height:16px"></i> Clear
             </button>
         </div>
     </div>
@@ -445,8 +490,8 @@ function toggleDropdown(id) {
     }
 }
 
-    // Filter state
-    var filterState = {
+    // Filter state (global for social-case.js to access)
+    window.filterState = {
         status: 'All',
         assistance: 'All',
         barangay: 'All'
@@ -456,27 +501,27 @@ function toggleDropdown(id) {
     function populateDropdowns() {
         // Populate Status dropdown
         const statusMenu = document.getElementById('statusMenu');
-        if(statusMenu && typeof STATUSES !== 'undefined') {
+        if(statusMenu && typeof window.STATUSES !== 'undefined') {
             statusMenu.innerHTML = '<div class="status-opt" data-value="All" onclick="selectStatus(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Status</div>';
-            STATUSES.forEach(status => {
+            window.STATUSES.forEach(status => {
                 statusMenu.innerHTML += `<div class="status-opt" data-value="${status}" onclick="selectStatus(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">${status}</div>`;
             });
         }
 
         // Populate Assistance Type dropdown
         const assistanceMenu = document.getElementById('assistanceMenu');
-        if(assistanceMenu && typeof PURPOSES !== 'undefined') {
+        if(assistanceMenu && typeof window.PURPOSES !== 'undefined') {
             assistanceMenu.innerHTML = '<div class="assistance-opt" data-value="All" onclick="selectAssistance(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Types</div>';
-            PURPOSES.forEach(purpose => {
+            window.PURPOSES.forEach(purpose => {
                 assistanceMenu.innerHTML += `<div class="assistance-opt" data-value="${purpose}" onclick="selectAssistance(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">${purpose}</div>`;
             });
         }
 
         // Populate Barangay dropdown
         const barangayMenu = document.getElementById('barangayMenu');
-        if(barangayMenu && typeof BARANGAYS !== 'undefined') {
+        if(barangayMenu && typeof window.BARANGAYS !== 'undefined') {
             barangayMenu.innerHTML = '<div class="barangay-opt" data-value="All" onclick="selectBarangay(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Barangays</div>';
-            BARANGAYS.forEach(barangay => {
+            window.BARANGAYS.forEach(barangay => {
                 barangayMenu.innerHTML += `<div class="barangay-opt" data-value="${barangay}" onclick="selectBarangay(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">${barangay}</div>`;
             });
         }
@@ -493,11 +538,12 @@ function toggleDropdown(id) {
             menu.style.display='none';
             if(arrow) arrow.style.transform='';
         }
+        event.stopPropagation();
     }
 
     function selectStatus(el){
         var val=el.getAttribute('data-value');
-        filterState.status=val;
+        window.filterState.status=val;
         document.getElementById('statusLabel').textContent=el.textContent;
         document.getElementById('statusMenu').style.display='none';
         var arrow=document.querySelector('#statusBtn [data-lucide="chevron-down"]');
@@ -506,13 +552,14 @@ function toggleDropdown(id) {
         var btn=document.getElementById('statusBtn');
         if(val && val !== 'All'){ btn.classList.add('active'); btn.setAttribute('data-filter', val); }
         else { btn.classList.remove('active'); btn.removeAttribute('data-filter'); }
-        applyFilters();
+        if(typeof applyFilters === 'function') applyFilters();
+        event.stopPropagation();
     }
 
     function highlightStatusOpt(){
         var opts=document.querySelectorAll('.status-opt');
         opts.forEach(function(o){
-            if(o.getAttribute('data-value')===filterState.status) o.classList.add('selected');
+            if(o.getAttribute('data-value')===window.filterState.status) o.classList.add('selected');
             else o.classList.remove('selected');
         });
     }
@@ -528,11 +575,12 @@ function toggleDropdown(id) {
             menu.style.display='none';
             if(arrow) arrow.style.transform='';
         }
+        event.stopPropagation();
     }
 
     function selectAssistance(el){
         var val=el.getAttribute('data-value');
-        filterState.assistance=val;
+        window.filterState.assistance=val;
         document.getElementById('assistanceLabel').textContent=el.textContent;
         document.getElementById('assistanceMenu').style.display='none';
         var arrow=document.querySelector('#assistanceBtn [data-lucide="chevron-down"]');
@@ -541,13 +589,14 @@ function toggleDropdown(id) {
         var btn=document.getElementById('assistanceBtn');
         if(val && val !== 'All'){ btn.classList.add('active'); btn.setAttribute('data-filter', val); }
         else { btn.classList.remove('active'); btn.removeAttribute('data-filter'); }
-        applyFilters();
+        if(typeof applyFilters === 'function') applyFilters();
+        event.stopPropagation();
     }
 
     function highlightAssistanceOpt(){
         var opts=document.querySelectorAll('.assistance-opt');
         opts.forEach(function(o){
-            if(o.getAttribute('data-value')===filterState.assistance) o.classList.add('selected');
+            if(o.getAttribute('data-value')===window.filterState.assistance) o.classList.add('selected');
             else o.classList.remove('selected');
         });
     }
@@ -563,11 +612,12 @@ function toggleDropdown(id) {
             menu.style.display='none';
             if(arrow) arrow.style.transform='';
         }
+        event.stopPropagation();
     }
 
     function selectBarangay(el){
         var val=el.getAttribute('data-value');
-        filterState.barangay=val;
+        window.filterState.barangay=val;
         document.getElementById('barangayLabel').textContent=el.textContent;
         document.getElementById('barangayMenu').style.display='none';
         var arrow=document.querySelector('#barangayBtn [data-lucide="chevron-down"]');
@@ -576,13 +626,14 @@ function toggleDropdown(id) {
         var btn=document.getElementById('barangayBtn');
         if(val && val !== 'All') btn.classList.add('active');
         else btn.classList.remove('active');
-        applyFilters();
+        if(typeof applyFilters === 'function') applyFilters();
+        event.stopPropagation();
     }
 
     function highlightBarangayOpt(){
         var opts=document.querySelectorAll('.barangay-opt');
         opts.forEach(function(o){
-            if(o.getAttribute('data-value')===filterState.barangay) o.classList.add('selected');
+            if(o.getAttribute('data-value')===window.filterState.barangay) o.classList.add('selected');
             else o.classList.remove('selected');
         });
     }
@@ -611,11 +662,15 @@ function toggleDropdown(id) {
             if(menu) menu.style.display='none';
             if(arrow) arrow.style.transform='';
         }
-    });
+    }, true);
 
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
-        populateDropdowns();
+        // Wait for social-case.js to load constants
+        setTimeout(function() {
+            populateDropdowns();
+            console.log('Dropdowns populated');
+        }, 300);
         loadCaseList();
     });
 </script>

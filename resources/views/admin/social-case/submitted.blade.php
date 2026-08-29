@@ -46,15 +46,26 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     /* ── Subtitle ── */
     .submitted-subtitle { color: #6B7280; font-size: 0.85rem; margin: 0 0 10px; white-space: normal; overflow-wrap: break-word; line-height: 1.4; }
 
+    /* ── Submitted Requests section ── */
+    .submitted-section-header { margin-bottom: 10px; }
+    .submitted-section-title { font-size: 1.05rem; font-weight: 800; color: #1A237E; margin: 0 0 4px; letter-spacing: -0.01em; }
+
     /* ── Filter bar ── */
-    .submitted-filter-bar { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 12px 14px; background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; }
-    .submitted-filter-search { max-width: 320px; width: 100%; flex-shrink: 0; display: flex; flex-direction: column; justify-content: flex-end; }
-    .submitted-filter-label { display: block; font-size: 0.72rem; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; line-height: 1; }
-    .submitted-search-wrap { display: flex; align-items: center; height: 40px; }
-    .submitted-search-wrap input { flex: 1; height: 40px; border: 1px solid #D1D5DB; border-right: none; border-radius: 6px 0 0 6px; padding: 0 0.85rem; font-size: 0.85rem; color: #111827; background: #fff; outline: none; transition: border-color .15s, box-shadow .15s; }
-    .submitted-search-wrap input:focus { border-color: #1A237E; box-shadow: 0 0 0 3px rgba(26,35,126,.08); }
-    .submitted-search-wrap button { background: #1A237E; color: #fff; border: none; padding: 0 1rem; border-radius: 0 6px 6px 0; cursor: pointer; height: 40px; display: flex; align-items: center; justify-content: center; transition: background .15s; }
-    .submitted-search-wrap button:hover { background: #121858; }
+    .submitted-filter-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 16px; background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; }
+    .filter-item { display: flex; flex-direction: column; gap: 6px; }
+    .filter-label { font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .filter-search { flex: 1 1 250px; min-width: 250px; }
+    .filter-search-wrap { display: flex; width: 100%; }
+    .filter-search input { flex: 1; height: 44px; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; padding: 0 16px; font-size: 0.875rem; color: #111827; background: #fff; outline: none; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
+    .filter-search input:focus { border-color: #1A237E; box-shadow: 0 0 0 3px rgba(26,35,126,.08); }
+    .filter-search input::placeholder { color: #9CA3AF; }
+    .filter-search-btn { height: 44px; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .15s; }
+    .filter-search-btn:hover { background: #121858; }
+
+    .filter-reset { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; }
+    .filter-reset-btn { height: 44px; padding: 0 20px; border: 1px solid #EF4444; border-radius: 8px; background: #fff; color: #EF4444; font-size: 0.875rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
+    .filter-reset-btn:hover { background: #FEE2E2; border-color: #DC2626; }
 
     /* ── Panel / wrap ── */
     .submitted-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 0; padding: 0; }
@@ -188,9 +199,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     /* Mobile (< 768px) */
     @media (max-width: 767.98px) {
         .submitted-filter-bar { padding: 10px 12px; margin-bottom: 10px; }
-        .submitted-filter-search { max-width: none; width: 100%; }
-
-        .accepted-section-header { text-align: center; }
+        .filter-search { max-width: none; width: 100%; min-width: 0; }
+        .filter-reset { width: 100%; }
+        .filter-reset-btn { width: 100% !important; justify-content: center !important; }
 
         .sc-pagination { flex-direction: column; align-items: center; gap: 8px; }
         .sc-pagination-controls { justify-content: center; }
@@ -203,7 +214,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     /* Collapsed Sidebar (768px - 1199.98px) */
     @media (min-width: 768px) and (max-width: 1199.98px) {
         .submitted-filter-bar { padding: 10px 14px; margin-bottom: 12px; }
-        .submitted-filter-search { max-width: 280px; }
+        .filter-search { flex: 1 1 220px; min-width: 220px; }
 
         .sc-pagination { flex-direction: row; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
     }
@@ -216,8 +227,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .app { height: 100vh !important; overflow: hidden !important; }
         .main { height: 100vh !important; overflow-y: auto !important; overflow-x: hidden !important; }
 
-        .submitted-filter-bar { padding: 12px 16px; margin-bottom: 12px; }
-        .submitted-filter-search { max-width: 320px; }
+        .submitted-filter-bar { padding: 16px; margin-bottom: 12px; }
+        .filter-search { flex: 0 1 300px; min-width: 300px; }
+        .filter-search-btn { height: 44px !important; }
 
         .submitted-panel { flex: 0 0 auto; overflow: visible; }
         .submitted-table-wrap { flex: 0 0 auto; overflow: auto; border: 1px solid #E5E7EB; border-radius: 8px; height: 500px !important; }
@@ -232,7 +244,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     }
 
     /* ── Accepted Online Requests table ── */
-    .accepted-section { margin-top: 26px; }
+    .accepted-section { margin-top: 32px; padding-top: 32px; border-top: 3px solid #1A237E; }
     .accepted-section-header { margin-bottom: 10px; }
     .accepted-section-title { font-size: 1.05rem; font-weight: 800; color: #1A237E; margin: 0 0 4px; letter-spacing: -0.01em; }
     .accepted-online-panel { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden; }
@@ -360,21 +372,29 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 </div>
 
 <div class="main">
-    <div style="margin-bottom:10px;">
+    <!-- Submitted Requests Section -->
+    <div class="submitted-section-header">
+        <h2 class="submitted-section-title">Submitted Requests</h2>
         <p class="submitted-subtitle">Clients forwarded by the Eligibility Checker and waiting to be encoded.</p>
     </div>
 
     <!-- Search Bar -->
     <div class="submitted-filter-bar">
-        <div class="submitted-filter-search">
-            <label class="submitted-filter-label">Search Client</label>
-            <div class="submitted-search-wrap">
+        <div class="filter-item filter-search">
+            <label class="filter-label">Search</label>
+            <div class="filter-search-wrap">
                 <input type="text" id="submittedSearch" placeholder="Search client name..."
                        oninput="filterSubmitted()">
-                <button type="button" onclick="filterSubmitted()" title="Search">
-                    <i data-lucide="search" style="width:16px;height:16px"></i>
+                <button type="button" class="filter-search-btn" onclick="filterSubmitted()">
+                    <i data-lucide="search" style="width:18px;height:18px"></i>
                 </button>
             </div>
+        </div>
+        <div class="filter-item filter-reset">
+            <label class="filter-label">&nbsp;</label>
+            <button type="button" class="filter-reset-btn" onclick="clearSubmittedSearch()">
+                <i data-lucide="x" style="width:16px;height:16px"></i> Clear
+            </button>
         </div>
     </div>
 
@@ -523,6 +543,12 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     function getSubmittedRows() {
         return Array.from(document.querySelectorAll('#submittedTable tbody tr:not(.empty-row)'));
+    }
+
+    function clearSubmittedSearch() {
+        document.getElementById('submittedSearch').value = '';
+        _submittedPage = 1;
+        renderSubmitted();
     }
 
     function renderSubmitted() {

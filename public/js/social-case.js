@@ -13,6 +13,11 @@ const BARANGAYS = [
   "Puting Kahoy","Sabutan","San Miguel I","San Miguel II","San Vicente I","San Vicente II","Santol",
   "Tartaria","Tibig","Toledo","Tubuan I","Tubuan II","Tubuan III","Ulat","Yakal"
 ];
+
+// Make constants globally accessible for blade templates
+window.STATUSES = STATUSES;
+window.PURPOSES = PURPOSES;
+window.BARANGAYS = BARANGAYS;
 const AGENCIES = [
   {key:"PCSO", name:"Philippine Charity Sweepstakes Office", addressee:"The Officer-in-Charge\nPCSO Provincial/District Office"},
   {key:"DSWD", name:"Department of Social Welfare and Development", addressee:"The Regional Director\nDSWD Field Office"},
@@ -2747,9 +2752,9 @@ function renderCaseList(){
 
   // Get filter values
   const searchQuery = (document.getElementById('searchInput')?.value || "").toLowerCase();
-  const statusFilter = filterState.status || "All";
-  const assistanceFilter = filterState.assistance || "All";
-  const barangayFilter = filterState.barangay || "All";
+  const statusFilter = (window.filterState?.status) || "All";
+  const assistanceFilter = (window.filterState?.assistance) || "All";
+  const barangayFilter = (window.filterState?.barangay) || "All";
 
   // Filter cases (exclude archived – those live on the archive page)
   // Only show cases the encoder has picked up: encoded at intake, or already printed
@@ -2875,8 +2880,8 @@ function applyFilters(){
 function resetFilters(){
   const searchInput = document.getElementById('searchInput');
   if(searchInput) searchInput.value = '';
-  
-  filterState = { status: 'All', assistance: 'All', barangay: 'All' };
+
+  window.filterState = { status: 'All', assistance: 'All', barangay: 'All' };
   
   document.getElementById('statusLabel').textContent = 'All Status';
   document.getElementById('assistanceLabel').textContent = 'All Types';

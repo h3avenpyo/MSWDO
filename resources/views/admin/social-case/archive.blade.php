@@ -48,28 +48,31 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .archive-subtitle { color: #6B7280; font-size: 0.85rem; margin: 0 0 10px; white-space: normal; overflow-wrap: break-word; line-height: 1.4; }
 
     /* ── Filter bar ── */
-    .archive-filter-bar { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 12px 14px; background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; }
-    .archive-filter-search { flex: 1.4 1 200px; min-width: 170px; max-width: 280px; display: flex; flex-direction: column; justify-content: flex-end; }
-    .archive-filter-label { display: block; font-size: 0.72rem; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; line-height: 1; white-space: nowrap; }
-    .archive-search-wrap { display: flex; align-items: center; height: 40px; }
-    .archive-search-wrap input { flex: 1; height: 40px; border: 1px solid #D1D5DB; border-right: none; border-radius: 6px 0 0 6px; padding: 0 0.85rem; font-size: 0.85rem; color: #111827; background: #fff; outline: none; transition: border-color .15s, box-shadow .15s; }
-    .archive-search-wrap input:focus { border-color: #1A237E; box-shadow: 0 0 0 3px rgba(26,35,126,.08); }
-    .archive-search-wrap button { background: #1A237E; color: #fff; border: none; padding: 0 1rem; border-radius: 0 6px 6px 0; cursor: pointer; height: 40px; display: flex; align-items: center; justify-content: center; transition: background .15s; }
-    .archive-search-wrap button:hover { background: #121858; }
+    .archive-filter-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 16px; background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; }
+    .filter-item { display: flex; flex-direction: column; gap: 6px; }
+    .filter-label { font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em; }
 
-    .archive-filter-dropdown { flex: 1 1 130px; min-width: 125px; position: relative; display: flex; flex-direction: column; justify-content: flex-end; }
-    .archive-select-btn { display: flex; align-items: center; gap: 6px; padding: 0 10px; height: 40px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 0.83rem; cursor: pointer; background: #fff; transition: border-color .15s, box-shadow .15s; }
-    .archive-select-btn:hover { border-color: #9CA3AF; }
-    .archive-select-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #111827; font-weight: 500; }
-    .archive-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 50; max-height: 260px; overflow-y: auto; padding: 4px; }
+    .filter-search { flex: 3 1 400px; min-width: 400px; }
+    .filter-search-wrap { display: flex; width: 100%; }
+    .filter-search input { flex: 1; height: 44px; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; padding: 0 16px; font-size: 0.875rem; color: #111827; background: #fff; outline: none; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
+    .filter-search input:focus { border-color: #1A237E; box-shadow: 0 0 0 3px rgba(26,35,126,.08); }
+    .filter-search input::placeholder { color: #9CA3AF; }
+    .filter-search-btn { height: 44px; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .15s; }
+    .filter-search-btn:hover { background: #121858; }
 
-    .archive-filter-reset { flex: 0 0 auto; display: flex; flex-direction: column; justify-content: flex-end; }
-    .archive-reset-btn { height: 40px; padding: 0 0.85rem; border: 1px solid #EF4444; border-radius: 6px; background: #fff; color: #EF4444; font-size: 0.813rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: all .15s; }
-    .archive-reset-btn:hover { background: #FEE2E2; }
+    .filter-dropdown { flex: 1 1 200px; min-width: 200px; position: relative; }
+    .filter-select-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; height: 44px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 0.875rem; cursor: pointer; background: #fff; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
+    .filter-select-btn:hover { border-color: #9CA3AF; }
+    .filter-select-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #111827; font-weight: 500; }
+    .filter-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 50; max-height: 260px; overflow-y: auto; padding: 4px; }
 
-    /* Dropdown options */
-    .archive-type-opt.selected, .archive-brgy-opt.selected { background: #EEF2FF; color: #1A237E; font-weight: 600; }
-    .archive-type-opt:hover, .archive-brgy-opt:hover { background: #F3F4F6; }
+    .filter-reset { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; }
+    .filter-reset-btn { height: 44px; padding: 0 20px; border: 1px solid #EF4444; border-radius: 8px; background: #fff; color: #EF4444; font-size: 0.875rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
+    .filter-reset-btn:hover { background: #FEE2E2; border-color: #DC2626; }
+
+    /* ── Dropdown options ── */
+    .type-opt.selected, .brgy-opt.selected { background: #EEF2FF; color: #1A237E; font-weight: 600; }
+    .type-opt:hover, .brgy-opt:hover { background: #F3F4F6; }
     #archiveBrgyBtn.active { border-color: #059669; background: #ECFDF5; color: #065F46; }
     #archiveTypeBtn.active { border-color: #1A237E; background: #EEF2FF; }
 
@@ -207,17 +210,24 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     /* Mobile (< 768px) */
     @media (max-width: 767.98px) {
-        .archive-filter-bar { 
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 8px; 
-            padding: 10px 12px; 
-            margin-bottom: 10px;
+        .archive-filter-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 6px;
+            margin-bottom: 6px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
-        .archive-filter-search { max-width: none; width: 100%; min-width: 0; }
-        .archive-filter-dropdown { width: 100%; min-width: 0; }
-        .archive-filter-reset { width: 100%; }
-        .archive-reset-btn { width: 100% !important; justify-content: center !important; }
+        .filter-item { gap: 2px; width: 100%; }
+        .filter-label { font-size: 0.6rem; }
+        .filter-select-btn { height: 32px; padding: 0 6px; font-size: 0.7rem; width: 100%; box-sizing: border-box; }
+        .filter-reset-btn { height: 32px; font-size: 0.7rem; }
+        .filter-search { width: 100%; }
+        .filter-dropdown { width: 100%; }
+        .filter-reset { width: 100%; }
+        .filter-reset-btn { width: 100% !important; justify-content: center !important; }
 
         .sc-pagination { flex-direction: column; align-items: center; gap: 8px; }
         .sc-pagination-controls { justify-content: center; }
@@ -226,8 +236,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .archive-filter-bar {
             grid-template-columns: 1fr 1fr;
         }
-        .archive-filter-search { grid-column: 1 / -1; }
-        .archive-filter-reset { grid-column: 1 / -1; }
+        .filter-search { grid-column: 1 / -1; }
+        .filter-reset { grid-column: 1 / -1; }
     }
     @media (max-width: 479px) {
         .archive-table tbody td::before { min-width: 75px; font-size: 0.68rem; }
@@ -236,10 +246,10 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     /* Collapsed Sidebar (768px - 1199.98px) */
     @media (min-width: 768px) and (max-width: 1199.98px) {
-        .archive-filter-bar { gap: 8px 10px; padding: 10px 14px; margin-bottom: 12px; flex-wrap: wrap; }
-        .archive-filter-search { flex: 1 1 190px; min-width: 170px; max-width: 250px; }
-        .archive-filter-dropdown { flex: 1 1 120px; min-width: 115px; }
-        .archive-filter-reset { flex: 0 0 auto; }
+        .archive-filter-bar { gap: 10px; padding: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+        .filter-search { flex: 3 1 350px; min-width: 350px; }
+        .filter-dropdown { flex: 1 1 180px; min-width: 180px; }
+        .filter-reset { flex: 0 0 auto; }
 
         .sc-pagination { flex-direction: row; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
     }
@@ -252,10 +262,10 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .app { height: 100vh !important; overflow: hidden !important; }
         .main { height: 100vh !important; overflow: hidden !important; }
 
-        .archive-filter-bar { flex-wrap: nowrap; gap: 10px; padding: 12px 16px; margin-bottom: 12px; }
-        .archive-filter-search { flex: 0 0 260px; max-width: 260px; }
-        .archive-filter-dropdown { flex: 1; min-width: 130px; }
-        .archive-filter-reset { flex: 0 0 auto; }
+        .archive-filter-bar { flex-wrap: nowrap; gap: 12px; padding: 16px; margin-bottom: 12px; }
+        .filter-search { flex: 3 1 400px; min-width: 400px; }
+        .filter-dropdown { flex: 1 1 200px; min-width: 200px; }
+        .filter-reset { flex: 0 0 auto; }
 
         .archive-panel { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
         .archive-table-wrap { flex: 1; min-height: 0; overflow: auto; border: 1px solid #E5E7EB; border-radius: 8px; }
@@ -322,48 +332,47 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     <!-- Search and Filter Bar -->
     <div class="archive-filter-bar">
-        <div class="archive-filter-search">
-            <label class="archive-filter-label">Search by Name</label>
-            <div class="archive-search-wrap">
-                <input type="text" id="archiveSearch" placeholder="Search by name..."
+        <div class="filter-item filter-search">
+            <label class="filter-label">Search</label>
+            <div class="filter-search-wrap">
+                <input type="text" id="archiveSearch" placeholder="Search name, control no..."
                        oninput="view.archiveSearch=this.value;view.archivePage=1;renderArchive()">
-                <button type="button" onclick="renderArchive()" title="Search">
-                    <i data-lucide="search" style="width:16px;height:16px"></i>
+                <button type="button" class="filter-search-btn" onclick="renderArchive()">
+                    <i data-lucide="search" style="width:18px;height:18px"></i>
                 </button>
             </div>
         </div>
-        <div class="archive-filter-dropdown" id="archiveBrgyDropdown">
-            <label class="archive-filter-label">Filter by Barangay</label>
-            <div onclick="toggleArchiveBrgyMenu()" class="archive-select-btn" id="archiveBrgyBtn">
-                <i data-lucide="map-pin" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
-                <span id="archiveBrgyLabel" class="archive-select-label">All Barangays</span>
+        <div class="filter-item filter-dropdown" id="archiveBrgyDropdown">
+            <label class="filter-label">Filter by Barangay</label>
+            <div onclick="toggleArchiveBrgyMenu()" class="filter-select-btn" id="archiveBrgyBtn">
+                <span id="archiveBrgyLabel" class="filter-select-label">All Barangays</span>
                 <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
             </div>
-            <div id="archiveBrgyMenu" class="archive-menu" style="display:none">
-                <div class="archive-brgy-opt" data-value="" onclick="selectArchiveBrgy(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Barangays</div>
+            <div id="archiveBrgyMenu" class="filter-menu" style="display:none">
+                <div class="brgy-opt" data-value="" onclick="selectArchiveBrgy(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Barangays</div>
             </div>
         </div>
-        <div class="archive-filter-dropdown" id="archiveTypeDropdown">
-            <label class="archive-filter-label">Filter by Type</label>
-            <div onclick="toggleArchiveTypeMenu()" class="archive-select-btn" id="archiveTypeBtn">
-                <i data-lucide="filter" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
-                <span id="archiveTypeLabel" class="archive-select-label">All Types</span>
+        <div class="filter-item filter-dropdown" id="archiveTypeDropdown">
+            <label class="filter-label">Filter by Type</label>
+            <div onclick="toggleArchiveTypeMenu()" class="filter-select-btn" id="archiveTypeBtn">
+                <span id="archiveTypeLabel" class="filter-select-label">All Types</span>
                 <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
             </div>
-            <div id="archiveTypeMenu" class="archive-menu" style="display:none">
-                <div class="archive-type-opt" data-value="" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Types</div>
-                <div class="archive-type-opt" data-value="Medical Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Medical Assistance</div>
-                <div class="archive-type-opt" data-value="Burial Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Burial Assistance</div>
-                <div class="archive-type-opt" data-value="Educational Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Educational Assistance</div>
-                <div class="archive-type-opt" data-value="Financial Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Financial Assistance</div>
-                <div class="archive-type-opt" data-value="Food / Relief Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Food / Relief Assistance</div>
-                <div class="archive-type-opt" data-value="Livelihood Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Livelihood Assistance</div>
-                <div class="archive-type-opt" data-value="Other" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Other</div>
+            <div id="archiveTypeMenu" class="filter-menu" style="display:none">
+                <div class="type-opt" data-value="" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">All Types</div>
+                <div class="type-opt" data-value="Medical Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Medical Assistance</div>
+                <div class="type-opt" data-value="Burial Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Burial Assistance</div>
+                <div class="type-opt" data-value="Educational Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Educational Assistance</div>
+                <div class="type-opt" data-value="Financial Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Financial Assistance</div>
+                <div class="type-opt" data-value="Food / Relief Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Food / Relief Assistance</div>
+                <div class="type-opt" data-value="Livelihood Assistance" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Livelihood Assistance</div>
+                <div class="type-opt" data-value="Other" onclick="selectArchiveType(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">Other</div>
             </div>
         </div>
-        <div class="archive-filter-reset">
-            <button type="button" class="archive-reset-btn" onclick="resetArchiveFilters()">
-                <i data-lucide="x" style="width:14px;height:14px"></i> Reset
+        <div class="filter-item filter-reset">
+            <label class="filter-label">&nbsp;</label>
+            <button type="button" class="filter-reset-btn" onclick="resetArchiveFilters()">
+                <i data-lucide="x" style="width:16px;height:16px"></i> Clear
             </button>
         </div>
     </div>
@@ -408,6 +417,7 @@ function toggleDropdown(id) {
             menu.style.display='none';
             if(arrow) arrow.style.transform='';
         }
+        event.stopPropagation();
     }
     function selectArchiveType(el){
         var val=el.getAttribute('data-value');
@@ -430,9 +440,10 @@ function toggleDropdown(id) {
         }
         
         renderArchive();
+        event.stopPropagation();
     }
     function highlightArchiveTypeOpt(){
-        var opts=document.querySelectorAll('.archive-type-opt');
+        var opts=document.querySelectorAll('.type-opt');
         opts.forEach(function(o){
             if(o.getAttribute('data-value')===view.archiveFilter) o.classList.add('selected');
             else o.classList.remove('selected');
@@ -449,6 +460,7 @@ function toggleDropdown(id) {
             menu.style.display='none';
             if(arrow) arrow.style.transform='';
         }
+        event.stopPropagation();
     }
     function selectArchiveBrgy(el){
         var val=el.getAttribute('data-value');
@@ -466,9 +478,10 @@ function toggleDropdown(id) {
         else btn.classList.remove('active');
         
         renderArchive();
+        event.stopPropagation();
     }
     function highlightArchiveBrgyOpt(){
-        var opts=document.querySelectorAll('.archive-brgy-opt');
+        var opts=document.querySelectorAll('.brgy-opt');
         opts.forEach(function(o){
             if(o.getAttribute('data-value')===view.archiveBarangay) o.classList.add('selected');
             else o.classList.remove('selected');
@@ -508,7 +521,7 @@ function toggleDropdown(id) {
             if(menu) menu.style.display='none';
             if(arrow) arrow.style.transform='';
         }
-    });
+    }, true);
 
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
