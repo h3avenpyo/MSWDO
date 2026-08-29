@@ -684,7 +684,7 @@ class BirthdayController extends Controller
             'month',
             'year',
             'barangayName'
-        ))->setPaper('a4', 'portrait')
+        ))->setPaper('a4', 'landscape')
           ->setOptions([
               'defaultFont'          => 'Arial',
               'isHtml5ParserEnabled' => true,
