@@ -439,6 +439,9 @@ class SeniorController extends Controller
 
     public function exportSeniorsPdf(Request $request)
     {
+        @ini_set('memory_limit', '1024M');
+        @ini_set('max_execution_time', 300);
+
         $ids = $request->get('ids');
         $barangay = $request->get('barangay');
         $search = $request->get('search');
@@ -464,21 +467,54 @@ class SeniorController extends Controller
             });
         }
 
-        $seniors = $query->orderBy('last_name')->orderBy('first_name')->get();
+        $perPart = 1000;
+        $totalMatching = (clone $query)->count();
+        $totalParts = max(1, (int) ceil($totalMatching / $perPart));
+
+        // Return count metadata for client-side multi-part downloader
+        if ($request->boolean('check_count')) {
+            return response()->json([
+                'total_count' => $totalMatching,
+                'per_part' => $perPart,
+                'total_parts' => $totalParts,
+            ]);
+        }
+
+        $part = max(1, min($totalParts, (int) $request->get('part', 1)));
+        $partStart = (($part - 1) * $perPart) + 1;
+        $partEnd = min($totalMatching, $part * $perPart);
+
+        // Fetch records for this part (ordered consistently)
+        $seniors = $query->orderBy('last_name')
+            ->orderBy('first_name')
+            ->offset(($part - 1) * $perPart)
+            ->limit($perPart)
+            ->get();
 
         $data = [
             'seniors' => $seniors,
             'date' => now()->format('F d, Y'),
-            'total' => $seniors->count(),
+            'total' => $totalMatching,
             'barangay' => $barangay,
-            'search' => $search
+            'search' => $search,
+            'currentPart' => $part,
+            'totalParts' => $totalParts,
+            'partStart' => $partStart,
+            'partEnd' => $partEnd,
         ];
 
         $pdf = PDF::loadView('admin.senior.seniors-pdf', $data);
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->getDomPDF()->set_option('isFontSubsettingEnabled', false);
+        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+        $pdf->getDomPDF()->set_option('dpi', 96);
 
         $filename = 'senior_citizens';
         if ($barangay) {
             $filename .= '_' . str_replace(' ', '_', strtolower($barangay));
+        }
+        if ($totalParts > 1) {
+            $filename .= '_part_' . $part . '_of_' . $totalParts;
         }
         $filename .= '_' . now()->format('Y-m-d') . '.pdf';
 

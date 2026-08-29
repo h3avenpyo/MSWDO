@@ -762,11 +762,6 @@
     </div>
 </div>
 
-<!-- Hidden form for secure POST logout -->
-<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display:none;">
-    @csrf
-</form>
-
 <!-- Bulk Action Modal -->
 <div class="modal-overlay" id="bulkActionModal">
     <div class="modal-panel">
@@ -779,10 +774,7 @@
                 <button type="button" class="modal-btn modal-btn-danger" onclick="bulkArchive(event)">
                     <i data-lucide="archive"></i> Archive Selected
                 </button>
-                <button type="button" class="modal-btn modal-btn-indigo" onclick="bulkExport(event)">
-                    <i data-lucide="download"></i> Export Selected (CSV)
-                </button>
-                <button type="button" class="modal-btn modal-btn-indigo" onclick="exportPdf(event)" style="background:#4338CA;">
+                <button type="button" class="modal-btn modal-btn-indigo" onclick="exportPdf(event)">
                     <i data-lucide="file-output"></i> Export Selected (PDF)
                 </button>
             </div>
@@ -791,6 +783,8 @@
 </div>
 
 <script>
+    lucide.createIcons();
+
     function showBulkActionPopup() {
         const selected = document.querySelectorAll('.senior-checkbox:checked');
         if (selected.length === 0 && !window.selectAllMatching) {
@@ -805,6 +799,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
         const modal = document.getElementById('bulkActionModal');
         if (modal) {
             modal.addEventListener('click', function(e) {
@@ -818,18 +813,23 @@
 
     function openModal() {
         const modal = document.getElementById('seniorModal');
+        if (!modal) return;
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         setTimeout(() => modal.style.opacity = '1', 10);
     }
     function closeModal() {
         const modal = document.getElementById('seniorModal');
+        if (!modal) return;
         modal.style.opacity = '0';
         setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = ''; }, 200);
     }
-    document.getElementById('seniorModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
+    const seniorModalEl = document.getElementById('seniorModal');
+    if (seniorModalEl) {
+        seniorModalEl.addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    }
 
     // View senior profile function
     function viewProfile(id) {
@@ -865,8 +865,8 @@
 
     // Event delegation for Archive buttons
     document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('archive-senior-btn') || e.target.closest('.archive-senior-btn')) {
-            const button = e.target.classList.contains('archive-senior-btn') ? e.target : e.target.closest('.archive-senior-btn');
+        const button = e.target.closest ? e.target.closest('.archive-senior-btn') : null;
+        if (button) {
             const seniorId = button.dataset.id;
             const seniorName = button.dataset.name;
 
@@ -1067,7 +1067,7 @@
         });
     }
 
-    function exportPdf(e) {
+    async function exportPdf(e) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
         closeBulkModal();
 
@@ -1077,56 +1077,127 @@
         const currentBarangay = `{{ request('barangay') ?? '' }}`;
         const currentSearch = `{{ request('search') ?? '' }}`;
 
-        let url = `{{ route('admin.senior.export-pdf') }}?barangay=${encodeURIComponent(currentBarangay)}&search=${encodeURIComponent(currentSearch)}`;
+        let baseQuery = `barangay=${encodeURIComponent(currentBarangay)}&search=${encodeURIComponent(currentSearch)}`;
 
         // If specific individual checkboxes are checked AND NOT select-all / selectAllMatching
         if (checkboxes.length > 0 && !window.selectAllMatching && !isAllPageChecked) {
             const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
-            url += `&ids=${ids.join(',')}`;
+            baseQuery += `&ids=${ids.join(',')}`;
         }
 
         Swal.fire({
-            title: 'Generating PDF...',
-            text: 'Please wait while the file is being prepared.',
+            title: 'Preparing PDF Export...',
+            text: 'Calculating records and parts...',
             allowOutsideClick: false,
             allowEscapeKey: false,
             showConfirmButton: false,
             didOpen: () => { Swal.showLoading(); }
         });
-        fetch(url)
-            .then(r => {
-                if (!r.ok) throw new Error('Download failed');
-                return r.blob();
-            })
-            .then(blob => {
+
+        try {
+            const countRes = await fetch(`{{ route('admin.senior.export-pdf') }}?${baseQuery}&check_count=1`);
+            if (!countRes.ok) throw new Error('Count check failed');
+            const countData = await countRes.json();
+
+            const totalCount = countData.total_count || 0;
+            const totalParts = countData.total_parts || 1;
+
+            if (totalCount === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'No Records',
+                    text: 'No senior citizen records found to export.',
+                    confirmButtonColor: '#1A237E'
+                });
+                return;
+            }
+
+            if (totalParts === 1) {
+                Swal.fire({
+                    title: 'Generating PDF...',
+                    text: `Exporting ${totalCount} record(s). Please wait...`,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                const pdfRes = await fetch(`{{ route('admin.senior.export-pdf') }}?${baseQuery}&part=1`);
+                if (!pdfRes.ok) throw new Error('Download failed');
+                const blob = await pdfRes.blob();
+
                 let filename = 'senior_citizens';
                 if (currentBarangay) {
                     filename += '_' + currentBarangay.toLowerCase().replace(/[^a-z0-9]+/g, '_');
                 }
                 filename += '_' + new Date().toISOString().slice(0, 10) + '.pdf';
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 100);
+                triggerFileDownload(blob, filename);
+
                 Swal.fire({
                     icon: 'success',
                     title: 'Download Complete',
-                    text: 'The PDF file has been saved to your device.',
+                    text: `Successfully exported ${totalCount} record(s).`,
                     confirmButtonColor: '#1A237E',
                     timer: 3000,
                     timerProgressBar: true
                 });
-            })
-            .catch(() => {
+            } else {
+                for (let part = 1; part <= totalParts; part++) {
+                    const startNum = ((part - 1) * 1000) + 1;
+                    const endNum = Math.min(totalCount, part * 1000);
+
+                    Swal.fire({
+                        title: `Downloading Part ${part} of ${totalParts}...`,
+                        html: `<p style="font-size:13px;color:#4B5563;margin-top:8px;">Downloading records <b>${startNum.toLocaleString()} – ${endNum.toLocaleString()}</b> of <b>${totalCount.toLocaleString()}</b> total records.</p><p style="font-size:11.5px;color:#9CA3AF;margin-top:4px;">Please do not close this window.</p>`,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    const pdfRes = await fetch(`{{ route('admin.senior.export-pdf') }}?${baseQuery}&part=${part}`);
+                    if (!pdfRes.ok) throw new Error(`Download of Part ${part} failed`);
+                    const blob = await pdfRes.blob();
+
+                    let filename = 'senior_citizens';
+                    if (currentBarangay) {
+                        filename += '_' + currentBarangay.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                    }
+                    filename += `_part_${part}_of_${totalParts}_` + new Date().toISOString().slice(0, 10) + '.pdf';
+                    triggerFileDownload(blob, filename);
+
+                    if (part < totalParts) {
+                        await new Promise(r => setTimeout(r, 1200));
+                    }
+                }
+
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Download Failed',
-                    text: 'Something went wrong. Please try again.',
-                    confirmButtonColor: '#1A237E'
+                    icon: 'success',
+                    title: 'All Parts Downloaded!',
+                    text: `Successfully downloaded all ${totalParts} parts (${totalCount.toLocaleString()} total records).`,
+                    confirmButtonColor: '#1A237E',
+                    timer: 4000,
+                    timerProgressBar: true
                 });
+            }
+        } catch (err) {
+            console.error('PDF Export Error:', err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Download Failed',
+                text: 'Something went wrong during export. Please try again.',
+                confirmButtonColor: '#1A237E'
             });
+        }
+    }
+
+    function triggerFileDownload(blob, filename) {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 100);
     }
 
     function bulkExport(e) {
