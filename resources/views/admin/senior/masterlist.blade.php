@@ -1100,7 +1100,8 @@
             const countData = await countRes.json();
 
             const totalCount = countData.total_count || 0;
-            const totalParts = countData.total_parts || 1;
+            const batchSize = countData.per_part || 1000;
+            const totalBatches = countData.total_parts || Math.max(1, Math.ceil(totalCount / batchSize));
 
             if (totalCount === 0) {
                 Swal.fire({
@@ -1112,74 +1113,55 @@
                 return;
             }
 
-            if (totalParts === 1) {
+            for (let batch = 1; batch <= totalBatches; batch++) {
+                const startRecord = ((batch - 1) * batchSize) + 1;
+                const endRecord = Math.min(totalCount, batch * batchSize);
+
                 Swal.fire({
-                    title: 'Generating PDF...',
-                    text: `Exporting ${totalCount} record(s). Please wait...`,
+                    title: `Downloading Batch ${batch}…`,
+                    html: `
+                        <p style="font-size:14px;color:#334155;margin:10px 0 6px 0;">
+                            Downloading records <b>${startRecord.toLocaleString()}–${endRecord.toLocaleString()} of ${totalCount.toLocaleString()}</b> total records.
+                        </p>
+                        <p style="font-size:12px;color:#64748b;margin:0;">
+                            Please keep this window open until the download is complete.
+                        </p>
+                    `,
                     allowOutsideClick: false,
                     allowEscapeKey: false,
                     showConfirmButton: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
 
-                const pdfRes = await fetch(`{{ route('admin.senior.export-pdf') }}?${baseQuery}&part=1`);
-                if (!pdfRes.ok) throw new Error('Download failed');
+                const pdfRes = await fetch(`{{ route('admin.senior.export-pdf') }}?${baseQuery}&part=${batch}`);
+                if (!pdfRes.ok) throw new Error(`Download of Batch ${batch} failed`);
                 const blob = await pdfRes.blob();
 
                 let filename = 'senior_citizens';
                 if (currentBarangay) {
                     filename += '_' + currentBarangay.toLowerCase().replace(/[^a-z0-9]+/g, '_');
                 }
+                if (totalBatches > 1) {
+                    filename += `_batch_${batch}_of_${totalBatches}`;
+                }
                 filename += '_' + new Date().toISOString().slice(0, 10) + '.pdf';
                 triggerFileDownload(blob, filename);
 
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Download Complete',
-                    text: `Successfully exported ${totalCount} record(s).`,
-                    confirmButtonColor: '#1A237E',
-                    timer: 3000,
-                    timerProgressBar: true
-                });
-            } else {
-                for (let part = 1; part <= totalParts; part++) {
-                    const startNum = ((part - 1) * 1000) + 1;
-                    const endNum = Math.min(totalCount, part * 1000);
-
-                    Swal.fire({
-                        title: `Downloading Part ${part} of ${totalParts}...`,
-                        html: `<p style="font-size:13px;color:#4B5563;margin-top:8px;">Downloading records <b>${startNum.toLocaleString()} – ${endNum.toLocaleString()}</b> of <b>${totalCount.toLocaleString()}</b> total records.</p><p style="font-size:11.5px;color:#9CA3AF;margin-top:4px;">Please do not close this window.</p>`,
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        showConfirmButton: false,
-                        didOpen: () => { Swal.showLoading(); }
-                    });
-
-                    const pdfRes = await fetch(`{{ route('admin.senior.export-pdf') }}?${baseQuery}&part=${part}`);
-                    if (!pdfRes.ok) throw new Error(`Download of Part ${part} failed`);
-                    const blob = await pdfRes.blob();
-
-                    let filename = 'senior_citizens';
-                    if (currentBarangay) {
-                        filename += '_' + currentBarangay.toLowerCase().replace(/[^a-z0-9]+/g, '_');
-                    }
-                    filename += `_part_${part}_of_${totalParts}_` + new Date().toISOString().slice(0, 10) + '.pdf';
-                    triggerFileDownload(blob, filename);
-
-                    if (part < totalParts) {
-                        await new Promise(r => setTimeout(r, 1200));
-                    }
+                if (batch < totalBatches) {
+                    await new Promise(r => setTimeout(r, 1200));
                 }
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'All Parts Downloaded!',
-                    text: `Successfully downloaded all ${totalParts} parts (${totalCount.toLocaleString()} total records).`,
-                    confirmButtonColor: '#1A237E',
-                    timer: 4000,
-                    timerProgressBar: true
-                });
             }
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Download Complete',
+                text: totalBatches > 1 
+                    ? `Successfully downloaded all ${totalBatches} batches (${totalCount.toLocaleString()} total records).`
+                    : `Successfully exported ${totalCount.toLocaleString()} record(s).`,
+                confirmButtonColor: '#1A237E',
+                timer: 3500,
+                timerProgressBar: true
+            });
         } catch (err) {
             console.error('PDF Export Error:', err);
             Swal.fire({

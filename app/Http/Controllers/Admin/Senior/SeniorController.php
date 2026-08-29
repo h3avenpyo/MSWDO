@@ -504,9 +504,10 @@ class SeniorController extends Controller
         ];
 
         $pdf = PDF::loadView('admin.senior.seniors-pdf', $data);
-        $pdf->setPaper('a4', 'portrait');
+        $pdf->setPaper('a4', 'landscape');
         $pdf->getDomPDF()->set_option('isFontSubsettingEnabled', false);
         $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
         $pdf->getDomPDF()->set_option('dpi', 96);
 
         $filename = 'senior_citizens';
@@ -514,7 +515,7 @@ class SeniorController extends Controller
             $filename .= '_' . str_replace(' ', '_', strtolower($barangay));
         }
         if ($totalParts > 1) {
-            $filename .= '_part_' . $part . '_of_' . $totalParts;
+            $filename .= '_batch_' . $part . '_of_' . $totalParts;
         }
         $filename .= '_' . now()->format('Y-m-d') . '.pdf';
 
