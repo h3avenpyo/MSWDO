@@ -435,6 +435,14 @@
                 </div>
             @endif
             <div class="panel archive-panel-wrap">
+                @if($archivedSeniors->total() > $archivedSeniors->count())
+                <div id="selectAllPagesNotice" style="display:none;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:13px;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                    <span id="selectAllPagesText">All {{ $archivedSeniors->count() }} seniors on this page are selected.</span>
+                    <button type="button" id="selectAllPagesBtn" onclick="selectAllAcrossPages(event)" style="background:none;border:none;color:#1A237E;font-weight:700;cursor:pointer;text-decoration:underline;padding:0;font-size:13px;">
+                        Select all {{ $archivedSeniors->total() }} archived senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }}
+                    </button>
+                </div>
+                @endif
                 <div class="archive-table-wrap">
                     <table class="archive-table">
                         <thead>
@@ -550,13 +558,72 @@
 <script>
     lucide.createIcons();
 
+    window.selectAllMatching = false;
+
     function toggleSelectAll(checked) {
         document.querySelectorAll('.senior-checkbox').forEach(cb => cb.checked = checked);
+
+        const notice = document.getElementById('selectAllPagesNotice');
+        const total = {{ $archivedSeniors->total() ?? 0 }};
+        const currentCount = {{ $archivedSeniors->count() ?? 0 }};
+        const hasMorePages = total > currentCount;
+
+        if (checked) {
+            window.selectAllMatching = true;
+            if (notice && hasMorePages) {
+                notice.style.display = 'flex';
+                document.getElementById('selectAllPagesText').textContent = `All ${total} archived senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.`;
+                const btn = document.getElementById('selectAllPagesBtn');
+                if (btn) {
+                    btn.textContent = 'Clear selection';
+                    btn.onclick = function(e) { e.preventDefault(); clearAllSelection(); };
+                }
+            }
+        } else {
+            window.selectAllMatching = false;
+            if (notice) notice.style.display = 'none';
+        }
+
         updateBulkActions();
     }
 
     function toggleSelectAllMobile(checked) {
-        document.querySelectorAll('.senior-checkbox').forEach(cb => cb.checked = checked);
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll) selectAll.checked = checked;
+        toggleSelectAll(checked);
+    }
+
+    function selectAllAcrossPages(e) {
+        if (e) e.preventDefault();
+        window.selectAllMatching = true;
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll) selectAll.checked = true;
+        document.querySelectorAll('.senior-checkbox').forEach(cb => cb.checked = true);
+        const mobileAll = document.getElementById('mobileSelectAll');
+        if (mobileAll) mobileAll.checked = true;
+
+        const notice = document.getElementById('selectAllPagesNotice');
+        if (notice) {
+            notice.style.display = 'flex';
+            document.getElementById('selectAllPagesText').textContent = `All {{ $archivedSeniors->total() }} archived senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'this filter' }} are selected.`;
+            const btn = document.getElementById('selectAllPagesBtn');
+            if (btn) {
+                btn.textContent = 'Clear selection';
+                btn.onclick = function(ev) { ev.preventDefault(); clearAllSelection(); };
+            }
+        }
+        updateBulkActions();
+    }
+
+    function clearAllSelection() {
+        window.selectAllMatching = false;
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll) selectAll.checked = false;
+        document.querySelectorAll('.senior-checkbox').forEach(cb => cb.checked = false);
+        const mobileAll = document.getElementById('mobileSelectAll');
+        if (mobileAll) mobileAll.checked = false;
+        const notice = document.getElementById('selectAllPagesNotice');
+        if (notice) notice.style.display = 'none';
         updateBulkActions();
     }
 
@@ -568,12 +635,27 @@
         const selectAll = document.getElementById('selectAll');
         const mobileAll = document.getElementById('mobileSelectAll');
         const mobileCount = document.getElementById('mobileSelectedCount');
-        if (countSpan) countSpan.textContent = selected.length;
-        if (selectAll) selectAll.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
-        if (mobileAll) mobileAll.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
-        if (mobileCount) mobileCount.textContent = selected.length > 0 ? selected.length + ' / ' + checkboxes.length + ' selected' : '';
+        const totalMatching = {{ $archivedSeniors->total() ?? 0 }};
+        const pageTotal = checkboxes.length;
+
+        const count = window.selectAllMatching ? totalMatching : selected.length;
+
+        if (countSpan) countSpan.textContent = count;
+        if (selectAll) selectAll.checked = pageTotal > 0 && selected.length === pageTotal;
+        if (mobileAll) mobileAll.checked = pageTotal > 0 && selected.length === pageTotal;
+        if (mobileCount) mobileCount.textContent = count > 0
+            ? (window.selectAllMatching ? `${count} / ${totalMatching} selected (all pages)` : `${count} / ${pageTotal} selected`)
+            : '';
+
+        // If user manually unchecks any box, reset select-all-matching state
+        if (selected.length < pageTotal) {
+            window.selectAllMatching = false;
+            const notice = document.getElementById('selectAllPagesNotice');
+            if (notice) notice.style.display = 'none';
+        }
+
         if (button) {
-            const has = selected.length > 0;
+            const has = count > 0;
             button.disabled = !has;
             button.style.opacity = has ? '1' : '0.45';
             button.style.background = has ? '#3730A3' : '#E0E7FF';
@@ -584,7 +666,7 @@
 
     function showBulkActionPopup() {
         const selected = document.querySelectorAll('.senior-checkbox:checked');
-        if (selected.length === 0) {
+        if (selected.length === 0 && !window.selectAllMatching) {
             Swal.fire('No Selection', 'Please select at least one record.', 'warning');
             return;
         }
@@ -600,15 +682,22 @@
     });
 
     function bulkRestore() {
-        const ids = Array.from(document.querySelectorAll('.senior-checkbox:checked')).map(cb => cb.dataset.id);
-        if (ids.length === 0) {
+        const checked = document.querySelectorAll('.senior-checkbox:checked');
+        const ids = Array.from(checked).map(cb => cb.dataset.id);
+        const currentBarangay = `{{ request('barangay') ?? '' }}`;
+        const currentSearch = `{{ request('search') ?? '' }}`;
+
+        if (ids.length === 0 && !window.selectAllMatching) {
             Swal.fire('No Selection', 'Please select at least one record.', 'warning');
             return;
         }
         closeBulkModal();
+
+        const count = window.selectAllMatching ? {{ $archivedSeniors->total() ?? 0 }} : ids.length;
+
         Swal.fire({
             title: 'Restore Selected Records?',
-            text: `You are about to restore ${ids.length} record(s) back to active status.`,
+            text: `You are about to restore ${count} record(s) back to active status.`,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#0f766e',
@@ -617,13 +706,17 @@
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
+                const payload = window.selectAllMatching
+                    ? { select_all: true, barangay: currentBarangay, search: currentSearch }
+                    : { ids: ids };
+
                 fetch('/admin/senior/bulk-restore', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
-                    body: JSON.stringify({ ids: ids })
+                    body: JSON.stringify(payload)
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -642,15 +735,22 @@
     }
 
     function bulkExport() {
-        const ids = Array.from(document.querySelectorAll('.senior-checkbox:checked')).map(cb => cb.dataset.id);
-        if (ids.length === 0) {
+        const checked = document.querySelectorAll('.senior-checkbox:checked');
+        const ids = Array.from(checked).map(cb => cb.dataset.id);
+        const currentBarangay = `{{ request('barangay') ?? '' }}`;
+        const currentSearch = `{{ request('search') ?? '' }}`;
+
+        if (ids.length === 0 && !window.selectAllMatching) {
             Swal.fire('No Selection', 'Please select at least one record.', 'warning');
             return;
         }
         closeBulkModal();
+
+        const count = window.selectAllMatching ? {{ $archivedSeniors->total() ?? 0 }} : ids.length;
+
         Swal.fire({
             title: 'Export Selected Records?',
-            text: `You are about to export ${ids.length} record(s).`,
+            text: `You are about to export ${count} record(s).`,
             icon: 'info',
             showCancelButton: true,
             confirmButtonColor: '#1A237E',
@@ -659,7 +759,11 @@
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = `/admin/senior/export?ids=${ids.join(',')}`;
+                if (window.selectAllMatching) {
+                    window.location.href = `{{ route('admin.senior.export') }}?barangay=${encodeURIComponent(currentBarangay)}&search=${encodeURIComponent(currentSearch)}`;
+                } else {
+                    window.location.href = `/admin/senior/export?ids=${ids.join(',')}`;
+                }
             }
         });
     }

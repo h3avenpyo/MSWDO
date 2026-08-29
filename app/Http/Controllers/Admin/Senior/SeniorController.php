@@ -274,16 +274,36 @@ class SeniorController extends Controller
 
     public function bulkArchive(Request $request)
     {
-        $request->validate([
-            'ids' => 'required|array',
-            'ids.*' => 'integer'
-        ]);
+        $ids = $request->input('ids');
+        $selectAll = $request->boolean('select_all');
+        $barangay = $request->input('barangay');
+        $search = $request->input('search');
 
-        $ids = $request->ids;
+        $query = SeniorCitizenRecord::where('status', '!=', 'archived');
 
-        $updated = SeniorCitizenRecord::
-            whereIn('id', $ids)
-            ->update(['status' => 'archived']);
+        if ($ids && is_array($ids) && count($ids) > 0) {
+            // Specific IDs selected
+            $query->whereIn('id', $ids);
+        } elseif ($selectAll) {
+            // Select all matching filter (barangay/search may be empty = no filter = all)
+            if ($barangay && $barangay !== 'All' && $barangay !== '') {
+                $query->where('barangay', $barangay);
+            }
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', '%' . $search . '%')
+                      ->orWhere('middle_name', 'like', '%' . $search . '%')
+                      ->orWhere('last_name', 'like', '%' . $search . '%');
+                });
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No records specified to archive.'
+            ], 400);
+        }
+
+        $updated = $query->update(['status' => 'archived']);
 
         if ($updated > 0) {
             $this->logActivity('bulk archived', "{$updated} senior(s)", 'Multiple');
@@ -302,16 +322,36 @@ class SeniorController extends Controller
 
     public function bulkRestore(Request $request)
     {
-        $request->validate([
-            'ids' => 'required|array',
-            'ids.*' => 'integer'
-        ]);
+        $ids = $request->input('ids');
+        $selectAll = $request->boolean('select_all');
+        $barangay = $request->input('barangay');
+        $search = $request->input('search');
 
-        $ids = $request->ids;
+        $query = SeniorCitizenRecord::where('status', 'archived');
 
-        $updated = SeniorCitizenRecord::
-            whereIn('id', $ids)
-            ->update(['status' => 'active']);
+        if ($ids && is_array($ids) && count($ids) > 0) {
+            // Specific IDs selected
+            $query->whereIn('id', $ids);
+        } elseif ($selectAll) {
+            // Select all matching filter (barangay/search may be empty = no filter = all)
+            if ($barangay && $barangay !== 'All' && $barangay !== '') {
+                $query->where('barangay', $barangay);
+            }
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', '%' . $search . '%')
+                      ->orWhere('middle_name', 'like', '%' . $search . '%')
+                      ->orWhere('last_name', 'like', '%' . $search . '%');
+                });
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No records specified to restore.'
+            ], 400);
+        }
+
+        $updated = $query->update(['status' => 'active']);
 
         if ($updated > 0) {
             $this->logActivity('bulk restored', "{$updated} senior(s)", 'Multiple');
@@ -331,19 +371,31 @@ class SeniorController extends Controller
     public function exportSeniors(Request $request)
     {
         $ids = $request->get('ids');
+        $barangay = $request->get('barangay');
+        $search = $request->get('search');
+
+        $query = SeniorCitizenRecord::where('status', '!=', 'archived')
+            ->whereNotNull('birth_date')
+            ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60');
 
         if ($ids) {
             $idsArray = explode(',', $ids);
-            $seniors = SeniorCitizenRecord::
-                whereIn('id', $idsArray)
-                ->get();
-        } else {
-            $seniors = SeniorCitizenRecord::
-                where('status', 'active')
-                ->whereNotNull('birth_date')
-                ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')
-                ->get();
+            $query->whereIn('id', $idsArray);
         }
+
+        if ($barangay && $barangay !== 'All' && $barangay !== '') {
+            $query->where('barangay', $barangay);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', '%' . $search . '%')
+                  ->orWhere('middle_name', 'like', '%' . $search . '%')
+                  ->orWhere('last_name', 'like', '%' . $search . '%');
+            });
+        }
+
+        $seniors = $query->orderBy('last_name')->orderBy('first_name')->get();
 
         $headers = [
             'Content-Type' => 'text/csv',
@@ -391,7 +443,7 @@ class SeniorController extends Controller
         $barangay = $request->get('barangay');
         $search = $request->get('search');
 
-        $query = SeniorCitizenRecord::where('status', 'active')
+        $query = SeniorCitizenRecord::where('status', '!=', 'archived')
             ->whereNotNull('birth_date')
             ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60');
 
@@ -400,7 +452,7 @@ class SeniorController extends Controller
             $query->whereIn('id', $idsArray);
         }
 
-        if ($barangay) {
+        if ($barangay && $barangay !== 'All' && $barangay !== '') {
             $query->where('barangay', $barangay);
         }
 
@@ -412,7 +464,7 @@ class SeniorController extends Controller
             });
         }
 
-        $seniors = $query->get();
+        $seniors = $query->orderBy('last_name')->orderBy('first_name')->get();
 
         $data = [
             'seniors' => $seniors,
