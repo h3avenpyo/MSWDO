@@ -2799,9 +2799,6 @@ function renderCaseList(){
             </div>
             <div class="empty-title">No Social Case Studies Found</div>
             <div class="empty-subtitle">Create your first Social Case Study to begin managing case records.</div>
-            <a href="/admin/social-case/new" style="background:var(--primary);color:#fff;border:none;display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:10px 16px;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none;">
-              <i data-lucide="plus" style="width:16px;height:16px"></i> Create New Case
-            </a>
           </div>
         </td>
       </tr>

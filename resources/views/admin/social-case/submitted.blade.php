@@ -80,16 +80,16 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .filter-reset-btn.visible { display: inline-flex; }
 
     /* ── Panel / wrap ── */
-    .submitted-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; height: 500px !important; overflow-y: auto; }
+    .submitted-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border: 2px solid #CBD5E1; border-radius: 8px; background: #fff; height: 500px !important; overflow-y: auto; }
 
     /* ── Table base ── */
     #submittedTable { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: auto; }
-    #submittedTable thead tr { background: #F8FAFC; border-bottom: 2px solid #E2E8F0; }
-    #submittedTable thead th { padding: 12px 14px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; white-space: nowrap; text-align: left; border-bottom: 2px solid #E2E8F0; }
-    #submittedTable tbody tr { border-bottom: 1px solid #F1F5F9; transition: background .15s; }
+    #submittedTable thead tr { background: #F8FAFC; border-bottom: 2px solid #94A3B8; }
+    #submittedTable thead th { padding: 12px 14px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; white-space: nowrap; text-align: left; border-bottom: 2px solid #94A3B8; }
+    #submittedTable tbody tr { border-bottom: 1px solid #CBD5E1; transition: background .15s; }
     #submittedTable tbody tr:last-child { border-bottom: none; }
     #submittedTable tbody tr:hover { background: #F8FAFC; }
-    #submittedTable tbody td { padding: 12px 14px; font-size: 0.875rem; color: #1E293B; vertical-align: middle; border-bottom: 1px solid #F1F5F9; }
+    #submittedTable tbody td { padding: 12px 14px; font-size: 0.875rem; color: #1E293B; vertical-align: middle; border-bottom: 1px solid #CBD5E1; }
 
     /* Column specific spacing */
     #submittedTable tbody td[data-label="Control No."] { min-width: 130px; white-space: nowrap; font-family: 'Courier New', monospace; font-size: 0.813rem; font-weight: 600; color: #1E293B; }

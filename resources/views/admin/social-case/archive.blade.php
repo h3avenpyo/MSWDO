@@ -84,16 +84,16 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .type-opt { padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer; transition: background .15s; }
 
     /* ── Panel / wrap ── */
-    .archive-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; }
+    .archive-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border: 2px solid #CBD5E1; border-radius: 8px; background: #fff; }
 
     /* ── Table base ── */
     .archive-table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: auto; }
-    .archive-table thead tr { background: #F8FAFC; border-bottom: 2px solid #E2E8F0; }
-    .archive-table thead th { padding: 12px 14px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; white-space: nowrap; text-align: left; border-bottom: 2px solid #E2E8F0; }
-    .archive-table tbody tr { border-bottom: 1px solid #F1F5F9; transition: background .15s; }
+    .archive-table thead tr { background: #F8FAFC; border-bottom: 2px solid #94A3B8; }
+    .archive-table thead th { padding: 12px 14px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; white-space: nowrap; text-align: left; border-bottom: 2px solid #94A3B8; }
+    .archive-table tbody tr { border-bottom: 1px solid #CBD5E1; transition: background .15s; }
     .archive-table tbody tr:last-child { border-bottom: none; }
     .archive-table tbody tr:hover { background: #F8FAFC; }
-    .archive-table tbody td { padding: 12px 14px; font-size: 0.875rem; color: #1E293B; vertical-align: middle; border-bottom: 1px solid #F1F5F9; }
+    .archive-table tbody td { padding: 12px 14px; font-size: 0.875rem; color: #1E293B; vertical-align: middle; border-bottom: 1px solid #CBD5E1; }
 
     /* Column specific spacing */
     .archive-table tbody td[data-label="Control No"] { min-width: 125px; white-space: nowrap; font-family: 'Courier New', monospace; font-size: 0.813rem; font-weight: 600; color: #1E293B; }
