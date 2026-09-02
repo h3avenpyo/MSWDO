@@ -28,7 +28,7 @@
     .filter-item { display: flex; flex-direction: column; gap: 6px; }
     .filter-label { font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em; }
 
-    .filter-search { flex: 3 1 400px; min-width: 400px; }
+    .filter-search { flex: 1 1 200px; min-width: 180px; }
     .filter-search-wrap { display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s; }
     .filter-search-wrap:focus-within { box-shadow: 0 0 0 3px rgba(26,35,126,.12); border-radius: 8px; }
     .filter-search input { flex: 1 1 auto; width: 1%; min-width: 0; height: 44px !important; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; padding: 0 16px; font-size: 0.875rem; color: #111827; background: #fff; outline: none; transition: border-color .15s; box-sizing: border-box !important; margin: 0 !important; }
@@ -37,7 +37,7 @@
     .filter-search-btn { height: 44px !important; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch; }
     .filter-search-btn:hover { background: #121858; }
 
-    .filter-dropdown { flex: 1 1 200px; min-width: 200px; position: relative; }
+    .filter-dropdown { flex: 1 1 200px; min-width: 180px; position: relative; }
     .filter-select-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; height: 44px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 0.875rem; cursor: pointer; background: #fff; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
     .filter-select-btn:hover { border-color: #9CA3AF; }
     .filter-select-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #111827; font-weight: 500; }
@@ -110,15 +110,15 @@
 
     @media (min-width: 768px) and (max-width: 1199.98px) {
         .online-filter-bar { gap: 10px; padding: 14px; margin-bottom: 12px; flex-wrap: wrap; }
-        .filter-search { flex: 3 1 350px; min-width: 350px; }
-        .filter-dropdown { flex: 1 1 180px; min-width: 180px; }
+        .filter-search { flex: 1 1 180px; min-width: 160px; }
+        .filter-dropdown { flex: 1 1 180px; min-width: 160px; }
         .filter-reset { flex: 0 0 auto; }
     }
 
     @media (min-width: 1200px) {
         .online-filter-bar { flex-wrap: nowrap; gap: 12px; padding: 16px; margin-bottom: 12px; }
-        .filter-search { flex: 3 1 400px; min-width: 400px; }
-        .filter-dropdown { flex: 1 1 200px; min-width: 200px; }
+        .filter-search { flex: 1 1 200px; min-width: 180px; }
+        .filter-dropdown { flex: 1 1 200px; min-width: 180px; }
         .filter-reset { flex: 0 0 auto; }
     }
 
