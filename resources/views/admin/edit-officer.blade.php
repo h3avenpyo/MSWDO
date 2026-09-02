@@ -263,21 +263,6 @@ $initials = count($words) >= 2
                 <input type="text" name="phone" class="form-control" placeholder="e.g. 0917XXXXXXX" value="{{ old('phone', $officer->phone) }}">
             </div>
             <div>
-                <label class="form-label">Status</label>
-                <div class="status-selection">
-                    <label class="status-option {{ old('status', $officer->status) == 'active' ? 'selected' : '' }}">
-                        <input type="radio" name="status" value="active" {{ old('status', $officer->status) == 'active' ? 'checked' : '' }} required>
-                        <span class="status-circle"></span>
-                        <span class="status-label">Active</span>
-                    </label>
-                    <label class="status-option {{ old('status', $officer->status) == 'inactive' ? 'selected' : '' }}">
-                        <input type="radio" name="status" value="inactive" {{ old('status', $officer->status) == 'inactive' ? 'checked' : '' }}>
-                        <span class="status-circle"></span>
-                        <span class="status-label">Inactive</span>
-                    </label>
-                </div>
-            </div>
-            <div>
                 <label class="form-label">Signature Position</label>
                 <select class="form-select" name="signature_position">
                     <option value="">None</option>
@@ -288,20 +273,6 @@ $initials = count($words) >= 2
                 <p class="select-hint">
                     <i data-lucide="info"></i>
                     <span>Select if this officer's signature should appear on ID cards</span>
-                </p>
-            </div>
-            <div class="md:col-span-2">
-                <label class="form-label">Signature Image</label>
-                <input type="file" name="signature_image" class="form-control" accept="image/*">
-                @if($officer->signature_image)
-                    <p class="select-hint">
-                        <i data-lucide="check"></i>
-                        <span>Current signature: {{ basename($officer->signature_image) }}</span>
-                    </p>
-                @endif
-                <p class="select-hint">
-                    <i data-lucide="info"></i>
-                    <span>Upload signature image (PNG, JPG) for ID cards</span>
                 </p>
             </div>
             <div class="md:col-span-2 mt-2 flex justify-end gap-2">

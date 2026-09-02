@@ -101,6 +101,11 @@ $initials = count($words) >= 2
     .status-opt.selected { background: #EEF2FF; color: #1A237E; font-weight: 600; }
     #statusBtn.active { border-color: #1A237E; background: #EEF2FF; }
 
+    .filter-search input::placeholder { color: #6B7280; font-weight: 500; font-size: 0.875rem; }
+
+    .filter-reset-btn { display: none !important; }
+    .filter-reset-btn.visible { display: inline-flex !important; }
+
     /* ── Buttons ── */
     .btn {
         display: inline-flex;
@@ -228,7 +233,7 @@ $initials = count($words) >= 2
         <div class="filter-item filter-search" style="display: flex; flex-direction: column; gap: 6px; flex: 0 0 auto;">
             <label class="filter-label">Search</label>
             <div class="filter-search-wrap" style="display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s;">
-                <input type="text" class="form-control text-xs" placeholder="Search by name or email..." style="width: 220px; padding-left: 16px; height: 44px; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; flex: 1 1 auto; min-width: 0; box-sizing: border-box !important; margin: 0 !important;" id="searchInput" value="{{ request()->get('search', '') }}" oninput="handleSearch()" onkeydown="if(event.key==='Enter'){event.preventDefault();handleSearch();}">
+                <input type="text" class="form-control text-xs" placeholder="Search name or email..." style="width: 220px; padding-left: 16px; height: 44px; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; flex: 1 1 auto; min-width: 0; box-sizing: border-box !important; margin: 0 !important;" id="searchInput" value="{{ request()->get('search', '') }}" oninput="updateClearButtonVisibility()" onkeydown="if(event.key==='Enter'){event.preventDefault();handleSearch();}">
                 <button type="button" class="filter-search-btn" style="height: 44px !important; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch;" onclick="handleSearch()">
                     <i data-lucide="search" style="width: 18px; height: 18px;"></i>
                 </button>
@@ -242,7 +247,7 @@ $initials = count($words) >= 2
             </div>
             <div id="statusMenu" class="filter-menu" style="display:none"></div>
         </div>
-        <button type="button" onclick="clearFilters()" style="height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all .15s; font-size: 0.875rem; font-weight: 500; gap: 6px; flex-shrink: 0;" onmouseover="this.style.borderColor='#B91C1C';this.style.color='#B91C1C';this.style.background='#FEF2F2';" onmouseout="this.style.borderColor='#DC2626';this.style.color='#DC2626';this.style.background='#fff';">
+        <button type="button" class="filter-reset-btn" onclick="clearFilters()" style="height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; cursor: pointer; align-items: center; justify-content: center; transition: all .15s; font-size: 0.875rem; font-weight: 500; gap: 6px; flex-shrink: 0;" onmouseover="this.style.borderColor='#B91C1C';this.style.color='#B91C1C';this.style.background='#FEF2F2';" onmouseout="this.style.borderColor='#DC2626';this.style.color='#DC2626';this.style.background='#fff';">
             <i data-lucide="x" style="width: 16px; height: 16px;"></i>
             Clear
         </button>
@@ -377,6 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.setAttribute('data-filter', urlStatus);
         highlightStatusOpt();
     }
+    updateClearButtonVisibility();
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
     // ── SweetAlert confirmations for all forms ──
@@ -487,14 +493,15 @@ function selectStatus(el) {
     if(arrow) arrow.style.transform = '';
     highlightStatusOpt();
     var btn = document.getElementById('statusBtn');
-    if(val && val !== 'All Status') { 
-        btn.classList.add('active'); 
-        btn.setAttribute('data-filter', val); 
-    } else { 
-        btn.classList.remove('active'); 
-        btn.removeAttribute('data-filter'); 
+    if(val && val !== 'All Status') {
+        btn.classList.add('active');
+        btn.setAttribute('data-filter', val);
+    } else {
+        btn.classList.remove('active');
+        btn.removeAttribute('data-filter');
     }
     handleSearch();
+    updateClearButtonVisibility();
     event.stopPropagation();
 }
 
@@ -522,6 +529,19 @@ function clearFilters() {
     url.searchParams.delete('search');
     url.searchParams.delete('status');
     window.location.href = url.toString();
+}
+
+function updateClearButtonVisibility() {
+    var searchValue = document.getElementById('searchInput').value.trim();
+    var statusValue = window.statusFilterState !== 'All Status';
+    var clearBtn = document.querySelector('.filter-reset-btn');
+    if (clearBtn) {
+        if (searchValue || statusValue) {
+            clearBtn.classList.add('visible');
+        } else {
+            clearBtn.classList.remove('visible');
+        }
+    }
 }
 </script>
 @endpush

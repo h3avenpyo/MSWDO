@@ -127,7 +127,7 @@ class OfficerController extends Controller
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($officer->id)],
             'role' => ['required', Rule::enum(UserRole::class)],
             'phone' => ['nullable', 'string', 'max:20'],
-            'status' => ['required', 'in:active,inactive'],
+            'status' => ['nullable', 'in:active,inactive'],
             'signature_position' => ['nullable', 'in:osca_head,mswdo_officer,mswdo_staff'],
             'signature_image' => ['nullable', 'image', 'max:2048'],
         ]);
@@ -149,7 +149,7 @@ class OfficerController extends Controller
             'email' => $request->email,
             'role' => $request->role,
             'phone' => $request->phone,
-            'status' => $request->status === 'active' ? \App\Enums\UserStatus::Active : \App\Enums\UserStatus::Inactive,
+            'status' => $request->status ? ($request->status === 'active' ? \App\Enums\UserStatus::Active : \App\Enums\UserStatus::Inactive) : $officer->status,
             'signature_position' => $request->signature_position,
             'signature_image' => $signatureImagePath,
         ]);
