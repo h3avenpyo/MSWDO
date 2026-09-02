@@ -44,7 +44,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     }
     @media (max-width: 767.98px) { .main { padding-top: 72px !important; } }
 
-    /* ── Subtitle ── */
+    /* ── Header & Subtitle ── */
+    .archive-section-header { margin-bottom: 10px; }
+    .archive-section-title { font-size: 1.05rem; font-weight: 800; color: #1A237E; margin: 0 0 4px; letter-spacing: -0.01em; }
     .archive-subtitle { color: #6B7280; font-size: 0.85rem; margin: 0 0 10px; white-space: normal; overflow-wrap: break-word; line-height: 1.4; }
 
     /* ── Filter bar ── */
@@ -359,8 +361,11 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 </div>
 
 <div class="main">
-    <!-- Page Sub-Header -->
-    <p class="archive-subtitle">View and manage archived social case study records.</p>
+    <!-- Section Header -->
+    <div class="archive-section-header">
+        <h2 class="archive-section-title">Archive</h2>
+        <p class="archive-subtitle">View and manage archived social case study records.</p>
+    </div>
 
     <!-- Search and Filter Bar -->
     <div class="archive-filter-bar">
