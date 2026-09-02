@@ -415,40 +415,38 @@
 
 
             <!-- Summary Section -->
-            <form method="GET" action="{{ route('admin.senior.archive.list') }}">
-                <div class="archive-filter-bar">
-                    <div id="summaryGrid">
-                    <div class="filter-field">
-                        <label class="filter-label" for="searchInput">Search by Name</label>
-                        <div class="input-group">
-                            <input type="text" id="searchInput" name="search" placeholder="Search by name..." value="{{ request('search') }}">
-                            <button type="submit" class="search-btn" aria-label="Search"><i data-lucide="search"></i></button>
-                        </div>
-                    </div>
-                    <div class="filter-field">
-                        <label class="filter-label" for="barangayFilter">Filter by Barangay</label>
-                        <select class="filter-select" id="barangayFilter" name="barangay" onchange="this.form.submit()">
-                            <option value="" {{ !request('barangay') ? 'selected' : '' }}>All Barangays</option>
-                            @foreach($barangays as $b)
-                                <option value="{{ $b }}" {{ request('barangay') == $b ? 'selected' : '' }}>{{ $b }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="filter-field">
-                        <label class="filter-label">&nbsp;</label>
-                        <div class="bulk-actions-row">
-                            <button type="button" id="bulkActionButton" class="bulk-btn" onclick="showBulkActionPopup()" disabled>
-                                <i data-lucide="list-checks"></i> Bulk Actions <span class="bulk-count" id="selectedCount">0</span>
-                            </button>
-                            @if(request('search') || request('barangay'))
-                                <a href="{{ route('admin.senior.archive.list') }}" class="btn btn-clear">
-                                    <i data-lucide="x"></i> Clear
-                                </a>
-                            @endif
-                        </div>
+            <form method="GET" action="{{ route('admin.senior.archive.list') }}" style="margin-bottom: 20px;">
+                <div id="summaryGrid">
+                <div class="filter-field">
+                    <label class="filter-label" for="searchInput">Search by Name</label>
+                    <div class="input-group">
+                        <input type="text" id="searchInput" name="search" placeholder="Search by name..." value="{{ request('search') }}">
+                        <button type="submit" class="search-btn" aria-label="Search"><i data-lucide="search"></i></button>
                     </div>
                 </div>
+                <div class="filter-field">
+                    <label class="filter-label" for="barangayFilter">Filter by Barangay</label>
+                    <select class="filter-select" id="barangayFilter" name="barangay" onchange="this.form.submit()">
+                        <option value="" {{ !request('barangay') ? 'selected' : '' }}>All Barangays</option>
+                        @foreach($barangays as $b)
+                            <option value="{{ $b }}" {{ request('barangay') == $b ? 'selected' : '' }}>{{ $b }}</option>
+                        @endforeach
+                    </select>
                 </div>
+                <div class="filter-field">
+                    <label class="filter-label">&nbsp;</label>
+                    <div class="bulk-actions-row">
+                        <button type="button" id="bulkActionButton" class="bulk-btn" onclick="showBulkActionPopup()" disabled>
+                            <i data-lucide="list-checks"></i> Bulk Actions <span class="bulk-count" id="selectedCount">0</span>
+                        </button>
+                        @if(request('search') || request('barangay'))
+                            <a href="{{ route('admin.senior.archive.list') }}" class="btn btn-clear">
+                                <i data-lucide="x"></i> Clear
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            </div>
             </form>
 
             <!-- Archived Records Table -->

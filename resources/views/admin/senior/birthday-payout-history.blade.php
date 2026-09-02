@@ -241,38 +241,36 @@
             @endif
 
             {{-- Filter Bar --}}
-            <form method="GET" action="{{ route('admin.senior.payouts-history') }}">
-                <div class="archive-filter-bar section-spacing">
-                    <div id="filterGrid">
-                        <div class="filter-field">
-                            <label class="filter-label" for="barangayFilter">Barangay</label>
-                            <select class="filter-select" id="barangayFilter" name="barangay">
-                                <option value="">All Barangays</option>
-                                @foreach($barangays as $barangay)
-                                    <option value="{{ $barangay }}" {{ request('barangay') == $barangay ? 'selected' : '' }}>{{ $barangay }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="filter-field">
-                            <label class="filter-label" for="dateFromFilter">Date From</label>
-                            <input type="date" class="filter-select" id="dateFromFilter" name="date_from" value="{{ $dateFrom }}">
-                        </div>
-                        <div class="filter-field">
-                            <label class="filter-label" for="dateToFilter">Date To</label>
-                            <input type="date" class="filter-select" id="dateToFilter" name="date_to" value="{{ $dateTo }}">
-                        </div>
-                        <div class="filter-field">
-                            <label class="filter-label">&nbsp;</label>
-                            <div class="filter-actions-row">
-                                <button type="submit" class="btn primary">
-                                    <i data-lucide="filter"></i> Filter
-                                </button>
-                                @if(request('barangay') || request('date_from') || request('date_to'))
-                                    <a href="{{ route('admin.senior.payouts-history') }}" class="btn btn-clear">
-                                        <i data-lucide="x"></i> Clear
-                                    </a>
-                                @endif
-                            </div>
+            <form method="GET" action="{{ route('admin.senior.payouts-history') }}" style="margin-bottom: 20px;">
+                <div id="filterGrid">
+                    <div class="filter-field">
+                        <label class="filter-label" for="barangayFilter">Barangay</label>
+                        <select class="filter-select" id="barangayFilter" name="barangay">
+                            <option value="">All Barangays</option>
+                            @foreach($barangays as $barangay)
+                                <option value="{{ $barangay }}" {{ request('barangay') == $barangay ? 'selected' : '' }}>{{ $barangay }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="filter-field">
+                        <label class="filter-label" for="dateFromFilter">Date From</label>
+                        <input type="date" class="filter-select" id="dateFromFilter" name="date_from" value="{{ $dateFrom }}">
+                    </div>
+                    <div class="filter-field">
+                        <label class="filter-label" for="dateToFilter">Date To</label>
+                        <input type="date" class="filter-select" id="dateToFilter" name="date_to" value="{{ $dateTo }}">
+                    </div>
+                    <div class="filter-field">
+                        <label class="filter-label">&nbsp;</label>
+                        <div class="filter-actions-row">
+                            <button type="submit" class="btn primary">
+                                <i data-lucide="filter"></i> Filter
+                            </button>
+                            @if(request('barangay') || request('date_from') || request('date_to'))
+                                <a href="{{ route('admin.senior.payouts-history') }}" class="btn btn-clear">
+                                    <i data-lucide="x"></i> Clear
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
