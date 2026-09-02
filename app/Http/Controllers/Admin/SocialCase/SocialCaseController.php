@@ -83,7 +83,14 @@ class SocialCaseController extends Controller
         $canCheckEligibility = in_array($role, ['eligibility_checker', 'admin'], true);
         $canEncode = in_array($role, ['social_worker', 'admin'], true);
 
-        return view('admin.social-case.new', compact('canCheckEligibility', 'canEncode'));
+        // Get online request counts for sidebar badges
+        $onlineRequestCounts = [
+            'pending' => \App\Models\OnlineRequest::where('status', 'pending')->whereNull('case_id')->count(),
+            'accepted' => \App\Models\OnlineRequest::where('status', 'approved')->whereNull('case_id')->count(),
+            'rejected' => \App\Models\OnlineRequest::where('status', 'rejected')->count(),
+        ];
+
+        return view('admin.social-case.new', compact('canCheckEligibility', 'canEncode', 'onlineRequestCounts'));
     }
 
     public function socialCaseIntake()
