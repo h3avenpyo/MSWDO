@@ -240,4 +240,37 @@ class SocialCaseEligibilityRoleTest extends TestCase
         $worker->delete();
         $checker->delete();
     }
+
+    public function test_case_encoding_account_hides_disabled_navbar_buttons(): void
+    {
+        $worker = $this->makeUser('social_worker');
+
+        $response = $this->sessionAs($worker)->get(route('admin.social-case.dashboard'));
+        $response->assertOk();
+        $response->assertDontSee('/admin/social-case/new');
+        $response->assertDontSee('/admin/social-case/online-requests');
+        $response->assertDontSee('Online Requests');
+        $response->assertSee('/admin/social-case/submitted');
+        $response->assertSee('/admin/social-case/cases');
+        $response->assertSee('/admin/social-case/archive');
+
+        $worker->delete();
+    }
+
+    public function test_eligibility_checker_account_hides_disabled_navbar_buttons(): void
+    {
+        $checker = $this->makeUser('eligibility_checker');
+
+        $response = $this->sessionAs($checker)->get(route('admin.social-case.dashboard'));
+        $response->assertOk();
+        $response->assertSee('/admin/social-case/new');
+        $response->assertSee('/admin/social-case/online-requests');
+        $response->assertSee('Online Requests');
+        $response->assertDontSee('/admin/social-case/submitted');
+        $response->assertDontSee('Submitted Cases');
+        $response->assertDontSee('/admin/social-case/cases');
+        $response->assertDontSee('/admin/social-case/archive');
+
+        $checker->delete();
+    }
 }
