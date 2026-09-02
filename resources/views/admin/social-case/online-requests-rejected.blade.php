@@ -23,7 +23,7 @@
     }
 
     /* ── Filter bar ── */
-    .online-filter-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 16px; background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; }
+    .online-filter-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; }
     .filter-item { display: flex; flex-direction: column; gap: 6px; }
     .filter-label { font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em; }
 
@@ -43,7 +43,8 @@
     .filter-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 50; max-height: 260px; overflow-y: auto; padding: 4px; }
 
     .filter-reset { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; }
-    .filter-reset-btn { height: 44px; padding: 0 20px; border: 1px solid #EF4444; border-radius: 8px; background: #fff; color: #EF4444; font-size: 0.875rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
+    .filter-reset-btn { height: 44px; padding: 0 20px; border: 1px solid #EF4444; border-radius: 8px; background: #fff; color: #EF4444; font-size: 0.875rem; font-weight: 600; cursor: pointer; display: none; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
+    .filter-reset-btn.visible { display: inline-flex; }
     .filter-reset-btn:hover { background: #FEE2E2; border-color: #DC2626; }
 
     .type-opt.selected, .brgy-opt.selected { background: #EEF2FF; color: #1A237E; font-weight: 600; }
@@ -669,7 +670,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="filter-item filter-search">
             <label class="filter-label">Search</label>
             <div class="filter-search-wrap">
-                <input type="text" id="onlineSearchInput" value="{{ request('search') }}" placeholder="Search name, contact, email..." onkeydown="if(event.key==='Enter') applyOnlineFilters()">
+                <input type="text" id="onlineSearchInput" value="{{ request('search') }}" placeholder="Search name, contact, email..." oninput="updateClearButtonVisibility()" onkeydown="if(event.key==='Enter') applyOnlineFilters()">
                 <button type="button" class="filter-search-btn" onclick="applyOnlineFilters()">
                     <i data-lucide="search" style="width:18px;height:18px"></i>
                 </button>
@@ -808,8 +809,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 @push('scripts')
 <script>
 window.onlineFilterState = {
-    barangay: '{{ request('barangay') ?? '' }}',
-    type: '{{ request('type') ?? '' }}'
+    barangay: '{{ request('barangay') && request('barangay') !== 'All' ? request('barangay') : '' }}',
+    type: '{{ request('type') && request('type') !== 'All' ? request('type') : '' }}'
 };
 
 function toggleBarangayMenu() {
@@ -834,12 +835,14 @@ function selectBarangay(el) {
     const val = el.getAttribute('data-value');
     window.onlineFilterState.barangay = val;
     applyOnlineFilters();
+    updateClearButtonVisibility();
 }
 
 function selectType(el) {
     const val = el.getAttribute('data-value');
     window.onlineFilterState.type = val;
     applyOnlineFilters();
+    updateClearButtonVisibility();
 }
 
 function applyOnlineFilters() {
@@ -858,6 +861,20 @@ function applyOnlineFilters() {
 
 function resetOnlineFilters() {
     window.location.href = window.location.pathname;
+}
+
+function updateClearButtonVisibility() {
+    var searchValue = document.getElementById('onlineSearchInput') ? document.getElementById('onlineSearchInput').value.trim() : '';
+    var barangayValue = window.onlineFilterState && window.onlineFilterState.barangay && window.onlineFilterState.barangay !== 'All';
+    var typeValue = window.onlineFilterState && window.onlineFilterState.type && window.onlineFilterState.type !== 'All';
+    var clearBtn = document.querySelector('.filter-reset-btn');
+    if (clearBtn) {
+        if (searchValue || barangayValue || typeValue) {
+            clearBtn.classList.add('visible');
+        } else {
+            clearBtn.classList.remove('visible');
+        }
+    }
 }
 
 document.addEventListener('click', function(e) {
@@ -885,6 +902,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
+    updateClearButtonVisibility();
 });
 
 function viewOnlineRequest(id) {

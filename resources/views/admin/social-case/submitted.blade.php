@@ -75,8 +75,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .filter-search-btn:hover { background: #121858; }
 
     .filter-reset { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; }
-    .filter-reset-btn { height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; font-size: 0.875rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
+    .filter-reset-btn { height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; font-size: 0.875rem; font-weight: 500; cursor: pointer; display: none; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
     .filter-reset-btn:hover { background: #FEF2F2; border-color: #B91C1C; color: #B91C1C; }
+    .filter-reset-btn.visible { display: inline-flex; }
 
     /* ── Panel / wrap ── */
     .submitted-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; height: 500px !important; overflow-y: auto; }
@@ -395,7 +396,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             <label class="filter-label">Search</label>
             <div class="filter-search-wrap">
                 <input type="text" id="submittedSearch" placeholder="Search client name, control no..."
-                       oninput="filterSubmitted()" onkeydown="if(event.key==='Enter'){event.preventDefault();filterSubmitted();}">
+                       oninput="filterSubmitted(); updateClearButtonVisibility();" onkeydown="if(event.key==='Enter'){event.preventDefault();filterSubmitted();}">
                 <button type="button" class="filter-search-btn" onclick="filterSubmitted()">
                     <i data-lucide="search" style="width:18px;height:18px"></i>
                 </button>
@@ -561,6 +562,19 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         _acceptedPage = 1;
         renderSubmitted();
         renderAccepted();
+        updateClearButtonVisibility();
+    }
+
+    function updateClearButtonVisibility() {
+        var searchValue = document.getElementById('submittedSearch').value.trim();
+        var clearBtn = document.querySelector('.filter-reset-btn');
+        if (clearBtn) {
+            if (searchValue) {
+                clearBtn.classList.add('visible');
+            } else {
+                clearBtn.classList.remove('visible');
+            }
+        }
     }
 
     function toggleView(view) {
@@ -586,6 +600,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             sectionTitle.textContent = 'Accepted Online Requests';
             sectionSubtitle.textContent = 'Online service requests accepted by the Eligibility Checker.';
         }
+        
+        updateClearButtonVisibility();
         
         if (typeof lucide !== 'undefined') lucide.createIcons();
     }

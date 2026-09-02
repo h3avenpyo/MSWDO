@@ -70,7 +70,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .filter-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 50; max-height: 260px; overflow-y: auto; padding: 4px; }
 
     .filter-reset { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; }
-    .filter-reset-btn { height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; font-size: 0.875rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
+    .filter-reset-btn { height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; font-size: 0.875rem; font-weight: 500; cursor: pointer; display: none; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
+    .filter-reset-btn.visible { display: inline-flex; }
     .filter-reset-btn:hover { background: #FEF2F2; border-color: #B91C1C; color: #B91C1C; }
 
     /* ── Dropdown options ── */
@@ -377,7 +378,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             <label class="filter-label">Search</label>
             <div class="filter-search-wrap">
                 <input type="text" id="archiveSearch" placeholder="Search name, control no..."
-                       oninput="view.archiveSearch=this.value;view.archivePage=1;renderArchive()">
+                       oninput="view.archiveSearch=this.value;view.archivePage=1;renderArchive();updateClearButtonVisibility()">
                 <button type="button" class="filter-search-btn" onclick="renderArchive()">
                     <i data-lucide="search" style="width:18px;height:18px"></i>
                 </button>
@@ -444,6 +445,20 @@ function toggleDropdown(id) {
     }
 }
 
+function updateClearButtonVisibility() {
+    var searchValue = document.getElementById('archiveSearch').value.trim();
+    var barangayValue = (typeof view !== 'undefined' && view.archiveBarangay !== '');
+    var typeValue = (typeof view !== 'undefined' && view.archiveFilter !== '');
+    var clearBtn = document.querySelector('.filter-reset-btn');
+    if (clearBtn) {
+        if (searchValue || barangayValue || typeValue) {
+            clearBtn.classList.add('visible');
+        } else {
+            clearBtn.classList.remove('visible');
+        }
+    }
+}
+
     function toggleArchiveTypeMenu(){
         var menu=document.getElementById('archiveTypeMenu');
         var btn=document.getElementById('archiveTypeBtn');
@@ -467,7 +482,7 @@ function toggleDropdown(id) {
         var arrow=document.querySelector('#archiveTypeBtn [data-lucide="chevron-down"]');
         if(arrow) arrow.style.transform='';
         highlightArchiveTypeOpt();
-        
+
         // Add active class and data-filter color to button
         var btn=document.getElementById('archiveTypeBtn');
         if(val){
@@ -477,8 +492,9 @@ function toggleDropdown(id) {
             btn.classList.remove('active');
             btn.removeAttribute('data-filter');
         }
-        
+
         renderArchive();
+        updateClearButtonVisibility();
         event.stopPropagation();
     }
     function highlightArchiveTypeOpt(){
@@ -510,13 +526,14 @@ function toggleDropdown(id) {
         var arrow=document.querySelector('#archiveBrgyBtn [data-lucide="chevron-down"]');
         if(arrow) arrow.style.transform='';
         highlightArchiveBrgyOpt();
-        
+
         // Add active class to button if filter is selected
         var btn=document.getElementById('archiveBrgyBtn');
         if(val) btn.classList.add('active');
         else btn.classList.remove('active');
-        
+
         renderArchive();
+        updateClearButtonVisibility();
         event.stopPropagation();
     }
     function highlightArchiveBrgyOpt(){
@@ -537,13 +554,14 @@ function toggleDropdown(id) {
         document.getElementById('archiveBrgyBtn').classList.remove('active');
         highlightArchiveBrgyOpt();
         // Reset type
-        view.archiveType = '';
+        view.archiveFilter = '';
         document.getElementById('archiveTypeLabel').textContent = 'All Types';
         document.getElementById('archiveTypeBtn').classList.remove('active');
         highlightArchiveTypeOpt();
         // Reset page and re-render
         view.archivePage = 1;
         renderArchive();
+        updateClearButtonVisibility();
     }
     document.addEventListener('click',function(e){
         var typeDD=document.getElementById('archiveTypeDropdown');
@@ -565,6 +583,7 @@ function toggleDropdown(id) {
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
         loadArchive();
+        updateClearButtonVisibility();
     });
 </script>
 @endpush

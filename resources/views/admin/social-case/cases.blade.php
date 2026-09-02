@@ -70,8 +70,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .filter-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 50; max-height: 260px; overflow-y: auto; padding: 4px; }
 
     .filter-reset { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; }
-    .filter-reset-btn { height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; font-size: 0.875rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
+    .filter-reset-btn { height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; font-size: 0.875rem; font-weight: 500; cursor: pointer; display: none; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
     .filter-reset-btn:hover { background: #FEF2F2; border-color: #B91C1C; color: #B91C1C; }
+    .filter-reset-btn.visible { display: inline-flex; }
 
     /* ── Dropdown options ── */
     .status-opt.selected, .assistance-opt.selected, .barangay-opt.selected { background: #EEF2FF; color: #1A237E; font-weight: 600; }
@@ -407,7 +408,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="filter-item filter-search">
             <label class="filter-label">Search</label>
             <div class="filter-search-wrap">
-                <input type="text" id="searchInput" placeholder="Search name, control no..." oninput="applyFilters()">
+                <input type="text" id="searchInput" placeholder="Search name, control no..." oninput="applyFilters(); updateClearButtonVisibility();">
                 <button type="button" class="filter-search-btn" onclick="applyFilters()">
                     <i data-lucide="search" style="width:18px;height:18px"></i>
                 </button>
@@ -482,6 +483,31 @@ function toggleDropdown(id) {
     }
 }
 
+function updateClearButtonVisibility() {
+    var searchValue = document.getElementById('searchInput').value.trim();
+    var statusValue = window.filterState.status !== 'All';
+    var assistanceValue = window.filterState.assistance !== 'All';
+    var barangayValue = window.filterState.barangay !== 'All';
+    var clearBtn = document.querySelector('.filter-reset-btn');
+    if (clearBtn) {
+        if (searchValue || statusValue || assistanceValue || barangayValue) {
+            clearBtn.classList.add('visible');
+        } else {
+            clearBtn.classList.remove('visible');
+        }
+    }
+}
+
+// Override resetFilters to include clear button visibility update
+var originalResetFilters = window.resetFilters;
+window.resetFilters = function() {
+    if (originalResetFilters) {
+        originalResetFilters();
+    }
+    document.getElementById('searchInput').value = '';
+    updateClearButtonVisibility();
+};
+
     // Filter state (global for social-case.js to access)
     window.filterState = {
         status: 'All',
@@ -545,6 +571,7 @@ function toggleDropdown(id) {
         if(val && val !== 'All'){ btn.classList.add('active'); btn.setAttribute('data-filter', val); }
         else { btn.classList.remove('active'); btn.removeAttribute('data-filter'); }
         if(typeof applyFilters === 'function') applyFilters();
+        updateClearButtonVisibility();
         event.stopPropagation();
     }
 
@@ -582,6 +609,7 @@ function toggleDropdown(id) {
         if(val && val !== 'All'){ btn.classList.add('active'); btn.setAttribute('data-filter', val); }
         else { btn.classList.remove('active'); btn.removeAttribute('data-filter'); }
         if(typeof applyFilters === 'function') applyFilters();
+        updateClearButtonVisibility();
         event.stopPropagation();
     }
 
@@ -619,6 +647,7 @@ function toggleDropdown(id) {
         if(val && val !== 'All') btn.classList.add('active');
         else btn.classList.remove('active');
         if(typeof applyFilters === 'function') applyFilters();
+        updateClearButtonVisibility();
         event.stopPropagation();
     }
 
