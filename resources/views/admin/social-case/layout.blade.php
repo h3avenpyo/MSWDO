@@ -2437,15 +2437,16 @@
             }
             #statusBtn, #assistanceBtn, #barangayBtn,
             #archiveBrgyBtn, #archiveTypeBtn {
-                height: 48px !important;
+                height: 44px !important;
                 font-size: 15px !important;
+            }
+            #searchInput, #archiveSearch,
+            #searchInput + button, #archiveSearch + button {
+                height: 44px !important;
             }
             #searchInput, #archiveSearch {
                 border-right: none !important;
                 border-radius: 6px 0 0 6px !important;
-            }
-            #searchInput + button, #archiveSearch + button {
-                height: 48px !important;
             }
             .chart-wrapper { flex: 1; min-height: 0; height: 100%; flex-direction: row; align-items: center; gap: 24px; }
             .chart-legend { flex: 0 1 300px; width: auto; flex-direction: column; flex-wrap: nowrap; justify-content: center; gap: 16px; }

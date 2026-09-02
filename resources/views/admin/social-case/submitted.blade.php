@@ -55,12 +55,13 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .filter-item { display: flex; flex-direction: column; gap: 6px; }
     .filter-label { font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em; }
 
-    .filter-search { flex: 1 1 250px; min-width: 250px; }
-    .filter-search-wrap { display: flex; width: 100%; }
-    .filter-search input { flex: 1; height: 44px; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; padding: 0 16px; font-size: 0.875rem; color: #111827; background: #fff; outline: none; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
-    .filter-search input:focus { border-color: #1A237E; box-shadow: 0 0 0 3px rgba(26,35,126,.08); }
+    .filter-search { flex: 1 1 360px; max-width: 480px; min-width: 280px; }
+    .filter-search-wrap { display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s; }
+    .filter-search-wrap:focus-within { box-shadow: 0 0 0 3px rgba(26,35,126,.12); border-radius: 8px; }
+    .filter-search input { flex: 1 1 auto; width: 1%; min-width: 0; height: 44px !important; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; padding: 0 16px; font-size: 0.875rem; color: #111827; background: #fff; outline: none; transition: border-color .15s; box-sizing: border-box !important; margin: 0 !important; }
+    .filter-search input:focus { border-color: #1A237E; }
     .filter-search input::placeholder { color: #9CA3AF; }
-    .filter-search-btn { height: 44px; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .15s; }
+    .filter-search-btn { height: 44px !important; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch; }
     .filter-search-btn:hover { background: #121858; }
 
     .filter-reset { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; }
@@ -228,7 +229,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .main { height: 100vh !important; overflow-y: auto !important; overflow-x: hidden !important; }
 
         .submitted-filter-bar { padding: 16px; margin-bottom: 12px; }
-        .filter-search { flex: 0 1 300px; min-width: 300px; }
+        .filter-search { flex: 1 1 380px; max-width: 500px; min-width: 320px; }
         .filter-search-btn { height: 44px !important; }
 
         .submitted-panel { flex: 0 0 auto; overflow: visible; }
@@ -370,8 +371,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="filter-item filter-search">
             <label class="filter-label">Search</label>
             <div class="filter-search-wrap">
-                <input type="text" id="submittedSearch" placeholder="Search client name..."
-                       oninput="filterSubmitted()">
+                <input type="text" id="submittedSearch" placeholder="Search client name, control no..."
+                       oninput="filterSubmitted()" onkeydown="if(event.key==='Enter'){event.preventDefault();filterSubmitted();}">
                 <button type="button" class="filter-search-btn" onclick="filterSubmitted()">
                     <i data-lucide="search" style="width:18px;height:18px"></i>
                 </button>
@@ -400,7 +401,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                 </thead>
                 <tbody>
                     @forelse($submitted as $c)
-                    <tr data-name="{{ mb_strtolower($c->client ? $c->client->full_name : '') }}">
+                    <tr data-name="{{ mb_strtolower($c->client ? $c->client->full_name : '') }}" data-search="{{ mb_strtolower(($c->case_number ?? '') . ' ' . ($c->client ? $c->client->full_name : '') . ' ' . ($c->eligibleByUser ? $c->eligibleByUser->name : '')) }}">
                         <td data-label="Control No."><span class="control-no" title="{{ $c->case_number }}">{{ $c->case_number ?: '—' }}</span></td>
                         <td data-label="Client" title="{{ $c->client ? $c->client->full_name : '' }}">{{ $c->client ? $c->client->full_name : 'Unnamed' }}</td>
                         <td data-label="Forwarded By" title="{{ $c->eligibleByUser ? $c->eligibleByUser->name : 'Eligibility Checker' }}">{{ $c->eligibleByUser ? $c->eligibleByUser->name : 'Eligibility Checker' }}</td>
@@ -535,7 +536,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     function clearSubmittedSearch() {
         document.getElementById('submittedSearch').value = '';
         _submittedPage = 1;
+        _acceptedPage = 1;
         renderSubmitted();
+        renderAccepted();
     }
 
     function renderSubmitted() {
@@ -544,8 +547,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
         // Filter
         var filtered = allRows.filter(function(row) {
-            var name = (row.getAttribute('data-name') || '').toLowerCase();
-            return !query || name.indexOf(query) !== -1;
+            var searchData = (row.getAttribute('data-search') || row.getAttribute('data-name') || row.textContent || '').toLowerCase();
+            return !query || searchData.indexOf(query) !== -1;
         });
 
         // Reset to page 1 only when search changed
@@ -622,7 +625,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     function filterSubmitted() {
         _submittedPage = 1;
+        _acceptedPage = 1;
         renderSubmitted();
+        renderAccepted();
     }
 
     function goToSubmittedPage(page) {
@@ -638,25 +643,57 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     }
 
     function renderAccepted() {
+        var query = (document.getElementById('submittedSearch') ? document.getElementById('submittedSearch').value : '').trim().toLowerCase();
         var allRows = getAcceptedRows();
 
-        var totalPages = Math.max(1, Math.ceil(allRows.length / _acceptedPageSize));
+        var filtered = allRows.filter(function(row) {
+            var searchData = (row.getAttribute('data-search') || row.textContent || '').toLowerCase();
+            return !query || searchData.indexOf(query) !== -1;
+        });
+
+        var totalPages = Math.max(1, Math.ceil(filtered.length / _acceptedPageSize));
         if (_acceptedPage > totalPages) _acceptedPage = totalPages;
 
         var startIndex = (_acceptedPage - 1) * _acceptedPageSize;
         var endIndex   = startIndex + _acceptedPageSize;
-        var pageRows   = allRows.slice(startIndex, endIndex);
+        var pageRows   = filtered.slice(startIndex, endIndex);
 
         allRows.forEach(function(r) { r.style.display = 'none'; });
         pageRows.forEach(function(r) { r.style.display = ''; });
 
+        var emptyRow = document.querySelector('#acceptedOnlineTable tbody tr.empty-row');
+        if (allRows.length > 0) {
+            if (filtered.length === 0) {
+                if (!emptyRow) {
+                    emptyRow = document.createElement('tr');
+                    emptyRow.className = 'empty-row';
+                    emptyRow.innerHTML = '<td colspan="7" class="empty-cell">' +
+                        '<div class="empty-state-content">' +
+                        '<div class="empty-icon-wrap"><i data-lucide="search-x"></i></div>' +
+                        '<div class="empty-title">No matching accepted requests</div>' +
+                        '<div class="empty-subtitle">Try adjusting your search</div>' +
+                        '</div></td>';
+                    document.querySelector('#acceptedOnlineTable tbody').appendChild(emptyRow);
+                } else {
+                    emptyRow.querySelector('.empty-title').textContent = 'No matching accepted requests';
+                    emptyRow.querySelector('.empty-subtitle').textContent = 'Try adjusting your search';
+                    var iconWrap = emptyRow.querySelector('.empty-icon-wrap');
+                    if (iconWrap) iconWrap.innerHTML = '<i data-lucide="search-x"></i>';
+                }
+                emptyRow.style.display = '';
+            } else {
+                if (emptyRow) emptyRow.style.display = 'none';
+            }
+        }
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
         // Pagination info
         var infoEl = document.getElementById('acceptedPaginationInfo');
         if (infoEl) {
-            if (allRows.length === 0) {
+            if (filtered.length === 0) {
                 infoEl.textContent = 'Showing 0 of 0 Records';
             } else {
-                infoEl.textContent = 'Showing ' + (startIndex + 1) + '\u2013' + Math.min(endIndex, allRows.length) + ' of ' + allRows.length + ' Records';
+                infoEl.textContent = 'Showing ' + (startIndex + 1) + '\u2013' + Math.min(endIndex, filtered.length) + ' of ' + filtered.length + ' Records';
             }
         }
 
