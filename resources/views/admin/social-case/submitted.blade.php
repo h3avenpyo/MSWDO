@@ -55,7 +55,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .filter-item { display: flex; flex-direction: column; gap: 6px; }
     .filter-label { font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em; }
 
-    .filter-search { flex: 1 1 360px; max-width: 480px; min-width: 280px; }
+    .filter-search { flex: 0 1 280px; max-width: 320px; min-width: 220px; }
     .filter-search-wrap { display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s; }
     .filter-search-wrap:focus-within { box-shadow: 0 0 0 3px rgba(26,35,126,.12); border-radius: 8px; }
     .filter-search input { flex: 1 1 auto; width: 1%; min-width: 0; height: 44px !important; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; padding: 0 16px; font-size: 0.875rem; color: #111827; background: #fff; outline: none; transition: border-color .15s; box-sizing: border-box !important; margin: 0 !important; }
@@ -215,7 +215,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     /* Collapsed Sidebar (768px - 1199.98px) */
     @media (min-width: 768px) and (max-width: 1199.98px) {
         .submitted-filter-bar { padding: 10px 14px; margin-bottom: 12px; }
-        .filter-search { flex: 1 1 220px; min-width: 220px; }
+        .filter-search { flex: 0 1 280px; max-width: 320px; min-width: 220px; }
 
         .sc-pagination { flex-direction: row; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
     }
@@ -229,7 +229,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .main { height: 100vh !important; overflow-y: auto !important; overflow-x: hidden !important; }
 
         .submitted-filter-bar { padding: 16px; margin-bottom: 12px; }
-        .filter-search { flex: 1 1 380px; max-width: 500px; min-width: 320px; }
+        .filter-search { flex: 0 1 280px; max-width: 320px; min-width: 220px; }
         .filter-search-btn { height: 44px !important; }
 
         .submitted-panel { flex: 0 0 auto; overflow: visible; }
