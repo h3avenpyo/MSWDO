@@ -209,12 +209,14 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     /* Mobile (< 768px) */
     @media (max-width: 767.98px) {
         .submitted-filter-bar { padding: 0; margin-bottom: 10px; }
-        .filter-search { max-width: none; width: 100%; min-width: 0; }
+        .filter-search { max-width: none; width: 100%; min-width: 0; flex: 1 1 auto; }
+        .filter-search input { width: 100% !important; min-width: 0 !important; }
+        .filter-search-btn { padding: 0 16px !important; flex-shrink: 0 !important; }
         .filter-reset { width: 100%; }
         .filter-reset-btn { width: 100% !important; justify-content: center !important; }
 
-        .sc-pagination { flex-direction: column; align-items: center; gap: 8px; }
-        .sc-pagination-controls { justify-content: center; }
+        .sc-pagination { flex-direction: column; align-items: center; gap: 8px; margin-top: 70px !important; margin-bottom: 70px !important; }
+        .sc-pagination-controls { justify-content: flex-end; padding-right: 20px; }
     }
     @media (max-width: 479px) {
         #submittedTable tbody td::before { min-width: 75px; font-size: 0.68rem; }

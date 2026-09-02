@@ -1083,7 +1083,7 @@ function renderArchive(){
     if(pagControls) {
       pagControls.innerHTML = `
         <button class="sc-page-btn" disabled><i data-lucide="chevron-left" style="width:14px;height:14px"></i> Previous</button>
-        <button class="sc-page-btn active" disabled>1</button>
+        <button class="sc-page-btn active">1</button>
         <button class="sc-page-btn" disabled>Next <i data-lucide="chevron-right" style="width:14px;height:14px"></i></button>
       `;
     }
@@ -1131,13 +1131,10 @@ function renderArchive(){
     if(pagControls){
       let pageButtons = '';
       pageButtons += `<button class="sc-page-btn" ${currentPage<=1?'disabled':''} onclick="goToArchivePage(${currentPage-1})"><i data-lucide="chevron-left" style="width:14px;height:14px"></i> Previous</button>`;
-      const maxButtons = 5;
-      let startPage = Math.max(1, currentPage - Math.floor(maxButtons/2));
-      let endPage = Math.min(totalPages, startPage + maxButtons - 1);
-      if(endPage - startPage < maxButtons - 1) startPage = Math.max(1, endPage - maxButtons + 1);
-      for(let i = startPage; i <= endPage; i++){
-        pageButtons += `<button class="sc-page-btn ${i===currentPage?'active':''}" onclick="goToArchivePage(${i})">${i}</button>`;
-      }
+      
+      // Always show current page
+      pageButtons += `<button class="sc-page-btn active" onclick="goToArchivePage(${currentPage})">${currentPage}</button>`;
+      
       pageButtons += `<button class="sc-page-btn" ${currentPage>=totalPages?'disabled':''} onclick="goToArchivePage(${currentPage+1})">Next <i data-lucide="chevron-right" style="width:14px;height:14px"></i></button>`;
       pagControls.innerHTML = pageButtons;
     }
@@ -2854,13 +2851,10 @@ function renderCaseList(){
   const controls = document.getElementById('paginationControls');
   let pageButtons = '';
   pageButtons += `<button class="sc-page-btn" id="prevBtn" ${page<=1?'disabled':''} onclick="goToCaseListPage(${page-1})"><i data-lucide="chevron-left" style="width:14px;height:14px"></i> Previous</button>`;
-  const maxButtons = 5;
-  let startPage = Math.max(1, page - Math.floor(maxButtons/2));
-  let endPage = Math.min(totalPages, startPage + maxButtons - 1);
-  if(endPage - startPage < maxButtons - 1) startPage = Math.max(1, endPage - maxButtons + 1);
-  for(let i = startPage; i <= endPage; i++){
-    pageButtons += `<button class="sc-page-btn ${i===page?'active':''}" onclick="goToCaseListPage(${i})">${i}</button>`;
-  }
+  
+  // Always show current page
+  pageButtons += `<button class="sc-page-btn active" onclick="goToCaseListPage(${page})">${page}</button>`;
+  
   pageButtons += `<button class="sc-page-btn" id="nextBtn" ${page>=totalPages?'disabled':''} onclick="goToCaseListPage(${page+1})">Next <i data-lucide="chevron-right" style="width:14px;height:14px"></i></button>`;
   controls.innerHTML = pageButtons;
 

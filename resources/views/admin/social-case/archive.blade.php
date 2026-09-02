@@ -285,8 +285,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
         /* Pagination */
         .sc-pagination { flex-direction: column !important; align-items: center !important; gap: 8px !important; }
-        .sc-pagination-controls { justify-content: center !important; }
-        .sc-pagination-info { text-align: center !important; }
+        .sc-pagination-controls { justify-content: flex-end !important; padding-right: 20px !important; }
+        .sc-pagination-info { text-align: center !important; padding-left: 0 !important; }
     }
     @media (max-width: 479px) {
         .archive-table tbody td::before { min-width: 75px; font-size: 0.68rem; }
