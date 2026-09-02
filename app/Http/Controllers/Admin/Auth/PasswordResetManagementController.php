@@ -11,11 +11,12 @@ use Illuminate\Support\Facades\Mail;
 
 class PasswordResetManagementController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $perPage = $request->get('per_page', 5);
         $requests = PasswordResetRequest::with('processedBy')
             ->orderByDesc('requested_at')
-            ->get();
+            ->paginate($perPage);
 
         return view('admin.password-reset-management', compact('requests'));
     }

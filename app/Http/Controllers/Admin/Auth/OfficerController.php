@@ -48,7 +48,7 @@ class OfficerController extends Controller
             'password' => ['required', 'confirmed', 'min:8'],
             'role' => ['required', Rule::enum(UserRole::class)],
             'phone' => ['nullable', 'string', 'max:20'],
-            'status' => ['required', 'in:active,inactive'],
+            'status' => ['nullable', 'in:active,inactive'],
             'signature_position' => ['nullable', 'in:osca_head,mswdo_officer,mswdo_staff'],
             'signature_image' => ['nullable', 'image', 'max:2048'],
         ]);
@@ -67,7 +67,7 @@ class OfficerController extends Controller
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'phone' => $request->phone,
-            'status' => $request->status === 'active' ? \App\Enums\UserStatus::Active : \App\Enums\UserStatus::Inactive,
+            'status' => $request->status === 'inactive' ? \App\Enums\UserStatus::Inactive : \App\Enums\UserStatus::Active,
             'signature_position' => $request->signature_position,
             'signature_image' => $signatureImagePath,
         ]);
