@@ -50,7 +50,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .archive-subtitle { color: #6B7280; font-size: 0.85rem; margin: 0 0 10px; white-space: normal; overflow-wrap: break-word; line-height: 1.4; }
 
     /* ── Filter bar ── */
-    .archive-filter-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 16px; background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; }
+    .archive-filter-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 0; background: transparent; border: none; border-radius: 0; }
     .filter-item { display: flex; flex-direction: column; gap: 6px; }
     .filter-label { font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em; }
 
@@ -70,17 +70,19 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .filter-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 50; max-height: 260px; overflow-y: auto; padding: 4px; }
 
     .filter-reset { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; }
-    .filter-reset-btn { height: 44px; padding: 0 20px; border: 1px solid #EF4444; border-radius: 8px; background: #fff; color: #EF4444; font-size: 0.875rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
-    .filter-reset-btn:hover { background: #FEE2E2; border-color: #DC2626; }
+    .filter-reset-btn { height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; font-size: 0.875rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
+    .filter-reset-btn:hover { background: #FEF2F2; border-color: #B91C1C; color: #B91C1C; }
 
     /* ── Dropdown options ── */
     .type-opt.selected, .brgy-opt.selected { background: #EEF2FF; color: #1A237E; font-weight: 600; }
     .type-opt:hover, .brgy-opt:hover { background: #F3F4F6; }
     #archiveBrgyBtn.active { border-color: #059669; background: #ECFDF5; color: #065F46; }
     #archiveTypeBtn.active { border-color: #1A237E; background: #EEF2FF; }
+    
+    .brgy-opt { padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer; transition: background .15s; }
+    .type-opt { padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer; transition: background .15s; }
 
     /* ── Panel / wrap ── */
-    .archive-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 0; padding: 0; }
     .archive-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; }
 
     /* ── Table base ── */
@@ -131,7 +133,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
        MOBILE, TABLET & COLLAPSED SIDEBAR (< 1200px): CARD LAYOUT
     ═══════════════════════════════════════════════════════════════ */
     @media (max-width: 1199.98px) {
-        .archive-panel { background: transparent; border: none; padding: 0; box-shadow: none; }
         .archive-table-wrap { overflow: visible; border: none; background: transparent; }
 
         .archive-table, 
@@ -222,7 +223,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             display: grid !important;
             grid-template-columns: 1fr 1fr !important;
             gap: 8px !important;
-            padding: 12px !important;
+            padding: 0 !important;
             margin-bottom: 10px !important;
             width: 100% !important;
             max-width: 100% !important;
@@ -293,7 +294,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     /* Collapsed Sidebar (768px - 1199.98px) */
     @media (min-width: 768px) and (max-width: 1199.98px) {
-        .archive-filter-bar { gap: 10px; padding: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+        .archive-filter-bar { gap: 10px; padding: 0; margin-bottom: 12px; flex-wrap: wrap; }
         .filter-search { flex: 3 1 350px; min-width: 350px; }
         .filter-dropdown { flex: 1 1 180px; min-width: 180px; }
         .filter-reset { flex: 0 0 auto; }
@@ -309,12 +310,11 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .app { height: 100vh !important; overflow: hidden !important; }
         .main { height: 100vh !important; overflow: hidden !important; }
 
-        .archive-filter-bar { flex-wrap: nowrap; gap: 12px; padding: 16px; margin-bottom: 12px; }
+        .archive-filter-bar { flex-wrap: nowrap; gap: 12px; padding: 0; margin-bottom: 12px; }
         .filter-search { flex: 3 1 400px; min-width: 400px; }
         .filter-dropdown { flex: 1 1 200px; min-width: 200px; }
         .filter-reset { flex: 0 0 auto; }
 
-        .archive-panel { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
         .archive-table-wrap { flex: 1; min-height: 0; overflow: auto; border: 1px solid #E5E7EB; border-radius: 8px; }
         .archive-table { min-width: 900px; width: 100%; table-layout: auto; }
         .archive-table thead th { padding: 12px 16px; font-size: 0.75rem; }
@@ -323,8 +323,12 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .archive-table tbody tr.empty-row td.empty-cell { white-space: normal !important; overflow: visible !important; max-width: none !important; }
 
         .sc-pagination { flex-direction: row; justify-content: space-between; margin-top: 12px; flex-shrink: 0; }
+        .sc-pagination-controls { justify-content: flex-end; }
+        .sc-pagination-info { text-align: left; }
         .sc-page-btn { height: 38px; }
     }
+    
+    .sc-pagination { flex-shrink: 0; }
 </style>
 
 <div class="sidebar" id="sidebar">
@@ -408,20 +412,18 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         </div>
         <div class="filter-item filter-reset">
             <label class="filter-label">&nbsp;</label>
-            <button type="button" class="filter-reset-btn" onclick="resetArchiveFilters()">
+            <button type="button" class="filter-reset-btn" onclick="resetArchiveFilters()" onmouseover="this.style.borderColor='#B91C1C';this.style.color='#B91C1C';this.style.background='#FEF2F2';" onmouseout="this.style.borderColor='#DC2626';this.style.color='#DC2626';this.style.background='#fff';">
                 <i data-lucide="x" style="width:16px;height:16px"></i> Clear
             </button>
         </div>
     </div>
 
     <!-- Table Panel -->
-    <div class="archive-panel">
-        <div class="archive-table-wrap">
-            <table class="archive-table">
-                <thead><tr><th>Control No</th><th>Client</th><th>Assistance Type</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
-                <tbody id="archiveTable"></tbody>
-            </table>
-        </div>
+    <div class="archive-table-wrap">
+        <table class="archive-table">
+            <thead><tr><th>Control No</th><th>Client</th><th>Assistance Type</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="archiveTable"></tbody>
+        </table>
     </div>
 
     <!-- Pagination -->

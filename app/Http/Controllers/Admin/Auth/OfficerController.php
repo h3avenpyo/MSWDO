@@ -22,13 +22,42 @@ class OfficerController extends Controller
         return view('admin.add-officers', compact('officerCreated'));
     }
 
-    public function officersDirectory()
+    public function officersDirectory(Request $request)
     {
-        $officers = User::
-            where('email', '!=', 'admin@mswdo.test')
-            ->select('id', 'name', 'email', 'role', 'phone', 'created_at', 'status')
-            ->orderByDesc('created_at')
-            ->get();
+        $search = $request->get('search');
+        $role = $request->get('role');
+        $perPage = $request->get('per_page', 10);
+
+        $query = User::where('email', '!=', 'admin@mswdo.test')
+            ->select('id', 'name', 'email', 'role', 'phone', 'created_at', 'status');
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        if ($role && $role !== 'All Roles') {
+            // Map display names to database values
+            $roleMap = [
+                'Administrator' => 'admin',
+                'Social Case Worker (Encoder)' => 'social_worker',
+                'Social Case Worker (Checker)' => 'eligibility_checker',
+                'Encoder' => 'encoder',
+                'Staff' => 'staff',
+                'Senior Citizen Officer' => 'senior_citizen_officer',
+                'Financial Assistance Officer' => 'financial_assistance_officer',
+                'Financial Assistance Step 1' => 'financialstep1',
+                'Financial Assistance Step 2' => 'financialstep2',
+            ];
+            
+            $dbRole = $roleMap[$role] ?? $role;
+            $query->where('role', $dbRole);
+        }
+
+        $officers = $query->orderByDesc('created_at')->paginate($perPage);
 
         return view('admin.officers-directory', compact('officers'));
     }

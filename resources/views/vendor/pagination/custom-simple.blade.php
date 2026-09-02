@@ -11,14 +11,8 @@
     </a>
 @endif
 
-{{-- Page Numbers --}}
-@for ($i = 1; $i <= $paginator->lastPage(); $i++)
-    @if ($i == $paginator->currentPage())
-        <button class="sc-page-btn active">{{ $i }}</button>
-    @else
-        <a href="{{ $paginator->appends(request()->query())->url($i) }}" class="sc-page-btn">{{ $i }}</a>
-    @endif
-@endfor
+{{-- Current Page --}}
+<button class="sc-page-btn active">{{ $paginator->currentPage() }}</button>
 
 {{-- Next --}}
 @if ($paginator->hasMorePages())

@@ -83,6 +83,24 @@ $initials = count($words) >= 2
     .status-completed { background: #DBEAFE; color: #1E40AF; }
     .status-rejected { background: #FEE2E2; color: #991B1B; }
 
+    /* ── Filter Styles ── */
+    .filter-item { display: flex; flex-direction: column; gap: 6px; }
+    .filter-label { font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: .03em; }
+    .filter-search-wrap { display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s; }
+    .filter-search-wrap:focus-within { box-shadow: 0 0 0 3px rgba(26,35,126,.12); border-radius: 8px; }
+    .filter-search-btn { height: 44px !important; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch; }
+    .filter-search-btn:hover { background: #121858; }
+
+    .filter-dropdown { flex: 0 1 200px; min-width: 180px; position: relative; }
+    .filter-select-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; height: 44px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 0.875rem; cursor: pointer; background: #fff; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
+    .filter-select-btn:hover { border-color: #9CA3AF; }
+    .filter-select-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #111827; font-weight: 500; }
+    .filter-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 50; max-height: 260px; overflow-y: auto; padding: 4px; }
+    .status-opt { padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer; transition: background .15s; }
+    .status-opt:hover { background: #F3F4F6; }
+    .status-opt.selected { background: #EEF2FF; color: #1A237E; font-weight: 600; }
+    #statusBtn.active { border-color: #1A237E; background: #EEF2FF; }
+
     /* ── Buttons ── */
     .btn {
         display: inline-flex;
@@ -176,6 +194,9 @@ $initials = count($words) >= 2
         .sc-pagination { flex-direction: column !important; align-items: center !important; gap: 8px !important; }
         .sc-pagination-controls { justify-content: center !important; }
         .sc-pagination-info { text-align: center !important; }
+        
+        .filter-dropdown { min-width: 0; width: 100%; }
+        .filter-select-btn { width: 100%; }
     }
 
     /* ── Tablet ── */
@@ -188,7 +209,13 @@ $initials = count($words) >= 2
         .main { height: 100vh !important; overflow: hidden !important; }
         .password-reset-table-wrap { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
         .sc-pagination { flex-direction: row; justify-content: space-between; margin-top: 12px; flex-shrink: 0; }
+        .sc-pagination-controls { justify-content: flex-end; }
+        .sc-pagination-info { text-align: left; }
+        
+        .filter-dropdown { flex: 0 1 200px; min-width: 180px; }
     }
+    
+    .sc-pagination { flex-shrink: 0; }
 </style>
 
 <div class="panel-header">
@@ -196,10 +223,37 @@ $initials = count($words) >= 2
     <p>Review and approve password reset requests from users</p>
 </div>
 
+<div class="flex items-center justify-between flex-wrap gap-2 mb-3">
+    <div class="flex items-center gap-3 flex-wrap" style="align-items: flex-end !important;">
+        <div class="filter-item filter-search" style="display: flex; flex-direction: column; gap: 6px; flex: 0 0 auto;">
+            <label class="filter-label">Search</label>
+            <div class="filter-search-wrap" style="display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s;">
+                <input type="text" class="form-control text-xs" placeholder="Search by name or email..." style="width: 220px; padding-left: 16px; height: 44px; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; flex: 1 1 auto; min-width: 0; box-sizing: border-box !important; margin: 0 !important;" id="searchInput" value="{{ request()->get('search', '') }}" oninput="handleSearch()" onkeydown="if(event.key==='Enter'){event.preventDefault();handleSearch();}">
+                <button type="button" class="filter-search-btn" style="height: 44px !important; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch;" onclick="handleSearch()">
+                    <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+                </button>
+            </div>
+        </div>
+        <div class="filter-item filter-dropdown" id="statusDropdown" style="display: flex; flex-direction: column; gap: 6px; flex: 0 0 auto;">
+            <label class="filter-label">Filter by Status</label>
+            <div onclick="toggleStatusMenu()" class="filter-select-btn" id="statusBtn">
+                <span id="statusLabel" class="filter-select-label">{{ request()->get('status', 'All Status') }}</span>
+                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
+            </div>
+            <div id="statusMenu" class="filter-menu" style="display:none"></div>
+        </div>
+        <button type="button" onclick="clearFilters()" style="height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all .15s; font-size: 0.875rem; font-weight: 500; gap: 6px; flex-shrink: 0;" onmouseover="this.style.borderColor='#B91C1C';this.style.color='#B91C1C';this.style.background='#FEF2F2';" onmouseout="this.style.borderColor='#DC2626';this.style.color='#DC2626';this.style.background='#fff';">
+            <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+            Clear
+        </button>
+    </div>
+</div>
+
 <div class="password-reset-table-wrap">
     <table class="gov-table">
         <thead>
             <tr>
+                <th>Name</th>
                 <th>Email</th>
                 <th>Status</th>
                 <th>Requested</th>
@@ -211,6 +265,13 @@ $initials = count($words) >= 2
         <tbody>
             @forelse($requests as $request)
                 <tr class="data-row">
+                    <td data-label="Name" style="font-weight: 500;">
+                        @if($request->user)
+                            {{ $request->user->name }}
+                        @else
+                            -
+                        @endif
+                    </td>
                     <td data-label="Email" style="font-weight: 500;">{{ $request->email }}</td>
                     <td data-label="Status">
                         @if($request->status === 'pending')
@@ -241,11 +302,11 @@ $initials = count($words) >= 2
                     <td data-label="Action">
                         @if($request->status === 'pending')
                             <div style="display: flex; gap: 0.5rem;">
-                                <form method="POST" action="{{ route('admin.password-reset.approve', $request->id) }}" class="swal-form" data-swal-title="Approve Request" data-swal-text="Are you sure you want to approve the password reset request for {{ $request->email }}?" data-swal-icon="question" data-swal-confirm="Yes, Approve" data-swal-color="#16A34A" style="display: inline;">
+                                <form method="POST" action="{{ route('admin.password-reset.approve', $request->id) }}" class="swal-form" data-swal-title="Approve Request" data-swal-text="Are you sure you want to approve the password reset request for {{ $request->user->name ?? $request->email }}?" data-swal-icon="question" data-swal-confirm="Yes, Approve" data-swal-color="#16A34A" style="display: inline;">
                                     @csrf
                                     <button type="submit" class="btn btn-sm btn-success">Approve</button>
                                 </form>
-                                <form method="POST" action="{{ route('admin.password-reset.reject', $request->id) }}" class="swal-form" data-swal-title="Reject Request" data-swal-text="Are you sure you want to reject the password reset request for {{ $request->email }}?" data-swal-icon="warning" data-swal-confirm="Yes, Reject" data-swal-color="#DC2626" style="display: inline;">
+                                <form method="POST" action="{{ route('admin.password-reset.reject', $request->id) }}" class="swal-form" data-swal-title="Reject Request" data-swal-text="Are you sure you want to reject the password reset request for {{ $request->user->name ?? $request->email }}?" data-swal-icon="warning" data-swal-confirm="Yes, Reject" data-swal-color="#DC2626" style="display: inline;">
                                     @csrf
                                     <button type="submit" class="btn btn-sm btn-danger">Reject</button>
                                 </form>
@@ -253,14 +314,14 @@ $initials = count($words) >= 2
                         @elseif($request->status === 'approved')
                             <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                                 <span style="font-size: 0.75rem; color: #64748B;">Email sent to user</span>
-                                <form method="POST" action="{{ route('admin.password-reset.delete', $request->id) }}" class="swal-form" data-swal-title="Delete Record" data-swal-text="Are you sure you want to delete this password reset record for {{ $request->email }}?" data-swal-icon="warning" data-swal-confirm="Yes, Delete" data-swal-color="#DC2626" style="display: inline;">
+                                <form method="POST" action="{{ route('admin.password-reset.delete', $request->id) }}" class="swal-form" data-swal-title="Delete Record" data-swal-text="Are you sure you want to delete this password reset record for {{ $request->user->name ?? $request->email }}?" data-swal-icon="warning" data-swal-confirm="Yes, Delete" data-swal-color="#DC2626" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-secondary">Delete</button>
                                 </form>
                             </div>
                         @else
-                            <form method="POST" action="{{ route('admin.password-reset.delete', $request->id) }}" class="swal-form" data-swal-title="Delete Record" data-swal-text="Are you sure you want to delete this password reset record for {{ $request->email }}?" data-swal-icon="warning" data-swal-confirm="Yes, Delete" data-swal-color="#DC2626" style="display: inline;">
+                            <form method="POST" action="{{ route('admin.password-reset.delete', $request->id) }}" class="swal-form" data-swal-title="Delete Record" data-swal-text="Are you sure you want to delete this password reset record for {{ $request->user->name ?? $request->email }}?" data-swal-icon="warning" data-swal-confirm="Yes, Delete" data-swal-color="#DC2626" style="display: inline;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-secondary">Delete</button>
@@ -270,7 +331,7 @@ $initials = count($words) >= 2
                 </tr>
             @empty
                 <tr class="empty-row">
-                    <td colspan="6" class="empty-cell">
+                    <td colspan="7" class="empty-cell">
                         <div class="empty-state-content">
                             <div class="empty-icon-wrap">
                                 <svg xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -297,7 +358,7 @@ $initials = count($words) >= 2
         @endif
     </div>
     <div class="sc-pagination-controls">
-        {{ $requests->appends(request()->query())->links('vendor.pagination.custom-simple') }}
+        {{ $requests->appends(request()->only(['search', 'status', 'per_page']))->links('vendor.pagination.custom-simple') }}
     </div>
 </div>
 @endsection
@@ -305,6 +366,19 @@ $initials = count($words) >= 2
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize status dropdown and set current filter from URL
+    populateStatusDropdown();
+    const urlStatus = "{{ request()->get('status', 'All Status') }}";
+    if (urlStatus && urlStatus !== 'All Status') {
+        window.statusFilterState = urlStatus;
+        document.getElementById('statusLabel').textContent = urlStatus;
+        var btn = document.getElementById('statusBtn');
+        btn.classList.add('active');
+        btn.setAttribute('data-filter', urlStatus);
+        highlightStatusOpt();
+    }
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
     // ── SweetAlert confirmations for all forms ──
     document.querySelectorAll('.swal-form').forEach(function(form) {
         form.addEventListener('submit', function(e) {
@@ -354,5 +428,100 @@ document.addEventListener('DOMContentLoaded', function() {
         customClass: { popup: 'rounded-4 shadow-lg' }
     });
 @endif
+
+// Search and filter functions
+function handleSearch() {
+    const searchValue = document.getElementById('searchInput').value.trim();
+    const statusValue = window.statusFilterState === 'All Status' ? '' : window.statusFilterState;
+    
+    const url = new URL(window.location.href);
+    if (searchValue) {
+        url.searchParams.set('search', searchValue);
+    } else {
+        url.searchParams.delete('search');
+    }
+    if (statusValue) {
+        url.searchParams.set('status', statusValue);
+    } else {
+        url.searchParams.delete('status');
+    }
+    
+    window.location.href = url.toString();
+}
+
+// Status filter state
+window.statusFilterState = 'All Status';
+
+function populateStatusDropdown() {
+    const statusMenu = document.getElementById('statusMenu');
+    if(statusMenu) {
+        const statuses = ['All Status', 'pending', 'approved', 'completed', 'rejected'];
+        statusMenu.innerHTML = '';
+        statuses.forEach(status => {
+            statusMenu.innerHTML += `<div class="status-opt" data-value="${status}" onclick="selectStatus(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">${status}</div>`;
+        });
+        highlightStatusOpt();
+    }
+}
+
+function toggleStatusMenu() {
+    var menu = document.getElementById('statusMenu');
+    var arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
+    if(menu.style.display === 'none' || !menu.style.display) {
+        menu.style.display = 'block';
+        if(arrow) arrow.style.transform = 'rotate(180deg)';
+        highlightStatusOpt();
+    } else {
+        menu.style.display = 'none';
+        if(arrow) arrow.style.transform = '';
+    }
+    event.stopPropagation();
+}
+
+function selectStatus(el) {
+    var val = el.getAttribute('data-value');
+    window.statusFilterState = val;
+    document.getElementById('statusLabel').textContent = el.textContent;
+    document.getElementById('statusMenu').style.display = 'none';
+    var arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
+    if(arrow) arrow.style.transform = '';
+    highlightStatusOpt();
+    var btn = document.getElementById('statusBtn');
+    if(val && val !== 'All Status') { 
+        btn.classList.add('active'); 
+        btn.setAttribute('data-filter', val); 
+    } else { 
+        btn.classList.remove('active'); 
+        btn.removeAttribute('data-filter'); 
+    }
+    handleSearch();
+    event.stopPropagation();
+}
+
+function highlightStatusOpt() {
+    var opts = document.querySelectorAll('.status-opt');
+    opts.forEach(function(o) {
+        if(o.getAttribute('data-value') === window.statusFilterState) o.classList.add('selected');
+        else o.classList.remove('selected');
+    });
+}
+
+// Close menu when clicking outside
+document.addEventListener('click', function(e) {
+    var statusDD = document.getElementById('statusDropdown');
+    if(statusDD && !statusDD.contains(e.target)) {
+        var menu = document.getElementById('statusMenu');
+        var arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
+        if(menu) menu.style.display = 'none';
+        if(arrow) arrow.style.transform = '';
+    }
+}, true);
+
+function clearFilters() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('search');
+    url.searchParams.delete('status');
+    window.location.href = url.toString();
+}
 </script>
 @endpush

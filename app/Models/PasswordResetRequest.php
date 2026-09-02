@@ -29,6 +29,11 @@ class PasswordResetRequest extends Model
         return $this->belongsTo(User::class, 'processed_by');
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'email', 'email');
+    }
+
     public function isExpired(): bool
     {
         return $this->expires_at && $this->expires_at->isPast();

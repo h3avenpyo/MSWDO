@@ -46,12 +46,22 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     /* ── Subtitle ── */
     .submitted-subtitle { color: #6B7280; font-size: 0.85rem; margin: 0 0 10px; white-space: normal; overflow-wrap: break-word; line-height: 1.4; }
 
+    /* ── Toggle Button ── */
+    .submitted-toggle-container { display: flex; gap: 8px; margin-bottom: 16px; }
+    .submitted-toggle-btn { flex: 1; padding: 10px 16px; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; color: #6B7280; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all .15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .submitted-toggle-btn:hover { border-color: #9CA3AF; background: #F9FAFB; }
+    .submitted-toggle-btn.active { border-color: #1A237E; background: #1A237E; color: #fff; font-weight: 600; }
+
+    /* ── View Toggle ── */
+    .submitted-view { display: none; }
+    .submitted-view.active { display: block; }
+
     /* ── Submitted Requests section ── */
     .submitted-section-header { margin-bottom: 10px; }
     .submitted-section-title { font-size: 1.05rem; font-weight: 800; color: #1A237E; margin: 0 0 4px; letter-spacing: -0.01em; }
 
     /* ── Filter bar ── */
-    .submitted-filter-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 16px; background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; }
+    .submitted-filter-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 0; background: transparent; border: none; border-radius: 0; }
     .filter-item { display: flex; flex-direction: column; gap: 6px; }
     .filter-label { font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em; }
 
@@ -65,11 +75,10 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .filter-search-btn:hover { background: #121858; }
 
     .filter-reset { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; }
-    .filter-reset-btn { height: 44px; padding: 0 20px; border: 1px solid #EF4444; border-radius: 8px; background: #fff; color: #EF4444; font-size: 0.875rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
-    .filter-reset-btn:hover { background: #FEE2E2; border-color: #DC2626; }
+    .filter-reset-btn { height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; font-size: 0.875rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
+    .filter-reset-btn:hover { background: #FEF2F2; border-color: #B91C1C; color: #B91C1C; }
 
     /* ── Panel / wrap ── */
-    .submitted-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 0; padding: 0; }
     .submitted-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; height: 500px !important; overflow-y: auto; }
 
     /* ── Table base ── */
@@ -113,7 +122,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
        MOBILE, TABLET & COLLAPSED SIDEBAR (< 1200px): CARD LAYOUT
     ═══════════════════════════════════════════════════════════════ */
     @media (max-width: 1199.98px) {
-        .submitted-panel { background: transparent; border: none; padding: 0; box-shadow: none; }
         .submitted-table-wrap { overflow: visible; border: none; background: transparent; height: auto !important; }
 
         #submittedTable, 
@@ -199,7 +207,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     /* Mobile (< 768px) */
     @media (max-width: 767.98px) {
-        .submitted-filter-bar { padding: 10px 12px; margin-bottom: 10px; }
+        .submitted-filter-bar { padding: 0; margin-bottom: 10px; }
         .filter-search { max-width: none; width: 100%; min-width: 0; }
         .filter-reset { width: 100%; }
         .filter-reset-btn { width: 100% !important; justify-content: center !important; }
@@ -214,7 +222,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     /* Collapsed Sidebar (768px - 1199.98px) */
     @media (min-width: 768px) and (max-width: 1199.98px) {
-        .submitted-filter-bar { padding: 10px 14px; margin-bottom: 12px; }
+        .submitted-filter-bar { padding: 0; margin-bottom: 12px; }
         .filter-search { flex: 0 1 280px; max-width: 320px; min-width: 220px; }
 
         .sc-pagination { flex-direction: row; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
@@ -228,11 +236,10 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .app { height: 100vh !important; overflow: hidden !important; }
         .main { height: 100vh !important; overflow-y: auto !important; overflow-x: hidden !important; }
 
-        .submitted-filter-bar { padding: 16px; margin-bottom: 12px; }
+        .submitted-filter-bar { padding: 0; margin-bottom: 12px; }
         .filter-search { flex: 0 1 280px; max-width: 320px; min-width: 220px; }
         .filter-search-btn { height: 44px !important; }
 
-        .submitted-panel { flex: 0 0 auto; overflow: visible; }
         .submitted-table-wrap { flex: 0 0 auto; overflow: auto; border: 1px solid #E5E7EB; border-radius: 8px; height: 500px !important; }
         #submittedTable { min-width: 900px; width: 100%; table-layout: auto; }
         #submittedTable thead th { padding: 12px 16px; font-size: 0.75rem; }
@@ -241,11 +248,15 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         #submittedTable tbody tr.empty-row td.empty-cell { white-space: normal !important; overflow: visible !important; max-width: none !important; }
 
         .sc-pagination { flex-direction: row; justify-content: space-between; margin-top: 12px; flex-shrink: 0; }
+        .sc-pagination-controls { justify-content: flex-end; }
+        .sc-pagination-info { text-align: left; }
         .sc-page-btn { height: 38px; }
     }
+    
+    .sc-pagination { flex-shrink: 0; }
 
     /* ── Accepted Online Requests table ── */
-    .accepted-section { margin-top: 32px; padding-top: 32px; border-top: 3px solid #1A237E; }
+    .accepted-section { margin-top: 0; padding-top: 0; }
     .accepted-section-header { margin-bottom: 10px; }
     .accepted-section-title { font-size: 1.05rem; font-weight: 800; color: #1A237E; margin: 0 0 4px; letter-spacing: -0.01em; }
     .accepted-online-panel { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden; }
@@ -362,8 +373,20 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 <div class="main">
     <!-- Submitted Requests Section -->
     <div class="submitted-section-header">
-        <h2 class="submitted-section-title">Submitted Requests</h2>
-        <p class="submitted-subtitle">Clients forwarded by the Eligibility Checker and waiting to be encoded.</p>
+        <h2 class="submitted-section-title" id="sectionTitle">Submitted Requests</h2>
+        <p class="submitted-subtitle" id="sectionSubtitle">Clients forwarded by the Eligibility Checker and waiting to be encoded.</p>
+    </div>
+
+    <!-- Toggle Buttons -->
+    <div class="submitted-toggle-container">
+        <button type="button" class="submitted-toggle-btn active" id="toggleSubmitted" onclick="toggleView('submitted')">
+            <i data-lucide="send" style="width:16px;height:16px"></i>
+            Submitted Requests
+        </button>
+        <button type="button" class="submitted-toggle-btn" id="toggleOnline" onclick="toggleView('online')">
+            <i data-lucide="check-circle" style="width:16px;height:16px"></i>
+            Accepted Online Requests
+        </button>
     </div>
 
     <!-- Search Bar -->
@@ -380,16 +403,17 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         </div>
         <div class="filter-item filter-reset">
             <label class="filter-label">&nbsp;</label>
-            <button type="button" class="filter-reset-btn" onclick="clearSubmittedSearch()">
+            <button type="button" class="filter-reset-btn" onclick="clearSubmittedSearch()" onmouseover="this.style.borderColor='#B91C1C';this.style.color='#B91C1C';this.style.background='#FEF2F2';" onmouseout="this.style.borderColor='#DC2626';this.style.color='#DC2626';this.style.background='#fff';">
                 <i data-lucide="x" style="width:16px;height:16px"></i> Clear
             </button>
         </div>
     </div>
 
+    <!-- Submitted Requests View -->
+    <div class="submitted-view active" id="submittedView">
     <!-- Table Panel -->
-    <div class="submitted-panel">
-        <div class="submitted-table-wrap">
-            <table id="submittedTable">
+    <div class="submitted-table-wrap">
+        <table id="submittedTable">
                 <thead>
                     <tr>
                         <th>Control No.</th>
@@ -427,7 +451,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                     @endforelse
                 </tbody>
             </table>
-        </div>
     </div>
 
     <!-- Pagination -->
@@ -435,15 +458,13 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="sc-pagination-info" id="submittedPaginationInfo">Showing 0 of 0 Records</div>
         <div class="sc-pagination-controls" id="submittedPaginationControls"></div>
     </div>
+    </div>
 
+    <!-- Accepted Online Requests View -->
+    <div class="submitted-view" id="onlineView">
     <!-- Accepted Online Requests -->
     <div class="accepted-section">
-        <div class="accepted-section-header">
-            <h2 class="accepted-section-title">Accepted Online Requests</h2>
-            <p class="submitted-subtitle">Online service requests accepted by the Eligibility Checker.</p>
-        </div>
-        <div class="accepted-online-panel">
-            <div class="accepted-online-table-wrap">
+        <div class="accepted-online-table-wrap">
                 <table id="acceptedOnlineTable">
                     <thead>
                         <tr>
@@ -520,6 +541,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             <div class="sc-pagination-controls" id="acceptedPaginationControls"></div>
         </div>
     </div>
+    </div>
 </div>
 @endsection
 
@@ -539,6 +561,33 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         _acceptedPage = 1;
         renderSubmitted();
         renderAccepted();
+    }
+
+    function toggleView(view) {
+        var submittedView = document.getElementById('submittedView');
+        var onlineView = document.getElementById('onlineView');
+        var toggleSubmitted = document.getElementById('toggleSubmitted');
+        var toggleOnline = document.getElementById('toggleOnline');
+        var sectionTitle = document.getElementById('sectionTitle');
+        var sectionSubtitle = document.getElementById('sectionSubtitle');
+
+        if (view === 'submitted') {
+            submittedView.classList.add('active');
+            onlineView.classList.remove('active');
+            toggleSubmitted.classList.add('active');
+            toggleOnline.classList.remove('active');
+            sectionTitle.textContent = 'Submitted Requests';
+            sectionSubtitle.textContent = 'Clients forwarded by the Eligibility Checker and waiting to be encoded.';
+        } else {
+            submittedView.classList.remove('active');
+            onlineView.classList.add('active');
+            toggleSubmitted.classList.remove('active');
+            toggleOnline.classList.add('active');
+            sectionTitle.textContent = 'Accepted Online Requests';
+            sectionSubtitle.textContent = 'Online service requests accepted by the Eligibility Checker.';
+        }
+        
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
     function renderSubmitted() {
