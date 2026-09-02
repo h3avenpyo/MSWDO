@@ -450,7 +450,7 @@
                 </div>
                 <div class="text-center">
                     <div
-                        class="w-20 h-20 mx-auto rounded-full bg-accent text-white flex items-center justify-center text-3xl">
+                        class="w-20 h-20 mx-auto rounded-full bg-warm-gold text-white flex items-center justify-center text-3xl">
                         5
                     </div>
                     <h3 class="font-bold mt-6">

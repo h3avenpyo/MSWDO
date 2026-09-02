@@ -6,15 +6,21 @@
     <ul class="sidebar-menu">
         @if(request()->is('admin/financial/financialstep2*') || session('admin_user_role') === 'financialstep2')
         <li>
-            <a href="/admin/financial/financialstep2"
-                class="{{ request()->is('admin/financial/financialstep2*') ? 'active' : '' }}">
+            <a href="{{ route('admin.financial.financialstep2') }}"
+                class="{{ request()->routeIs('admin.financial.financialstep2') ? 'active' : '' }}">
                 <i class="fas fa-hand-holding-usd"></i> Step 2 Masterlist
             </a>
         </li>
         <li>
-            <a href="/admin/beneficiary-intake"
-                class="{{ request()->is('admin/beneficiary-intake*') ? 'active' : '' }}">
-                <i class="fas fa-list"></i> All Intakes
+            <a href="{{ route('admin.financial.financialstep2.payroll') }}"
+                class="{{ request()->routeIs('admin.financial.financialstep2.payroll*') ? 'active' : '' }}">
+                <i class="fas fa-file-invoice-dollar"></i> Payroll Generation
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.financial.financialstep2.all-intakes') }}"
+                class="{{ request()->routeIs('admin.financial.financialstep2.all-intakes') ? 'active' : '' }}">
+                <i class="fas fa-layer-group"></i> All Intakes
             </a>
         </li>
         <li>

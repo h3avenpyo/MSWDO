@@ -118,13 +118,16 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::get('/admin/financial/dashboard', [FinancialDashboardController::class, 'financialDashboard'])->name('admin.financial.dashboard');
     Route::get('/admin/financial/financialstep1', [FinancialDashboardController::class, 'financialStep1'])->name('admin.financial.financialstep1');
     Route::post('/admin/financial/step2/authenticate', [FinancialDashboardController::class, 'authenticateStep2'])->name('admin.financial.step2.authenticate');
-    Route::post('/admin/financial/step2/lock', [FinancialDashboardController::class, 'lockStep2'])->name('admin.financial.step2.lock');
     Route::get('/admin/financial/financialstep1statistics', [FinancialDashboardController::class, 'statistics'])->name('admin.financial.financialstep1statistics');
 
     // Step 2 Protected Routes (requires Step 2 credentials or authorized role)
     Route::middleware('financial.step2.auth')->group(function () {
         Route::get('/admin/financial/financialstep2', [FinancialDashboardController::class, 'financialStep2'])->name('admin.financial.financialstep2');
-        Route::get('/admin/financial/financialstep2/process/{intake}', [FinancialDashboardController::class, 'financialStep2Process'])->name('admin.financial.financialstep2.process');
+        Route::get('/admin/financial/financialstep2/all-intakes', [FinancialDashboardController::class, 'financialStep2AllIntakes'])->name('admin.financial.financialstep2.all-intakes');
+        Route::get('/admin/financial/financialstep2/payroll', [FinancialDashboardController::class, 'financialStep2Payroll'])->name('admin.financial.financialstep2.payroll');
+        Route::post('/admin/financial/financialstep2/payroll/update-amount', [FinancialDashboardController::class, 'updateIntakeAmount'])->name('admin.financial.financialstep2.payroll.update-amount');
+        Route::post('/admin/financial/financialstep2/payroll/bulk-update-amounts', [FinancialDashboardController::class, 'bulkUpdateIntakeAmounts'])->name('admin.financial.financialstep2.payroll.bulk-update-amounts');
+        Route::get('/admin/financial/financialstep2/payroll/print', [FinancialDashboardController::class, 'printPayroll'])->name('admin.financial.financialstep2.payroll.print');
     });
 });
 

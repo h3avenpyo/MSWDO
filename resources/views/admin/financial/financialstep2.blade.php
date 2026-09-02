@@ -106,19 +106,13 @@ $userName = session('admin_user_name') ?? 'Officer';
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <div>
             <h2 class="wizard-heading mb-1"><i class="fas fa-hand-holding-usd me-2"></i>Financial Assistance: Step 2 Masterlist</h2>
-            <p class="mb-0 text-white-50" style="font-size: var(--text-sm);">Client General Intake Masterlist &bull; Select a client to proceed to Step 2 Financial Assistance processing</p>
+            <p class="mb-0 text-white-50" style="font-size: var(--text-sm);">Today's Client General Intake Masterlist &bull; Step 2 Financial Assistance records processed today ({{ date('F d, Y') }})</p>
         </div>
         <div class="d-flex align-items-center gap-2">
-            <div class="user-welcome me-2">
+            <div class="user-welcome">
                 <i class="fas fa-user-circle me-1"></i>
                 <span>{{ $userName }}</span>
             </div>
-            <form action="{{ route('admin.financial.step2.lock') }}" method="POST" class="d-inline">
-                @csrf
-                <button type="submit" class="btn btn-danger btn-sm rounded-pill px-3 shadow-xs" title="Lock Step 2 and return to Step 1">
-                    <i class="fas fa-lock me-1"></i> Lock Step 2
-                </button>
-            </form>
         </div>
     </div>
 
@@ -128,11 +122,7 @@ $userName = session('admin_user_name') ?? 'Officer';
             <span class="text-white fw-bold"><i class="fas fa-route me-1"></i> Workflow:</span>
             <span class="badge bg-white text-dark rounded-pill px-3 py-1">1. General Intake (Step 1)</span>
             <i class="fas fa-arrow-right text-white-50"></i>
-            <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold">2. Financial Masterlist</span>
-            <i class="fas fa-arrow-right text-white-50"></i>
-            <span class="badge bg-light text-secondary rounded-pill px-3 py-1">3. Select Client</span>
-            <i class="fas fa-arrow-right text-white-50"></i>
-            <span class="badge bg-light text-secondary rounded-pill px-3 py-1">4. Process Financial Assistance (Step 2)</span>
+            <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold">2. Financial Masterlist (Step 2)</span>
         </div>
     </div>
 
@@ -143,8 +133,16 @@ $userName = session('admin_user_name') ?? 'Officer';
         </a>
         <div class="step-item-pill active">
             <div class="step-circle"><i class="fas fa-list-check"></i></div>
-            <div class="step-label">Step 2: Financial Masterlist (Active)</div>
+            <div class="step-label">Step 2: Masterlist (Active)</div>
         </div>
+        <a href="{{ route('admin.financial.financialstep2.payroll') }}" class="step-item-pill text-decoration-none">
+            <div class="step-circle"><i class="fas fa-file-invoice-dollar"></i></div>
+            <div class="step-label">Step 2: Payroll Generation</div>
+        </a>
+        <a href="{{ route('admin.financial.financialstep2.all-intakes') }}" class="step-item-pill text-decoration-none">
+            <div class="step-circle"><i class="fas fa-layer-group"></i></div>
+            <div class="step-label">All Intakes (Step 1 Submissions)</div>
+        </a>
     </div>
 </div>
 
@@ -252,13 +250,8 @@ $userName = session('admin_user_name') ?? 'Officer';
         <div class="card animate-fade-in">
             <div class="card-header-clean d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div>
-                    <h3 class="card-title-clean"><i class="fas fa-address-book me-2 text-primary"></i>General Intake Masterlist Records</h3>
-                    <p class="card-subtitle-clean">All clients who completed Step 1 General Intake &bull; Select a client to open their Financial Step 2 processing page</p>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    <a href="{{ route('admin.beneficiary-intake.transmittal') }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                        <i class="fas fa-print me-1"></i> Print Transmittal Summary
-                    </a>
+                    <h3 class="card-title-clean"><i class="fas fa-address-book me-2 text-primary"></i>Today's General Intake Masterlist Records ({{ date('M d, Y') }})</h3>
+                    <p class="card-subtitle-clean">Clients processed today &bull; To view all historical intakes, visit the <a href="{{ route('admin.financial.financialstep2.all-intakes') }}" class="text-primary fw-semibold text-decoration-none">All Intakes</a> page</p>
                 </div>
             </div>
             <div class="p-3">
@@ -273,7 +266,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                                 <th>Category / Medical Purpose</th>
                                 <th>Assessed Grant</th>
                                 <th>Status</th>
-                                <th class="text-end">Step 2 Actions</th>
+                                <th class="text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -334,19 +327,9 @@ $userName = session('admin_user_name') ?? 'Officer';
                                     @endif
                                 </td>
                                 <td class="text-end">
-                                    <div class="d-flex align-items-center justify-content-end gap-1">
-                                        <a href="{{ route('admin.financial.financialstep2.process', $intake) }}" class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold" style="background: #1A237E; border-color: #1A237E;" title="Open Financial Step 2 Processing for this client">
-                                            <i class="fas fa-hand-holding-usd me-1"></i> Process Client
-                                        </a>
-                                        <div class="btn-group btn-group-sm">
-                                            <button type="button" class="btn btn-outline-secondary" title="Quick Preview Step 1 Data" onclick="viewIntakeDetails({{ json_encode($intake) }})">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <a href="{{ route('admin.beneficiary-intake.transmittal', ['ids' => $intake->id]) }}" target="_blank" class="btn btn-outline-secondary" title="Print Disbursement Slip">
-                                                <i class="fas fa-print"></i>
-                                            </a>
-                                        </div>
-                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium" title="Quick Preview Record" onclick="viewIntakeDetails({{ json_encode($intake) }})">
+                                        <i class="fas fa-eye me-1"></i> View
+                                    </button>
                                 </td>
                             </tr>
                             @empty
@@ -354,12 +337,12 @@ $userName = session('admin_user_name') ?? 'Officer';
                                 <td colspan="8" class="p-5 text-center">
                                     <div class="empty-state-box text-center py-4">
                                         <i class="fas fa-folder-open fa-3x mb-3 text-muted opacity-50 d-block"></i>
-                                        <h4 class="fw-bold mb-1" style="font-size: var(--text-md); color: var(--color-text-primary);">No General Intake records found in Masterlist</h4>
+                                        <h4 class="fw-bold mb-1" style="font-size: var(--text-md); color: var(--color-text-primary);">No General Intake records found for today</h4>
                                         <p class="text-muted mb-0" style="font-size: var(--text-sm);">
-                                            @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'date']))
-                                                No records matched your search filters. Try resetting the filter criteria.
+                                            @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort']))
+                                                No records matched your search filters for today. Try resetting the filter criteria.
                                             @else
-                                                Clients who complete the Step 1 General Intake process will automatically appear in this masterlist.
+                                                Clients who complete the Step 1 General Intake process today will automatically appear in this masterlist.
                                             @endif
                                         </p>
                                     </div>
@@ -513,12 +496,7 @@ $userName = session('admin_user_name') ?? 'Officer';
             </div>
             <div class="modal-footer bg-white border-top d-flex justify-content-between">
                 <span class="text-muted small"><i class="fas fa-check-circle text-success me-1"></i> Inherited from Step 1 General Intake</span>
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Close</button>
-                    <a id="modalProcessClientLink" href="#" class="btn btn-primary btn-sm rounded-pill px-4" style="background: #1A237E; border-color: #1A237E;">
-                        <i class="fas fa-hand-holding-usd me-1"></i> Open Step 2 Processing
-                    </a>
-                </div>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-4" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -533,7 +511,6 @@ function viewIntakeDetails(intake) {
 
     // Header info
     document.getElementById('modalControlNumberHeader').textContent = 'Control No: ' + (intake.control_number || 'N/A') + ' • Processed: ' + (intake.date_processed ? intake.date_processed.split('T')[0] : 'N/A');
-    document.getElementById('modalProcessClientLink').href = '/admin/financial/financialstep2/process/' + intake.id;
 
     // Beneficiary details
     const benFullName = [intake.beneficiary_first_name, intake.beneficiary_middle_name, intake.beneficiary_last_name, intake.beneficiary_extension_name].filter(Boolean).join(' ') || 'N/A';
