@@ -6,14 +6,14 @@
 <style>
     /* Resets & Base Layout */
     html, body {
-        overflow-x: hidden !important;
+        overflow-x: auto !important;
         overflow-y: auto !important;
     }
     .main {
         display: flex !important;
         flex-direction: column !important;
         padding-top: 14px !important;
-        overflow-x: hidden !important;
+        overflow-x: auto !important;
         overflow-y: auto !important;
     }
     @media (max-width: 767.98px) {
@@ -294,8 +294,9 @@
         gap: 12px;
         margin-top: 14px;
         flex-shrink: 0;
-        padding: 4px 0;
+        padding: 0;
         flex-wrap: wrap;
+        border: none;
     }
     .sc-pagination-info {
         font-size: 0.813rem;
@@ -766,6 +767,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             </table>
         </div>
     </div>
+
+    <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
 
     <!-- Pagination -->
     <div class="sc-pagination">

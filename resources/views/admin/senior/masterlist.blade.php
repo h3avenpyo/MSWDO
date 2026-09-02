@@ -72,10 +72,10 @@
 
         /* ── Archive-style panel & table ── */
         .archive-panel-wrap{width:100%;padding:1rem;margin-bottom:1rem;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
-        .archive-table-wrap{border:1px solid var(--border);border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+        .archive-table-wrap{border:2px solid #CBD5E1;border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;max-height: 500px; overflow-y: auto;}
         .archive-table{width:100%;border-collapse:collapse;font-size:14px;}
-        .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--text-secondary);text-align:left;border-bottom:1px solid var(--border);background:var(--background);white-space:nowrap;}
-        .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid var(--border);vertical-align:middle;white-space:normal;word-break:break-word;}
+        .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:#1E293B;text-align:left;border-bottom:2px solid #94A3B8;background:#E2E8F0;white-space:nowrap;position: sticky; top: 0; z-index: 10;}
+        .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid #CBD5E1;vertical-align:middle;white-space:normal;word-break:break-word;}
         .archive-table tbody tr:last-child td{border-bottom:none;}
         .archive-table input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
         .archive-table .col-check{width:40px;text-align:center;}
@@ -111,9 +111,24 @@
         /* ── Pagination links ── */
         .pagination-wrap{display:flex;justify-content:center;flex-wrap:wrap;padding-top:1rem;margin-top:1rem;border-top:1px solid var(--border);}
 
+        /* ── Social Case Style Pagination ── */
+        .sc-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-shrink: 0; padding: 4px 0; flex-wrap: wrap; }
+        .sc-pagination-info { font-size: 0.813rem; color: #6B7280; font-weight: 500; }
+        .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
+        .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
+        .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
+        .sc-page-btn.active { background: #1A237E; color: #fff; border-color: #1A237E; font-weight: 700; }
+        .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
         /* ── Filter container ── */
         .archive-filter-bar{display:block;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;}
         .archive-filter-bar #summaryGrid{margin-bottom:0;}
+
+        /* ── Mobile Pagination ── */
+        @media (max-width: 767.98px) {
+            .sc-pagination { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; background: #fff !important; padding: 15px 0 !important; z-index: 100 !important; border-top: 1px solid #E5E7EB !important; flex-direction: column; align-items: center; gap: 8px; }
+            .sc-pagination-controls { justify-content: flex-end; padding-right: 20px; }
+        }
 
         /* ══════════════════════════════════════════════
            RESPONSIVE BREAKPOINTS
@@ -600,86 +615,99 @@
                 </div>
             @endif
 
-            <div class="panel archive-panel-wrap">
-                @if($seniors->total() > $seniors->count())
-                <div id="selectAllPagesNotice" style="display:none;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
-                    <span id="selectAllPagesText">All {{ $seniors->total() }} senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.</span>
-                </div>
-                @endif
-                <div class="archive-table-wrap">
-                    <table class="archive-table">
-                        <thead>
-                            <tr>
-                                <th class="col-check"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
-                                <th>Control No</th>
-                                <th>Full Name</th>
-                                <th>Barangay</th>
-                                <th>Status</th>
-                                <th>Address</th>
-                                <th>Age</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($seniors as $senior)
-                                <tr>
-                                    <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()"></td>
-                                    <td data-label="Control No" style="font-weight:600;">{{ $senior->control_number ?? '-' }}</td>
-                                    <td data-label="Full Name">{{ $senior->full_name ?? '-' }}</td>
-                                    <td data-label="Barangay">{{ $senior->barangay ?? '-' }}</td>
-                                    <td data-label="Status">
-                                        <span class="badge {{ $senior->status->value == 'active' ? 'badge-active' : 'badge-pending' }}">
-                                            {{ ucfirst($senior->status->value ?? 'pending') }}
-                                        </span>
-                                    </td>
-                                    <td data-label="Address">{{ $senior->address ?? '-' }}</td>
-                                    <td data-label="Age">{{ $senior->age ?? '-' }}</td>
-                                    <td data-label="Action">
-                                        <div class="actions">
-                                            <button class="action-btn" style="background:var(--primary);border-color:var(--primary);color:#fff;" onclick="viewProfile({{ $senior->id }})" title="View Profile">
-                                                <i data-lucide="eye"></i>
-                                            </button>
-                                            <button class="action-btn archive-senior-btn"
-                                                data-id="{{ $senior->id }}"
-                                                data-name="{{ $senior->full_name }}"
-                                                style="background:var(--danger-bg);border-color:#FECACA;color:var(--danger);"
-                                                title="Archive">
-                                                <i data-lucide="archive"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr class="empty-row">
-                                    <td colspan="8" class="empty-cell">
-                                        <div class="empty-state-content">
-                                            <div class="empty-icon-wrap">
-                                                <i data-lucide="users"></i>
-                                            </div>
-                                            <div class="empty-title">No senior citizens found</div>
-                                            <div class="empty-subtitle">No records match your search criteria</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+            @if($seniors->total() > $seniors->count())
+            <div id="selectAllPagesNotice" style="display:none;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
+                <span id="selectAllPagesText">All {{ $seniors->total() }} senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.</span>
             </div>
-
-            <div class="archive-pagination-info">
-                @if($seniors->total() === 0)
-                    Showing 0 of 0 Records
-                @else
-                    Showing {{ $seniors->firstItem() }}–{{ $seniors->lastItem() }} of {{ $seniors->total() }} Records
-                @endif
-            </div>
-
-            @if($seniors->hasPages())
-                <div class="pagination-wrap">
-                    {{ $seniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
-                </div>
             @endif
+            <div class="archive-table-wrap">
+                <table class="archive-table">
+                    <thead>
+                        <tr>
+                            <th class="col-check"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                            <th>Control No</th>
+                            <th>Full Name</th>
+                            <th>Barangay</th>
+                            <th>Status</th>
+                            <th>Address</th>
+                            <th>Age</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($seniors as $senior)
+                            <tr>
+                                <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()"></td>
+                                <td data-label="Control No" style="font-weight:600;">{{ $senior->control_number ?? '-' }}</td>
+                                <td data-label="Full Name">{{ $senior->full_name ?? '-' }}</td>
+                                <td data-label="Barangay">{{ $senior->barangay ?? '-' }}</td>
+                                <td data-label="Status">
+                                    <span class="badge {{ $senior->status->value == 'active' ? 'badge-active' : 'badge-pending' }}">
+                                        {{ ucfirst($senior->status->value ?? 'pending') }}
+                                    </span>
+                                </td>
+                                <td data-label="Address">{{ $senior->address ?? '-' }}</td>
+                                <td data-label="Age">{{ $senior->age ?? '-' }}</td>
+                                <td data-label="Action">
+                                    <div class="actions">
+                                        <button class="action-btn" style="background:var(--primary);border-color:var(--primary);color:#fff;" onclick="viewProfile({{ $senior->id }})" title="View Profile">
+                                            <i data-lucide="eye"></i>
+                                        </button>
+                                        <button class="action-btn archive-senior-btn"
+                                            data-id="{{ $senior->id }}"
+                                            data-name="{{ $senior->full_name }}"
+                                            style="background:var(--danger-bg);border-color:#FECACA;color:var(--danger);"
+                                            title="Archive">
+                                            <i data-lucide="archive"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr class="empty-row">
+                                <td colspan="8" class="empty-cell">
+                                    <div class="empty-state-content">
+                                        <div class="empty-icon-wrap">
+                                            <i data-lucide="users"></i>
+                                        </div>
+                                        <div class="empty-title">No senior citizens found</div>
+                                        <div class="empty-subtitle">No records match your search criteria</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
+
+            <div class="sc-pagination">
+                <div class="sc-pagination-info">
+                    @if($seniors->total() === 0)
+                        Showing 0 of 0 Records
+                    @else
+                        Showing {{ $seniors->firstItem() }}–{{ $seniors->lastItem() }} of {{ $seniors->total() }} Records
+                    @endif
+                </div>
+                <div class="sc-pagination-controls">
+                    @if($seniors->hasPages())
+                        @if($seniors->onFirstPage())
+                            <span class="sc-page-btn" disabled>Previous</span>
+                        @else
+                            <a href="{{ $seniors->previousPageUrl() }}" class="sc-page-btn">Previous</a>
+                        @endif
+
+                        <span class="sc-page-btn active">{{ $seniors->currentPage() }}</span>
+
+                        @if($seniors->hasMorePages())
+                            <a href="{{ $seniors->nextPageUrl() }}" class="sc-page-btn">Next</a>
+                        @else
+                            <span class="sc-page-btn" disabled>Next</span>
+                        @endif
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 </div>

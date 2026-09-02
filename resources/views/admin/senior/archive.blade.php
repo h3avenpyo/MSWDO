@@ -53,14 +53,23 @@
 
         /* ── Table Card ── */
         .table-card-title{font-size:1.25rem;font-weight:700;color:var(--text-primary);margin:0 0 1.25rem 0;flex-shrink:0;padding:0 24px;}
-        .table-responsive{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);margin:0 24px 24px 0;}
+        .table-responsive{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--surface);border:2px solid #CBD5E1;border-radius:14px;box-shadow:var(--shadow);margin:0 24px 24px 0;max-height: 500px; overflow-y: auto;}
         .mobile-select-all{margin:0 24px 10px 0;}
         .table-responsive table{width:100%;border-collapse:collapse;table-layout:auto;}
-        .table-responsive thead th{padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary);text-align:left;border-bottom:2px solid var(--border);background:var(--surface);white-space:nowrap;}
-        .table-responsive tbody td{padding:12px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid var(--border);vertical-align:middle;white-space:normal;word-break:break-word;}
+        .table-responsive thead th{padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#1E293B;text-align:left;border-bottom:2px solid #94A3B8;background:#E2E8F0;white-space:nowrap;position: sticky; top: 0; z-index: 10;}
+        .table-responsive tbody td{padding:12px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid #CBD5E1;vertical-align:middle;white-space:normal;word-break:break-word;}
         .table-responsive tbody tr:last-child td{border-bottom:none;}
         .table-responsive tbody tr:hover td{background:var(--background);}
         .table-responsive input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
+
+        /* ── Archive Table (same styling as table-responsive) ── */
+        .archive-table-wrap{border:2px solid #CBD5E1;border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;max-height: 500px; overflow-y: auto;}
+        .archive-table{width:100%;border-collapse:collapse;font-size:14px;}
+        .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:#1E293B;text-align:left;border-bottom:2px solid #94A3B8;background:#E2E8F0;white-space:nowrap;position: sticky; top: 0; z-index: 10;}
+        .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid #CBD5E1;vertical-align:middle;white-space:normal;word-break:break-word;}
+        .archive-table tbody tr:last-child td{border-bottom:none;}
+        .archive-table input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
+        .archive-table .col-check{width:40px;text-align:center;}
         .td-name{font-weight:500;color:var(--text-primary);font-size:13px;}
         .td-addr{font-size:0.75rem;color:var(--text-secondary);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
         .control-no{font-weight:600;color:var(--text-primary);font-size:13px;}
@@ -84,10 +93,26 @@
 
         /* ── Pagination ── */
         .pagination-wrap{display:flex;justify-content:center;flex-wrap:wrap;padding-top:1rem;margin-top:1rem;border-top:1px solid var(--border);}
+        .archive-pagination-info{font-size:0.875rem;color:var(--text-secondary);text-align:center;padding-top:0.75rem;}
+
+        /* ── Social Case Style Pagination ── */
+        .sc-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-shrink: 0; padding: 4px 0; flex-wrap: wrap; }
+        .sc-pagination-info { font-size: 0.813rem; color: #6B7280; font-weight: 500; }
+        .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
+        .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
+        .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
+        .sc-page-btn.active { background: #1A237E; color: #fff; border-color: #1A237E; font-weight: 700; }
+        .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         /* ── Mobile Select All ── */
         .mobile-select-all{display:none;align-items:center;gap:8px;padding:10px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-secondary);}
         .mobile-select-all input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
+
+        /* ── Mobile Pagination ── */
+        @media (max-width: 767.98px) {
+            .sc-pagination { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; background: #fff !important; padding: 15px 0 !important; z-index: 100 !important; border-top: 1px solid #E5E7EB !important; flex-direction: column; align-items: center; gap: 8px; }
+            .sc-pagination-controls { justify-content: flex-end; padding-right: 20px; }
+        }
 
         /* ── Flash Messages ── */
         .flash-message{display:flex;align-items:center;gap:12px;padding:.875rem 1.25rem;border-radius:10px;font-size:.875rem;font-weight:500;margin-bottom:1rem;animation:fadeIn .3s ease;}
@@ -303,10 +328,10 @@
            ARCHIVE TABLE — visual match with Social Case archive
            ══════════════════════════════════════════════ */
         .archive-panel-wrap{width:100%;padding:1rem;margin-bottom:1rem;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
-        .archive-table-wrap{border:1px solid var(--border);border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+        .archive-table-wrap{border:2px solid #CBD5E1;border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
         .archive-table{width:100%;border-collapse:collapse;font-size:14px;}
-        .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--text-secondary);text-align:left;border-bottom:1px solid var(--border);background:var(--background);white-space:nowrap;}
-        .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid var(--border);vertical-align:middle;white-space:normal;word-break:break-word;}
+        .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:#1E293B;text-align:left;border-bottom:2px solid #94A3B8;background:#E2E8F0;white-space:nowrap;}
+        .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid #CBD5E1;vertical-align:middle;white-space:normal;word-break:break-word;}
         .archive-table tbody tr:last-child td{border-bottom:none;}
         .archive-table input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
         .archive-table .col-check{width:40px;text-align:center;}
@@ -434,99 +459,112 @@
                     <span id="mobileSelectedCount" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--primary);"></span>
                 </div>
             @endif
-            <div class="panel archive-panel-wrap">
-                @if($archivedSeniors->total() > $archivedSeniors->count())
-                <div id="selectAllPagesNotice" style="display:none;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
-                    <span id="selectAllPagesText">All {{ $archivedSeniors->total() }} archived senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.</span>
-                </div>
-                @endif
-                <div class="archive-table-wrap">
-                    <table class="archive-table">
-                        <thead>
+            @if($archivedSeniors->total() > $archivedSeniors->count())
+            <div id="selectAllPagesNotice" style="display:none;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
+                <span id="selectAllPagesText">All {{ $archivedSeniors->total() }} archived senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.</span>
+            </div>
+            @endif
+            <div class="archive-table-wrap">
+                <table class="archive-table">
+                    <thead>
+                        <tr>
+                            <th class="col-check"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)"></th>
+                            <th>Control No.</th>
+                            <th>Full Name</th>
+                            <th>Barangay</th>
+                            <th>Sex / Age</th>
+                            <th>Archived On</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($archivedSeniors as $index => $senior)
                             <tr>
-                                <th class="col-check"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)"></th>
-                                <th>Control No.</th>
-                                <th>Full Name</th>
-                                <th>Barangay</th>
-                                <th>Sex / Age</th>
-                                <th>Archived On</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()"></td>
+                                <td data-label="Control No."><span class="control-no">{{ $senior->control_number ?? '-' }}</span></td>
+                                <td data-label="Full Name">
+                                    <div class="td-name">{{ $senior->full_name ?? '-' }}</div>
+                                    @if($senior->address)
+                                        <div class="td-addr">{{ $senior->address }}</div>
+                                    @endif
+                                </td>
+                                <td data-label="Barangay">
+                                    @if($senior->barangay)
+                                        <span class="badge-archived">{{ $senior->barangay }}</span>
+                                    @else
+                                        <span class="text-[var(--text-muted)]">-</span>
+                                    @endif
+                                </td>
+                                <td data-label="Sex / Age">
+                                    <span class="sex-age-wrap">
+                                        @if($senior->sex)
+                                            <span class="sex-letter">{{ $senior->sex == 'Male' ? 'M' : 'F' }}</span>
+                                        @endif
+                                        <span class="sex-sep">/</span>
+                                        <strong>{{ $senior->age ?? '-' }}</strong>
+                                    </span>
+                                </td>
+                                <td data-label="Archived On">
+                                    <span class="text-[var(--text-muted)]">{{ $senior->updated_at ? \Carbon\Carbon::parse($senior->updated_at)->format('M d, Y') : '-' }}</span>
+                                </td>
+                                <td data-label="Status">
+                                    <span class="badge-archived">Archived</span>
+                                </td>
+                                <td data-label="Action">
+                                    <form method="POST" action="{{ route('admin.senior.unarchive', $senior->id) }}" id="restore-form-{{ $senior->id }}" style="display:inline;">
+                                        @csrf
+                                        <button type="button" class="btn-restore" onclick="confirmRestore({{ $senior->id }}, '{{ addslashes($senior->full_name) }}')">
+                                            <i data-lucide="rotate-ccw"></i>
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($archivedSeniors as $index => $senior)
-                                <tr>
-                                    <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()"></td>
-                                    <td data-label="Control No."><span class="control-no">{{ $senior->control_number ?? '-' }}</span></td>
-                                    <td data-label="Full Name">
-                                        <div class="td-name">{{ $senior->full_name ?? '-' }}</div>
-                                        @if($senior->address)
-                                            <div class="td-addr">{{ $senior->address }}</div>
-                                        @endif
-                                    </td>
-                                    <td data-label="Barangay">
-                                        @if($senior->barangay)
-                                            <span class="badge-archived">{{ $senior->barangay }}</span>
-                                        @else
-                                            <span class="text-[var(--text-muted)]">-</span>
-                                        @endif
-                                    </td>
-                                    <td data-label="Sex / Age">
-                                        <span class="sex-age-wrap">
-                                            @if($senior->sex)
-                                                <span class="sex-letter">{{ $senior->sex == 'Male' ? 'M' : 'F' }}</span>
-                                            @endif
-                                            <span class="sex-sep">/</span>
-                                            <strong>{{ $senior->age ?? '-' }}</strong>
-                                        </span>
-                                    </td>
-                                    <td data-label="Archived On">
-                                        <span class="text-[var(--text-muted)]">{{ $senior->updated_at ? \Carbon\Carbon::parse($senior->updated_at)->format('M d, Y') : '-' }}</span>
-                                    </td>
-                                    <td data-label="Status">
-                                        <span class="badge-archived">Archived</span>
-                                    </td>
-                                    <td data-label="Action">
-                                        <form method="POST" action="{{ route('admin.senior.unarchive', $senior->id) }}" id="restore-form-{{ $senior->id }}" style="display:inline;">
-                                            @csrf
-                                            <button type="button" class="btn-restore" onclick="confirmRestore({{ $senior->id }}, '{{ addslashes($senior->full_name) }}')">
-                                                <i data-lucide="rotate-ccw"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr class="empty-row">
-                                    <td colspan="9" class="empty-cell">
-                                        <div class="empty-state-content">
-                                            <div class="empty-icon-wrap">
-                                                <i data-lucide="archive"></i>
-                                            </div>
-                                            <div class="empty-title">No archived cases</div>
-                                            <div class="empty-subtitle">Archived cases will appear here</div>
+                        @empty
+                            <tr class="empty-row">
+                                <td colspan="9" class="empty-cell">
+                                    <div class="empty-state-content">
+                                        <div class="empty-icon-wrap">
+                                            <i data-lucide="archive"></i>
                                         </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                                        <div class="empty-title">No archived cases</div>
+                                        <div class="empty-subtitle">Archived cases will appear here</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
+
+            <div class="sc-pagination">
+                    <div class="sc-pagination-info">
+                        @if($archivedSeniors->total() === 0)
+                            Showing 0 of 0 Archived Cases
+                        @else
+                            Showing {{ $archivedSeniors->firstItem() }}–{{ $archivedSeniors->lastItem() }} of {{ $archivedSeniors->total() }} Archived Cases
+                        @endif
+                    </div>
+                    <div class="sc-pagination-controls">
+                        @if($archivedSeniors->count() > 0 && $archivedSeniors->hasPages())
+                            @if($archivedSeniors->onFirstPage())
+                                <span class="sc-page-btn" disabled>Previous</span>
+                            @else
+                                <a href="{{ $archivedSeniors->previousPageUrl() }}" class="sc-page-btn">Previous</a>
+                            @endif
+
+                            <span class="sc-page-btn active">{{ $archivedSeniors->currentPage() }}</span>
+
+                            @if($archivedSeniors->hasMorePages())
+                                <a href="{{ $archivedSeniors->nextPageUrl() }}" class="sc-page-btn">Next</a>
+                            @else
+                                <span class="sc-page-btn" disabled>Next</span>
+                            @endif
+                        @endif
                     </div>
                 </div>
-
-                <div class="archive-pagination-info">
-                    @if($archivedSeniors->total() === 0)
-                        Showing 0 of 0 Archived Cases
-                    @else
-                        Showing {{ $archivedSeniors->firstItem() }}–{{ $archivedSeniors->lastItem() }} of {{ $archivedSeniors->total() }} Archived Cases
-                    @endif
-                </div>
-
-                @if($archivedSeniors->count() > 0 && $archivedSeniors->hasPages())
-                    <div class="pagination-wrap">
-                        {{ $archivedSeniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
-                    </div>
-                @endif
             </div>
         </div>
     </div>
