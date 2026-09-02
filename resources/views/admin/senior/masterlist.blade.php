@@ -37,12 +37,23 @@
         .btn-clear{background:var(--surface);color:var(--danger);border:1px solid #FECACA;}
         .btn-clear:hover{border-color:var(--danger);}
 
-        /* ── Dropdown ── */
-        .dropdown{position:relative;display:inline-block;}
-        .dropdown-menu{position:absolute;top:100%;right:0;z-index:50;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.08);min-width:200px;padding:6px;display:none;margin-top:6px;}
-        .dropdown-menu.show{display:block;}
-        .dropdown-item{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:13px;color:var(--text-primary);border-radius:6px;text-decoration:none;cursor:pointer;transition:background .15s;}
-        .dropdown-item:hover{background:var(--background);}
+        /* ── Modal ── */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+        .modal-overlay.active{display:flex;}
+        .modal-panel{background:var(--surface);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.15);width:90%;max-width:440px;overflow:hidden;transform:scale(.95);opacity:0;transition:all .2s ease;}
+        .modal-overlay.active .modal-panel{transform:scale(1);opacity:1;}
+        .modal-panel-header{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#1A237E;color:#ffffff;}
+        .modal-panel-header h5{font-size:1rem;font-weight:600;display:flex;align-items:center;gap:8px;color:#ffffff;margin:0;}
+        .modal-close{color:#ffffff;cursor:pointer;border:none;background:transparent;padding:4px;border-radius:6px;display:flex;align-items:center;justify-content:center;opacity:0.8;transition:opacity 0.2s;}
+        .modal-close:hover{opacity:1;}
+        .modal-close svg{width:20px;height:20px;}
+        .modal-panel-body{padding:1.5rem;}
+        .modal-btn{display:flex;align-items:center;justify-content:center;gap:10px;border:none;border-radius:12px;padding:14px 20px;font-size:1rem;font-weight:500;transition:background .2s;cursor:pointer;width:100%;font-family:inherit;color:#fff;}
+        .modal-btn svg{width:20px;height:20px;}
+        .modal-btn-danger{background:#DC2626;}
+        .modal-btn-danger:hover{background:#B91C1C;}
+        .modal-btn-indigo{background:var(--primary);}
+        .modal-btn-indigo:hover{background:var(--primary-hover);}
 
         /* ── Summary / Filters ── */
         .section-spacing{margin-bottom:28px;}
@@ -566,19 +577,10 @@
                         <div class="filter-field bulk-field">
                             <label class="filter-label desktop-only-label">&nbsp;</label>
                             <div class="bulk-actions-row">
-                                <a href="#" class="btn btn-export" onclick="exportPdf(event)">
-                                    <i data-lucide="file-output"></i> <span>Export PDF</span>
-                                </a>
-                                <div class="dropdown" id="bulkActionDropdown">
-                                    <button id="bulkActionButton" class="btn btn-bulk" onclick="toggleDropdown()" disabled>
-                                        <i data-lucide="archive"></i> <span>Bulk Actions</span>
-                                        <span id="selectedCount" class="selected-count-badge">0</span>
-                                    </button>
-                                    <div class="dropdown-menu" id="bulkDropdownMenu">
-                                        <a class="dropdown-item" href="#" onclick="bulkArchive()"><i data-lucide="archive" style="width:14px;height:14px"></i> Archive Selected</a>
-                                        <a class="dropdown-item" href="#" onclick="bulkExport()"><i data-lucide="download" style="width:14px;height:14px"></i> Export Selected</a>
-                                    </div>
-                                </div>
+                                <button type="button" id="bulkActionButton" class="btn btn-bulk" onclick="showBulkActionPopup()" disabled>
+                                    <i data-lucide="list-checks"></i> <span>Bulk Actions</span>
+                                    <span id="selectedCount" class="selected-count-badge">0</span>
+                                </button>
                                 @if(request('search') || request('barangay'))
                                     <a href="{{ route('admin.senior.masterlist') }}" class="btn btn-clear">
                                         <i data-lucide="x"></i> <span>Clear</span>
@@ -599,6 +601,11 @@
             @endif
 
             <div class="panel archive-panel-wrap">
+                @if($seniors->total() > $seniors->count())
+                <div id="selectAllPagesNotice" style="display:none;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
+                    <span id="selectAllPagesText">All {{ $seniors->total() }} senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.</span>
+                </div>
+                @endif
                 <div class="archive-table-wrap">
                     <table class="archive-table">
                         <thead>
@@ -755,22 +762,49 @@
     </div>
 </div>
 
-<!-- Hidden form for secure POST logout -->
-<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display:none;">
-    @csrf
-</form>
+<!-- Bulk Action Modal -->
+<div class="modal-overlay" id="bulkActionModal">
+    <div class="modal-panel">
+        <div class="modal-panel-header">
+            <h5><i data-lucide="list-checks"></i> Bulk Actions</h5>
+            <button type="button" class="modal-close" onclick="closeBulkModal()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-panel-body">
+            <div class="flex flex-col gap-3">
+                <button type="button" class="modal-btn modal-btn-danger" onclick="bulkArchive(event)">
+                    <i data-lucide="archive"></i> Archive Selected
+                </button>
+                <button type="button" class="modal-btn modal-btn-indigo" onclick="exportPdf(event)">
+                    <i data-lucide="file-output"></i> Export Selected (PDF)
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-    // Custom Dropdown
-    function toggleDropdown() {
-        const menu = document.getElementById('bulkDropdownMenu');
-        menu.classList.toggle('show');
+    lucide.createIcons();
+
+    function showBulkActionPopup() {
+        const selected = document.querySelectorAll('.senior-checkbox:checked');
+        if (selected.length === 0 && !window.selectAllMatching) {
+            Swal.fire('No Selection', 'Please select at least one record.', 'warning');
+            return;
+        }
+        document.getElementById('bulkActionModal').classList.add('active');
     }
-    document.addEventListener('click', function(e) {
-        const dropdown = document.getElementById('bulkActionDropdown');
-        const menu = document.getElementById('bulkDropdownMenu');
-        if (dropdown && !dropdown.contains(e.target)) {
-            menu.classList.remove('show');
+
+    function closeBulkModal() {
+        document.getElementById('bulkActionModal').classList.remove('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        const modal = document.getElementById('bulkActionModal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) closeBulkModal();
+            });
         }
     });
 
@@ -779,18 +813,23 @@
 
     function openModal() {
         const modal = document.getElementById('seniorModal');
+        if (!modal) return;
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         setTimeout(() => modal.style.opacity = '1', 10);
     }
     function closeModal() {
         const modal = document.getElementById('seniorModal');
+        if (!modal) return;
         modal.style.opacity = '0';
         setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = ''; }, 200);
     }
-    document.getElementById('seniorModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
+    const seniorModalEl = document.getElementById('seniorModal');
+    if (seniorModalEl) {
+        seniorModalEl.addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    }
 
     // View senior profile function
     function viewProfile(id) {
@@ -826,8 +865,8 @@
 
     // Event delegation for Archive buttons
     document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('archive-senior-btn') || e.target.closest('.archive-senior-btn')) {
-            const button = e.target.classList.contains('archive-senior-btn') ? e.target : e.target.closest('.archive-senior-btn');
+        const button = e.target.closest ? e.target.closest('.archive-senior-btn') : null;
+        if (button) {
             const seniorId = button.dataset.id;
             const seniorName = button.dataset.name;
 
@@ -864,6 +903,8 @@
         }
     });
 
+    window.selectAllMatching = false;
+
     // Bulk Actions Functions
     function toggleSelectAll() {
         const selectAll = document.getElementById('selectAll');
@@ -873,14 +914,61 @@
         });
         var mobileAll = document.getElementById('mobileSelectAll');
         if (mobileAll) mobileAll.checked = selectAll.checked;
+
+        const notice = document.getElementById('selectAllPagesNotice');
+        const total = {{ $seniors->total() ?? 0 }};
+        const currentCount = {{ $seniors->count() ?? 0 }};
+        const hasMorePages = total > currentCount;
+
+        if (selectAll.checked) {
+            window.selectAllMatching = true;
+            if (notice && hasMorePages) {
+                notice.style.display = 'flex';
+                document.getElementById('selectAllPagesText').textContent = `All ${total} senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.`;
+            }
+        } else {
+            window.selectAllMatching = false;
+            if (notice) notice.style.display = 'none';
+        }
+
         updateBulkActions();
     }
 
     function toggleSelectAllMobile(checked) {
         var selectAll = document.getElementById('selectAll');
-        var checkboxes = document.querySelectorAll('.senior-checkbox');
-        checkboxes.forEach(cb => cb.checked = checked);
         if (selectAll) selectAll.checked = checked;
+        toggleSelectAll();
+    }
+
+    function selectAllAcrossPages(e) {
+        if (e) e.preventDefault();
+        window.selectAllMatching = true;
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll) selectAll.checked = true;
+        const checkboxes = document.querySelectorAll('.senior-checkbox');
+        checkboxes.forEach(cb => cb.checked = true);
+        const mobileAll = document.getElementById('mobileSelectAll');
+        if (mobileAll) mobileAll.checked = true;
+
+        const notice = document.getElementById('selectAllPagesNotice');
+        if (notice) {
+            notice.style.display = 'flex';
+            document.getElementById('selectAllPagesText').textContent = `All {{ $seniors->total() }} senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'this filter' }} are selected.`;
+        }
+        updateBulkActions();
+    }
+
+    function clearAllSelection() {
+        window.selectAllMatching = false;
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll) selectAll.checked = false;
+        const checkboxes = document.querySelectorAll('.senior-checkbox');
+        checkboxes.forEach(cb => cb.checked = false);
+        const mobileAll = document.getElementById('mobileSelectAll');
+        if (mobileAll) mobileAll.checked = false;
+
+        const notice = document.getElementById('selectAllPagesNotice');
+        if (notice) notice.style.display = 'none';
         updateBulkActions();
     }
 
@@ -890,13 +978,26 @@
         const countSpan = document.getElementById('selectedCount');
         const mobileCount = document.getElementById('mobileSelectedCount');
         const mobileAll = document.getElementById('mobileSelectAll');
-        const total = document.querySelectorAll('.senior-checkbox').length;
+        const totalMatching = {{ $seniors->total() ?? 0 }};
+        const pageTotal = document.querySelectorAll('.senior-checkbox').length;
 
-        countSpan.textContent = checkboxes.length;
-        if (mobileCount) mobileCount.textContent = checkboxes.length > 0 ? checkboxes.length + ' / ' + total + ' selected' : '';
-        if (mobileAll) mobileAll.checked = checkboxes.length === total && total > 0;
+        const count = window.selectAllMatching ? totalMatching : checkboxes.length;
 
-        if (checkboxes.length > 0) {
+        countSpan.textContent = count;
+        if (mobileCount) {
+            mobileCount.textContent = count > 0 ? (window.selectAllMatching ? `${count} / ${totalMatching} selected (all pages)` : `${count} / ${pageTotal} selected`) : '';
+        }
+        if (mobileAll) {
+            mobileAll.checked = checkboxes.length === pageTotal && pageTotal > 0;
+        }
+
+        if (checkboxes.length < pageTotal) {
+            window.selectAllMatching = false;
+            const notice = document.getElementById('selectAllPagesNotice');
+            if (notice) notice.style.display = 'none';
+        }
+
+        if (count > 0) {
             button.disabled = false;
             button.style.opacity = '1';
             button.style.background = '#3730A3';
@@ -911,18 +1012,23 @@
         }
     }
 
-    function bulkArchive() {
+    function bulkArchive(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        closeBulkModal();
+
         const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
         const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
 
-        if (ids.length === 0) {
+        if (ids.length === 0 && !window.selectAllMatching) {
             Swal.fire('No Selection', 'Please select at least one record.', 'warning');
             return;
         }
 
+        const count = window.selectAllMatching ? {{ $seniors->total() ?? 0 }} : ids.length;
+
         Swal.fire({
             title: 'Archive Selected Records?',
-            text: `You are about to archive ${ids.length} record(s). This action can be undone from the archive page.`,
+            text: `You are about to archive ${count} record(s). This action can be undone from the archive page.`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#1A237E',
@@ -933,13 +1039,17 @@
             customClass: { popup: 'rounded-4 shadow-lg' }
         }).then((result) => {
             if (result.isConfirmed) {
+                const payload = window.selectAllMatching 
+                    ? { select_all: true, barangay: `{{ request('barangay') ?? '' }}`, search: `{{ request('search') ?? '' }}` }
+                    : { ids: ids };
+
                 fetch('/admin/senior/bulk-archive', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
-                    body: JSON.stringify({ ids: ids })
+                    body: JSON.stringify(payload)
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -957,61 +1067,140 @@
         });
     }
 
-    function exportPdf(e) {
-        e.preventDefault();
-        const url = `{{ route('admin.senior.export-pdf') }}?barangay={{ request('barangay') }}&search={{ request('search') }}`;
+    async function exportPdf(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        closeBulkModal();
+
+        const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
+        const selectAll = document.getElementById('selectAll');
+        const isAllPageChecked = selectAll && selectAll.checked;
+        const currentBarangay = `{{ request('barangay') ?? '' }}`;
+        const currentSearch = `{{ request('search') ?? '' }}`;
+
+        let baseQuery = `barangay=${encodeURIComponent(currentBarangay)}&search=${encodeURIComponent(currentSearch)}`;
+
+        // If specific individual checkboxes are checked AND NOT select-all / selectAllMatching
+        if (checkboxes.length > 0 && !window.selectAllMatching && !isAllPageChecked) {
+            const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+            baseQuery += `&ids=${ids.join(',')}`;
+        }
+
         Swal.fire({
-            title: 'Generating PDF...',
-            text: 'Please wait while the file is being prepared.',
+            title: 'Preparing PDF Export...',
+            text: 'Calculating records and parts...',
             allowOutsideClick: false,
             allowEscapeKey: false,
             showConfirmButton: false,
             didOpen: () => { Swal.showLoading(); }
         });
-        fetch(url)
-            .then(r => {
-                if (!r.ok) throw new Error('Download failed');
-                return r.blob();
-            })
-            .then(blob => {
-                const filename = 'senior_citizens.pdf';
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 100);
+
+        try {
+            const countRes = await fetch(`{{ route('admin.senior.export-pdf') }}?${baseQuery}&check_count=1`);
+            if (!countRes.ok) throw new Error('Count check failed');
+            const countData = await countRes.json();
+
+            const totalCount = countData.total_count || 0;
+            const batchSize = countData.per_part || 1000;
+            const totalBatches = countData.total_parts || Math.max(1, Math.ceil(totalCount / batchSize));
+
+            if (totalCount === 0) {
                 Swal.fire({
-                    icon: 'success',
-                    title: 'Download Complete',
-                    text: 'The PDF file has been saved to your device.',
-                    confirmButtonColor: '#1A237E',
-                    timer: 3000,
-                    timerProgressBar: true
-                });
-            })
-            .catch(() => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Download Failed',
-                    text: 'Something went wrong. Please try again.',
+                    icon: 'info',
+                    title: 'No Records',
+                    text: 'No senior citizen records found to export.',
                     confirmButtonColor: '#1A237E'
                 });
+                return;
+            }
+
+            for (let batch = 1; batch <= totalBatches; batch++) {
+                const startRecord = ((batch - 1) * batchSize) + 1;
+                const endRecord = Math.min(totalCount, batch * batchSize);
+
+                Swal.fire({
+                    title: `Downloading Batch ${batch}…`,
+                    html: `
+                        <p style="font-size:14px;color:#334155;margin:10px 0 6px 0;">
+                            Downloading records <b>${startRecord.toLocaleString()}–${endRecord.toLocaleString()} of ${totalCount.toLocaleString()}</b> total records.
+                        </p>
+                        <p style="font-size:12px;color:#64748b;margin:0;">
+                            Please keep this window open until the download is complete.
+                        </p>
+                    `,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                const pdfRes = await fetch(`{{ route('admin.senior.export-pdf') }}?${baseQuery}&part=${batch}`);
+                if (!pdfRes.ok) throw new Error(`Download of Batch ${batch} failed`);
+                const blob = await pdfRes.blob();
+
+                let filename = 'senior_citizens';
+                if (currentBarangay) {
+                    filename += '_' + currentBarangay.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                }
+                if (totalBatches > 1) {
+                    filename += `_batch_${batch}_of_${totalBatches}`;
+                }
+                filename += '_' + new Date().toISOString().slice(0, 10) + '.pdf';
+                triggerFileDownload(blob, filename);
+
+                if (batch < totalBatches) {
+                    await new Promise(r => setTimeout(r, 1200));
+                }
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Download Complete',
+                text: totalBatches > 1 
+                    ? `Successfully downloaded all ${totalBatches} batches (${totalCount.toLocaleString()} total records).`
+                    : `Successfully exported ${totalCount.toLocaleString()} record(s).`,
+                confirmButtonColor: '#1A237E',
+                timer: 3500,
+                timerProgressBar: true
             });
+        } catch (err) {
+            console.error('PDF Export Error:', err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Download Failed',
+                text: 'Something went wrong during export. Please try again.',
+                confirmButtonColor: '#1A237E'
+            });
+        }
     }
 
-    function bulkExport() {
+    function triggerFileDownload(blob, filename) {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 100);
+    }
+
+    function bulkExport(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        closeBulkModal();
+
         const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
         const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+        const currentBarangay = `{{ request('barangay') ?? '' }}`;
+        const currentSearch = `{{ request('search') ?? '' }}`;
 
-        if (ids.length === 0) {
+        if (checkboxes.length === 0 && !window.selectAllMatching) {
             Swal.fire('No Selection', 'Please select at least one record.', 'warning');
             return;
         }
 
+        const count = window.selectAllMatching ? {{ $seniors->total() ?? 0 }} : ids.length;
+
         Swal.fire({
             title: 'Export Selected Records?',
-            text: `You are about to export ${ids.length} record(s).`,
+            text: `You are about to export ${count} record(s) to CSV.`,
             icon: 'info',
             showCancelButton: true,
             confirmButtonColor: '#1A237E',
@@ -1020,7 +1209,11 @@
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = `/admin/senior/export?ids=${ids.join(',')}`;
+                if (window.selectAllMatching) {
+                    window.location.href = `{{ route('admin.senior.export') }}?barangay=${encodeURIComponent(currentBarangay)}&search=${encodeURIComponent(currentSearch)}`;
+                } else {
+                    window.location.href = `/admin/senior/export?ids=${ids.join(',')}`;
+                }
             }
         });
     }

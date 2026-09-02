@@ -435,6 +435,11 @@
                 </div>
             @endif
             <div class="panel archive-panel-wrap">
+                @if($archivedSeniors->total() > $archivedSeniors->count())
+                <div id="selectAllPagesNotice" style="display:none;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
+                    <span id="selectAllPagesText">All {{ $archivedSeniors->total() }} archived senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.</span>
+                </div>
+                @endif
                 <div class="archive-table-wrap">
                     <table class="archive-table">
                         <thead>
@@ -539,8 +544,8 @@
                 <button type="button" class="modal-btn modal-btn-teal" onclick="bulkRestore()">
                     <i data-lucide="undo-2"></i> Restore Selected
                 </button>
-                <button type="button" class="modal-btn modal-btn-indigo" onclick="bulkExport()">
-                    <i data-lucide="download"></i> Export Selected
+                <button type="button" class="modal-btn modal-btn-indigo" onclick="exportPdf(event)">
+                    <i data-lucide="file-output"></i> Export PDF
                 </button>
             </div>
         </div>
@@ -550,13 +555,64 @@
 <script>
     lucide.createIcons();
 
+    window.selectAllMatching = false;
+
     function toggleSelectAll(checked) {
         document.querySelectorAll('.senior-checkbox').forEach(cb => cb.checked = checked);
+        const mobileAll = document.getElementById('mobileSelectAll');
+        if (mobileAll) mobileAll.checked = checked;
+
+        const notice = document.getElementById('selectAllPagesNotice');
+        const total = {{ $archivedSeniors->total() ?? 0 }};
+        const currentCount = {{ $archivedSeniors->count() ?? 0 }};
+        const hasMorePages = total > currentCount;
+
+        if (checked) {
+            window.selectAllMatching = true;
+            if (notice && hasMorePages) {
+                notice.style.display = 'flex';
+                document.getElementById('selectAllPagesText').textContent = `All ${total} archived senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.`;
+            }
+        } else {
+            window.selectAllMatching = false;
+            if (notice) notice.style.display = 'none';
+        }
+
         updateBulkActions();
     }
 
     function toggleSelectAllMobile(checked) {
-        document.querySelectorAll('.senior-checkbox').forEach(cb => cb.checked = checked);
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll) selectAll.checked = checked;
+        toggleSelectAll(checked);
+    }
+
+    function selectAllAcrossPages(e) {
+        if (e) e.preventDefault();
+        window.selectAllMatching = true;
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll) selectAll.checked = true;
+        document.querySelectorAll('.senior-checkbox').forEach(cb => cb.checked = true);
+        const mobileAll = document.getElementById('mobileSelectAll');
+        if (mobileAll) mobileAll.checked = true;
+
+        const notice = document.getElementById('selectAllPagesNotice');
+        if (notice) {
+            notice.style.display = 'flex';
+            document.getElementById('selectAllPagesText').textContent = `All {{ $archivedSeniors->total() }} archived senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'this filter' }} are selected.`;
+        }
+        updateBulkActions();
+    }
+
+    function clearAllSelection() {
+        window.selectAllMatching = false;
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll) selectAll.checked = false;
+        document.querySelectorAll('.senior-checkbox').forEach(cb => cb.checked = false);
+        const mobileAll = document.getElementById('mobileSelectAll');
+        if (mobileAll) mobileAll.checked = false;
+        const notice = document.getElementById('selectAllPagesNotice');
+        if (notice) notice.style.display = 'none';
         updateBulkActions();
     }
 
@@ -568,12 +624,27 @@
         const selectAll = document.getElementById('selectAll');
         const mobileAll = document.getElementById('mobileSelectAll');
         const mobileCount = document.getElementById('mobileSelectedCount');
-        if (countSpan) countSpan.textContent = selected.length;
-        if (selectAll) selectAll.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
-        if (mobileAll) mobileAll.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
-        if (mobileCount) mobileCount.textContent = selected.length > 0 ? selected.length + ' / ' + checkboxes.length + ' selected' : '';
+        const totalMatching = {{ $archivedSeniors->total() ?? 0 }};
+        const pageTotal = checkboxes.length;
+
+        const count = window.selectAllMatching ? totalMatching : selected.length;
+
+        if (countSpan) countSpan.textContent = count;
+        if (selectAll) selectAll.checked = pageTotal > 0 && selected.length === pageTotal;
+        if (mobileAll) mobileAll.checked = pageTotal > 0 && selected.length === pageTotal;
+        if (mobileCount) mobileCount.textContent = count > 0
+            ? (window.selectAllMatching ? `${count} / ${totalMatching} selected (all pages)` : `${count} / ${pageTotal} selected`)
+            : '';
+
+        // If user manually unchecks any box, reset select-all-matching state
+        if (selected.length < pageTotal) {
+            window.selectAllMatching = false;
+            const notice = document.getElementById('selectAllPagesNotice');
+            if (notice) notice.style.display = 'none';
+        }
+
         if (button) {
-            const has = selected.length > 0;
+            const has = count > 0;
             button.disabled = !has;
             button.style.opacity = has ? '1' : '0.45';
             button.style.background = has ? '#3730A3' : '#E0E7FF';
@@ -584,7 +655,7 @@
 
     function showBulkActionPopup() {
         const selected = document.querySelectorAll('.senior-checkbox:checked');
-        if (selected.length === 0) {
+        if (selected.length === 0 && !window.selectAllMatching) {
             Swal.fire('No Selection', 'Please select at least one record.', 'warning');
             return;
         }
@@ -600,15 +671,22 @@
     });
 
     function bulkRestore() {
-        const ids = Array.from(document.querySelectorAll('.senior-checkbox:checked')).map(cb => cb.dataset.id);
-        if (ids.length === 0) {
+        const checked = document.querySelectorAll('.senior-checkbox:checked');
+        const ids = Array.from(checked).map(cb => cb.dataset.id);
+        const currentBarangay = `{{ request('barangay') ?? '' }}`;
+        const currentSearch = `{{ request('search') ?? '' }}`;
+
+        if (ids.length === 0 && !window.selectAllMatching) {
             Swal.fire('No Selection', 'Please select at least one record.', 'warning');
             return;
         }
         closeBulkModal();
+
+        const count = window.selectAllMatching ? {{ $archivedSeniors->total() ?? 0 }} : ids.length;
+
         Swal.fire({
             title: 'Restore Selected Records?',
-            text: `You are about to restore ${ids.length} record(s) back to active status.`,
+            text: `You are about to restore ${count} record(s) back to active status.`,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#0f766e',
@@ -617,13 +695,17 @@
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
+                const payload = window.selectAllMatching
+                    ? { select_all: true, barangay: currentBarangay, search: currentSearch }
+                    : { ids: ids };
+
                 fetch('/admin/senior/bulk-restore', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
-                    body: JSON.stringify({ ids: ids })
+                    body: JSON.stringify(payload)
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -641,27 +723,119 @@
         });
     }
 
-    function bulkExport() {
-        const ids = Array.from(document.querySelectorAll('.senior-checkbox:checked')).map(cb => cb.dataset.id);
-        if (ids.length === 0) {
-            Swal.fire('No Selection', 'Please select at least one record.', 'warning');
-            return;
-        }
+    async function exportPdf(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
         closeBulkModal();
+
+        const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
+        const selectAll = document.getElementById('selectAll');
+        const isAllPageChecked = selectAll && selectAll.checked;
+        const currentBarangay = `{{ request('barangay') ?? '' }}`;
+        const currentSearch = `{{ request('search') ?? '' }}`;
+
+        let baseQuery = `barangay=${encodeURIComponent(currentBarangay)}&search=${encodeURIComponent(currentSearch)}&archived=1`;
+
+        // If specific individual checkboxes are checked AND NOT select-all / selectAllMatching
+        if (checkboxes.length > 0 && !window.selectAllMatching && !isAllPageChecked) {
+            const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+            baseQuery += `&ids=${ids.join(',')}`;
+        }
+
         Swal.fire({
-            title: 'Export Selected Records?',
-            text: `You are about to export ${ids.length} record(s).`,
-            icon: 'info',
-            showCancelButton: true,
-            confirmButtonColor: '#1A237E',
-            cancelButtonColor: '#EF4444',
-            confirmButtonText: 'Yes, Export',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = `/admin/senior/export?ids=${ids.join(',')}`;
-            }
+            title: 'Preparing PDF Export...',
+            text: 'Calculating records and batches...',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => { Swal.showLoading(); }
         });
+
+        try {
+            const countRes = await fetch(`{{ route('admin.senior.export-pdf') }}?${baseQuery}&check_count=1`);
+            if (!countRes.ok) throw new Error('Count check failed');
+            const countData = await countRes.json();
+
+            const totalCount = countData.total_count || 0;
+            const batchSize = countData.per_part || 1000;
+            const totalBatches = countData.total_parts || Math.max(1, Math.ceil(totalCount / batchSize));
+
+            if (totalCount === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'No Records',
+                    text: 'No archived senior citizen records found to export.',
+                    confirmButtonColor: '#1A237E'
+                });
+                return;
+            }
+
+            for (let batch = 1; batch <= totalBatches; batch++) {
+                const startRecord = ((batch - 1) * batchSize) + 1;
+                const endRecord = Math.min(totalCount, batch * batchSize);
+
+                Swal.fire({
+                    title: `Downloading Batch ${batch}…`,
+                    html: `
+                        <p style="font-size:14px;color:#334155;margin:10px 0 6px 0;">
+                            Downloading records <b>${startRecord.toLocaleString()}–${endRecord.toLocaleString()} of ${totalCount.toLocaleString()}</b> total records.
+                        </p>
+                        <p style="font-size:12px;color:#64748b;margin:0;">
+                            Please keep this window open until the download is complete.
+                        </p>
+                    `,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                const pdfRes = await fetch(`{{ route('admin.senior.export-pdf') }}?${baseQuery}&part=${batch}`);
+                if (!pdfRes.ok) throw new Error(`Download of Batch ${batch} failed`);
+                const blob = await pdfRes.blob();
+
+                let filename = 'archived_senior_citizens';
+                if (currentBarangay) {
+                    filename += '_' + currentBarangay.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                }
+                if (totalBatches > 1) {
+                    filename += `_batch_${batch}_of_${totalBatches}`;
+                }
+                filename += '_' + new Date().toISOString().slice(0, 10) + '.pdf';
+                triggerFileDownload(blob, filename);
+
+                if (batch < totalBatches) {
+                    await new Promise(r => setTimeout(r, 1200));
+                }
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Download Complete',
+                text: totalBatches > 1 
+                    ? `Successfully downloaded all ${totalBatches} batches (${totalCount.toLocaleString()} total records).`
+                    : `Successfully exported ${totalCount.toLocaleString()} record(s).`,
+                confirmButtonColor: '#1A237E',
+                timer: 3500,
+                timerProgressBar: true
+            });
+        } catch (err) {
+            console.error('PDF Export Error:', err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Download Failed',
+                text: 'Something went wrong during export. Please try again.',
+                confirmButtonColor: '#1A237E'
+            });
+        }
+    }
+
+    function triggerFileDownload(blob, filename) {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 100);
     }
 
     function confirmRestore(id, name) {

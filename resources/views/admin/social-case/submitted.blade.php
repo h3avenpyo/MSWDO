@@ -46,28 +46,50 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     /* ── Subtitle ── */
     .submitted-subtitle { color: #6B7280; font-size: 0.85rem; margin: 0 0 10px; white-space: normal; overflow-wrap: break-word; line-height: 1.4; }
 
+    /* ── Toggle Button ── */
+    .submitted-toggle-container { display: flex; gap: 8px; margin-bottom: 16px; }
+    .submitted-toggle-btn { flex: 1; padding: 10px 16px; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; color: #6B7280; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all .15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .submitted-toggle-btn:hover { border-color: #9CA3AF; background: #F9FAFB; }
+    .submitted-toggle-btn.active { border-color: #1A237E; background: #1A237E; color: #fff; font-weight: 600; }
+
+    /* ── View Toggle ── */
+    .submitted-view { display: none; }
+    .submitted-view.active { display: block; }
+
+    /* ── Submitted Requests section ── */
+    .submitted-section-header { margin-bottom: 10px; }
+    .submitted-section-title { font-size: 1.05rem; font-weight: 800; color: #1A237E; margin: 0 0 4px; letter-spacing: -0.01em; }
+
     /* ── Filter bar ── */
-    .submitted-filter-bar { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 12px 14px; background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; }
-    .submitted-filter-search { max-width: 320px; width: 100%; flex-shrink: 0; display: flex; flex-direction: column; justify-content: flex-end; }
-    .submitted-filter-label { display: block; font-size: 0.72rem; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; line-height: 1; }
-    .submitted-search-wrap { display: flex; align-items: center; height: 40px; }
-    .submitted-search-wrap input { flex: 1; height: 40px; border: 1px solid #D1D5DB; border-right: none; border-radius: 6px 0 0 6px; padding: 0 0.85rem; font-size: 0.85rem; color: #111827; background: #fff; outline: none; transition: border-color .15s, box-shadow .15s; }
-    .submitted-search-wrap input:focus { border-color: #1A237E; box-shadow: 0 0 0 3px rgba(26,35,126,.08); }
-    .submitted-search-wrap button { background: #1A237E; color: #fff; border: none; padding: 0 1rem; border-radius: 0 6px 6px 0; cursor: pointer; height: 40px; display: flex; align-items: center; justify-content: center; transition: background .15s; }
-    .submitted-search-wrap button:hover { background: #121858; }
+    .submitted-filter-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 0; background: transparent; border: none; border-radius: 0; }
+    .filter-item { display: flex; flex-direction: column; gap: 6px; }
+    .filter-label { font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .filter-search { flex: 0 1 280px; max-width: 320px; min-width: 220px; }
+    .filter-search-wrap { display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s; }
+    .filter-search-wrap:focus-within { box-shadow: 0 0 0 3px rgba(26,35,126,.12); border-radius: 8px; }
+    .filter-search input { flex: 1 1 auto; width: 1%; min-width: 0; height: 44px !important; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; padding: 0 16px; font-size: 0.875rem; color: #111827; background: #fff; outline: none; transition: border-color .15s; box-sizing: border-box !important; margin: 0 !important; }
+    .filter-search input:focus { border-color: #1A237E; }
+    .filter-search input::placeholder { color: #9CA3AF; }
+    .filter-search-btn { height: 44px !important; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch; }
+    .filter-search-btn:hover { background: #121858; }
+
+    .filter-reset { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; }
+    .filter-reset-btn { height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; font-size: 0.875rem; font-weight: 500; cursor: pointer; display: none; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
+    .filter-reset-btn:hover { background: #FEF2F2; border-color: #B91C1C; color: #B91C1C; }
+    .filter-reset-btn.visible { display: inline-flex; }
 
     /* ── Panel / wrap ── */
-    .submitted-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 0; padding: 0; }
-    .submitted-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; height: 500px !important; overflow-y: auto; }
+    .submitted-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border: 2px solid #CBD5E1; border-radius: 8px; background: #fff; height: 500px !important; overflow-y: auto; }
 
     /* ── Table base ── */
     #submittedTable { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: auto; }
-    #submittedTable thead tr { background: #F8FAFC; border-bottom: 2px solid #E2E8F0; }
-    #submittedTable thead th { padding: 12px 14px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; white-space: nowrap; text-align: left; border-bottom: 2px solid #E2E8F0; }
-    #submittedTable tbody tr { border-bottom: 1px solid #F1F5F9; transition: background .15s; }
+    #submittedTable thead tr { background: #F8FAFC; border-bottom: 2px solid #94A3B8; }
+    #submittedTable thead th { padding: 12px 14px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; white-space: nowrap; text-align: left; border-bottom: 2px solid #94A3B8; }
+    #submittedTable tbody tr { border-bottom: 1px solid #CBD5E1; transition: background .15s; }
     #submittedTable tbody tr:last-child { border-bottom: none; }
     #submittedTable tbody tr:hover { background: #F8FAFC; }
-    #submittedTable tbody td { padding: 12px 14px; font-size: 0.875rem; color: #1E293B; vertical-align: middle; border-bottom: 1px solid #F1F5F9; }
+    #submittedTable tbody td { padding: 12px 14px; font-size: 0.875rem; color: #1E293B; vertical-align: middle; border-bottom: 1px solid #CBD5E1; }
 
     /* Column specific spacing */
     #submittedTable tbody td[data-label="Control No."] { min-width: 130px; white-space: nowrap; font-family: 'Courier New', monospace; font-size: 0.813rem; font-weight: 600; color: #1E293B; }
@@ -101,7 +123,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
        MOBILE, TABLET & COLLAPSED SIDEBAR (< 1200px): CARD LAYOUT
     ═══════════════════════════════════════════════════════════════ */
     @media (max-width: 1199.98px) {
-        .submitted-panel { background: transparent; border: none; padding: 0; box-shadow: none; }
         .submitted-table-wrap { overflow: visible; border: none; background: transparent; height: auto !important; }
 
         #submittedTable, 
@@ -187,13 +208,15 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     /* Mobile (< 768px) */
     @media (max-width: 767.98px) {
-        .submitted-filter-bar { padding: 10px 12px; margin-bottom: 10px; }
-        .submitted-filter-search { max-width: none; width: 100%; }
+        .submitted-filter-bar { padding: 0; margin-bottom: 10px; }
+        .filter-search { max-width: none; width: 100%; min-width: 0; flex: 1 1 auto; }
+        .filter-search input { width: 100% !important; min-width: 0 !important; }
+        .filter-search-btn { padding: 0 16px !important; flex-shrink: 0 !important; }
+        .filter-reset { width: 100%; }
+        .filter-reset-btn { width: 100% !important; justify-content: center !important; }
 
-        .accepted-section-header { text-align: center; }
-
-        .sc-pagination { flex-direction: column; align-items: center; gap: 8px; }
-        .sc-pagination-controls { justify-content: center; }
+        .sc-pagination { flex-direction: column; align-items: center; gap: 8px; margin-top: 70px !important; margin-bottom: 70px !important; }
+        .sc-pagination-controls { justify-content: flex-end; padding-right: 20px; }
     }
     @media (max-width: 479px) {
         #submittedTable tbody td::before { min-width: 75px; font-size: 0.68rem; }
@@ -202,8 +225,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     /* Collapsed Sidebar (768px - 1199.98px) */
     @media (min-width: 768px) and (max-width: 1199.98px) {
-        .submitted-filter-bar { padding: 10px 14px; margin-bottom: 12px; }
-        .submitted-filter-search { max-width: 280px; }
+        .submitted-filter-bar { padding: 0; margin-bottom: 12px; }
+        .filter-search { flex: 0 1 280px; max-width: 320px; min-width: 220px; }
 
         .sc-pagination { flex-direction: row; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
     }
@@ -216,10 +239,10 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .app { height: 100vh !important; overflow: hidden !important; }
         .main { height: 100vh !important; overflow-y: auto !important; overflow-x: hidden !important; }
 
-        .submitted-filter-bar { padding: 12px 16px; margin-bottom: 12px; }
-        .submitted-filter-search { max-width: 320px; }
+        .submitted-filter-bar { padding: 0; margin-bottom: 12px; }
+        .filter-search { flex: 0 1 280px; max-width: 320px; min-width: 220px; }
+        .filter-search-btn { height: 44px !important; }
 
-        .submitted-panel { flex: 0 0 auto; overflow: visible; }
         .submitted-table-wrap { flex: 0 0 auto; overflow: auto; border: 1px solid #E5E7EB; border-radius: 8px; height: 500px !important; }
         #submittedTable { min-width: 900px; width: 100%; table-layout: auto; }
         #submittedTable thead th { padding: 12px 16px; font-size: 0.75rem; }
@@ -228,11 +251,15 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         #submittedTable tbody tr.empty-row td.empty-cell { white-space: normal !important; overflow: visible !important; max-width: none !important; }
 
         .sc-pagination { flex-direction: row; justify-content: space-between; margin-top: 12px; flex-shrink: 0; }
+        .sc-pagination-controls { justify-content: flex-end; }
+        .sc-pagination-info { text-align: left; }
         .sc-page-btn { height: 38px; }
     }
+    
+    .sc-pagination { flex-shrink: 0; }
 
     /* ── Accepted Online Requests table ── */
-    .accepted-section { margin-top: 26px; }
+    .accepted-section { margin-top: 0; padding-top: 0; }
     .accepted-section-header { margin-bottom: 10px; }
     .accepted-section-title { font-size: 1.05rem; font-weight: 800; color: #1A237E; margin: 0 0 4px; letter-spacing: -0.01em; }
     .accepted-online-panel { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden; }
@@ -320,30 +347,17 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     </div>
     <ul class="sidebar-menu">
         <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
+        @if((string) session('admin_user_role') !== 'social_worker')
         <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>Client Eligibility</span></a></li>
-        @if((string) session('admin_user_role') === 'eligibility_checker')
-        <li><a href="#" onclick="return false" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for eligibility checker accounts"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
-        @else
-        <li><a href="/admin/social-case/submitted" class="active"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
         @endif
+        @if((string) session('admin_user_role') !== 'eligibility_checker')
+        <li><a href="/admin/social-case/submitted" class="active"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
         <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i><span>All cases</span></a></li>
         <li><a href="/admin/social-case/archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
+        @endif
         @if((string) session('admin_user_role') === 'eligibility_checker')
         <li class="sidebar-dropdown" id="onlineRequestsDropdown">
             <a href="#" class="sidebar-dropdown-toggle" onclick="toggleDropdown('onlineRequestsDropdown'); return false;">
-                <i data-lucide="file-text" style="width:20px;height:20px"></i>
-                <span>Online Requests</span>
-                <i data-lucide="chevron-down" class="dropdown-chevron" style="width:16px;height:16px;margin-left:auto;"></i>
-            </a>
-            <ul class="sidebar-dropdown-menu">
-                <li><a href="/admin/social-case/online-requests"><i data-lucide="clock" style="width:18px;height:18px"></i><span>Pending Requests</span><span class="badge-count badge-pending" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#F59E0B;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['pending'] ?? 0 }}</span></a></li>
-                <li><a href="/admin/social-case/online-requests/accepted"><i data-lucide="check-circle" style="width:18px;height:18px"></i><span>Accepted Requests</span><span class="badge-count badge-accepted" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#10B981;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['accepted'] ?? 0 }}</span></a></li>
-                <li><a href="/admin/social-case/online-requests/rejected"><i data-lucide="x-circle" style="width:18px;height:18px"></i><span>Rejected Requests</span><span class="badge-count badge-rejected" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#EF4444;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['rejected'] ?? 0 }}</span></a></li>
-            </ul>
-        </li>
-        @elseif((string) session('admin_user_role') === 'social_worker')
-        <li class="sidebar-dropdown" id="onlineRequestsDropdown">
-            <a href="#" class="sidebar-dropdown-toggle" onclick="return false;" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for case encoding accounts">
                 <i data-lucide="file-text" style="width:20px;height:20px"></i>
                 <span>Online Requests</span>
                 <i data-lucide="chevron-down" class="dropdown-chevron" style="width:16px;height:16px;margin-left:auto;"></i>
@@ -360,28 +374,49 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 </div>
 
 <div class="main">
-    <div style="margin-bottom:10px;">
-        <p class="submitted-subtitle">Clients forwarded by the Eligibility Checker and waiting to be encoded.</p>
+    <!-- Submitted Requests Section -->
+    <div class="submitted-section-header">
+        <h2 class="submitted-section-title" id="sectionTitle">Submitted Requests</h2>
+        <p class="submitted-subtitle" id="sectionSubtitle">Clients forwarded by the Eligibility Checker and waiting to be encoded.</p>
+    </div>
+
+    <!-- Toggle Buttons -->
+    <div class="submitted-toggle-container">
+        <button type="button" class="submitted-toggle-btn active" id="toggleSubmitted" onclick="toggleView('submitted')">
+            <i data-lucide="send" style="width:16px;height:16px"></i>
+            Submitted Requests
+        </button>
+        <button type="button" class="submitted-toggle-btn" id="toggleOnline" onclick="toggleView('online')">
+            <i data-lucide="check-circle" style="width:16px;height:16px"></i>
+            Accepted Online Requests
+        </button>
     </div>
 
     <!-- Search Bar -->
     <div class="submitted-filter-bar">
-        <div class="submitted-filter-search">
-            <label class="submitted-filter-label">Search Client</label>
-            <div class="submitted-search-wrap">
-                <input type="text" id="submittedSearch" placeholder="Search client name..."
-                       oninput="filterSubmitted()">
-                <button type="button" onclick="filterSubmitted()" title="Search">
-                    <i data-lucide="search" style="width:16px;height:16px"></i>
+        <div class="filter-item filter-search">
+            <label class="filter-label">Search</label>
+            <div class="filter-search-wrap">
+                <input type="text" id="submittedSearch" placeholder="Search client name, control no..."
+                       oninput="filterSubmitted(); updateClearButtonVisibility();" onkeydown="if(event.key==='Enter'){event.preventDefault();filterSubmitted();}">
+                <button type="button" class="filter-search-btn" onclick="filterSubmitted()">
+                    <i data-lucide="search" style="width:18px;height:18px"></i>
                 </button>
             </div>
         </div>
+        <div class="filter-item filter-reset">
+            <label class="filter-label">&nbsp;</label>
+            <button type="button" class="filter-reset-btn" onclick="clearSubmittedSearch()" onmouseover="this.style.borderColor='#B91C1C';this.style.color='#B91C1C';this.style.background='#FEF2F2';" onmouseout="this.style.borderColor='#DC2626';this.style.color='#DC2626';this.style.background='#fff';">
+                <i data-lucide="x" style="width:16px;height:16px"></i> Clear
+            </button>
+        </div>
     </div>
 
+    <!-- Submitted Requests View -->
+    <div class="submitted-view active" id="submittedView">
     <!-- Table Panel -->
-    <div class="submitted-panel">
-        <div class="submitted-table-wrap">
-            <table id="submittedTable">
+    <div class="submitted-table-wrap">
+        <table id="submittedTable">
                 <thead>
                     <tr>
                         <th>Control No.</th>
@@ -393,7 +428,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                 </thead>
                 <tbody>
                     @forelse($submitted as $c)
-                    <tr data-name="{{ mb_strtolower($c->client ? $c->client->full_name : '') }}">
+                    <tr data-name="{{ mb_strtolower($c->client ? $c->client->full_name : '') }}" data-search="{{ mb_strtolower(($c->case_number ?? '') . ' ' . ($c->client ? $c->client->full_name : '') . ' ' . ($c->eligibleByUser ? $c->eligibleByUser->name : '')) }}">
                         <td data-label="Control No."><span class="control-no" title="{{ $c->case_number }}">{{ $c->case_number ?: '—' }}</span></td>
                         <td data-label="Client" title="{{ $c->client ? $c->client->full_name : '' }}">{{ $c->client ? $c->client->full_name : 'Unnamed' }}</td>
                         <td data-label="Forwarded By" title="{{ $c->eligibleByUser ? $c->eligibleByUser->name : 'Eligibility Checker' }}">{{ $c->eligibleByUser ? $c->eligibleByUser->name : 'Eligibility Checker' }}</td>
@@ -419,7 +454,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                     @endforelse
                 </tbody>
             </table>
-        </div>
     </div>
 
     <!-- Pagination -->
@@ -427,15 +461,13 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="sc-pagination-info" id="submittedPaginationInfo">Showing 0 of 0 Records</div>
         <div class="sc-pagination-controls" id="submittedPaginationControls"></div>
     </div>
+    </div>
 
+    <!-- Accepted Online Requests View -->
+    <div class="submitted-view" id="onlineView">
     <!-- Accepted Online Requests -->
     <div class="accepted-section">
-        <div class="accepted-section-header">
-            <h2 class="accepted-section-title">Accepted Online Requests</h2>
-            <p class="submitted-subtitle">Online service requests accepted by the Eligibility Checker.</p>
-        </div>
-        <div class="accepted-online-panel">
-            <div class="accepted-online-table-wrap">
+        <div class="accepted-online-table-wrap">
                 <table id="acceptedOnlineTable">
                     <thead>
                         <tr>
@@ -512,6 +544,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             <div class="sc-pagination-controls" id="acceptedPaginationControls"></div>
         </div>
     </div>
+    </div>
 </div>
 @endsection
 
@@ -525,14 +558,64 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         return Array.from(document.querySelectorAll('#submittedTable tbody tr:not(.empty-row)'));
     }
 
+    function clearSubmittedSearch() {
+        document.getElementById('submittedSearch').value = '';
+        _submittedPage = 1;
+        _acceptedPage = 1;
+        renderSubmitted();
+        renderAccepted();
+        updateClearButtonVisibility();
+    }
+
+    function updateClearButtonVisibility() {
+        var searchValue = document.getElementById('submittedSearch').value.trim();
+        var clearBtn = document.querySelector('.filter-reset-btn');
+        if (clearBtn) {
+            if (searchValue) {
+                clearBtn.classList.add('visible');
+            } else {
+                clearBtn.classList.remove('visible');
+            }
+        }
+    }
+
+    function toggleView(view) {
+        var submittedView = document.getElementById('submittedView');
+        var onlineView = document.getElementById('onlineView');
+        var toggleSubmitted = document.getElementById('toggleSubmitted');
+        var toggleOnline = document.getElementById('toggleOnline');
+        var sectionTitle = document.getElementById('sectionTitle');
+        var sectionSubtitle = document.getElementById('sectionSubtitle');
+
+        if (view === 'submitted') {
+            submittedView.classList.add('active');
+            onlineView.classList.remove('active');
+            toggleSubmitted.classList.add('active');
+            toggleOnline.classList.remove('active');
+            sectionTitle.textContent = 'Submitted Requests';
+            sectionSubtitle.textContent = 'Clients forwarded by the Eligibility Checker and waiting to be encoded.';
+        } else {
+            submittedView.classList.remove('active');
+            onlineView.classList.add('active');
+            toggleSubmitted.classList.remove('active');
+            toggleOnline.classList.add('active');
+            sectionTitle.textContent = 'Accepted Online Requests';
+            sectionSubtitle.textContent = 'Online service requests accepted by the Eligibility Checker.';
+        }
+        
+        updateClearButtonVisibility();
+        
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
     function renderSubmitted() {
         var query = (document.getElementById('submittedSearch').value || '').trim().toLowerCase();
         var allRows = getSubmittedRows();
 
         // Filter
         var filtered = allRows.filter(function(row) {
-            var name = (row.getAttribute('data-name') || '').toLowerCase();
-            return !query || name.indexOf(query) !== -1;
+            var searchData = (row.getAttribute('data-search') || row.getAttribute('data-name') || row.textContent || '').toLowerCase();
+            return !query || searchData.indexOf(query) !== -1;
         });
 
         // Reset to page 1 only when search changed
@@ -609,7 +692,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     function filterSubmitted() {
         _submittedPage = 1;
+        _acceptedPage = 1;
         renderSubmitted();
+        renderAccepted();
     }
 
     function goToSubmittedPage(page) {
@@ -625,25 +710,57 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     }
 
     function renderAccepted() {
+        var query = (document.getElementById('submittedSearch') ? document.getElementById('submittedSearch').value : '').trim().toLowerCase();
         var allRows = getAcceptedRows();
 
-        var totalPages = Math.max(1, Math.ceil(allRows.length / _acceptedPageSize));
+        var filtered = allRows.filter(function(row) {
+            var searchData = (row.getAttribute('data-search') || row.textContent || '').toLowerCase();
+            return !query || searchData.indexOf(query) !== -1;
+        });
+
+        var totalPages = Math.max(1, Math.ceil(filtered.length / _acceptedPageSize));
         if (_acceptedPage > totalPages) _acceptedPage = totalPages;
 
         var startIndex = (_acceptedPage - 1) * _acceptedPageSize;
         var endIndex   = startIndex + _acceptedPageSize;
-        var pageRows   = allRows.slice(startIndex, endIndex);
+        var pageRows   = filtered.slice(startIndex, endIndex);
 
         allRows.forEach(function(r) { r.style.display = 'none'; });
         pageRows.forEach(function(r) { r.style.display = ''; });
 
+        var emptyRow = document.querySelector('#acceptedOnlineTable tbody tr.empty-row');
+        if (allRows.length > 0) {
+            if (filtered.length === 0) {
+                if (!emptyRow) {
+                    emptyRow = document.createElement('tr');
+                    emptyRow.className = 'empty-row';
+                    emptyRow.innerHTML = '<td colspan="7" class="empty-cell">' +
+                        '<div class="empty-state-content">' +
+                        '<div class="empty-icon-wrap"><i data-lucide="search-x"></i></div>' +
+                        '<div class="empty-title">No matching accepted requests</div>' +
+                        '<div class="empty-subtitle">Try adjusting your search</div>' +
+                        '</div></td>';
+                    document.querySelector('#acceptedOnlineTable tbody').appendChild(emptyRow);
+                } else {
+                    emptyRow.querySelector('.empty-title').textContent = 'No matching accepted requests';
+                    emptyRow.querySelector('.empty-subtitle').textContent = 'Try adjusting your search';
+                    var iconWrap = emptyRow.querySelector('.empty-icon-wrap');
+                    if (iconWrap) iconWrap.innerHTML = '<i data-lucide="search-x"></i>';
+                }
+                emptyRow.style.display = '';
+            } else {
+                if (emptyRow) emptyRow.style.display = 'none';
+            }
+        }
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
         // Pagination info
         var infoEl = document.getElementById('acceptedPaginationInfo');
         if (infoEl) {
-            if (allRows.length === 0) {
+            if (filtered.length === 0) {
                 infoEl.textContent = 'Showing 0 of 0 Records';
             } else {
-                infoEl.textContent = 'Showing ' + (startIndex + 1) + '\u2013' + Math.min(endIndex, allRows.length) + ' of ' + allRows.length + ' Records';
+                infoEl.textContent = 'Showing ' + (startIndex + 1) + '\u2013' + Math.min(endIndex, filtered.length) + ' of ' + filtered.length + ' Records';
             }
         }
 

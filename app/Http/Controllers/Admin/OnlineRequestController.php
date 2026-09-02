@@ -5,34 +5,95 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\OnlineRequest;
 use App\Models\Client;
+use App\Services\NameMatcher;
 use Illuminate\Http\Request;
 
 class OnlineRequestController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $onlineRequests = OnlineRequest::where('status', 'pending')
-            ->whereNull('case_id')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $query = OnlineRequest::where('status', 'pending')
+            ->whereNull('case_id');
 
+        if ($search = trim($request->get('search', ''))) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"])
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('contact_number', 'like', "%{$search}%");
+            });
+        }
+
+        if ($barangay = $request->get('barangay')) {
+            if ($barangay !== 'All' && $barangay !== '') {
+                $query->where('barangay', $barangay);
+            }
+        }
+
+        if ($type = $request->get('type')) {
+            if ($type !== 'All' && $type !== '') {
+                $query->where(function ($q) use ($type) {
+                    $q->where('assistance_type', 'like', "%{$type}%")
+                      ->orWhere('service_type', 'like', "%{$type}%");
+                });
+            }
+        }
+
+        $onlineRequests = $query->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->appends($request->query());
+
+        // Batch process existing client checks to avoid N+1 queries
         $sixMonthsAgo = now()->subMonths(6);
+        $requestNames = $onlineRequests->getCollection()->map(function ($req) {
+            return trim($req->first_name . ' ' . $req->last_name);
+        })->unique()->values();
 
-        $onlineRequests->getCollection()->transform(function ($req) use ($sixMonthsAgo) {
-            $name = strtolower(trim($req->first_name . ' ' . $req->last_name));
+        // Pre-load all potential matching clients in a single query
+        $allClients = Client::all();
+        $clientMap = [];
+        foreach ($allClients as $client) {
+            $normalizedName = NameMatcher::normalizeName($client->first_name . ' ' . $client->last_name);
+            $clientMap[$normalizedName] = $client;
+        }
 
-            $client = Client::whereRaw('LOWER(CONCAT(first_name, " ", last_name)) = ?', [$name])->first();
+        $onlineRequests->getCollection()->transform(function ($req) use ($sixMonthsAgo, $clientMap) {
+            $fullName = trim($req->first_name . ' ' . $req->last_name);
+            $normalizedName = NameMatcher::normalizeName($fullName);
+
+            // Check for existing client using the normalized name map
+            $client = $clientMap[$normalizedName] ?? NameMatcher::findMatchingClient($fullName);
             $req->warning_existing = (bool) $client;
 
             $req->warning_recent = false;
-            if ($client && $client->assistanceRecords()
-                    ->where('release_date', '>=', $sixMonthsAgo->toDateString())
-                    ->exists()) {
-                $req->warning_recent = true;
+            if ($client) {
+                $hasRecentCase = $client->socialCaseStudies()
+                    ->where(function ($q) use ($sixMonthsAgo) {
+                        $q->where('created_at', '>=', $sixMonthsAgo)
+                          ->orWhere('date_processed', '>=', $sixMonthsAgo)
+                          ->orWhere('assistance_date', '>=', $sixMonthsAgo)
+                          ->orWhere('released_at', '>=', $sixMonthsAgo);
+                    })
+                    ->exists();
+
+                $hasRecentAssistance = $client->assistanceRecords()
+                    ->where(function ($q) use ($sixMonthsAgo) {
+                        $q->where('release_date', '>=', $sixMonthsAgo->toDateString())
+                          ->orWhere('created_at', '>=', $sixMonthsAgo);
+                    })
+                    ->exists();
+
+                $isRecentClient = $client->created_at >= $sixMonthsAgo;
+
+                if ($hasRecentCase || $hasRecentAssistance || $isRecentClient) {
+                    $req->warning_recent = true;
+                }
             }
+
             if (!$req->warning_recent) {
                 $req->warning_recent = OnlineRequest::where('id', '!=', $req->id)
-                    ->whereRaw('LOWER(CONCAT(first_name, " ", last_name)) = ?', [$name])
+                    ->whereRaw('LOWER(CONCAT(first_name, " ", last_name)) = ?', [$normalizedName])
                     ->where('created_at', '>=', $sixMonthsAgo)
                     ->exists();
             }
@@ -60,7 +121,47 @@ class OnlineRequestController extends Controller
         if (!$request) {
             return response()->json(['error' => 'Request not found'], 404);
         }
-        
+
+        // Check for existing client & recent record (same logic as index())
+        $sixMonthsAgo = now()->subMonths(6);
+        $fullName     = trim($request->first_name . ' ' . $request->last_name);
+        $client       = NameMatcher::findMatchingClient($fullName);
+
+        $warningExisting = (bool) $client;
+        $warningRecent   = false;
+
+        if ($client) {
+            $hasRecentCase = $client->socialCaseStudies()
+                ->where(function ($q) use ($sixMonthsAgo) {
+                    $q->where('created_at', '>=', $sixMonthsAgo)
+                      ->orWhere('date_processed', '>=', $sixMonthsAgo)
+                      ->orWhere('assistance_date', '>=', $sixMonthsAgo)
+                      ->orWhere('released_at', '>=', $sixMonthsAgo);
+                })
+                ->exists();
+
+            $hasRecentAssistance = $client->assistanceRecords()
+                ->where(function ($q) use ($sixMonthsAgo) {
+                    $q->where('release_date', '>=', $sixMonthsAgo->toDateString())
+                      ->orWhere('created_at', '>=', $sixMonthsAgo);
+                })
+                ->exists();
+
+            $isRecentClient = $client->created_at >= $sixMonthsAgo;
+
+            if ($hasRecentCase || $hasRecentAssistance || $isRecentClient) {
+                $warningRecent = true;
+            }
+        }
+
+        if (!$warningRecent) {
+            $normalizedName = NameMatcher::normalizeName($fullName);
+            $warningRecent  = OnlineRequest::where('id', '!=', $request->id)
+                ->whereRaw('LOWER(CONCAT(first_name, " ", last_name)) = ?', [$normalizedName])
+                ->where('created_at', '>=', $sixMonthsAgo)
+                ->exists();
+        }
+
         $attachmentsHtml = '';
         if ($request->attachments->count() > 0) {
             $attachmentsHtml = '<div style="margin-top: 12px;"><h4 style="margin: 0 0 8px 0; color: #1A237E; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Attached Files</h4><ul style="margin: 0; padding-left: 20px;">';
@@ -72,21 +173,23 @@ class OnlineRequestController extends Controller
         } else {
             $attachmentsHtml = '<div style="margin-top: 12px;"><p style="margin: 0; font-size: 14px; color: #6B7280;">No files attached</p></div>';
         }
-        
+
         return response()->json([
-            'id' => $request->id,
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'contact_number' => $request->contact_number,
-            'service_type' => ucfirst(str_replace('_', ' ', $request->service_type)),
-            'assistance_type' => ucfirst(str_replace('_', ' ', $request->assistance_type)),
-            'barangay' => $request->barangay,
-            'status' => ucfirst($request->status),
-            'created_at' => $request->created_at->format('M d, Y g:i A'),
-            'situation' => $request->situation ?? 'N/A',
-            'notes' => $request->notes ?? 'N/A',
-            'attachments_html' => $attachmentsHtml
+            'id'               => $request->id,
+            'first_name'       => $request->first_name,
+            'last_name'        => $request->last_name,
+            'email'            => $request->email,
+            'contact_number'   => $request->contact_number,
+            'service_type'     => ucfirst(str_replace('_', ' ', $request->service_type)),
+            'assistance_type'  => ucfirst(str_replace('_', ' ', $request->assistance_type)),
+            'barangay'         => $request->barangay,
+            'status'           => ucfirst($request->status),
+            'created_at'       => $request->created_at->format('M d, Y g:i A'),
+            'situation'        => $request->situation ?? 'N/A',
+            'notes'            => $request->notes ?? 'N/A',
+            'attachments_html' => $attachmentsHtml,
+            'warning_existing' => $warningExisting,
+            'warning_recent'   => $warningRecent,
         ]);
     }
 
@@ -242,12 +345,39 @@ class OnlineRequestController extends Controller
         return response()->json(['success' => true, 'message' => 'Request declined successfully']);
     }
 
-    public function accepted()
+    public function accepted(Request $request)
     {
-        $acceptedRequests = OnlineRequest::where('status', 'approved')
-            ->whereNull('case_id')
-            ->orderBy('updated_at', 'desc')
-            ->paginate(10);
+        $query = OnlineRequest::where('status', 'approved')
+            ->whereNull('case_id');
+
+        if ($search = trim($request->get('search', ''))) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"])
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('contact_number', 'like', "%{$search}%");
+            });
+        }
+
+        if ($barangay = $request->get('barangay')) {
+            if ($barangay !== 'All' && $barangay !== '') {
+                $query->where('barangay', $barangay);
+            }
+        }
+
+        if ($type = $request->get('type')) {
+            if ($type !== 'All' && $type !== '') {
+                $query->where(function ($q) use ($type) {
+                    $q->where('assistance_type', 'like', "%{$type}%")
+                      ->orWhere('service_type', 'like', "%{$type}%");
+                });
+            }
+        }
+
+        $acceptedRequests = $query->orderBy('updated_at', 'desc')
+            ->paginate(10)
+            ->appends($request->query());
 
         // Get online request counts for badge
         $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
@@ -263,11 +393,38 @@ class OnlineRequestController extends Controller
         return view('admin.social-case.online-requests-accepted', compact('acceptedRequests', 'onlineRequestCounts'));
     }
 
-    public function rejected()
+    public function rejected(Request $request)
     {
-        $rejectedRequests = OnlineRequest::where('status', 'rejected')
-            ->orderBy('updated_at', 'desc')
-            ->paginate(10);
+        $query = OnlineRequest::where('status', 'rejected');
+
+        if ($search = trim($request->get('search', ''))) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"])
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('contact_number', 'like', "%{$search}%");
+            });
+        }
+
+        if ($barangay = $request->get('barangay')) {
+            if ($barangay !== 'All' && $barangay !== '') {
+                $query->where('barangay', $barangay);
+            }
+        }
+
+        if ($type = $request->get('type')) {
+            if ($type !== 'All' && $type !== '') {
+                $query->where(function ($q) use ($type) {
+                    $q->where('assistance_type', 'like', "%{$type}%")
+                      ->orWhere('service_type', 'like', "%{$type}%");
+                });
+            }
+        }
+
+        $rejectedRequests = $query->orderBy('updated_at', 'desc')
+            ->paginate(10)
+            ->appends($request->query());
 
         // Get online request counts for badge
         $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();

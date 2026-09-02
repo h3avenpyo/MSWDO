@@ -368,6 +368,62 @@
             header #currentDateTime,
             header [title^="Admin:"] { display: none !important; }
         }
+
+        /* Uniform SweetAlert & Custom Modal Styles */
+        .swal2-popup {
+            border-radius: 16px !important;
+            padding: 1.5rem !important;
+            font-family: inherit !important;
+            max-width: 95vw !important;
+            box-sizing: border-box !important;
+        }
+        .swal2-title {
+            color: #1A237E !important;
+            font-weight: 700 !important;
+            font-size: 1.35rem !important;
+        }
+        .swal2-html-container {
+            font-size: 0.925rem !important;
+            color: #374151 !important;
+            max-height: 75vh !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+        .swal2-confirm {
+            background-color: #1A237E !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            padding: 10px 24px !important;
+        }
+        .swal2-cancel {
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            padding: 10px 24px !important;
+        }
+        .swal2-actions {
+            flex-direction: row !important;
+            gap: 12px;
+        }
+        @media (max-width: 575.98px) {
+            .swal2-popup {
+                padding: 1rem 0.75rem !important;
+                border-radius: 12px !important;
+            }
+            .swal2-title {
+                font-size: 1.1rem !important;
+            }
+            .swal2-actions {
+                flex-direction: column-reverse !important;
+                gap: 8px !important;
+                width: 100% !important;
+                margin-top: 1rem !important;
+            }
+            .swal2-actions button {
+                width: 100% !important;
+                margin: 0 !important;
+                height: 44px !important;
+            }
+        }
     </style>
     @stack('styles')
 </head>

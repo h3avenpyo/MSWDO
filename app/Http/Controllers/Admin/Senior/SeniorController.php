@@ -274,16 +274,36 @@ class SeniorController extends Controller
 
     public function bulkArchive(Request $request)
     {
-        $request->validate([
-            'ids' => 'required|array',
-            'ids.*' => 'integer'
-        ]);
+        $ids = $request->input('ids');
+        $selectAll = $request->boolean('select_all');
+        $barangay = $request->input('barangay');
+        $search = $request->input('search');
 
-        $ids = $request->ids;
+        $query = SeniorCitizenRecord::where('status', '!=', 'archived');
 
-        $updated = SeniorCitizenRecord::
-            whereIn('id', $ids)
-            ->update(['status' => 'archived']);
+        if ($ids && is_array($ids) && count($ids) > 0) {
+            // Specific IDs selected
+            $query->whereIn('id', $ids);
+        } elseif ($selectAll) {
+            // Select all matching filter (barangay/search may be empty = no filter = all)
+            if ($barangay && $barangay !== 'All' && $barangay !== '') {
+                $query->where('barangay', $barangay);
+            }
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', '%' . $search . '%')
+                      ->orWhere('middle_name', 'like', '%' . $search . '%')
+                      ->orWhere('last_name', 'like', '%' . $search . '%');
+                });
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No records specified to archive.'
+            ], 400);
+        }
+
+        $updated = $query->update(['status' => 'archived']);
 
         if ($updated > 0) {
             $this->logActivity('bulk archived', "{$updated} senior(s)", 'Multiple');
@@ -302,16 +322,36 @@ class SeniorController extends Controller
 
     public function bulkRestore(Request $request)
     {
-        $request->validate([
-            'ids' => 'required|array',
-            'ids.*' => 'integer'
-        ]);
+        $ids = $request->input('ids');
+        $selectAll = $request->boolean('select_all');
+        $barangay = $request->input('barangay');
+        $search = $request->input('search');
 
-        $ids = $request->ids;
+        $query = SeniorCitizenRecord::where('status', 'archived');
 
-        $updated = SeniorCitizenRecord::
-            whereIn('id', $ids)
-            ->update(['status' => 'active']);
+        if ($ids && is_array($ids) && count($ids) > 0) {
+            // Specific IDs selected
+            $query->whereIn('id', $ids);
+        } elseif ($selectAll) {
+            // Select all matching filter (barangay/search may be empty = no filter = all)
+            if ($barangay && $barangay !== 'All' && $barangay !== '') {
+                $query->where('barangay', $barangay);
+            }
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', '%' . $search . '%')
+                      ->orWhere('middle_name', 'like', '%' . $search . '%')
+                      ->orWhere('last_name', 'like', '%' . $search . '%');
+                });
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No records specified to restore.'
+            ], 400);
+        }
+
+        $updated = $query->update(['status' => 'active']);
 
         if ($updated > 0) {
             $this->logActivity('bulk restored', "{$updated} senior(s)", 'Multiple');
@@ -331,19 +371,31 @@ class SeniorController extends Controller
     public function exportSeniors(Request $request)
     {
         $ids = $request->get('ids');
+        $barangay = $request->get('barangay');
+        $search = $request->get('search');
+
+        $query = SeniorCitizenRecord::where('status', '!=', 'archived')
+            ->whereNotNull('birth_date')
+            ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60');
 
         if ($ids) {
             $idsArray = explode(',', $ids);
-            $seniors = SeniorCitizenRecord::
-                whereIn('id', $idsArray)
-                ->get();
-        } else {
-            $seniors = SeniorCitizenRecord::
-                where('status', 'active')
-                ->whereNotNull('birth_date')
-                ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')
-                ->get();
+            $query->whereIn('id', $idsArray);
         }
+
+        if ($barangay && $barangay !== 'All' && $barangay !== '') {
+            $query->where('barangay', $barangay);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', '%' . $search . '%')
+                  ->orWhere('middle_name', 'like', '%' . $search . '%')
+                  ->orWhere('last_name', 'like', '%' . $search . '%');
+            });
+        }
+
+        $seniors = $query->orderBy('last_name')->orderBy('first_name')->get();
 
         $headers = [
             'Content-Type' => 'text/csv',
@@ -387,20 +439,29 @@ class SeniorController extends Controller
 
     public function exportSeniorsPdf(Request $request)
     {
+        @ini_set('memory_limit', '1024M');
+        @ini_set('max_execution_time', 300);
+
         $ids = $request->get('ids');
         $barangay = $request->get('barangay');
         $search = $request->get('search');
+        $isArchived = $request->boolean('archived');
 
-        $query = SeniorCitizenRecord::where('status', 'active')
-            ->whereNotNull('birth_date')
-            ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60');
+        $query = SeniorCitizenRecord::query();
+        if ($isArchived) {
+            $query->where('status', 'archived');
+        } else {
+            $query->where('status', '!=', 'archived')
+                ->whereNotNull('birth_date')
+                ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60');
+        }
 
         if ($ids) {
             $idsArray = explode(',', $ids);
             $query->whereIn('id', $idsArray);
         }
 
-        if ($barangay) {
+        if ($barangay && $barangay !== 'All' && $barangay !== '') {
             $query->where('barangay', $barangay);
         }
 
@@ -412,21 +473,56 @@ class SeniorController extends Controller
             });
         }
 
-        $seniors = $query->get();
+        $perPart = 1000;
+        $totalMatching = (clone $query)->count();
+        $totalParts = max(1, (int) ceil($totalMatching / $perPart));
+
+        // Return count metadata for client-side multi-part downloader
+        if ($request->boolean('check_count')) {
+            return response()->json([
+                'total_count' => $totalMatching,
+                'per_part' => $perPart,
+                'total_parts' => $totalParts,
+            ]);
+        }
+
+        $part = max(1, min($totalParts, (int) $request->get('part', 1)));
+        $partStart = (($part - 1) * $perPart) + 1;
+        $partEnd = min($totalMatching, $part * $perPart);
+
+        // Fetch records for this part (ordered consistently)
+        $seniors = $query->orderBy('last_name')
+            ->orderBy('first_name')
+            ->offset(($part - 1) * $perPart)
+            ->limit($perPart)
+            ->get();
 
         $data = [
             'seniors' => $seniors,
             'date' => now()->format('F d, Y'),
-            'total' => $seniors->count(),
+            'total' => $totalMatching,
             'barangay' => $barangay,
-            'search' => $search
+            'search' => $search,
+            'isArchived' => $isArchived,
+            'currentPart' => $part,
+            'totalParts' => $totalParts,
+            'partStart' => $partStart,
+            'partEnd' => $partEnd,
         ];
 
         $pdf = PDF::loadView('admin.senior.seniors-pdf', $data);
+        $pdf->setPaper('a4', 'landscape');
+        $pdf->getDomPDF()->set_option('isFontSubsettingEnabled', false);
+        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
+        $pdf->getDomPDF()->set_option('dpi', 96);
 
-        $filename = 'senior_citizens';
+        $filename = $isArchived ? 'archived_senior_citizens' : 'senior_citizens';
         if ($barangay) {
             $filename .= '_' . str_replace(' ', '_', strtolower($barangay));
+        }
+        if ($totalParts > 1) {
+            $filename .= '_batch_' . $part . '_of_' . $totalParts;
         }
         $filename .= '_' . now()->format('Y-m-d') . '.pdf';
 

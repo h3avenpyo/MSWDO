@@ -12,13 +12,35 @@ $initials = count($words) >= 2
 @endphp
 
 <style>
+    /* ── Full-height layout ── */
+    html, body { overflow-x: hidden !important; overflow-y: auto !important; }
+    .main {
+        display: flex !important;
+        flex-direction: column !important;
+        padding-top: 14px !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+    }
+    @media (max-width: 767.98px) { .main { padding-top: 72px !important; } }
+
+    /* ── Panel Header ── */
+    .panel-header { margin-bottom: 1rem; }
+    .panel-header h2 { font-size: 2rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+    .panel-header p { font-size: 0.875rem; color: var(--text-secondary); margin: 0.25rem 0 0; }
+
+    /* ── Table wrap ── */
     .password-reset-table-wrap {
         background: var(--surface);
         border-radius: 16px;
         border: 1px solid var(--border);
         box-shadow: var(--shadow);
         padding: 1.5rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
     }
+
+    /* ── Table ── */
     .gov-table {
         width: 100%;
         border-collapse: collapse;
@@ -46,19 +68,45 @@ $initials = count($words) >= 2
     .gov-table tr:hover td { background: #F8FAFC; }
     .gov-table tr:last-child td { border-bottom: none; }
 
+    /* ── Badges ── */
     .status-badge {
         display: inline-flex;
         align-items: center;
-        padding: 0.35rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: .04em;
     }
     .status-pending { background: #FEF3C7; color: #92400E; }
     .status-approved { background: #D1FAE5; color: #065F46; }
     .status-completed { background: #DBEAFE; color: #1E40AF; }
     .status-rejected { background: #FEE2E2; color: #991B1B; }
 
+    /* ── Filter Styles ── */
+    .filter-item { display: flex; flex-direction: column; gap: 6px; }
+    .filter-label { font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: .03em; }
+    .filter-search-wrap { display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s; }
+    .filter-search-wrap:focus-within { box-shadow: 0 0 0 3px rgba(26,35,126,.12); border-radius: 8px; }
+    .filter-search-btn { height: 44px !important; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch; }
+    .filter-search-btn:hover { background: #121858; }
+
+    .filter-dropdown { flex: 0 1 200px; min-width: 180px; position: relative; }
+    .filter-select-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; height: 44px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 0.875rem; cursor: pointer; background: #fff; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
+    .filter-select-btn:hover { border-color: #9CA3AF; }
+    .filter-select-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #111827; font-weight: 500; }
+    .filter-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 50; max-height: 260px; overflow-y: auto; padding: 4px; }
+    .status-opt { padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer; transition: background .15s; }
+    .status-opt:hover { background: #F3F4F6; }
+    .status-opt.selected { background: #EEF2FF; color: #1A237E; font-weight: 600; }
+    #statusBtn.active { border-color: #1A237E; background: #EEF2FF; }
+
+    .filter-search input::placeholder { color: #6B7280; font-weight: 500; font-size: 0.875rem; }
+
+    .filter-reset-btn { display: none !important; }
+    .filter-reset-btn.visible { display: inline-flex !important; }
+
+    /* ── Buttons ── */
     .btn {
         display: inline-flex;
         align-items: center;
@@ -77,22 +125,28 @@ $initials = count($words) >= 2
     .btn-success:hover { background: #15803D; }
     .btn-danger { background: #DC2626; color: white; }
     .btn-danger:hover { background: #B91C1C; }
-    .btn-primary { background: #2563EB; color: white; }
-    .btn-primary:hover { background: #1D4ED8; }
     .btn-secondary { background: #64748B; color: white; }
     .btn-secondary:hover { background: #475569; }
 
-    .reset-link-input {
-        background: #F1F5F9;
-        border: 1px solid #E2E8F0;
-        border-radius: 6px;
-        padding: 0.35rem 0.5rem;
-        font-size: 0.75rem;
-        color: #475569;
-        width: 200px;
-    }
+    /* ── Pagination ── */
+    .sc-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-shrink: 0; padding: 4px 0; flex-wrap: wrap; }
+    .sc-pagination-info { font-size: 0.813rem; color: #6B7280; font-weight: 500; }
+    .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
+    .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
+    .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
+    .sc-page-btn.active { background: #1A237E; color: #fff; border-color: #1A237E; font-weight: 700; }
+    .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* ── Mobile: stacked card rows (no horizontal scroll) ── */
+    /* ── Empty State ── */
+    .empty-row { background: transparent !important; border: none !important; box-shadow: none !important; }
+    .empty-cell { padding: 3rem 1rem !important; text-align: center !important; border: none !important; }
+    .empty-cell::before { display: none !important; content: none !important; }
+    .empty-state-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 2rem 1rem; margin-top: 50px; }
+    .empty-icon-wrap { width: 72px; height: 72px; border-radius: 50%; background: #EEF2FF; display: flex; align-items: center; justify-content: center; color: #1A237E; }
+    .empty-title { font-size: 1rem; font-weight: 600; color: #374151; margin: 0; }
+    .empty-subtitle { font-size: 0.85rem; color: #9CA3AF; margin: 0; }
+
+    /* ── Mobile: stacked card rows ── */
     @media (max-width: 767.98px) {
         .password-reset-table-wrap { padding: 1rem; }
         .gov-table { display: block; width: 100%; margin-top: 0.75rem; }
@@ -140,28 +194,71 @@ $initials = count($words) >= 2
             padding-top: 10px;
         }
         .gov-table tbody td[data-label="Action"]::before { display: none !important; }
-        .gov-table tbody td.empty-state-cell {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            text-align: center !important;
-            padding: 2rem 1rem !important;
-        }
-        .gov-table tbody td.empty-state-cell::before { display: none !important; }
+        .gov-table tbody td.empty-cell { display: flex !important; justify-content: center !important; align-items: center !important; text-align: center !important; padding: 2rem 1rem !important; }
+        .gov-table tbody td.empty-cell::before { display: none !important; }
+        .sc-pagination { flex-direction: column !important; align-items: center !important; gap: 8px !important; }
+        .sc-pagination-controls { justify-content: center !important; }
+        .sc-pagination-info { text-align: center !important; }
+        
+        .filter-dropdown { min-width: 0; width: 100%; }
+        .filter-select-btn { width: 100%; }
     }
+
+    /* ── Tablet ── */
+    @media (min-width: 768px) and (max-width: 1199.98px) {
+        .sc-pagination { flex-direction: row; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    }
+
+    /* ── Desktop: full-height, no-scroll ── */
+    @media (min-width: 1200px) {
+        .main { height: 100vh !important; overflow: hidden !important; }
+        .password-reset-table-wrap { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
+        .sc-pagination { flex-direction: row; justify-content: space-between; margin-top: 12px; flex-shrink: 0; }
+        .sc-pagination-controls { justify-content: flex-end; }
+        .sc-pagination-info { text-align: left; }
+        
+        .filter-dropdown { flex: 0 1 200px; min-width: 180px; }
+    }
+    
+    .sc-pagination { flex-shrink: 0; }
 </style>
 
-<div class="password-reset-table-wrap">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <div>
-            <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin: 0;">Password Reset Requests</h2>
-            <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0.25rem 0 0;">Review and approve password reset requests from users</p>
-        </div>
-    </div>
+<div class="panel-header">
+    <h2>Password Reset Requests</h2>
+    <p>Review and approve password reset requests from users</p>
+</div>
 
+<div class="flex items-center justify-between flex-wrap gap-2 mb-3">
+    <div class="flex items-center gap-3 flex-wrap" style="align-items: flex-end !important;">
+        <div class="filter-item filter-search" style="display: flex; flex-direction: column; gap: 6px; flex: 0 0 auto;">
+            <label class="filter-label">Search</label>
+            <div class="filter-search-wrap" style="display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s;">
+                <input type="text" class="form-control text-xs" placeholder="Search name or email..." style="width: 220px; padding-left: 16px; height: 44px; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; flex: 1 1 auto; min-width: 0; box-sizing: border-box !important; margin: 0 !important;" id="searchInput" value="{{ request()->get('search', '') }}" oninput="updateClearButtonVisibility()" onkeydown="if(event.key==='Enter'){event.preventDefault();handleSearch();}">
+                <button type="button" class="filter-search-btn" style="height: 44px !important; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch;" onclick="handleSearch()">
+                    <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+                </button>
+            </div>
+        </div>
+        <div class="filter-item filter-dropdown" id="statusDropdown" style="display: flex; flex-direction: column; gap: 6px; flex: 0 0 auto;">
+            <label class="filter-label">Filter by Status</label>
+            <div onclick="toggleStatusMenu()" class="filter-select-btn" id="statusBtn">
+                <span id="statusLabel" class="filter-select-label">{{ request()->get('status', 'All Status') }}</span>
+                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
+            </div>
+            <div id="statusMenu" class="filter-menu" style="display:none"></div>
+        </div>
+        <button type="button" class="filter-reset-btn" onclick="clearFilters()" style="height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; cursor: pointer; align-items: center; justify-content: center; transition: all .15s; font-size: 0.875rem; font-weight: 500; gap: 6px; flex-shrink: 0;" onmouseover="this.style.borderColor='#B91C1C';this.style.color='#B91C1C';this.style.background='#FEF2F2';" onmouseout="this.style.borderColor='#DC2626';this.style.color='#DC2626';this.style.background='#fff';">
+            <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+            Clear
+        </button>
+    </div>
+</div>
+
+<div class="password-reset-table-wrap">
     <table class="gov-table">
         <thead>
             <tr>
+                <th>Name</th>
                 <th>Email</th>
                 <th>Status</th>
                 <th>Requested</th>
@@ -172,7 +269,14 @@ $initials = count($words) >= 2
         </thead>
         <tbody>
             @forelse($requests as $request)
-                <tr>
+                <tr class="data-row">
+                    <td data-label="Name" style="font-weight: 500;">
+                        @if($request->user)
+                            {{ $request->user->name }}
+                        @else
+                            -
+                        @endif
+                    </td>
                     <td data-label="Email" style="font-weight: 500;">{{ $request->email }}</td>
                     <td data-label="Status">
                         @if($request->status === 'pending')
@@ -203,50 +307,44 @@ $initials = count($words) >= 2
                     <td data-label="Action">
                         @if($request->status === 'pending')
                             <div style="display: flex; gap: 0.5rem;">
-                                <form method="POST" action="{{ route('admin.password-reset.approve', $request->id) }}" style="display: inline;">
+                                <form method="POST" action="{{ route('admin.password-reset.approve', $request->id) }}" class="swal-form" data-swal-title="Approve Request" data-swal-text="Are you sure you want to approve the password reset request for {{ $request->user->name ?? $request->email }}?" data-swal-icon="question" data-swal-confirm="Yes, Approve" data-swal-color="#16A34A" style="display: inline;">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Approve this password reset request?')">
-                                        Approve
-                                    </button>
+                                    <button type="submit" class="btn btn-sm btn-success">Approve</button>
                                 </form>
-                                <form method="POST" action="{{ route('admin.password-reset.reject', $request->id) }}" style="display: inline;">
+                                <form method="POST" action="{{ route('admin.password-reset.reject', $request->id) }}" class="swal-form" data-swal-title="Reject Request" data-swal-text="Are you sure you want to reject the password reset request for {{ $request->user->name ?? $request->email }}?" data-swal-icon="warning" data-swal-confirm="Yes, Reject" data-swal-color="#DC2626" style="display: inline;">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Reject this password reset request?')">
-                                        Reject
-                                    </button>
+                                    <button type="submit" class="btn btn-sm btn-danger">Reject</button>
                                 </form>
                             </div>
                         @elseif($request->status === 'approved')
                             <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                                 <span style="font-size: 0.75rem; color: #64748B;">Email sent to user</span>
-                                <form method="POST" action="{{ route('admin.password-reset.delete', $request->id) }}" style="display: inline;">
+                                <form method="POST" action="{{ route('admin.password-reset.delete', $request->id) }}" class="swal-form" data-swal-title="Delete Record" data-swal-text="Are you sure you want to delete this password reset record for {{ $request->user->name ?? $request->email }}?" data-swal-icon="warning" data-swal-confirm="Yes, Delete" data-swal-color="#DC2626" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-secondary" onclick="return confirm('Delete this record?')">
-                                        Delete
-                                    </button>
+                                    <button type="submit" class="btn btn-sm btn-secondary">Delete</button>
                                 </form>
                             </div>
                         @else
-                            <form method="POST" action="{{ route('admin.password-reset.delete', $request->id) }}" style="display: inline;">
+                            <form method="POST" action="{{ route('admin.password-reset.delete', $request->id) }}" class="swal-form" data-swal-title="Delete Record" data-swal-text="Are you sure you want to delete this password reset record for {{ $request->user->name ?? $request->email }}?" data-swal-icon="warning" data-swal-confirm="Yes, Delete" data-swal-color="#DC2626" style="display: inline;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-secondary" onclick="return confirm('Delete this record?')">
-                                    Delete
-                                </button>
+                                <button type="submit" class="btn btn-sm btn-secondary">Delete</button>
                             </form>
                         @endif
                     </td>
                 </tr>
             @empty
-                <tr>
-                    <td colspan="6" class="empty-state-cell" style="text-align: center; padding: 3rem 1rem; color: #64748B;">
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-                            <svg xmlns="http://www.w3.org/2000/svg" style="width: 48px; height: 48px; color: #CBD5E1;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                            </svg>
-                            <p style="font-size: 1rem; font-weight: 500; margin: 0;">No password reset requests</p>
-                            <p style="font-size: 0.875rem; margin: 0;">Requests will appear here when users submit them.</p>
+                <tr class="empty-row">
+                    <td colspan="7" class="empty-cell">
+                        <div class="empty-state-content">
+                            <div class="empty-icon-wrap">
+                                <svg xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                </svg>
+                            </div>
+                            <p class="empty-title">No password reset requests</p>
+                            <p class="empty-subtitle">Requests will appear here when users submit them.</p>
                         </div>
                     </td>
                 </tr>
@@ -254,11 +352,65 @@ $initials = count($words) >= 2
         </tbody>
     </table>
 </div>
+
+<!-- Laravel Pagination -->
+<div class="sc-pagination">
+    <div class="sc-pagination-info">
+        @if($requests->count() > 0)
+            Showing {{ $requests->firstItem() }}–{{ $requests->lastItem() }} of {{ $requests->total() }} Records
+        @else
+            Showing 0 of 0 Records
+        @endif
+    </div>
+    <div class="sc-pagination-controls">
+        {{ $requests->appends(request()->only(['search', 'status', 'per_page']))->links('vendor.pagination.custom-simple') }}
+    </div>
+</div>
 @endsection
 
 @push('scripts')
 <script>
-// Show flash messages as SweetAlert popups
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize status dropdown and set current filter from URL
+    populateStatusDropdown();
+    const urlStatus = "{{ request()->get('status', 'All Status') }}";
+    if (urlStatus && urlStatus !== 'All Status') {
+        window.statusFilterState = urlStatus;
+        document.getElementById('statusLabel').textContent = urlStatus;
+        var btn = document.getElementById('statusBtn');
+        btn.classList.add('active');
+        btn.setAttribute('data-filter', urlStatus);
+        highlightStatusOpt();
+    }
+    updateClearButtonVisibility();
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    // ── SweetAlert confirmations for all forms ──
+    document.querySelectorAll('.swal-form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const f = this;
+            Swal.fire({
+                title: f.dataset.swalTitle || 'Are you sure?',
+                text: f.dataset.swalText || 'This action cannot be undone.',
+                icon: f.dataset.swalIcon || 'warning',
+                showCancelButton: true,
+                confirmButtonColor: f.dataset.swalColor || '#1A237E',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: f.dataset.swalConfirm || 'Yes',
+                cancelButtonText: 'Cancel',
+                background: '#ffffff',
+                customClass: { popup: 'rounded-4 shadow-lg' }
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    f.submit();
+                }
+            });
+        });
+    });
+});
+
+// ── Flash message SweetAlert popups ──
 @if(session('success'))
     Swal.fire({
         title: 'Success',
@@ -282,5 +434,114 @@ $initials = count($words) >= 2
         customClass: { popup: 'rounded-4 shadow-lg' }
     });
 @endif
+
+// Search and filter functions
+function handleSearch() {
+    const searchValue = document.getElementById('searchInput').value.trim();
+    const statusValue = window.statusFilterState === 'All Status' ? '' : window.statusFilterState;
+    
+    const url = new URL(window.location.href);
+    if (searchValue) {
+        url.searchParams.set('search', searchValue);
+    } else {
+        url.searchParams.delete('search');
+    }
+    if (statusValue) {
+        url.searchParams.set('status', statusValue);
+    } else {
+        url.searchParams.delete('status');
+    }
+    
+    window.location.href = url.toString();
+}
+
+// Status filter state
+window.statusFilterState = 'All Status';
+
+function populateStatusDropdown() {
+    const statusMenu = document.getElementById('statusMenu');
+    if(statusMenu) {
+        const statuses = ['All Status', 'pending', 'approved', 'completed', 'rejected'];
+        statusMenu.innerHTML = '';
+        statuses.forEach(status => {
+            statusMenu.innerHTML += `<div class="status-opt" data-value="${status}" onclick="selectStatus(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">${status}</div>`;
+        });
+        highlightStatusOpt();
+    }
+}
+
+function toggleStatusMenu() {
+    var menu = document.getElementById('statusMenu');
+    var arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
+    if(menu.style.display === 'none' || !menu.style.display) {
+        menu.style.display = 'block';
+        if(arrow) arrow.style.transform = 'rotate(180deg)';
+        highlightStatusOpt();
+    } else {
+        menu.style.display = 'none';
+        if(arrow) arrow.style.transform = '';
+    }
+    event.stopPropagation();
+}
+
+function selectStatus(el) {
+    var val = el.getAttribute('data-value');
+    window.statusFilterState = val;
+    document.getElementById('statusLabel').textContent = el.textContent;
+    document.getElementById('statusMenu').style.display = 'none';
+    var arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
+    if(arrow) arrow.style.transform = '';
+    highlightStatusOpt();
+    var btn = document.getElementById('statusBtn');
+    if(val && val !== 'All Status') {
+        btn.classList.add('active');
+        btn.setAttribute('data-filter', val);
+    } else {
+        btn.classList.remove('active');
+        btn.removeAttribute('data-filter');
+    }
+    handleSearch();
+    updateClearButtonVisibility();
+    event.stopPropagation();
+}
+
+function highlightStatusOpt() {
+    var opts = document.querySelectorAll('.status-opt');
+    opts.forEach(function(o) {
+        if(o.getAttribute('data-value') === window.statusFilterState) o.classList.add('selected');
+        else o.classList.remove('selected');
+    });
+}
+
+// Close menu when clicking outside
+document.addEventListener('click', function(e) {
+    var statusDD = document.getElementById('statusDropdown');
+    if(statusDD && !statusDD.contains(e.target)) {
+        var menu = document.getElementById('statusMenu');
+        var arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
+        if(menu) menu.style.display = 'none';
+        if(arrow) arrow.style.transform = '';
+    }
+}, true);
+
+function clearFilters() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('search');
+    url.searchParams.delete('status');
+    window.location.href = url.toString();
+}
+
+function updateClearButtonVisibility() {
+    var searchValue = document.getElementById('searchInput').value.trim();
+    var statusValue = window.statusFilterState !== 'All Status';
+    var clearBtn = document.querySelector('.filter-reset-btn');
+    if (clearBtn) {
+        if (searchValue || statusValue) {
+            clearBtn.classList.add('visible');
+        } else {
+            clearBtn.classList.remove('visible');
+        }
+    }
+}
 </script>
 @endpush

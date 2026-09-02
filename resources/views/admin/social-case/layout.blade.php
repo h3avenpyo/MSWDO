@@ -2437,15 +2437,16 @@
             }
             #statusBtn, #assistanceBtn, #barangayBtn,
             #archiveBrgyBtn, #archiveTypeBtn {
-                height: 48px !important;
+                height: 44px !important;
                 font-size: 15px !important;
+            }
+            #searchInput, #archiveSearch,
+            #searchInput + button, #archiveSearch + button {
+                height: 44px !important;
             }
             #searchInput, #archiveSearch {
                 border-right: none !important;
                 border-radius: 6px 0 0 6px !important;
-            }
-            #searchInput + button, #archiveSearch + button {
-                height: 48px !important;
             }
             .chart-wrapper { flex: 1; min-height: 0; height: 100%; flex-direction: row; align-items: center; gap: 24px; }
             .chart-legend { flex: 0 1 300px; width: auto; flex-direction: column; flex-wrap: nowrap; justify-content: center; gap: 16px; }
@@ -2619,28 +2620,7 @@
         });
     });
 
-    (function () {
-        var roleMeta = document.querySelector('meta[name="user-role"]');
-        var role = roleMeta ? roleMeta.getAttribute('content') : '';
-        var disabledHrefs = [];
-        if (role === 'eligibility_checker') {
-            disabledHrefs = ['/admin/social-case/cases', '/admin/social-case/archive'];
-        } else if (role === 'social_worker') {
-            disabledHrefs = ['/admin/social-case/new'];
-        }
-        disabledHrefs.forEach(function (fragment) {
-            document.querySelectorAll('.sidebar-menu a').forEach(function (a) {
-                var href = a.getAttribute('href') || '';
-                if (href.indexOf(fragment) !== -1) {
-                    a.setAttribute('aria-disabled', 'true');
-                    a.style.pointerEvents = 'none';
-                    a.style.opacity = '0.45';
-                    a.style.cursor = 'not-allowed';
-                    a.addEventListener('click', function (e) { e.preventDefault(); });
-                }
-            });
-        });
-    })();
+
 </script>
 </body>
 </html>

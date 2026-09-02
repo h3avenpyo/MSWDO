@@ -13,6 +13,11 @@ const BARANGAYS = [
   "Puting Kahoy","Sabutan","San Miguel I","San Miguel II","San Vicente I","San Vicente II","Santol",
   "Tartaria","Tibig","Toledo","Tubuan I","Tubuan II","Tubuan III","Ulat","Yakal"
 ];
+
+// Make constants globally accessible for blade templates
+window.STATUSES = STATUSES;
+window.PURPOSES = PURPOSES;
+window.BARANGAYS = BARANGAYS;
 const AGENCIES = [
   {key:"PCSO", name:"Philippine Charity Sweepstakes Office", addressee:"The Officer-in-Charge\nPCSO Provincial/District Office"},
   {key:"DSWD", name:"Department of Social Welfare and Development", addressee:"The Regional Director\nDSWD Field Office"},
@@ -73,6 +78,21 @@ function countEffectiveOverlap(inputParts, clientParts){
     }
   }
   return overlap;
+}
+
+/* ── Backend-fresh document data (date + age) ──────────────────────── */
+async function fetchDocumentData(caseId){
+  try {
+    const resp = await fetch(`/admin/social-case/api/cases/${caseId}/document-data`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if(!resp.ok) throw new Error('Failed to fetch document data');
+    return await resp.json();
+  } catch(e) {
+    console.error('fetchDocumentData error:', e);
+    // Fallback: compute age client-side from birthdate
+    return null;
+  }
 }
 
 let cases = [];
@@ -811,6 +831,10 @@ function saveNewCase(){
     payload.online_request_id = onlineRequestId;
     sessionStorage.removeItem('intake_onlineRequestId');
   }
+  // Include case_id if editing an existing case
+  if (draftIntake.caseId) {
+    payload.case_id = draftIntake.caseId;
+  }
   console.log('Saving case (payload):', payload);
   fetch('/admin/social-case/api/cases', {
     method: 'POST',
@@ -1059,7 +1083,7 @@ function renderArchive(){
     if(pagControls) {
       pagControls.innerHTML = `
         <button class="sc-page-btn" disabled><i data-lucide="chevron-left" style="width:14px;height:14px"></i> Previous</button>
-        <button class="sc-page-btn active" disabled>1</button>
+        <button class="sc-page-btn active">1</button>
         <button class="sc-page-btn" disabled>Next <i data-lucide="chevron-right" style="width:14px;height:14px"></i></button>
       `;
     }
@@ -1107,13 +1131,10 @@ function renderArchive(){
     if(pagControls){
       let pageButtons = '';
       pageButtons += `<button class="sc-page-btn" ${currentPage<=1?'disabled':''} onclick="goToArchivePage(${currentPage-1})"><i data-lucide="chevron-left" style="width:14px;height:14px"></i> Previous</button>`;
-      const maxButtons = 5;
-      let startPage = Math.max(1, currentPage - Math.floor(maxButtons/2));
-      let endPage = Math.min(totalPages, startPage + maxButtons - 1);
-      if(endPage - startPage < maxButtons - 1) startPage = Math.max(1, endPage - maxButtons + 1);
-      for(let i = startPage; i <= endPage; i++){
-        pageButtons += `<button class="sc-page-btn ${i===currentPage?'active':''}" onclick="goToArchivePage(${i})">${i}</button>`;
-      }
+      
+      // Always show current page
+      pageButtons += `<button class="sc-page-btn active" onclick="goToArchivePage(${currentPage})">${currentPage}</button>`;
+      
       pageButtons += `<button class="sc-page-btn" ${currentPage>=totalPages?'disabled':''} onclick="goToArchivePage(${currentPage+1})">Next <i data-lucide="chevron-right" style="width:14px;height:14px"></i></button>`;
       pagControls.innerHTML = pageButtons;
     }
@@ -2728,9 +2749,9 @@ function renderCaseList(){
 
   // Get filter values
   const searchQuery = (document.getElementById('searchInput')?.value || "").toLowerCase();
-  const statusFilter = filterState.status || "All";
-  const assistanceFilter = filterState.assistance || "All";
-  const barangayFilter = filterState.barangay || "All";
+  const statusFilter = (window.filterState?.status) || "All";
+  const assistanceFilter = (window.filterState?.assistance) || "All";
+  const barangayFilter = (window.filterState?.barangay) || "All";
 
   // Filter cases (exclude archived – those live on the archive page)
   // Only show cases the encoder has picked up: encoded at intake, or already printed
@@ -2778,9 +2799,6 @@ function renderCaseList(){
             </div>
             <div class="empty-title">No Social Case Studies Found</div>
             <div class="empty-subtitle">Create your first Social Case Study to begin managing case records.</div>
-            <a href="/admin/social-case/new" style="background:var(--primary);color:#fff;border:none;display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:10px 16px;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none;">
-              <i data-lucide="plus" style="width:16px;height:16px"></i> Create New Case
-            </a>
           </div>
         </td>
       </tr>
@@ -2830,13 +2848,10 @@ function renderCaseList(){
   const controls = document.getElementById('paginationControls');
   let pageButtons = '';
   pageButtons += `<button class="sc-page-btn" id="prevBtn" ${page<=1?'disabled':''} onclick="goToCaseListPage(${page-1})"><i data-lucide="chevron-left" style="width:14px;height:14px"></i> Previous</button>`;
-  const maxButtons = 5;
-  let startPage = Math.max(1, page - Math.floor(maxButtons/2));
-  let endPage = Math.min(totalPages, startPage + maxButtons - 1);
-  if(endPage - startPage < maxButtons - 1) startPage = Math.max(1, endPage - maxButtons + 1);
-  for(let i = startPage; i <= endPage; i++){
-    pageButtons += `<button class="sc-page-btn ${i===page?'active':''}" onclick="goToCaseListPage(${i})">${i}</button>`;
-  }
+  
+  // Always show current page
+  pageButtons += `<button class="sc-page-btn active" onclick="goToCaseListPage(${page})">${page}</button>`;
+  
   pageButtons += `<button class="sc-page-btn" id="nextBtn" ${page>=totalPages?'disabled':''} onclick="goToCaseListPage(${page+1})">Next <i data-lucide="chevron-right" style="width:14px;height:14px"></i></button>`;
   controls.innerHTML = pageButtons;
 
@@ -2856,8 +2871,8 @@ function applyFilters(){
 function resetFilters(){
   const searchInput = document.getElementById('searchInput');
   if(searchInput) searchInput.value = '';
-  
-  filterState = { status: 'All', assistance: 'All', barangay: 'All' };
+
+  window.filterState = { status: 'All', assistance: 'All', barangay: 'All' };
   
   document.getElementById('statusLabel').textContent = 'All Status';
   document.getElementById('assistanceLabel').textContent = 'All Types';
@@ -2983,6 +2998,10 @@ async function printDocument(){
   // container/style are intentionally left mounted after printing (see below),
   // so every print call must start clean.
   removePrintArtifacts();
+
+  // Fetch authoritative document date + age from the backend
+  const docData = await fetchDocumentData(view.caseId);
+
   const agencies = c.agencies || (c.submittedTo ? c.submittedTo.split(',').map(s => s.trim()).filter(Boolean) : []);
   
   if(agencies.length === 0) {
@@ -3025,7 +3044,9 @@ async function printDocument(){
     const recommendationDefault = `Due to the lack of sufficient income and the absence of alternative financial resources to meet the ${_defaultPossessive} needs, the undersigned worker respectfully recommends that the ${_defaultSubject} be considered for assistance from your office to cover the ${_expenseType} required.`;
 
     const clientName = escapeHtml((c.client?.fullName || c.client?.full_name || c.client?.name || c.clientName || c.client_name || "")).toUpperCase() || notProvided;
-    const clientAge = escapeHtml(String(c.client?.age || "")) || notProvided;
+    const clientAge = docData && docData.client_age !== null
+      ? escapeHtml(String(docData.client_age))
+      : (escapeHtml(String(c.client?.age || "")) || notProvided);
     const clientSex = escapeHtml((c.client?.sex || c.client?.gender || "")).toUpperCase() || notProvided;
     const clientAddress = escapeHtml((c.client?.address || "")).toUpperCase() || notProvided;
     const clientBirthdate = c.client?.birthdate ? fmtDate(c.client.birthdate).toUpperCase() : notProvided;
@@ -3036,7 +3057,9 @@ async function printDocument(){
     const clientOccupation = escapeHtml((c.client?.occupation || "")) || notProvided;
     const clientIncome = escapeHtml((c.client?.income || "")) || notProvided;
     const clientContact = escapeHtml((c.client?.contact || c.client?.contactNumber || c.client?.contact_number || "")) || notProvided;
-    const reportDate = fmtDate(c.interviewDate || c.interview?.reportDate || c.createdAt).toUpperCase();
+    const reportDate = docData && docData.document_date
+      ? fmtDate(docData.document_date).toUpperCase()
+      : fmtDate(new Date().toISOString().slice(0,10)).toUpperCase();
     const rawProblem = c.interview?.interviewSituation || c.interview?.interview_situation || c.interview?.problemPresented || "";
     const purpose = c.purpose || "";
     const clientFirstName = (c.client?.firstName || c.client?.first_name || "").trim();
@@ -3207,13 +3230,17 @@ async function printDocument(){
 async function reprintCase(caseId){
   const caseRec = getCase(caseId);
   if(!caseRec) return;
-  
-  // Update the releasedDate to today to show it was reprinted
-  caseRec.releasedDate = todayISO();
-  caseRec.updatedAt = todayISO();
-  
-  // Update in database
-  const payload = convertKeys(caseRec, camelToSnake);
+
+  // Fetch authoritative date + age from backend (not from cached JS state)
+  const docData = await fetchDocumentData(caseId);
+
+  // Only send the minimal fields that change on reprint — do NOT send the
+  // full case payload (which includes stale client sub-object).
+  const payload = {
+    released_at: docData?.document_date || todayISO() + 'T00:00:00',
+    updated_at:  docData?.document_date || todayISO() + 'T00:00:00',
+  };
+
   await fetch(`/admin/social-case/api/cases/${caseId}`, {
     method: 'PUT',
     headers: {
@@ -3228,14 +3255,14 @@ async function reprintCase(caseId){
     console.log('Case updated for reprint:', data);
     logActivity('printed', 'Case document reprinted', {
       clientName: caseRec.client?.name,
-      controlNo: caseRec.controlNo
+      controlNo: caseRec.controlNo,
+      reprintDate: docData?.document_date || todayISO(),
+      clientAge: docData?.client_age ?? null,
     });
-    // Reload case data from server to get latest data
     await loadCaseDetail(caseId);
-    // Show success message
     Swal.fire({
       title: 'Reprint Successful',
-      text: `Case ${caseRec.controlNo} has been updated with today's date (${todayISO()}). You can now print the document.`,
+      html: `Case <strong>${escapeHtml(caseRec.controlNo || '')}</strong> has been updated with today's date (<strong>${escapeHtml(docData?.document_date || todayISO())}</strong>).${docData?.client_age !== null ? '<br>Client age at reprint: <strong>' + escapeHtml(String(docData.client_age)) + '</strong>' : ''}<br><br>You can now print the document.`,
       icon: 'success',
       confirmButtonColor: '#1A237E',
       confirmButtonText: 'OK',
@@ -3903,6 +3930,9 @@ async function loadDocumentPreview(caseId){
   </div>`;
   lucide.createIcons();
 
+  // Fetch authoritative document date + age from the backend
+  const docData = await fetchDocumentData(caseId);
+
   const c = getCase(caseId);
   console.log('Case data:', c);
   if(!c){
@@ -3932,7 +3962,9 @@ async function loadDocumentPreview(caseId){
   const recommendationDefault = `Due to the lack of sufficient income and the absence of alternative financial resources to meet the ${_defaultPossessive2} needs, the undersigned worker respectfully recommends that the ${_defaultSubject2} be considered for assistance from your office to cover the ${_expenseType2} required.`;
 
   const clientName = escapeHtml((c.client?.fullName || c.client?.full_name || c.client?.name || c.clientName || c.client_name || "")).toUpperCase() || notProvided;
-  const clientAge = escapeHtml(String(c.client?.age || "")) || notProvided;
+  const clientAge = docData && docData.client_age !== null
+    ? escapeHtml(String(docData.client_age))
+    : (escapeHtml(String(c.client?.age || "")) || notProvided);
   const clientSex = escapeHtml((c.client?.sex || c.client?.gender || "")).toUpperCase() || notProvided;
   const clientAddress = escapeHtml((c.client?.address || "")).toUpperCase() || notProvided;
   const clientBirthdate = c.client?.birthdate ? fmtDate(c.client.birthdate).toUpperCase() : notProvided;
@@ -3944,7 +3976,9 @@ async function loadDocumentPreview(caseId){
   const clientIncome = escapeHtml((c.client?.income || "")) || notProvided;
   const clientContact = escapeHtml((c.client?.contact || c.client?.contactNumber || c.client?.contact_number || "")) || notProvided;
 
-  const reportDate = fmtDate(c.interviewDate || c.interview?.reportDate || c.createdAt).toUpperCase();
+  const reportDate = docData && docData.document_date
+    ? fmtDate(docData.document_date).toUpperCase()
+    : fmtDate(new Date().toISOString().slice(0,10)).toUpperCase();
 
   const rawProblem = c.interview?.interviewSituation || c.interview?.interview_situation || c.interview?.problemPresented || "";
   const purpose = c.purpose || "";
@@ -4291,6 +4325,9 @@ async function renderDocument(){
   console.log('Client sex:', c.client?.sex);
   if(!c){ container.innerHTML = `<div class="empty">Case not found. Case ID: ${view.caseId}</div>`; return; }
 
+  // Fetch authoritative document date + age from the backend
+  const docData = await fetchDocumentData(view.caseId);
+
   const agenciesToPrint = view.docAgency === 'all'
     ? (c.agencies && c.agencies.length ? c.agencies : ['PCSO'])
     : [view.docAgency];
@@ -4319,7 +4356,9 @@ async function renderDocument(){
   }
 
   const clientName = escapeHtml((c.client?.fullName || c.client?.full_name || c.client?.name || c.clientName || c.client_name || "")).toUpperCase() || notProvided;
-  const clientAge = escapeHtml(String(c.client?.age || "")) || notProvided;
+  const clientAge = docData && docData.client_age !== null
+    ? escapeHtml(String(docData.client_age))
+    : (escapeHtml(String(c.client?.age || "")) || notProvided);
   const clientSex = escapeHtml((c.client?.sex || c.client?.gender || "")).toUpperCase() || notProvided;
   const clientAddress = escapeHtml((c.client?.address || "")).toUpperCase() || notProvided;
   const clientBirthdate = c.client?.birthdate ? fmtDate(c.client.birthdate).toUpperCase() : notProvided;
@@ -4331,7 +4370,9 @@ async function renderDocument(){
   const clientIncome = escapeHtml((c.client?.income || "")) || notProvided;
   const clientContact = escapeHtml((c.client?.contact || c.client?.contactNumber || c.client?.contact_number || "")) || notProvided;
 
-  const reportDate = fmtDate(c.interviewDate || c.interview?.reportDate || c.createdAt).toUpperCase();
+  const reportDate = docData && docData.document_date
+    ? fmtDate(docData.document_date).toUpperCase()
+    : fmtDate(new Date().toISOString().slice(0,10)).toUpperCase();
 
   const rawProblem = c.interview?.interviewSituation || c.interview?.interview_situation || c.interview?.problemPresented || "";
   const purpose = c.purpose || "";

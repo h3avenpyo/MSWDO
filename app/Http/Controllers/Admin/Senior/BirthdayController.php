@@ -675,6 +675,15 @@ class BirthdayController extends Controller
             : 'All Barangays';
         $this->logActivity('printed birthday payout PDF', "{$barangayLabel} - {$month} {$year}", count($payouts) . ' payout(s)');
 
+        $preparedUser = \App\Models\User::find(session('admin_user_id'));
+        $preparedByName = $preparedUser ? $preparedUser->name : (session('admin_user_name') ?? 'MSWDO Staff');
+
+        $oscaUser = \App\Models\User::where('role', 'Senior Citizen officer')->first();
+        $checkedByName = $oscaUser ? $oscaUser->name : 'Sir Roc';
+
+        $headUser = \App\Models\User::where('role', 'admin')->first();
+        $approvedByName = $headUser ? $headUser->name : 'Fred Calos';
+
         $pdf = Pdf::loadView('admin.senior.birthday-payout-print', compact(
             'payouts',
             'payoutsByBarangay',
@@ -683,16 +692,17 @@ class BirthdayController extends Controller
             'totalAmount',
             'month',
             'year',
-            'barangayName'
-        ))->setPaper('a4', 'portrait')
+            'barangayName',
+            'preparedByName',
+            'checkedByName',
+            'approvedByName'
+        ))->setPaper('a4', 'landscape')
           ->setOptions([
-              'defaultFont' => 'Times New Roman',
+              'defaultFont'          => 'Arial',
               'isHtml5ParserEnabled' => true,
-              'isRemoteEnabled' => true,
-              'margin-top' => '15mm',
-              'margin-bottom' => '15mm',
-              'margin-left' => '15mm',
-              'margin-right' => '15mm',
+              'isPhpEnabled'         => true,
+              'isFontSubsettingEnabled' => false,
+              'dpi'                  => 96,
           ]);
 
         $filename = strtolower($barangayName) . '-' . strtolower($month) . "-{$year}.pdf";

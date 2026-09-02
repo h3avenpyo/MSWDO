@@ -119,7 +119,7 @@ class SeniorCitizenSeeder extends Seeder
                     'blood_type' => $bloodTypes[array_rand($bloodTypes)],
                     'civil_status' => $civilStatuses[array_rand($civilStatuses)],
                     'osca_id' => 'OSCA-' . str_pad($recordNumberCounter, 4, '0', STR_PAD_LEFT),
-                    'created_by' => 5,
+                    'created_by' => 1,
                     'status' => 'active',
                     'emergency_contact_name' => $firstName . ' ' . $lastName . ' Jr.',
                     'emergency_contact_number' => '09' . str_pad(rand(10, 99), 2, '0', STR_PAD_LEFT) . str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT),

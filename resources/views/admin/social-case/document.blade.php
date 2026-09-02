@@ -39,18 +39,16 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     </div>
     <ul class="sidebar-menu">
         <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
+        @if((string) session('admin_user_role') !== 'social_worker')
         <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>Client Eligibility</span></a></li>
-        @if((string) session('admin_user_role') === 'eligibility_checker')
-        <li><a href="#" onclick="return false" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for eligibility checker accounts"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
-        @else
-        <li><a href="/admin/social-case/submitted"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
         @endif
+        @if((string) session('admin_user_role') !== 'eligibility_checker')
+        <li><a href="/admin/social-case/submitted"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
         <li><a href="/admin/social-case/cases" class="active"><i data-lucide="list" style="width:20px;height:20px"></i><span>All cases</span></a></li>
         <li><a href="/admin/social-case/archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
+        @endif
         @if((string) session('admin_user_role') === 'eligibility_checker')
         <li><a href="/admin/social-case/online-requests"><i data-lucide="file-text" style="width:20px;height:20px"></i><span>Online Requests</span></a></li>
-        @elseif((string) session('admin_user_role') === 'social_worker')
-        <li><a href="#" onclick="return false" style="opacity:0.5;pointer-events:none;cursor:not-allowed" title="Not available for social worker accounts"><i data-lucide="file-text" style="width:20px;height:20px"></i><span>Online Requests</span></a></li>
         @endif
         <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a></li>
     </ul>

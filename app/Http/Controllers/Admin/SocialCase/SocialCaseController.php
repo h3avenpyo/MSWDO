@@ -10,6 +10,7 @@ use App\Models\Client;
 use App\Models\User;
 use App\Models\OnlineRequest;
 use App\Services\SocialCase\EligibilityChecker;
+use App\Services\NameMatcher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -43,16 +44,16 @@ class SocialCaseController extends Controller
         ];
 
         if ($isEligibilityChecker) {
-            // Eligibility checker stats - use eligibility_status instead of rejected_at
-            $stats['pending_eligibility'] = SocialCaseStudy::where('eligibility_status', 'pending')->count();
+            // Eligibility checker stats - count online requests instead of social case studies
+            $stats['pending_eligibility'] = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
             $stats['eligible_clients'] = SocialCaseStudy::where('eligibility_status', 'eligible')->count();
             $stats['forwarded_to_encoder'] = SocialCaseStudy::where('eligibility_status', 'eligible')
                 ->whereNotNull('eligible_by')
                 ->count();
-            $stats['rejected_clients'] = SocialCaseStudy::where('eligibility_status', 'ineligible')->count();
+            $stats['rejected_clients'] = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
         } else {
             // Case encoder stats
-            $stats['total_clients'] = Client::count();
+            $stats['total_clients'] = Client::has('socialCaseStudies')->count();
             $stats['for_encoding'] = SocialCaseStudy::where('eligibility_status', 'eligible')
                 ->where('status', 'Draft')
                 ->count();
@@ -62,7 +63,18 @@ class SocialCaseController extends Controller
             $stats['total_released'] = SocialCaseStudy::whereIn('status', ['Printed', 'Released'])->count();
         }
 
-        return view('admin.social-case.dashboard', compact('justLoggedIn', 'stats'));
+        // Get online request counts for badge
+        $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
+        $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
+
+        $onlineRequestCounts = [
+            'pending' => $pendingCount,
+            'accepted' => $acceptedCount,
+            'rejected' => $rejectedCount,
+        ];
+
+        return view('admin.social-case.dashboard', compact('justLoggedIn', 'stats', 'onlineRequestCounts'));
     }
 
     public function socialCaseNew()
@@ -71,7 +83,14 @@ class SocialCaseController extends Controller
         $canCheckEligibility = in_array($role, ['eligibility_checker', 'admin'], true);
         $canEncode = in_array($role, ['social_worker', 'admin'], true);
 
-        return view('admin.social-case.new', compact('canCheckEligibility', 'canEncode'));
+        // Get online request counts for sidebar badges
+        $onlineRequestCounts = [
+            'pending' => \App\Models\OnlineRequest::where('status', 'pending')->whereNull('case_id')->count(),
+            'accepted' => \App\Models\OnlineRequest::where('status', 'approved')->whereNull('case_id')->count(),
+            'rejected' => \App\Models\OnlineRequest::where('status', 'rejected')->count(),
+        ];
+
+        return view('admin.social-case.new', compact('canCheckEligibility', 'canEncode', 'onlineRequestCounts'));
     }
 
     public function socialCaseIntake()
@@ -84,7 +103,18 @@ class SocialCaseController extends Controller
 
     public function socialCaseArchive()
     {
-        return view('admin.social-case.archive');
+        // Get online request counts for badge
+        $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
+        $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
+
+        $onlineRequestCounts = [
+            'pending' => $pendingCount,
+            'accepted' => $acceptedCount,
+            'rejected' => $rejectedCount,
+        ];
+
+        return view('admin.social-case.archive', compact('onlineRequestCounts'));
     }
 
     public function socialCaseCases()
@@ -92,7 +122,7 @@ class SocialCaseController extends Controller
         // Get online request counts for badge
         $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
         $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
-        $rejectedCount = OnlineRequest::where('status', 'rejected')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
 
         $onlineRequestCounts = [
             'pending' => $pendingCount,
@@ -130,7 +160,7 @@ class SocialCaseController extends Controller
         // Get online request counts for badge
         $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
         $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
-        $rejectedCount = OnlineRequest::where('status', 'rejected')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
 
         $onlineRequestCounts = [
             'pending' => $pendingCount,
@@ -188,6 +218,39 @@ class SocialCaseController extends Controller
             return response()->json(['error' => 'Case not found'], 404);
         }
         return response()->json($case);
+    }
+
+    /**
+     * Return authoritative document-generation values (date + age) that are
+     * computed fresh from the database on every request.  The frontend MUST
+     * use these instead of any cached JS state when generating/reprinting.
+     */
+    public function getDocumentData($id)
+    {
+        $case = SocialCaseStudy::with('client')->find($id);
+        if (!$case) {
+            return response()->json(['error' => 'Case not found'], 404);
+        }
+
+        $client = $case->client;
+        $today  = now()->startOfDay();
+
+        $documentAge = null;
+        if ($client && $client->birthdate) {
+            $birthdate = \Carbon\Carbon::parse($client->birthdate);
+            $documentAge = (int) $birthdate->diffInYears($today, false);
+            // diffInYears with false can return negative for future dates;
+            // clamp to 0 as a safety net.
+            if ($documentAge < 0) {
+                $documentAge = 0;
+            }
+        }
+
+        return response()->json([
+            'document_date'     => $today->toDateString(),
+            'client_age'        => $documentAge,
+            'client_birthdate'  => $client?->birthdate?->toDateString(),
+        ]);
     }
 
     /**
@@ -316,10 +379,10 @@ class SocialCaseController extends Controller
         ]);
 
         $name = trim($request->input('client_name'));
-        $parsed = self::parseFullName($name);
+        $parsed = NameMatcher::parseFullName($name);
 
         $start = microtime(true);
-        $candidates = self::findCandidateClients($parsed);
+        $candidates = NameMatcher::findCandidateClients($parsed);
 
         $client    = $candidates['exact']->first();
         $matchType = $client ? 'exact' : null;
@@ -413,8 +476,8 @@ class SocialCaseController extends Controller
         $override = $request->boolean('override');
 
         // Use the same normalized matching as checkEligibility
-        $parsed    = self::parseFullName($name);
-        $candidates = self::findCandidateClients($parsed);
+        $parsed    = NameMatcher::parseFullName($name);
+        $candidates = NameMatcher::findCandidateClients($parsed);
         $client    = $candidates['exact']->first()
                   ?? $candidates['partial']->first();
 
@@ -642,7 +705,7 @@ class SocialCaseController extends Controller
     private function findOrCreateClient(array $clientData): int
     {
         $fullName = trim($clientData['name'] ?? '');
-        $parsed   = self::parseFullName($fullName);
+        $parsed   = NameMatcher::parseFullName($fullName);
         $firstName  = $parsed['first_name'];
         $lastName   = $parsed['last_name'];
         $middleName = $parsed['middle_name'];

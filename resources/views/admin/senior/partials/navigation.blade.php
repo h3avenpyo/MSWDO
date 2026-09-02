@@ -4,6 +4,62 @@
        (Identical responsive system used by the Senior Dashboard)
        ══════════════════════════════════════════════════════════ */
 
+    /* Uniform SweetAlert & Custom Modal Styles */
+    .swal2-popup {
+        border-radius: 16px !important;
+        padding: 1.5rem !important;
+        font-family: inherit !important;
+        max-width: 95vw !important;
+        box-sizing: border-box !important;
+    }
+    .swal2-title {
+        color: #1A237E !important;
+        font-weight: 700 !important;
+        font-size: 1.35rem !important;
+    }
+    .swal2-html-container {
+        font-size: 0.925rem !important;
+        color: #374151 !important;
+        max-height: 75vh !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    .swal2-confirm {
+        background-color: #1A237E !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        padding: 10px 24px !important;
+    }
+    .swal2-cancel {
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        padding: 10px 24px !important;
+    }
+    .swal2-actions {
+        flex-direction: row !important;
+        gap: 12px;
+    }
+    @media (max-width: 575.98px) {
+        .swal2-popup {
+            padding: 1rem 0.75rem !important;
+            border-radius: 12px !important;
+        }
+        .swal2-title {
+            font-size: 1.1rem !important;
+        }
+        .swal2-actions {
+            flex-direction: column-reverse !important;
+            gap: 8px !important;
+            width: 100% !important;
+            margin-top: 1rem !important;
+        }
+        .swal2-actions button {
+            width: 100% !important;
+            margin: 0 !important;
+            height: 44px !important;
+        }
+    }
+
     .app{display:flex;min-height:100vh;flex-direction:row;}
 
     /* Sidebar */
@@ -116,6 +172,11 @@
 <!-- Sidebar Overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
+<!-- Hidden form for secure POST logout -->
+<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display:none;">
+    @csrf
+</form>
+
 <!-- Mobile Header (visible only on mobile) -->
 @php
     $logo = null;
@@ -163,8 +224,8 @@
         }
     }
 
-    function confirmLogout(e) {
-        e.preventDefault();
+    function confirmLogout(event) {
+        event.preventDefault();
         Swal.fire({
             title: 'Are you sure?',
             text: 'Do you really want to log out?',
@@ -176,10 +237,9 @@
             cancelButtonText: 'Cancel',
             background: '#ffffff',
             customClass: { popup: 'rounded-4 shadow-lg' }
-        }).then(function (result) {
+        }).then((result) => {
             if (result.isConfirmed) {
-                var form = document.getElementById('logout-form');
-                if (form) form.submit();
+                document.getElementById('logout-form').submit();
             }
         });
     }

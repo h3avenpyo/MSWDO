@@ -11,11 +11,29 @@ use Illuminate\Support\Facades\Mail;
 
 class PasswordResetManagementController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $requests = PasswordResetRequest::with('processedBy')
-            ->orderByDesc('requested_at')
-            ->get();
+        $search = $request->get('search');
+        $status = $request->get('status');
+        $perPage = $request->get('per_page', 5);
+
+        $query = PasswordResetRequest::with('processedBy', 'user')
+            ->orderByDesc('requested_at');
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('email', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($status && $status !== 'All Status') {
+            $query->where('status', $status);
+        }
+
+        $requests = $query->paginate($perPage);
 
         return view('admin.password-reset-management', compact('requests'));
     }
