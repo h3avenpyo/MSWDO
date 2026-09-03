@@ -101,41 +101,41 @@
 
                 <!-- Section 1: Who needs assistance -->
                 <div class="mb-8 pb-8 border-b border-slate-200">
-                    <h2 class="text-xl font-bold text-primary mb-6">Who needs assistance?</h2>
+                    <h2 class="text-xl font-bold text-primary mb-6">Who needs assistance? (Sino ang nangangailangan ng tulong?)</h2>
                     
                     <div class="space-y-3">
                         <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition">
                             <input type="radio" name="request_for" value="myself" required class="w-5 h-5 text-primary focus:ring-primary">
                             <div>
-                                <span class="block font-semibold text-slate-900">Myself</span>
+                                <span class="block font-semibold text-slate-900">Myself (Ako)</span>
                                 <span class="block text-sm text-slate-500">I am requesting assistance for myself.</span>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition">
                             <input type="radio" name="request_for" value="child" class="w-5 h-5 text-primary focus:ring-primary">
                             <div>
-                                <span class="block font-semibold text-slate-900">My Child</span>
+                                <span class="block font-semibold text-slate-900">My Child (Anak ko)</span>
                                 <span class="block text-sm text-slate-500">I am requesting assistance for my child.</span>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition">
                             <input type="radio" name="request_for" value="parent" class="w-5 h-5 text-primary focus:ring-primary">
                             <div>
-                                <span class="block font-semibold text-slate-900">My Parent</span>
+                                <span class="block font-semibold text-slate-900">My Parent (Magulang ko)</span>
                                 <span class="block text-sm text-slate-500">I am requesting assistance for my parent.</span>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition">
                             <input type="radio" name="request_for" value="family" class="w-5 h-5 text-primary focus:ring-primary">
                             <div>
-                                <span class="block font-semibold text-slate-900">Another family member</span>
+                                <span class="block font-semibold text-slate-900">Another family member (Ibang miyembro ng pamilya)</span>
                                 <span class="block text-sm text-slate-500">The request is for our household/family.</span>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition">
                             <input type="radio" name="request_for" value="assisting" class="w-5 h-5 text-primary focus:ring-primary">
                             <div>
-                                <span class="block font-semibold text-slate-900">Someone I am assisting</span>
+                                <span class="block font-semibold text-slate-900">Someone I am assisting (Tinutulungan kong tao)</span>
                                 <span class="block text-sm text-slate-500">I am submitting this request on behalf of another person.</span>
                             </div>
                         </label>
@@ -144,26 +144,26 @@
 
                 <!-- Section 2: Beneficiary Information -->
                 <div class="mb-8 pb-8 border-b border-slate-200">
-                    <h2 class="text-xl font-bold text-primary mb-6">Beneficiary Information</h2>
+                    <h2 class="text-xl font-bold text-primary mb-6">Beneficiary Information (Impormasyon ng Benepisyaryo)</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label for="firstName" class="block text-sm font-semibold text-slate-700 mb-2">First name</label>
-                            <input type="text" id="firstName" name="first_name" required placeholder="Enter first name" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
+                            <label for="firstName" class="block text-sm font-semibold text-slate-700 mb-2">First name (Unang Pangalan)</label>
+                            <input type="text" id="firstName" name="first_name" required placeholder="e.g. Juan" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
                         </div>
                         <div>
-                            <label for="lastName" class="block text-sm font-semibold text-slate-700 mb-2">Last name</label>
-                            <input type="text" id="lastName" name="last_name" required placeholder="Enter last name" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
+                            <label for="lastName" class="block text-sm font-semibold text-slate-700 mb-2">Last name (Apelyido)</label>
+                            <input type="text" id="lastName" name="last_name" required placeholder="e.g. Dela Cruz" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label for="dob" class="block text-sm font-semibold text-slate-700 mb-2">Date of birth</label>
+                            <label for="dob" class="block text-sm font-semibold text-slate-700 mb-2">Date of birth (Petsa ng Kapanganakan)</label>
                             <input type="date" id="dob" name="dob" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
                         </div>
                         <div>
-                            <label for="barangay" class="block text-sm font-semibold text-slate-700 mb-2">Barangay</label>
+                            <label for="barangay" class="block text-sm font-semibold text-slate-700 mb-2">Barangay (Barangay)</label>
                             <select id="barangay" name="barangay" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
                                 <option value="">Select barangay</option>
                                 <option value="ACACIA">Acacia</option>
@@ -236,40 +236,36 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="contactNumber" class="block text-sm font-semibold text-slate-700 mb-2">Contact number</label>
-                            <input type="text" id="contactNumber" name="contact_number" required placeholder="Enter contact number" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
+                            <label for="contactNumber" class="block text-sm font-semibold text-slate-700 mb-2">Contact number (Numero ng Kontak)</label>
+                            <input type="text" id="contactNumber" name="contact_number" required placeholder="e.g. 09123456789" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
                         </div>
                         <div>
-                            <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">Email address</label>
-                            <input type="email" id="email" name="email" required placeholder="Enter email address" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
+                            <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">Email address (Email)</label>
+                            <input type="email" id="email" name="email" required placeholder="e.g. juan@gmail.com" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
                         </div>
                     </div>
 
                     <div class="mt-4">
-                        <label for="address" class="block text-sm font-semibold text-slate-700 mb-2">Address</label>
-                        <input type="text" id="address" name="address" placeholder="Enter address" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
+                        <label for="address" class="block text-sm font-semibold text-slate-700 mb-2">Address (Address)</label>
+                        <input type="text" id="address" name="address" placeholder="e.g. Block 5 Lot 12, Phase 1, Barangay Poblacion" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
                     </div>
                 </div>
 
                 <!-- Section 3: Service Details -->
                 <div class="mb-8 pb-8 border-b border-slate-200">
-                    <h2 class="text-xl font-bold text-primary mb-6">Service Request Details</h2>
+                    <h2 class="text-xl font-bold text-primary mb-6">Service Request Details (Detalye ng Kahilingan ng Serbisyo)</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label for="serviceType" class="block text-sm font-semibold text-slate-700 mb-2">Type of Service</label>
+                            <label for="serviceType" class="block text-sm font-semibold text-slate-700 mb-2">Type of Service (Uri ng Serbisyo)</label>
                             <select id="serviceType" name="service_type" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
                                 <option value="">Select service type</option>
                                 <option value="financial_assistance">Financial Assistance</option>
                                 <option value="social_case_study">Social Case Study</option>
-                                <option value="senior_citizen">Senior Citizen Services</option>
-                                <option value="vawc">VAWC Services</option>
-                                <option value="bcpc">BCPC Services</option>
-                                <option value="others">Others</option>
                             </select>
                         </div>
                         <div>
-                            <label for="assistanceType" class="block text-sm font-semibold text-slate-700 mb-2">Assistance Type</label>
+                            <label for="assistanceType" class="block text-sm font-semibold text-slate-700 mb-2">Assistance Type (Uri ng Tulong)</label>
                             <select id="assistanceType" name="assistance_type" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
                                 <option value="">Select assistance type</option>
                                 <option value="medical">Medical Assistance</option>
@@ -285,14 +281,14 @@
                     </div>
 
                     <div>
-                        <label for="situation" class="block text-sm font-semibold text-slate-700 mb-2">Situation Description</label>
-                        <textarea id="situation" name="situation" rows="4" required placeholder="Describe the situation..." class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 resize-vertical"></textarea>
+                        <label for="situation" class="block text-sm font-semibold text-slate-700 mb-2">Situation Description (Paglalarawan ng Sitwasyon)</label>
+                        <textarea id="situation" name="situation" rows="4" required placeholder="e.g. I need financial assistance for my child's hospitalization due to dengue fever." class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 resize-vertical"></textarea>
                     </div>
                 </div>
 
                 <!-- Section 4: Upload Documents -->
                 <div class="mb-8">
-                    <h2 class="text-xl font-bold text-primary mb-6">Upload Documents (Optional)</h2>
+                    <h2 class="text-xl font-bold text-primary mb-6">Upload Documents (Mag-upload ng Dokumento)</h2>
                     
                     <div id="uploadArea" class="border-2 border-dashed border-primary rounded-lg p-8 text-center bg-slate-50 cursor-pointer transition-all duration-300 hover:bg-slate-100">
                         <div class="mb-4">
@@ -312,10 +308,16 @@
                 <!-- Submit Button -->
                 <div class="flex flex-col sm:flex-row gap-4">
                     <button type="submit" class="flex-1 bg-primary text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition shadow-lg">
-                        Submit Request
+                        <div class="flex flex-col items-center">
+                            <span>Submit Request</span>
+                            <span class="text-xs font-normal text-white/70 mt-1">Isumite ang Kahilingan</span>
+                        </div>
                     </button>
                     <a href="/" class="flex-1 text-center border-2 border-slate-300 text-slate-700 px-8 py-4 rounded-xl font-bold hover:border-primary hover:text-primary transition">
-                        Cancel
+                        <div class="flex flex-col items-center">
+                            <span>Cancel</span>
+                            <span class="text-xs font-normal text-slate-500 mt-1">Kanselahin</span>
+                        </div>
                     </a>
                 </div>
             </form>
@@ -447,13 +449,20 @@
             e.preventDefault();
             
             const formData = new FormData(this);
+            const serviceType = document.getElementById('serviceType').value;
+            
+            // Determine submission URL based on service type
+            let submitUrl = '/service-request';
+            if (serviceType === 'social_case_study') {
+                submitUrl = '/admin/social-case/online-requests';
+            }
             
             // Add selected files
             for (let i = 0; i < selectedFiles.length; i++) {
                 formData.append('documents[]', selectedFiles[i]);
             }
 
-            fetch('/service-request', {
+            fetch(submitUrl, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
