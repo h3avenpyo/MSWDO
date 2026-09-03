@@ -325,9 +325,9 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-primary text-white py-10">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <p class="text-offwhite text-sm">
+    <footer class="bg-primary text-white py-8 sm:py-10 lg:py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 text-center">
+            <p class="text-offwhite text-[10px] sm:text-xs sm:text-sm">
                 © {{ date('Y') }} MSWDO Silang. All Rights Reserved.
             </p>
         </div>
