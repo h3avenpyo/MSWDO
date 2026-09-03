@@ -125,25 +125,6 @@ $userName = session('admin_user_name') ?? 'Officer';
             <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold">2. Financial Masterlist (Step 2)</span>
         </div>
     </div>
-
-    <div class="step-wizard-nav pt-2">
-        <a href="{{ route('admin.financial.financialstep1') }}" class="step-item-pill text-decoration-none">
-            <div class="step-circle"><i class="fas fa-check"></i></div>
-            <div class="step-label">Step 1: Intake &amp; Assessment</div>
-        </a>
-        <div class="step-item-pill active">
-            <div class="step-circle"><i class="fas fa-list-check"></i></div>
-            <div class="step-label">Step 2: Masterlist (Active)</div>
-        </div>
-        <a href="{{ route('admin.financial.financialstep2.payroll') }}" class="step-item-pill text-decoration-none">
-            <div class="step-circle"><i class="fas fa-file-invoice-dollar"></i></div>
-            <div class="step-label">Step 2: Payroll Generation</div>
-        </a>
-        <a href="{{ route('admin.financial.financialstep2.all-intakes') }}" class="step-item-pill text-decoration-none">
-            <div class="step-circle"><i class="fas fa-layer-group"></i></div>
-            <div class="step-label">All Intakes (Step 1 Submissions)</div>
-        </a>
-    </div>
 </div>
 
 <!-- Stat Cards Grid -->

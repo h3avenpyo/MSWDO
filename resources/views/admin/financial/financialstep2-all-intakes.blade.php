@@ -91,6 +91,9 @@
             <a href="{{ route('admin.financial.financialstep2.payroll') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">
                 <i class="fas fa-file-invoice-dollar me-1"></i> Payroll Generation
             </a>
+            <a href="{{ route('admin.financial.financialstep2.payroll-records') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">
+                <i class="fas fa-archive me-1"></i> Payroll Records
+            </a>
             <a href="{{ route('admin.financial.financialstep2') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
                 <i class="fas fa-arrow-left me-1"></i> Back to Step 2 Masterlist
             </a>

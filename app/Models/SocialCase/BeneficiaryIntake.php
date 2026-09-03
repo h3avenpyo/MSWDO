@@ -3,6 +3,7 @@
 namespace App\Models\SocialCase;
 
 use App\Models\Client;
+use App\Models\Financial\FinancialPayrollRecord;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -70,6 +71,10 @@ class BeneficiaryIntake extends Model
         'purpose',
         'purpose_other',
         'submitted_to',
+        'is_payroll_generated',
+        'payroll_generated_at',
+        'payroll_date',
+        'payroll_record_id',
     ];
 
     protected $casts = [
@@ -78,6 +83,10 @@ class BeneficiaryIntake extends Model
         'rep_birthday' => 'date',
         'is_client_beneficiary' => 'boolean',
         'has_representative' => 'boolean',
+        'is_payroll_generated' => 'boolean',
+        'payroll_generated_at' => 'datetime',
+        'payroll_date' => 'date',
+        'payroll_record_id' => 'integer',
         'medical_conditions' => 'array',
         'beneficiary_categories' => 'array',
         'family_composition' => 'array',
@@ -99,6 +108,11 @@ class BeneficiaryIntake extends Model
     public function encoderUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'encoder');
+    }
+
+    public function payrollRecord(): BelongsTo
+    {
+        return $this->belongsTo(FinancialPayrollRecord::class, 'payroll_record_id');
     }
 
     public function getClientFullNameAttribute(): ?string

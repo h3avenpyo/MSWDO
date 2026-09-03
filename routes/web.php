@@ -128,7 +128,10 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::get('/admin/financial/financialstep2/payroll', [FinancialDashboardController::class, 'financialStep2Payroll'])->name('admin.financial.financialstep2.payroll');
         Route::post('/admin/financial/financialstep2/payroll/update-amount', [FinancialDashboardController::class, 'updateIntakeAmount'])->name('admin.financial.financialstep2.payroll.update-amount');
         Route::post('/admin/financial/financialstep2/payroll/bulk-update-amounts', [FinancialDashboardController::class, 'bulkUpdateIntakeAmounts'])->name('admin.financial.financialstep2.payroll.bulk-update-amounts');
+        Route::post('/admin/financial/financialstep2/payroll/generate', [FinancialDashboardController::class, 'generatePayroll'])->name('admin.financial.financialstep2.payroll.generate');
         Route::get('/admin/financial/financialstep2/payroll/print', [FinancialDashboardController::class, 'printPayroll'])->name('admin.financial.financialstep2.payroll.print');
+        Route::get('/admin/financial/financialstep2/payroll-records', [FinancialDashboardController::class, 'financialStep2PayrollRecords'])->name('admin.financial.financialstep2.payroll-records');
+        Route::get('/admin/financial/financialstep2/payroll-records/date/{date}', [FinancialDashboardController::class, 'financialStep2PayrollRecords'])->name('admin.financial.financialstep2.payroll-records.date');
     });
 });
 

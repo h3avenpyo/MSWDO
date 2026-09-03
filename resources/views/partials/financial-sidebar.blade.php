@@ -13,8 +13,14 @@
         </li>
         <li>
             <a href="{{ route('admin.financial.financialstep2.payroll') }}"
-                class="{{ request()->routeIs('admin.financial.financialstep2.payroll*') ? 'active' : '' }}">
+                class="{{ request()->routeIs('admin.financial.financialstep2.payroll') ? 'active' : '' }}">
                 <i class="fas fa-file-invoice-dollar"></i> Payroll Generation
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.financial.financialstep2.payroll-records') }}"
+                class="{{ request()->routeIs('admin.financial.financialstep2.payroll-records*') ? 'active' : '' }}">
+                <i class="fas fa-archive"></i> Payroll Records
             </a>
         </li>
         <li>

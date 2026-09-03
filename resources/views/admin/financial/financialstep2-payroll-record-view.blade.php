@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financial Assistance Payroll (Legal Landscape) - MSWDO Silang, Cavite</title>
+    <title>Payroll Record {{ $payrollRefNo }} (Legal Landscape) - MSWDO Silang, Cavite</title>
 
     <!-- Google Fonts: Public Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -406,26 +406,29 @@
     <!-- Web Top Action Bar (Hidden when printing) -->
     <div class="no-print no-print-bar">
         <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <div class="d-flex align-items-center gap-3">
-                <a href="{{ route('admin.financial.financialstep2.payroll') }}"
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <a href="{{ route('admin.financial.financialstep2.payroll-records') }}"
                     class="btn btn-outline-light btn-sm rounded-pill px-3">
-                    <i class="fas fa-arrow-left me-1"></i> Back to Payroll Generator
+                    <i class="fas fa-arrow-left me-1"></i> Back to Payroll Records
+                </a>
+                <a href="{{ route('admin.financial.financialstep2.payroll') }}"
+                    class="btn btn-outline-secondary btn-sm rounded-pill px-3 text-light">
+                    <i class="fas fa-file-invoice-dollar me-1"></i> Payroll Generator
                 </a>
                 <span class="text-white-50">|</span>
-                <span class="badge bg-secondary text-white rounded-pill px-2.5 py-1">Paper: Legal (8.5 × 14 in)
-                    Landscape</span>
-                <span class="fw-semibold">Date: <span class="text-warning">{{ $payrollDate }}</span></span>
-                @if(!empty($generatedTime))
-                <span class="badge bg-secondary text-white rounded-pill px-2.5 py-1"><i class="fas fa-clock me-1"></i>{{ $generatedTime }}</span>
-                @endif
+                <span class="badge bg-secondary text-white rounded-pill px-2.5 py-1">Paper: Legal (8.5 × 14 in) Landscape</span>
+                <span class="badge bg-dark border border-secondary text-warning font-monospace px-3 py-1">{{ $payrollRefNo }}</span>
+                <span class="fw-semibold text-white">Date: <span class="text-warning">{{ $payrollDate }}</span></span>
                 <span class="badge bg-primary rounded-pill px-3">{{ $totalBeneficiaries }} Beneficiaries</span>
                 <span class="badge bg-success rounded-pill px-3">Total: {{ $formattedTotalAmount }}</span>
                 @if($missingAmountCount > 0)
-                <span class="badge bg-warning text-dark rounded-pill px-3"><i
-                        class="fas fa-exclamation-triangle me-1"></i> {{ $missingAmountCount }} Pending Amount</span>
+                <span class="badge bg-warning text-dark rounded-pill px-3"><i class="fas fa-exclamation-triangle me-1"></i> {{ $missingAmountCount }} Pending Amount</span>
                 @endif
             </div>
             <div class="d-flex align-items-center gap-2">
+                <a href="{{ route('admin.financial.financialstep2.payroll-records.export-csv', $record->id) }}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="fas fa-file-csv me-1"></i> Export CSV
+                </a>
                 <button onclick="window.print()" class="btn btn-warning fw-bold text-dark px-4 rounded-pill shadow-sm">
                     <i class="fas fa-print me-1"></i> Print Legal Landscape Payroll
                 </button>
@@ -457,9 +460,6 @@
             </div>
             <div class="document-subtitle">
                 Assistance to Individuals in Crisis Situation (AICS) / Emergency Financial Assistance Program
-                @if(!empty($payrollRefNo))
-                &bull; <span class="font-monospace">Ref: {{ $payrollRefNo }}</span>
-                @endif
             </div>
         </div>
 
@@ -480,18 +480,18 @@
             <tbody>
                 @forelse($payrollRows as $row)
                 <tr>
-                    <td class="col-no">{{ $row->item_no }}</td>
+                    <td class="col-no">{{ $row->item_no ?? $loop->iteration }}</td>
                     <td class="col-control">{{ $row->control_number }}</td>
                     <td class="col-rep">
-                        <div class="fw-bold">{{ mb_strtoupper($row->representative_name) }}</div>
+                        <div class="fw-bold">{{ mb_strtoupper($row->representative_name ?? '') }}</div>
                     </td>
                     <td class="col-ben">
-                        <div>{{ mb_strtoupper($row->beneficiary_name) }}</div>
+                        <div>{{ mb_strtoupper($row->beneficiary_name ?? '') }}</div>
                     </td>
-                    <td class="col-brgy">{{ $row->barangay }}</td>
-                    <td class="col-contact">{{ $row->contact_number }}</td>
+                    <td class="col-brgy">{{ $row->barangay ?? 'Silang, Cavite' }}</td>
+                    <td class="col-contact">{{ $row->contact_number ?? 'N/A' }}</td>
                     <td class="col-amount">
-                        &#8369;{{ number_format($row->amount, 2) }}
+                        &#8369;{{ number_format((float) ($row->amount ?? 0), 2) }}
                     </td>
                     <td class="col-signature">
                         <!-- Signature field completely blank for manual physical signing -->
@@ -511,7 +511,8 @@
                 $rowCount = count($payrollRows);
                 $targetRows = max(4 - $rowCount, 0);
                 @endphp
-                @for($i = 0; $i < $targetRows; $i++) <tr>
+                @for($i = 0; $i < $targetRows; $i++)
+                <tr>
                     <td class="col-no text-muted">&nbsp;</td>
                     <td class="col-control">&nbsp;</td>
                     <td class="col-rep">&nbsp;</td>
@@ -522,8 +523,8 @@
                     <td class="col-signature">
                         <div class="signature-box"></div>
                     </td>
-                    </tr>
-                    @endfor
+                </tr>
+                @endfor
             </tbody>
             <tfoot>
                 <tr class="payroll-total-row">
@@ -552,14 +553,14 @@
             <div class="signatory-card">
                 <div class="signatory-role">Verified &amp; Certified by:</div>
                 <div class="signatory-line"></div>
-                <div class="signatory-name">MSWDO HEAD / OFFICER-IN-CHARGE</div>
+                <div class="signatory-name">{{ $certifiedBy }}</div>
                 <div class="signatory-title">Municipal Social Welfare &amp; Development Officer</div>
             </div>
 
             <div class="signatory-card">
                 <div class="signatory-role">Approved by:</div>
                 <div class="signatory-line"></div>
-                <div class="signatory-name">HON. MUNICIPAL MAYOR</div>
+                <div class="signatory-name">{{ $approvedBy }}</div>
                 <div class="signatory-title">Municipality of Silang, Cavite</div>
             </div>
         </div>
@@ -570,15 +571,23 @@
                 <span>MSWDO Financial Assistance Payroll System</span>
                 <span class="mx-2">&bull;</span>
                 <span>Ref: {{ $payrollRefNo }}</span>
+                <span class="mx-2">&bull;</span>
+                <span>Generated by: {{ $generatedBy }} ({{ $generatedAt }})</span>
             </div>
             <div>
-                {{-- <span>Printed on: {{ date('F d, Y h:i A') }}</span>
-                <span class="mx-2">&bull;</span>
-                <span>Document Format: Legal (8.5 × 14 in) Landscape</span> --}}
+                <span>Official Legal Landscape Record</span>
             </div>
         </div>
 
     </div>
+
+    @if(!empty($autoprint))
+    <script>
+        window.addEventListener('load', function() {
+            window.print();
+        });
+    </script>
+    @endif
 
 </body>
 
