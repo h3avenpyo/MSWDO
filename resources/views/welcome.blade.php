@@ -197,7 +197,7 @@
                                 families in crisis.
                             </p>
                         </div>
-                        <button type="button" onclick="openServiceRequestModal()"
+                        <a href="/service-request"
                             class="mt-6 flex items-center text-warm-gold font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200 cursor-pointer">
                             Apply & Details
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
@@ -205,7 +205,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
-                        </button>
+                        </a>
                     </div>
                     <!-- Service 2: Protection & VAWC -->
                     <div
@@ -225,7 +225,7 @@
                                 domestic violence and abuse.
                             </p>
                         </div>
-                        <button type="button" onclick="openServiceRequestModal()"
+                        <a href="/service-request"
                             class="mt-6 flex items-center text-accent font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200 cursor-pointer">
                             Get Support
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
@@ -233,7 +233,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
-                        </button>
+                        </a>
                     </div>
                     <!-- Service 3: Senior & PWD Welfare -->
                     <div
@@ -253,7 +253,7 @@
                                 for senior citizens and PWDs.
                             </p>
                         </div>
-                        <button type="button" onclick="openServiceRequestModal()"
+                        <a href="/service-request"
                             class="mt-6 flex items-center text-primary font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200 cursor-pointer">
                             Apply Pension
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
@@ -261,7 +261,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
-                        </button>
+                        </a>
                     </div>
                     <!-- Service 4: Social Case Study -->
                     <div
@@ -281,7 +281,7 @@
                                 government benefits support.
                             </p>
                         </div>
-                        <button type="button" onclick="openServiceRequestModal()"
+                        <a href="/service-request"
                             class="mt-6 flex items-center text-emerald-600 font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200 cursor-pointer">
                             Request Report
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
@@ -289,7 +289,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -539,11 +539,11 @@
                     class="border border-offwhite px-8 py-4 rounded-xl text-white hover:bg-offwhite hover:text-primary transition font-bold inline-flex items-center justify-center">
                     View Services
                 </a>
-                <button onclick="openServiceRequestModal()"
+                <a href="/service-request"
                     class="bg-warm-gold text-[#1F2937] px-8 py-4 rounded-xl font-bold hover:scale-105 transition shadow-lg inline-flex items-center justify-center cursor-pointer">
                     <i data-lucide="file-text" class="w-5 h-5 mr-2"></i>
                     <span>Online Service Request</span>
-                </button>
+                </a>
             </div>
         </div>
     </section>

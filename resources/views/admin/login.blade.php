@@ -510,30 +510,9 @@
         .form-options {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-end;
             margin-bottom: 1.5rem;
             font-size: .8438rem;
-        }
-
-        .remember-me {
-            display: inline-flex;
-            align-items: center;
-            gap: .5rem;
-            color: #475569;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .remember-checkbox {
-            width: 1.05rem;
-            height: 1.05rem;
-            accent-color: #1D4ED8;
-            cursor: pointer;
-        }
-
-        .remember-checkbox:focus-visible {
-            outline: 3px solid #93C5FD;
-            outline-offset: 1px;
         }
 
         .forgot-password {
@@ -873,10 +852,6 @@
                         </div>
 
                         <div class="form-options">
-                            <label class="remember-me">
-                                <input type="checkbox" name="remember" class="remember-checkbox">
-                                Remember me
-                            </label>
                             <a href="{{ route('admin.forgot-password') }}" class="forgot-password">Forgot password?</a>
                         </div>
 

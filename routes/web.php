@@ -22,6 +22,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/service-request', [ServiceRequestController::class, 'create'])->name('service-request.create');
 Route::post('/service-request', [ServiceRequestController::class, 'store'])->name('service-request.store');
 
 Route::get('/admin', [AuthController::class, 'showLogin'])->name('admin.login.form');
