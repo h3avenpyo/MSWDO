@@ -124,6 +124,19 @@
         .archive-filter-bar{display:block;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;}
         .archive-filter-bar #summaryGrid{margin-bottom:0;}
 
+        /* ── Mobile Filter Buttons */
+        @media (max-width:767px){
+            #summaryGrid{grid-template-columns:1fr !important;gap:12px !important;}
+            .filter-field{width:100%;}
+            .filter-label{display:block !important;}
+            .input-group{width:100%;}
+            .input-group input{width:100%;}
+            .filter-select{width:100%;}
+            .bulk-field{grid-column:1/-1;margin-top:8px;}
+            .bulk-actions-row{display:flex;flex-direction:row;flex-wrap:wrap;gap:8px;width:100%;}
+            .bulk-actions-row .btn-clear{flex:1 1 100%;min-width:100%;height:42px;min-height:42px;padding:0 10px;font-size:13px;}
+        }
+
         /* ── Mobile Pagination ── */
         @media (max-width: 767.98px) {
             .sc-pagination { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; background: #fff !important; padding: 15px 0 !important; z-index: 100 !important; border-top: 1px solid #E5E7EB !important; flex-direction: column; align-items: center; gap: 8px; }
@@ -228,7 +241,8 @@
             align-items: center;
             justify-content: center;
             white-space: nowrap;
-            width: 100%;
+            width: auto;
+            min-width: 140px;
         }
         .selected-count-badge {
             background: #3730A3;
@@ -595,11 +609,9 @@
                                 <i data-lucide="list-checks"></i> <span>Bulk Actions</span>
                                 <span id="selectedCount" class="selected-count-badge">0</span>
                             </button>
-                            @if(request('search') || request('barangay'))
-                                <a href="{{ route('admin.senior.masterlist') }}" class="btn btn-clear">
-                                    <i data-lucide="x"></i> <span>Clear</span>
-                                </a>
-                            @endif
+                            <button type="button" id="clearFiltersBtn" class="btn btn-clear" onclick="clearFilters()" style="display: none;">
+                                <i data-lucide="x"></i> <span>Clear</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1252,8 +1264,56 @@
         });
     }
 
+    function updateClearButtonVisibility() {
+        const searchInput = document.getElementById('searchInput');
+        const barangaySelect = document.getElementById('barangaySelect');
+        const clearBtn = document.getElementById('clearFiltersBtn');
+        
+        const hasSearch = searchInput && searchInput.value.trim() !== '';
+        const hasBarangay = barangaySelect && barangaySelect.value !== '';
+        
+        if (clearBtn) {
+            if (hasSearch || hasBarangay) {
+                clearBtn.style.display = 'inline-flex';
+            } else {
+                clearBtn.style.display = 'none';
+            }
+        }
+    }
+
+    function clearFilters() {
+        const searchInput = document.getElementById('searchInput');
+        const barangaySelect = document.getElementById('barangaySelect');
+        
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        if (barangaySelect) {
+            barangaySelect.value = '';
+        }
+        
+        updateClearButtonVisibility();
+        
+        // Submit form to clear filters
+        document.getElementById('filterForm').submit();
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
+
+        // Check if filters are active and show/hide clear button
+        updateClearButtonVisibility();
+
+        // Listen for input changes to show/hide clear button
+        const searchInput = document.getElementById('searchInput');
+        const barangaySelect = document.getElementById('barangaySelect');
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', updateClearButtonVisibility);
+        }
+        if (barangaySelect) {
+            barangaySelect.addEventListener('change', updateClearButtonVisibility);
+        }
 
         @if(session('success'))
             Swal.fire({

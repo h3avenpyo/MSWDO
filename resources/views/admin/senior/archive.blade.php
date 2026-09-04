@@ -380,6 +380,18 @@
         .archive-filter-bar{display:block;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;}
         .archive-filter-bar #summaryGrid{margin-bottom:0;}
 
+        /* ── Mobile Filter Buttons */
+        @media (max-width:767px){
+            #summaryGrid{grid-template-columns:1fr !important;gap:12px !important;}
+            .filter-field{width:100%;}
+            .filter-label{display:block !important;}
+            .input-group{width:100%;}
+            .input-group input{width:100%;}
+            .filter-select{width:100%;}
+            .bulk-actions-row{display:flex;flex-direction:row;flex-wrap:wrap;gap:8px;width:100%;}
+            .bulk-actions-row .btn-clear{flex:1 1 100%;min-width:100%;height:42px;min-height:42px;padding:0 10px;font-size:13px;}
+        }
+
         /* Mobile (<768px): table → stacked cards (matches Social Case archive) */
         @media (max-width:767px){
             .archive-panel-wrap{padding:.75rem;}
@@ -415,7 +427,7 @@
 
 
             <!-- Summary Section -->
-            <form method="GET" action="{{ route('admin.senior.archive.list') }}" style="margin-bottom: 20px;">
+            <form id="filterForm" method="GET" action="{{ route('admin.senior.archive.list') }}" style="margin-bottom: 20px;">
                 <div id="summaryGrid">
                 <div class="filter-field">
                     <label class="filter-label" for="searchInput">Search by Name</label>
@@ -436,14 +448,12 @@
                 <div class="filter-field">
                     <label class="filter-label">&nbsp;</label>
                     <div class="bulk-actions-row">
-                        <button type="button" id="bulkActionButton" class="bulk-btn" onclick="showBulkActionPopup()" disabled>
+                        <button type="button" id="bulkActionButton" class="bulk-btn" onclick="showBulkActionPopup()" disabled style="display: none;">
                             <i data-lucide="list-checks"></i> Bulk Actions <span class="bulk-count" id="selectedCount">0</span>
                         </button>
-                        @if(request('search') || request('barangay'))
-                            <a href="{{ route('admin.senior.archive.list') }}" class="btn btn-clear">
-                                <i data-lucide="x"></i> Clear
-                            </a>
-                        @endif
+                        <button type="button" id="clearFiltersBtn" class="btn btn-clear" onclick="clearFilters()" style="display: none;">
+                            <i data-lucide="x"></i> Clear
+                        </button>
                     </div>
                 </div>
             </div>
@@ -680,12 +690,13 @@
         }
 
         if (button) {
-            const has = count > 0;
-            button.disabled = !has;
-            button.style.opacity = has ? '1' : '0.45';
-            button.style.background = has ? '#3730A3' : '#E0E7FF';
-            button.style.color = has ? 'white' : '#3730A3';
-            button.style.borderColor = has ? '#312E81' : '#C7D2FE';
+            const selectAllChecked = (selectAll && selectAll.checked) || (mobileAll && mobileAll.checked);
+            button.disabled = !selectAllChecked;
+            button.style.display = selectAllChecked ? 'inline-flex' : 'none';
+            button.style.opacity = selectAllChecked ? '1' : '0.45';
+            button.style.background = selectAllChecked ? '#3730A3' : '#E0E7FF';
+            button.style.color = selectAllChecked ? 'white' : '#3730A3';
+            button.style.borderColor = selectAllChecked ? '#312E81' : '#C7D2FE';
         }
     }
 
@@ -893,7 +904,57 @@
         });
     }
 
+    function updateClearButtonVisibility() {
+        const searchInput = document.getElementById('searchInput');
+        const barangayFilter = document.getElementById('barangayFilter');
+        const clearBtn = document.getElementById('clearFiltersBtn');
+        
+        const hasSearch = searchInput && searchInput.value.trim() !== '';
+        const hasBarangay = barangayFilter && barangayFilter.value !== '';
+        
+        if (clearBtn) {
+            if (hasSearch || hasBarangay) {
+                clearBtn.style.display = 'inline-flex';
+            } else {
+                clearBtn.style.display = 'none';
+            }
+        }
+    }
+
+    function clearFilters() {
+        const searchInput = document.getElementById('searchInput');
+        const barangayFilter = document.getElementById('barangayFilter');
+        
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        if (barangayFilter) {
+            barangayFilter.value = '';
+        }
+        
+        updateClearButtonVisibility();
+        
+        // Submit form to clear filters
+        document.getElementById('filterForm').submit();
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+
+        // Check if filters are active and show/hide clear button
+        updateClearButtonVisibility();
+
+        // Listen for input changes to show/hide clear button
+        const searchInput = document.getElementById('searchInput');
+        const barangayFilter = document.getElementById('barangayFilter');
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', updateClearButtonVisibility);
+        }
+        if (barangayFilter) {
+            barangayFilter.addEventListener('change', updateClearButtonVisibility);
+        }
+
         @if(session('success'))
             Swal.fire({
                 title: 'Success!',
