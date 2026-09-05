@@ -1,0 +1,217 @@
+/**
+ * Financial Assistance Step 2 Payroll Records Stylesheet
+ */
+
+/* Policy 2.0 Unified Styling Tokens */
+:root {
+    --color-brand: #1A237E;
+    --color-brand-light: #EEF2FF;
+    --color-brand-dark: #0D1642;
+    --color-success: #059669;
+    --color-success-light: #ECFDF5;
+    --color-warning: #D97706;
+    --color-warning-light: #FEF3C7;
+    --color-info: #0284C7;
+    --color-info-light: #E0F2FE;
+    --color-border-subtle: #E2E8F0;
+}
+
+.filter-card {
+    background: #FFFFFF;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 14px;
+    padding: 18px 22px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.stat-metric-card {
+    background: #FFFFFF;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-metric-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.records-table-card {
+    background: #FFFFFF;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.records-table-card:hover {
+    border-color: #CBD5E1;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.date-group-card {
+    background: #FFFFFF;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    margin-bottom: 20px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.date-group-card:hover {
+    border-color: #CBD5E1;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.date-group-header {
+    background: #FFFFFF;
+    padding: 18px 24px;
+    border-radius: 14px;
+}
+
+.record-header {
+    user-select: none;
+    background: #FFFFFF;
+    transition: background-color 0.15s ease;
+}
+
+.record-header:hover {
+    background-color: #F8FAFC;
+}
+
+.record-toggle-icon {
+    transition: transform 0.2s ease;
+    display: inline-block;
+}
+
+.record-header[aria-expanded="true"] .record-toggle-icon {
+    transform: rotate(180deg);
+}
+
+.table-clean th {
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #475569;
+    background: #F8FAFC;
+    border-bottom: 2px solid #E2E8F0;
+    padding: 14px 16px;
+    white-space: nowrap;
+}
+
+.table-clean td {
+    padding: 14px 16px;
+    vertical-align: middle;
+    border-bottom: 1px solid #F1F5F9;
+    font-size: 0.875rem;
+}
+
+.table-clean tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.table-clean tbody tr:hover {
+    background-color: #F8FAFC;
+}
+
+.badge-control-no {
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 0.84rem;
+    background-color: var(--color-brand-light);
+    color: var(--color-brand);
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #C7D2FE;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-amount {
+    background-color: #ECFDF5;
+    color: #065F46;
+    font-weight: 700;
+    font-size: 0.88rem;
+    padding: 4px 12px;
+    border-radius: 8px;
+    border: 1px solid #A7F3D0;
+    display: inline-block;
+}
+
+.date-hero-banner {
+    background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-dark) 100%);
+    color: #FFFFFF;
+    border-radius: 14px;
+    padding: 22px 28px;
+    box-shadow: 0 4px 16px rgba(26, 35, 126, 0.15);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--color-brand);
+    border-color: var(--color-brand);
+}
+
+.pagination .page-link {
+    color: var(--color-brand);
+    border-radius: 8px;
+    margin: 0 2px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Custom Reusable Utility Classes (Replacing inline styles) */
+.btn-brand-primary {
+    background-color: var(--color-brand) !important;
+    border-color: var(--color-brand) !important;
+    color: #FFFFFF !important;
+}
+
+.btn-brand-primary:hover,
+.btn-brand-primary:focus {
+    background-color: var(--color-brand-dark) !important;
+    border-color: var(--color-brand-dark) !important;
+    color: #FFFFFF !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.btn-circle-toggle {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.th-col-num {
+    width: 50px;
+}
+
+.th-col-control {
+    width: 140px;
+}
+
+.text-rep-type {
+    font-size: 0.68rem;
+}
+
+.empty-state-icon-lg {
+    font-size: 4rem;
+}
+
+.text-brand-color {
+    color: var(--color-brand);
+}
+
+.bg-brand-icon {
+    background-color: var(--color-brand) !important;
+    color: #FFFFFF;
+}

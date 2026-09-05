@@ -1,0 +1,131 @@
+/**
+ * Financial Assistance Step 2 All General Intakes Stylesheet
+ */
+
+/* Clean Data Table */
+.table-clean th {
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #475569;
+    background: #F8FAFC;
+    border-bottom: 2px solid #E2E8F0;
+    padding: 12px 14px;
+}
+
+.table-clean td {
+    padding: 12px 14px;
+    vertical-align: middle;
+    border-bottom: 1px solid #F1F5F9;
+    font-size: 0.875rem;
+}
+
+.table-clean tbody tr:hover {
+    background-color: #F8FAFC;
+}
+
+/* Filter Card */
+.filter-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+/* Badges */
+.badge-amount {
+    background-color: #ECFDF5;
+    color: #065F46;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    border-radius: 8px;
+    border: 1px solid #A7F3D0;
+    display: inline-block;
+}
+
+.badge-category {
+    background: #F1F5F9;
+    color: #334155;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid #E2E8F0;
+}
+
+.badge-client-type {
+    font-size: 0.7rem;
+}
+
+/* Typography & Display Utilities */
+.header-title-custom {
+    color: #1A237E;
+}
+
+.control-number-code {
+    color: #1A237E;
+    font-weight: 700;
+}
+
+.text-rep-info {
+    font-size: 0.75rem;
+}
+
+.text-officer-info {
+    font-size: 0.75rem;
+}
+
+.text-purpose-truncate {
+    max-width: 200px;
+}
+
+/* Empty State */
+.empty-state-title {
+    font-size: var(--text-md, 1rem);
+    color: var(--color-text-primary, #1e293b);
+}
+
+.empty-state-desc {
+    font-size: var(--text-sm, 0.875rem);
+}
+
+/* Modal Details */
+.intake-modal-header {
+    background: #1A237E;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+
+.modal-section-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #1A237E;
+    border-bottom: 2px solid #EEF2FF;
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+}
+
+.detail-field-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #64748B;
+    margin-bottom: 2px;
+}
+
+.detail-field-value {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #1E293B;
+}
+
+.modal-assessment-text {
+    white-space: pre-line;
+    font-size: 0.85rem;
+}

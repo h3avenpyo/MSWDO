@@ -4,76 +4,7 @@
 @section('page-title', 'Step 2: All General Intakes')
 
 @section('page-styles')
-<style>
-.table-clean th {
-    font-size: 0.76rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: #475569;
-    background: #F8FAFC;
-    border-bottom: 2px solid #E2E8F0;
-    padding: 12px 14px;
-}
-.table-clean td {
-    padding: 12px 14px;
-    vertical-align: middle;
-    border-bottom: 1px solid #F1F5F9;
-    font-size: 0.875rem;
-}
-.table-clean tbody tr:hover {
-    background-color: #F8FAFC;
-}
-.filter-card {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 14px;
-    padding: 16px 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-}
-.badge-amount {
-    background-color: #ECFDF5;
-    color: #065F46;
-    font-weight: 700;
-    font-size: 0.85rem;
-    padding: 4px 10px;
-    border-radius: 8px;
-    border: 1px solid #A7F3D0;
-    display: inline-block;
-}
-.badge-category {
-    background: #F1F5F9;
-    color: #334155;
-    font-weight: 600;
-    font-size: 0.75rem;
-    padding: 3px 8px;
-    border-radius: 6px;
-    border: 1px solid #E2E8F0;
-}
-.modal-section-title {
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #1A237E;
-    border-bottom: 2px solid #EEF2FF;
-    padding-bottom: 6px;
-    margin-bottom: 12px;
-}
-.detail-field-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: #64748B;
-    margin-bottom: 2px;
-}
-.detail-field-value {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: #1E293B;
-}
-</style>
+<link href="{{ asset('css/financialstep2-all-intakes.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -82,7 +13,7 @@
     <!-- Header Actions -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
-            <h4 class="fw-bold mb-1" style="color: #1A237E;">
+            <h4 class="fw-bold mb-1 header-title-custom">
                 <i class="fas fa-layer-group me-2"></i>Step 2: All General Intake Records
             </h4>
             <p class="text-muted small mb-0">Masterlist of all General Intake records submitted from Step 1.</p>
@@ -123,7 +54,7 @@
             </div>
             <div class="col-md-2 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i> Barangay</label>
-                <select name="barangay" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
+                <select name="barangay" class="form-select form-select-sm rounded-3">
                     <option value="All">All Barangays</option>
                     @foreach($barangays as $brgy)
                     <option value="{{ $brgy }}" {{ request('barangay') == $brgy ? 'selected' : '' }}>{{ $brgy }}</option>
@@ -132,7 +63,7 @@
             </div>
             <div class="col-md-2 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-tags me-1"></i> Category</label>
-                <select name="category" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
+                <select name="category" class="form-select form-select-sm rounded-3">
                     <option value="All">All Categories</option>
                     @foreach($categories as $cat)
                     <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
@@ -141,11 +72,11 @@
             </div>
             <div class="col-md-2 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> Date Filter</label>
-                <input type="date" name="date" class="form-control form-control-sm rounded-3" value="{{ request('date') }}" onchange="this.form.submit()">
+                <input type="date" name="date" class="form-control form-control-sm rounded-3" value="{{ request('date') }}">
             </div>
             <div class="col-md-2 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-sort me-1"></i> Sort By</label>
-                <select name="sort" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
+                <select name="sort" class="form-select form-select-sm rounded-3">
                     <option value="date_desc" {{ request('sort') == 'date_desc' ? 'selected' : '' }}>Date (Newest First)</option>
                     <option value="date_asc" {{ request('sort') == 'date_asc' ? 'selected' : '' }}>Date (Oldest First)</option>
                     <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Client Name (A-Z)</option>
@@ -190,9 +121,9 @@
                                 @forelse($intakes as $intake)
                                 <tr>
                                     <td>
-                                        <span class="fw-bold" style="color: #1A237E;">{{ $intake->control_number }}</span>
+                                        <span class="fw-bold control-number-code">{{ $intake->control_number }}</span>
                                         <div>
-                                            <span class="badge bg-light text-secondary border px-2 py-0.5 rounded-pill" style="font-size: 0.7rem;">{{ $intake->client_type ?? 'New' }}</span>
+                                            <span class="badge bg-light text-secondary border px-2 py-0.5 rounded-pill badge-client-type">{{ $intake->client_type ?? 'New' }}</span>
                                         </div>
                                     </td>
                                     <td>
@@ -204,7 +135,7 @@
                                             {{ $intake->beneficiary_sex ?? 'N/A' }}
                                         </div>
                                         @if($intake->has_representative)
-                                        <div class="text-primary small mt-1" style="font-size: 0.75rem;">
+                                        <div class="text-primary small mt-1 text-rep-info">
                                             <i class="fas fa-user-friends me-1"></i>Rep: <strong>{{ $intake->representative_full_name }}</strong> ({{ $intake->rep_relationship ?? 'Representative' }})
                                         </div>
                                         @endif
@@ -215,13 +146,13 @@
                                     </td>
                                     <td>
                                         <div class="fw-medium text-dark">{{ $intake->date_processed ? $intake->date_processed->format('M d, Y') : 'N/A' }}</div>
-                                        <div class="text-muted small" style="font-size: 0.75rem;"><i class="fas fa-user-edit me-1"></i>{{ $intake->encoderUser?->name ?? 'MSWDO Staff' }}</div>
+                                        <div class="text-muted small text-officer-info"><i class="fas fa-user-edit me-1"></i>{{ $intake->encoderUser?->name ?? 'MSWDO Staff' }}</div>
                                     </td>
                                     <td>
                                         <div>
                                             <span class="badge-category">{{ $intake->display_category }}</span>
                                         </div>
-                                        <div class="text-muted small mt-1 text-truncate" style="max-width: 200px;" title="{{ $intake->display_assistance_purpose }}">
+                                        <div class="text-muted small mt-1 text-truncate text-purpose-truncate" title="{{ $intake->display_assistance_purpose }}">
                                             <i class="fas fa-notes-medical me-1 text-danger"></i>{{ $intake->display_assistance_purpose }}
                                         </div>
                                     </td>
@@ -233,7 +164,7 @@
                                         @endif
                                     </td>
                                     <td class="text-end">
-                                        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium" title="Quick Preview Record" onclick="viewIntakeDetails({{ json_encode($intake) }})">
+                                        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium btn-view-intake" title="Quick Preview Record" data-intake='@json($intake)'>
                                             <i class="fas fa-eye me-1"></i> View
                                         </button>
                                     </td>
@@ -243,8 +174,8 @@
                                     <td colspan="7" class="p-5 text-center">
                                         <div class="empty-state-box text-center py-4">
                                             <i class="fas fa-folder-open fa-3x mb-3 text-muted opacity-50 d-block"></i>
-                                            <h4 class="fw-bold mb-1" style="font-size: var(--text-md); color: var(--color-text-primary);">No General Intake records found</h4>
-                                            <p class="text-muted mb-0" style="font-size: var(--text-sm);">
+                                            <h4 class="fw-bold mb-1 empty-state-title">No General Intake records found</h4>
+                                            <p class="text-muted mb-0 empty-state-desc">
                                                 @if(request()->hasAny(['search', 'barangay', 'category', 'date']))
                                                     No records matched your search filters. Try resetting the filter criteria.
                                                 @else
@@ -279,7 +210,7 @@
 <div class="modal fade" id="intakeQuickViewModal" tabindex="-1" aria-labelledby="intakeQuickViewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg rounded-4">
-            <div class="modal-header text-white" style="background: #1A237E; border-top-left-radius: 1rem; border-top-right-radius: 1rem;">
+            <div class="modal-header text-white intake-modal-header">
                 <div class="d-flex align-items-center gap-2">
                     <i class="fas fa-clipboard-check fa-lg"></i>
                     <div>
@@ -388,7 +319,7 @@
                         </div>
                         <div class="col-12">
                             <div class="detail-field-label">Pagsusuri ng Social Worker (Assessment)</div>
-                            <div class="detail-field-value p-2 rounded bg-light border" id="modalSocialWorkerAssessment" style="white-space: pre-line; font-size: 0.85rem;">--</div>
+                            <div class="detail-field-value p-2 rounded bg-light border modal-assessment-text" id="modalSocialWorkerAssessment">--</div>
                         </div>
                         <div class="col-md-6">
                             <div class="detail-field-label">Inirerekomendang Uri ng Tulong</div>
@@ -412,94 +343,5 @@
 @endsection
 
 @section('page-scripts')
-<script>
-function viewIntakeDetails(intake) {
-    if (!intake) return;
-
-    // Header info
-    document.getElementById('modalControlNumberHeader').textContent = 'Control No: ' + (intake.control_number || 'N/A') + ' • Processed: ' + (intake.date_processed ? intake.date_processed.split('T')[0] : 'N/A');
-
-    // Beneficiary details
-    const benFullName = [intake.beneficiary_first_name, intake.beneficiary_middle_name, intake.beneficiary_last_name, intake.beneficiary_extension_name].filter(Boolean).join(' ') || 'N/A';
-    document.getElementById('modalBeneficiaryName').textContent = benFullName;
-    document.getElementById('modalBeneficiarySexAge').textContent = (intake.beneficiary_sex || '--') + ' / ' + (intake.beneficiary_age ? intake.beneficiary_age + ' yrs' : '--');
-    document.getElementById('modalBeneficiaryBirthday').textContent = intake.beneficiary_birthday ? intake.beneficiary_birthday.split('T')[0] : '--';
-    document.getElementById('modalBeneficiaryContact').textContent = intake.beneficiary_contact_number || 'N/A';
-    
-    const benAddress = [intake.beneficiary_street_address, intake.beneficiary_barangay, intake.beneficiary_city || 'Silang', intake.beneficiary_province || 'Cavite'].filter(Boolean).join(', ') || 'N/A';
-    document.getElementById('modalBeneficiaryAddress').textContent = benAddress;
-    document.getElementById('modalBeneficiaryBarangay').textContent = intake.beneficiary_barangay || 'Silang';
-    document.getElementById('modalBeneficiaryOccupation').textContent = intake.beneficiary_occupation || 'N/A';
-    document.getElementById('modalBeneficiarySalary').textContent = intake.beneficiary_monthly_salary ? '₱' + parseFloat(intake.beneficiary_monthly_salary).toLocaleString('en-US', {minimumFractionDigits: 2}) : 'N/A';
-    
-    let categoriesText = intake.beneficiary_category || 'N/A';
-    if (Array.isArray(intake.beneficiary_categories) && intake.beneficiary_categories.length > 0) {
-        categoriesText = intake.beneficiary_categories.join(', ');
-    }
-    document.getElementById('modalBeneficiaryCategory').textContent = categoriesText;
-
-    // Representative details
-    const repCard = document.getElementById('modalRepresentativeCard');
-    if (intake.has_representative) {
-        repCard.style.display = 'block';
-        const repFullName = [intake.rep_first_name, intake.rep_middle_name, intake.rep_last_name, intake.rep_extension_name].filter(Boolean).join(' ') || 'N/A';
-        document.getElementById('modalRepName').textContent = repFullName;
-        document.getElementById('modalRepRelationship').textContent = intake.rep_relationship || 'Representative';
-        document.getElementById('modalRepSexAge').textContent = (intake.rep_sex || '--') + ' / ' + (intake.rep_age ? intake.rep_age + ' yrs' : '--');
-        document.getElementById('modalRepContact').textContent = intake.rep_contact_number || 'N/A';
-        const repAddress = [intake.rep_street_address, intake.rep_barangay, intake.rep_city || 'Silang', intake.rep_province || 'Cavite'].filter(Boolean).join(', ') || 'N/A';
-        document.getElementById('modalRepAddress').textContent = repAddress;
-        document.getElementById('modalRepOccupation').textContent = intake.rep_occupation || 'N/A';
-        document.getElementById('modalRepSalary').textContent = intake.rep_monthly_salary ? '₱' + parseFloat(intake.rep_monthly_salary).toLocaleString('en-US', {minimumFractionDigits: 2}) : 'N/A';
-    } else {
-        repCard.style.display = 'none';
-    }
-
-    // Assessment & Assistance
-    let medCond = 'None';
-    if (Array.isArray(intake.medical_conditions) && intake.medical_conditions.length > 0) {
-        medCond = intake.medical_conditions.join(', ');
-    } else if (intake.medical_condition_other) {
-        medCond = intake.medical_condition_other;
-    }
-    document.getElementById('modalMedicalConditions').textContent = medCond;
-    document.getElementById('modalAssistancePurpose').textContent = intake.purpose_other || intake.assistance_purpose || intake.purpose || 'N/A';
-    document.getElementById('modalSocialWorkerAssessment').textContent = intake.social_worker_assessment || 'Assessment completed in Step 1 intake.';
-    document.getElementById('modalRecommendedType').textContent = intake.recommended_assistance_type || intake.service_provided || 'Financial Assistance';
-    
-    if (intake.recommended_amount) {
-        document.getElementById('modalRecommendedAmount').textContent = '₱' + parseFloat(intake.recommended_amount).toLocaleString('en-US', {minimumFractionDigits: 2});
-    } else {
-        document.getElementById('modalRecommendedAmount').textContent = 'To be assessed';
-    }
-
-    // Show modal
-    const modalEl = document.getElementById('intakeQuickViewModal');
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
-}
-
-// Automatic Search Debounce
-document.addEventListener('DOMContentLoaded', function() {
-    const filterForm = document.getElementById('allIntakesFilterForm');
-    const searchInput = document.getElementById('searchInput');
-
-    if (filterForm && searchInput) {
-        let timeout = null;
-        searchInput.addEventListener('input', function() {
-            clearTimeout(timeout);
-            timeout = setTimeout(function() {
-                filterForm.submit();
-            }, 600);
-        });
-
-        // Focus search input at the end of value if user was searching
-        if (searchInput.value.trim().length > 0 && document.activeElement !== searchInput) {
-            const val = searchInput.value;
-            searchInput.focus();
-            searchInput.setSelectionRange(val.length, val.length);
-        }
-    }
-});
-</script>
+<script src="{{ asset('js/financialstep2-all-intakes.js') }}"></script>
 @endsection

@@ -4,82 +4,7 @@
 @section('page-title', 'Financial Assistance Step 2 Masterlist')
 
 @section('page-styles')
-<style>
-.table-clean th {
-    font-size: 0.76rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: #475569;
-    background: #F8FAFC;
-    border-bottom: 2px solid #E2E8F0;
-    padding: 12px 14px;
-}
-.table-clean td {
-    padding: 12px 14px;
-    vertical-align: middle;
-    border-bottom: 1px solid #F1F5F9;
-    font-size: 0.875rem;
-}
-.table-clean tbody tr:hover {
-    background-color: #F8FAFC;
-}
-.filter-card {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 14px;
-    padding: 16px 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-}
-.badge-amount {
-    background-color: #ECFDF5;
-    color: #065F46;
-    font-weight: 700;
-    font-size: 0.85rem;
-    padding: 4px 10px;
-    border-radius: 8px;
-    border: 1px solid #A7F3D0;
-    display: inline-block;
-}
-.badge-category {
-    background: #F1F5F9;
-    color: #334155;
-    font-weight: 600;
-    font-size: 0.75rem;
-    padding: 3px 8px;
-    border-radius: 6px;
-    border: 1px solid #E2E8F0;
-}
-.modal-section-title {
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #1A237E;
-    border-bottom: 2px solid #EEF2FF;
-    padding-bottom: 6px;
-    margin-bottom: 12px;
-}
-.detail-field-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: #64748B;
-    margin-bottom: 2px;
-}
-.detail-field-value {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: #1E293B;
-}
-.workflow-pipeline-box {
-    background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
-    border-radius: 14px;
-    padding: 14px 20px;
-    color: #FFFFFF;
-}
-</style>
+<link href="{{ asset('css/financialstep2.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -106,7 +31,7 @@ $userName = session('admin_user_name') ?? 'Officer';
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <div>
             <h2 class="wizard-heading mb-1"><i class="fas fa-hand-holding-usd me-2"></i>Financial Assistance: Step 2 Masterlist</h2>
-            <p class="mb-0 text-white-50" style="font-size: var(--text-sm);">Today's Client General Intake Masterlist &bull; Step 2 Financial Assistance records processed today ({{ date('F d, Y') }})</p>
+            <p class="mb-0 text-white-50 hero-subtitle">Today's Client General Intake Masterlist &bull; Step 2 Financial Assistance records processed today ({{ date('F d, Y') }})</p>
         </div>
         <div class="d-flex align-items-center gap-2">
             <div class="user-welcome">
@@ -213,7 +138,7 @@ $userName = session('admin_user_name') ?? 'Officer';
             </select>
         </div>
         <div class="col-md-1 col-lg-1 d-flex gap-1">
-            <button type="submit" class="btn btn-sm btn-primary rounded-3 w-100 fw-semibold" style="background: #1A237E; border-color: #1A237E;" title="Apply Filter">
+            <button type="submit" class="btn btn-sm btn-primary btn-brand-primary rounded-3 w-100 fw-semibold" title="Apply Filter">
                 <i class="fas fa-filter"></i>
             </button>
             @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort', 'date']))
@@ -254,9 +179,9 @@ $userName = session('admin_user_name') ?? 'Officer';
                             @forelse($intakes as $intake)
                             <tr>
                                 <td>
-                                    <span class="fw-bold" style="color: #1A237E;">{{ $intake->control_number }}</span>
+                                    <span class="fw-bold text-brand-color">{{ $intake->control_number }}</span>
                                     <div>
-                                        <span class="badge bg-light text-secondary border px-2 py-0.5 rounded-pill" style="font-size: 0.7rem;">{{ $intake->client_type ?? 'New' }}</span>
+                                        <span class="badge bg-light text-secondary border px-2 py-0.5 rounded-pill badge-client-subtle">{{ $intake->client_type ?? 'New' }}</span>
                                     </div>
                                 </td>
                                 <td>
@@ -268,7 +193,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                                         {{ $intake->beneficiary_sex ?? 'N/A' }}
                                     </div>
                                     @if($intake->has_representative)
-                                    <div class="text-primary small mt-1" style="font-size: 0.75rem;">
+                                    <div class="text-primary small mt-1 font-text-xs">
                                         <i class="fas fa-user-friends me-1"></i>Rep: <strong>{{ $intake->representative_full_name }}</strong> ({{ $intake->rep_relationship ?? 'Representative' }})
                                     </div>
                                     @endif
@@ -279,13 +204,13 @@ $userName = session('admin_user_name') ?? 'Officer';
                                 </td>
                                 <td>
                                     <div class="fw-medium text-dark">{{ $intake->date_processed ? $intake->date_processed->format('M d, Y') : 'N/A' }}</div>
-                                    <div class="text-muted small" style="font-size: 0.75rem;"><i class="fas fa-user-edit me-1"></i>{{ $intake->encoderUser?->name ?? 'MSWDO Staff' }}</div>
+                                    <div class="text-muted small font-text-xs"><i class="fas fa-user-edit me-1"></i>{{ $intake->encoderUser?->name ?? 'MSWDO Staff' }}</div>
                                 </td>
                                 <td>
                                     <div>
                                         <span class="badge-category">{{ $intake->display_category }}</span>
                                     </div>
-                                    <div class="text-muted small mt-1 text-truncate" style="max-width: 200px;" title="{{ $intake->display_assistance_purpose }}">
+                                    <div class="text-muted small mt-1 text-truncate purpose-max-w-200" title="{{ $intake->display_assistance_purpose }}">
                                         <i class="fas fa-notes-medical me-1 text-danger"></i>{{ $intake->display_assistance_purpose }}
                                     </div>
                                 </td>
@@ -298,17 +223,17 @@ $userName = session('admin_user_name') ?? 'Officer';
                                 </td>
                                 <td>
                                     @if($intake->recommended_amount && $intake->recommended_amount > 0)
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.75rem;">
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 fw-bold badge-status-payout">
                                             <i class="fas fa-check-circle me-1"></i>Eligible for Payout
                                         </span>
                                     @else
-                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.75rem;">
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1 fw-bold badge-status-assessment">
                                             <i class="fas fa-clock me-1"></i>For Assessment
                                         </span>
                                     @endif
                                 </td>
                                 <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium" title="Quick Preview Record" onclick="viewIntakeDetails({{ json_encode($intake) }})">
+                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium btn-view-intake" title="Quick Preview Record" data-intake="{{ json_encode($intake) }}">
                                         <i class="fas fa-eye me-1"></i> View
                                     </button>
                                 </td>
@@ -318,8 +243,8 @@ $userName = session('admin_user_name') ?? 'Officer';
                                 <td colspan="8" class="p-5 text-center">
                                     <div class="empty-state-box text-center py-4">
                                         <i class="fas fa-folder-open fa-3x mb-3 text-muted opacity-50 d-block"></i>
-                                        <h4 class="fw-bold mb-1" style="font-size: var(--text-md); color: var(--color-text-primary);">No General Intake records found for today</h4>
-                                        <p class="text-muted mb-0" style="font-size: var(--text-sm);">
+                                        <h4 class="fw-bold mb-1 empty-title">No General Intake records found for today</h4>
+                                        <p class="text-muted mb-0 empty-desc">
                                             @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort']))
                                                 No records matched your search filters for today. Try resetting the filter criteria.
                                             @else
@@ -353,7 +278,7 @@ $userName = session('admin_user_name') ?? 'Officer';
 <div class="modal fade" id="intakeQuickViewModal" tabindex="-1" aria-labelledby="intakeQuickViewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg rounded-4">
-            <div class="modal-header text-white" style="background: #1A237E; border-top-left-radius: 1rem; border-top-right-radius: 1rem;">
+            <div class="modal-header text-white modal-header-brand">
                 <div class="d-flex align-items-center gap-2">
                     <i class="fas fa-clipboard-check fa-lg"></i>
                     <div>
@@ -462,7 +387,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                         </div>
                         <div class="col-12">
                             <div class="detail-field-label">Pagsusuri ng Social Worker (Assessment)</div>
-                            <div class="detail-field-value p-2 rounded bg-light border" id="modalSocialWorkerAssessment" style="white-space: pre-line; font-size: 0.85rem;">--</div>
+                            <div class="detail-field-value p-2 rounded bg-light border modal-assessment-box" id="modalSocialWorkerAssessment">--</div>
                         </div>
                         <div class="col-md-6">
                             <div class="detail-field-label">Inirerekomendang Uri ng Tulong</div>
@@ -486,71 +411,5 @@ $userName = session('admin_user_name') ?? 'Officer';
 @endsection
 
 @section('page-scripts')
-<script>
-function viewIntakeDetails(intake) {
-    if (!intake) return;
-
-    // Header info
-    document.getElementById('modalControlNumberHeader').textContent = 'Control No: ' + (intake.control_number || 'N/A') + ' • Processed: ' + (intake.date_processed ? intake.date_processed.split('T')[0] : 'N/A');
-
-    // Beneficiary details
-    const benFullName = [intake.beneficiary_first_name, intake.beneficiary_middle_name, intake.beneficiary_last_name, intake.beneficiary_extension_name].filter(Boolean).join(' ') || 'N/A';
-    document.getElementById('modalBeneficiaryName').textContent = benFullName;
-    document.getElementById('modalBeneficiarySexAge').textContent = (intake.beneficiary_sex || '--') + ' / ' + (intake.beneficiary_age ? intake.beneficiary_age + ' yrs' : '--');
-    document.getElementById('modalBeneficiaryBirthday').textContent = intake.beneficiary_birthday ? intake.beneficiary_birthday.split('T')[0] : '--';
-    document.getElementById('modalBeneficiaryContact').textContent = intake.beneficiary_contact_number || 'N/A';
-    
-    const benAddress = [intake.beneficiary_street_address, intake.beneficiary_barangay, intake.beneficiary_city || 'Silang', intake.beneficiary_province || 'Cavite'].filter(Boolean).join(', ') || 'N/A';
-    document.getElementById('modalBeneficiaryAddress').textContent = benAddress;
-    document.getElementById('modalBeneficiaryBarangay').textContent = intake.beneficiary_barangay || 'Silang';
-    document.getElementById('modalBeneficiaryOccupation').textContent = intake.beneficiary_occupation || 'N/A';
-    document.getElementById('modalBeneficiarySalary').textContent = intake.beneficiary_monthly_salary ? '₱' + parseFloat(intake.beneficiary_monthly_salary).toLocaleString('en-US', {minimumFractionDigits: 2}) : 'N/A';
-    
-    let categoriesText = intake.beneficiary_category || 'N/A';
-    if (Array.isArray(intake.beneficiary_categories) && intake.beneficiary_categories.length > 0) {
-        categoriesText = intake.beneficiary_categories.join(', ');
-    }
-    document.getElementById('modalBeneficiaryCategory').textContent = categoriesText;
-
-    // Representative details
-    const repCard = document.getElementById('modalRepresentativeCard');
-    if (intake.has_representative) {
-        repCard.style.display = 'block';
-        const repFullName = [intake.rep_first_name, intake.rep_middle_name, intake.rep_last_name, intake.rep_extension_name].filter(Boolean).join(' ') || 'N/A';
-        document.getElementById('modalRepName').textContent = repFullName;
-        document.getElementById('modalRepRelationship').textContent = intake.rep_relationship || 'Representative';
-        document.getElementById('modalRepSexAge').textContent = (intake.rep_sex || '--') + ' / ' + (intake.rep_age ? intake.rep_age + ' yrs' : '--');
-        document.getElementById('modalRepContact').textContent = intake.rep_contact_number || 'N/A';
-        const repAddress = [intake.rep_street_address, intake.rep_barangay, intake.rep_city || 'Silang', intake.rep_province || 'Cavite'].filter(Boolean).join(', ') || 'N/A';
-        document.getElementById('modalRepAddress').textContent = repAddress;
-        document.getElementById('modalRepOccupation').textContent = intake.rep_occupation || 'N/A';
-        document.getElementById('modalRepSalary').textContent = intake.rep_monthly_salary ? '₱' + parseFloat(intake.rep_monthly_salary).toLocaleString('en-US', {minimumFractionDigits: 2}) : 'N/A';
-    } else {
-        repCard.style.display = 'none';
-    }
-
-    // Assessment & Assistance
-    let medCond = 'None';
-    if (Array.isArray(intake.medical_conditions) && intake.medical_conditions.length > 0) {
-        medCond = intake.medical_conditions.join(', ');
-    } else if (intake.medical_condition_other) {
-        medCond = intake.medical_condition_other;
-    }
-    document.getElementById('modalMedicalConditions').textContent = medCond;
-    document.getElementById('modalAssistancePurpose').textContent = intake.purpose_other || intake.assistance_purpose || intake.purpose || 'N/A';
-    document.getElementById('modalSocialWorkerAssessment').textContent = intake.social_worker_assessment || 'Assessment completed in Step 1 intake.';
-    document.getElementById('modalRecommendedType').textContent = intake.recommended_assistance_type || intake.service_provided || 'Financial Assistance';
-    
-    if (intake.recommended_amount) {
-        document.getElementById('modalRecommendedAmount').textContent = '₱' + parseFloat(intake.recommended_amount).toLocaleString('en-US', {minimumFractionDigits: 2});
-    } else {
-        document.getElementById('modalRecommendedAmount').textContent = 'To be assessed';
-    }
-
-    // Show modal
-    const modalEl = document.getElementById('intakeQuickViewModal');
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
-}
-</script>
+<script src="{{ asset('js/financialstep2.js') }}"></script>
 @endsection
