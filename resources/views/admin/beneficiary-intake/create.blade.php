@@ -106,6 +106,13 @@
             border-radius: 8px;
         }
 
+        #intakeForm :is(input[type="text"], input:not([type]), textarea):not([readonly]) {
+            text-transform: uppercase !important;
+        }
+        #intakeForm :is(input, textarea)::placeholder {
+            text-transform: none !important;
+        }
+
         .step-wizard {
             overflow-x: auto;
             padding-bottom: 0.5rem;
@@ -672,6 +679,19 @@
             document.getElementById('reviewContent').innerHTML = html;
         }
 
+        // Real-time uppercase conversion for editable user inputs
+        document.addEventListener('input', function (e) {
+            const el = e.target;
+            if (el.matches?.('#intakeForm :is(input[type="text"], input:not([type]), textarea):not([readonly])')) {
+                const { selectionStart: s, selectionEnd: end, value } = el;
+                const upper = value.toUpperCase();
+                if (value !== upper) {
+                    el.value = upper;
+                    el.setSelectionRange?.(s, end);
+                }
+            }
+        });
+
         document.getElementById('intakeForm').addEventListener('submit', function (event) {
             for (let step = 1; step <= 7; step++) {
                 if (!validateStep(step)) {
@@ -686,6 +706,9 @@
             toggleBeneficiaryFields();
             toggleMedicalOther();
             togglePurposeOther();
+
+            document.querySelectorAll('#intakeForm :is(input[type="text"], input:not([type]), textarea):not([readonly])')
+                .forEach(el => el.value && (el.value = el.value.toUpperCase()));
 
             @if($errors->any())
                 showStep(2);
