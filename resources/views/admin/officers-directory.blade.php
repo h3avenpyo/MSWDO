@@ -23,13 +23,51 @@ $initials = count($words) >= 2
     }
     @media (max-width: 767.98px) { .main { padding-top: 72px !important; } }
 
+    /* ── Modern Dashboard Base ── */
+    .dashboard-container {
+        background: #F8FAFC;
+        min-height: 100vh;
+        padding: 2rem;
+    }
+
+    /* ── Modern Page Header ── */
+    .page-header {
+        background: #1E3A8A;
+        border-radius: 16px;
+        padding: 2rem 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
+    }
+
     /* ── Table Card ── */
     .officers-table-wrap {
-        background: var(--surface);
+        background: #ffffff;
         border-radius: 16px;
-        border: 1px solid var(--border);
-        box-shadow: var(--shadow);
-        padding: 1.5rem;
+        border: 1px solid #E5E7EB;
+        border-left: 4px solid #1E3A8A;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        overflow: visible;
+    }
+    .table-scroll-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: #1E3A8A #EFF6FF;
+    }
+    .table-scroll-container::-webkit-scrollbar {
+        height: 8px;
+    }
+    .table-scroll-container::-webkit-scrollbar-track {
+        background: #EFF6FF;
+        border-radius: 4px;
+    }
+    .table-scroll-container::-webkit-scrollbar-thumb {
+        background: #1E3A8A;
+        border-radius: 4px;
+    }
+    .table-scroll-container::-webkit-scrollbar-thumb:hover {
+        background: #1E40AF;
     }
     .gov-table {
         width: 100%;
@@ -38,36 +76,42 @@ $initials = count($words) >= 2
         margin-top: 1rem;
     }
     .gov-table th {
-        background: #F8FAFC;
-        color: var(--text-secondary);
+        background: #EFF6FF;
+        color: #1E3A8A;
         font-size: 0.75rem;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: .05em;
-        padding: 0.75rem 1rem;
-        border-bottom: 2px solid var(--border);
+        letter-spacing: 0.05em;
+        padding: 1rem 1.25rem;
+        border-bottom: 3px solid #1E3A8A;
         text-align: left;
         white-space: nowrap;
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
+    .gov-table th:first-child { border-radius: 8px 0 0 0; }
+    .gov-table th:last-child { border-radius: 0 8px 0 0; }
     .gov-table td {
-        padding: 0.85rem 1rem;
+        padding: 1rem 1.25rem;
         vertical-align: middle;
-        border-bottom: 1px solid #F1F5F9;
-        color: var(--text-primary);
+        border-bottom: 2px solid #E5E7EB;
+        color: #374151;
+        white-space: nowrap;
     }
-    .gov-table tr:hover td { background: #F8FAFC; }
+    .gov-table tr:hover td { background: #EFF6FF; }
     .gov-table tr:last-child td { border-bottom: none; }
 
     /* ── Pagination ── */
     .sc-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-shrink: 0; padding: 4px 0; flex-wrap: wrap; }
-    .sc-pagination-info { font-size: 0.813rem; color: #6B7280; font-weight: 500; }
+    .sc-pagination-info { font-size: 0.813rem; color: #64748B; font-weight: 500; }
     .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
-    .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
-    .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
-    .sc-page-btn.active { background: #1A237E; color: #fff; border-color: #1A237E; font-weight: 700; }
+    .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
+    .sc-page-btn:hover:not(:disabled) { background: #EFF6FF; border-color: #1E3A8A; color: #1E3A8A; }
+    .sc-page-btn.active { background: #1E3A8A; color: #fff; border-color: #1E3A8A; font-weight: 700; }
     .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* ── Table Action Buttons matching Senior Masterlist Theme ── */
+    /* ── Table Action Buttons ── */
     .table-actions {
         display: flex;
         gap: 6px;
@@ -86,7 +130,7 @@ $initials = count($words) >= 2
         box-shadow: none !important;
         cursor: pointer;
         transition: background .15s ease, border-color .15s ease;
-        border: 1px solid var(--border);
+        border: 1px solid #E5E7EB;
         text-decoration: none;
     }
     .table-action-btn:hover {
@@ -97,31 +141,41 @@ $initials = count($words) >= 2
         height: 16px !important;
     }
     .table-action-btn.btn-edit {
-        background: #EEF2FF;
-        color: #4338CA;
-        border-color: #C7D2FE;
+        background: #1E3A8A;
+        color: #FFFFFF;
+        border-color: #1E3A8A;
     }
     .table-action-btn.btn-edit:hover {
-        background: #4338CA;
+        background: #1E40AF;
         color: #FFFFFF;
-        border-color: #4338CA;
+        border-color: #1E40AF;
     }
     .table-action-btn.btn-deactivate {
-        background: #FEF2F2;
-        color: #DC2626;
-        border-color: #FECACA;
-    }
-    .table-action-btn.btn-deactivate:hover {
         background: #DC2626;
         color: #FFFFFF;
         border-color: #DC2626;
+    }
+    .table-action-btn.btn-deactivate:hover {
+        background: #B91C1C;
+        color: #FFFFFF;
+        border-color: #B91C1C;
+    }
+    .table-action-btn.btn-activate {
+        background: #16A34A;
+        color: #FFFFFF;
+        border-color: #16A34A;
+    }
+    .table-action-btn.btn-activate:hover {
+        background: #15803D;
+        color: #FFFFFF;
+        border-color: #15803D;
     }
 
     .avatar-initial {
         width: 34px;
         height: 34px;
         border-radius: 50%;
-        background: var(--primary);
+        background: #1E3A8A;
         color: #FFFFFF;
         display: inline-flex;
         align-items: center;
@@ -134,47 +188,56 @@ $initials = count($words) >= 2
     .badge-status {
         display: inline-flex;
         align-items: center;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: .04em;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
     }
-    .badge-status.active { background: #DCFCE7; color: #15803D; }
+    .badge-status.active { background: #EFF6FF; color: #1E3A8A; }
     .badge-status.inactive { background: #FEE2E2; color: #DC2626; }
 
     .form-control {
         width: 100%;
-        background: #F8FAFC;
-        border: 1px solid var(--border);
+        background: #EFF6FF;
+        border: 1px solid #BFDBFE;
         border-radius: 8px;
-        padding: 0.65rem 0.85rem;
+        padding: 0.75rem 1rem;
         font-size: 0.875rem;
-        color: var(--text-primary);
+        color: #374151;
         outline: none;
         transition: border-color .2s, box-shadow .2s;
     }
     .form-control:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+        border-color: #1E3A8A;
+        box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
         background: #fff;
     }
 
     .filter-search-wrap { display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s; }
-    .filter-search-wrap:focus-within { box-shadow: 0 0 0 3px rgba(26,35,126,.12); border-radius: 8px; }
-    .filter-search-btn { height: 44px !important; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch; }
-    .filter-search-btn:hover { background: #121858; }
+    .filter-search-wrap:focus-within { box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12); border-radius: 8px; }
+    .filter-search-btn { height: 44px !important; padding: 0 20px; border: 1px solid #1E3A8A; border-radius: 0 8px 8px 0; background: #1E3A8A; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch; }
+    .filter-search-btn:hover { background: #1E40AF; }
 
     .filter-dropdown { flex: 0 1 200px; min-width: 180px; position: relative; }
-    .filter-select-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; height: 44px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 0.875rem; cursor: pointer; background: #fff; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
-    .filter-select-btn:hover { border-color: #9CA3AF; }
-    .filter-select-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #111827; font-weight: 500; }
-    .filter-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 50; max-height: 260px; overflow-y: auto; padding: 4px; }
+    .filter-select-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; height: 44px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 0.875rem; cursor: pointer; background: #EFF6FF; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
+    .filter-select-btn:hover { border-color: #1E3A8A; background: #ffffff; }
+    .filter-select-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #374151; font-weight: 500; }
+    .filter-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #E5E7EB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 50; max-height: 260px; overflow-y: auto; padding: 4px; }
     .role-opt { padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer; transition: background .15s; }
-    .role-opt:hover { background: #F3F4F6; }
-    .role-opt.selected { background: #EEF2FF; color: #1A237E; font-weight: 600; }
-    #roleBtn.active { border-color: #1A237E; background: #EEF2FF; }
+    .role-opt:hover { background: #EFF6FF; }
+    .role-opt.selected { background: #EFF6FF; color: #1E3A8A; font-weight: 600; }
+    #roleBtn.active { border-color: #1E3A8A; background: #EFF6FF; }
     .filter-reset-btn.visible { display: inline-flex !important; }
+
+    /* ── Alert Messages ── */
+    .alert-success {
+        background: #EFF6FF;
+        border: 1px solid #BFDBFE;
+        color: #1E3A8A;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+    }
 
     /* ── Mobile: stacked card rows (no horizontal scroll) ── */
     @media (max-width: 767.98px) {
@@ -185,12 +248,12 @@ $initials = count($words) >= 2
         .gov-table tbody { display: block; }
         .gov-table tbody tr {
             display: block;
-            background: var(--surface);
-            border: 1px solid var(--border);
+            background: #ffffff;
+            border: 1px solid #E5E7EB;
             border-radius: 12px;
             margin-bottom: 12px;
             padding: 10px 12px;
-            box-shadow: var(--shadow);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
         .gov-table tbody tr:last-child { margin-bottom: 0; }
         .gov-table tbody td {
@@ -200,7 +263,7 @@ $initials = count($words) >= 2
             gap: 12px;
             padding: 8px 0;
             border: none;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #E5E7EB;
             white-space: normal;
             word-break: break-word;
             text-align: right;
@@ -209,7 +272,7 @@ $initials = count($words) >= 2
         .gov-table tbody td::before {
             content: attr(data-label);
             font-weight: 600;
-            color: var(--text-secondary);
+            color: #64748B;
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: .03em;
@@ -247,21 +310,21 @@ $initials = count($words) >= 2
 </style>
 
 {{-- Page Header --}}
-<header class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none mb-6">
+<header class="page-header flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none">
     <div>
-        <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Officers Directory</h1>
-        <p class="text-sm text-slate-500 mt-1 font-medium">MSWDO Silang — View All Registered Officers</p>
+        <h1 class="font-['Public_Sans'] text-[28px] md:text-[32px] lg:text-[36px] font-bold text-white leading-none m-0">Officers Directory</h1>
+        <p class="text-sm md:text-base text-white/90 mt-2 font-medium">MSWDO Silang — View All Registered Officers</p>
     </div>
     <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-        <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime">Loading date...</div>
-        <div class="w-11 h-11 rounded-full bg-[#1A237E] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(26,35,126,0.3)] hover:scale-105 select-none" title="Admin: {{ $adminName }}">
+        <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-white/90" id="currentDateTime">Loading date...</div>
+        <div class="w-12 h-12 rounded-full bg-white/20 text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-white/30 select-none" title="Admin: {{ $adminName }}">
             {{ $initials }}
         </div>
     </div>
 </header>
 
 @if(session('success'))
-    <div class="p-3 mb-4 rounded-lg bg-green-50 text-green-700 text-sm border border-green-200" id="successAlert" style="display:none;">{{ session('success') }}</div>
+    <div class="alert-success mb-4" id="successAlert" style="display:none;">{{ session('success') }}</div>
 @endif
 
 <!-- Directory Table -->
@@ -269,9 +332,9 @@ $initials = count($words) >= 2
     <div class="flex items-center gap-3 flex-wrap" style="align-items: flex-end !important;">
         <div class="filter-item filter-search" style="display: flex; flex-direction: column; gap: 6px; flex: 0 0 auto;">
             <label class="filter-label">Search</label>
-            <div class="filter-search-wrap" style="display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s;">
-                <input type="text" class="form-control text-xs" placeholder="Search officer..." style="width: 220px; padding-left: 16px; height: 44px; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; flex: 1 1 auto; min-width: 0; box-sizing: border-box !important; margin: 0 !important;" id="searchInput" value="{{ request()->get('search', '') }}" oninput="updateClearButtonVisibility()" onkeydown="if(event.key==='Enter'){event.preventDefault();handleSearch();}">
-                <button type="button" class="filter-search-btn" style="height: 44px !important; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch;" onclick="handleSearch()">
+            <div class="filter-search-wrap">
+                <input type="text" class="form-control" placeholder="Search officer..." style="width: 220px; height: 44px; border-right: none; border-radius: 8px 0 0 8px;" id="searchInput" value="{{ request()->get('search', '') }}" oninput="updateClearButtonVisibility()" onkeydown="if(event.key==='Enter'){event.preventDefault();handleSearch();}">
+                <button type="button" class="filter-search-btn" style="border: 1px solid #1E3A8A; background: #1E3A8A;" onclick="handleSearch()">
                     <i data-lucide="search" style="width: 18px; height: 18px;"></i>
                 </button>
             </div>
@@ -291,17 +354,7 @@ $initials = count($words) >= 2
     </div>
 </div>
 
-<div class="officers-table-wrap">
-    <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
-        <div>
-            <h3 class="text-base font-bold text-slate-800 m-0 flex items-center gap-2">
-                <i data-lucide="user-check" style="width: 20px; height: 20px; color: var(--primary);"></i>
-                <span>MSWDO Active Officers</span>
-            </h3>
-            <p class="text-xs text-slate-500 mt-0.5">Registered system accounts and status indicators.</p>
-        </div>
-    </div>
-
+<div class="table-scroll-container">
     <table class="gov-table" id="officersTable">
         <thead>
             <tr>
@@ -367,7 +420,7 @@ $initials = count($words) >= 2
                                     <i data-lucide="ban"></i>
                                 </button>
                             @else
-                                <button type="button" class="table-action-btn btn-edit" title="Activate Officer" style="background:#DCFCE7;color:#15803D;border-color:#86EFAC;" onclick="activateOfficer({{ $officer->id }}, '{{ $officer->name }}')">
+                                <button type="button" class="table-action-btn btn-activate" title="Activate Officer" onclick="activateOfficer({{ $officer->id }}, '{{ $officer->name }}')">
                                     <i data-lucide="check"></i>
                                 </button>
                             @endif

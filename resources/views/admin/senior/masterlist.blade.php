@@ -57,7 +57,7 @@
 
         /* ── Summary / Filters ── */
         .section-spacing{margin-bottom:28px;}
-        #summaryGrid{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:stretch;}
+        #summaryGrid{display:grid;grid-template-columns:280px 180px auto !important;gap:12px;align-items:stretch;}
         .filter-field{display:flex;flex-direction:column;justify-content:flex-end;min-width:0;gap:3px;}
         .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;display:block;text-transform:uppercase;letter-spacing:0.05em;height:18px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .filter-select{width:100%;height:44px;min-height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .15s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
@@ -72,10 +72,10 @@
 
         /* ── Archive-style panel & table ── */
         .archive-panel-wrap{width:100%;padding:1rem;margin-bottom:1rem;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
-        .archive-table-wrap{border:1px solid var(--border);border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+        .archive-table-wrap{border:2px solid #CBD5E1;border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;max-height: 500px; overflow-y: auto;}
         .archive-table{width:100%;border-collapse:collapse;font-size:14px;}
-        .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--text-secondary);text-align:left;border-bottom:1px solid var(--border);background:var(--background);white-space:nowrap;}
-        .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid var(--border);vertical-align:middle;white-space:normal;word-break:break-word;}
+        .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:#1E293B;text-align:left;border-bottom:2px solid #94A3B8;background:#E2E8F0;white-space:nowrap;position: sticky; top: 0; z-index: 10;}
+        .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid #CBD5E1;vertical-align:middle;white-space:normal;word-break:break-word;}
         .archive-table tbody tr:last-child td{border-bottom:none;}
         .archive-table input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
         .archive-table .col-check{width:40px;text-align:center;}
@@ -111,9 +111,37 @@
         /* ── Pagination links ── */
         .pagination-wrap{display:flex;justify-content:center;flex-wrap:wrap;padding-top:1rem;margin-top:1rem;border-top:1px solid var(--border);}
 
+        /* ── Social Case Style Pagination ── */
+        .sc-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-shrink: 0; padding: 4px 0; flex-wrap: wrap; }
+        .sc-pagination-info { font-size: 0.813rem; color: #6B7280; font-weight: 500; }
+        .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
+        .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
+        .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
+        .sc-page-btn.active { background: #1A237E; color: #fff; border-color: #1A237E; font-weight: 700; }
+        .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
         /* ── Filter container ── */
         .archive-filter-bar{display:block;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;}
         .archive-filter-bar #summaryGrid{margin-bottom:0;}
+
+        /* ── Mobile Filter Buttons */
+        @media (max-width:767px){
+            #summaryGrid{grid-template-columns:1fr !important;gap:12px !important;}
+            .filter-field{width:100%;}
+            .filter-label{display:block !important;}
+            .input-group{width:100%;}
+            .input-group input{width:100%;}
+            .filter-select{width:100%;}
+            .bulk-field{grid-column:1/-1;margin-top:8px;}
+            .bulk-actions-row{display:flex;flex-direction:row;flex-wrap:wrap;gap:8px;width:100%;}
+            .bulk-actions-row .btn-clear{flex:1 1 100%;min-width:100%;height:42px;min-height:42px;padding:0 10px;font-size:13px;}
+        }
+
+        /* ── Mobile Pagination ── */
+        @media (max-width: 767.98px) {
+            .sc-pagination { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; background: #fff !important; padding: 15px 0 !important; z-index: 100 !important; border-top: 1px solid #E5E7EB !important; flex-direction: column; align-items: center; gap: 8px; }
+            .sc-pagination-controls { justify-content: flex-end; padding-right: 20px; }
+        }
 
         /* ══════════════════════════════════════════════
            RESPONSIVE BREAKPOINTS
@@ -213,7 +241,8 @@
             align-items: center;
             justify-content: center;
             white-space: nowrap;
-            width: 100%;
+            width: auto;
+            min-width: 140px;
         }
         .selected-count-badge {
             background: #3730A3;
@@ -494,99 +523,95 @@
             </div>
 
             {{-- Filter Bar --}}
-            <form method="GET" action="{{ route('admin.senior.masterlist') }}" id="filterForm">
-                <div class="archive-filter-bar section-spacing">
-                    <div id="summaryGrid">
-                        <div class="filter-field">
-                            <label class="filter-label" for="searchInput">Search by Name</label>
-                            <div class="input-group">
-                                <input type="text" id="searchInput" name="search" placeholder="Search by name..." value="{{ request('search') }}">
-                                <button type="submit" class="search-btn" aria-label="Search"><i data-lucide="search"></i></button>
-                            </div>
+            <form method="GET" action="{{ route('admin.senior.masterlist') }}" id="filterForm" style="margin-bottom: 20px;">
+                <div id="summaryGrid">
+                    <div class="filter-field">
+                        <label class="filter-label" for="searchInput">Search by Name</label>
+                        <div class="input-group">
+                            <input type="text" id="searchInput" name="search" placeholder="Search by name..." value="{{ request('search') }}">
+                            <button type="submit" class="search-btn" aria-label="Search"><i data-lucide="search"></i></button>
                         </div>
-                        <div class="filter-field">
-                            <label class="filter-label" for="barangaySelect">Filter by Barangay</label>
-                            <select class="filter-select" id="barangaySelect" name="barangay" onchange="this.form.submit()">
-                                <option value="">All Barangays</option>
-                                <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
-                                <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
-                                <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
-                                <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
-                                <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
-                                <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
-                                <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
-                                <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
-                                <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
-                                <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
-                                <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
-                                <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
-                                <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
-                                <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
-                                <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
-                                <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
-                                <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
-                                <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
-                                <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
-                                <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
-                                <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
-                                <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
-                                <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
-                                <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
-                                <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
-                                <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
-                                <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
-                                <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
-                                <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
-                                <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
-                                <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
-                                <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
-                                <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
-                                <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
-                                <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
-                                <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
-                                <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
-                                <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
-                                <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
-                                <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
-                                <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
-                                <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
-                                <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
-                                <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
-                                <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
-                                <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
-                                <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
-                                <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
-                                <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
-                                <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
-                                <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
-                                <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
-                                <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
-                                <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
-                                <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
-                                <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
-                                <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
-                                <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
-                                <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
-                                <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
-                                <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
-                                <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
-                                <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
-                                <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
-                            </select>
-                        </div>
-                        <div class="filter-field bulk-field">
-                            <label class="filter-label desktop-only-label">&nbsp;</label>
-                            <div class="bulk-actions-row">
-                                <button type="button" id="bulkActionButton" class="btn btn-bulk" onclick="showBulkActionPopup()" disabled>
-                                    <i data-lucide="list-checks"></i> <span>Bulk Actions</span>
-                                    <span id="selectedCount" class="selected-count-badge">0</span>
-                                </button>
-                                @if(request('search') || request('barangay'))
-                                    <a href="{{ route('admin.senior.masterlist') }}" class="btn btn-clear">
-                                        <i data-lucide="x"></i> <span>Clear</span>
-                                    </a>
-                                @endif
-                            </div>
+                    </div>
+                    <div class="filter-field">
+                        <label class="filter-label" for="barangaySelect">Filter by Barangay</label>
+                        <select class="filter-select" id="barangaySelect" name="barangay" onchange="this.form.submit()">
+                            <option value="">All Barangays</option>
+                            <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
+                            <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
+                            <option value="Anahaw I" {{ request('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
+                            <option value="Anahaw II" {{ request('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
+                            <option value="Balite I" {{ request('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
+                            <option value="Balite II" {{ request('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
+                            <option value="Balubad" {{ request('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
+                            <option value="Banaba" {{ request('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
+                            <option value="Batas" {{ request('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
+                            <option value="Biga I" {{ request('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
+                            <option value="Biga II" {{ request('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
+                            <option value="Biluso" {{ request('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
+                            <option value="Bucal" {{ request('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
+                            <option value="Buho" {{ request('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
+                            <option value="Bulihan" {{ request('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
+                            <option value="Cabangaan" {{ request('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
+                            <option value="Carmen" {{ request('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
+                            <option value="Hoyo" {{ request('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
+                            <option value="Hukay" {{ request('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
+                            <option value="Iba" {{ request('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
+                            <option value="Inchican" {{ request('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
+                            <option value="Ipil I" {{ request('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
+                            <option value="Ipil II" {{ request('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
+                            <option value="Kalubkob" {{ request('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
+                            <option value="Kaong" {{ request('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
+                            <option value="Lalaan I" {{ request('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
+                            <option value="Lalaan II" {{ request('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
+                            <option value="Litlit" {{ request('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
+                            <option value="Lucsuhin" {{ request('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
+                            <option value="Lumil" {{ request('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
+                            <option value="Maguyam" {{ request('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
+                            <option value="Malabag" {{ request('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
+                            <option value="Malaking Tatyao" {{ request('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
+                            <option value="Mataas na Burol" {{ request('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
+                            <option value="Munting Ilog" {{ request('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
+                            <option value="Narra I" {{ request('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
+                            <option value="Narra II" {{ request('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
+                            <option value="Narra III" {{ request('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
+                            <option value="Paligawan" {{ request('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
+                            <option value="Pasong Langka" {{ request('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
+                            <option value="Barangay I (Poblacion)" {{ request('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
+                            <option value="Barangay II (Poblacion)" {{ request('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
+                            <option value="Barangay III (Poblacion)" {{ request('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
+                            <option value="Barangay IV (Poblacion)" {{ request('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
+                            <option value="Barangay V (Poblacion)" {{ request('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
+                            <option value="Pooc I" {{ request('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
+                            <option value="Pooc II" {{ request('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
+                            <option value="Pulong Bunga" {{ request('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
+                            <option value="Pulong Saging" {{ request('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
+                            <option value="Puting Kahoy" {{ request('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
+                            <option value="Sabutan" {{ request('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
+                            <option value="San Miguel I" {{ request('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
+                            <option value="San Miguel II" {{ request('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
+                            <option value="San Vicente I" {{ request('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
+                            <option value="San Vicente II" {{ request('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
+                            <option value="Santol" {{ request('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
+                            <option value="Tartaria" {{ request('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
+                            <option value="Tibig" {{ request('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
+                            <option value="Toledo" {{ request('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
+                            <option value="Tubuan I" {{ request('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
+                            <option value="Tubuan II" {{ request('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
+                            <option value="Tubuan III" {{ request('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
+                            <option value="Ulat" {{ request('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
+                            <option value="Yakal" {{ request('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
+                        </select>
+                    </div>
+                    <div class="filter-field bulk-field">
+                        <label class="filter-label desktop-only-label">&nbsp;</label>
+                        <div class="bulk-actions-row">
+                            <button type="button" id="bulkActionButton" class="btn btn-bulk" onclick="showBulkActionPopup()" disabled style="display: none;">
+                                <i data-lucide="list-checks"></i> <span>Bulk Actions</span>
+                                <span id="selectedCount" class="selected-count-badge">0</span>
+                            </button>
+                            <button type="button" id="clearFiltersBtn" class="btn btn-clear" onclick="clearFilters()" style="display: none;">
+                                <i data-lucide="x"></i> <span>Clear</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -600,86 +625,99 @@
                 </div>
             @endif
 
-            <div class="panel archive-panel-wrap">
-                @if($seniors->total() > $seniors->count())
-                <div id="selectAllPagesNotice" style="display:none;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
-                    <span id="selectAllPagesText">All {{ $seniors->total() }} senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.</span>
-                </div>
-                @endif
-                <div class="archive-table-wrap">
-                    <table class="archive-table">
-                        <thead>
-                            <tr>
-                                <th class="col-check"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
-                                <th>Control No</th>
-                                <th>Full Name</th>
-                                <th>Barangay</th>
-                                <th>Status</th>
-                                <th>Address</th>
-                                <th>Age</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($seniors as $senior)
-                                <tr>
-                                    <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()"></td>
-                                    <td data-label="Control No" style="font-weight:600;">{{ $senior->control_number ?? '-' }}</td>
-                                    <td data-label="Full Name">{{ $senior->full_name ?? '-' }}</td>
-                                    <td data-label="Barangay">{{ $senior->barangay ?? '-' }}</td>
-                                    <td data-label="Status">
-                                        <span class="badge {{ $senior->status->value == 'active' ? 'badge-active' : 'badge-pending' }}">
-                                            {{ ucfirst($senior->status->value ?? 'pending') }}
-                                        </span>
-                                    </td>
-                                    <td data-label="Address">{{ $senior->address ?? '-' }}</td>
-                                    <td data-label="Age">{{ $senior->age ?? '-' }}</td>
-                                    <td data-label="Action">
-                                        <div class="actions">
-                                            <button class="action-btn" style="background:var(--primary);border-color:var(--primary);color:#fff;" onclick="viewProfile({{ $senior->id }})" title="View Profile">
-                                                <i data-lucide="eye"></i>
-                                            </button>
-                                            <button class="action-btn archive-senior-btn"
-                                                data-id="{{ $senior->id }}"
-                                                data-name="{{ $senior->full_name }}"
-                                                style="background:var(--danger-bg);border-color:#FECACA;color:var(--danger);"
-                                                title="Archive">
-                                                <i data-lucide="archive"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr class="empty-row">
-                                    <td colspan="8" class="empty-cell">
-                                        <div class="empty-state-content">
-                                            <div class="empty-icon-wrap">
-                                                <i data-lucide="users"></i>
-                                            </div>
-                                            <div class="empty-title">No senior citizens found</div>
-                                            <div class="empty-subtitle">No records match your search criteria</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+            @if($seniors->total() > $seniors->count())
+            <div id="selectAllPagesNotice" style="display:none;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
+                <span id="selectAllPagesText">All {{ $seniors->total() }} senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.</span>
             </div>
-
-            <div class="archive-pagination-info">
-                @if($seniors->total() === 0)
-                    Showing 0 of 0 Records
-                @else
-                    Showing {{ $seniors->firstItem() }}–{{ $seniors->lastItem() }} of {{ $seniors->total() }} Records
-                @endif
-            </div>
-
-            @if($seniors->hasPages())
-                <div class="pagination-wrap">
-                    {{ $seniors->appends(['barangay' => request('barangay'), 'search' => request('search')])->links('vendor.pagination.custom') }}
-                </div>
             @endif
+            <div class="archive-table-wrap">
+                <table class="archive-table">
+                    <thead>
+                        <tr>
+                            <th class="col-check"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                            <th>Control No</th>
+                            <th>Full Name</th>
+                            <th>Barangay</th>
+                            <th>Status</th>
+                            <th>Address</th>
+                            <th>Age</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($seniors as $senior)
+                            <tr>
+                                <td data-label="" class="col-check"><input type="checkbox" class="senior-checkbox" data-id="{{ $senior->id }}" onchange="updateBulkActions()"></td>
+                                <td data-label="Control No" style="font-weight:600;">{{ $senior->control_number ?? '-' }}</td>
+                                <td data-label="Full Name">{{ $senior->full_name ?? '-' }}</td>
+                                <td data-label="Barangay">{{ $senior->barangay ?? '-' }}</td>
+                                <td data-label="Status">
+                                    <span class="badge {{ $senior->status->value == 'active' ? 'badge-active' : 'badge-pending' }}">
+                                        {{ ucfirst($senior->status->value ?? 'pending') }}
+                                    </span>
+                                </td>
+                                <td data-label="Address">{{ $senior->address ?? '-' }}</td>
+                                <td data-label="Age">{{ $senior->age ?? '-' }}</td>
+                                <td data-label="Action">
+                                    <div class="actions">
+                                        <button class="action-btn" style="background:var(--primary);border-color:var(--primary);color:#fff;" onclick="viewProfile({{ $senior->id }})" title="View Profile">
+                                            <i data-lucide="eye"></i>
+                                        </button>
+                                        <button class="action-btn archive-senior-btn"
+                                            data-id="{{ $senior->id }}"
+                                            data-name="{{ $senior->full_name }}"
+                                            style="background:var(--danger-bg);border-color:#FECACA;color:var(--danger);"
+                                            title="Archive">
+                                            <i data-lucide="archive"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr class="empty-row">
+                                <td colspan="8" class="empty-cell">
+                                    <div class="empty-state-content">
+                                        <div class="empty-icon-wrap">
+                                            <i data-lucide="users"></i>
+                                        </div>
+                                        <div class="empty-title">No senior citizens found</div>
+                                        <div class="empty-subtitle">No records match your search criteria</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
+
+            <div class="sc-pagination">
+                <div class="sc-pagination-info">
+                    @if($seniors->total() === 0)
+                        Showing 0 of 0 Records
+                    @else
+                        Showing {{ $seniors->firstItem() }}–{{ $seniors->lastItem() }} of {{ $seniors->total() }} Records
+                    @endif
+                </div>
+                <div class="sc-pagination-controls">
+                    @if($seniors->hasPages())
+                        @if($seniors->onFirstPage())
+                            <span class="sc-page-btn" disabled>Previous</span>
+                        @else
+                            <a href="{{ $seniors->previousPageUrl() }}" class="sc-page-btn">Previous</a>
+                        @endif
+
+                        <span class="sc-page-btn active">{{ $seniors->currentPage() }}</span>
+
+                        @if($seniors->hasMorePages())
+                            <a href="{{ $seniors->nextPageUrl() }}" class="sc-page-btn">Next</a>
+                        @else
+                            <span class="sc-page-btn" disabled>Next</span>
+                        @endif
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -926,9 +964,15 @@
                 notice.style.display = 'flex';
                 document.getElementById('selectAllPagesText').textContent = `All ${total} senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.`;
             }
+            // Show bulk actions button
+            const bulkButton = document.getElementById('bulkActionButton');
+            if (bulkButton) bulkButton.style.display = 'inline-flex';
         } else {
             window.selectAllMatching = false;
             if (notice) notice.style.display = 'none';
+            // Hide bulk actions button
+            const bulkButton = document.getElementById('bulkActionButton');
+            if (bulkButton) bulkButton.style.display = 'none';
         }
 
         updateBulkActions();
@@ -1000,12 +1044,14 @@
         if (count > 0) {
             button.disabled = false;
             button.style.opacity = '1';
+            button.style.display = 'inline-flex';
             button.style.background = '#3730A3';
             button.style.color = 'white';
             button.style.borderColor = '#312E81';
         } else {
             button.disabled = true;
             button.style.opacity = '0.45';
+            button.style.display = 'none';
             button.style.background = '#E0E7FF';
             button.style.color = '#3730A3';
             button.style.borderColor = '#C7D2FE';
@@ -1218,8 +1264,56 @@
         });
     }
 
+    function updateClearButtonVisibility() {
+        const searchInput = document.getElementById('searchInput');
+        const barangaySelect = document.getElementById('barangaySelect');
+        const clearBtn = document.getElementById('clearFiltersBtn');
+        
+        const hasSearch = searchInput && searchInput.value.trim() !== '';
+        const hasBarangay = barangaySelect && barangaySelect.value !== '';
+        
+        if (clearBtn) {
+            if (hasSearch || hasBarangay) {
+                clearBtn.style.display = 'inline-flex';
+            } else {
+                clearBtn.style.display = 'none';
+            }
+        }
+    }
+
+    function clearFilters() {
+        const searchInput = document.getElementById('searchInput');
+        const barangaySelect = document.getElementById('barangaySelect');
+        
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        if (barangaySelect) {
+            barangaySelect.value = '';
+        }
+        
+        updateClearButtonVisibility();
+        
+        // Submit form to clear filters
+        document.getElementById('filterForm').submit();
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
+
+        // Check if filters are active and show/hide clear button
+        updateClearButtonVisibility();
+
+        // Listen for input changes to show/hide clear button
+        const searchInput = document.getElementById('searchInput');
+        const barangaySelect = document.getElementById('barangaySelect');
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', updateClearButtonVisibility);
+        }
+        if (barangaySelect) {
+            barangaySelect.addEventListener('change', updateClearButtonVisibility);
+        }
 
         @if(session('success'))
             Swal.fire({

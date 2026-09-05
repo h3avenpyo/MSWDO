@@ -47,10 +47,10 @@
 
         /* ── Archive-style panel & table (matches archive page) ── */
         .archive-panel-wrap{width:100%;padding:1rem;margin-bottom:1rem;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
-        .archive-table-wrap{border:1px solid var(--border);border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+        .archive-table-wrap{border:2px solid #CBD5E1;border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;max-height: 500px; overflow-y: auto;}
         .archive-table{width:100%;border-collapse:collapse;font-size:14px;}
-        .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--text-secondary);text-align:left;border-bottom:1px solid var(--border);background:var(--background);white-space:nowrap;}
-        .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid var(--border);vertical-align:middle;white-space:normal;word-break:break-word;}
+        .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:#1E293B;text-align:left;border-bottom:2px solid #94A3B8;background:#E2E8F0;white-space:nowrap;position: sticky; top: 0; z-index: 10;}
+        .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid #CBD5E1;vertical-align:middle;white-space:normal;word-break:break-word;}
         .archive-table tbody tr:last-child td{border-bottom:none;}
 
         /* ── Badges ── */
@@ -76,9 +76,24 @@
         /* ── Pagination links ── */
         .pagination-wrap{display:flex;justify-content:center;flex-wrap:wrap;padding-top:1rem;margin-top:1rem;border-top:1px solid var(--border);}
 
+        /* ── Social Case Style Pagination ── */
+        .sc-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-shrink: 0; padding: 4px 0; flex-wrap: wrap; }
+        .sc-pagination-info { font-size: 0.813rem; color: #6B7280; font-weight: 500; }
+        .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
+        .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
+        .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
+        .sc-page-btn.active { background: #1A237E; color: #fff; border-color: #1A237E; font-weight: 700; }
+        .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
         /* ── Filter container (matches archive page) ── */
         .archive-filter-bar{display:block;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;}
         .archive-filter-bar #filterGrid{margin-bottom:0;}
+
+        /* ── Mobile Pagination ── */
+        @media (max-width: 767.98px) {
+            .sc-pagination { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; background: #fff !important; padding: 15px 0 !important; z-index: 100 !important; border-top: 1px solid #E5E7EB !important; flex-direction: column; align-items: center; gap: 8px; }
+            .sc-pagination-controls { justify-content: flex-end; padding-right: 20px; }
+        }
 
         /* ── Flash Messages ── */
         .flash-message{display:flex;align-items:center;gap:12px;padding:.875rem 1.25rem;border-radius:10px;font-size:.875rem;font-weight:500;margin-bottom:1rem;animation:fadeIn .3s ease;}
@@ -226,117 +241,128 @@
             @endif
 
             {{-- Filter Bar --}}
-            <form method="GET" action="{{ route('admin.senior.payouts-history') }}">
-                <div class="archive-filter-bar section-spacing">
-                    <div id="filterGrid">
-                        <div class="filter-field">
-                            <label class="filter-label" for="barangayFilter">Barangay</label>
-                            <select class="filter-select" id="barangayFilter" name="barangay">
-                                <option value="">All Barangays</option>
-                                @foreach($barangays as $barangay)
-                                    <option value="{{ $barangay }}" {{ request('barangay') == $barangay ? 'selected' : '' }}>{{ $barangay }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="filter-field">
-                            <label class="filter-label" for="dateFromFilter">Date From</label>
-                            <input type="date" class="filter-select" id="dateFromFilter" name="date_from" value="{{ $dateFrom }}">
-                        </div>
-                        <div class="filter-field">
-                            <label class="filter-label" for="dateToFilter">Date To</label>
-                            <input type="date" class="filter-select" id="dateToFilter" name="date_to" value="{{ $dateTo }}">
-                        </div>
-                        <div class="filter-field">
-                            <label class="filter-label">&nbsp;</label>
-                            <div class="filter-actions-row">
-                                <button type="submit" class="btn primary">
-                                    <i data-lucide="filter"></i> Filter
-                                </button>
-                                @if(request('barangay') || request('date_from') || request('date_to'))
-                                    <a href="{{ route('admin.senior.payouts-history') }}" class="btn btn-clear">
-                                        <i data-lucide="x"></i> Clear
-                                    </a>
-                                @endif
-                            </div>
+            <form method="GET" action="{{ route('admin.senior.payouts-history') }}" style="margin-bottom: 20px;">
+                <div id="filterGrid">
+                    <div class="filter-field">
+                        <label class="filter-label" for="barangayFilter">Barangay</label>
+                        <select class="filter-select" id="barangayFilter" name="barangay">
+                            <option value="">All Barangays</option>
+                            @foreach($barangays as $barangay)
+                                <option value="{{ $barangay }}" {{ request('barangay') == $barangay ? 'selected' : '' }}>{{ $barangay }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="filter-field">
+                        <label class="filter-label" for="dateFromFilter">Date From</label>
+                        <input type="date" class="filter-select" id="dateFromFilter" name="date_from" value="{{ $dateFrom }}">
+                    </div>
+                    <div class="filter-field">
+                        <label class="filter-label" for="dateToFilter">Date To</label>
+                        <input type="date" class="filter-select" id="dateToFilter" name="date_to" value="{{ $dateTo }}">
+                    </div>
+                    <div class="filter-field">
+                        <label class="filter-label">&nbsp;</label>
+                        <div class="filter-actions-row">
+                            <button type="submit" class="btn primary">
+                                <i data-lucide="filter"></i> Filter
+                            </button>
+                            @if(request('barangay') || request('date_from') || request('date_to'))
+                                <a href="{{ route('admin.senior.payouts-history') }}" class="btn btn-clear">
+                                    <i data-lucide="x"></i> Clear
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
             </form>
 
             {{-- History Table --}}
-            <div class="panel archive-panel-wrap">
-                <div class="archive-table-wrap">
-                    <table class="archive-table">
-                        <thead>
+            <div class="archive-table-wrap">
+                <table class="archive-table">
+                    <thead>
+                        <tr>
+                            <th>Date &amp; Time</th>
+                            <th>Action</th>
+                            <th>Senior</th>
+                            <th>Amount</th>
+                            <th>Details</th>
+                            <th>Performed By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($history as $record)
                             <tr>
-                                <th>Date &amp; Time</th>
-                                <th>Action</th>
-                                <th>Senior</th>
-                                <th>Amount</th>
-                                <th>Details</th>
-                                <th>Performed By</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($history as $record)
-                                <tr>
-                                    <td data-label="Date & Time">{{ $record->created_at->format('M d, Y g:i A') }}</td>
-                                    <td data-label="Action">
-                                        <span class="badge-span badge-{{ $record->action }}">
-                                            {{ ucfirst(str_replace('_', ' ', $record->action)) }}
-                                        </span>
-                                    </td>
-                                    <td data-label="Senior">
-                                        @if($record->senior)
-                                            <div>
-                                                <strong>{{ $record->senior->full_name }}</strong>
-                                                <div style="font-size:0.72rem;margin-top:2px;color:var(--text-muted);">{{ $record->senior->control_number ?? '-' }}</div>
-                                            </div>
-                                        @else
-                                            <span style="font-size:0.8rem;color:var(--text-muted);">System-wide action</span>
-                                        @endif
-                                    </td>
-                                    <td data-label="Amount">PHP {{ number_format($record->payout->amount ?? 0, 2) }}</td>
-                                    <td data-label="Details"><div style="min-width:0;text-align:left">{{ $record->details ?? '-' }}</div></td>
-                                    <td data-label="Performed By">
-                                        @if($record->performedBy)
-                                            {{ $record->performedBy->name ?? 'Admin' }}
-                                        @else
-                                            <span style="font-size:0.8rem;color:var(--text-muted);">System</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr class="empty-row">
-                                    <td colspan="6" class="empty-cell">
-                                        <div class="empty-state-content">
-                                            <div class="empty-icon-wrap">
-                                                <i data-lucide="history"></i>
-                                            </div>
-                                            <div class="empty-title">No payout history found</div>
-                                            <div class="empty-subtitle">Payout history records will appear here</div>
+                                <td data-label="Date & Time">{{ $record->created_at->format('M d, Y g:i A') }}</td>
+                                <td data-label="Action">
+                                    <span class="badge-span badge-{{ $record->action }}">
+                                        {{ ucfirst(str_replace('_', ' ', $record->action)) }}
+                                    </span>
+                                </td>
+                                <td data-label="Senior">
+                                    @if($record->senior)
+                                        <div>
+                                            <strong>{{ $record->senior->full_name }}</strong>
+                                            <div style="font-size:0.72rem;margin-top:2px;color:var(--text-muted);">{{ $record->senior->control_number ?? '-' }}</div>
                                         </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                                    @else
+                                        <span style="font-size:0.8rem;color:var(--text-muted);">System-wide action</span>
+                                    @endif
+                                </td>
+                                <td data-label="Amount">PHP {{ number_format($record->payout->amount ?? 0, 2) }}</td>
+                                <td data-label="Details"><div style="min-width:0;text-align:left">{{ $record->details ?? '-' }}</div></td>
+                                <td data-label="Performed By">
+                                    @if($record->performedBy)
+                                        {{ $record->performedBy->name ?? 'Admin' }}
+                                    @else
+                                        <span style="font-size:0.8rem;color:var(--text-muted);">System</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr class="empty-row">
+                                <td colspan="6" class="empty-cell">
+                                    <div class="empty-state-content">
+                                        <div class="empty-icon-wrap">
+                                            <i data-lucide="history"></i>
+                                        </div>
+                                        <div class="empty-title">No payout history found</div>
+                                        <div class="empty-subtitle">Payout history records will appear here</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
 
-            <div class="archive-pagination-info">
-                @if($history->total() === 0)
-                    Showing 0 of 0 Records
-                @else
-                    Showing {{ $history->firstItem() }}–{{ $history->lastItem() }} of {{ $history->total() }} Records
-                @endif
-            </div>
+            <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
 
-            @if($history->hasPages())
-                <div class="pagination-wrap">
-                    {{ $history->appends(['barangay' => request('barangay'), 'date_from' => request('date_from'), 'date_to' => request('date_to')])->links('vendor.pagination.custom') }}
+            <div class="sc-pagination">
+                <div class="sc-pagination-info">
+                    @if($history->total() === 0)
+                        Showing 0 of 0 Records
+                    @else
+                        Showing {{ $history->firstItem() }}–{{ $history->lastItem() }} of {{ $history->total() }} Records
+                    @endif
                 </div>
-            @endif
+                <div class="sc-pagination-controls">
+                    @if($history->hasPages())
+                        @if($history->onFirstPage())
+                            <span class="sc-page-btn" disabled>Previous</span>
+                        @else
+                            <a href="{{ $history->previousPageUrl() }}" class="sc-page-btn">Previous</a>
+                        @endif
+
+                        <span class="sc-page-btn active">{{ $history->currentPage() }}</span>
+
+                        @if($history->hasMorePages())
+                            <a href="{{ $history->nextPageUrl() }}" class="sc-page-btn">Next</a>
+                        @else
+                            <span class="sc-page-btn" disabled>Next</span>
+                        @endif
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 </div>

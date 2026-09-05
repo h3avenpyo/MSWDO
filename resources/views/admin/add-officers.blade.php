@@ -12,42 +12,61 @@ $initials = count($words) >= 2
 @endphp
 
 <style>
-    /* ── Minimalist Form & Card ── */
-    .form-card {
-        background: var(--surface);
-        border-radius: 16px;
-        border: 1px solid var(--border);
-        box-shadow: var(--shadow);
+    /* ── Modern Dashboard Base ── */
+    .dashboard-container {
+        background: #F8FAFC;
+        min-height: 100vh;
         padding: 2rem;
-        margin-bottom: 2rem;
     }
+
+    /* ── Modern Page Header ── */
+    .page-header {
+        background: #1E3A8A;
+        border-radius: 16px;
+        padding: 2rem 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
+    }
+
+    /* ── Form Card ── */
+    .form-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #E5E7EB;
+        border-left: 4px solid #1E3A8A;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+    }
+
     .form-label {
         display: block;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         font-weight: 600;
-        color: var(--text-secondary);
-        margin-bottom: 0.4rem;
+        color: #64748B;
+        margin-bottom: 0.5rem;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.05em;
     }
+
     .form-control, .form-select {
         width: 100%;
-        background: #F8FAFC;
-        border: 1px solid var(--border);
+        background: #EFF6FF;
+        border: 1px solid #BFDBFE;
         border-radius: 8px;
-        padding: 0.65rem 0.85rem;
+        padding: 0.75rem 1rem;
         font-size: 0.875rem;
-        color: var(--text-primary);
+        color: #374151;
         outline: none;
         transition: border-color .2s, box-shadow .2s;
     }
     .form-control:focus, .form-select:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
-        background: #fff;
+        border-color: #1E3A8A;
+        box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        background: #ffffff;
     }
 
-    /* ── Dropdown select – distinct look ── */
+    /* ── Dropdown select ── */
     .select-dropdown-wrap {
         position: relative;
     }
@@ -55,24 +74,23 @@ $initials = count($words) >= 2
         appearance: none;
         -webkit-appearance: none;
         -moz-appearance: none;
-        background: #F8FAFC;
-        border: 1.5px solid #E2E8F0;
+        background: #EFF6FF;
+        border: 1px solid #BFDBFE;
         border-radius: 8px;
-        padding: 0.65rem 2.8rem 0.65rem 0.85rem;
+        padding: 0.75rem 2.5rem 0.75rem 1rem;
         font-size: 0.875rem;
-        color: var(--text-primary);
+        color: #374151;
         cursor: pointer;
-        transition: all .25s ease;
+        transition: all .2s ease;
     }
     .select-dropdown-wrap .form-select:hover {
-        border-color: var(--primary);
-        background: #fff;
-        box-shadow: 0 2px 8px rgba(26, 35, 126, .08);
+        border-color: #1E3A8A;
+        background: #ffffff;
     }
     .select-dropdown-wrap .form-select:focus {
-        border-color: var(--primary);
-        background: #fff;
-        box-shadow: 0 0 0 3px rgba(26, 35, 126, .1);
+        border-color: #1E3A8A;
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
         outline: none;
     }
     .select-dropdown-wrap::after {
@@ -90,41 +108,58 @@ $initials = count($words) >= 2
         transition: transform .2s ease, border-color .2s ease;
     }
     .select-dropdown-wrap:hover::after {
-        border-top-color: var(--primary);
+        border-top-color: #1E3A8A;
     }
     .select-dropdown-wrap:focus-within::after {
         transform: translateY(-50%) rotate(180deg);
-        border-top-color: var(--primary);
+        border-top-color: #1E3A8A;
     }
 
     .select-hint {
-        font-size: 0.72rem;
-        color: var(--text-muted);
-        margin-top: 0.35rem;
+        font-size: 0.75rem;
+        color: #64748B;
+        margin-top: 0.5rem;
         display: flex;
         align-items: center;
         gap: 0.3rem;
     }
     .select-hint svg {
-        width: 13px;
-        height: 13px;
-        color: var(--primary);
+        width: 14px;
+        height: 14px;
+        color: #1E3A8A;
         flex-shrink: 0;
     }
 
     .btn-submit {
-        background: var(--primary);
+        background: #1E3A8A;
         color: #fff;
         border: none;
         border-radius: 8px;
-        padding: 0.65rem 1.5rem;
+        padding: 0.75rem 1.5rem;
         font-size: 0.875rem;
         font-weight: 600;
         cursor: pointer;
         transition: all .2s;
     }
     .btn-submit:hover {
-        background: var(--primary-dark);
+        background: #1E40AF;
+    }
+
+    .btn-cancel {
+        background: #ffffff;
+        color: #374151;
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .2s;
+    }
+    .btn-cancel:hover {
+        background: #EFF6FF;
+        border-color: #1E3A8A;
+        color: #1E3A8A;
     }
 
     /* ── Password strength feedback ── */
@@ -137,8 +172,8 @@ $initials = count($words) >= 2
         gap: 0.25rem 0.75rem;
     }
     .pw-checklist li {
-        font-size: 0.74rem;
-        color: var(--text-muted);
+        font-size: 0.75rem;
+        color: #64748B;
         display: flex;
         align-items: center;
         gap: 0.4rem;
@@ -153,24 +188,24 @@ $initials = count($words) >= 2
         flex-shrink: 0;
     }
     .pw-checklist li.met {
-        color: #16a34a;
+        color: #1E3A8A;
         font-weight: 600;
     }
     .pw-checklist li.met .circle-dot {
-        background: #16a34a;
+        background: #1E3A8A;
     }
     .pw-match-msg {
-        font-size: 0.74rem;
-        margin-top: 0.35rem;
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
         display: flex;
         align-items: center;
         gap: 0.3rem;
         transition: all .25s ease;
     }
-    .pw-match-msg.match { color: #059669; font-weight: 600; }
-    .pw-match-msg.no-match { color: var(--danger); }
+    .pw-match-msg.match { color: #1E3A8A; font-weight: 600; }
+    .pw-match-msg.no-match { color: #DC2626; }
 
-    /* ── Status Selection with Circle Radio Buttons ── */
+    /* ── Status Selection ── */
     .status-selection {
         display: flex;
         gap: 1rem;
@@ -179,21 +214,21 @@ $initials = count($words) >= 2
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.6rem 1rem;
-        background: #F8FAFC;
-        border: 1.5px solid #E2E8F0;
+        padding: 0.75rem 1rem;
+        background: #EFF6FF;
+        border: 1px solid #BFDBFE;
         border-radius: 8px;
         cursor: pointer;
         transition: all .2s ease;
     }
     .status-option:hover {
-        border-color: var(--primary);
-        background: #EFF6FF;
+        border-color: #1E3A8A;
+        background: #ffffff;
     }
     .status-option.selected {
-        border-color: var(--primary);
+        border-color: #1E3A8A;
         background: #EFF6FF;
-        box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
+        box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.1);
     }
     .status-option input[type="radio"] {
         display: none;
@@ -209,11 +244,11 @@ $initials = count($words) >= 2
         position: relative;
     }
     .status-option:hover .status-circle {
-        border-color: var(--primary);
+        border-color: #1E3A8A;
     }
     .status-option.selected .status-circle {
-        border-color: var(--primary);
-        background: var(--primary);
+        border-color: #1E3A8A;
+        background: #1E3A8A;
     }
     .status-option.selected .status-circle::after {
         content: '';
@@ -227,21 +262,39 @@ $initials = count($words) >= 2
         border-radius: 50%;
     }
     .status-label {
-        font-size: 0.8rem;
-        color: var(--text-primary);
+        font-size: 0.875rem;
+        color: #374151;
         font-weight: 500;
+    }
+
+    /* ── Alert Messages ── */
+    .alert-success {
+        background: #EFF6FF;
+        border: 1px solid #BFDBFE;
+        color: #1E3A8A;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+    }
+    .alert-error {
+        background: #FEE2E2;
+        border: 1px solid #FCA5A5;
+        color: #DC2626;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
     }
 </style>
 
 {{-- Page Header --}}
-<header class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none mb-6">
+<header class="page-header flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none">
     <div>
-        <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Officers Directory</h1>
-        <p class="text-sm text-slate-500 mt-1 font-medium">MSWDO Silang — Manage Staff &amp; Officer Accounts</p>
+        <h1 class="font-['Public_Sans'] text-[28px] md:text-[32px] lg:text-[36px] font-bold text-white leading-none m-0">Officers Directory</h1>
+        <p class="text-sm md:text-base text-white/90 mt-2 font-medium">MSWDO Silang — Manage Staff &amp; Officer Accounts</p>
     </div>
     <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-        <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime">Loading date...</div>
-        <div class="w-11 h-11 rounded-full bg-[#1A237E] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(26,35,126,0.3)] hover:scale-105 select-none" title="Admin: {{ $adminName }}">
+        <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-white/90" id="currentDateTime">Loading date...</div>
+        <div class="w-12 h-12 rounded-full bg-white/20 text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-white/30 select-none" title="Admin: {{ $adminName }}">
             {{ $initials }}
         </div>
     </div>
@@ -250,16 +303,16 @@ $initials = count($words) >= 2
 <!-- Form Card -->
 <div class="form-card">
     <div class="mb-4">
-        <h2 class="text-lg font-bold text-slate-800 m-0">Create Officer Account</h2>
-        <p class="text-xs text-slate-500 mt-1">Register a new social worker or administrator to access the MSWDO platform.</p>
+        <h2 class="text-xl font-bold text-[#1E3A8A] m-0">Create Officer Account</h2>
+        <p class="text-sm text-slate-500 mt-1">Register a new social worker or administrator to access the MSWDO platform.</p>
     </div>
 
     @if(session('success'))
-        <div class="p-3 mb-4 rounded-lg bg-green-50 text-green-700 text-sm border border-green-200" id="successAlert">{{ session('success') }}</div>
+        <div class="alert-success mb-4" id="successAlert">{{ session('success') }}</div>
     @endif
 
     @if($errors->any())
-        <div class="p-3 mb-4 rounded-lg bg-red-50 text-red-700 text-sm border border-red-200" id="errorAlert">
+        <div class="alert-error mb-4" id="errorAlert">
             <ul class="list-disc pl-5 m-0">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -336,7 +389,7 @@ $initials = count($words) >= 2
                 </p>
             </div>
             <div class="md:col-span-2 mt-2 flex justify-end gap-2">
-                <button type="button" class="px-4 py-2 text-sm font-semibold rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition" onclick="location.reload()">Cancel</button>
+                <button type="button" class="btn-cancel" onclick="location.reload()">Cancel</button>
                 <button type="submit" class="btn-submit">Add Officer</button>
             </div>
         </div>

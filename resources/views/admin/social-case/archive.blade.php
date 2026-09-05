@@ -34,12 +34,12 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
 <style>
     /* ── Archive page resets ── */
-    html, body { overflow-x: hidden !important; overflow-y: auto !important; }
+    html, body { overflow-x: auto !important; overflow-y: auto !important; }
     .main {
         display: flex !important;
         flex-direction: column !important;
         padding-top: 14px !important;
-        overflow-x: hidden !important;
+        overflow-x: auto !important;
         overflow-y: auto !important;
     }
     @media (max-width: 767.98px) { .main { padding-top: 72px !important; } }
@@ -112,7 +112,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .actions button:active { transform: translateY(0); }
 
     /* ── Pagination ── */
-    .sc-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-shrink: 0; padding: 4px 0; flex-wrap: wrap; }
+    .sc-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-shrink: 0; padding: 0; flex-wrap: wrap; border: none; }
     .sc-pagination-info { font-size: 0.813rem; color: #6B7280; font-weight: 500; }
     .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
     .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
@@ -307,9 +307,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
        LARGE DESKTOP (1200px+): FULL TABLE
     ══════════════════════════════════ */
     @media (min-width: 1200px) {
-        html, body { overflow: hidden !important; }
+        html, body { overflow: auto !important; }
         .app { height: 100vh !important; overflow: hidden !important; }
-        .main { height: 100vh !important; overflow: hidden !important; }
+        .main { height: 100vh !important; overflow: auto !important; }
 
         .archive-filter-bar { flex-wrap: nowrap; gap: 12px; padding: 0; margin-bottom: 12px; }
         .filter-search { flex: 3 1 400px; min-width: 400px; }
@@ -426,6 +426,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             <tbody id="archiveTable"></tbody>
         </table>
     </div>
+
+    <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
 
     <!-- Pagination -->
     <div class="sc-pagination">

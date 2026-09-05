@@ -13,58 +13,197 @@ $initials = count($words) >= 2
 
 <style>
 
+    /* ── Modern Dashboard Base ── */
+    .dashboard-container {
+        background: #F8FAFC;
+        min-height: 100vh;
+        padding: 2rem;
+    }
+
+    /* ── Modern Page Header ── */
+    .page-header {
+        background: #1E3A8A;
+        border-radius: 16px;
+        padding: 2rem 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
+    }
+
     /* ── Card Panel ── */
     .card-panel {
-        background: #fff;
-        border-radius: 14px;
+        background: #ffffff;
+        border-radius: 16px;
         border: 1px solid #E5E7EB;
-        padding: 1.5rem;
-        box-shadow: 0 1px 4px rgba(0,0,0,.04);
+        border-left: 4px solid #1E3A8A;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         margin-bottom: 1.5rem;
+        transition: box-shadow 0.2s ease;
+    }
+    .card-panel:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    /* ── Section Headers ── */
+    .section-header {
+        display: flex;
+        justify-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1E3A8A;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 0;
+    }
+    .section-subtitle {
+        font-size: 0.95rem;
+        color: #64748B;
+        margin: 0.5rem 0 0 0;
+        font-weight: 500;
     }
 
     /* ── Action Buttons ── */
     .action-btn {
-        display: inline-flex; align-items: center; gap: 6px;
-        padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
-        border: 1px solid #E5E7EB; background: #F9FAFB; color: #374151;
-        cursor: pointer; transition: all .15s; text-decoration: none;
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 600;
+        border: 1px solid #E5E7EB; background: #ffffff;
+        color: #374151; cursor: pointer; transition: all 0.2s ease;
+        text-decoration: none;
     }
-    .action-btn:hover { background: #F3F4F6; border-color: #D1D5DB; }
-    .action-btn.primary { background: #1A237E; color: #fff; border-color: #1A237E; }
-    .action-btn.primary:hover { background: #121858; }
+    .action-btn:hover { 
+        background: #EFF6FF;
+        border-color: #1E3A8A;
+        color: #1E3A8A;
+    }
+    .action-btn.primary { 
+        background: #1E3A8A;
+        color: #fff;
+        border-color: #1E3A8A;
+    }
+    .action-btn.primary:hover { 
+        background: #1E40AF;
+    }
 
     /* ── Data Table ── */
-    .data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-    .data-table th { background: #F8FAFC; color: #6B7280; font-weight: 600; font-size: 0.75rem;
-        text-transform: uppercase; letter-spacing: .05em; padding: .75rem 1rem; text-align: left;
-        border-bottom: 1px solid #E5E7EB; white-space: nowrap; }
-    .data-table td { padding: .75rem 1rem; border-bottom: 1px solid #F3F4F6; color: #374151; vertical-align: middle; }
+    .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.875rem; }
+    .data-table th { 
+        background: #EFF6FF;
+        color: #1E3A8A; font-weight: 600; font-size: 0.75rem;
+        text-transform: uppercase; letter-spacing: 0.05em; padding: 1rem 1.25rem; 
+        text-align: left; white-space: nowrap;
+        border-bottom: 2px solid #1E3A8A;
+    }
+    .data-table th:first-child { border-radius: 8px 0 0 0; }
+    .data-table th:last-child { border-radius: 0 8px 0 0; }
+    .data-table td { 
+        padding: 1rem 1.25rem; border-bottom: 1px solid #E5E7EB; 
+        color: #374151; vertical-align: middle; background: #ffffff;
+        white-space: nowrap;
+    }
     .data-table tbody tr:last-child td { border-bottom: none; }
-    .data-table tbody tr:hover td { background: #F8FAFC; }
+    .data-table tbody tr:hover td { background: #EFF6FF; }
+
+    /* ── Scrollable Table Container ── */
+    .table-scroll-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: #1E3A8A #EFF6FF;
+    }
+    .table-scroll-container::-webkit-scrollbar {
+        height: 8px;
+    }
+    .table-scroll-container::-webkit-scrollbar-track {
+        background: #EFF6FF;
+        border-radius: 4px;
+    }
+    .table-scroll-container::-webkit-scrollbar-thumb {
+        background: #1E3A8A;
+        border-radius: 4px;
+    }
+    .table-scroll-container::-webkit-scrollbar-thumb:hover {
+        background: #1E40AF;
+    }
 
     /* ── Status Badges ── */
-    .badge-status { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px;
-        font-size: 0.72rem; font-weight: 700; letter-spacing: .04em; }
-    .badge-status.active   { background: #DCFCE7; color: #15803D; }
-    .badge-status.inactive { background: #FEE2E2; color: #DC2626; }
+    .badge-status { 
+        display: inline-flex; align-items: center; padding: 4px 12px; 
+        border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+    }
+    .badge-status.active   { 
+        background: #EFF6FF;
+        color: #1E3A8A;
+    }
+    .badge-status.inactive { 
+        background: #FEE2E2;
+        color: #DC2626;
+    }
 
     /* ── Reports Summary Grid ── */
     .reports-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.25rem;
     }
     .report-stat-box {
-        background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 10px;
-        padding: 1rem 1.25rem;
+        background: #EFF6FF;
+        border: 1px solid #BFDBFE;
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: box-shadow 0.2s ease;
     }
-    .report-stat-box .stat-title { font-size: 0.75rem; color: #6B7280; font-weight: 500; margin-bottom: 6px; }
-    .report-stat-box .stat-num   { font-size: 1.6rem; font-weight: 700; color: #111827; }
+    .report-stat-box:hover {
+        box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+    }
+    .report-stat-box .stat-title { 
+        font-size: 0.75rem; color: #64748B; font-weight: 600; 
+        margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .report-stat-box .stat-num   { 
+        font-size: 1.75rem; font-weight: 700; color: #1E3A8A;
+    }
+
+    /* ── Service Stat Boxes ── */
+    .sb-stats-grid > div {
+        background: #EFF6FF !important;
+        border: 1px solid #BFDBFE !important;
+        border-radius: 12px !important;
+        padding: 1.25rem 1.5rem !important;
+        transition: box-shadow 0.2s ease;
+        position: relative;
+    }
+    .sb-stats-grid > div:hover {
+        box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+    }
+    .sb-stats-grid > div .text-sm {
+        font-size: 0.7rem !important;
+        font-weight: 600 !important;
+        color: #64748B !important;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem !important;
+    }
+    .sb-stats-grid > div .text-2xl {
+        font-size: 1.5rem !important;
+        font-weight: 700 !important;
+        color: #1E3A8A !important;
+    }
 
     /* ── Responsive Breakpoints ── */
     @media (max-width: 1024px) {
-        /* Tablet: Service breakdown - 2 cards per row */
+        .dashboard-container {
+            padding: 1.5rem;
+        }
+        .page-header {
+            padding: 1.5rem 2rem;
+        }
         .service-breakdown-row {
             flex-direction: column !important;
         }
@@ -76,7 +215,20 @@ $initials = count($words) >= 2
     }
 
     @media (max-width: 768px) {
-        /* Mobile: Service breakdown - 1 card per row */
+        .dashboard-container {
+            padding: 1rem;
+        }
+        .page-header {
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+        }
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .section-title {
+            font-size: 1.25rem;
+        }
         .service-breakdown-row {
             flex-direction: column !important;
             gap: 1rem !important;
@@ -85,45 +237,44 @@ $initials = count($words) >= 2
             width: 100% !important;
             min-height: auto !important;
             min-width: 0 !important;
-            padding: 1rem !important;
+            padding: 1.5rem !important;
+            border-radius: 12px !important;
         }
         .service-breakdown-row .sb-stats-grid {
             grid-template-columns: 1fr !important;
-            gap: 0.75rem !important;
+            gap: 1rem !important;
         }
         .service-breakdown-row .sb-stats-grid > div {
             height: auto !important;
-            padding: 0.875rem !important;
+            padding: 1.25rem !important;
         }
-
-        /* Mobile: Reports summary - 2 per row */
         .reports-grid {
             grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem !important;
         }
-
-        /* Mobile: Recent cases table */
         .card-panel table {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
         }
         .card-panel table th,
         .card-panel table td {
-            padding: 0.75rem 0.5rem !important;
+            padding: 0.75rem 1rem !important;
         }
-
-        /* Mobile: Action buttons */
         .action-btn {
-            padding: 5px 10px;
-            font-size: 0.75rem;
+            padding: 6px 12px;
+            font-size: 0.8rem;
         }
     }
 
     @media (max-width: 480px) {
-        /* Small mobile: Reports summary - 1 per row */
+        .page-header {
+            padding: 1rem 1.25rem;
+        }
+        .section-title {
+            font-size: 1.125rem;
+        }
         .reports-grid {
             grid-template-columns: 1fr !important;
         }
-
-        /* Small mobile: Hide less important columns */
         .card-panel table th:nth-child(4),
         .card-panel table td:nth-child(4) {
             display: none;
@@ -132,26 +283,26 @@ $initials = count($words) >= 2
 </style>
 
 {{-- Page Header --}}
-<header class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none mb-6">
+<header class="page-header flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none">
     <div>
-        <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Admin Dashboard</h1>
-        <p class="text-sm text-slate-500 mt-1 font-medium">MSWDO Silang — System Overview</p>
+        <h1 class="font-['Public_Sans'] text-[28px] md:text-[32px] lg:text-[36px] font-bold text-white leading-none m-0">Admin Dashboard</h1>
+        <p class="text-sm md:text-base text-white/90 mt-2 font-medium">MSWDO Silang — System Overview</p>
     </div>
     <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-        <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime">Loading date...</div>
-        <div class="w-11 h-11 rounded-full bg-[#1A237E] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(26,35,126,0.3)] hover:scale-105 select-none" title="Admin: {{ $adminName }}">
+        <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-white/90" id="currentDateTime">Loading date...</div>
+        <div class="w-12 h-12 rounded-full bg-white/20 text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-white/30 select-none" title="Admin: {{ $adminName }}">
             {{ $initials }}
         </div>
     </div>
 </header>
 
 {{-- Service Breakdown --}}
-<div class="flex justify-between items-center mb-6 flex-wrap gap-2">
+<div class="section-header">
     <div>
-        <h3 class="text-xl font-bold text-slate-800 m-0 flex items-center gap-2">
-            <i data-lucide="grid" class="w-6 h-6 text-indigo-600"></i> Service Breakdown
+        <h3 class="section-title">
+            <i data-lucide="grid" class="w-7 h-7"></i> Service Breakdown
         </h3>
-        <p class="text-sm text-slate-500 m-0 mt-1">Status breakdown across all services</p>
+        <p class="section-subtitle">Status breakdown across all services</p>
     </div>
 </div>
 
@@ -167,12 +318,12 @@ $initials = count($words) >= 2
     <div class="service-breakdown-row" style="display:flex; gap:1.5rem; flex-wrap:wrap;">
         @foreach($topKeys as $serviceName)
         @php $stats = $servicesArray[$serviceName]; @endphp
-        <div class="card-panel" style="flex:1; min-width:300px; margin-bottom:0; padding:1.5rem; min-height:280px;">
-            <div class="flex items-center justify-between mb-4">
-                <h4 class="text-lg font-bold text-slate-800 m-0">{{ $serviceName }}</h4>
-                <span class="text-sm text-slate-500 font-medium">Total: {{ $stats['total'] }}</span>
+        <div class="card-panel" style="flex:1; min-width:300px; margin-bottom:0; padding:2rem; min-height:300px;">
+            <div class="flex items-center justify-between mb-6">
+                <h4 class="text-xl font-bold text-slate-800 m-0">{{ $serviceName }}</h4>
+                <span class="text-sm font-medium bg-[#EFF6FF] text-[#1E3A8A] px-3 py-1 rounded-full">Total: {{ $stats['total'] }}</span>
             </div>
-            <div class="sb-stats-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem; align-items:stretch;">
+            <div class="sb-stats-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1.25rem; align-items:stretch;">
                 @php
                     $label1 = 'Active';
                     $label2 = 'Pending';
@@ -232,12 +383,12 @@ $initials = count($words) >= 2
     <div class="service-breakdown-row" style="display:flex; gap:1.5rem; flex-wrap:wrap;">
         @foreach($bottomKeys as $serviceName)
         @php $stats = $servicesArray[$serviceName]; @endphp
-        <div class="card-panel" style="flex:1; min-width:300px; margin-bottom:0; padding:1.5rem; min-height:280px;">
-            <div class="flex items-center justify-between mb-4">
-                <h4 class="text-lg font-bold text-slate-800 m-0">{{ $serviceName }}</h4>
-                <span class="text-sm text-slate-500 font-medium">Total: {{ $stats['total'] }}</span>
+        <div class="card-panel" style="flex:1; min-width:300px; margin-bottom:0; padding:2rem; min-height:300px;">
+            <div class="flex items-center justify-between mb-6">
+                <h4 class="text-xl font-bold text-slate-800 m-0">{{ $serviceName }}</h4>
+                <span class="text-sm font-medium bg-[#EFF6FF] text-[#1E3A8A] px-3 py-1 rounded-full">Total: {{ $stats['total'] }}</span>
             </div>
-            <div class="sb-stats-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem; align-items:stretch;">
+            <div class="sb-stats-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1.25rem; align-items:stretch;">
                 @php
                     $label1 = 'Active';
                     $label2 = 'Pending';
@@ -295,48 +446,48 @@ $initials = count($words) >= 2
 </div>
 
 {{-- Recent Cases --}}
-<div class="card-panel" style="margin-bottom:1.5rem;">
-    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+<div class="card-panel">
+    <div class="section-header">
         <div>
-            <h3 class="text-xl font-bold text-slate-800 m-0 flex items-center gap-2">
-                <i data-lucide="clock" class="w-6 h-6 text-indigo-600"></i> Recent Cases
+            <h3 class="section-title">
+                <i data-lucide="clock" class="w-7 h-7"></i> Recent Cases
             </h3>
-            <p class="text-sm text-slate-500 m-0 mt-1">Latest updated cases across all services</p>
+            <p class="section-subtitle">Latest updated cases across all services</p>
         </div>
     </div>
 
-    <div style="overflow-x:auto;">
-        <table style="width:100%; border-collapse:collapse;">
+    <div class="table-scroll-container">
+        <table class="data-table">
             <thead>
-                <tr style="background:#F8FAFC; border-bottom:2px solid #E5E7EB;">
-                    <th style="padding:1rem; text-align:left; font-weight:600; color:#475569; font-size:0.875rem;">Client</th>
-                    <th style="padding:1rem; text-align:left; font-weight:600; color:#475569; font-size:0.875rem;">Service</th>
-                    <th style="padding:1rem; text-align:left; font-weight:600; color:#475569; font-size:0.875rem;">Officer</th>
-                    <th style="padding:1rem; text-align:left; font-weight:600; color:#475569; font-size:0.875rem;">Status</th>
-                    <th style="padding:1rem; text-align:left; font-weight:600; color:#475569; font-size:0.875rem;">Updated</th>
+                <tr>
+                    <th>Client</th>
+                    <th>Service</th>
+                    <th>Officer</th>
+                    <th>Status</th>
+                    <th>Updated</th>
                 </tr>
             </thead>
             <tbody>
                 @if($recentCases && $recentCases->count() > 0)
                     @foreach($recentCases as $case)
-                    <tr style="border-bottom:1px solid #E5E7EB; transition:background-color 0.2s;">
-                        <td style="padding:1rem; color:#1E293B; font-size:0.875rem;">{{ $case['client'] }}</td>
-                        <td style="padding:1rem; color:#475569; font-size:0.875rem;">{{ $case['service'] }}</td>
-                        <td style="padding:1rem; color:#475569; font-size:0.875rem;">{{ $case['officer'] }}</td>
-                        <td style="padding:1rem;">
+                    <tr>
+                        <td>{{ $case['client'] }}</td>
+                        <td>{{ $case['service'] }}</td>
+                        <td>{{ $case['officer'] }}</td>
+                        <td>
                             @php
-                                $statusColor = '#64748B';
+                                $statusClass = 'badge-status';
                                 if($case['status'] === 'Active' || $case['status'] === 'Resolved') {
-                                    $statusColor = '#10B981';
+                                    $statusClass .= ' active';
                                 } elseif($case['status'] === 'Pending') {
-                                    $statusColor = '#F59E0B';
+                                    $statusClass .= ' inactive';
                                 } elseif($case['status'] === 'Overdue' || $case['status'] === 'Rejected') {
-                                    $statusColor = '#EF4444';
+                                    $statusClass .= ' inactive';
                                 }
                             @endphp
-                            <span style="background:{{ $statusColor }}; color:white; padding:0.25rem 0.75rem; border-radius:9999px; font-size:0.75rem; font-weight:500;">{{ $case['status'] }}</span>
+                            <span class="{{ $statusClass }}">{{ $case['status'] }}</span>
                         </td>
-                        <td style="padding:1rem; color:#64748B; font-size:0.875rem;">{{ $case['updated'] }}</td>
+                        <td>{{ $case['updated'] }}</td>
                     </tr>
                     @endforeach
                 @else
@@ -353,12 +504,12 @@ $initials = count($words) >= 2
 
 {{-- Reports Summary --}}
 <div class="card-panel">
-    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+    <div class="section-header">
         <div>
-            <h3 class="text-base font-bold text-slate-800 m-0 flex items-center gap-2">
-                <i data-lucide="file-bar-chart-2" class="w-5 h-5 text-indigo-600"></i> Reports Summary
+            <h3 class="section-title">
+                <i data-lucide="file-bar-chart-2" class="w-7 h-7"></i> Reports Summary
             </h3>
-            <p class="text-xs text-slate-500 m-0 mt-0.5">Key activity &amp; financial performance indicators</p>
+            <p class="section-subtitle">Key activity &amp; financial performance indicators</p>
         </div>
         <div class="flex items-center gap-2">
             <button class="action-btn"><i data-lucide="file-text" class="w-4 h-4 text-red-600"></i> PDF</button>

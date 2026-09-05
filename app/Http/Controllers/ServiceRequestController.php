@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Storage;
 
 class ServiceRequestController extends Controller
 {
+    public function create()
+    {
+        return view('service-request');
+    }
+
     public function store(Request $request)
     {
         try {

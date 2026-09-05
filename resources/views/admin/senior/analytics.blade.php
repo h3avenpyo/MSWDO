@@ -314,67 +314,65 @@
                 <p style="margin:0;font-size:0.875rem;color:#6B7280;">View senior citizen statistics and trends. Filter by year to generate a program summary.</p>
             </div>
             <!-- Filter Section -->
-            <div class="filter-section section-spacing">
-                <form id="filterForm" method="GET" action="{{ route('admin.senior.analytics') }}" autocomplete="off">
-                    <div id="filterGrid">
-                        <div class="filter-field">
-                            <label class="filter-label" for="yearFilter">Year</label>
-                            <select class="filter-select" id="yearFilter" name="year">
-                                <option value="2026" {{ $year == 2026 ? 'selected' : '' }}>2026</option>
-                                <option value="2025" {{ $year == 2025 ? 'selected' : '' }}>2025</option>
-                                <option value="2024" {{ $year == 2024 ? 'selected' : '' }}>2024</option>
-                                <option value="2023" {{ $year == 2023 ? 'selected' : '' }}>2023</option>
-                                <option value="2022" {{ $year == 2022 ? 'selected' : '' }}>2022</option>
-                            </select>
-                        </div>
-                        <div class="filter-field">
-                            <label class="filter-label" for="monthFilter">Month</label>
-                            <select class="filter-select" id="monthFilter" name="month">
-                                <option value="" {{ $month === null || $month === '' ? 'selected' : '' }}>All</option>
-                                @for($i = 1; $i <= 12; $i++)
-                                    <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>{{ date('M', mktime(0, 0, 0, $i, 1)) }}</option>
-                                @endfor
-                            </select>
-                        </div>
-                        <div class="filter-field">
-                            <label class="filter-label" for="barangayFilter">Barangay</label>
-                            <select class="filter-select" id="barangayFilter" name="barangay">
-                                <option value="" {{ $barangay === null || $barangay === '' ? 'selected' : '' }}>All</option>
-                                @foreach($allBarangays as $b)
-                                    <option value="{{ $b }}" {{ $barangay === $b ? 'selected' : '' }}>{{ $b }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="filter-field">
-                            <label class="filter-label" for="genderFilter">Gender</label>
-                            <select class="filter-select" id="genderFilter" name="gender">
-                                <option value="" {{ $gender === null || $gender === '' ? 'selected' : '' }}>All</option>
-                                <option value="Male" {{ $gender == 'Male' ? 'selected' : '' }}>Male</option>
-                                <option value="Female" {{ $gender == 'Female' ? 'selected' : '' }}>Female</option>
-                            </select>
-                        </div>
-                        <div class="filter-field">
-                            <label class="filter-label" for="ageGroupFilter">Age Group</label>
-                            <select class="filter-select" id="ageGroupFilter" name="age_group">
-                                <option value="" {{ $ageGroup === null || $ageGroup === '' ? 'selected' : '' }}>All</option>
-                                <option value="60-69" {{ $ageGroup == '60-69' ? 'selected' : '' }}>60-69</option>
-                                <option value="70-79" {{ $ageGroup == '70-79' ? 'selected' : '' }}>70-79</option>
-                                <option value="80-89" {{ $ageGroup == '80-89' ? 'selected' : '' }}>80-89</option>
-                                <option value="90-99" {{ $ageGroup == '90-99' ? 'selected' : '' }}>90-99</option>
-                                <option value="100+" {{ $ageGroup == '100+' ? 'selected' : '' }}>100+</option>
-                            </select>
-                        </div>
-                        <div class="filter-actions">
-                            <button type="submit" class="btn primary">
-                                <i data-lucide="check" style="width:16px;height:16px"></i> Apply
-                            </button>
-                            <a href="{{ route('admin.senior.analytics') }}" class="btn btn-clear">
-                                <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> Reset
-                            </a>
-                        </div>
+            <form id="filterForm" method="GET" action="{{ route('admin.senior.analytics') }}" autocomplete="off" style="margin-bottom: 20px;">
+                <div id="filterGrid">
+                    <div class="filter-field">
+                        <label class="filter-label" for="yearFilter">Year</label>
+                        <select class="filter-select" id="yearFilter" name="year">
+                            <option value="2026" {{ $year == 2026 ? 'selected' : '' }}>2026</option>
+                            <option value="2025" {{ $year == 2025 ? 'selected' : '' }}>2025</option>
+                            <option value="2024" {{ $year == 2024 ? 'selected' : '' }}>2024</option>
+                            <option value="2023" {{ $year == 2023 ? 'selected' : '' }}>2023</option>
+                            <option value="2022" {{ $year == 2022 ? 'selected' : '' }}>2022</option>
+                        </select>
                     </div>
-                </form>
-            </div>
+                    <div class="filter-field">
+                        <label class="filter-label" for="monthFilter">Month</label>
+                        <select class="filter-select" id="monthFilter" name="month">
+                            <option value="" {{ $month === null || $month === '' ? 'selected' : '' }}>All</option>
+                            @for($i = 1; $i <= 12; $i++)
+                                <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>{{ date('M', mktime(0, 0, 0, $i, 1)) }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div class="filter-field">
+                        <label class="filter-label" for="barangayFilter">Barangay</label>
+                        <select class="filter-select" id="barangayFilter" name="barangay">
+                            <option value="" {{ $barangay === null || $barangay === '' ? 'selected' : '' }}>All</option>
+                            @foreach($allBarangays as $b)
+                                <option value="{{ $b }}" {{ $barangay === $b ? 'selected' : '' }}>{{ $b }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="filter-field">
+                        <label class="filter-label" for="genderFilter">Gender</label>
+                        <select class="filter-select" id="genderFilter" name="gender">
+                            <option value="" {{ $gender === null || $gender === '' ? 'selected' : '' }}>All</option>
+                            <option value="Male" {{ $gender == 'Male' ? 'selected' : '' }}>Male</option>
+                            <option value="Female" {{ $gender == 'Female' ? 'selected' : '' }}>Female</option>
+                        </select>
+                    </div>
+                    <div class="filter-field">
+                        <label class="filter-label" for="ageGroupFilter">Age Group</label>
+                        <select class="filter-select" id="ageGroupFilter" name="age_group">
+                            <option value="" {{ $ageGroup === null || $ageGroup === '' ? 'selected' : '' }}>All</option>
+                            <option value="60-69" {{ $ageGroup == '60-69' ? 'selected' : '' }}>60-69</option>
+                            <option value="70-79" {{ $ageGroup == '70-79' ? 'selected' : '' }}>70-79</option>
+                            <option value="80-89" {{ $ageGroup == '80-89' ? 'selected' : '' }}>80-89</option>
+                            <option value="90-99" {{ $ageGroup == '90-99' ? 'selected' : '' }}>90-99</option>
+                            <option value="100+" {{ $ageGroup == '100+' ? 'selected' : '' }}>100+</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button type="submit" class="btn primary">
+                            <i data-lucide="check" style="width:16px;height:16px"></i> Apply
+                        </button>
+                        <a href="{{ route('admin.senior.analytics') }}" class="btn btn-clear">
+                            <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> Reset
+                        </a>
+                    </div>
+                </div>
+            </form>
 
             <!-- Summary Cards -->
             <div class="stat-cards">
