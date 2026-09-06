@@ -67,7 +67,15 @@ class Client extends Model
 
     public function getFullNameAttribute(): string
     {
-        return trim(sprintf('%s %s %s', $this->first_name, $this->middle_name, $this->last_name));
+        $firstName = mb_convert_case($this->first_name, MB_CASE_TITLE, 'UTF-8');
+        $middleName = mb_convert_case($this->middle_name, MB_CASE_TITLE, 'UTF-8');
+        $lastName = mb_convert_case($this->last_name, MB_CASE_TITLE, 'UTF-8');
+
+        if (!empty($middleName)) {
+            $middleName = rtrim($middleName, '.') . '.';
+        }
+
+        return trim(sprintf('%s %s %s', $firstName, $middleName, $lastName));
     }
 
     public function getNameAttribute(): string

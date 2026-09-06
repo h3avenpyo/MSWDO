@@ -859,6 +859,14 @@ function saveNewCase(){
             if(e.message.startsWith('Validation')) throw e;
           }
         }
+        if(response.status === 409){
+          try {
+            const json = JSON.parse(text);
+            throw new Error(json.error || 'Case already exists');
+          } catch(e) {
+            if(e.message !== 'Case already exists') throw e;
+          }
+        }
         console.error('Server returned error:', response.status, text);
         throw new Error('Server error: ' + response.status);
       }
@@ -1456,6 +1464,13 @@ function formatDateTime(dateStr){
   const d = date.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
   const t = date.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit', hour12:true});
   return `${d} ${t}`;
+}
+
+function formatNumberWithCommas(value){
+  if(!value) return '';
+  const numericValue = value.toString().replace(/,/g, '');
+  if(numericValue === '' || isNaN(numericValue)) return value;
+  return parseFloat(numericValue).toLocaleString('en-US');
 }
 
 function initCharts(){
@@ -2272,115 +2287,173 @@ function renderIntakeForm(){
   const container = document.getElementById('intakeFormContent');
   if(!container) return;
 
+  // Allow the page to scroll instead of just the container
+  container.style.overflow = 'visible';
+  container.style.height = 'auto';
+
+  // Also check and modify parent container if it exists
+  if (container.parentElement) {
+    container.parentElement.style.overflow = 'visible';
+    container.parentElement.style.height = 'auto';
+  }
+
   const d = draftIntake;
   d.signers.preparedByTitle = "MSWDO Staff";
   d.signers.notedByTitle = "MSWDO Head";
   container.innerHTML = `
-  <div class="panel">
-    <h3>Report details</h3>
-    <div class="field-row">
-      <div class="field field-control-no"><label>Control no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.controlNo)}" oninput="draftIntake.controlNo=this.value" placeholder="Control no."></div>
-      <div class="field"><label>Report date <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.interview.reportDate}" oninput="draftIntake.interview.reportDate=this.value"></div>
+  <div style="width:100%;overflow:visible;padding-bottom:20px;box-sizing:border-box">
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
+    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Report details</h3>
+    <div class="field-row" style="display:flex;gap:10px">
+      <div class="field field-control-no" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Control no. <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.controlNo)}" oninput="draftIntake.controlNo=this.value" placeholder="e.g. MSWD-O-2026-09-0001" style="padding:6px 8px;font-size:13px;width:100%"></div>
+      <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Report date <span style="color:#DC2626;font-weight:700">*</span></label><input type="date" value="${d.interview.reportDate}" oninput="draftIntake.interview.reportDate=this.value" style="padding:6px 8px;font-size:13px;width:100%"></div>
     </div>
   </div>
 
-  <div class="panel">
-    <h3>I. Identifying information</h3>
-      <div class="field"><label>Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value" required maxlength="255" placeholder="Enter full name"></div>
-      <div class="field-row">
-        <div class="field"><label>Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="number" id="clientAgeInput" value="${escapeHtml(String(d.client.age))}" min="0" max="150" placeholder="Auto-computed" readonly style="background:#F3F4F6;cursor:not-allowed"></div>
-        <div class="field"><label>Sex <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-          <select oninput="draftIntake.client.sex=this.value" required>
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
+    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">I. Identifying information</h3>
+      <div class="field" style="margin:0 0 8px 0"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Name <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value" required maxlength="255" placeholder="e.g. Juan A. Santos" style="padding:6px 8px;font-size:13px;width:100%"></div>
+      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Age <span style="color:#DC2626;font-weight:700">*</span></label><input type="number" id="clientAgeInput" value="${escapeHtml(String(d.client.age))}" min="0" max="150" placeholder="Auto-computed from birthdate" readonly style="background:#F3F4F6;cursor:not-allowed;padding:6px 8px;font-size:13px;width:100%"></div>
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Sex <span style="color:#DC2626;font-weight:700">*</span></label>
+          <select oninput="draftIntake.client.sex=this.value" required style="padding:6px 8px;font-size:13px;width:100%">
             ${["","Male","Female"].map(o=>`<option ${d.client.sex===o?'selected':''}>${o}</option>`).join("")}
           </select>
         </div>
       </div>
-      <div class="field-sep"></div>
-      <div class="field"><label>Address (Barangay) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-        <select oninput="draftIntake.client.address=this.value" required>
+      <div class="field" style="margin:0 0 8px 0"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Address (Barangay) <span style="color:#DC2626;font-weight:700">*</span></label>
+        <select oninput="draftIntake.client.address=this.value" required style="padding:6px 8px;font-size:13px;width:100%">
           <option value="">Select Barangay</option>
           ${BARANGAYS.map(b=>`<option ${d.client.address===b?'selected':''}>${b}</option>`).join("")}
         </select>
       </div>
-      <div class="field-sep"></div>
-      <div class="field-row">
-        <div class="field"><label>Birthdate <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value; updateClientAge()"></div>
-        <div class="field"><label>Birthplace <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value" placeholder="Birthplace"></div>
+      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Birthdate <span style="color:#DC2626;font-weight:700">*</span></label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value; updateClientAge()" style="padding:6px 8px;font-size:13px;width:100%"></div>
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Birthplace <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value" placeholder="e.g. Cavite City" style="padding:6px 8px;font-size:13px;width:100%"></div>
       </div>
-      <div class="field"><label>Religion <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.religion)}" oninput="draftIntake.client.religion=this.value" placeholder="Enter religion"></div>
-      <div class="field"><label>Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.education)}" oninput="draftIntake.client.education=this.value" placeholder="Educational attainment"></div>
-      <div class="field-sep"></div>
-      <div class="field-row">
-        <div class="field"><label>Civil status <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-          <select oninput="draftIntake.client.civilStatus=this.value">
+      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Religion <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.religion)}" oninput="draftIntake.client.religion=this.value" placeholder="e.g. Roman Catholic" style="padding:6px 8px;font-size:13px;width:100%"></div>
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Educational attainment <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.education)}" oninput="draftIntake.client.education=this.value" placeholder="e.g. College Graduate" style="padding:6px 8px;font-size:13px;width:100%"></div>
+      </div>
+      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Civil status <span style="color:#DC2626;font-weight:700">*</span></label>
+          <select oninput="draftIntake.client.civilStatus=this.value" style="padding:6px 8px;font-size:13px;width:100%">
             ${["","Single","Married","Widowed","Separated"].map(o=>`<option ${d.client.civilStatus===o?'selected':''}>${o}</option>`).join("")}
           </select>
         </div>
-        <div class="field"><label>Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="Enter occupation"></div>
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Occupation <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="e.g. Teacher" style="padding:6px 8px;font-size:13px;width:100%"></div>
       </div>
-      <div class="field-row">
-        <div class="field"><label>Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.income)}" oninput="draftIntake.client.income=this.value" placeholder="Income (N/A if none)"></div>
-        <div class="field"><label>Contact no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="tel" value="${escapeHtml(d.client.contact)}" oninput="draftIntake.client.contact=this.value" pattern="09[0-9]{9}" maxlength="11" placeholder="e.g. 09171234567" title="Must be a valid PH mobile number (09xxxxxxxxx)"></div>
+      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Income <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.income)}" oninput="this.value=formatNumberWithCommas(this.value); draftIntake.client.income=this.value" placeholder="e.g. 15,000 or N/A" style="padding:6px 8px;font-size:13px;width:100%"></div>
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Contact no. <span style="color:#DC2626;font-weight:700">*</span></label><input type="tel" value="${escapeHtml(d.client.contact)}" oninput="draftIntake.client.contact=this.value" pattern="09[0-9]{9}" maxlength="11" placeholder="e.g. 09171234567" title="Must be a valid PH mobile number (09xxxxxxxxx)" style="padding:6px 8px;font-size:13px;width:100%"></div>
       </div>
   </div>
 
-  <div class="panel">
-    <h3>II. Family composition</h3>
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
+    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">II. Family composition</h3>
     ${d.household.map((m,i)=>`
-      <div class="grid3" style="margin-bottom:8px;align-items:end;padding-bottom:8px;border-bottom:1px solid var(--surface-sunken)">
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value" placeholder="Enter name"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Relationship <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><select oninput="draftIntake.household[${i}].relationship=this.value"><option value="">Select relationship</option>${RELATIONSHIPS.map(o=>`<option ${m.relationship===o?'selected':''}>${o}</option>`).join("")}</select></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="number" value="${escapeHtml(String(m.age))}" oninput="draftIntake.household[${i}].age=this.value" min="0" max="150" placeholder="Enter age"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value" placeholder="Educational attainment"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="Enter occupation"></div>
-        <div class="field" style="margin-bottom:0;display:flex;gap:6px">
-          <div style="flex:1"><label>${i===0?'Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.income)}" oninput="draftIntake.household[${i}].income=this.value" placeholder="Income (N/A if none)"></div>
-          ${i>0?`<button class="btn ghost btn-sm" style="align-self:flex-end" onclick="draftIntake.household.splice(${i},1); renderIntakeForm();"><i data-lucide="x" style="width:16px;height:16px"></i></button>`:""}
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:5px;align-items:end;padding-bottom:5px;border-bottom:1px solid var(--surface-sunken)">
+        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Name <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value" placeholder="e.g. Maria Santos" style="padding:4px 6px;font-size:12px;width:100%"></div>
+        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Relationship <span style="color:#DC2626;font-weight:700">*</span></label><select oninput="draftIntake.household[${i}].relationship=this.value" style="padding:4px 6px;font-size:12px;width:100%"><option value="">Select</option>${RELATIONSHIPS.map(o=>`<option ${m.relationship===o?'selected':''}>${o}</option>`).join("")}</select></div>
+        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Age <span style="color:#DC2626;font-weight:700">*</span></label><input type="number" value="${escapeHtml(String(m.age))}" oninput="draftIntake.household[${i}].age=this.value" min="0" max="150" placeholder="e.g. 25" style="padding:4px 6px;font-size:12px;width:100%"></div>
+        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Education <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value" placeholder="e.g. High School" style="padding:4px 6px;font-size:12px;width:100%"></div>
+        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Occupation <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="e.g. Driver" style="padding:4px 6px;font-size:12px;width:100%"></div>
+        <div class="field" style="margin:0;display:flex;gap:3px">
+          <div style="flex:1"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Income <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(m.income)}" oninput="this.value=formatNumberWithCommas(this.value); draftIntake.household[${i}].income=this.value" placeholder="e.g. 10,000" style="padding:4px 6px;font-size:12px;width:100%"></div>
+          ${i>0?`<button class="btn ghost btn-sm" style="align-self:flex-end;padding:3px 6px" onclick="draftIntake.household.splice(${i},1); renderIntakeForm();"><i data-lucide="x" style="width:12px;height:12px"></i></button>`:""}
         </div>
       </div>`).join("")}
-    <button class="btn ghost btn-sm" onclick="draftIntake.household.push({name:'',relationship:'',age:'',education:'',occupation:'',income:''}); renderIntakeForm();"><i data-lucide="plus" style="width:16px;height:16px"></i> Add family member</button>
+    <button class="btn ghost btn-sm" onclick="draftIntake.household.push({name:'',relationship:'',age:'',education:'',occupation:'',income:''}); renderIntakeForm();" style="padding:6px 12px;font-size:12px"><i data-lucide="plus" style="width:14px;height:14px"></i> Add family member</button>
   </div>
 
-  <div class="panel">
-    <h3>Narrative sections</h3>
-    <div class="field"><label>III. Problem presented <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><textarea oninput="draftIntake.interview.problemPresented=this.value">${escapeHtml(d.interview.problemPresented)}</textarea></div>
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
+    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Narrative sections</h3>
+    <div class="field" style="margin:0"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">III. Problem presented <span style="color:#DC2626;font-weight:700">*</span></label><textarea oninput="draftIntake.interview.problemPresented=this.value" style="padding:6px 8px;font-size:13px;min-height:80px;width:100%">${escapeHtml(d.interview.problemPresented)}</textarea></div>
   </div>
 
-  <div class="panel">
-    <h3>Signatories</h3>
-      <div class="field"><label>Prepared by (name) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.preparedByName)}" oninput="draftIntake.signers.preparedByName=this.value" required maxlength="255" placeholder="Enter prepared by name"></div>
-      <div class="field"><label>Prepared by (title)</label><input type="text" value="MSWDO Staff" readonly style="background:#F3F4F6;cursor:not-allowed"></div>
-      <div class="field-sep"></div>
-      <div class="field"><label>Noted by (name) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.notedByName)}" oninput="draftIntake.signers.notedByName=this.value" required maxlength="255" placeholder="Enter noted by name"></div>
-      <div class="field"><label>Noted by (title)</label><input type="text" value="MSWDO Head" readonly style="background:#F3F4F6;cursor:not-allowed"></div>
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
+    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Signatories</h3>
+      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Prepared by (name) <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.signers.preparedByName)}" oninput="draftIntake.signers.preparedByName=this.value" required maxlength="255" placeholder="Enter prepared by name" style="padding:6px 8px;font-size:13px;width:100%"></div>
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Prepared by (title)</label><input type="text" value="MSWDO Staff" readonly style="background:#F3F4F6;cursor:not-allowed;padding:6px 8px;font-size:13px;width:100%"></div>
+      </div>
+      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Noted by (name) <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.signers.notedByName)}" oninput="draftIntake.signers.notedByName=this.value" required maxlength="255" placeholder="Enter noted by name" style="padding:6px 8px;font-size:13px;width:100%"></div>
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Noted by (title)</label><input type="text" value="MSWDO Head" readonly style="background:#F3F4F6;cursor:not-allowed;padding:6px 8px;font-size:13px;width:100%"></div>
+      </div>
   </div>
 
-  <div class="panel">
-    <h3>Agencies & Purpose</h3>
-    <div class="field"><label>Purpose <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-      <select oninput="draftIntake.purpose=this.value">
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
+    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Agencies & Purpose</h3>
+    <div class="field" style="margin:0 0 6px 0"><label style="font-size:14px;margin-bottom:8px;font-weight:600;color:#111827">Purpose <span style="color:#DC2626;font-weight:700">*</span></label>
+      <select oninput="draftIntake.purpose=this.value" style="padding:5px 7px;font-size:12px;width:100%">
         ${PURPOSES.map(p=>`<option ${d.purpose===p?'selected':''}>${p}</option>`).join("")}
       </select>
     </div>
-    <div class="field"><label>Agencies (select all that apply) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-      <div style="display:flex;flex-wrap:wrap;gap:8px">
-        ${AGENCIES.map(a=>`<label class="pill-check ${d.agencies.includes(a.key)?'on':''}" onclick="toggleAgency('${a.key}')">${a.name}</label>`).join("")}
+    <div class="field" style="margin:0"><label style="font-size:14px;margin-bottom:16px;display:block;text-align:left;font-weight:600;color:#111827">Agencies (select all that apply) <span style="color:#DC2626;font-weight:700">*</span></label>
+      <div class="agencies-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
+        ${AGENCIES.map(a=>`<label class="pill-check ${d.agencies.includes(a.key)?'on':''}" style="font-size:13px;padding:12px 16px;font-weight:500;min-height:52px;display:flex;align-items:center;gap:8px;text-align:center;white-space:normal;line-height:1.4;word-wrap:break-word;overflow-wrap:break-word;cursor:pointer;border:1px solid #D1D5DB;border-radius:8px;background:#F9FAFB;transition:all 0.2s ease !important">
+          <input type="checkbox" ${d.agencies.includes(a.key)?'checked':''} onchange="toggleAgency('${a.key}')" style="flex-shrink:0;margin:0;width:18px;height:18px;pointer-events:none"> <span style="flex:1;text-align:center">${a.name}</span>
+        </label>`).join("")}
       </div>
     </div>
+    <style>
+      .agencies-grid .pill-check.on {
+        background: #1A237E !important;
+        border-color: #1A237E !important;
+        color: white !important;
+      }
+      .agencies-grid .pill-check.on:hover {
+        background: #121858 !important;
+        border-color: #121858 !important;
+      }
+      .agencies-grid .pill-check:hover {
+        border-color: #1A237E !important;
+        background: #F1F5F9 !important;
+      }
+      @media (max-width: 768px) {
+        .agencies-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </div>
 
-  <div class="panel">
-    <h3>Requirements</h3>
-    ${d.requirements.map((r,i)=>`
-      <label class="pill-check ${r.submitted?'on':''}" style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <input type="checkbox" ${r.submitted?'checked':''} onchange="toggleRequirement(${i})"> ${escapeHtml(r.name)}
-      </label>
-    `).join("")}
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
+    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Requirements</h3>
+    <div class="requirements-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+      ${d.requirements.map((r,i)=>`
+        <label class="pill-check ${r.submitted?'on':''}" style="font-size:13px;padding:12px 16px;font-weight:500;min-height:52px;display:flex;align-items:center;gap:8px;text-align:left;white-space:normal;line-height:1.4;word-wrap:break-word;overflow-wrap:break-word;cursor:pointer;border:1px solid #D1D5DB;border-radius:8px;background:#F9FAFB;transition:all 0.2s ease !important">
+          <input type="checkbox" ${r.submitted?'checked':''} onchange="toggleRequirement(${i})" style="flex-shrink:0;margin:0;width:18px;height:18px;pointer-events:none"> <span style="flex:1">${escapeHtml(r.name)}</span>
+        </label>
+      `).join("")}
+    </div>
+    <style>
+      .requirements-grid .pill-check.on {
+        background: #1A237E !important;
+        border-color: #1A237E !important;
+        color: white !important;
+      }
+      .requirements-grid .pill-check.on:hover {
+        background: #121858 !important;
+        border-color: #121858 !important;
+      }
+      .requirements-grid .pill-check:hover {
+        border-color: #1A237E !important;
+        background: #F1F5F9 !important;
+      }
+      @media (max-width: 768px) {
+        .requirements-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </div>
 
-  <div class="intake-actions" style="display:flex;gap:12px;margin-top:20px;justify-content:flex-end">
+  <div class="intake-actions" style="display:flex;gap:12px;margin-top:20px;margin-bottom:20px;justify-content:flex-end">
     <button class="btn primary" onclick="reviewIntake()"><i data-lucide="eye" style="width:16px;height:16px"></i> Review & Save</button>
     <button class="btn" style="background-color: #dc3545; color: white; border: 1px solid #dc3545;" onclick="window.location.href='/admin/social-case/submitted'"><i data-lucide="x" style="width:16px;height:16px"></i> Cancel</button>
+  </div>
   </div>
   `;
   
@@ -3077,25 +3150,25 @@ async function printDocument(){
     const notedLicense = escapeHtml(c.signers?.notedByLicense || "");
 
     const familyTable = famRows.length ? `
-      <table style="border-radius: 0;">
+      <table style="border-radius: 0; ${famRows.length >= 3 ? 'font-size: 11px;' : ''}">
         <thead>
           <tr>
-            <th style="border-radius: 0;">RELATIVES</th>
-            <th style="border-radius: 0;">RELATIONSHIP</th>
-            <th style="border-radius: 0;">AGE</th>
-            <th style="border-radius: 0;">EDUCATIONAL<br>ATTAINMENT</th>
-            <th style="border-radius: 0;">OCCUPATION</th>
-            <th style="border-radius: 0;">INCOME</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIVES</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIONSHIP</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">AGE</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">EDUCATIONAL<br>ATTAINMENT</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">OCCUPATION</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">INCOME</th>
           </tr>
         </thead>
         <tbody>
           ${famRows.map(m=>`<tr>
-            <td style="border-radius: 0;">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
-            <td align="center" style="border-radius: 0;">${escapeHtml(String(m.age || "")) || "—"}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.education || "—").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
+            <td align="center" style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.age || "")) || "—"}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.education || "—").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
           </tr>`).join("")}
         </tbody>
       </table>` : `<div style="color:#999;margin-top:8px;font-style:italic;">None listed.</div>`;
@@ -4005,25 +4078,25 @@ async function loadDocumentPreview(caseId){
     console.log('Template loaded, length:', template.length);
 
     const familyTable = famRows.length ? `
-      <table style="border-radius: 0;">
+      <table style="border-radius: 0; ${famRows.length >= 3 ? 'font-size: 11px;' : ''}">
         <thead>
           <tr>
-            <th style="border-radius: 0;">RELATIVES</th>
-            <th style="border-radius: 0;">RELATIONSHIP</th>
-            <th style="border-radius: 0;">AGE</th>
-            <th style="border-radius: 0;">EDUCATIONAL<br>ATTAINMENT</th>
-            <th style="border-radius: 0;">OCCUPATION</th>
-            <th style="border-radius: 0;">INCOME</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIVES</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIONSHIP</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">AGE</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">EDUCATIONAL<br>ATTAINMENT</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">OCCUPATION</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">INCOME</th>
           </tr>
         </thead>
         <tbody>
           ${famRows.map(m=>`<tr>
-            <td style="border-radius: 0;">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
-            <td align="center" style="border-radius: 0;">${escapeHtml(String(m.age || "")) || "—"}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.education || "—").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
+            <td align="center" style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.age || "")) || "—"}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.education || "—").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
           </tr>`).join("")}
         </tbody>
       </table>` : `<div style="color:#999;margin-top:8px;font-style:italic;">None listed.</div>`;
@@ -4579,25 +4652,25 @@ async function renderDocument(){
     let template = await response.text();
 
     const familyTable = famRows.length ? `
-      <table style="border-radius: 0;">
+      <table style="border-radius: 0; ${famRows.length >= 3 ? 'font-size: 11px;' : ''}">
         <thead>
           <tr>
-            <th style="border-radius: 0;">RELATIVES</th>
-            <th style="border-radius: 0;">RELATIONSHIP</th>
-            <th style="border-radius: 0;">AGE</th>
-            <th style="border-radius: 0;">EDUCATIONAL<br>ATTAINMENT</th>
-            <th style="border-radius: 0;">OCCUPATION</th>
-            <th style="border-radius: 0;">INCOME</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIVES</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIONSHIP</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">AGE</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">EDUCATIONAL<br>ATTAINMENT</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">OCCUPATION</th>
+            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">INCOME</th>
           </tr>
         </thead>
         <tbody>
           ${famRows.map(m=>`<tr>
-            <td style="border-radius: 0;">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
-            <td align="center" style="border-radius: 0;">${escapeHtml(String(m.age || "")) || "—"}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.education || "—").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
+            <td align="center" style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.age || "")) || "—"}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.education || "—").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
           </tr>`).join("")}
         </tbody>
       </table>` : `<div style="color:#999;margin-top:8px;font-style:italic;">None listed.</div>`;

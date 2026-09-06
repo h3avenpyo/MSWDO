@@ -671,6 +671,13 @@
             , Printed: "b-printed"
             , Released: "b-released"
         };
+
+        function formatNumberWithCommas(value){
+            if(!value) return '';
+            const numericValue = value.toString().replace(/,/g, '');
+            if(numericValue === '' || isNaN(numericValue)) return value;
+            return parseFloat(numericValue).toLocaleString('en-US');
+        }
         const PURPOSES = ["Medical Assistance", "Burial Assistance", "Educational Assistance", "Financial Assistance", "Food / Relief Assistance", "Livelihood Assistance", "Other"];
         const AGENCIES = [{
                 key: "PCSO"
@@ -1091,47 +1098,47 @@
     </div>
   </div>
 
-  <div class="panel">
-    <h3>I. Identifying information</h3>
-    <div class="grid3">
-      <div class="field"><label>Name</label><input type="text" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value"></div>
-      <div class="field"><label>Age</label><input type="number" value="${escapeHtml(String(d.client.age))}" oninput="draftIntake.client.age=this.value"></div>
-      <div class="field"><label>Sex</label>
-        <select oninput="draftIntake.client.sex=this.value">
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px">
+    <h3 style="margin:0 0 8px 0;font-size:13px">I. Identifying information</h3>
+    <div class="grid3" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">
+      <div class="field" style="margin:0"><label style="font-size:11px;margin-bottom:3px">Name</label><input type="text" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value" style="padding:5px 7px;font-size:12px;width:100%"></div>
+      <div class="field" style="margin:0"><label style="font-size:11px;margin-bottom:3px">Age</label><input type="number" value="${escapeHtml(String(d.client.age))}" oninput="draftIntake.client.age=this.value" style="padding:5px 7px;font-size:12px;width:100%"></div>
+      <div class="field" style="margin:0"><label style="font-size:11px;margin-bottom:3px">Sex</label>
+        <select oninput="draftIntake.client.sex=this.value" style="padding:5px 7px;font-size:12px;width:100%">
           ${["","Male","Female"].map(o=>`<option ${d.client.sex===o?'selected':''}>${o}</option>`).join("")}
         </select>
       </div>
-      <div class="field" style="grid-column:span 2"><label>Address</label><input type="text" value="${escapeHtml(d.client.address)}" oninput="draftIntake.client.address=this.value"></div>
-      <div class="field"><label>Birthdate</label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value"></div>
-      <div class="field"><label>Birthplace</label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value"></div>
-      <div class="field"><label>Religion</label><input type="text" value="${escapeHtml(d.client.religion)}" oninput="draftIntake.client.religion=this.value"></div>
-      <div class="field"><label>Educational attainment</label><input type="text" value="${escapeHtml(d.client.education)}" oninput="draftIntake.client.education=this.value"></div>
-      <div class="field"><label>Civil status</label>
-        <select oninput="draftIntake.client.civilStatus=this.value">
+      <div class="field" style="grid-column:span 2;margin:0"><label style="font-size:11px;margin-bottom:3px">Address</label><input type="text" value="${escapeHtml(d.client.address)}" oninput="draftIntake.client.address=this.value" style="padding:5px 7px;font-size:12px;width:100%"></div>
+      <div class="field" style="margin:0"><label style="font-size:11px;margin-bottom:3px">Birthdate</label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value" style="padding:5px 7px;font-size:12px;width:100%"></div>
+      <div class="field" style="margin:0"><label style="font-size:11px;margin-bottom:3px">Birthplace</label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value" style="padding:5px 7px;font-size:12px;width:100%"></div>
+      <div class="field" style="margin:0"><label style="font-size:11px;margin-bottom:3px">Religion</label><input type="text" value="${escapeHtml(d.client.religion)}" oninput="draftIntake.client.religion=this.value" style="padding:5px 7px;font-size:12px;width:100%"></div>
+      <div class="field" style="margin:0"><label style="font-size:11px;margin-bottom:3px">Educational attainment</label><input type="text" value="${escapeHtml(d.client.education)}" oninput="draftIntake.client.education=this.value" style="padding:5px 7px;font-size:12px;width:100%"></div>
+      <div class="field" style="margin:0"><label style="font-size:11px;margin-bottom:3px">Civil status</label>
+        <select oninput="draftIntake.client.civilStatus=this.value" style="padding:5px 7px;font-size:12px;width:100%">
           ${["","Single","Married","Widowed","Separated"].map(o=>`<option ${d.client.civilStatus===o?'selected':''}>${o}</option>`).join("")}
         </select>
       </div>
-      <div class="field"><label>Occupation</label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="N/A"></div>
-      <div class="field"><label>Income</label><input type="text" value="${escapeHtml(d.client.income)}" oninput="draftIntake.client.income=this.value" placeholder="N/A"></div>
-      <div class="field"><label>Contact no.</label><input type="tel" value="${escapeHtml(d.client.contact)}" oninput="draftIntake.client.contact=this.value"></div>
+      <div class="field" style="margin:0"><label style="font-size:11px;margin-bottom:3px">Occupation</label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="N/A" style="padding:5px 7px;font-size:12px;width:100%"></div>
+      <div class="field" style="margin:0"><label style="font-size:11px;margin-bottom:3px">Income</label><input type="text" value="${escapeHtml(d.client.income)}" oninput="this.value=formatNumberWithCommas(this.value); draftIntake.client.income=this.value" placeholder="N/A" style="padding:5px 7px;font-size:12px;width:100%"></div>
+      <div class="field" style="margin:0"><label style="font-size:11px;margin-bottom:3px">Contact no.</label><input type="tel" value="${escapeHtml(d.client.contact)}" oninput="draftIntake.client.contact=this.value" style="padding:5px 7px;font-size:12px;width:100%"></div>
     </div>
   </div>
 
-  <div class="panel">
-    <h3>II. Family composition</h3>
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px">
+    <h3 style="margin:0 0 8px 0;font-size:13px">II. Family composition</h3>
     ${d.household.map((m,i)=>`
-      <div class="grid3" style="margin-bottom:8px;align-items:end;padding-bottom:8px;border-bottom:1px solid var(--surface-sunken)">
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Name':''}</label><input type="text" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Relationship':''}</label><input type="text" value="${escapeHtml(m.relationship)}" oninput="draftIntake.household[${i}].relationship=this.value"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Age':''}</label><input type="number" value="${escapeHtml(String(m.age))}" oninput="draftIntake.household[${i}].age=this.value"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Educational attainment':''}</label><input type="text" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Occupation':''}</label><input type="text" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="N/A"></div>
-        <div class="field" style="margin-bottom:0;display:flex;gap:6px">
-          <div style="flex:1"><label>${i===0?'Income':''}</label><input type="text" value="${escapeHtml(m.income)}" oninput="draftIntake.household[${i}].income=this.value" placeholder="N/A"></div>
-          ${i>0?`<button class="btn ghost btn-sm" style="align-self:flex-end" onclick="draftIntake.household.splice(${i},1);render()"><i class="ti ti-x" aria-hidden="true"></i></button>`:""}
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:5px;align-items:end;padding-bottom:5px;border-bottom:1px solid var(--surface-sunken)">
+        <div class="field" style="margin:0"><label style="font-size:10px;margin-bottom:2px">Name</label><input type="text" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value" style="padding:4px 6px;font-size:11px;width:100%"></div>
+        <div class="field" style="margin:0"><label style="font-size:10px;margin-bottom:2px">Relationship</label><input type="text" value="${escapeHtml(m.relationship)}" oninput="draftIntake.household[${i}].relationship=this.value" style="padding:4px 6px;font-size:11px;width:100%"></div>
+        <div class="field" style="margin:0"><label style="font-size:10px;margin-bottom:2px">Age</label><input type="number" value="${escapeHtml(String(m.age))}" oninput="draftIntake.household[${i}].age=this.value" style="padding:4px 6px;font-size:11px;width:100%"></div>
+        <div class="field" style="margin:0"><label style="font-size:10px;margin-bottom:2px">Educational attainment</label><input type="text" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value" style="padding:4px 6px;font-size:11px;width:100%"></div>
+        <div class="field" style="margin:0"><label style="font-size:10px;margin-bottom:2px">Occupation</label><input type="text" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="N/A" style="padding:4px 6px;font-size:11px;width:100%"></div>
+        <div class="field" style="margin:0;display:flex;gap:3px">
+          <div style="flex:1"><label style="font-size:10px;margin-bottom:2px">Income</label><input type="text" value="${escapeHtml(m.income)}" oninput="this.value=formatNumberWithCommas(this.value); draftIntake.household[${i}].income=this.value" placeholder="N/A" style="padding:4px 6px;font-size:11px;width:100%"></div>
+          ${i>0?`<button class="btn ghost btn-sm" style="align-self:flex-end;padding:3px 6px" onclick="draftIntake.household.splice(${i},1);render()"><i class="ti ti-x" aria-hidden="true" style="width:12px;height:12px"></i></button>`:""}
         </div>
       </div>`).join("")}
-    <button class="btn ghost btn-sm" onclick="draftIntake.household.push({name:'',relationship:'',age:'',education:'',occupation:'',income:''});render()"><i class="ti ti-plus" aria-hidden="true"></i> Add family member</button>
+    <button class="btn ghost btn-sm" onclick="draftIntake.household.push({name:'',relationship:'',age:'',education:'',occupation:'',income:''});render()" style="padding:5px 10px;font-size:11px"><i class="ti ti-plus" aria-hidden="true" style="width:12px;height:12px"></i> Add family member</button>
   </div>
 
   <div class="panel">

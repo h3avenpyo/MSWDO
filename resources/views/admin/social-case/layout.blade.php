@@ -73,7 +73,7 @@
         }
         
         *{box-sizing:border-box;}
-        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100%;overflow-x:auto;overflow-y:auto;}
+        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:auto;overflow-x:auto;overflow-y:auto;}
         body{font-size:14px;line-height:1.5;}
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
         button{font-family:inherit;cursor:pointer;}
@@ -979,8 +979,8 @@
             margin-left:0;
             padding:20px;
             max-width:100%;
-            min-height:100vh;
-            overflow-y:auto;
+            min-height:auto;
+            overflow-y:visible;
             overflow-x:auto;
             display:flex;
             flex-direction:column;

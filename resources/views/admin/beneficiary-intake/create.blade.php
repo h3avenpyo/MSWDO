@@ -268,8 +268,8 @@
                                     <input type="text" name="client_occupation" class="form-control" value="{{ old('client_occupation') }}">
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">Monthly Income</label>
-                                    <input type="number" name="client_monthly_income" class="form-control" step="0.01" value="{{ old('client_monthly_income') }}">
+                                    <label class="form-label" style="font-size:12px;margin-bottom:4px">Monthly Income</label>
+                                    <input type="text" name="client_monthly_income" class="form-control" value="{{ old('client_monthly_income') }}" oninput="this.value=formatNumberWithCommas(this.value)" style="padding:6px 8px;font-size:13px">
                                 </div>
                             </div>
                         </div>
@@ -470,6 +470,13 @@
     <script>
         let currentStep = 1;
         const totalSteps = 8;
+
+        function formatNumberWithCommas(value){
+            if(!value) return '';
+            const numericValue = value.toString().replace(/,/g, '');
+            if(numericValue === '' || isNaN(numericValue)) return value;
+            return parseFloat(numericValue).toLocaleString('en-US');
+        }
 
         function getStepFields(step) {
             const stepEl = document.querySelector(`.step-content[data-step="${step}"]`);

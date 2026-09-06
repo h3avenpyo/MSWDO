@@ -95,7 +95,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         </div>
     </div>
 
-    <div id="intakeFormContent" style="overflow-y: auto; max-height: calc(100vh - 250px); padding-right: 10px;" class="intake-scroll"></div>
+    <div id="intakeFormContent" style="overflow-y: visible; height: auto; padding-right: 10px;" class="intake-scroll"></div>
 </div>
 @endsection
 
