@@ -52,6 +52,8 @@
         .modal-btn svg{width:20px;height:20px;}
         .modal-btn-danger{background:#DC2626;}
         .modal-btn-danger:hover{background:#B91C1C;}
+        .modal-btn-success{background:#10B981;}
+        .modal-btn-success:hover{background:#059669;}
         .modal-btn-indigo{background:var(--primary);}
         .modal-btn-indigo:hover{background:var(--primary-hover);}
 
@@ -534,7 +536,7 @@
                     </div>
                     <div class="filter-field">
                         <label class="filter-label" for="barangaySelect">Filter by Barangay</label>
-                        <select class="filter-select" id="barangaySelect" name="barangay" onchange="this.form.submit()">
+                        <select class="filter-select" id="barangaySelect" name="barangay">
                             <option value="">All Barangays</option>
                             <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
                             <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
@@ -662,6 +664,9 @@
                                     <div class="actions">
                                         <button class="action-btn" style="background:var(--primary);border-color:var(--primary);color:#fff;" onclick="viewProfile({{ $senior->id }})" title="View Profile">
                                             <i data-lucide="eye"></i>
+                                        </button>
+                                        <button class="action-btn" style="background:#10B981;border-color:#10B981;color:#fff;" onclick="generateIdCard({{ $senior->id }})" title="Generate ID Card">
+                                            <i data-lucide="id-card"></i>
                                         </button>
                                         <button class="action-btn archive-senior-btn"
                                             data-id="{{ $senior->id }}"
@@ -812,6 +817,9 @@
                 <button type="button" class="modal-btn modal-btn-danger" onclick="bulkArchive(event)">
                     <i data-lucide="archive"></i> Archive Selected
                 </button>
+                <button type="button" class="modal-btn modal-btn-success" onclick="bulkPrintIdCards(event)">
+                    <i data-lucide="printer"></i> Print Selected IDs
+                </button>
                 <button type="button" class="modal-btn modal-btn-indigo" onclick="exportPdf(event)">
                     <i data-lucide="file-output"></i> Export Selected (PDF)
                 </button>
@@ -899,6 +907,89 @@
                 console.error('Error loading profile:', err);
                 document.getElementById('modalFullName').textContent = 'Error loading data';
             });
+    }
+
+    // Generate ID Card function
+    function generateIdCard(id) {
+        window.open(`{{ route('admin.senior.generate-id-card', 0) }}`.replace('/0', `/${id}`), '_blank');
+    }
+
+    function bulkPrintIdCards(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        closeBulkModal();
+
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
+        const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+
+        if (ids.length === 0 && !selectAll.checked) {
+            Swal.fire('No Selection', 'Please select at least one record.', 'warning');
+            return;
+        }
+
+        const count = selectAll.checked ? {{ $seniors->total() ?? 0 }} : ids.length;
+
+        Swal.fire({
+            title: 'Print Selected IDs?',
+            text: `You are about to generate ID cards for ${count} senior(s). Continue?`,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#1A237E',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Yes, Generate',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route('admin.senior.bulk-print-ids') }}';
+                form.target = '_blank';
+                
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = '{{ csrf_token() }}';
+                form.appendChild(csrfInput);
+                
+                if (selectAll.checked) {
+                    // Send filter parameters instead of IDs
+                    const searchInput = document.getElementById('searchInput');
+                    const barangaySelect = document.getElementById('barangaySelect');
+                    
+                    if (searchInput && searchInput.value) {
+                        const searchInput2 = document.createElement('input');
+                        searchInput2.type = 'hidden';
+                        searchInput2.name = 'search';
+                        searchInput2.value = searchInput.value;
+                        form.appendChild(searchInput2);
+                    }
+                    
+                    if (barangaySelect && barangaySelect.value) {
+                        const barangayInput = document.createElement('input');
+                        barangayInput.type = 'hidden';
+                        barangayInput.name = 'barangay';
+                        barangayInput.value = barangaySelect.value;
+                        form.appendChild(barangayInput);
+                    }
+                    
+                    const selectAllInput = document.createElement('input');
+                    selectAllInput.type = 'hidden';
+                    selectAllInput.name = 'select_all';
+                    selectAllInput.value = '1';
+                    form.appendChild(selectAllInput);
+                } else {
+                    const idsInput = document.createElement('input');
+                    idsInput.type = 'hidden';
+                    idsInput.name = 'ids';
+                    idsInput.value = JSON.stringify(ids);
+                    form.appendChild(idsInput);
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+            }
+        });
     }
 
     // Event delegation for Archive buttons
@@ -1304,15 +1395,28 @@
         // Check if filters are active and show/hide clear button
         updateClearButtonVisibility();
 
-        // Listen for input changes to show/hide clear button
+        // Listen for input changes to show/hide clear button and auto-refresh
         const searchInput = document.getElementById('searchInput');
         const barangaySelect = document.getElementById('barangaySelect');
+        const filterForm = document.getElementById('filterForm');
         
+        // Debounce function for search input
+        let searchTimeout;
         if (searchInput) {
-            searchInput.addEventListener('input', updateClearButtonVisibility);
+            searchInput.addEventListener('input', function() {
+                updateClearButtonVisibility();
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function() {
+                    filterForm.submit();
+                }, 1000);
+            });
         }
+        
         if (barangaySelect) {
-            barangaySelect.addEventListener('change', updateClearButtonVisibility);
+            barangaySelect.addEventListener('change', function() {
+                updateClearButtonVisibility();
+                filterForm.submit();
+            });
         }
 
         @if(session('success'))

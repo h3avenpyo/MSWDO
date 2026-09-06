@@ -166,8 +166,37 @@ $initials = count($words) >= 2
         font-size: 0.75rem; color: #64748B; font-weight: 600; 
         margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;
     }
-    .report-stat-box .stat-num   { 
+    .report-stat-box .stat-num   {
         font-size: 1.75rem; font-weight: 700; color: #1E3A8A;
+    }
+
+    /* ── Analytics Charts Grid ── */
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .chart-card {
+        background: #ffffff;
+        border: 1px solid #E5E7EB;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    .chart-card h4 {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #1E3A8A;
+        margin: 0 0 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
     }
 
     /* ── Service Stat Boxes ── */
@@ -445,6 +474,50 @@ $initials = count($words) >= 2
     </div>
 </div>
 
+{{-- Analytics Charts --}}
+<div class="section-header">
+    <div>
+        <h3 class="section-title">
+            <i data-lucide="bar-chart-2" class="w-7 h-7"></i> Analytics Overview
+        </h3>
+        <p class="section-subtitle">Data visualization across all modules</p>
+    </div>
+</div>
+
+<div class="analytics-grid">
+    <!-- Social Case Study Chart -->
+    <div class="chart-card">
+        <h4><i data-lucide="file-text" class="w-5 h-5"></i> Social Case Study Trends</h4>
+        <div class="chart-container">
+            <canvas id="socialCaseChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Financial Assistance Chart -->
+    <div class="chart-card">
+        <h4><i data-lucide="dollar-sign" class="w-5 h-5"></i> Financial Assistance Applications</h4>
+        <div class="chart-container">
+            <canvas id="financialChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Senior Citizen Chart -->
+    <div class="chart-card">
+        <h4><i data-lucide="users" class="w-5 h-5"></i> Senior Citizens by Barangay</h4>
+        <div class="chart-container">
+            <canvas id="seniorChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Overall Distribution Chart -->
+    <div class="chart-card">
+        <h4><i data-lucide="pie-chart" class="w-5 h-5"></i> Service Distribution</h4>
+        <div class="chart-container">
+            <canvas id="distributionChart"></canvas>
+        </div>
+    </div>
+</div>
+
 {{-- Recent Cases --}}
 <div class="card-panel">
     <div class="section-header">
@@ -560,6 +633,131 @@ document.addEventListener('DOMContentLoaded', function () {
         lucide.createIcons();
         // Re-create icons after a short delay to ensure dynamic icons are rendered
         setTimeout(() => lucide.createIcons(), 100);
+    }
+
+    // Analytics Charts
+    @php
+        $serviceBreakdown = $serviceBreakdown ?? [];
+        $socialCaseData = $serviceBreakdown['Social Case Study'] ?? [];
+        $financialData = $serviceBreakdown['Financial Assistance'] ?? [];
+        $seniorData = $serviceBreakdown['Senior Citizen'] ?? [];
+    @endphp
+
+    // Social Case Study Chart
+    const socialCaseCtx = document.getElementById('socialCaseChart');
+    if (socialCaseCtx) {
+        @php
+            $monthlyLabels = $monthlySocialCases['labels'] ?? [];
+            $monthlyData = $monthlySocialCases['data'] ?? [];
+        @endphp
+        
+        new Chart(socialCaseCtx, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($monthlyLabels) !!},
+                datasets: [{
+                    label: 'Social Case Study',
+                    data: {!! json_encode($monthlyData) !!},
+                    borderColor: '#1E3A8A',
+                    backgroundColor: 'rgba(30, 58, 138, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    // Financial Assistance Chart
+    const financialCtx = document.getElementById('financialChart');
+    if (financialCtx) {
+        new Chart(financialCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Total Intakes', 'Pending', 'Step 1 Approved', 'Ready Step 2'],
+                datasets: [{
+                    label: 'Financial Assistance',
+                    data: [{{ $financialData['active'] ?? 0 }}, {{ $financialData['pending'] ?? 0 }}, {{ $financialData['overdue'] ?? 0 }}, {{ $financialData['completed'] ?? 0 }}],
+                    backgroundColor: ['#1E3A8A', '#3B82F6', '#10B981', '#F59E0B']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    // Senior Citizen Chart
+    const seniorCtx = document.getElementById('seniorChart');
+    if (seniorCtx) {
+        const seniorData = {
+            active: {{ $seniorData['pending'] ?? 0 }},
+            archived: {{ $seniorData['overdue'] ?? 0 }}
+        };
+        
+        console.log('Senior Citizen Data:', seniorData);
+        
+        new Chart(seniorCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Active Seniors', 'Archived'],
+                datasets: [{
+                    data: [seniorData.active, seniorData.archived],
+                    backgroundColor: ['#10B981', '#EF4444']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+
+    // Overall Distribution Chart
+    const distributionCtx = document.getElementById('distributionChart');
+    if (distributionCtx) {
+        new Chart(distributionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Social Case Study', 'Financial Assistance', 'Senior Citizen', 'VAWC', 'BCPC'],
+                datasets: [{
+                    data: [
+                        {{ $serviceBreakdown['Social Case Study']['total'] ?? 0 }},
+                        {{ $serviceBreakdown['Financial Assistance']['total'] ?? 0 }},
+                        {{ $serviceBreakdown['Senior Citizen']['total'] ?? 0 }},
+                        {{ $serviceBreakdown['VAWC']['total'] ?? 0 }},
+                        {{ $serviceBreakdown['BCPC']['total'] ?? 0 }}
+                    ],
+                    backgroundColor: ['#1E3A8A', '#3B82F6', '#10B981', '#F59E0B', '#EF4444']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
     }
 });
 </script>

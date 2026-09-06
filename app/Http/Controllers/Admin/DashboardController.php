@@ -24,6 +24,9 @@ class DashboardController extends Controller
         // Fetch recent cases
         $recentCases = $this->getRecentCases();
 
+        // Fetch monthly social case data for analytics
+        $monthlySocialCases = $this->getMonthlySocialCases();
+
         $data = [
             'staffPerformance' => [],
             'recentActivities' => [],
@@ -45,6 +48,7 @@ class DashboardController extends Controller
             'justLoggedIn' => $justLoggedIn,
             'serviceBreakdown' => $serviceBreakdown,
             'recentCases' => $recentCases,
+            'monthlySocialCases' => $monthlySocialCases,
         ];
 
         $data['caseDistribution'] = [];
@@ -221,6 +225,34 @@ class DashboardController extends Controller
 
         // Sort by updated date and take top 10
         return $recentCases->take(10);
+    }
+
+    private function getMonthlySocialCases()
+    {
+        if (!class_exists(\App\Models\SocialCase\SocialCaseStudy::class)) {
+            return [];
+        }
+
+        $monthlyData = [];
+        $months = [];
+        
+        // Get data for the last 12 months
+        for ($i = 11; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $monthName = $date->format('M Y');
+            $months[] = $monthName;
+            
+            $count = \App\Models\SocialCase\SocialCaseStudy::whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->count();
+            
+            $monthlyData[] = $count;
+        }
+
+        return [
+            'labels' => $months,
+            'data' => $monthlyData
+        ];
     }
 
     public function financialDashboard()

@@ -41,7 +41,7 @@
         .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;display:block;text-transform:uppercase;letter-spacing:0.05em;height:18px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .filter-select{width:100%;height:44px;min-height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
         .filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
-        input[type="date"].filter-select{cursor:text;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3e%3cline x1='16' y1='2' x2='16' y2='6'/%3e%3cline x1='8' y1='2' x2='8' y2='6'/%3e%3cline x1='3' y1='10' x2='21' y2='10'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-right:36px;}
+        input[type="date"].filter-select{cursor:text;background-image:none;background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-right:12px;}
         .filter-actions-row{display:flex;gap:8px;align-items:center;min-width:0;}
         .filter-actions-row .btn{white-space:nowrap;flex:1;}
 
@@ -264,7 +264,7 @@
                         <label class="filter-label">&nbsp;</label>
                         <div class="filter-actions-row">
                             <button type="submit" class="btn primary">
-                                <i data-lucide="filter"></i> Filter
+                                Filter
                             </button>
                             @if(request('barangay') || request('date_from') || request('date_to'))
                                 <a href="{{ route('admin.senior.payouts-history') }}" class="btn btn-clear">

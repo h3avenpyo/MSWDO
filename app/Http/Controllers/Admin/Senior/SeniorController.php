@@ -184,6 +184,100 @@ class SeniorController extends Controller
         return view('admin.senior.masterlist', compact('seniors'));
     }
 
+    public function seniorIdCard(Request $request)
+    {
+        $query = SeniorCitizenRecord::
+            where('status', '!=', 'archived')
+            ->whereNotNull('birth_date')
+            ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60')
+            ->select('id', 'control_number', 'first_name', 'middle_name', 'last_name', 'address', 'barangay', 'birth_date', 'sex', 'status', 'contact_number');
+
+        if ($request->filled('barangay') && $request->barangay !== '') {
+            $query->where('barangay', $request->barangay);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', '%' . $search . '%')
+                  ->orWhere('middle_name', 'like', '%' . $search . '%')
+                  ->orWhere('last_name', 'like', '%' . $search . '%');
+            });
+        }
+
+        $seniors = $query->orderByDesc('created_at')->paginate(15)->onEachSide(1);
+
+        $allBarangays = $this->getAllBarangays();
+
+        return view('admin.senior.id-card', compact('seniors', 'allBarangays'));
+    }
+
+    public function generateIdCard($id)
+    {
+        $senior = SeniorCitizenRecord::find($id);
+        
+        if (!$senior) {
+            abort(404);
+        }
+
+        $birthDate = $senior->birth_date ? \Carbon\Carbon::parse($senior->birth_date) : null;
+        $formattedBirthDate = $birthDate ? $birthDate->format('F d, Y') : 'N/A';
+        $currentDate = \Carbon\Carbon::now()->format('F d, Y');
+
+        return view('admin.senior.id-card-template', compact('senior', 'formattedBirthDate', 'currentDate'));
+    }
+
+    public function bulkPrintIds(Request $request)
+    {
+        $selectAll = $request->input('select_all', false);
+        
+        if ($selectAll) {
+            // Get all seniors based on filters
+            $query = SeniorCitizenRecord::where('status', 'active');
+            
+            if ($request->has('search') && !empty($request->input('search'))) {
+                $search = $request->input('search');
+                $query->where(function($q) use ($search) {
+                    $q->where('full_name', 'like', '%' . $search . '%')
+                      ->orWhere('control_number', 'like', '%' . $search . '%');
+                });
+            }
+            
+            if ($request->has('barangay') && !empty($request->input('barangay'))) {
+                $query->where('barangay', $request->input('barangay'));
+            }
+            
+            $seniors = $query->get();
+        } else {
+            $ids = $request->input('ids', []);
+            
+            if (is_string($ids)) {
+                $ids = json_decode($ids, true);
+            }
+            
+            if (empty($ids) || !is_array($ids)) {
+                return back()->with('error', 'No seniors selected.');
+            }
+
+            $seniors = SeniorCitizenRecord::whereIn('id', $ids)->get();
+        }
+        
+        $cardData = [];
+        foreach ($seniors as $senior) {
+            $birthDate = $senior->birth_date ? \Carbon\Carbon::parse($senior->birth_date) : null;
+            $formattedBirthDate = $birthDate ? $birthDate->format('F d, Y') : 'N/A';
+            $currentDate = \Carbon\Carbon::now()->format('F d, Y');
+            
+            $cardData[] = [
+                'senior' => $senior,
+                'formattedBirthDate' => $formattedBirthDate,
+                'currentDate' => $currentDate
+            ];
+        }
+
+        return view('admin.senior.bulk-id-cards', compact('cardData'));
+    }
+
     public function seniorArchiveList(Request $request)
     {
         $query = SeniorCitizenRecord::

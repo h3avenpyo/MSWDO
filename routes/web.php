@@ -145,6 +145,9 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::get('/admin/senior/registration', [SeniorController::class, 'seniorRegistration'])->name('admin.senior.registration');
     Route::post('/admin/senior/registration', [SeniorController::class, 'storeSeniorRegistration'])->name('admin.senior.registration.store');
     Route::get('/admin/senior/masterlist', [SeniorController::class, 'seniorMasterlist'])->name('admin.senior.masterlist');
+    Route::get('/admin/senior/id-card', [SeniorController::class, 'seniorIdCard'])->name('admin.senior.id-card');
+    Route::get('/admin/senior/id-card/{id}', [SeniorController::class, 'generateIdCard'])->name('admin.senior.generate-id-card');
+    Route::post('/admin/senior/bulk-print-ids', [SeniorController::class, 'bulkPrintIds'])->name('admin.senior.bulk-print-ids');
     Route::get('/admin/senior/archive', [SeniorController::class, 'seniorArchiveList'])->name('admin.senior.archive.list');
     Route::post('/admin/senior/archive/{id}', [SeniorController::class, 'archiveSenior'])->name('admin.senior.archive');
     Route::post('/admin/senior/unarchive/{id}', [SeniorController::class, 'unarchiveSenior'])->name('admin.senior.unarchive');
