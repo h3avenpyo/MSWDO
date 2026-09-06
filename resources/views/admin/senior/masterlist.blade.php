@@ -911,7 +911,7 @@
 
     // Generate ID Card function
     function generateIdCard(id) {
-        window.open(`{{ route('admin.senior.generate-id-card', 0) }}`.replace('/0', `/${id}`), '_blank');
+        window.location.href = `{{ route('admin.senior.generate-id-card', 0) }}`.replace('/0', `/${id}`);
     }
 
     function bulkPrintIdCards(e) {
@@ -943,7 +943,6 @@
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '{{ route('admin.senior.bulk-print-ids') }}';
-                form.target = '_blank';
                 
                 const csrfInput = document.createElement('input');
                 csrfInput.type = 'hidden';

@@ -246,7 +246,7 @@
     lucide.createIcons();
 
     function generateIdCard(id) {
-        window.open(`{{ route('admin.senior.generate-id-card', 0) }}`.replace('/0', `/${id}`), '_blank');
+        window.location.href = `{{ route('admin.senior.generate-id-card', 0) }}`.replace('/0', `/${id}`);
     }
 
     function toggleSelectAll() {
@@ -280,19 +280,24 @@
             return;
         }
 
-        ids.forEach((id, index) => {
-            setTimeout(() => {
-                window.open(`{{ route('admin.senior.generate-id-card', 0) }}`.replace('/0', `/${id}`), '_blank');
-            }, index * 300);
-        });
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route('admin.senior.bulk-print-ids') }}';
 
-        Swal.fire({
-            title: 'Opening ID Cards',
-            text: `Opening ${ids.length} ID card(s) in new tabs. Please print each one.`,
-            icon: 'info',
-            confirmButtonColor: '#1A237E',
-            confirmButtonText: 'OK'
-        });
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = '{{ csrf_token() }}';
+        form.appendChild(csrfInput);
+
+        const idsInput = document.createElement('input');
+        idsInput.type = 'hidden';
+        idsInput.name = 'ids';
+        idsInput.value = JSON.stringify(ids);
+        form.appendChild(idsInput);
+
+        document.body.appendChild(form);
+        form.submit();
     }
 </script>
 </body>

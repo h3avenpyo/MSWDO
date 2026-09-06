@@ -111,6 +111,17 @@
             background: #1E40AF;
         }
 
+        .header-btn.btn-close-custom {
+            color: #DC2626 !important;
+            border: 1.5px solid #DC2626 !important;
+            background: #ffffff !important;
+        }
+        .header-btn.btn-close-custom:hover {
+            background: #FEF2F2 !important;
+            border-color: #B91C1C !important;
+            color: #B91C1C !important;
+        }
+
         @media (max-width: 900px) {
             .detail-header-top { flex-direction: column; gap: 16px; }
             .header-actions { flex-wrap: wrap; }
@@ -134,10 +145,10 @@
             to { transform: rotate(360deg); }
         }
 
-        .bulk-cards-container { display: flex; flex-direction: row; align-items: flex-start; padding: 0; gap: 20px; position: relative; }
-        .cards-wrapper { flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
-        .page { width: 210mm; min-height: 297mm; background: white; padding: 10mm; display: flex; flex-direction: column; gap: 5mm; page-break-after: always; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-radius: 8px; }
-        .cards-row { display: flex; flex-wrap: wrap; gap: 5mm; justify-content: flex-start; padding-left: 10mm; }
+        .bulk-cards-container { display: flex; flex-direction: row; justify-content: center; align-items: flex-start; padding: 0; gap: 20px; position: relative; width: 100%; }
+        .cards-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
+        .page { width: 210mm; min-height: 297mm; background: white; padding: 10mm; display: flex; flex-direction: column; gap: 5mm; page-break-after: always; margin: 0 auto 24px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-radius: 8px; }
+        .cards-row { display: flex; flex-wrap: wrap; gap: 5mm; justify-content: center; }
         .card-pair { display: flex; flex-direction: row; gap: 2mm; }
         .id-card { width: 85.6mm; height: 53.98mm; background-color: #ffffff; border-radius: 3.18mm; border: 2px solid #1A237E; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); position: relative; overflow: hidden; display: flex; flex-direction: column; padding: 3mm; color: #1a1a1a; }
         .header { text-align: center; border-bottom: 2px solid #1A237E; padding-bottom: 1mm; margin-bottom: 2mm; background: linear-gradient(to bottom, #1A237E, #121858); padding: 2mm 0; margin: -3mm -3mm 2mm -3mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -210,13 +221,13 @@
                         <i data-lucide="printer" style="width:16px;height:16px;"></i>
                         Print
                     </button>
-                    <button type="button" class="header-btn primary" style="width:120px;flex-shrink:0;" onclick="reprintSeniorCard({{ $senior->id }})">
-                        <i data-lucide="printer" style="width:16px;height:16px;"></i>
-                        Reprint
-                    </button>
                     <button type="button" class="header-btn" style="background:#1A237E;color:white;border-color:#1A237E;width:120px;flex-shrink:0;" onclick="openEditSeniorModal()">
                         <i data-lucide="edit" style="width:16px;height:16px;"></i>
                         Edit
+                    </button>
+                    <button type="button" class="header-btn btn-close-custom" style="width:120px;flex-shrink:0;" onclick="handleClose()">
+                        <i data-lucide="x" style="width:16px;height:16px;"></i>
+                        Close
                     </button>
                 </div>
             </div>
@@ -415,43 +426,14 @@
         }, 500);
     }
 
-    function reprintSeniorCard(id) {
-        Swal.fire({
-            title: 'Reprint ID Card',
-            text: 'Are you sure you want to reprint this ID card?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#1E3A8A',
-            cancelButtonColor: '#6B7280',
-            confirmButtonText: 'Yes, Reprint',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`/admin/senior/id-card/${id}/reprint`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(r => r.json())
-                .then(data => {
-                    window.print();
-                    Swal.fire({
-                        title: 'Reprint Successful',
-                        text: 'ID card has been recorded and sent to printer.',
-                        icon: 'success',
-                        confirmButtonColor: '#1A237E',
-                        confirmButtonText: 'OK'
-                    });
-                })
-                .catch(err => {
-                    console.error('Reprint error:', err);
-                    window.print();
-                });
-            }
-        });
+    function handleClose() {
+        if (document.referrer && document.referrer.indexOf(window.location.host) !== -1 && document.referrer !== window.location.href) {
+            window.location.href = document.referrer;
+        } else if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            window.location.href = '/admin/senior/id-card';
+        }
     }
 
     function openEditSeniorModal() {
