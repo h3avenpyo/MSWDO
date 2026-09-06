@@ -214,7 +214,7 @@ class SeniorController extends Controller
 
     public function generateIdCard($id)
     {
-        $senior = SeniorCitizenRecord::find($id);
+        $senior = SeniorCitizenRecord::with('createdBy')->find($id);
         
         if (!$senior) {
             abort(404);
@@ -223,8 +223,70 @@ class SeniorController extends Controller
         $birthDate = $senior->birth_date ? \Carbon\Carbon::parse($senior->birth_date) : null;
         $formattedBirthDate = $birthDate ? $birthDate->format('F d, Y') : 'N/A';
         $currentDate = \Carbon\Carbon::now()->format('F d, Y');
+        $allBarangays = $this->getAllBarangays();
 
-        return view('admin.senior.id-card-template', compact('senior', 'formattedBirthDate', 'currentDate'));
+        return view('admin.senior.id-card-template', compact('senior', 'formattedBirthDate', 'currentDate', 'allBarangays'));
+    }
+
+    public function updateSenior(Request $request, $id)
+    {
+        $senior = SeniorCitizenRecord::findOrFail($id);
+
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:100',
+            'middle_name' => 'nullable|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'control_number' => 'nullable|string|max:50|unique:senior_citizen_records,control_number,' . $senior->id,
+            'birth_date' => 'nullable|date',
+            'sex' => 'nullable|in:Male,Female',
+            'address' => 'nullable|string|max:255',
+            'barangay' => 'nullable|string|max:100',
+            'contact_number' => 'nullable|string|max:20',
+            'emergency_contact_name' => 'nullable|string|max:100',
+            'emergency_contact_number' => 'nullable|string|max:20',
+            'status' => 'nullable|in:active,pending,archived',
+        ]);
+
+        $senior->update($validated);
+
+        $this->logActivity('updated', $senior->full_name, $senior->control_number ?? ('SC-' . $senior->id));
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Senior record updated successfully.',
+                'senior' => [
+                    'id' => $senior->id,
+                    'full_name' => $senior->full_name,
+                    'control_number' => $senior->control_number,
+                    'address' => $senior->address,
+                    'barangay' => $senior->barangay,
+                    'birth_date' => $senior->birth_date ? $senior->birth_date->format('F d, Y') : 'N/A',
+                    'sex' => $senior->sex,
+                    'status' => $senior->status ? ucfirst($senior->status->value ?? $senior->status) : 'Active',
+                    'emergency_contact_name' => $senior->emergency_contact_name,
+                    'emergency_contact_number' => $senior->emergency_contact_number,
+                ]
+            ]);
+        }
+
+        return back()->with('success', 'Senior record updated successfully.');
+    }
+
+    public function reprintIdCard($id)
+    {
+        $senior = SeniorCitizenRecord::findOrFail($id);
+        $senior->increment('print_count');
+        $senior->update(['last_printed_at' => now()]);
+
+        $this->logActivity('reprinted', $senior->full_name, $senior->control_number ?? ('SC-' . $senior->id));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Reprint recorded successfully.',
+            'print_count' => $senior->print_count,
+            'last_printed_at' => $senior->last_printed_at ? $senior->last_printed_at->format('M j, Y h:i A') : now()->format('M j, Y h:i A')
+        ]);
     }
 
     public function bulkPrintIds(Request $request)
@@ -233,7 +295,7 @@ class SeniorController extends Controller
         
         if ($selectAll) {
             // Get all seniors based on filters
-            $query = SeniorCitizenRecord::where('status', 'active');
+            $query = SeniorCitizenRecord::with('createdBy')->where('status', 'active');
             
             if ($request->has('search') && !empty($request->input('search'))) {
                 $search = $request->input('search');
@@ -256,10 +318,10 @@ class SeniorController extends Controller
             }
             
             if (empty($ids) || !is_array($ids)) {
-                return back()->with('error', 'No seniors selected.');
+                $seniors = SeniorCitizenRecord::with('createdBy')->where('status', 'active')->limit(12)->get();
+            } else {
+                $seniors = SeniorCitizenRecord::with('createdBy')->whereIn('id', $ids)->get();
             }
-
-            $seniors = SeniorCitizenRecord::whereIn('id', $ids)->get();
         }
         
         $cardData = [];
@@ -275,7 +337,29 @@ class SeniorController extends Controller
             ];
         }
 
-        return view('admin.senior.bulk-id-cards', compact('cardData'));
+        $allBarangays = $this->getAllBarangays();
+
+        return view('admin.senior.bulk-id-cards', compact('cardData', 'allBarangays'));
+    }
+
+    public function bulkReprintIds(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (is_string($ids)) {
+            $ids = json_decode($ids, true);
+        }
+
+        if (!empty($ids) && is_array($ids)) {
+            SeniorCitizenRecord::whereIn('id', $ids)->increment('print_count');
+            SeniorCitizenRecord::whereIn('id', $ids)->update(['last_printed_at' => now()]);
+            $count = count($ids);
+            $this->logActivity('bulk reprinted', "{$count} senior ID cards", 'Multiple');
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Bulk reprint recorded successfully.'
+        ]);
     }
 
     public function seniorArchiveList(Request $request)

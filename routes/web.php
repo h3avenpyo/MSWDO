@@ -147,11 +147,14 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::get('/admin/senior/masterlist', [SeniorController::class, 'seniorMasterlist'])->name('admin.senior.masterlist');
     Route::get('/admin/senior/id-card', [SeniorController::class, 'seniorIdCard'])->name('admin.senior.id-card');
     Route::get('/admin/senior/id-card/{id}', [SeniorController::class, 'generateIdCard'])->name('admin.senior.generate-id-card');
-    Route::post('/admin/senior/bulk-print-ids', [SeniorController::class, 'bulkPrintIds'])->name('admin.senior.bulk-print-ids');
+    Route::match(['get', 'post'], '/admin/senior/bulk-print-ids', [SeniorController::class, 'bulkPrintIds'])->name('admin.senior.bulk-print-ids');
+    Route::post('/admin/senior/bulk-reprint-ids', [SeniorController::class, 'bulkReprintIds'])->name('admin.senior.bulk-reprint-ids');
     Route::get('/admin/senior/archive', [SeniorController::class, 'seniorArchiveList'])->name('admin.senior.archive.list');
     Route::post('/admin/senior/archive/{id}', [SeniorController::class, 'archiveSenior'])->name('admin.senior.archive');
     Route::post('/admin/senior/unarchive/{id}', [SeniorController::class, 'unarchiveSenior'])->name('admin.senior.unarchive');
     Route::get('/admin/senior/profile/{id}/json', [SeniorController::class, 'seniorProfileJson'])->name('admin.senior.profile.json');
+    Route::post('/admin/senior/update/{id}', [SeniorController::class, 'updateSenior'])->name('admin.senior.update');
+    Route::post('/admin/senior/id-card/{id}/reprint', [SeniorController::class, 'reprintIdCard'])->name('admin.senior.reprint');
     Route::prefix('admin/senior/birthdays')->name('admin.senior.birthdays')->group(function () {
         Route::get('/', [BirthdayController::class, 'index']);
         Route::get('/data', [BirthdayController::class, 'data'])->name('.data');
