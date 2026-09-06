@@ -100,7 +100,7 @@ let view = {tab:"dashboard", caseId:null, docAgency:null, newCaseStep:"search", 
 let selectedAgency = "PCSO";
 let draftIntake = null;
 
-/* ---------------- Role / permission helpers ---------------- */
+const CURRENT_USER_ID = (document.querySelector('meta[name="user-id"]')?.content || '').trim();
 const CURRENT_USER_ROLE = (document.querySelector('meta[name="user-role"]')?.content || '').toLowerCase();
 const CURRENT_USER_NAME = (document.querySelector('meta[name="user-name"]')?.content || '').trim();
 const ADMIN_NAME = (document.querySelector('meta[name="admin-name"]')?.content || '').trim();
@@ -738,20 +738,127 @@ async function submitForEncoding(){
     return;
   }
 
-  const confirm = await Swal.fire({
-    title: 'Submit for Case Encoding?',
-    html: `Forward <strong>${escapeHtml(name)}</strong> to the case encoder for encoding?`,
-    icon: 'question',
+  // Show quick loading while fetching available encoders
+  Swal.fire({
+    title: 'Loading Accounts...',
+    html: '<div style="padding:14px 0;color:#6B7280;font-size:14px;">Fetching social case encoder accounts...</div>',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+
+  let encoders = [];
+  try {
+    const encRes = await fetch('/admin/social-case/api/encoders');
+    if(encRes.ok){
+      encoders = await encRes.json();
+    } else {
+      throw new Error('Failed to load encoders list');
+    }
+  } catch(err){
+    console.error('Error fetching encoders:', err);
+    Swal.fire({
+      title: 'Error',
+      text: 'Could not load encoder accounts. Please try again or check your connection.',
+      icon: 'error',
+      confirmButtonColor: '#DC2626'
+    });
+    return;
+  }
+
+  if(!encoders || encoders.length === 0){
+    Swal.fire({
+      title: 'No Encoder Accounts Found',
+      text: 'There are no active accounts configured for social case encoding.',
+      icon: 'warning',
+      confirmButtonColor: '#1A237E'
+    });
+    return;
+  }
+
+  const encodersListHtml = encoders.map((enc, index) => {
+    const isChecked = index === 0 ? 'checked' : '';
+    const initials = (enc.name || 'SC')
+      .split(' ')
+      .map(w => w[0])
+      .filter(Boolean)
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+
+    return `
+      <label class="encoder-option-card ${index === 0 ? 'selected' : ''}" for="enc_opt_${enc.id}" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border:2px solid ${index === 0 ? '#1A237E' : '#E2E8F0'};border-radius:10px;margin-bottom:8px;cursor:pointer;background:${index === 0 ? '#F8FAFC' : '#FFFFFF'};transition:all .15s ease;text-align:left;user-select:none;">
+        <input type="radio" id="enc_opt_${enc.id}" name="selected_encoder" value="${enc.id}" ${isChecked} style="width:18px;height:18px;accent-color:#1A237E;cursor:pointer;margin:0;flex-shrink:0;">
+        <div style="width:38px;height:38px;border-radius:50%;background:#1A237E;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">
+          ${escapeHtml(initials)}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <span style="font-size:15px;font-weight:600;color:#0F172A;">${escapeHtml(enc.name)}</span>
+        </div>
+      </label>
+    `;
+  }).join('');
+
+  const modalResult = await Swal.fire({
+    title: 'Select Case Encoder',
+    html: `
+      <div style="text-align:left;padding:0 2px;">
+        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+          <div style="width:24px;height:24px;border-radius:50%;background:#16A34A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">✓</div>
+          <div style="font-size:13px;color:#166534;line-height:1.4;">
+            Client <strong>${escapeHtml(name)}</strong> is eligible. Choose a Case Encoding account to forward this client to:
+          </div>
+        </div>
+        <div id="encodersSelectionContainer" style="max-height:300px;overflow-y:auto;padding-right:4px;">
+          ${encodersListHtml}
+        </div>
+      </div>
+    `,
     showCancelButton: true,
-    confirmButtonText: 'Yes, Submit',
+    confirmButtonText: 'Submit to Selected Encoder',
     cancelButtonText: 'Cancel',
     confirmButtonColor: '#1A237E',
     cancelButtonColor: '#6B7280',
     background: '#ffffff',
-    customClass: { popup: 'rounded-4 shadow-lg' }
+    customClass: {
+      popup: 'rounded-4 shadow-lg'
+    },
+    didOpen: () => {
+      const container = document.getElementById('encodersSelectionContainer');
+      if(container){
+        const cards = container.querySelectorAll('.encoder-option-card');
+        cards.forEach(card => {
+          card.addEventListener('click', () => {
+            cards.forEach(c => {
+              c.style.borderColor = '#E2E8F0';
+              c.style.background = '#FFFFFF';
+            });
+            card.style.borderColor = '#1A237E';
+            card.style.background = '#F8FAFC';
+            const radio = card.querySelector('input[type="radio"]');
+            if(radio) radio.checked = true;
+          });
+        });
+      }
+    },
+    preConfirm: () => {
+      const selectedRadio = document.querySelector('input[name="selected_encoder"]:checked');
+      if(!selectedRadio){
+        Swal.showValidationMessage('Please select an encoder account');
+        return false;
+      }
+      return selectedRadio.value;
+    }
   });
 
-  if(!confirm.isConfirmed) return;
+  if(!modalResult.isConfirmed || !modalResult.value) return;
+
+  const selectedEncoderId = modalResult.value;
+  const selectedEncoder = encoders.find(e => String(e.id) === String(selectedEncoderId));
+  const encoderName = selectedEncoder ? selectedEncoder.name : 'the case encoder';
 
   try {
     const response = await fetch('/admin/social-case/api/eligibility/submit', {
@@ -761,7 +868,11 @@ async function submitForEncoding(){
         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
         'Accept': 'application/json'
       },
-      body: JSON.stringify({client_name: name, override: !!view.eligOverride})
+      body: JSON.stringify({
+        client_name: name,
+        override: !!view.eligOverride,
+        encoder_id: selectedEncoderId
+      })
     });
 
     const data = await response.json();
@@ -775,14 +886,17 @@ async function submitForEncoding(){
       return;
     }
 
-    logActivity('created', 'Client forwarded for case encoding', {
+    const assignedName = data.assigned_officer?.name || encoderName;
+
+    logActivity('created', `Client forwarded to ${assignedName} for case encoding`, {
       clientName: data.case?.client?.name || name,
-      controlNo: data.case?.case_number || ''
+      controlNo: data.case?.case_number || '',
+      assignedEncoder: assignedName
     });
 
     Swal.fire({
-      title: 'Forwarded!',
-      text: data.message || 'Client passed eligibility and was forwarded for case encoding.',
+      title: 'Forwarded Successfully!',
+      html: `<strong>${escapeHtml(data.case?.client?.name || name)}</strong> was successfully forwarded and assigned to <strong>${escapeHtml(assignedName)}</strong> for case encoding.`,
       icon: 'success',
       confirmButtonColor: '#1A237E'
     });
@@ -1578,7 +1692,15 @@ function renderEncoderQueue(){
   const container = document.getElementById('encoderQueue');
   if(!container) return;
 
-  const waiting = cases.filter(c => c.eligibilityStatus === 'eligible' && c.status === 'Draft' && c.eligibleBy && !(c.interview && c.interview.interviewSituation));
+  const waiting = cases.filter(c => {
+    const isWaiting = c.eligibilityStatus === 'eligible' && c.status === 'Draft' && c.eligibleBy && !(c.interview && c.interview.interviewSituation);
+    if (!isWaiting) return false;
+    if (CURRENT_USER_ROLE === 'social_worker' && CURRENT_USER_ID) {
+      const assignedId = c.officerId || c.officer_id || c.officer?.id;
+      return String(assignedId) === String(CURRENT_USER_ID);
+    }
+    return true;
+  });
 
   if(waiting.length === 0){
     container.innerHTML = `
@@ -1598,7 +1720,7 @@ function renderEncoderQueue(){
           ${escapeHtml(String(c.client?.age || ''))} • ${escapeHtml(c.client?.sex || c.client?.gender || '')} • ${escapeHtml(c.client?.address || c.client?.barangay || '—')}
         </div>
         <div style="font-size:11px;color:var(--text-muted);margin-top:2px">
-          Forwarded by ${escapeHtml(c.eligibleByUser?.name || 'Eligibility Checker')}${c.eligibleAt ? ' • ' + fmtDate(c.eligibleAt) : ''}
+          Forwarded by ${escapeHtml(c.eligibleByUser?.name || 'Eligibility Checker')}${c.officer?.name ? ` • Assigned to: <strong style="color:#1A237E">${escapeHtml(c.officer.name)}</strong>` : ''}${c.eligibleAt ? ' • ' + fmtDate(c.eligibleAt) : ''}
         </div>
       </div>
       <div style="display:flex;gap:6px;flex-shrink:0">

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="user-id" content="{{ session('admin_user_id') }}">
     <meta name="user-role" content="{{ session('admin_user_role') }}">
     <meta name="user-name" content="{{ session('admin_user_name') ?? 'Social Case Study Officer' }}">
     <meta name="admin-name" content="{{ optional(\App\Models\User::where('role', 'admin')->first())->name ?? '' }}">

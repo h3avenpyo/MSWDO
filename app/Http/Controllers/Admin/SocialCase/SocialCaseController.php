@@ -138,13 +138,21 @@ class SocialCaseController extends Controller
      */
     public function socialCaseSubmitted()
     {
-        $submitted = SocialCaseStudy::with('client', 'eligibleByUser')
+        $userId = session('admin_user_id');
+        $userRole = (string) session('admin_user_role');
+
+        $query = SocialCaseStudy::with('client', 'eligibleByUser', 'officer')
             ->where('eligibility_status', 'eligible')
             ->whereNotNull('eligible_by')
             ->whereNull('encoded_by')
-            ->whereNotIn('status', ['Review', 'Approved', 'Printed', 'Released', 'Archived'])
-            ->orderByDesc('eligible_at')
-            ->get();
+            ->whereNotIn('status', ['Review', 'Approved', 'Printed', 'Released', 'Archived']);
+
+        // Case encoder accounts should only see submitted clients assigned to them
+        if ($userRole === 'social_worker') {
+            $query->where('officer_id', $userId);
+        }
+
+        $submitted = $query->orderByDesc('eligible_at')->get();
 
         $acceptedOnlineRequests = OnlineRequest::with('attachments')
             ->where('status', 'approved')
@@ -209,6 +217,37 @@ class SocialCaseController extends Controller
         });
 
         return response()->json($cases);
+    }
+
+    /**
+     * Return active accounts available for social case encoding.
+     */
+    public function getEncoders()
+    {
+        $encoders = User::where('role', 'social_worker')
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get(['id', 'name', 'email', 'role', 'position'])
+            ->map(function ($user) {
+                $activeCount = SocialCaseStudy::where('officer_id', $user->id)
+                    ->whereNotIn('status', ['Printed', 'Released', 'Archived'])
+                    ->count();
+
+                $roleValue = $user->role instanceof \App\Enums\UserRole ? $user->role->value : (string) $user->role;
+                $roleLabel = $user->role instanceof \App\Enums\UserRole ? $user->role->label() : ucfirst(str_replace('_', ' ', $user->role));
+
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $roleValue,
+                    'role_label' => $roleLabel,
+                    'position' => $user->position ?: $roleLabel,
+                    'active_cases_count' => $activeCount,
+                ];
+            });
+
+        return response()->json($encoders);
     }
 
     public function getCase($id)
@@ -474,10 +513,24 @@ class SocialCaseController extends Controller
         $request->validate([
             'client_name' => 'required|string|max:255',
             'override'    => 'sometimes|boolean',
+            'encoder_id'  => 'nullable|integer|exists:users,id',
         ]);
 
-        $name     = trim($request->input('client_name'));
-        $override = $request->boolean('override');
+        $name      = trim($request->input('client_name'));
+        $override  = $request->boolean('override');
+        $encoderId = $request->input('encoder_id');
+
+        if ($encoderId) {
+            $encoderUser = User::where('id', $encoderId)
+                ->where('status', 'active')
+                ->where('role', 'social_worker')
+                ->first();
+            if (! $encoderUser) {
+                return response()->json([
+                    'error' => 'The selected account is not a Case Encoding account or is inactive.',
+                ], 422);
+            }
+        }
 
         // Use the same normalized matching as checkEligibility
         $parsed    = NameMatcher::parseFullName($name);
@@ -521,7 +574,7 @@ class SocialCaseController extends Controller
             ], 409);
         }
 
-        $case = DB::transaction(function () use ($client) {
+        $case = DB::transaction(function () use ($client, $encoderId) {
             // Increment global document reference counter
             $counter = DB::table('document_reference_counters')
                 ->where('type', 'social_case')
@@ -547,7 +600,7 @@ class SocialCaseController extends Controller
 
             $case = SocialCaseStudy::create([
                 'client_id'          => $client->id,
-                'officer_id'         => session('admin_user_id'),
+                'officer_id'         => $encoderId ?? session('admin_user_id'),
                 'case_number'        => $this->generateCaseNumber(),
                 'date_processed'     => now()->toDateString(),
                 'encoded_by'         => null,
@@ -562,10 +615,20 @@ class SocialCaseController extends Controller
             return $case;
         });
 
+        $assignedOfficer = $case->officer;
+        $message = $assignedOfficer
+            ? "Client passed eligibility and was forwarded to {$assignedOfficer->name} for case encoding."
+            : 'Client passed eligibility and was forwarded for case encoding.';
+
         return response()->json([
             'eligible' => true,
-            'case' => $case->load('client'),
-            'message' => 'Client passed eligibility and was forwarded for case encoding.',
+            'case' => $case->load('client', 'officer', 'eligibleByUser'),
+            'assigned_officer' => $assignedOfficer ? [
+                'id' => $assignedOfficer->id,
+                'name' => $assignedOfficer->name,
+                'role' => $assignedOfficer->role instanceof \App\Enums\UserRole ? $assignedOfficer->role->label() : (string) $assignedOfficer->role,
+            ] : null,
+            'message' => $message,
         ], 201);
     }
 

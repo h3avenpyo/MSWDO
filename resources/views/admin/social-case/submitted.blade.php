@@ -428,10 +428,18 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                 </thead>
                 <tbody>
                     @forelse($submitted as $c)
-                    <tr data-name="{{ mb_strtolower($c->client ? $c->client->full_name : '') }}" data-search="{{ mb_strtolower(($c->case_number ?? '') . ' ' . ($c->client ? $c->client->full_name : '') . ' ' . ($c->eligibleByUser ? $c->eligibleByUser->name : '')) }}">
+                    <tr data-name="{{ mb_strtolower($c->client ? $c->client->full_name : '') }}" data-search="{{ mb_strtolower(($c->case_number ?? '') . ' ' . ($c->client ? $c->client->full_name : '') . ' ' . ($c->eligibleByUser ? $c->eligibleByUser->name : '') . ' ' . ($c->officer ? $c->officer->name : '')) }}">
                         <td data-label="Control No."><span class="control-no" title="{{ $c->case_number }}">{{ $c->case_number ?: '—' }}</span></td>
                         <td data-label="Client" title="{{ $c->client ? $c->client->full_name : '' }}">{{ $c->client ? $c->client->full_name : 'Unnamed' }}</td>
-                        <td data-label="Forwarded By" title="{{ $c->eligibleByUser ? $c->eligibleByUser->name : 'Eligibility Checker' }}">{{ $c->eligibleByUser ? $c->eligibleByUser->name : 'Eligibility Checker' }}</td>
+                        <td data-label="Forwarded By" title="Forwarded by {{ $c->eligibleByUser ? $c->eligibleByUser->name : 'Eligibility Checker' }}{{ $c->officer ? ' (Assigned to: ' . $c->officer->name . ')' : '' }}">
+                            <div style="font-weight: 500; color: #1E293B;">{{ $c->eligibleByUser ? $c->eligibleByUser->name : 'Eligibility Checker' }}</div>
+                            @if($c->officer)
+                                <div style="font-size: 0.75rem; color: #1A237E; font-weight: 600; margin-top: 3px; display: inline-flex; align-items: center; gap: 4px; background: #EEF2FF; padding: 2px 7px; border-radius: 4px; border: 1px solid #C7D2FE;">
+                                    <i data-lucide="user-check" style="width: 12px; height: 12px;"></i>
+                                    To: {{ $c->officer->name }}
+                                </div>
+                            @endif
+                        </td>
                         <td data-label="Date Submitted">{{ $c->eligible_at ? \Carbon\Carbon::parse($c->eligible_at)->format('M d, Y') : '—' }}</td>
                         <td data-label="Action">
                             <button class="btn primary btn-sm" onclick="startEncodingFromQueue('{{ $c->id }}', '{{ $c->client ? addslashes($c->client->full_name) : '' }}')">
