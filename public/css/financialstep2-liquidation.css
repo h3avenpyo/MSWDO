@@ -1,0 +1,113 @@
+/**
+ * Financial Assistance Step 2 Liquidation Stylesheet
+ */
+
+:root {
+    --color-brand: #1A237E;
+    --color-brand-light: #EEF2FF;
+    --color-brand-dark: #0D1642;
+    --color-success: #059669;
+    --color-success-light: #ECFDF5;
+    --color-warning: #D97706;
+    --color-warning-light: #FEF3C7;
+    --color-info: #0284C7;
+    --color-info-light: #E0F2FE;
+    --color-border-subtle: #E2E8F0;
+}
+
+.liquidation-hero-banner {
+    background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-dark) 100%);
+    color: #FFFFFF;
+    border-radius: 14px;
+    padding: 22px 28px;
+    box-shadow: 0 4px 16px rgba(26, 35, 126, 0.15);
+}
+
+.filter-card {
+    background: #FFFFFF;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 14px;
+    padding: 18px 22px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.stat-metric-card {
+    background: #FFFFFF;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-metric-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.stat-metric-card.card-remaining {
+    border-left: 4px solid var(--color-warning) !important;
+    background: linear-gradient(135deg, #FFFDF5 0%, #FFFFFF 100%);
+}
+
+.stat-metric-card.card-claimed {
+    border-left: 4px solid var(--color-success) !important;
+}
+
+.stat-metric-card.card-allocated {
+    border-left: 4px solid var(--color-brand) !important;
+}
+
+.payroll-liquidation-card {
+    background: #FFFFFF;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    margin-bottom: 20px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payroll-liquidation-card:hover {
+    border-color: #CBD5E1;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.payroll-card-header {
+    background: #FFFFFF;
+    padding: 20px 24px;
+}
+
+.finance-metric-box {
+    background-color: #F8FAFC;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+.btn-brand-primary {
+    background-color: var(--color-brand) !important;
+    border-color: var(--color-brand) !important;
+    color: #FFFFFF !important;
+}
+
+.btn-brand-primary:hover,
+.btn-brand-primary:focus {
+    background-color: var(--color-brand-dark) !important;
+    border-color: var(--color-brand-dark) !important;
+    color: #FFFFFF !important;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 10px;
+    background-color: #E2E8F0;
+    overflow: hidden;
+}
+
+.progress-bar-liquidation {
+    transition: width 0.4s ease;
+}
+
+.text-2xs {
+    font-size: 0.68rem;
+}

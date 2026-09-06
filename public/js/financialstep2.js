@@ -150,10 +150,12 @@ function viewIntakeDetails(intake) {
 
     const recAmountEl = document.getElementById('modalRecommendedAmount');
     if (recAmountEl) {
-        if (intake.recommended_amount) {
+        if (intake.recommended_amount && parseFloat(intake.recommended_amount) > 0) {
             recAmountEl.textContent = '₱' + parseFloat(intake.recommended_amount).toLocaleString('en-US', { minimumFractionDigits: 2 });
+            recAmountEl.className = 'detail-field-value text-success fs-5 fw-bold';
         } else {
-            recAmountEl.textContent = 'To be assessed';
+            recAmountEl.textContent = 'Pending Amount';
+            recAmountEl.className = 'detail-field-value text-warning fs-5 fw-bold';
         }
     }
 

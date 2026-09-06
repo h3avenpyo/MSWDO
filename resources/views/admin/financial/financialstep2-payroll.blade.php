@@ -115,9 +115,9 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
         </div>
         <div class="col-md-3">
             <div class="payroll-stat-card">
-                <div class="detail-field-label">Pending Amount</div>
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
+                        <div class="detail-field-label">Pending Amount</div>
                         <h3 class="h4 fw-bold mb-0 mt-1 {{ ($pendingCount ?? 0) > 0 ? 'stat-val-warning' : 'stat-val-muted' }}"
                             id="statPendingCount">{{ number_format($pendingCount ?? 0) }}</h3>
                     </div>
@@ -158,7 +158,7 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                     @elseif($allAmountsEncoded)
                     All Intakes Verified &amp; Encoded! Ready for Payroll Generation
                     @else
-                    {{ $pendingCount }} of {{ $totalTodayCount }} Intakes Pending Financial Assistance Amount
+                    {{ $pendingCount }} of {{ $totalTodayCount }} Intakes with Pending Amount
                     @endif
                 </h5>
                 <p class="mb-0 text-muted small" id="readinessSubtitle">
@@ -229,7 +229,7 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                 <select name="status" class="form-select form-select-sm rounded-3">
                     <option value="All">All</option>
                     <option value="encoded" {{ request('status')=='encoded' ? 'selected' : '' }}>Encoded</option>
-                    <option value="pending" {{ request('status')=='pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="pending" {{ request('status')=='pending' || request('status')=='pending_amount' ? 'selected' : '' }}>Pending Amount</option>
                 </select>
             </div>
             <div class="col-md-1 col-lg-1">
@@ -282,10 +282,6 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                     </p>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <a href="{{ route('admin.financial.financialstep2.payroll.print', ['date' => isset($targetDate) ? $targetDate->format('Y-m-d') : date('Y-m-d')]) }}"
-                        target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-semibold">
-                        <i class="fas fa-print me-1"></i> Print Payroll
-                    </a>
                     <button type="submit" class="btn btn-primary btn-brand-primary btn-sm rounded-pill px-3 fw-semibold">
                         <i class="fas fa-save me-1"></i> Save All Encoded Amounts
                     </button>
@@ -415,7 +411,7 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                                         </span>
                                         @else
                                         <span class="status-pill-pending">
-                                            <i class="fas fa-exclamation-circle"></i> Required
+                                            <i class="fas fa-clock"></i> Pending Amount
                                         </span>
                                         @endif
                                     </div>

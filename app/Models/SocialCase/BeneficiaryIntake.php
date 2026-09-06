@@ -75,6 +75,9 @@ class BeneficiaryIntake extends Model
         'payroll_generated_at',
         'payroll_date',
         'payroll_record_id',
+        'claim_status',
+        'claimed_at',
+        'claimed_by',
     ];
 
     protected $casts = [
@@ -87,6 +90,7 @@ class BeneficiaryIntake extends Model
         'payroll_generated_at' => 'datetime',
         'payroll_date' => 'date',
         'payroll_record_id' => 'integer',
+        'claimed_at' => 'datetime',
         'medical_conditions' => 'array',
         'beneficiary_categories' => 'array',
         'family_composition' => 'array',
@@ -197,5 +201,22 @@ class BeneficiaryIntake extends Model
             return $this->purpose_other;
         }
         return $this->assistance_purpose ?? 'N/A';
+    }
+
+    public function getStep2StatusAttribute(): string
+    {
+        if (!$this->recommended_amount || $this->recommended_amount <= 0) {
+            return 'Pending Amount';
+        }
+
+        if ($this->claim_status === 'Claimed') {
+            return 'Claimed';
+        }
+
+        if ($this->is_payroll_generated) {
+            return 'Unclaimed';
+        }
+
+        return 'Amount Assigned';
     }
 }

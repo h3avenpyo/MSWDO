@@ -370,4 +370,390 @@ class FinancialStep2PayrollRecordsTest extends TestCase
         $allRecordsOnPageResponse->assertSee('Expand All');
         $allRecordsOnPageResponse->assertSee('Collapse All');
     }
+
+    public function test_payroll_generation_automatically_sets_claim_status_to_unclaimed(): void
+    {
+        $todayStr = Carbon::today()->format('Y-m-d');
+        $ctrl1 = 'CLAIM-GEN-' . rand(10000, 99999);
+        $ctrl2 = 'CLAIM-GEN-' . rand(10000, 99999);
+
+        $intake1 = BeneficiaryIntake::create([
+            'control_number' => $ctrl1,
+            'client_type' => 'New',
+            'date_processed' => $todayStr,
+            'beneficiary_first_name' => 'Jose',
+            'beneficiary_last_name' => 'Rizal',
+            'beneficiary_barangay' => 'Biga I',
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Medical Assistance',
+            'submitted_to' => 'MSWDO Silang Main Office',
+            'recommended_amount' => 5000.00,
+            'is_payroll_generated' => false,
+        ]);
+
+        $intake2 = BeneficiaryIntake::create([
+            'control_number' => $ctrl2,
+            'client_type' => 'New',
+            'date_processed' => $todayStr,
+            'beneficiary_first_name' => 'Andres',
+            'beneficiary_last_name' => 'Bonifacio',
+            'beneficiary_barangay' => 'Biluso',
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Burial Assistance',
+            'recommended_amount' => 3000.00,
+            'is_payroll_generated' => false,
+        ]);
+
+        $generateResponse = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->postJson(route('admin.financial.financialstep2.payroll.generate'), [
+            'date' => $todayStr,
+        ]);
+
+        $generateResponse->assertStatus(200);
+        $generateResponse->assertJson(['success' => true]);
+
+        $intake1->refresh();
+        $intake2->refresh();
+
+        $this->assertTrue($intake1->is_payroll_generated);
+        $this->assertTrue($intake2->is_payroll_generated);
+        $this->assertSame('Unclaimed', $intake1->claim_status);
+        $this->assertSame('Unclaimed', $intake2->claim_status);
+        $this->assertNull($intake1->claimed_at);
+        $this->assertNull($intake2->claimed_at);
+    }
+
+    public function test_step2_officer_can_mark_intake_as_claimed_and_only_selected_intake_updates(): void
+    {
+        $todayStr = Carbon::today()->format('Y-m-d');
+        $ctrl1 = 'CLAIM-UPD-' . rand(10000, 99999);
+        $ctrl2 = 'CLAIM-UPD-' . rand(10000, 99999);
+
+        $intake1 = BeneficiaryIntake::create([
+            'control_number' => $ctrl1,
+            'client_type' => 'New',
+            'date_processed' => $todayStr,
+            'beneficiary_first_name' => 'Apolinario',
+            'beneficiary_last_name' => 'Mabini',
+            'beneficiary_barangay' => 'Biga I',
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Medical Assistance',
+            'submitted_to' => 'MSWDO Silang Main Office',
+            'recommended_amount' => 4000.00,
+            'is_payroll_generated' => true,
+            'claim_status' => 'Unclaimed',
+        ]);
+
+        $intake2 = BeneficiaryIntake::create([
+            'control_number' => $ctrl2,
+            'client_type' => 'New',
+            'date_processed' => $todayStr,
+            'beneficiary_first_name' => 'Emilio',
+            'beneficiary_last_name' => 'Aguinaldo',
+            'beneficiary_barangay' => 'Biluso',
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Educational Assistance',
+            'submitted_to' => 'MSWDO Silang Main Office',
+            'recommended_amount' => 2500.00,
+            'is_payroll_generated' => true,
+            'claim_status' => 'Unclaimed',
+        ]);
+
+        // Mark ONLY intake 1 as Claimed
+        $response = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->postJson(route('admin.financial.financialstep2.payroll.intake.claim-status', ['id' => $intake1->id]), [
+            'status' => 'Claimed',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'intake_id' => $intake1->id,
+            'claim_status' => 'Claimed',
+        ]);
+
+        $intake1->refresh();
+        $intake2->refresh();
+
+        // Selected intake is Claimed
+        $this->assertSame('Claimed', $intake1->claim_status);
+        $this->assertNotNull($intake1->claimed_at);
+        $this->assertSame($this->step2Officer->name, $intake1->claimed_by);
+
+        // Other intake strictly remains Unclaimed
+        $this->assertSame('Unclaimed', $intake2->claim_status);
+        $this->assertNull($intake2->claimed_at);
+        $this->assertNull($intake2->claimed_by);
+
+        // Can revert intake 1 back to Unclaimed
+        $revertResponse = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->postJson(route('admin.financial.financialstep2.payroll.intake.claim-status', ['id' => $intake1->id]), [
+            'status' => 'Unclaimed',
+        ]);
+
+        $revertResponse->assertStatus(200);
+        $revertResponse->assertJson([
+            'success' => true,
+            'claim_status' => 'Unclaimed',
+        ]);
+
+        $intake1->refresh();
+        $this->assertSame('Unclaimed', $intake1->claim_status);
+        $this->assertNull($intake1->claimed_at);
+        $this->assertNull($intake1->claimed_by);
+    }
+
+    public function test_payroll_records_view_displays_claim_status_and_filters_by_status(): void
+    {
+        $todayStr = Carbon::today()->format('Y-m-d');
+        $ctrl1 = 'FILTER-CLAIM-' . rand(10000, 99999);
+        $ctrl2 = 'FILTER-CLAIM-' . rand(10000, 99999);
+
+        $intakeClaimed = BeneficiaryIntake::create([
+            'control_number' => $ctrl1,
+            'client_type' => 'New',
+            'date_processed' => $todayStr,
+            'beneficiary_first_name' => 'Gabriela',
+            'beneficiary_last_name' => 'Silang',
+            'beneficiary_barangay' => 'Biga I',
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Medical Assistance',
+            'submitted_to' => 'MSWDO Silang Main Office',
+            'recommended_amount' => 5000.00,
+            'is_payroll_generated' => false,
+        ]);
+
+        $intakeUnclaimed = BeneficiaryIntake::create([
+            'control_number' => $ctrl2,
+            'client_type' => 'New',
+            'date_processed' => $todayStr,
+            'beneficiary_first_name' => 'Teresa',
+            'beneficiary_last_name' => 'Magbanua',
+            'beneficiary_barangay' => 'Biluso',
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Burial Assistance',
+            'recommended_amount' => 3000.00,
+            'is_payroll_generated' => false,
+        ]);
+
+        // Generate payroll
+        $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->postJson(route('admin.financial.financialstep2.payroll.generate'), [
+            'date' => $todayStr,
+        ]);
+
+        // Mark Gabriela Silang as Claimed
+        $intakeClaimed->refresh();
+        $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->postJson(route('admin.financial.financialstep2.payroll.intake.claim-status', ['id' => $intakeClaimed->id]), [
+            'status' => 'Claimed',
+        ]);
+
+        // 1. Visit records page: should see Claim Status column and both statuses
+        $pageResponse = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->get(route('admin.financial.financialstep2.payroll-records', ['date' => $todayStr]));
+
+        $pageResponse->assertStatus(200);
+        $pageResponse->assertSee('Claim Status');
+        $pageResponse->assertSee('Gabriela Silang');
+        $pageResponse->assertSee('Teresa Magbanua');
+        $pageResponse->assertSee('Claimed');
+        $pageResponse->assertSee('Unclaimed');
+
+        // 2. Filter by Claimed
+        $claimedFilterResponse = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->get(route('admin.financial.financialstep2.payroll-records', [
+            'date' => $todayStr,
+            'claim_status' => 'Claimed',
+        ]));
+
+        $claimedFilterResponse->assertStatus(200);
+        $claimedFilterResponse->assertSee('Gabriela Silang');
+        $claimedFilterResponse->assertDontSee('Teresa Magbanua');
+
+        // 3. Filter by Unclaimed
+        $unclaimedFilterResponse = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->get(route('admin.financial.financialstep2.payroll-records', [
+            'date' => $todayStr,
+            'claim_status' => 'Unclaimed',
+        ]));
+
+        $unclaimedFilterResponse->assertStatus(200);
+        $unclaimedFilterResponse->assertSee('Teresa Magbanua');
+        $unclaimedFilterResponse->assertDontSee('Gabriela Silang');
+    }
+
+    public function test_intake_model_accessor_returns_correct_step2_status_across_stages(): void
+    {
+        $todayStr = Carbon::today()->format('Y-m-d');
+
+        // Stage 1: No amount assigned -> Pending Amount
+        $intakePending = BeneficiaryIntake::create([
+            'control_number' => 'STATUS-STAGE-1-' . rand(1000, 9999),
+            'client_type' => 'New',
+            'date_processed' => $todayStr,
+            'beneficiary_first_name' => 'Juan',
+            'beneficiary_last_name' => 'Luna',
+            'beneficiary_barangay' => 'Biga I',
+            'service_provided' => 'Financial Assistance',
+            'recommended_amount' => null,
+            'is_payroll_generated' => false,
+        ]);
+
+        $this->assertSame('Pending Amount', $intakePending->step2_status);
+
+        // Stage 2: Amount encoded and generated in payroll -> Unclaimed
+        $intakeUnclaimed = BeneficiaryIntake::create([
+            'control_number' => 'STATUS-STAGE-2-' . rand(1000, 9999),
+            'client_type' => 'New',
+            'date_processed' => $todayStr,
+            'beneficiary_first_name' => 'Marcelo',
+            'beneficiary_last_name' => 'Del Pilar',
+            'beneficiary_barangay' => 'Biluso',
+            'service_provided' => 'Financial Assistance',
+            'recommended_amount' => 5000.00,
+            'is_payroll_generated' => true,
+            'claim_status' => 'Unclaimed',
+        ]);
+
+        $this->assertSame('Unclaimed', $intakeUnclaimed->step2_status);
+
+        // Stage 3: Beneficiary received assistance -> Claimed
+        $intakeClaimed = BeneficiaryIntake::create([
+            'control_number' => 'STATUS-STAGE-3-' . rand(1000, 9999),
+            'client_type' => 'New',
+            'date_processed' => $todayStr,
+            'beneficiary_first_name' => 'Graciano',
+            'beneficiary_last_name' => 'Lopez Jaena',
+            'beneficiary_barangay' => 'Kaong',
+            'service_provided' => 'Financial Assistance',
+            'recommended_amount' => 4000.00,
+            'is_payroll_generated' => true,
+            'claim_status' => 'Claimed',
+        ]);
+
+        $this->assertSame('Claimed', $intakeClaimed->step2_status);
+    }
+
+    public function test_step2_masterlist_and_all_intakes_display_and_filter_pending_amount_status(): void
+    {
+        $todayStr = Carbon::today()->format('Y-m-d');
+
+        $intakeWithoutAmount = BeneficiaryIntake::create([
+            'control_number' => 'MST-PENDING-' . rand(1000, 9999),
+            'client_type' => 'New',
+            'date_processed' => $todayStr,
+            'beneficiary_first_name' => 'Lapu',
+            'beneficiary_last_name' => 'Lapu',
+            'beneficiary_barangay' => 'Biga I',
+            'service_provided' => 'Financial Assistance',
+            'recommended_amount' => null,
+            'is_payroll_generated' => false,
+        ]);
+
+        $intakeWithPayroll = BeneficiaryIntake::create([
+            'control_number' => 'MST-UNCLAIMED-' . rand(1000, 9999),
+            'client_type' => 'New',
+            'date_processed' => $todayStr,
+            'beneficiary_first_name' => 'Francisco',
+            'beneficiary_last_name' => 'Dagohoy',
+            'beneficiary_barangay' => 'Biluso',
+            'service_provided' => 'Financial Assistance',
+            'recommended_amount' => 3500.00,
+            'is_payroll_generated' => true,
+            'claim_status' => 'Unclaimed',
+        ]);
+
+        // 1. Step 2 Masterlist page
+        $masterlistResponse = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->get(route('admin.financial.financialstep2'));
+
+        $masterlistResponse->assertStatus(200);
+        $masterlistResponse->assertSee('Pending Amount');
+        $masterlistResponse->assertSee('Lapu Lapu');
+
+        // Filter masterlist by Pending Amount
+        $pendingFilterResponse = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->get(route('admin.financial.financialstep2', ['status' => 'pending_amount']));
+
+        $pendingFilterResponse->assertStatus(200);
+        $pendingFilterResponse->assertSee('Lapu Lapu');
+        $pendingFilterResponse->assertDontSee('Francisco Dagohoy');
+
+        // 2. Step 2 All Intakes page
+        $allIntakesResponse = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->get(route('admin.financial.financialstep2.all-intakes'));
+
+        $allIntakesResponse->assertStatus(200);
+        $allIntakesResponse->assertSee('Pending Amount');
+        $allIntakesResponse->assertSee('Lapu Lapu');
+
+        // Filter all intakes by Pending Amount
+        $allIntakesPendingFilter = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->get(route('admin.financial.financialstep2.all-intakes', ['status' => 'pending_amount']));
+
+        $allIntakesPendingFilter->assertStatus(200);
+        $allIntakesPendingFilter->assertSee('Lapu Lapu');
+        $allIntakesPendingFilter->assertDontSee('Francisco Dagohoy');
+    }
 }

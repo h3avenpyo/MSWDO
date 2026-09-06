@@ -119,7 +119,7 @@ function saveSingleAmount(intakeId) {
                 if (rowEl) rowEl.classList.remove('table-warning-subtle');
             } else {
                 if (statusBadgeEl) {
-                    statusBadgeEl.innerHTML = '<span class="status-pill-pending"><i class="fas fa-exclamation-circle"></i> Required</span>';
+                    statusBadgeEl.innerHTML = '<span class="status-pill-pending"><i class="fas fa-clock"></i> Pending Amount</span>';
                 }
                 if (rowEl) rowEl.classList.add('table-warning-subtle');
             }
@@ -188,7 +188,16 @@ function updateDashboardMetrics(data) {
     if (elEncoded) elEncoded.textContent = data.encoded_count;
 
     const elPending = document.getElementById('statPendingCount');
-    if (elPending) elPending.textContent = data.pending_count;
+    if (elPending) {
+        elPending.textContent = data.pending_count;
+        if (data.pending_count > 0) {
+            elPending.classList.remove('stat-val-muted');
+            elPending.classList.add('stat-val-warning');
+        } else {
+            elPending.classList.remove('stat-val-warning');
+            elPending.classList.add('stat-val-muted');
+        }
+    }
 
     const elTotalAmt = document.getElementById('statTotalPayrollAmount');
     if (elTotalAmt) elTotalAmt.textContent = data.formatted_total_payroll_amount;
@@ -234,7 +243,7 @@ function updateDashboardMetrics(data) {
         } else {
             readinessBanner.className = 'payroll-readiness-banner d-flex justify-content-between align-items-center flex-wrap gap-3';
             if (readinessIcon) readinessIcon.className = 'fas fa-exclamation-triangle text-warning';
-            if (readinessTitle) readinessTitle.textContent = pendingIntakesCount + " of " + totalIntakesCount + " Intakes Pending Financial Assistance Amount";
+            if (readinessTitle) readinessTitle.textContent = pendingIntakesCount + " of " + totalIntakesCount + " Intakes with Pending Amount";
             if (readinessSubtitle) readinessSubtitle.textContent = "Please encode the financial assistance amount for all remaining intakes below. Once verified, the Generate Payroll button will be enabled.";
             if (btnGenerate) btnGenerate.disabled = true;
         }

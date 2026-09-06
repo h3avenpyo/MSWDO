@@ -24,6 +24,12 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('admin.financial.financialstep2.liquidation') }}"
+                class="{{ request()->routeIs('admin.financial.financialstep2.liquidation*') ? 'active' : '' }}">
+                <i class="fas fa-receipt"></i> Liquidation
+            </a>
+        </li>
+        <li>
             <a href="{{ route('admin.financial.financialstep2.all-intakes') }}"
                 class="{{ request()->routeIs('admin.financial.financialstep2.all-intakes') ? 'active' : '' }}">
                 <i class="fas fa-layer-group"></i> All Intakes

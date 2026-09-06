@@ -215,3 +215,42 @@
     background-color: var(--color-brand) !important;
     color: #FFFFFF;
 }
+
+.text-2xs {
+    font-size: 0.65rem;
+}
+
+.claim-status-badge {
+    transition: all 0.2s ease-in-out;
+    letter-spacing: 0.02em;
+}
+
+.btn-mark-claim {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px !important;
+    padding: 5px 14px !important;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+    white-space: nowrap;
+}
+
+.btn-mark-claim:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12) !important;
+}
+
+.btn-mark-claim:active {
+    transform: translateY(0);
+}
+
+.stat-unclaimed-card {
+    border-left: 4px solid var(--color-warning) !important;
+    background: linear-gradient(135deg, #FFFDF5 0%, #FFFFFF 100%);
+}
+

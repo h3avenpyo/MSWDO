@@ -83,13 +83,7 @@
     color: #1E293B;
 }
 
-/* Workflow Progression Pipeline Box */
-.workflow-pipeline-box {
-    background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
-    border-radius: 14px;
-    padding: 14px 20px;
-    color: #FFFFFF;
-}
+
 
 /* Semantic and Utility Replacement Classes */
 .hero-subtitle {

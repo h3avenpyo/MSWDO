@@ -45,6 +45,62 @@
     </div>
     @endif
 
+    <!-- Stat Cards Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-xs rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted small fw-bold mb-1 text-uppercase">Total Intakes</p>
+                        <h4 class="fw-bold mb-0 text-dark">{{ number_format($totalIntakesCount ?? 0) }}</h4>
+                    </div>
+                    <div class="rounded-circle bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="fas fa-users fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-xs rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted small fw-bold mb-1 text-uppercase">Pending Amount</p>
+                        <h4 class="fw-bold mb-0 text-warning">{{ number_format($pendingAmountCount ?? 0) }}</h4>
+                    </div>
+                    <div class="rounded-circle bg-warning-subtle text-warning p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="fas fa-clock fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-xs rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted small fw-bold mb-1 text-uppercase">Unclaimed</p>
+                        <h4 class="fw-bold mb-0 text-info">{{ number_format($unclaimedCount ?? 0) }}</h4>
+                    </div>
+                    <div class="rounded-circle bg-info-subtle text-info p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="fas fa-file-invoice-dollar fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-xs rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted small fw-bold mb-1 text-uppercase">Claimed</p>
+                        <h4 class="fw-bold mb-0 text-success">{{ number_format($claimedCount ?? 0) }}</h4>
+                    </div>
+                    <div class="rounded-circle bg-success-subtle text-success p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="fas fa-check-circle fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Search, Filter & Sorting Controls -->
     <div class="filter-card animate-fade-in mb-4">
         <form id="allIntakesFilterForm" action="{{ route('admin.financial.financialstep2.all-intakes') }}" method="GET" class="row g-2 align-items-end">
@@ -71,28 +127,38 @@
                 </select>
             </div>
             <div class="col-md-2 col-lg-2">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> Date Filter</label>
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-info-circle me-1"></i> Status</label>
+                <select name="status" class="form-select form-select-sm rounded-3">
+                    <option value="All">All Statuses</option>
+                    <option value="pending_amount" {{ request('status') == 'pending_amount' || request('status') == 'for_assessment' ? 'selected' : '' }}>Pending Amount</option>
+                    <option value="unclaimed" {{ request('status') == 'unclaimed' ? 'selected' : '' }}>Unclaimed</option>
+                    <option value="claimed" {{ request('status') == 'claimed' ? 'selected' : '' }}>Claimed</option>
+                    <option value="amount_assigned" {{ request('status') == 'amount_assigned' || request('status') == 'ready_payout' ? 'selected' : '' }}>Amount Assigned</option>
+                </select>
+            </div>
+            <div class="col-md-1 col-lg-1">
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> Date</label>
                 <input type="date" name="date" class="form-control form-control-sm rounded-3" value="{{ request('date') }}">
             </div>
-            <div class="col-md-2 col-lg-2">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-sort me-1"></i> Sort By</label>
+            <div class="col-md-1 col-lg-1">
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-sort me-1"></i> Sort</label>
                 <select name="sort" class="form-select form-select-sm rounded-3">
-                    <option value="date_desc" {{ request('sort') == 'date_desc' ? 'selected' : '' }}>Date (Newest First)</option>
-                    <option value="date_asc" {{ request('sort') == 'date_asc' ? 'selected' : '' }}>Date (Oldest First)</option>
-                    <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Client Name (A-Z)</option>
-                    <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>Client Name (Z-A)</option>
-                    <option value="control_asc" {{ request('sort') == 'control_asc' ? 'selected' : '' }}>Control No. (Asc)</option>
-                    <option value="control_desc" {{ request('sort') == 'control_desc' ? 'selected' : '' }}>Control No. (Desc)</option>
+                    <option value="date_desc" {{ request('sort') == 'date_desc' || !request('sort') ? 'selected' : '' }}>Date &darr;</option>
+                    <option value="date_asc" {{ request('sort') == 'date_asc' ? 'selected' : '' }}>Date &uarr;</option>
+                    <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Name A-Z</option>
+                    <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>Name Z-A</option>
+                    <option value="control_asc" {{ request('sort') == 'control_asc' ? 'selected' : '' }}>Ctrl # &uarr;</option>
+                    <option value="control_desc" {{ request('sort') == 'control_desc' ? 'selected' : '' }}>Ctrl # &darr;</option>
                 </select>
             </div>
             <div class="col-md-1 col-lg-1 d-flex gap-1">
-                @if(request()->hasAny(['search', 'barangay', 'category', 'date', 'sort']))
+                @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'date', 'sort']))
                 <a href="{{ route('admin.financial.financialstep2.all-intakes') }}" class="btn btn-sm btn-outline-secondary rounded-3 w-100 fw-semibold" title="Reset Filters">
-                    <i class="fas fa-redo me-1"></i> Reset
+                    <i class="fas fa-redo"></i>
                 </a>
                 @else
-                <button type="button" class="btn btn-sm btn-light border rounded-3 w-100 text-muted" disabled title="Filters will apply automatically">
-                    <i class="fas fa-bolt"></i> Auto
+                <button type="button" class="btn btn-sm btn-light border rounded-3 w-100 text-muted" disabled title="Filters apply automatically">
+                    <i class="fas fa-bolt"></i>
                 </button>
                 @endif
             </div>
@@ -114,6 +180,7 @@
                                     <th>Intake Date &amp; Officer</th>
                                     <th>Category / Medical Purpose</th>
                                     <th>Assessed Grant</th>
+                                    <th>Status</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
@@ -157,10 +224,31 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @if($intake->recommended_amount)
+                                        @if($intake->recommended_amount && $intake->recommended_amount > 0)
                                             <span class="badge-amount">&#8369;{{ number_format($intake->recommended_amount, 2) }}</span>
                                         @else
-                                            <span class="text-muted small">For Assessment</span>
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-0.5 fw-medium small">
+                                                <i class="fas fa-clock me-1"></i>Pending Amount
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if(!$intake->recommended_amount || $intake->recommended_amount <= 0)
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1 fw-bold">
+                                                <i class="fas fa-clock me-1"></i>Pending Amount
+                                            </span>
+                                        @elseif($intake->claim_status === 'Claimed')
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 fw-bold">
+                                                <i class="fas fa-check-circle me-1"></i>Claimed
+                                            </span>
+                                        @elseif($intake->is_payroll_generated)
+                                            <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2.5 py-1 fw-bold">
+                                                <i class="fas fa-file-invoice me-1"></i>Unclaimed
+                                            </span>
+                                        @else
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 fw-bold">
+                                                <i class="fas fa-check-circle me-1"></i>Amount Assigned
+                                            </span>
                                         @endif
                                     </td>
                                     <td class="text-end">
@@ -171,7 +259,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="7" class="p-5 text-center">
+                                    <td colspan="8" class="p-5 text-center">
                                         <div class="empty-state-box text-center py-4">
                                             <i class="fas fa-folder-open fa-3x mb-3 text-muted opacity-50 d-block"></i>
                                             <h4 class="fw-bold mb-1 empty-state-title">No General Intake records found</h4>

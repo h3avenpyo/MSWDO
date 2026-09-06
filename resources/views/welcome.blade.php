@@ -474,7 +474,7 @@
                 </div>
                 <div class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
-                        class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-accent text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                        class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-warm-gold text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
                         5
                     </div>
                     <h3 class="font-bold text-xs sm:text-sm md:text-base mt-3 sm:mt-4 md:mt-6">
@@ -1122,25 +1122,33 @@
                         <div class="hotline-item hidden-mobile"><span class="hotline-label">DSWD AICS:</span> <span
                                 class="hotline-value">8962-2813</span></div>
                         <div class="hotline-item hidden-mobile"><span class="hotline-label">DSWD Central Office:</span>
-                            <span class="hotline-value">8-931-8101</span></div>
+                            <span class="hotline-value">8-931-8101</span>
+                        </div>
                         <div class="hotline-item hidden-mobile"><span class="hotline-label">DSWD Mobile:</span> <span
                                 class="hotline-value">0919-911-6200</span></div>
                         <div class="hotline-item hidden-mobile"><span class="hotline-label">Makabata Helpline:</span>
-                            <span class="hotline-value">1383</span></div>
+                            <span class="hotline-value">1383</span>
+                        </div>
                         <div class="hotline-item hidden-mobile"><span class="hotline-label">Bantay Bata Hotline:</span>
-                            <span class="hotline-value">163</span></div>
+                            <span class="hotline-value">163</span>
+                        </div>
                         <div class="hotline-item hidden-mobile"><span class="hotline-label">Emergency (All):</span>
-                            <span class="hotline-value">911</span></div>
+                            <span class="hotline-value">911</span>
+                        </div>
                         <div class="hotline-item hidden-mobile"><span class="hotline-label">NCMH Mental Health:</span>
-                            <span class="hotline-value">1553</span></div>
+                            <span class="hotline-value">1553</span>
+                        </div>
                         <div class="hotline-item hidden-mobile"><span class="hotline-label">Complaints Hotline:</span>
-                            <span class="hotline-value">8888</span></div>
+                            <span class="hotline-value">8888</span>
+                        </div>
                         <div class="hotline-item hidden-mobile"><span class="hotline-label">Anti-Trafficking
                                 Line:</span> <span class="hotline-value">1343</span></div>
                         <div class="hotline-item hidden-mobile"><span class="hotline-label">PNP Women's Desk:</span>
-                            <span class="hotline-value">117</span></div>
+                            <span class="hotline-value">117</span>
+                        </div>
                         <div class="hotline-item hidden-mobile"><span class="hotline-label">Medical Assistance:</span>
-                            <span class="hotline-value">1555</span></div>
+                            <span class="hotline-value">1555</span>
+                        </div>
                         <div class="hotline-item hidden-mobile"><span class="hotline-label">DOH Hotline:</span> <span
                                 class="hotline-value">894-COVID</span></div>
                         <div class="hotline-item hidden-mobile"><span class="hotline-label">DSWD Help:</span> <span

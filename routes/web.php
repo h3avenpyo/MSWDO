@@ -133,6 +133,10 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::get('/admin/financial/financialstep2/payroll/print', [FinancialDashboardController::class, 'printPayroll'])->name('admin.financial.financialstep2.payroll.print');
         Route::get('/admin/financial/financialstep2/payroll-records', [FinancialDashboardController::class, 'financialStep2PayrollRecords'])->name('admin.financial.financialstep2.payroll-records');
         Route::get('/admin/financial/financialstep2/payroll-records/date/{date}', [FinancialDashboardController::class, 'financialStep2PayrollRecords'])->name('admin.financial.financialstep2.payroll-records.date');
+        Route::post('/admin/financial/financialstep2/payroll/intake/{id}/claim-status', [FinancialDashboardController::class, 'updateIntakeClaimStatus'])->name('admin.financial.financialstep2.payroll.intake.claim-status');
+        Route::get('/admin/financial/financialstep2/liquidation', [FinancialDashboardController::class, 'financialStep2Liquidation'])->name('admin.financial.financialstep2.liquidation');
+        Route::get('/admin/financial/financialstep2/liquidation/report/month/{yearMonth}', [FinancialDashboardController::class, 'financialStep2LiquidationReportMonthly'])->name('admin.financial.financialstep2.liquidation.report.month');
+        Route::get('/admin/financial/financialstep2/liquidation/report/{id}', [FinancialDashboardController::class, 'financialStep2LiquidationReport'])->name('admin.financial.financialstep2.liquidation.report');
     });
 });
 
