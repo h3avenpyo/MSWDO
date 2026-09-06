@@ -246,10 +246,14 @@ class SocialCaseController extends Controller
             }
         }
 
+        // Get the document reference number from the case (set when case was created)
+        $documentRefNumber = $case->document_ref_number ?? 1;
+
         return response()->json([
             'document_date'     => $today->toDateString(),
             'client_age'        => $documentAge,
             'client_birthdate'  => $client?->birthdate?->toDateString(),
+            'document_ref_number' => $documentRefNumber,
         ]);
     }
 
@@ -518,6 +522,29 @@ class SocialCaseController extends Controller
         }
 
         $case = DB::transaction(function () use ($client) {
+            // Increment global document reference counter
+            $counter = DB::table('document_reference_counters')
+                ->where('type', 'social_case')
+                ->lockForUpdate()
+                ->first();
+            
+            if ($counter) {
+                $counter->current_number = $counter->current_number + 1;
+                DB::table('document_reference_counters')
+                    ->where('id', $counter->id)
+                    ->update(['current_number' => $counter->current_number]);
+                $documentRefNumber = $counter->current_number;
+            } else {
+                // Initialize if not exists
+                DB::table('document_reference_counters')->insert([
+                    'type' => 'social_case',
+                    'current_number' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                $documentRefNumber = 1;
+            }
+
             $case = SocialCaseStudy::create([
                 'client_id'          => $client->id,
                 'officer_id'         => session('admin_user_id'),
@@ -529,6 +556,7 @@ class SocialCaseController extends Controller
                 'eligible_by'        => session('admin_user_id'),
                 'eligible_at'        => now(),
                 'workflow_step'       => 'requirements_verification',
+                'document_ref_number' => $documentRefNumber,
             ]);
 
             return $case;
@@ -637,6 +665,36 @@ class SocialCaseController extends Controller
         }
 
         $case = DB::transaction(function () use ($data, $clientId, $agencies, $encodedById, $caseId) {
+            // Increment global document reference counter for new cases only
+            $documentRefNumber = null;
+            if (!$caseId) {
+                $counter = DB::table('document_reference_counters')
+                    ->where('type', 'social_case')
+                    ->lockForUpdate()
+                    ->first();
+                
+                \Log::info('Document counter before increment:', ['counter' => $counter]);
+                
+                if ($counter) {
+                    $counter->current_number = $counter->current_number + 1;
+                    DB::table('document_reference_counters')
+                        ->where('id', $counter->id)
+                        ->update(['current_number' => $counter->current_number]);
+                    $documentRefNumber = $counter->current_number;
+                    \Log::info('Document counter incremented to:', ['documentRefNumber' => $documentRefNumber]);
+                } else {
+                    // Initialize if not exists
+                    DB::table('document_reference_counters')->insert([
+                        'type' => 'social_case',
+                        'current_number' => 1,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    $documentRefNumber = 1;
+                    \Log::info('Document counter initialized to:', ['documentRefNumber' => $documentRefNumber]);
+                }
+            }
+
             $case = $caseId
                 ? SocialCaseStudy::find($caseId)
                 : SocialCaseStudy::create([
@@ -645,9 +703,12 @@ class SocialCaseController extends Controller
                     'case_number'        => $this->generateCaseNumber(),
                     'date_processed'     => now()->toDateString(),
                     'workflow_step'       => 'requirements_verification',
+                    'document_ref_number' => $documentRefNumber,
                 ]);
+            
+            \Log::info('Case created with document_ref_number:', ['document_ref_number' => $case->document_ref_number]);
 
-            $case->update([
+            $updatePayload = [
                 'client_id'            => $clientId,
                 'date_processed'       => now()->toDateString(),
                 'interview_date'       => $data['interview']['report_date'] ?? null,
@@ -659,7 +720,12 @@ class SocialCaseController extends Controller
                 'summary'              => $data['interview']['problem_presented'] ?? null,
                 'requirements_complete' => !empty($data['requirements']),
                 'signers'              => $data['signers'] ?? [],
-            ]);
+            ];
+            // Only set document_ref_number for brand-new cases; never overwrite an existing one with null
+            if ($documentRefNumber !== null) {
+                $updatePayload['document_ref_number'] = $documentRefNumber;
+            }
+            $case->update($updatePayload);
 
             $interview = $data['interview'];
             \App\Models\SocialCase\CaseInterview::updateOrCreate(
@@ -700,6 +766,19 @@ class SocialCaseController extends Controller
         });
 
         return response()->json($case->load('client'), 201);
+    }
+    
+    // Debug endpoint to check document counter
+    public function debugDocumentCounter()
+    {
+        $counter = DB::table('document_reference_counters')
+            ->where('type', 'social_case')
+            ->first();
+        
+        return response()->json([
+            'counter' => $counter,
+            'message' => 'Document counter status'
+        ]);
     }
 
     private function findOrCreateClient(array $clientData): int

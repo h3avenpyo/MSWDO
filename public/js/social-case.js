@@ -2033,9 +2033,14 @@ function renderCheckerEligibilityResult(data){
 
   if(!status) return;
 
+  // Title case function to capitalize first letter of each word while preserving periods and other characters
+  const toTitleCase = (str) => {
+    return str.replace(/\b[a-z]/g, char => char.toUpperCase());
+  };
+
   const clientName = data.client
-    ? escapeHtml(`${data.client.first_name || ''} ${data.client.middle_name || ''} ${data.client.last_name || ''}`.replace(/\s+/g,' ').trim())
-    : escapeHtml(view.eligClientName || '');
+    ? escapeHtml(toTitleCase(`${data.client.first_name || ''} ${data.client.middle_name || ''} ${data.client.last_name || ''}`.replace(/\s+/g,' ').trim()))
+    : escapeHtml(toTitleCase(view.eligClientName || ''));
 
   const matchBadge = data.match_type === 'partial'
     ? `<span style="display:inline-block;background:#FEF3C7;color:#92400E;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-left:8px">Partial Name Match</span>`
@@ -3093,8 +3098,8 @@ async function printDocument(){
   let allPages = '';
   
   try {
-    // Fetch template once
-    const response = await fetch('/templates/social-case-report.html');
+    // Fetch template once with cache busting
+    const response = await fetch('/templates/social-case-report.html?v=' + Date.now());
     if (!response.ok) throw new Error('Failed to load template');
     const template = await response.text();
     
@@ -3105,6 +3110,9 @@ async function printDocument(){
     const pronoun = clientSexLower === 'male' ? 'his' : 'her';
     const pronounCap = clientSexLower === 'male' ? 'His' : 'Her';
     const clientPronoun = clientSexLower === 'male' ? 'him' : 'her';
+    
+    // Prepare document reference number
+    const docRefNumber = String(docData?.document_ref_number || 1).padStart(2, '0');
     
     const homeConditionDefault = `The client resides in a modest home with ${pronoun} family. The home of the family in modest circumstances is simple but functional. While the house may not have the latest appliances or decor, it is clean and maintained to the best of the family's ability. The family may prioritize practicality over style, and although they may face financial challenges, their home remains a place of warmth, care, and togetherness.`;
     const _purposeForDefault = (c.purpose || "").toLowerCase();
@@ -3150,25 +3158,25 @@ async function printDocument(){
     const notedLicense = escapeHtml(c.signers?.notedByLicense || "");
 
     const familyTable = famRows.length ? `
-      <table style="border-radius: 0; ${famRows.length >= 3 ? 'font-size: 11px;' : ''}">
+      <table style="border-radius: 0; ${famRows.length > 1 ? 'font-size: 11px;' : ''}">
         <thead>
           <tr>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIVES</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIONSHIP</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">AGE</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">EDUCATIONAL<br>ATTAINMENT</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">OCCUPATION</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">INCOME</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIVES</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIONSHIP</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">AGE</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">EDUCATIONAL ATTAINMENT</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">OCCUPATION</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">INCOME</th>
           </tr>
         </thead>
         <tbody>
           ${famRows.map(m=>`<tr>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
-            <td align="center" style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.age || "")) || "—"}</td>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.education || "—").toUpperCase())}</td>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
+            <td align="center" style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.age || "")) || "—"}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.education || "—").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
           </tr>`).join("")}
         </tbody>
       </table>` : `<div style="color:#999;margin-top:8px;font-style:italic;">None listed.</div>`;
@@ -3210,6 +3218,7 @@ async function printDocument(){
       pageTemplate = pageTemplate.replace(/{{NOTED_TITLE}}/g, notedTitle);
       pageTemplate = pageTemplate.replace(/{{NOTED_LICENSE}}/g, notedLicense ? 'License No. ' + notedLicense : '');
       pageTemplate = pageTemplate.replace(/{{AGENCY_NAME}}/g, escapeHtml(agencyName));
+      pageTemplate = pageTemplate.replace(/{{DOCUMENT_REF_NUMBER}}/g, docRefNumber);
       
       // Split by PAGE_BREAK to get individual pages
       const parts = pageTemplate.split('<!--PAGE_BREAK-->');
@@ -4006,6 +4015,11 @@ async function loadDocumentPreview(caseId){
   // Fetch authoritative document date + age from the backend
   const docData = await fetchDocumentData(caseId);
 
+  // Prepare document reference number
+  const docRefNumber = String(docData?.document_ref_number || 1).padStart(2, '0');
+  console.log('loadDocumentPreview - docData:', docData);
+  console.log('loadDocumentPreview - docRefNumber:', docRefNumber);
+
   const c = getCase(caseId);
   console.log('Case data:', c);
   if(!c){
@@ -4078,25 +4092,25 @@ async function loadDocumentPreview(caseId){
     console.log('Template loaded, length:', template.length);
 
     const familyTable = famRows.length ? `
-      <table style="border-radius: 0; ${famRows.length >= 3 ? 'font-size: 11px;' : ''}">
+      <table style="border-radius: 0; ${famRows.length > 1 ? 'font-size: 11px;' : ''}">
         <thead>
           <tr>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIVES</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIONSHIP</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">AGE</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">EDUCATIONAL<br>ATTAINMENT</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">OCCUPATION</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">INCOME</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIVES</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIONSHIP</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">AGE</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">EDUCATIONAL ATTAINMENT</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">OCCUPATION</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">INCOME</th>
           </tr>
         </thead>
         <tbody>
           ${famRows.map(m=>`<tr>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
-            <td align="center" style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.age || "")) || "—"}</td>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.education || "—").toUpperCase())}</td>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
+            <td align="center" style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.age || "")) || "—"}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.education || "—").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
           </tr>`).join("")}
         </tbody>
       </table>` : `<div style="color:#999;margin-top:8px;font-style:italic;">None listed.</div>`;
@@ -4132,6 +4146,8 @@ async function loadDocumentPreview(caseId){
     const agencyInfo = AGENCIES.find(a => a.key === selectedAgency) || AGENCIES[0];
     const agencyName = agencyInfo.name;
     pageTemplate = pageTemplate.replace(/{{AGENCY_NAME}}/g, escapeHtml(agencyName));
+    pageTemplate = pageTemplate.replace(/{{DOCUMENT_REF_NUMBER}}/g, docRefNumber);
+    console.log('loadDocumentPreview - replaced DOCUMENT_REF_NUMBER with:', docRefNumber);
     const parts = pageTemplate.split('<!--PAGE_BREAK-->');
     const totalPages = parts.length;
     
@@ -4385,8 +4401,12 @@ async function loadDocument(caseId, agency){
 }
 
 async function renderDocument(){
+  console.log('renderDocument called');
   const container = document.getElementById('documentContent');
-  if(!container) return;
+  if(!container) {
+    console.log('Container not found');
+    return;
+  }
 
   const c = getCase(view.caseId);
   console.log('Case object:', c);
@@ -4400,6 +4420,23 @@ async function renderDocument(){
 
   // Fetch authoritative document date + age from the backend
   const docData = await fetchDocumentData(view.caseId);
+
+  // Prepare document reference number
+  const docRefNumber = String(docData?.document_ref_number || 1).padStart(2, '0');
+  console.log('docData:', docData);
+  console.log('docRefNumber:', docRefNumber);
+
+  // Debug: Add debug info to container
+  const debugDiv = document.createElement('div');
+  debugDiv.style.cssText = 'position:fixed;top:10px;right:10px;background:yellow;padding:10px;z-index:9999;font-size:12px;border:2px solid red;';
+  debugDiv.innerHTML = `
+    <strong>DEBUG:</strong><br>
+    docData: ${JSON.stringify(docData)}<br>
+    docRefNumber: ${docRefNumber}<br>
+    Template before: {{DOCUMENT_REF_NUMBER}}<br>
+    Template after: ${docRefNumber}
+  `;
+  document.body.appendChild(debugDiv);
 
   const agenciesToPrint = view.docAgency === 'all'
     ? (c.agencies && c.agencies.length ? c.agencies : ['PCSO'])
@@ -4647,33 +4684,36 @@ async function renderDocument(){
   </div>`;
 
   try {
-    const response = await fetch('/templates/social-case-report.html');
+    const response = await fetch('/templates/social-case-report.html?v=' + Date.now());
     if (!response.ok) throw new Error('Failed to load template');
     let template = await response.text();
 
     const familyTable = famRows.length ? `
-      <table style="border-radius: 0; ${famRows.length >= 3 ? 'font-size: 11px;' : ''}">
+      <table style="border-radius: 0; ${famRows.length > 1 ? 'font-size: 11px;' : ''}">
         <thead>
           <tr>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIVES</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIONSHIP</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">AGE</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">EDUCATIONAL<br>ATTAINMENT</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">OCCUPATION</th>
-            <th style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 4px 6px; font-size: 10px;' : ''}">INCOME</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIVES</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIONSHIP</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">AGE</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">EDUCATIONAL ATTAINMENT</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">OCCUPATION</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">INCOME</th>
           </tr>
         </thead>
         <tbody>
           ${famRows.map(m=>`<tr>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
-            <td align="center" style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.age || "")) || "—"}</td>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.education || "—").toUpperCase())}</td>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
-            <td style="border-radius: 0; ${famRows.length >= 3 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
+            <td align="center" style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.age || "")) || "—"}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.education || "—").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
           </tr>`).join("")}
         </tbody>
       </table>` : `<div style="color:#999;margin-top:8px;font-style:italic;">None listed.</div>`;
+
+    // Prepare document reference number
+    const docRefNumber = String(docData?.document_ref_number || 1).padStart(2, '0');
 
     const pageParts = agenciesToPrint.map((agencyKey, pageIndex) => {
       const ag = AGENCIES.find(a => a.key === agencyKey) || { name: agencyKey };
@@ -4706,6 +4746,8 @@ async function renderDocument(){
       pageTemplate = pageTemplate.replace(/{{NOTED_TITLE}}/g, notedTitle);
       pageTemplate = pageTemplate.replace(/{{NOTED_LICENSE}}/g, notedLicense ? 'License No. ' + notedLicense : '');
       pageTemplate = pageTemplate.replace(/{{AGENCY_NAME}}/g, escapeHtml(ag.name || agencyKey));
+      pageTemplate = pageTemplate.replace(/{{DOCUMENT_REF_NUMBER}}/g, docRefNumber);
+      console.log('Template replacement done, docRefNumber:', docRefNumber);
 
       return pageTemplate.split('<!--PAGE_BREAK-->');
     }).flat();

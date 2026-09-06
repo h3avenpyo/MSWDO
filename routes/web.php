@@ -61,6 +61,7 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::get('/api/cases/{id}/document-data', [SocialCaseController::class, 'getDocumentData'])->name('api.document-data');
         Route::get('/api/activities', [SocialCaseController::class, 'getActivities'])->name('api.activities.get');
         Route::get('/api/eligibility-data', [SocialCaseController::class, 'getEligibilityData'])->name('api.eligibility-data');
+        Route::get('/api/debug/document-counter', [SocialCaseController::class, 'debugDocumentCounter'])->name('api.debug.document-counter');
 
         // Eligibility checker only (social2@mwsdo.test)
         Route::middleware('role:admin,eligibility_checker')->group(function () {

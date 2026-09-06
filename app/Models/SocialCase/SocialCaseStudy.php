@@ -39,6 +39,7 @@ class SocialCaseStudy extends Model
         'released_by',
         'released_to',
         'signers',
+        'document_ref_number',
     ];
 
     protected $casts = [
@@ -54,6 +55,7 @@ class SocialCaseStudy extends Model
         'assistance_released' => 'boolean',
         'assistance_amount' => 'decimal:2',
         'signers' => 'array',
+        'document_ref_number' => 'integer',
     ];
 
     protected $appends = ['control_no', 'released_date'];
