@@ -93,3 +93,6 @@
     text-transform: uppercase;
     color: #475569;
 }
+
+:is(input[type="text"], input:not([type]), textarea):not([readonly]) { text-transform: uppercase !important; }
+:is(input, textarea)::placeholder { text-transform: none !important; }

@@ -325,4 +325,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // Real-time uppercase conversion for editable user inputs
+    document.addEventListener('input', function (e) {
+        const el = e.target;
+        if (el.matches?.(':is(input[type="text"], input:not([type]), textarea):not([readonly])')) {
+            const { selectionStart: s, selectionEnd: end, value } = el;
+            if (value !== value.toUpperCase()) {
+                el.value = value.toUpperCase();
+                el.setSelectionRange?.(s, end);
+            }
+        }
+    });
 });

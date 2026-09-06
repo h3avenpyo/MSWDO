@@ -5,6 +5,10 @@
 
 @section('page-styles')
 <link href="{{ asset('css/beneficiary-intake/form.css') }}" rel="stylesheet">
+<style>
+    :is(input[type="text"], input:not([type]), textarea):not([readonly]) { text-transform: uppercase !important; }
+    :is(input, textarea)::placeholder { text-transform: none !important; }
+</style>
 @endsection
 
 @section('content')
@@ -546,4 +550,16 @@
 
 @section('page-scripts')
 <script src="{{ asset('js/beneficiary-intake/form.js') }}"></script>
+<script>
+    document.addEventListener('input', function (e) {
+        const el = e.target;
+        if (el.matches?.(':is(input[type="text"], input:not([type]), textarea):not([readonly])')) {
+            const { selectionStart: s, selectionEnd: end, value } = el;
+            if (value !== value.toUpperCase()) {
+                el.value = value.toUpperCase();
+                el.setSelectionRange?.(s, end);
+            }
+        }
+    });
+</script>
 @endsection
