@@ -2160,9 +2160,7 @@ function renderCheckerEligibilityResult(data){
     return str.replace(/\b[a-z]/g, char => char.toUpperCase());
   };
 
-  const clientName = data.client
-    ? escapeHtml(toTitleCase(`${data.client.first_name || ''} ${data.client.middle_name || ''} ${data.client.last_name || ''}`.replace(/\s+/g,' ').trim()))
-    : escapeHtml(toTitleCase(view.eligClientName || ''));
+  const clientName = escapeHtml(toTitleCase(view.eligClientName || ''));
 
   const matchBadge = data.match_type === 'partial'
     ? `<span style="display:inline-block;background:#FEF3C7;color:#92400E;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-left:8px">Partial Name Match</span>`
@@ -2479,7 +2477,7 @@ function renderIntakeForm(){
   <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
     <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">II. Family composition</h3>
     ${d.household.map((m,i)=>`
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:5px;align-items:end;padding-bottom:5px;border-bottom:1px solid var(--surface-sunken)">
+      <div class="family-member-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:5px;align-items:end;padding-bottom:5px;border-bottom:1px solid var(--surface-sunken)">
         <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Name <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value" placeholder="e.g. Maria Santos" style="padding:4px 6px;font-size:12px;width:100%"></div>
         <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Relationship <span style="color:#DC2626;font-weight:700">*</span></label><select oninput="draftIntake.household[${i}].relationship=this.value" style="padding:4px 6px;font-size:12px;width:100%"><option value="">Select</option>${RELATIONSHIPS.map(o=>`<option ${m.relationship===o?'selected':''}>${o}</option>`).join("")}</select></div>
         <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Age <span style="color:#DC2626;font-weight:700">*</span></label><input type="number" value="${escapeHtml(String(m.age))}" oninput="draftIntake.household[${i}].age=this.value" min="0" max="150" placeholder="e.g. 25" style="padding:4px 6px;font-size:12px;width:100%"></div>

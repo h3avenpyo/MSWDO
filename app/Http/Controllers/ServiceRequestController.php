@@ -26,7 +26,7 @@ class ServiceRequestController extends Controller
                 'contact_number' => ['required', 'string', 'max:20'],
                 'email' => ['required', 'email', 'max:255'],
                 'address' => ['nullable', 'string', 'max:500'],
-                'service_type' => ['required', 'in:financial_assistance,social_case_study,senior_citizen,vawc,bcpc,others'],
+                'service_type' => ['required', 'in:financial_assistance,social_case_study'],
                 'assistance_type' => ['required', 'in:medical,educational,food,transportation,burial,livelihood,emergency,others'],
                 'situation' => ['required', 'string', 'max:2000'],
                 'documents' => ['nullable', 'array'],

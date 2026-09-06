@@ -115,3 +115,43 @@ function toggleDropdown(id) {
     });
 </script>
 @endpush
+
+@push('styles')
+<style>
+    /* Mobile layout fixes for intake form */
+    @media (max-width: 767.98px) {
+        .family-member-row {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+        }
+        .family-member-row .field {
+            margin-bottom: 0;
+        }
+        .family-member-row .field label {
+            font-size: 12px !important;
+        }
+        .family-member-row .field input,
+        .family-member-row .field select {
+            font-size: 13px !important;
+            padding: 6px 8px !important;
+        }
+
+        /* Signatories mobile layout - vertical stacking */
+        .field-row {
+            flex-direction: column !important;
+            gap: 8px !important;
+        }
+        .field-row .field {
+            flex: 1 !important;
+            width: 100% !important;
+        }
+        .field-row .field label {
+            font-size: 12px !important;
+        }
+        .field-row .field input {
+            font-size: 13px !important;
+            padding: 6px 8px !important;
+        }
+    }
+</style>
+@endpush
