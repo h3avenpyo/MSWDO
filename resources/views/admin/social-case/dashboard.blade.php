@@ -42,6 +42,26 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             padding-top: 72px !important;
         }
     }
+
+    /* Mobile welcome message */
+    .mobile-welcome-message {
+        display: none;
+    }
+    @media (max-width: 767.98px) {
+        .mobile-welcome-message {
+            display: block;
+            padding: 16px;
+            background: #F5F7FB;
+            margin: 0 -16px 16px -16px;
+            text-align: center;
+        }
+        .mobile-welcome-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            margin: 0;
+        }
+    }
     .main > header {
         margin-top: 0 !important;
         padding-top: 0 !important;
@@ -117,6 +137,11 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 </div>
 
 <div class="main">
+    <!-- Mobile Welcome Message -->
+    <div class="mobile-welcome-message">
+        <h2 class="mobile-welcome-title">Welcome, {{ session('admin_user_name') ?? 'Social Case Study Officer' }}</h2>
+    </div>
+
     <!-- Modern Page Header -->
     @php
         $userName = session('admin_user_name') ?? 'Social Case Study Officer';
@@ -215,8 +240,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         </div>
         <div class="stat-card stat-card-green">
             <div class="stat-card-content">
-                <div class="stat-card-label">FOR ENCODING</div>
-                <div class="stat-card-value">{{ $stats['for_encoding'] ?? 0 }}</div>
+                <div class="stat-card-label">Forwarded to me</div>
+                <div class="stat-card-value">{{ $stats['forwarded_to_me'] ?? 0 }}</div>
             </div>
             <div class="stat-card-icon">
                 <i data-lucide="calendar"></i>

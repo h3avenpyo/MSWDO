@@ -38,7 +38,7 @@ class SocialCaseController extends Controller
             'forwarded_to_encoder' => 0,
             'rejected_clients' => 0,
             'total_clients' => 0,
-            'for_encoding' => 0,
+            'forwarded_to_me' => 0,
             'released_today' => 0,
             'total_released' => 0,
         ];
@@ -52,10 +52,12 @@ class SocialCaseController extends Controller
                 ->count();
             $stats['rejected_clients'] = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
         } else {
-            // Case encoder stats
+            // Case encoder stats - only count cases forwarded to this encoder
+            $currentUserId = session('admin_user_id');
             $stats['total_clients'] = Client::has('socialCaseStudies')->count();
-            $stats['for_encoding'] = SocialCaseStudy::where('eligibility_status', 'eligible')
+            $stats['forwarded_to_me'] = SocialCaseStudy::where('eligibility_status', 'eligible')
                 ->where('status', 'Draft')
+                ->where('officer_id', $currentUserId)
                 ->count();
             $stats['released_today'] = SocialCaseStudy::where('status', 'Released')
                 ->whereDate('released_at', today())

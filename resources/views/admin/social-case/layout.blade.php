@@ -1937,6 +1937,13 @@
         @media (max-width: 767.98px) {
             .mobile-header { display: flex !important; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #1A237E; color: #fff; padding: 0 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); align-items: center; justify-content: space-between; height: 60px; }
         }
+
+        /* ── Mobile Welcome Message ── */
+        .mobile-welcome { display: none !important; }
+        @media (max-width: 767.98px) {
+            .mobile-welcome { display: block !important; padding: 20px 16px 10px; background: #F5F7FB; }
+            .mobile-welcome-title { font-size: 18px; font-weight: 600; color: #111827; margin: 0; }
+        }
         .mobile-header-brand {
             display: flex;
             align-items: center;
