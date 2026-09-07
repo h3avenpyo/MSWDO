@@ -413,18 +413,33 @@
     
     function printAndNotify() {
         window.print();
-        
-        setTimeout(function() {
+
+        // Detect when print dialog closes
+        window.addEventListener('afterprint', function handleAfterPrint() {
+            window.removeEventListener('afterprint', handleAfterPrint);
             Swal.fire({
-                title: 'Success!',
-                text: 'ID Card has been sent to printer.',
+                title: 'Printing complete',
+                text: 'The print dialog has been closed.',
                 icon: 'success',
                 confirmButtonColor: '#1A237E',
                 confirmButtonText: 'OK',
                 background: '#ffffff',
                 customClass: { popup: 'rounded-4 shadow-lg' }
             });
-        }, 500);
+        });
+
+        // Fallback for browsers that don't support afterprint
+        setTimeout(function() {
+            Swal.fire({
+                title: 'Printing complete',
+                text: 'The print dialog has been closed.',
+                icon: 'success',
+                confirmButtonColor: '#1A237E',
+                confirmButtonText: 'OK',
+                background: '#ffffff',
+                customClass: { popup: 'rounded-4 shadow-lg' }
+            });
+        }, 2000);
     }
 
     function handleClose() {
