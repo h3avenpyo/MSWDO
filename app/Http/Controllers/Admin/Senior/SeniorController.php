@@ -325,6 +325,7 @@ class SeniorController extends Controller
         }
         
         $cardData = [];
+        $barangay = null;
         foreach ($seniors as $senior) {
             $birthDate = $senior->birth_date ? \Carbon\Carbon::parse($senior->birth_date) : null;
             $formattedBirthDate = $birthDate ? $birthDate->format('F d, Y') : 'N/A';
@@ -335,11 +336,15 @@ class SeniorController extends Controller
                 'formattedBirthDate' => $formattedBirthDate,
                 'currentDate' => $currentDate
             ];
+            
+            if (!$barangay && $senior->barangay) {
+                $barangay = $senior->barangay;
+            }
         }
 
         $allBarangays = $this->getAllBarangays();
 
-        return view('admin.senior.bulk-id-cards', compact('cardData', 'allBarangays'));
+        return view('admin.senior.bulk-id-cards', compact('cardData', 'allBarangays', 'barangay'));
     }
 
     public function bulkReprintIds(Request $request)

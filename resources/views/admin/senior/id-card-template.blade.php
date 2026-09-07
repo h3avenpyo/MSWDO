@@ -178,6 +178,7 @@
         .emergency-section .label { font-weight: bold; color: #333; margin-right: 1.5mm; white-space: nowrap; font-size: 5.5pt; width: 13mm; text-align: left; }
         .emergency-section .value { flex: 1; font-weight: 600; color: #000; padding-left: 0.5mm; font-size: 6pt; min-width: 0; word-wrap: break-word; }
         .footer-note { font-size: 5pt; text-align: center; color: #555; font-style: italic; margin-top: 1mm; }
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.08; width: 40mm; height: auto; pointer-events: none; z-index: 0; }
         @media print { 
             .sidebar, .mobile-header, .sidebar-overlay, .no-print, .detail-header, #editSeniorModal { display: none !important; }
             .main { margin-left: 0 !important; padding: 0 !important; }
@@ -273,6 +274,7 @@
                             </div>
                             
                             <div class="id-card">
+                                <img src="{{ asset('images/silang.png') }}" alt="Silang Logo" class="watermark">
                                 <div class="back-title">Card Benefits & Legal Notice</div>
                                 <ul class="benefits-list">
                                     <li>Proof of entitlement to statutory privileges & discounts under R.A. 9994 (Expanded Senior Citizens Act).</li>
@@ -282,9 +284,9 @@
                                 <div class="emergency-section">
                                     <div class="emergency-title">In Case of Emergency</div>
                                     <div class="details">
-                                        <div class="field"><span class="label">Name:</span><span class="value" id="cardEmergencyName">{{ $senior->emergency_contact_name ?? '' }}</span></div>
-                                        <div class="field"><span class="label">Contact:</span><span class="value" id="cardEmergencyContact">{{ $senior->emergency_contact_number ?? '' }}</span></div>
-                                        <div class="field"><span class="label">Address:</span><span class="value" id="cardEmergencyAddress">{{ $senior->emergency_contact_relationship ?? '' }}</span></div>
+                                        <div class="field"><span class="label">Name:</span><span class="value">________________________</span></div>
+                                        <div class="field"><span class="label">Contact:</span><span class="value">________________________</span></div>
+                                        <div class="field"><span class="label">Address:</span><span class="value">________________________</span></div>
                                     </div>
                                 </div>
                                 <div class="footer-note">If found, please return to the nearest OSCA Office or Police Station.</div>
