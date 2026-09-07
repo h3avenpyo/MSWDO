@@ -611,6 +611,9 @@
                                 <i data-lucide="list-checks"></i> <span>Bulk Actions</span>
                                 <span id="selectedCount" class="selected-count-badge">0</span>
                             </button>
+                            <button type="button" id="clearSelectionsBtn" class="btn btn-clear" onclick="clearSelections()" style="display: none;">
+                                <i data-lucide="x"></i> <span>Clear Selections</span>
+                            </button>
                             <button type="button" id="clearFiltersBtn" class="btn btn-clear" onclick="clearFilters()" style="display: none;">
                                 <i data-lucide="x"></i> <span>Clear</span>
                             </button>
@@ -919,8 +922,10 @@
         closeBulkModal();
 
         const selectAll = document.getElementById('selectAll');
-        const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
-        const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+        
+        // Get all selected IDs from localStorage
+        const savedIds = localStorage.getItem('selectedSeniorIds');
+        const ids = savedIds ? JSON.parse(savedIds) : [];
 
         if (ids.length === 0 && !selectAll.checked) {
             Swal.fire('No Selection', 'Please select at least one record.', 'warning');
@@ -983,7 +988,8 @@
                     idsInput.value = JSON.stringify(ids);
                     form.appendChild(idsInput);
                 }
-                
+
+                clearSelections();
                 document.body.appendChild(form);
                 form.submit();
                 document.body.removeChild(form);
@@ -1112,10 +1118,23 @@
         const countSpan = document.getElementById('selectedCount');
         const mobileCount = document.getElementById('mobileSelectedCount');
         const mobileAll = document.getElementById('mobileSelectAll');
+        const clearSelectionsBtn = document.getElementById('clearSelectionsBtn');
         const totalMatching = {{ $seniors->total() ?? 0 }};
         const pageTotal = document.querySelectorAll('.senior-checkbox').length;
 
-        const count = window.selectAllMatching ? totalMatching : checkboxes.length;
+        // Get all selected IDs from localStorage and merge with current page selections
+        const savedIds = localStorage.getItem('selectedSeniorIds');
+        let allSelectedIds = savedIds ? JSON.parse(savedIds) : [];
+        const currentPageIds = Array.from(checkboxes).map(cb => cb.dataset.id);
+
+        // Remove IDs from current page from saved list, then add current selections
+        const currentPageAllIds = Array.from(document.querySelectorAll('.senior-checkbox')).map(cb => cb.dataset.id);
+        allSelectedIds = allSelectedIds.filter(id => !currentPageAllIds.includes(id));
+        allSelectedIds = [...allSelectedIds, ...currentPageIds];
+
+        localStorage.setItem('selectedSeniorIds', JSON.stringify(allSelectedIds));
+
+        const count = window.selectAllMatching ? totalMatching : allSelectedIds.length;
 
         countSpan.textContent = count;
         if (mobileCount) {
@@ -1138,6 +1157,9 @@
             button.style.background = '#3730A3';
             button.style.color = 'white';
             button.style.borderColor = '#312E81';
+            if (clearSelectionsBtn) {
+                clearSelectionsBtn.style.display = 'inline-flex';
+            }
         } else {
             button.disabled = true;
             button.style.opacity = '0.45';
@@ -1145,6 +1167,24 @@
             button.style.background = '#E0E7FF';
             button.style.color = '#3730A3';
             button.style.borderColor = '#C7D2FE';
+            if (clearSelectionsBtn) {
+                clearSelectionsBtn.style.display = 'none';
+            }
+        }
+    }
+
+    // Restore selections from localStorage on page load
+    function restoreSelections() {
+        const savedIds = localStorage.getItem('selectedSeniorIds');
+        if (savedIds) {
+            const ids = JSON.parse(savedIds);
+            const checkboxes = document.querySelectorAll('.senior-checkbox');
+            checkboxes.forEach(cb => {
+                if (ids.includes(cb.dataset.id)) {
+                    cb.checked = true;
+                }
+            });
+            updateBulkActions();
         }
     }
 
@@ -1152,8 +1192,9 @@
         if (e) { e.preventDefault(); e.stopPropagation(); }
         closeBulkModal();
 
-        const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
-        const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+        // Get all selected IDs from localStorage
+        const savedIds = localStorage.getItem('selectedSeniorIds');
+        const ids = savedIds ? JSON.parse(savedIds) : [];
 
         if (ids.length === 0 && !window.selectAllMatching) {
             Swal.fire('No Selection', 'Please select at least one record.', 'warning');
@@ -1175,7 +1216,7 @@
             customClass: { popup: 'rounded-4 shadow-lg' }
         }).then((result) => {
             if (result.isConfirmed) {
-                const payload = window.selectAllMatching 
+                const payload = window.selectAllMatching
                     ? { select_all: true, barangay: `{{ request('barangay') ?? '' }}`, search: `{{ request('search') ?? '' }}` }
                     : { ids: ids };
 
@@ -1190,6 +1231,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        clearSelections();
                         Swal.fire('Archived!', 'Selected records have been archived.', 'success');
                         setTimeout(() => location.reload(), 1500);
                     } else {
@@ -1203,11 +1245,17 @@
         });
     }
 
+    function clearSelections() {
+        localStorage.removeItem('selectedSeniorIds');
+        const checkboxes = document.querySelectorAll('.senior-checkbox');
+        checkboxes.forEach(cb => cb.checked = false);
+        updateBulkActions();
+    }
+
     async function exportPdf(e) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
         closeBulkModal();
 
-        const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
         const selectAll = document.getElementById('selectAll');
         const isAllPageChecked = selectAll && selectAll.checked;
         const currentBarangay = `{{ request('barangay') ?? '' }}`;
@@ -1215,9 +1263,12 @@
 
         let baseQuery = `barangay=${encodeURIComponent(currentBarangay)}&search=${encodeURIComponent(currentSearch)}`;
 
+        // Get all selected IDs from localStorage
+        const savedIds = localStorage.getItem('selectedSeniorIds');
+        const ids = savedIds ? JSON.parse(savedIds) : [];
+
         // If specific individual checkboxes are checked AND NOT select-all / selectAllMatching
-        if (checkboxes.length > 0 && !window.selectAllMatching && !isAllPageChecked) {
-            const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+        if (ids.length > 0 && !window.selectAllMatching && !isAllPageChecked) {
             baseQuery += `&ids=${ids.join(',')}`;
         }
 
@@ -1345,6 +1396,7 @@
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
+                clearSelections();
                 if (window.selectAllMatching) {
                     window.location.href = `{{ route('admin.senior.export') }}?barangay=${encodeURIComponent(currentBarangay)}&search=${encodeURIComponent(currentSearch)}`;
                 } else {
@@ -1358,10 +1410,11 @@
         const searchInput = document.getElementById('searchInput');
         const barangaySelect = document.getElementById('barangaySelect');
         const clearBtn = document.getElementById('clearFiltersBtn');
-        
+        const clearSelectionsBtn = document.getElementById('clearSelectionsBtn');
+
         const hasSearch = searchInput && searchInput.value.trim() !== '';
         const hasBarangay = barangaySelect && barangaySelect.value !== '';
-        
+
         if (clearBtn) {
             if (hasSearch || hasBarangay) {
                 clearBtn.style.display = 'inline-flex';
@@ -1369,27 +1422,40 @@
                 clearBtn.style.display = 'none';
             }
         }
+
+        // Handle clear selections button visibility separately based on saved selections
+        const savedIds = localStorage.getItem('selectedSeniorIds');
+        const hasSelections = savedIds && JSON.parse(savedIds).length > 0;
+        if (clearSelectionsBtn) {
+            clearSelectionsBtn.style.display = hasSelections ? 'inline-flex' : 'none';
+        }
     }
 
     function clearFilters() {
         const searchInput = document.getElementById('searchInput');
         const barangaySelect = document.getElementById('barangaySelect');
-        
+
         if (searchInput) {
             searchInput.value = '';
         }
         if (barangaySelect) {
             barangaySelect.value = '';
         }
-        
+
+        // Also clear selections when clearing filters
+        clearSelections();
+
         updateClearButtonVisibility();
-        
+
         // Submit form to clear filters
         document.getElementById('filterForm').submit();
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
+
+        // Restore selections from localStorage
+        restoreSelections();
 
         // Check if filters are active and show/hide clear button
         updateClearButtonVisibility();

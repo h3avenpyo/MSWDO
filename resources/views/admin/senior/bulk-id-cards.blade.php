@@ -180,14 +180,14 @@
         .footer-note { font-size: 5pt; text-align: center; color: #555; font-style: italic; margin-top: 1mm; }
         .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.08; width: 40mm; height: auto; pointer-events: none; z-index: 0; }
         
-        @media print { 
-            .sidebar, .mobile-header, .sidebar-overlay, .no-print, .detail-header, #editSeniorModal, #selectSeniorModal { display: none !important; }
-            .main { margin-left: 0 !important; padding: 0 !important; }
+        @media print {
+            .sidebar, .mobile-header, .sidebar-overlay, .no-print { display: none !important; }
+            .main { margin: 0 !important; padding: 0 !important; }
             .main-scroll { padding: 0 !important; margin: 0 !important; }
             .bulk-cards-container { padding: 0 !important; margin: 0 !important; }
-            .page { margin: 0 !important; padding: 5mm !important; border: none !important; box-shadow: none !important; }
-            .id-card { border: 0.2pt solid #aaa !important; box-shadow: none !important; } 
-            @page { margin: 5mm; size: auto; }
+            .page { margin: 0 auto; padding: 5mm; border: none; box-shadow: none; page-break-after: always; }
+            .page:last-child { page-break-after: auto; }
+            @page { margin: 5mm; size: A4; }
         }
     </style>
 </head>
@@ -196,12 +196,7 @@
 
 <div class="main">
     <div class="main-scroll">
-        <!-- Page Sub-Header -->
-        <div class="mb-6 no-print">
-            <p class="text-[#6B7280] text-sm m-0">View and manage senior citizen ID cards in bulk.</p>
-        </div>
-
-        <!-- Detail Header (like in admin/social-case/detail) -->
+        <!-- Detail Header (for screen view, hidden in print) -->
         <div class="detail-header no-print">
             <div class="detail-header-top">
                 <div class="case-info">
@@ -256,7 +251,7 @@
         <div class="bulk-cards-container">
             <div class="cards-wrapper">
                 @php
-                    $cardsPerPage = 6;
+                    $cardsPerPage = 4;
                     $chunks = array_chunk($cardData, $cardsPerPage);
                 @endphp
                 

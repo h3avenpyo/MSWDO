@@ -149,6 +149,10 @@
         .mobile-brand-subtitle{font-size:11px !important;}
         .mobile-menu-icon{width:28px !important;height:28px !important;}
     }
+
+    @media print {
+        .sidebar, .mobile-header, .sidebar-overlay { display: none !important; }
+    }
 </style>
 
 <!-- Sidebar -->
