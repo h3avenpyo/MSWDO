@@ -179,14 +179,13 @@
         .emergency-section .value { flex: 1; font-weight: 600; color: #000; padding-left: 0.5mm; font-size: 6pt; min-width: 0; word-wrap: break-word; }
         .footer-note { font-size: 5pt; text-align: center; color: #555; font-style: italic; margin-top: 1mm; }
         .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.08; width: 40mm; height: auto; pointer-events: none; z-index: 0; }
-        @media print { 
-            .sidebar, .mobile-header, .sidebar-overlay, .no-print, .detail-header, #editSeniorModal { display: none !important; }
-            .main { margin-left: 0 !important; padding: 0 !important; }
+        @media print {
+            .sidebar, .mobile-header, .sidebar-overlay, .no-print { display: none !important; }
+            .main { margin: 0 !important; padding: 0 !important; }
             .main-scroll { padding: 0 !important; margin: 0 !important; }
             .bulk-cards-container { padding: 0 !important; margin: 0 !important; }
-            .page { box-shadow: none !important; border-radius: 0 !important; margin: 0 !important; }
-            .id-card { border: 0.2pt solid #aaa; box-shadow: none; } 
-            @page { margin: 5mm; size: auto; }
+            .page { margin: 0 auto; padding: 5mm; border: none; box-shadow: none; page-break-after: auto; }
+            @page { margin: 5mm; size: A4; }
         }
     </style>
 </head>
