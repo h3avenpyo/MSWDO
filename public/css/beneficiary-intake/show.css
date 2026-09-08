@@ -40,33 +40,669 @@
     font-size: 0.8rem;
 }
 
-/* Print Specific Styling matching Physical Hardcopy Form */
-@media print {
-    body {
-        background-color: #ffffff !important;
-        font-family: 'Times New Roman', Times, serif, sans-serif !important;
-        font-size: 11pt !important;
-        color: #000000 !important;
-    }
-    .main-content, .p-4 {
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-    .no-print, nav, .top-navbar, .sidebar, .sidebar-overlay, button, a {
-        display: none !important;
-    }
-    .print-container {
-        display: block !important;
-        width: 100% !important;
-        margin: 0 auto !important;
-        padding: 10mm !important;
-    }
-    .print-table, .print-table th, .print-table td {
-        border: 1px solid #000000 !important;
-        border-collapse: collapse !important;
-    }
-}
+/* ═══════════════════════════════════════════════════════════════
+   GENERAL INTAKE SHEET (GIS) HARDCOPY FORM STYLES
+   Exact visual match to physical DSWD/MSWDO Form (A4 Size Optimized)
+   ═══════════════════════════════════════════════════════════════ */
 
 .print-container {
     display: none;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000000;
+    background-color: #ffffff;
+    line-height: 1.2;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Header Container */
+.gis-header-container {
+    width: 100%;
+    margin-bottom: 2px;
+}
+
+.gis-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.gis-logos {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 22%;
+}
+
+.gis-logo-img {
+    height: 44px;
+    width: auto;
+    max-width: 48px;
+    object-fit: contain;
+    display: block;
+}
+
+.gis-title-box {
+    text-align: center;
+    flex-grow: 1;
+}
+
+.gis-title {
+    font-size: 16pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin: 0;
+    padding: 0;
+    letter-spacing: 0.5px;
+    color: #000000;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.gis-date-box-wrapper {
+    width: 25%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.gis-meta-label {
+    font-weight: 700;
+    font-size: 8.5pt;
+    margin-right: 4px;
+    color: #000000;
+    white-space: nowrap;
+}
+
+/* Date 3-compartment connected box [ MM | DD | 2026 ] */
+.gis-date-table {
+    border-collapse: collapse !important;
+    border: 1.3px solid #000000 !important;
+    display: inline-table;
+    vertical-align: middle;
+    background: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+.gis-date-table td {
+    border: 1.3px solid #000000 !important;
+    height: 20px;
+    line-height: 18px;
+    text-align: center;
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #000000;
+    padding: 0 4px;
+    box-sizing: border-box;
+}
+
+.gis-date-cell-m, .gis-date-cell-d {
+    width: 28px;
+    min-width: 28px;
+}
+
+.gis-date-cell-y {
+    width: 48px;
+    min-width: 48px;
+}
+
+.gis-date-placeholder {
+    color: #999999 !important;
+    font-weight: normal !important;
+}
+
+/* Row 2: Time Start (positioned below title, ending before Date) */
+.gis-time-start-row {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding-right: 145px;
+    box-sizing: border-box;
+}
+
+.gis-time-start-group {
+    display: flex;
+    align-items: center;
+}
+
+.gis-meta-box {
+    display: inline-block;
+    border: 1.3px solid #000000;
+    height: 20px;
+    line-height: 18px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 8.5pt;
+    background: #ffffff;
+    box-sizing: border-box;
+    vertical-align: middle;
+    color: #000000;
+}
+
+.gis-box-time-start {
+    width: 125px;
+}
+
+.gis-box-time {
+    width: 125px;
+}
+
+/* Control Number & Checkboxes Bar */
+.gis-ctrl-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    font-size: 9pt;
+    width: 100%;
+}
+
+.gis-ctrl-label {
+    font-weight: 700;
+    margin-right: 4px;
+}
+
+.gis-ctrl-line {
+    border-bottom: 1.5px solid #000000;
+    min-width: 160px;
+    display: inline-block;
+    padding: 0 8px;
+    font-weight: 700;
+    text-align: center;
+    font-size: 9.5pt;
+    height: 17px;
+    line-height: 17px;
+}
+
+.gis-status-group {
+    margin-left: 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.gis-checkbox-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 9pt;
+}
+
+.gis-checkbox {
+    width: 13px;
+    height: 13px;
+    border: 1.4px solid #000000;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9.5pt;
+    font-weight: 800;
+    line-height: 1;
+    background: #ffffff;
+    box-sizing: border-box;
+}
+
+/* Section Header Banners */
+.gis-banner {
+    width: 100%;
+    padding: 2.5px 5px;
+    font-size: 9pt;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    box-sizing: border-box;
+    margin-top: 3.5px;
+    margin-bottom: 1.5px;
+}
+
+.gis-banner-black {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+.gis-banner-maroon {
+    background-color: #801818 !important;
+    color: #ffffff !important;
+    text-align: center;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+.gis-banner-dark {
+    background-color: #1f1f1f !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTINUOUS STRAIGHT HORIZONTAL FIELD LINES
+   Beneficiary & Representative Information Tables
+   ═══════════════════════════════════════════════════════════════ */
+
+.gis-line-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    empty-cells: show !important;
+    table-layout: fixed !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+.gis-line-table td {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Value row: Seamless continuous bottom border across all columns */
+.gis-line-table .gis-val-row td.gis-val-cell {
+    border: none !important;
+    border-bottom: 1.2px solid #000000 !important;
+    font-size: 9pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    height: 21px;
+    line-height: 21px;
+    padding: 0 4px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+    color: #000000;
+    box-sizing: border-box;
+}
+
+/* Sub-label row: centered directly below the continuous line */
+.gis-line-table .gis-lbl-row td.gis-lbl-cell {
+    border: none !important;
+    font-size: 6.8pt;
+    text-align: center;
+    padding-top: 1px;
+    padding-bottom: 4px;
+    margin: 0;
+    color: #000000;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: top;
+    box-sizing: border-box;
+}
+
+.gis-sublbl {
+    font-size: 6.2pt;
+    font-weight: normal;
+}
+
+/* DSWD Notice Section */
+.gis-dswd-table {
+    width: 100%;
+    border: 1.5px solid #000000;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-top: 2px;
+    margin-bottom: 3px;
+}
+
+.gis-dswd-table td {
+    border: none;
+    vertical-align: top;
+}
+
+.gis-dswd-col-left {
+    width: 44%;
+    border-right: 1.5px solid #000000 !important;
+    padding: 5px 8px;
+    font-size: 8.5pt;
+}
+
+.gis-dswd-col-right {
+    width: 56%;
+    padding: 5px 10px;
+    font-size: 8.5pt;
+}
+
+.gis-dswd-title {
+    font-weight: 800;
+    font-size: 9pt;
+    text-align: center;
+    margin-bottom: 3px;
+    color: #000000;
+}
+
+.gis-dswd-subtitle {
+    font-size: 8pt;
+    font-style: italic;
+    margin-bottom: 4px;
+    color: #000000;
+}
+
+.gis-check-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-size: 8.5pt;
+    line-height: 1.25;
+}
+
+.gis-check-text {
+    font-size: 8.5pt;
+    color: #000000;
+}
+
+.gis-others-underline {
+    border-bottom: 1.2px solid #000000;
+    flex-grow: 1;
+    margin-left: 4px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 8.5pt;
+    min-height: 16px;
+    line-height: 16px;
+}
+
+.gis-assessment-content {
+    font-size: 8.5pt;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 155px;
+    color: #000000;
+    padding-top: 3px;
+}
+
+/* Family Composition Table */
+.gis-family-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1.5px solid #000000;
+    table-layout: fixed;
+    margin-top: 2px;
+    margin-bottom: 4px;
+}
+
+.gis-family-table th {
+    border: 1px solid #000000;
+    font-size: 8pt;
+    font-weight: 700;
+    text-align: center;
+    padding: 3px 2px;
+    line-height: 1.15;
+    background: #ffffff;
+    color: #000000;
+}
+
+.gis-family-table td {
+    border: 1px solid #000000;
+    font-size: 8.5pt;
+    text-align: center;
+    height: 24px;
+    line-height: 24px;
+    padding: 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #000000;
+}
+
+/* Recommendation Sentence Section */
+.gis-rec-section {
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 6px;
+    font-size: 9pt;
+    color: #000000;
+}
+
+.gis-rec-line {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    line-height: 1.25;
+}
+
+.gis-rec-text {
+    font-weight: 700;
+    white-space: nowrap;
+    padding-right: 4px;
+    font-size: 9pt;
+}
+
+.gis-rec-underline {
+    border-bottom: 1.2px solid #000000;
+    font-weight: 700;
+    font-size: 9pt;
+    text-align: center;
+    padding: 0 4px;
+    height: 18px;
+    line-height: 18px;
+    text-transform: uppercase;
+}
+
+.gis-underline-wide {
+    flex-grow: 1;
+}
+
+.gis-underline-med {
+    width: 28%;
+    margin-right: 4px;
+}
+
+.gis-underline-blank {
+    flex-grow: 1;
+    margin-right: 4px;
+}
+
+.gis-underline-amount {
+    width: 20%;
+    margin-left: 4px;
+    margin-right: 2px;
+}
+
+/* Bottom Signatures Block */
+.gis-sig-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-top: 6px;
+    margin-bottom: 2px;
+}
+
+.gis-sig-table td {
+    vertical-align: top;
+    padding: 0;
+}
+
+.gis-sig-col-left {
+    width: 44%;
+    padding-right: 10px;
+}
+
+.gis-sig-col-center {
+    width: 28%;
+    padding: 0 6px;
+    border-left: none;
+    text-align: center;
+}
+
+.gis-sig-col-right {
+    width: 28%;
+    padding-left: 6px;
+    text-align: center;
+}
+
+/* Oath Box with Right Thumbmark */
+.gis-oath-container {
+    border: 1.2px solid #000000;
+    padding: 4px 6px;
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+    background: #ffffff;
+}
+
+.gis-oath-text {
+    flex: 1;
+    font-size: 5.3pt;
+    font-style: italic;
+    line-height: 1.22;
+    text-align: justify;
+    color: #000000;
+    margin: 0;
+    padding: 0;
+}
+
+.gis-thumbmark-box {
+    width: 60px;
+    min-width: 60px;
+    border: 1.2px solid #000000;
+    background: #ffffff;
+    box-sizing: border-box;
+    align-self: stretch;
+}
+
+.gis-sig-header {
+    font-size: 8.5pt;
+    font-weight: normal;
+    text-align: center;
+    color: #000000;
+    height: 16px;
+}
+
+.gis-sig-spacer {
+    height: 52px;
+}
+
+.gis-sig-signer {
+    text-align: center;
+    width: 100%;
+}
+
+.gis-sig-name {
+    font-size: 8.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    height: 16px;
+    line-height: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #000000;
+}
+
+.gis-sig-line {
+    border-top: 1.2px solid #000000;
+    width: 96%;
+    margin: 1px auto 2px auto;
+}
+
+.gis-sig-title {
+    font-size: 7.8pt;
+    font-weight: 700;
+    color: #000000;
+    line-height: 1.15;
+}
+
+.gis-sig-subtitle {
+    font-size: 6.8pt;
+    font-style: italic;
+    color: #000000;
+    line-height: 1.1;
+}
+
+/* Footer Address */
+.gis-footer {
+    text-align: center;
+    font-size: 7.5pt;
+    font-style: italic;
+    color: #222222;
+    margin-top: 12px;
+    line-height: 1.25;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PRINT MEDIA RULES
+   Optimized specifically for A4 (210mm × 297mm) Paper Printing
+   Maximizing usable space while preventing multi-page overflow
+   ═══════════════════════════════════════════════════════════════ */
+
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 8mm 8mm 8mm 8mm;
+    }
+
+    html, body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-family: Arial, Helvetica, sans-serif !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .no-print, header, nav, .top-navbar, .sidebar, .sidebar-overlay, button, a, .btn {
+        display: none !important;
+    }
+
+    .main-content, .content-wrapper, .container-fluid, .p-4 {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .print-container {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        page-break-inside: avoid !important;
+        box-sizing: border-box !important;
+    }
+
+    .gis-banner-black {
+        background-color: #000000 !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .gis-banner-maroon {
+        background-color: #801818 !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .gis-banner-dark {
+        background-color: #1f1f1f !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .gis-dswd-table, .gis-family-table, .gis-sig-table, .gis-meta-box, .gis-oath-container, .gis-thumbmark-box, .gis-checkbox {
+        border-color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
 }

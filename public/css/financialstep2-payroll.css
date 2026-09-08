@@ -77,20 +77,6 @@
     margin-bottom: 24px;
 }
 
-.payroll-stat-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: 16px 20px;
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-base), box-shadow var(--transition-base);
-    height: 100%;
-}
-
-.payroll-stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
 
 .table-clean th {
     font-size: var(--text-xs);
@@ -340,37 +326,6 @@
     background-color: var(--color-brand) !important;
     border-color: var(--color-brand) !important;
     color: #FFFFFF !important;
-}
-
-.stat-icon-brand {
-    background: hsl(235, 66%, 95%);
-    color: var(--color-brand);
-}
-
-.stat-icon-success {
-    background: var(--color-success-light);
-    color: var(--color-success);
-}
-
-.stat-icon-warning {
-    background: var(--color-warning-light);
-    color: var(--color-warning);
-}
-
-.stat-val-brand {
-    color: var(--color-brand);
-}
-
-.stat-val-success {
-    color: var(--color-success);
-}
-
-.stat-val-warning {
-    color: var(--color-warning);
-}
-
-.stat-val-muted {
-    color: var(--color-text-muted);
 }
 
 .border-subtle-color {

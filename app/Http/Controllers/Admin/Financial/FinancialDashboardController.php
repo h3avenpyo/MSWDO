@@ -195,7 +195,12 @@ class FinancialDashboardController extends Controller
             // Filter by Status
             if ($request->filled('status') && $request->status !== 'All') {
                 $status = $request->status;
-                if ($status === 'pending_amount' || $status === 'for_assessment') {
+                if ($status === 'unprocessed') {
+                    $query->where(function ($q) {
+                        $q->where('is_payroll_generated', false)
+                          ->orWhereNull('is_payroll_generated');
+                    })->whereNull('payroll_record_id');
+                } elseif ($status === 'pending_amount' || $status === 'for_assessment') {
                     $query->where(function ($q) {
                         $q->whereNull('recommended_amount')->orWhere('recommended_amount', '<=', 0);
                     });
@@ -256,6 +261,12 @@ class FinancialDashboardController extends Controller
                 $q->whereNull('recommended_amount')->orWhere('recommended_amount', '<=', 0);
             })->count();
 
+            $unprocessedCount = (clone $todayQueueBase)->where(function ($q) {
+                $q->where('is_payroll_generated', false)
+                  ->orWhereNull('is_payroll_generated');
+            })->whereNull('payroll_record_id')->count();
+            $unprocessedIntakesCount = $unprocessedCount;
+
             $unclaimedCount = (clone $todayQueueBase)->where('is_payroll_generated', true)
                 ->where(function ($q) {
                     $q->where('claim_status', '!=', 'Claimed')
@@ -273,6 +284,8 @@ class FinancialDashboardController extends Controller
             $totalQueueCount = 0;
             $todayQueueCount = 0;
             $pendingAmountCount = 0;
+            $unprocessedCount = 0;
+            $unprocessedIntakesCount = 0;
             $unclaimedCount = 0;
             $claimedCount = 0;
             $pendingPayoutCount = 0;
@@ -311,6 +324,8 @@ class FinancialDashboardController extends Controller
             'totalQueueCount',
             'todayQueueCount',
             'pendingAmountCount',
+            'unprocessedCount',
+            'unprocessedIntakesCount',
             'unclaimedCount',
             'claimedCount',
             'pendingPayoutCount',

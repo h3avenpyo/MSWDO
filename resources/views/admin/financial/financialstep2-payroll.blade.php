@@ -83,65 +83,7 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
     </div>
     @endif
 
-    <!-- Stat Cards Grid (Policy 2.0 Unified Palette) -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="payroll-stat-card">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="detail-field-label">Unprocessed Intakes</div>
-                        <h3 class="h4 fw-bold text-dark mb-0 mt-1" id="statTotalIntakes">{{ number_format($totalTodayCount
-                            ?? 0) }}</h3>
-                    </div>
-                    <div class="p-3 rounded-circle stat-icon-brand">
-                        <i class="fas fa-users fa-lg"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="payroll-stat-card">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="detail-field-label">Amounts Encoded</div>
-                        <h3 class="h4 fw-bold mb-0 mt-1 stat-val-success" id="statEncodedCount">{{
-                            number_format($encodedCount ?? 0) }}</h3>
-                    </div>
-                    <div class="p-3 rounded-circle stat-icon-success">
-                        <i class="fas fa-check-circle fa-lg"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="payroll-stat-card">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="detail-field-label">Pending Amount</div>
-                        <h3 class="h4 fw-bold mb-0 mt-1 {{ ($pendingCount ?? 0) > 0 ? 'stat-val-warning' : 'stat-val-muted' }}"
-                            id="statPendingCount">{{ number_format($pendingCount ?? 0) }}</h3>
-                    </div>
-                    <div class="p-3 rounded-circle stat-icon-warning">
-                        <i class="fas fa-hourglass-half fa-lg"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="payroll-stat-card">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="detail-field-label">Payroll Fund Total</div>
-                        <h3 class="h4 fw-bold mb-0 mt-1 stat-val-brand" id="statTotalPayrollAmount">
-                            &#8369;{{ number_format($totalPayrollAmount ?? 0, 2) }}</h3>
-                    </div>
-                    <div class="p-3 rounded-circle stat-icon-brand">
-                        <i class="fas fa-coins fa-lg"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Payroll Verification & Readiness Banner (Clean neutral background) -->
     <div id="readinessBanner"

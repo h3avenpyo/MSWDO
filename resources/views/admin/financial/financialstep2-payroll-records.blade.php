@@ -94,9 +94,12 @@
                 </div>
                 <div class="flex-grow-1">
                     <div class="text-muted small fw-semibold text-uppercase">Total Unclaimed Assistance</div>
-                    <h4 class="fw-bold mb-0 text-warning-emphasis" id="stat-unclaimed-amount" data-raw-amount="{{ $grandTotalUnclaimedAmount ?? 0 }}">{{ $formattedGrandTotalUnclaimedAmount ?? '₱0.00' }}</h4>
+                    <h4 class="fw-bold mb-0 text-warning-emphasis" id="stat-unclaimed-amount"
+                        data-raw-amount="{{ $grandTotalUnclaimedAmount ?? 0 }}">{{ $formattedGrandTotalUnclaimedAmount
+                        ?? '₱0.00' }}</h4>
                     <div class="text-muted text-2xs mt-0.5" id="stat-unclaimed-subtitle">
-                        <span id="stat-unclaimed-count">{{ $grandTotalUnclaimedCount ?? 0 }}</span> {{ Str::plural('beneficiary', $grandTotalUnclaimedCount ?? 0) }} pending release
+                        <span id="stat-unclaimed-count">{{ $grandTotalUnclaimedCount ?? 0 }}</span> {{
+                        Str::plural('beneficiary', $grandTotalUnclaimedCount ?? 0) }} pending release
                     </div>
                 </div>
             </div>
@@ -109,9 +112,12 @@
                 </div>
                 <div class="flex-grow-1">
                     <div class="text-muted small fw-semibold text-uppercase">Total Claimed Assistance</div>
-                    <h4 class="fw-bold mb-0 text-success" id="stat-claimed-amount" data-raw-amount="{{ $grandTotalClaimedAmount ?? 0 }}">{{ $formattedGrandTotalClaimedAmount ?? '₱0.00' }}</h4>
+                    <h4 class="fw-bold mb-0 text-success" id="stat-claimed-amount"
+                        data-raw-amount="{{ $grandTotalClaimedAmount ?? 0 }}">{{ $formattedGrandTotalClaimedAmount ??
+                        '₱0.00' }}</h4>
                     <div class="text-muted text-2xs mt-0.5" id="stat-claimed-subtitle">
-                        <span id="stat-claimed-count">{{ $grandTotalClaimedCount ?? 0 }}</span> {{ Str::plural('beneficiary', $grandTotalClaimedCount ?? 0) }} released
+                        <span id="stat-claimed-count">{{ $grandTotalClaimedCount ?? 0 }}</span> {{
+                        Str::plural('beneficiary', $grandTotalClaimedCount ?? 0) }} released
                     </div>
                 </div>
             </div>
@@ -124,9 +130,11 @@
                 </div>
                 <div class="flex-grow-1">
                     <div class="text-muted small fw-semibold text-uppercase">Total Date Payroll</div>
-                    <h4 class="fw-bold mb-0 text-dark" id="stat-total-amount" data-raw-amount="{{ $grandTotalAmount ?? 0 }}">{{ $formattedGrandTotalAmount ?? '₱0.00' }}</h4>
+                    <h4 class="fw-bold mb-0 text-dark" id="stat-total-amount"
+                        data-raw-amount="{{ $grandTotalAmount ?? 0 }}">{{ $formattedGrandTotalAmount ?? '₱0.00' }}</h4>
                     <div class="text-muted text-2xs mt-0.5">
-                        {{ $payrollRecords->count() }} separate {{ Str::plural('payroll record', $payrollRecords->count()) }}
+                        {{ $payrollRecords->count() }} separate {{ Str::plural('payroll record',
+                        $payrollRecords->count()) }}
                     </div>
                 </div>
             </div>
@@ -139,7 +147,8 @@
                 </div>
                 <div class="flex-grow-1">
                     <div class="text-muted small fw-semibold text-uppercase">Total Beneficiaries</div>
-                    <h4 class="fw-bold mb-0 text-dark" id="stat-total-beneficiaries">{{ number_format($grandTotalBeneficiaries ?? 0) }}</h4>
+                    <h4 class="fw-bold mb-0 text-dark" id="stat-total-beneficiaries">{{
+                        number_format($grandTotalBeneficiaries ?? 0) }}</h4>
                     <div class="text-muted text-2xs mt-0.5">
                         Generated on this date
                     </div>
@@ -280,7 +289,9 @@
             Showing <strong>{{ $payrollRecords->count() }}</strong> separate {{ Str::plural('payroll record',
             $payrollRecords->count()) }}
             (Total: <strong>{{ $grandTotalBeneficiaries }}</strong> {{ Str::plural('beneficiary',
-            $grandTotalBeneficiaries) }} &bull; Total: <strong class="text-dark">{{ $formattedGrandTotalAmount }}</strong> &bull; Unclaimed: <strong class="text-warning-emphasis fw-bold" id="bar-unclaimed-amount">{{ $formattedGrandTotalUnclaimedAmount ?? '₱0.00' }}</strong>)
+            $grandTotalBeneficiaries) }} &bull; Total: <strong class="text-dark">{{ $formattedGrandTotalAmount
+                }}</strong> &bull; Unclaimed: <strong class="text-warning-emphasis fw-bold" id="bar-unclaimed-amount">{{
+                $formattedGrandTotalUnclaimedAmount ?? '₱0.00' }}</strong>)
             @if(request('payroll_id'))
             <span class="badge bg-light text-muted border ms-2">Filtered to 1 specific record</span>
             <a href="{{ route('admin.financial.financialstep2.payroll-records', ['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')]) }}"
@@ -330,7 +341,9 @@
                         Showing <strong>{{ $record->recordBeneficiariesCount }}</strong> {{ Str::plural('beneficiary',
                         $record->recordBeneficiariesCount) }}
                         | Total: <strong class="text-dark">{{ $record->formattedRecordAmount }}</strong>
-                        | Unclaimed: <strong class="text-warning-emphasis" id="batch-unclaimed-amount-{{ $record->id }}" data-raw-amount="{{ $record->recordUnclaimedAmount ?? 0 }}">{{ $record->formattedRecordUnclaimedAmount ?? '₱0.00' }}</strong>
+                        | Unclaimed: <strong class="text-warning-emphasis" id="batch-unclaimed-amount-{{ $record->id }}"
+                            data-raw-amount="{{ $record->recordUnclaimedAmount ?? 0 }}">{{
+                            $record->formattedRecordUnclaimedAmount ?? '₱0.00' }}</strong>
                         | Claimed: <span
                             class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5 text-xs fw-semibold"
                             id="batch-claimed-count-{{ $record->id }}"><i class="fas fa-check-circle me-1"></i>{{
@@ -435,8 +448,7 @@
                                     class="btn btn-sm btn-outline-secondary rounded-pill btn-mark-claim"
                                     data-intake-id="{{ $row->id }}" data-beneficiary-name="{{ $row->beneficiary_name }}"
                                     data-status="Unclaimed" data-record-id="{{ $record->id }}"
-                                    data-amount="{{ $row->amount }}"
-                                    title="Click to revert status to Unclaimed">
+                                    data-amount="{{ $row->amount }}" title="Click to revert status to Unclaimed">
                                     <i class="fas fa-rotate-left me-1"></i> Undo
                                 </button>
                                 @else
@@ -444,8 +456,7 @@
                                     class="btn btn-sm btn-success rounded-pill btn-mark-claim shadow-xs"
                                     data-intake-id="{{ $row->id }}" data-beneficiary-name="{{ $row->beneficiary_name }}"
                                     data-status="Claimed" data-record-id="{{ $record->id }}"
-                                    data-amount="{{ $row->amount }}"
-                                    title="Mark financial assistance as Claimed">
+                                    data-amount="{{ $row->amount }}" title="Mark financial assistance as Claimed">
                                     <i class="fas fa-check me-1"></i> Claimed
                                 </button>
                                 @endif
@@ -474,7 +485,9 @@
                                     $record->claimedCount }}</span> Claimed /
                                 <span class="text-warning fw-bold" id="tfoot-unclaimed-{{ $record->id }}">{{
                                     $record->unclaimedCount }}</span> Unclaimed
-                                (<span class="text-warning-emphasis fw-bold" id="tfoot-unclaimed-amount-{{ $record->id }}">{{ $record->formattedRecordUnclaimedAmount ?? '₱0.00' }}</span> pending)
+                                (<span class="text-warning-emphasis fw-bold"
+                                    id="tfoot-unclaimed-amount-{{ $record->id }}">{{
+                                    $record->formattedRecordUnclaimedAmount ?? '₱0.00' }}</span> pending)
                             </th>
                         </tr>
                     </tfoot>
@@ -541,53 +554,7 @@
         </div>
     </div>
 
-    <!-- Quick Summary Metric Cards (Instant High-Volume Overview) -->
-    <div class="row g-3 mb-4">
-        <div class="col-sm-6 col-lg-3">
-            <div class="stat-metric-card d-flex align-items-center gap-3">
-                <div class="p-3 rounded-circle bg-primary-subtle text-primary">
-                    <i class="fas fa-calendar-alt fs-4"></i>
-                </div>
-                <div>
-                    <div class="text-muted small fw-semibold text-uppercase">Dates Recorded</div>
-                    <h4 class="fw-bold mb-0 text-dark">{{ number_format($totalDatesCount ?? 0) }}</h4>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-lg-3">
-            <div class="stat-metric-card d-flex align-items-center gap-3">
-                <div class="p-3 rounded-circle bg-info-subtle text-info">
-                    <i class="fas fa-file-invoice fs-4"></i>
-                </div>
-                <div>
-                    <div class="text-muted small fw-semibold text-uppercase">Separate Payrolls</div>
-                    <h4 class="fw-bold mb-0 text-dark">{{ number_format($totalRecordsCount ?? 0) }}</h4>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-lg-3">
-            <div class="stat-metric-card d-flex align-items-center gap-3">
-                <div class="p-3 rounded-circle bg-warning-subtle text-warning">
-                    <i class="fas fa-users fs-4"></i>
-                </div>
-                <div>
-                    <div class="text-muted small fw-semibold text-uppercase">Total Beneficiaries</div>
-                    <h4 class="fw-bold mb-0 text-dark">{{ number_format($grandTotalBeneficiaries ?? 0) }}</h4>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-lg-3">
-            <div class="stat-metric-card d-flex align-items-center gap-3">
-                <div class="p-3 rounded-circle bg-success-subtle text-success">
-                    <i class="fas fa-coins fs-4"></i>
-                </div>
-                <div>
-                    <div class="text-muted small fw-semibold text-uppercase">Total Assistance</div>
-                    <h4 class="fw-bold mb-0 text-success">{{ $formattedGrandTotalAmount ?? '₱0.00' }}</h4>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Filter & Search Controls -->
     <div class="filter-card mb-4">

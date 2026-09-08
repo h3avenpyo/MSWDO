@@ -181,27 +181,6 @@ function updateDashboardMetrics(data) {
     pendingIntakesCount = data.pending_count;
     isAllEncoded = data.all_amounts_encoded;
 
-    const elTotal = document.getElementById('statTotalIntakes');
-    if (elTotal) elTotal.textContent = data.total_today_count;
-
-    const elEncoded = document.getElementById('statEncodedCount');
-    if (elEncoded) elEncoded.textContent = data.encoded_count;
-
-    const elPending = document.getElementById('statPendingCount');
-    if (elPending) {
-        elPending.textContent = data.pending_count;
-        if (data.pending_count > 0) {
-            elPending.classList.remove('stat-val-muted');
-            elPending.classList.add('stat-val-warning');
-        } else {
-            elPending.classList.remove('stat-val-warning');
-            elPending.classList.add('stat-val-muted');
-        }
-    }
-
-    const elTotalAmt = document.getElementById('statTotalPayrollAmount');
-    if (elTotalAmt) elTotalAmt.textContent = data.formatted_total_payroll_amount;
-    
     const footerEnc = document.getElementById('footerEncodedCount');
     if (footerEnc) footerEnc.textContent = data.encoded_count;
 

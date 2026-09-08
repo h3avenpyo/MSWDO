@@ -63,8 +63,8 @@ $userName = session('admin_user_name') ?? 'Officer';
     <div class="card animate-fade-in mb-0">
         <div class="stat-card-inner">
             <div>
-                <p class="stat-label">Pending Amount</p>
-                <h3 class="stat-value">{{ number_format($pendingAmountCount ?? 0) }}</h3>
+                <p class="stat-label">Unprocessed Intakes</p>
+                <h3 class="stat-value">{{ number_format($unprocessedCount ?? $unprocessedIntakesCount ?? 0) }}</h3>
             </div>
             <div class="stat-icon warning"><i class="fas fa-clock"></i></div>
         </div>
@@ -122,6 +122,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                 Status</label>
             <select name="status" class="form-select form-select-sm rounded-3">
                 <option value="All">All Statuses</option>
+                <option value="unprocessed" {{ request('status')=='unprocessed' ? 'selected' : '' }}>Unprocessed Intakes</option>
                 <option value="pending_amount" {{ request('status')=='pending_amount' ||
                     request('status')=='for_assessment' ? 'selected' : '' }}>Pending Amount</option>
                 <option value="unclaimed" {{ request('status')=='unclaimed' ? 'selected' : '' }}>Unclaimed</option>
