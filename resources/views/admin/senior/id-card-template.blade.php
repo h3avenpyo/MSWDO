@@ -283,8 +283,8 @@
                                 <div class="emergency-section">
                                     <div class="emergency-title">In Case of Emergency</div>
                                     <div class="details">
-                                        <div class="field"><span class="label">Name:</span><span class="value">________________________</span></div>
-                                        <div class="field"><span class="label">Contact:</span><span class="value">________________________</span></div>
+                                        <div class="field"><span class="label">Name:</span><span class="value" id="cardEmergencyName">{{ $senior->emergency_contact_name ?? '________________________' }}</span></div>
+                                        <div class="field"><span class="label">Contact:</span><span class="value" id="cardEmergencyContact">{{ $senior->emergency_contact_number ?? '________________________' }}</span></div>
                                         <div class="field"><span class="label">Address:</span><span class="value">________________________</span></div>
                                     </div>
                                 </div>
@@ -300,18 +300,18 @@
 
 <!-- Edit Senior Modal -->
 <div id="editSeniorModal" class="no-print" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;padding:16px;">
-    <div style="background:#fff;border-radius:16px;width:100%;max-width:640px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 25px -5px rgba(0,0,0,0.2);">
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid #E5E7EB;">
+    <div style="background:#fff;border-radius:16px;width:100%;max-width:640px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 25px -5px rgba(0,0,0,0.2);overflow:hidden;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid #E5E7EB;background:#1A237E;">
             <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:36px;height:36px;border-radius:8px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;color:#1A237E;">
+                <div style="width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;color:#fff;">
                     <i data-lucide="edit" style="width:20px;height:20px;"></i>
                 </div>
                 <div>
-                    <h3 style="margin:0;font-size:18px;font-weight:700;color:#111827;">Edit Senior Citizen</h3>
-                    <p style="margin:2px 0 0 0;font-size:12px;color:#6B7280;">Update senior details and ID card information</p>
+                    <h3 style="margin:0;font-size:18px;font-weight:700;color:#fff;">Edit Senior Citizen</h3>
+                    <p style="margin:2px 0 0 0;font-size:12px;color:rgba(255,255,255,0.8);">Update senior details and ID card information</p>
                 </div>
             </div>
-            <button type="button" onclick="closeEditSeniorModal()" style="background:transparent;border:none;color:#9CA3AF;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;">
+            <button type="button" onclick="closeEditSeniorModal()" style="background:transparent;border:none;color:#fff;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;">
                 <i data-lucide="x" style="width:20px;height:20px;"></i>
             </button>
         </div>

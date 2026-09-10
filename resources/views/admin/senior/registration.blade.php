@@ -19,19 +19,21 @@
         body{font-size:14px;line-height:1.5;}
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
         .form-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:32px;overflow:visible;}
-        .form-label{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.3px;}
-        .form-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text-primary);outline:none;transition:border-color .2s,box-shadow .2s;font-family:var(--font-family);height:44px;}
+        .form-label{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .form-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text-primary);outline:none;transition:border-color .2s,box-shadow .2s;font-family:var(--font-family);height:44px;box-sizing:border-box;}
         .form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.1);}
         .form-input::placeholder{color:var(--text-muted);}
+        .form-input[readonly]{background-color:#F8FAFC;color:var(--text-secondary);cursor:default;}
         select.form-input{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right .75rem center;background-size:1rem;padding-right:2.5rem;}
         textarea.form-input{resize:vertical;height:auto;min-height:80px;}
-        input[type="date"].form-input{min-height:44px;appearance:none;-webkit-appearance:none;position:relative;background-image:none;padding-right:14px;}
+        input[type="date"].form-input{position:relative;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3e%3cline x1='16' y1='2' x2='16' y2='6'/%3e%3cline x1='8' y1='2' x2='8' y2='6'/%3e%3cline x1='3' y1='10' x2='21' y2='10'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 12px center;background-size:18px;padding-right:38px;}
+        input[type="date"].form-input::-webkit-calendar-picker-indicator{opacity:0;cursor:pointer;position:absolute;right:0;top:0;width:38px;height:100%;}
+        input[type="number"].form-input{-moz-appearance:textfield;appearance:textfield;}
+        input[type="number"].form-input::-webkit-inner-spin-button,input[type="number"].form-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
         .btn{border:1px solid var(--border);background:var(--surface);color:var(--text-primary);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:8px;box-shadow:var(--shadow);transition:all .2s ease;height:42px;cursor:pointer;text-decoration:none;}
         .btn:hover{border-color:var(--primary);transform:translateY(-1px);}
         .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary);}
         .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);}
-
-        input[type="date"].form-input{background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3e%3cline x1='16' y1='2' x2='16' y2='6'/%3e%3cline x1='8' y1='2' x2='8' y2='6'/%3e%3cline x1='3' y1='10' x2='21' y2='10'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-right:36px;}
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
     </style>
 </head>
@@ -48,135 +50,193 @@
 
             <form method="POST" action="{{ route('admin.senior.registration.store') }}" onsubmit="return confirmSubmit(event)" id="registrationForm">
                 @csrf
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    <div>
-                        <label class="form-label">Year Applied</label>
-                        <input type="number" name="year_applied" id="year_applied" class="form-input" placeholder="e.g. 2026" value="{{ old('year_applied') ?? date('Y') }}" required onchange="updateControlNumber()">
+                
+                <!-- Personal Information Section -->
+                <div class="mb-8">
+                    <h3 class="text-md font-bold mb-4" style="color:var(--primary);border-bottom:2px solid var(--primary);padding-bottom:8px;">
+                        <i data-lucide="user" style="width:18px;height:18px;display:inline-block;margin-right:8px;vertical-align:text-bottom;"></i>
+                        Personal Information
+                    </h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                        <div class="lg:col-span-2">
+                            <label class="form-label">Full Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+                            <input type="text" name="full_name" class="form-input" placeholder="Enter full name" value="{{ old('full_name') }}" required>
+                        </div>
+                        <div>
+                            <label class="form-label">Sex <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+                            <select class="form-input" name="sex" required>
+                                <option value="">Select Sex</option>
+                                <option value="Male" {{ old('sex') == 'Male' ? 'selected' : '' }}>Male</option>
+                                <option value="Female" {{ old('sex') == 'Female' ? 'selected' : '' }}>Female</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Birth Date <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+                            <input type="date" name="birth_date" id="birthDate" class="form-input" value="{{ old('birth_date') }}" required onchange="calculateAge()">
+                        </div>
+                        <div>
+                            <label class="form-label">Month</label>
+                            <input type="text" name="month" id="month" class="form-input" placeholder="Auto-calculated" required readonly>
+                        </div>
+                        <div>
+                            <label class="form-label">Age</label>
+                            <input type="number" name="age" id="age" class="form-input" placeholder="Auto-calculated" value="{{ old('age') }}" readonly>
+                        </div>
                     </div>
-                    <div>
-                        <label class="form-label">Control Number</label>
-                        <input type="text" name="control_number" id="controlNumber" class="form-input" placeholder="Auto-generated" value="{{ old('control_number') }}" readonly>
+                </div>
+
+                <!-- Address Information Section -->
+                <div class="mb-8">
+                    <h3 class="text-md font-bold mb-4" style="color:var(--primary);border-bottom:2px solid var(--primary);padding-bottom:8px;">
+                        <i data-lucide="map-pin" style="width:18px;height:18px;display:inline-block;margin-right:8px;vertical-align:text-bottom;"></i>
+                        Address Information
+                    </h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                        <div class="lg:col-span-2">
+                            <label class="form-label">Address <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+                            <input type="text" name="address" class="form-input" placeholder="Enter complete address" value="{{ old('address') }}" required>
+                        </div>
+                        <div>
+                            <label class="form-label">Barangay <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+                            <select class="form-input" name="barangay" id="barangay" required onchange="updateControlNumber()">
+                                <option value="">Select Barangay</option>
+                                <option value="Acacia" {{ old('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
+                                <option value="Adlas" {{ old('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
+                                <option value="Anahaw I" {{ old('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
+                                <option value="Anahaw II" {{ old('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
+                                <option value="Balite I" {{ old('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
+                                <option value="Balite II" {{ old('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
+                                <option value="Balubad" {{ old('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
+                                <option value="Banaba" {{ old('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
+                                <option value="Batas" {{ old('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
+                                <option value="Biga I" {{ old('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
+                                <option value="Biga II" {{ old('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
+                                <option value="Biluso" {{ old('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
+                                <option value="Bucal" {{ old('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
+                                <option value="Buho" {{ old('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
+                                <option value="Bulihan" {{ old('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
+                                <option value="Cabangaan" {{ old('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
+                                <option value="Carmen" {{ old('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
+                                <option value="Hoyo" {{ old('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
+                                <option value="Hukay" {{ old('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
+                                <option value="Iba" {{ old('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
+                                <option value="Inchican" {{ old('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
+                                <option value="Ipil I" {{ old('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
+                                <option value="Ipil II" {{ old('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
+                                <option value="Kalubkob" {{ old('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
+                                <option value="Kaong" {{ old('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
+                                <option value="Lalaan I" {{ old('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
+                                <option value="Lalaan II" {{ old('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
+                                <option value="Litlit" {{ old('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
+                                <option value="Lucsuhin" {{ old('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
+                                <option value="Lumil" {{ old('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
+                                <option value="Maguyam" {{ old('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
+                                <option value="Malabag" {{ old('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
+                                <option value="Malaking Tatyao" {{ old('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
+                                <option value="Mataas na Burol" {{ old('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
+                                <option value="Munting Ilog" {{ old('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
+                                <option value="Narra I" {{ old('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
+                                <option value="Narra II" {{ old('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
+                                <option value="Narra III" {{ old('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
+                                <option value="Paligawan" {{ old('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
+                                <option value="Pasong Langka" {{ old('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
+                                <option value="Barangay I (Poblacion)" {{ old('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
+                                <option value="Barangay II (Poblacion)" {{ old('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
+                                <option value="Barangay III (Poblacion)" {{ old('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
+                                <option value="Barangay IV (Poblacion)" {{ old('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
+                                <option value="Barangay V (Poblacion)" {{ old('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
+                                <option value="Pooc I" {{ old('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
+                                <option value="Pooc II" {{ old('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
+                                <option value="Pulong Bunga" {{ old('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
+                                <option value="Pulong Saging" {{ old('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
+                                <option value="Puting Kahoy" {{ old('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
+                                <option value="Sabutan" {{ old('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
+                                <option value="San Miguel I" {{ old('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
+                                <option value="San Miguel II" {{ old('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
+                                <option value="San Vicente I" {{ old('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
+                                <option value="San Vicente II" {{ old('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
+                                <option value="Santol" {{ old('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
+                                <option value="Tartaria" {{ old('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
+                                <option value="Tibig" {{ old('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
+                                <option value="Toledo" {{ old('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
+                                <option value="Tubuan I" {{ old('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
+                                <option value="Tubuan II" {{ old('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
+                                <option value="Tubuan III" {{ old('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
+                                <option value="Ulat" {{ old('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
+                                <option value="Yakal" {{ old('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="md:col-span-2 lg:col-span-1">
-                        <label class="form-label">Full Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-                        <input type="text" name="full_name" class="form-input" placeholder="Enter full name" value="{{ old('full_name') }}" required>
+                </div>
+
+                <!-- Contact Information Section -->
+                <div class="mb-8">
+                    <h3 class="text-md font-bold mb-4" style="color:var(--primary);border-bottom:2px solid var(--primary);padding-bottom:8px;">
+                        <i data-lucide="phone" style="width:18px;height:18px;display:inline-block;margin-right:8px;vertical-align:text-bottom;"></i>
+                        Contact Information
+                    </h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                        <div>
+                            <label class="form-label">Contact Number <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+                            <input type="text" name="contact_number" class="form-input" placeholder="e.g. 09171234567" pattern="[0-9]{11}" maxlength="11" value="{{ old('contact_number') }}" required>
+                        </div>
+                        <div>
+                            <label class="form-label">Emergency Contact Person Name</label>
+                            <input type="text" name="emergency_contact_name" class="form-input" placeholder="e.g. Ricardo Villanueva" value="{{ old('emergency_contact_name') }}">
+                        </div>
+                        <div>
+                            <label class="form-label">Emergency Phone Number</label>
+                            <input type="text" name="emergency_contact_number" class="form-input" placeholder="e.g. 09181234567" pattern="[0-9]{11}" maxlength="11" value="{{ old('emergency_contact_number') }}">
+                        </div>
                     </div>
-                    <div class="md:col-span-2 lg:col-span-3">
-                        <label class="form-label">Address <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-                        <input type="text" name="address" class="form-input" placeholder="Enter complete address" value="{{ old('address') }}" required>
+                </div>
+
+                <!-- Identification Information Section -->
+                <div class="mb-8">
+                    <h3 class="text-md font-bold mb-4" style="color:var(--primary);border-bottom:2px solid var(--primary);padding-bottom:8px;">
+                        <i data-lucide="id-card" style="width:18px;height:18px;display:inline-block;margin-right:8px;vertical-align:text-bottom;"></i>
+                        Identification Information
+                    </h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                        <div>
+                            <label class="form-label">Year Applied</label>
+                            <input type="number" name="year_applied" id="year_applied" class="form-input" placeholder="e.g. 2026" value="{{ old('year_applied') ?? date('Y') }}" required onchange="updateControlNumber()">
+                        </div>
+                        <div class="lg:col-span-2">
+                            <label class="form-label">Control Number</label>
+                            <input type="text" name="control_number" id="controlNumber" class="form-input" placeholder="Auto-generated" value="{{ old('control_number') }}" readonly>
+                        </div>
+                        <div>
+                            <label class="form-label">PhilSys Number <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+                            <input type="text" name="philsys_number" class="form-input" placeholder="Enter 12-digit PhilSys number" pattern="[0-9]{12}" maxlength="12" value="{{ old('philsys_number') }}">
+                        </div>
+                        <div class="lg:col-span-2">
+                            <label class="form-label">RRN Number <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+                            <input type="text" name="rrn_number" class="form-input" placeholder="Enter 29-digit RRN number" pattern="[0-9]{29}" maxlength="29" value="{{ old('rrn_number') }}">
+                        </div>
                     </div>
-                    <div>
-                        <label class="form-label">Barangay <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-                        <select class="form-input" name="barangay" id="barangay" required onchange="updateControlNumber()">
-                            <option value="">Select Barangay</option>
-                            <option value="Acacia" {{ old('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
-                            <option value="Adlas" {{ old('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
-                            <option value="Anahaw I" {{ old('barangay') == 'Anahaw I' ? 'selected' : '' }}>Anahaw I</option>
-                            <option value="Anahaw II" {{ old('barangay') == 'Anahaw II' ? 'selected' : '' }}>Anahaw II</option>
-                            <option value="Balite I" {{ old('barangay') == 'Balite I' ? 'selected' : '' }}>Balite I</option>
-                            <option value="Balite II" {{ old('barangay') == 'Balite II' ? 'selected' : '' }}>Balite II</option>
-                            <option value="Balubad" {{ old('barangay') == 'Balubad' ? 'selected' : '' }}>Balubad</option>
-                            <option value="Banaba" {{ old('barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
-                            <option value="Batas" {{ old('barangay') == 'Batas' ? 'selected' : '' }}>Batas</option>
-                            <option value="Biga I" {{ old('barangay') == 'Biga I' ? 'selected' : '' }}>Biga I</option>
-                            <option value="Biga II" {{ old('barangay') == 'Biga II' ? 'selected' : '' }}>Biga II</option>
-                            <option value="Biluso" {{ old('barangay') == 'Biluso' ? 'selected' : '' }}>Biluso</option>
-                            <option value="Bucal" {{ old('barangay') == 'Bucal' ? 'selected' : '' }}>Bucal</option>
-                            <option value="Buho" {{ old('barangay') == 'Buho' ? 'selected' : '' }}>Buho</option>
-                            <option value="Bulihan" {{ old('barangay') == 'Bulihan' ? 'selected' : '' }}>Bulihan</option>
-                            <option value="Cabangaan" {{ old('barangay') == 'Cabangaan' ? 'selected' : '' }}>Cabangaan</option>
-                            <option value="Carmen" {{ old('barangay') == 'Carmen' ? 'selected' : '' }}>Carmen</option>
-                            <option value="Hoyo" {{ old('barangay') == 'Hoyo' ? 'selected' : '' }}>Hoyo</option>
-                            <option value="Hukay" {{ old('barangay') == 'Hukay' ? 'selected' : '' }}>Hukay</option>
-                            <option value="Iba" {{ old('barangay') == 'Iba' ? 'selected' : '' }}>Iba</option>
-                            <option value="Inchican" {{ old('barangay') == 'Inchican' ? 'selected' : '' }}>Inchican</option>
-                            <option value="Ipil I" {{ old('barangay') == 'Ipil I' ? 'selected' : '' }}>Ipil I</option>
-                            <option value="Ipil II" {{ old('barangay') == 'Ipil II' ? 'selected' : '' }}>Ipil II</option>
-                            <option value="Kalubkob" {{ old('barangay') == 'Kalubkob' ? 'selected' : '' }}>Kalubkob</option>
-                            <option value="Kaong" {{ old('barangay') == 'Kaong' ? 'selected' : '' }}>Kaong</option>
-                            <option value="Lalaan I" {{ old('barangay') == 'Lalaan I' ? 'selected' : '' }}>Lalaan I</option>
-                            <option value="Lalaan II" {{ old('barangay') == 'Lalaan II' ? 'selected' : '' }}>Lalaan II</option>
-                            <option value="Litlit" {{ old('barangay') == 'Litlit' ? 'selected' : '' }}>Litlit</option>
-                            <option value="Lucsuhin" {{ old('barangay') == 'Lucsuhin' ? 'selected' : '' }}>Lucsuhin</option>
-                            <option value="Lumil" {{ old('barangay') == 'Lumil' ? 'selected' : '' }}>Lumil</option>
-                            <option value="Maguyam" {{ old('barangay') == 'Maguyam' ? 'selected' : '' }}>Maguyam</option>
-                            <option value="Malabag" {{ old('barangay') == 'Malabag' ? 'selected' : '' }}>Malabag</option>
-                            <option value="Malaking Tatyao" {{ old('barangay') == 'Malaking Tatyao' ? 'selected' : '' }}>Malaking Tatyao</option>
-                            <option value="Mataas na Burol" {{ old('barangay') == 'Mataas na Burol' ? 'selected' : '' }}>Mataas na Burol</option>
-                            <option value="Munting Ilog" {{ old('barangay') == 'Munting Ilog' ? 'selected' : '' }}>Munting Ilog</option>
-                            <option value="Narra I" {{ old('barangay') == 'Narra I' ? 'selected' : '' }}>Narra I</option>
-                            <option value="Narra II" {{ old('barangay') == 'Narra II' ? 'selected' : '' }}>Narra II</option>
-                            <option value="Narra III" {{ old('barangay') == 'Narra III' ? 'selected' : '' }}>Narra III</option>
-                            <option value="Paligawan" {{ old('barangay') == 'Paligawan' ? 'selected' : '' }}>Paligawan</option>
-                            <option value="Pasong Langka" {{ old('barangay') == 'Pasong Langka' ? 'selected' : '' }}>Pasong Langka</option>
-                            <option value="Barangay I (Poblacion)" {{ old('barangay') == 'Barangay I (Poblacion)' ? 'selected' : '' }}>Barangay I (Poblacion)</option>
-                            <option value="Barangay II (Poblacion)" {{ old('barangay') == 'Barangay II (Poblacion)' ? 'selected' : '' }}>Barangay II (Poblacion)</option>
-                            <option value="Barangay III (Poblacion)" {{ old('barangay') == 'Barangay III (Poblacion)' ? 'selected' : '' }}>Barangay III (Poblacion)</option>
-                            <option value="Barangay IV (Poblacion)" {{ old('barangay') == 'Barangay IV (Poblacion)' ? 'selected' : '' }}>Barangay IV (Poblacion)</option>
-                            <option value="Barangay V (Poblacion)" {{ old('barangay') == 'Barangay V (Poblacion)' ? 'selected' : '' }}>Barangay V (Poblacion)</option>
-                            <option value="Pooc I" {{ old('barangay') == 'Pooc I' ? 'selected' : '' }}>Pooc I</option>
-                            <option value="Pooc II" {{ old('barangay') == 'Pooc II' ? 'selected' : '' }}>Pooc II</option>
-                            <option value="Pulong Bunga" {{ old('barangay') == 'Pulong Bunga' ? 'selected' : '' }}>Pulong Bunga</option>
-                            <option value="Pulong Saging" {{ old('barangay') == 'Pulong Saging' ? 'selected' : '' }}>Pulong Saging</option>
-                            <option value="Puting Kahoy" {{ old('barangay') == 'Puting Kahoy' ? 'selected' : '' }}>Puting Kahoy</option>
-                            <option value="Sabutan" {{ old('barangay') == 'Sabutan' ? 'selected' : '' }}>Sabutan</option>
-                            <option value="San Miguel I" {{ old('barangay') == 'San Miguel I' ? 'selected' : '' }}>San Miguel I</option>
-                            <option value="San Miguel II" {{ old('barangay') == 'San Miguel II' ? 'selected' : '' }}>San Miguel II</option>
-                            <option value="San Vicente I" {{ old('barangay') == 'San Vicente I' ? 'selected' : '' }}>San Vicente I</option>
-                            <option value="San Vicente II" {{ old('barangay') == 'San Vicente II' ? 'selected' : '' }}>San Vicente II</option>
-                            <option value="Santol" {{ old('barangay') == 'Santol' ? 'selected' : '' }}>Santol</option>
-                            <option value="Tartaria" {{ old('barangay') == 'Tartaria' ? 'selected' : '' }}>Tartaria</option>
-                            <option value="Tibig" {{ old('barangay') == 'Tibig' ? 'selected' : '' }}>Tibig</option>
-                            <option value="Toledo" {{ old('barangay') == 'Toledo' ? 'selected' : '' }}>Toledo</option>
-                            <option value="Tubuan I" {{ old('barangay') == 'Tubuan I' ? 'selected' : '' }}>Tubuan I</option>
-                            <option value="Tubuan II" {{ old('barangay') == 'Tubuan II' ? 'selected' : '' }}>Tubuan II</option>
-                            <option value="Tubuan III" {{ old('barangay') == 'Tubuan III' ? 'selected' : '' }}>Tubuan III</option>
-                            <option value="Ulat" {{ old('barangay') == 'Ulat' ? 'selected' : '' }}>Ulat</option>
-                            <option value="Yakal" {{ old('barangay') == 'Yakal' ? 'selected' : '' }}>Yakal</option>
-                        </select>
+                </div>
+
+                <!-- Additional Information Section -->
+                <div class="mb-8">
+                    <h3 class="text-md font-bold mb-4" style="color:var(--primary);border-bottom:2px solid var(--primary);padding-bottom:8px;">
+                        <i data-lucide="file-text" style="width:18px;height:18px;display:inline-block;margin-right:8px;vertical-align:text-bottom;"></i>
+                        Additional Information
+                    </h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                        <div class="lg:col-span-3">
+                            <label class="form-label">Remarks</label>
+                            <textarea name="remarks" class="form-input" rows="3" placeholder="Enter any additional remarks">{{ old('remarks') }}</textarea>
+                        </div>
                     </div>
-                    <div>
-                        <label class="form-label">Birth Date <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-                        <input type="date" name="birth_date" id="birthDate" class="form-input" value="{{ old('birth_date') }}" required onchange="calculateAge()">
-                    </div>
-                    <div>
-                        <label class="form-label">Month</label>
-                        <input type="text" name="month" id="month" class="form-input" required readonly>
-                    </div>
-                    <div>
-                        <label class="form-label">Sex <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-                        <select class="form-input" name="sex" required>
-                            <option value="">Select Sex</option>
-                            <option value="Male" {{ old('sex') == 'Male' ? 'selected' : '' }}>Male</option>
-                            <option value="Female" {{ old('sex') == 'Female' ? 'selected' : '' }}>Female</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">Age</label>
-                        <input type="number" name="age" id="age" class="form-input" placeholder="Auto-calculated" value="{{ old('age') }}" readonly>
-                    </div>
-                    <div>
-                        <label class="form-label">Contact Number <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-                        <input type="text" name="contact_number" class="form-input" placeholder="e.g. 09171234567" pattern="[0-9]{11}" maxlength="11" value="{{ old('contact_number') }}" required>
-                    </div>
-                    <div>
-                        <label class="form-label">PhilSys Number <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-                        <input type="text" name="philsys_number" class="form-input" placeholder="Enter 12-digit PhilSys number" pattern="[0-9]{12}" maxlength="12" value="{{ old('philsys_number') }}">
-                    </div>
-                    <div class="lg:col-span-2">
-                        <label class="form-label">RRN Number <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-                        <input type="text" name="rrn_number" class="form-input" placeholder="Enter 29-digit RRN number" pattern="[0-9]{29}" maxlength="29" value="{{ old('rrn_number') }}">
-                    </div>
-                    <div class="md:col-span-2 lg:col-span-3">
-                        <label class="form-label">Remarks</label>
-                        <textarea name="remarks" class="form-input" rows="3" placeholder="Enter any additional remarks">{{ old('remarks') }}</textarea>
-                    </div>
-                    <div class="md:col-span-2 lg:col-span-3 flex justify-end gap-3 mt-4">
-                        <button type="button" class="btn" style="height:44px;" onclick="location.href='/admin/senior'">Cancel</button>
-                        <button type="button" class="btn primary" style="height:44px;" onclick="confirmSubmit(event)">
-                            <i data-lucide="user-plus" style="width:16px;height:16px"></i> Register Senior Citizen
-                        </button>
-                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" class="btn" style="height:44px;" onclick="location.href='/admin/senior'">Cancel</button>
+                    <button type="button" class="btn primary" style="height:44px;" onclick="confirmSubmit(event)">
+                        <i data-lucide="user-plus" style="width:16px;height:16px"></i> Register Senior Citizen
+                    </button>
                 </div>
             </form>
         </div>
@@ -191,6 +251,7 @@
     // Input validation - prevent invalid characters
     document.addEventListener('DOMContentLoaded', function() {
         const contactNumberInput = document.querySelector('[name="contact_number"]');
+        const emergencyContactNumberInput = document.querySelector('[name="emergency_contact_number"]');
         const philsysNumberInput = document.querySelector('[name="philsys_number"]');
         const rrnNumberInput = document.querySelector('[name="rrn_number"]');
 
@@ -210,8 +271,16 @@
         }
 
         restrictToDigits(contactNumberInput, 11);
+        restrictToDigits(emergencyContactNumberInput, 11);
         restrictToDigits(philsysNumberInput, 12);
         restrictToDigits(rrnNumberInput, 29);
+
+        if (document.getElementById('birthDate') && document.getElementById('birthDate').value) {
+            calculateAge();
+        }
+        if (document.getElementById('barangay') && document.getElementById('barangay').value) {
+            updateControlNumber();
+        }
     });
 
     @if($seniorCreated ?? false)
@@ -266,6 +335,8 @@
 <div><div style="font-weight:600;color:var(--text-secondary);font-size:13px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px">Sex</div><div style="color:var(--text-primary);font-size:16px">${v('sex')}</div></div>
 <div><div style="font-weight:600;color:var(--text-secondary);font-size:13px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px">Age</div><div style="font-weight:700;color:var(--primary);font-size:18px">${v('age')}</div></div>
 <div><div style="font-weight:600;color:var(--text-secondary);font-size:13px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px">Contact Number</div><div style="color:var(--text-primary);font-size:16px">${v('contact_number')}</div></div>
+<div><div style="font-weight:600;color:var(--text-secondary);font-size:13px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px">Emergency Contact</div><div style="color:var(--text-primary);font-size:16px">${v('emergency_contact_name')}</div></div>
+<div><div style="font-weight:600;color:var(--text-secondary);font-size:13px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px">Emergency Phone</div><div style="color:var(--text-primary);font-size:16px">${v('emergency_contact_number')}</div></div>
 <div><div style="font-weight:600;color:var(--text-secondary);font-size:13px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px">PhilSys Number</div><div style="color:var(--text-primary);font-size:16px">${v('philsys_number')}</div></div>
 <div><div style="font-weight:600;color:var(--text-secondary);font-size:13px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px">RRN Number</div><div style="color:var(--text-primary);font-size:16px">${v('rrn_number')}</div></div>
 <div style="grid-column:1/-1"><div style="font-weight:600;color:var(--text-secondary);font-size:13px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px">Remarks</div><div style="color:var(--text-primary);font-size:16px">${f.querySelector('[name="remarks"]').value||'<span style="color:#9CA3AF">None</span>'}</div></div>
