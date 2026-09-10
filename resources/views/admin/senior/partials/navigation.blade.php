@@ -158,12 +158,12 @@
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <i data-lucide="users" style="width:24px;height:24px"></i>
+        <img src="{{ asset('images/dswd.png') }}" style="width:56px;height:56px;object-fit:contain;" alt="DSWD">
         <span>Senior Citizen</span>
     </div>
     <ul class="sidebar-menu">
         <li><a href="/admin/senior" class="{{ ($active ?? '') === 'dashboard' ? 'active' : '' }}"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
-        <li><a href="/admin/senior/registration" class="{{ ($active ?? '') === 'registration' ? 'active' : '' }}"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>Registration</span></a></li>
+        <li><a href="/admin/senior/registration" class="{{ ($active ?? '') === 'registration' ? 'active' : '' }}"><i data-lucide="users" style="width:20px;height:20px"></i><span>Registration</span></a></li>
         <li><a href="/admin/senior/masterlist" class="{{ ($active ?? '') === 'masterlist' ? 'active' : '' }}"><i data-lucide="list" style="width:20px;height:20px"></i><span>Masterlist</span></a></li>
         <li><a href="/admin/senior/birthdays" class="{{ ($active ?? '') === 'birthdays' ? 'active' : '' }}"><i data-lucide="cake" style="width:20px;height:20px"></i><span>Birthday Beneficiaries</span></a></li>
         <li><a href="/admin/senior/payouts-history" class="{{ ($active ?? '') === 'payouts' ? 'active' : '' }}"><i data-lucide="history" style="width:20px;height:20px"></i><span>Payout History</span></a></li>

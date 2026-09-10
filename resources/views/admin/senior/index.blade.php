@@ -573,7 +573,7 @@
 
         <!-- Role Banner -->
         <div class="role-banner" style="background:#EFF6FF;border:1px solid #BFDBFE;display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:8px;margin-bottom:24px;">
-            <i data-lucide="shield-check" style="width:20px;height:20px;color:#1E40AF;"></i>
+            <i data-lucide="users" style="width:20px;height:20px;color:#1E40AF;"></i>
             <div class="role-banner-text">
                 <div class="role-banner-title" style="color:#1E3A8A;font-weight:600;font-size:14px;">Senior Citizen Registration Account</div>
                 <div class="role-banner-subtitle" style="color:#1E40AF;font-size:13px;">Your account is authorized to register, update, and manage senior citizen records including ID card generation and birthday payout processing.</div>

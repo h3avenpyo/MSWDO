@@ -31,6 +31,8 @@
         .btn svg{width:16px;height:16px;}
         .btn.primary{background:var(--primary);color:#FFFFFF;border-color:var(--primary);}
         .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);transform:translateY(-1px);}
+        .btn-clear{background:#FEF2F2;color:var(--danger);border:1px solid #FECACA;font-weight:600;}
+        .btn-clear:hover{border-color:var(--danger);background:#FEE2E2;}
 
         /* ── Badges ── */
         .badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;}
@@ -288,7 +290,7 @@
                             <input type="month" id="dateFilter" style="width:100%;height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;" value="{{ $selectedYear }}-{{ str_pad($selectedMonth, 2, '0', STR_PAD_LEFT) }}" onchange="filterByDate(); updateClearButtonVisibility()">
                         </div>
                         <div id="clearFilterContainer" style="display:none;align-items:flex-end;justify-content:center;padding-bottom:2px;flex-shrink:0">
-                            <button id="clearFiltersBtn" class="btn" style="padding:8px 16px;font-size:13px;color:var(--danger);border-color:var(--danger);background:#FEF2F2;height:44px;white-space:nowrap" onclick="clearFilters()">
+                            <button id="clearFiltersBtn" class="btn btn-clear" onclick="clearFilters()">
                                 <i data-lucide="x" style="width:14px;height:14px"></i> Clear
                             </button>
                         </div>

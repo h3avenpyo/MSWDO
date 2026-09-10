@@ -34,8 +34,8 @@
         .btn-bulk{background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE;}
         .btn-bulk:hover{border-color:#3730A3;transform:none;}
         .btn-bulk:disabled{opacity:.45;cursor:not-allowed;pointer-events:none;}
-        .btn-clear{background:var(--surface);color:var(--danger);border:1px solid #FECACA;}
-        .btn-clear:hover{border-color:var(--danger);}
+        .btn-clear{background:#FEF2F2;color:var(--danger);border:1px solid #FECACA;font-weight:600;}
+        .btn-clear:hover{border-color:var(--danger);background:#FEE2E2;}
 
         /* ── Modal ── */
         .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
@@ -1279,7 +1279,31 @@
         localStorage.removeItem('selectedSeniorIds');
         const checkboxes = document.querySelectorAll('.senior-checkbox');
         checkboxes.forEach(cb => cb.checked = false);
-        updateBulkActions();
+
+        // Hide both buttons
+        const bulkBtn = document.getElementById('bulkActionButton');
+        const clearSelectBtn = document.getElementById('clearSelectionsBtn');
+        if (bulkBtn) bulkBtn.style.display = 'none';
+        if (clearSelectBtn) clearSelectBtn.style.display = 'none';
+
+        // Update select all checkbox
+        const selectAll = document.getElementById('selectAll');
+        const mobileSelectAll = document.getElementById('mobileSelectAll');
+        if (selectAll) selectAll.checked = false;
+        if (mobileSelectAll) mobileSelectAll.checked = false;
+
+        // Clear select all matching flag
+        window.selectAllMatching = false;
+
+        // Update counts
+        const countSpan = document.getElementById('selectedCount');
+        const mobileCount = document.getElementById('mobileSelectedCount');
+        if (countSpan) countSpan.textContent = '0';
+        if (mobileCount) mobileCount.textContent = '';
+
+        // Hide select all pages notice
+        const selectAllPagesNotice = document.getElementById('selectAllPagesNotice');
+        if (selectAllPagesNotice) selectAllPagesNotice.style.display = 'none';
     }
 
     async function exportPdf(e) {

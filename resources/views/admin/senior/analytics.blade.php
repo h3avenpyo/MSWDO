@@ -32,8 +32,8 @@
         .btn svg{width:16px;height:16px;}
         .btn.primary{background:var(--primary);color:#FFFFFF;border-color:var(--primary);}
         .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);transform:translateY(-1px);}
-        .btn-clear{background:var(--surface);color:var(--danger);border-color:var(--danger);font-weight:600;}
-        .btn-clear:hover{border-color:var(--danger);color:var(--danger);}
+        .btn-clear{background:#FEF2F2;color:var(--danger);border:1px solid #FECACA;font-weight:600;}
+        .btn-clear:hover{border-color:var(--danger);background:#FEE2E2;}
 
         /* ── Filter Section ── */
         .filter-section{background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);padding:12px 20px 20px 20px;}
@@ -370,9 +370,9 @@
                         <button type="button" onclick="generateReport()" class="btn primary" style="background:#16A34A;border-color:#16A34A;">
                             <i data-lucide="file-text" style="width:16px;height:16px"></i> Generate Report
                         </button>
-                        <a href="{{ route('admin.senior.analytics') }}" class="btn btn-clear">
-                            <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> Reset
-                        </a>
+                        <button type="button" id="clearFiltersBtn" class="btn btn-clear" onclick="clearFilters()" style="display:none;">
+                            <i data-lucide="x" style="width:16px;height:16px"></i> Clear
+                        </button>
                     </div>
                 </div>
             </form>
@@ -549,6 +549,35 @@
             }
         });
     }
+
+    function clearFilters() {
+        window.location.href = "{{ route('admin.senior.analytics') }}";
+    }
+
+    function updateClearButtonVisibility() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const year = urlParams.get('year');
+        const month = urlParams.get('month');
+        const barangay = urlParams.get('barangay');
+        const gender = urlParams.get('gender');
+        const ageGroup = urlParams.get('age_group');
+
+        const clearBtn = document.getElementById('clearFiltersBtn');
+
+        // Show clear button if any filter is active
+        const hasActiveFilter = (year && year !== '') ||
+                               (month && month !== '') ||
+                               (barangay && barangay !== '') ||
+                               (gender && gender !== '') ||
+                               (ageGroup && ageGroup !== '');
+
+        if (clearBtn) {
+            clearBtn.style.display = hasActiveFilter ? 'inline-flex' : 'none';
+        }
+    }
+
+    // Initialize clear button visibility on page load
+    updateClearButtonVisibility();
 
     lucide.createIcons();
 </script>
