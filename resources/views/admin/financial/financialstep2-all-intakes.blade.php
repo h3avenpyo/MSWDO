@@ -174,14 +174,14 @@
                         <table class="table-clean w-100">
                             <thead>
                                 <tr>
-                                    <th>Control No.</th>
-                                    <th>Client / Beneficiary Information</th>
-                                    <th>Address &amp; Contact</th>
-                                    <th>Intake Date &amp; Officer</th>
-                                    <th>Category / Medical Purpose</th>
-                                    <th>Assessed Grant</th>
-                                    <th>Status</th>
-                                    <th class="text-end">Actions</th>
+                                    <th class="col-control-no">Control No.</th>
+                                    <th class="col-beneficiary">Client / Beneficiary Information</th>
+                                    <th class="col-address">Address &amp; Contact</th>
+                                    <th class="col-date-officer">Intake Date &amp; Officer</th>
+                                    <th class="col-category-purpose">Category / Medical Purpose</th>
+                                    <th class="col-amount">Assessed Grant</th>
+                                    <th class="col-status">Status</th>
+                                    <th class="col-actions text-end">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -252,9 +252,27 @@
                                         @endif
                                     </td>
                                     <td class="text-end">
-                                        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium btn-view-intake" title="Quick Preview Record" data-intake='@json($intake)'>
-                                            <i class="fas fa-eye me-1"></i> View
-                                        </button>
+                                        <div class="d-flex align-items-center justify-content-end gap-1.5">
+                                            <button type="button"
+                                                class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1 fw-medium btn-message-beneficiary"
+                                                data-intake-id="{{ $intake->id }}"
+                                                data-beneficiary-name="{{ $intake->beneficiary_full_name }}"
+                                                data-representative-name="{{ $intake->representative_full_name }}"
+                                                data-is-separate-rep="{{ $intake->has_representative ? '1' : '0' }}"
+                                                data-contact-number="{{ $intake->has_representative && $intake->rep_contact_number ? $intake->rep_contact_number : $intake->beneficiary_contact_number }}"
+                                                data-purpose="{{ $intake->display_assistance_purpose }}"
+                                                data-amount-formatted="₱{{ number_format((float) ($intake->recommended_amount ?? 0), 2) }}"
+                                                data-claiming-date="{{ $intake->formatted_claiming_date ?? '' }}"
+                                                data-raw-claiming-date="{{ $intake->effective_claiming_date ? $intake->effective_claiming_date->format('Y-m-d') : '' }}"
+                                                data-last-message-date="{{ $intake->last_message_sent_at_formatted ?? '' }}"
+                                                data-default-template="{{ $intake->step2_status === 'Unclaimed' ? 'Unclaimed Assistance' : 'Follow-up' }}"
+                                                title="Send SMS to Beneficiary">
+                                                <i class="fas fa-comment-sms me-1"></i> Message
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-medium btn-view-intake" title="Quick Preview Record" data-intake='@json($intake)'>
+                                                <i class="fas fa-eye me-1"></i> View
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty
@@ -428,8 +446,10 @@
     </div>
 </div>
 
+@include('admin.financial.partials.sms-modal')
 @endsection
 
 @section('page-scripts')
 <script src="{{ asset('js/financialstep2-all-intakes.js') }}"></script>
+<script src="{{ asset('js/financialstep2-sms.js') }}"></script>
 @endsection

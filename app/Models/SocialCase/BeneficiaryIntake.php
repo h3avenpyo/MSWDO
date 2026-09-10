@@ -74,6 +74,7 @@ class BeneficiaryIntake extends Model
         'is_payroll_generated',
         'payroll_generated_at',
         'payroll_date',
+        'claiming_date',
         'payroll_record_id',
         'claim_status',
         'claimed_at',
@@ -89,6 +90,7 @@ class BeneficiaryIntake extends Model
         'is_payroll_generated' => 'boolean',
         'payroll_generated_at' => 'datetime',
         'payroll_date' => 'date',
+        'claiming_date' => 'date',
         'payroll_record_id' => 'integer',
         'claimed_at' => 'datetime',
         'medical_conditions' => 'array',
@@ -117,6 +119,38 @@ class BeneficiaryIntake extends Model
     public function payrollRecord(): BelongsTo
     {
         return $this->belongsTo(FinancialPayrollRecord::class, 'payroll_record_id');
+    }
+
+    public function messages(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Models\Financial\FinancialAssistanceMessage::class, 'intake_id')->orderBy('created_at', 'desc');
+    }
+
+    public function latestMessage(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(\App\Models\Financial\FinancialAssistanceMessage::class, 'intake_id')->latestOfMany();
+    }
+
+    public function getEffectiveClaimingDateAttribute(): ?\Carbon\Carbon
+    {
+        return $this->claiming_date 
+            ?? $this->payroll_date 
+            ?? ($this->payrollRecord ? $this->payrollRecord->payroll_date : null);
+    }
+
+    public function getFormattedClaimingDateAttribute(): ?string
+    {
+        $date = $this->effective_claiming_date;
+        return $date ? $date->format('F d, Y') : null;
+    }
+
+    public function getLastMessageSentAtFormattedAttribute(): ?string
+    {
+        if ($this->relationLoaded('latestMessage') && $this->latestMessage) {
+            return $this->latestMessage->formatted_date;
+        }
+        $latest = $this->messages()->where('status', 'Sent')->first();
+        return $latest ? $latest->formatted_date : null;
     }
 
     public function getClientFullNameAttribute(): ?string

@@ -111,3 +111,31 @@
 .text-2xs {
     font-size: 0.68rem;
 }
+
+/* Laptop Responsive Overrides (1366x768 - 1440x900) */
+@media (max-width: 1440px) {
+    .liquidation-hero-banner {
+        padding: 14px 18px;
+        border-radius: 10px;
+    }
+    .liquidation-hero-banner h2 {
+        font-size: 1.15rem;
+    }
+    .stat-metric-card {
+        padding: 12px 14px;
+        border-radius: 10px;
+    }
+    .stat-metric-card h3 {
+        font-size: 1.3rem;
+    }
+    .filter-card {
+        padding: 10px 14px;
+        border-radius: 10px;
+    }
+    .payroll-card-header {
+        padding: 14px 18px;
+    }
+    .finance-metric-box {
+        padding: 8px 10px;
+    }
+}

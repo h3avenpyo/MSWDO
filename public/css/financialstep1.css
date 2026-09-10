@@ -584,15 +584,68 @@ button, a, [role="button"], .action-tile, .card {
 .animate-fade-in { animation: fadeIn 0.35s ease forwards; }
 
 /* ── Responsive Rules ── */
+@media (max-width: 1440px) {
+    :root {
+        --sidebar-width: 240px;
+    }
+    .sidebar {
+        width: 240px;
+    }
+    .sidebar-brand {
+        height: 60px;
+        padding: 0 1.25rem;
+        font-size: 1rem;
+    }
+    .sidebar-menu a {
+        padding: 0.6rem 1.25rem;
+        font-size: 0.85rem;
+    }
+    .main-content {
+        margin-left: 240px;
+    }
+    .financial-content-wrapper {
+        padding: 1.15rem 1.25rem !important;
+    }
+    .top-navbar {
+        padding: 0.65rem 1.25rem;
+    }
+    .navbar-title {
+        font-size: 1.05rem;
+    }
+    .navbar-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 0.8rem;
+    }
+    .step-wizard-card {
+        padding: 1.15rem 1.35rem;
+        margin-bottom: 1.15rem;
+    }
+    .stat-cards-grid {
+        gap: 0.85rem;
+        margin-bottom: 1.15rem;
+    }
+    .stat-card-inner {
+        padding: 0.85rem 1rem;
+    }
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+}
+
 @media (max-width: 1023px) {
-    .sidebar { transform: translateX(-100%); z-index: 1001; }
+    .sidebar { transform: translateX(-100%); z-index: 1001; width: 260px; }
     .sidebar.show { transform: translateX(0); }
     .main-content { margin-left: 0; width: 100%; }
     .stat-cards-grid { grid-template-columns: repeat(2, 1fr); }
-    .top-navbar { padding: 1rem 1.25rem; }
+    .top-navbar { padding: 0.85rem 1.25rem; }
+    .financial-content-wrapper { padding: 1rem !important; }
 }
 
 @media (max-width: 575px) {
     .stat-cards-grid { grid-template-columns: 1fr; }
     .step-wizard-nav::before { display: none; }
+    .financial-content-wrapper { padding: 0.75rem !important; }
 }

@@ -73,14 +73,20 @@
                     Displaying all separately generated payroll records and full beneficiary masterlists for this date.
                 </p>
             </div>
-            @if($payrollRecords->isNotEmpty())
-            <div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button type="button"
+                    class="btn btn-warning btn-sm rounded-pill px-3.5 fw-bold text-dark shadow-xs btn-open-monthly-unclaimed"
+                    data-month="{{ $selectedDate ? $selectedDate->format('Y-m') : (request('date') ? substr(request('date'), 0, 7) : date('Y-m')) }}"
+                    title="Message unclaimed beneficiaries for this month">
+                    <i class="fas fa-bullhorn me-1"></i> Message Unclaimed
+                </button>
+                @if($payrollRecords->isNotEmpty())
                 <a href="{{ route('admin.financial.financialstep2.payroll.print', ['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')]) }}"
-                    target="_blank" class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs">
+                    target="_blank" class="btn btn-light btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs">
                     <i class="fas fa-print me-1"></i> Print Date Payroll Sheet
                 </a>
+                @endif
             </div>
-            @endif
         </div>
     </div>
 
@@ -443,22 +449,64 @@
                                 @endif
                             </td>
                             <td class="text-center" id="claim-action-col-{{ $row->id }}">
-                                @if($row->claim_status === 'Claimed')
-                                <button type="button"
-                                    class="btn btn-sm btn-outline-secondary rounded-pill btn-mark-claim"
-                                    data-intake-id="{{ $row->id }}" data-beneficiary-name="{{ $row->beneficiary_name }}"
-                                    data-status="Unclaimed" data-record-id="{{ $record->id }}"
-                                    data-amount="{{ $row->amount }}" title="Click to revert status to Unclaimed">
-                                    <i class="fas fa-rotate-left me-1"></i> Undo
-                                </button>
+                                <div class="d-flex align-items-center justify-content-center gap-1.5 flex-wrap">
+                                    @if($row->claim_status === 'Claimed')
+                                    <button type="button"
+                                        class="btn btn-sm btn-outline-secondary rounded-pill btn-mark-claim px-2.5 py-1"
+                                        data-intake-id="{{ $row->id }}" data-beneficiary-name="{{ $row->beneficiary_name }}"
+                                        data-status="Unclaimed" data-record-id="{{ $record->id }}"
+                                        data-amount="{{ $row->amount }}" title="Click to revert status to Unclaimed">
+                                        <i class="fas fa-rotate-left me-1"></i> Undo
+                                    </button>
+                                    <button type="button"
+                                        class="btn btn-sm btn-outline-primary rounded-pill btn-message-beneficiary px-2.5 py-1"
+                                        data-intake-id="{{ $row->id }}"
+                                        data-beneficiary-name="{{ $row->beneficiary_name }}"
+                                        data-representative-name="{{ $row->representative_name }}"
+                                        data-is-separate-rep="{{ $row->is_separate_rep ? '1' : '0' }}"
+                                        data-contact-number="{{ $row->contact_number }}"
+                                        data-purpose="{{ $row->purpose ?? 'Financial Assistance' }}"
+                                        data-amount-formatted="{{ $row->formatted_amount }}"
+                                        data-claiming-date="{{ $row->claiming_date ?? '' }}"
+                                        data-raw-claiming-date="{{ $row->raw_claiming_date ?? '' }}"
+                                        data-last-message-date="{{ $row->last_message_date ?? '' }}"
+                                        data-default-template="Follow-up"
+                                        title="Send SMS message to beneficiary">
+                                        <i class="fas fa-comment-sms me-1"></i> Message
+                                    </button>
+                                    @else
+                                    <button type="button"
+                                        class="btn btn-sm btn-primary rounded-pill btn-send-sms px-2.5 py-1 shadow-xs fw-semibold"
+                                        style="background: #1A237E; border-color: #1A237E;"
+                                        data-intake-id="{{ $row->id }}"
+                                        data-beneficiary-name="{{ $row->beneficiary_name }}"
+                                        data-representative-name="{{ $row->representative_name }}"
+                                        data-is-separate-rep="{{ $row->is_separate_rep ? '1' : '0' }}"
+                                        data-contact-number="{{ $row->contact_number }}"
+                                        data-purpose="{{ $row->purpose ?? 'Financial Assistance' }}"
+                                        data-amount-formatted="{{ $row->formatted_amount }}"
+                                        data-claiming-date="{{ $row->claiming_date ?? '' }}"
+                                        data-raw-claiming-date="{{ $row->raw_claiming_date ?? '' }}"
+                                        data-last-message-date="{{ $row->last_message_date ?? '' }}"
+                                        data-default-template="Unclaimed Assistance"
+                                        title="Send unclaimed notification via SMS">
+                                        <i class="fas fa-paper-plane me-1"></i> Send Message
+                                    </button>
+                                    <button type="button"
+                                        class="btn btn-sm btn-success rounded-pill btn-mark-claim shadow-xs px-2.5 py-1"
+                                        data-intake-id="{{ $row->id }}" data-beneficiary-name="{{ $row->beneficiary_name }}"
+                                        data-status="Claimed" data-record-id="{{ $record->id }}"
+                                        data-amount="{{ $row->amount }}" title="Mark financial assistance as Claimed">
+                                        <i class="fas fa-check me-1"></i> Claimed
+                                    </button>
+                                    @endif
+                                </div>
+                                @if($row->last_message_date)
+                                <div class="text-muted text-2xs mt-1" id="last-sent-badge-{{ $row->id }}">
+                                    <i class="fas fa-paper-plane text-primary me-0.5"></i> Last sent: {{ $row->last_message_date }}
+                                </div>
                                 @else
-                                <button type="button"
-                                    class="btn btn-sm btn-success rounded-pill btn-mark-claim shadow-xs"
-                                    data-intake-id="{{ $row->id }}" data-beneficiary-name="{{ $row->beneficiary_name }}"
-                                    data-status="Claimed" data-record-id="{{ $record->id }}"
-                                    data-amount="{{ $row->amount }}" title="Mark financial assistance as Claimed">
-                                    <i class="fas fa-check me-1"></i> Claimed
-                                </button>
+                                <div class="text-muted text-2xs mt-1 d-none" id="last-sent-badge-{{ $row->id }}"></div>
                                 @endif
                             </td>
                         </tr>
@@ -538,7 +586,13 @@
             <p class="text-muted small mb-0">Official payroll records organized by date. Click View on any date to
                 inspect all payroll batches and complete beneficiary lists.</p>
         </div>
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button type="button"
+                class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs btn-open-monthly-unclaimed"
+                data-month="{{ date('Y-m') }}"
+                title="Message unclaimed beneficiaries for a selected month">
+                <i class="fas fa-bullhorn me-1"></i> Message Unclaimed
+            </button>
             <a href="{{ route('admin.financial.financialstep2.payroll') }}"
                 class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold shadow-xs btn-brand-primary">
                 <i class="fas fa-edit me-1"></i> Payroll Generation
@@ -778,8 +832,16 @@
     @endif
 
 </div>
+
+<!-- SMS Messaging Modal Component -->
+@include('admin.financial.partials.sms-modal')
+
+<!-- Monthly Unclaimed Assistance Modal Component -->
+@include('admin.financial.partials.monthly-unclaimed-modal')
 @endsection
 
 @section('page-scripts')
 <script src="{{ asset('js/financialstep2-payroll-records.js') }}"></script>
+<script src="{{ asset('js/financialstep2-sms.js') }}"></script>
+<script src="{{ asset('js/financialstep2-monthly-unclaimed.js') }}"></script>
 @endsection

@@ -51,6 +51,12 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                 </p>
             </div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button type="button"
+                    class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs btn-open-monthly-unclaimed"
+                    data-month="{{ isset($targetDate) ? $targetDate->format('Y-m') : date('Y-m') }}"
+                    title="Message unclaimed beneficiaries for a selected month">
+                    <i class="fas fa-bullhorn me-1"></i> Message Unclaimed
+                </button>
                 <a href="{{ route('admin.financial.financialstep2.payroll-records', ['date' => isset($targetDate) ? $targetDate->format('Y-m-d') : date('Y-m-d')]) }}"
                     class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
                     <i class="fas fa-archive me-1"></i> View Payroll Records
@@ -550,8 +556,14 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
         </div>
     </div>
 </div>
+
+<!-- SMS Messaging Modals -->
+@include('admin.financial.partials.sms-modal')
+@include('admin.financial.partials.monthly-unclaimed-modal')
 @endsection
 
 @section('page-scripts')
 <script src="{{ asset('js/financialstep2-payroll.js') }}"></script>
+<script src="{{ asset('js/financialstep2-sms.js') }}"></script>
+<script src="{{ asset('js/financialstep2-monthly-unclaimed.js') }}"></script>
 @endsection

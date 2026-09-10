@@ -1256,7 +1256,7 @@ class FinancialDashboardController extends Controller
             $grandTotalUnclaimedAmount = 0.0;
 
             foreach ($rawRecords as $record) {
-                $intakesQuery = BeneficiaryIntake::with(['client', 'encoderUser', 'payrollRecord'])
+                $intakesQuery = BeneficiaryIntake::with(['client', 'encoderUser', 'payrollRecord', 'latestMessage'])
                     ->where('is_payroll_generated', true)
                     ->where(function ($q) use ($record) {
                         $q->where('payroll_record_id', $record->id)
@@ -1338,6 +1338,9 @@ class FinancialDashboardController extends Controller
                     }
 
                     $claimStatus = ($intake->claim_status === 'Claimed') ? 'Claimed' : 'Unclaimed';
+                    $claimingDate = $intake->effective_claiming_date;
+                    $formattedClaimingDate = $claimingDate ? $claimingDate->format('F d, Y') : ($record->payroll_date ? $record->payroll_date->format('F d, Y') : null);
+                    $lastMessageSentDate = $intake->last_message_sent_at_formatted;
 
                     return (object) [
                         'id' => $intake->id,
@@ -1355,6 +1358,11 @@ class FinancialDashboardController extends Controller
                         'claim_status' => $claimStatus,
                         'claimed_at' => $intake->claimed_at ? $intake->claimed_at->format('M d, Y h:i A') : null,
                         'claimed_by' => $intake->claimed_by,
+                        'claiming_date' => $formattedClaimingDate,
+                        'raw_claiming_date' => $claimingDate ? $claimingDate->format('Y-m-d') : ($record->payroll_date ? $record->payroll_date->format('Y-m-d') : null),
+                        'purpose' => $intake->display_assistance_purpose,
+                        'assistance_type' => $intake->recommended_assistance_type ?? 'Financial Assistance',
+                        'last_message_date' => $lastMessageSentDate,
                         'raw_intake' => $intake,
                     ];
                 });

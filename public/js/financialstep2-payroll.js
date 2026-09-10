@@ -451,6 +451,10 @@ function viewIntakeDetails(intake) {
         }
     }
 
+    if (typeof window.initStep2SmsModal === 'function') {
+        window.initStep2SmsModal(intake);
+    }
+
     const modalEl = document.getElementById('intakeQuickViewModal');
     if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
         const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);

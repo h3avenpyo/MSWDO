@@ -418,3 +418,80 @@
     background: var(--color-surface);
     border-color: var(--color-border) !important;
 }
+
+/* ============================================================
+   LAPTOP RESPONSIVE OPTIMIZATIONS (1366x768 - 1440x900)
+   ============================================================ */
+@media (max-width: 1440px) {
+    .payroll-wizard-hero {
+        padding: 14px 18px;
+        margin-bottom: 16px;
+        border-radius: var(--radius-lg);
+    }
+
+    .payroll-wizard-hero h2 {
+        font-size: 1.15rem;
+    }
+
+    .payroll-readiness-banner {
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        border-radius: var(--radius-md);
+    }
+
+    .payroll-readiness-banner h5 {
+        font-size: 0.95rem;
+    }
+
+    .filter-card {
+        padding: 10px 14px;
+        margin-bottom: 16px;
+    }
+
+    .table-clean th {
+        padding: 8px 10px;
+        font-size: 0.7rem;
+    }
+
+    .table-clean td {
+        padding: 8px 10px;
+        font-size: 0.8rem;
+    }
+
+    .amount-input-field {
+        height: 28px;
+        font-size: 0.8rem;
+        padding: 2px 6px;
+    }
+
+    .btn-save-amount {
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+
+    .preset-btn {
+        padding: 1.5px 6px;
+        font-size: 0.68rem;
+    }
+
+    .status-pill-encoded,
+    .status-pill-pending {
+        padding: 2.5px 8px;
+        font-size: 0.72rem;
+    }
+
+    #intakeQuickViewModal .modal-dialog {
+        max-width: min(980px, 94vw);
+        margin: 0.75rem auto;
+    }
+
+    #intakeQuickViewModal .modal-body-canvas {
+        padding: 0.85rem 1rem !important;
+    }
+
+    #intakeQuickViewModal .modal-detail-panel {
+        padding: 0.75rem 0.9rem !important;
+        margin-bottom: 0.65rem !important;
+    }
+}

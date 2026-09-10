@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\SocialCase\SocialCaseController;
 use App\Http\Controllers\Admin\SocialCase\SocialCaseIntakeController;
 use App\Http\Controllers\Admin\Financial\FinancialDashboardController;
 use App\Http\Controllers\Admin\Financial\FinancialIntakeController;
+use App\Http\Controllers\Admin\Financial\FinancialSmsController;
 use App\Http\Controllers\Admin\Senior\SeniorController;
 use App\Http\Controllers\Admin\Senior\BirthdayController;
 use App\Http\Controllers\Admin\Senior\BirthdayPayoutController;
@@ -137,6 +138,13 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::get('/admin/financial/financialstep2/liquidation', [FinancialDashboardController::class, 'financialStep2Liquidation'])->name('admin.financial.financialstep2.liquidation');
         Route::get('/admin/financial/financialstep2/liquidation/report/month/{yearMonth}', [FinancialDashboardController::class, 'financialStep2LiquidationReportMonthly'])->name('admin.financial.financialstep2.liquidation.report.month');
         Route::get('/admin/financial/financialstep2/liquidation/report/{id}', [FinancialDashboardController::class, 'financialStep2LiquidationReport'])->name('admin.financial.financialstep2.liquidation.report');
+
+        // Financial Step 2 SMS Messaging Routes
+        Route::post('/admin/financial/financialstep2/messages/send', [FinancialSmsController::class, 'send'])->name('admin.financial.financialstep2.messages.send');
+        Route::get('/admin/financial/financialstep2/messages/history/{intakeId}', [FinancialSmsController::class, 'history'])->name('admin.financial.financialstep2.messages.history');
+        Route::post('/admin/financial/financialstep2/intakes/{id}/claiming-date', [FinancialSmsController::class, 'updateClaimingDate'])->name('admin.financial.financialstep2.intakes.claiming-date');
+        Route::get('/admin/financial/financialstep2/messages/unclaimed-by-month', [FinancialSmsController::class, 'getUnclaimedByMonth'])->name('admin.financial.financialstep2.messages.unclaimed-by-month');
+        Route::post('/admin/financial/financialstep2/messages/send-bulk-unclaimed', [FinancialSmsController::class, 'sendBulkUnclaimed'])->name('admin.financial.financialstep2.messages.send-bulk-unclaimed');
     });
 });
 

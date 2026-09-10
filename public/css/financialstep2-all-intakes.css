@@ -1,37 +1,87 @@
 /**
  * Financial Assistance Step 2 All General Intakes Stylesheet
+ * Fully Responsive & Optimized for 1366x768, 1920x1080 & Smaller Screens
  */
 
 /* Clean Data Table */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+}
+
+.table-clean {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: collapse;
+}
+
 .table-clean th {
-    font-size: 0.76rem;
+    font-size: 0.74rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: #475569;
     background: #F8FAFC;
     border-bottom: 2px solid #E2E8F0;
-    padding: 12px 14px;
+    padding: 10px 12px;
+    white-space: nowrap;
+    vertical-align: middle;
 }
 
 .table-clean td {
-    padding: 12px 14px;
+    padding: 10px 12px;
     vertical-align: middle;
     border-bottom: 1px solid #F1F5F9;
-    font-size: 0.875rem;
+    font-size: 0.84rem;
+    color: #1E293B;
+}
+
+.table-clean tbody tr {
+    transition: background-color 0.15s ease;
 }
 
 .table-clean tbody tr:hover {
     background-color: #F8FAFC;
 }
 
+/* Column specific widths */
+.col-control-no { width: 125px; white-space: nowrap; }
+.col-beneficiary { min-width: 175px; max-width: 240px; }
+.col-address { min-width: 130px; max-width: 170px; }
+.col-date-officer { width: 120px; white-space: nowrap; }
+.col-category-purpose { min-width: 145px; max-width: 180px; }
+.col-amount { width: 115px; white-space: nowrap; }
+.col-status { width: 120px; white-space: nowrap; }
+.col-actions { width: 80px; text-align: right; white-space: nowrap; }
+
 /* Filter Card */
 .filter-card {
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
-    border-radius: 14px;
-    padding: 16px 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    border-radius: 12px;
+    padding: 12px 18px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    margin-bottom: 1.25rem;
+}
+
+.filter-card .form-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #64748B;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.filter-card .form-control-sm,
+.filter-card .form-select-sm {
+    height: 33px;
+    font-size: 0.8125rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    border-color: #CBD5E1;
 }
 
 /* Badges */
@@ -39,25 +89,31 @@
     background-color: #ECFDF5;
     color: #065F46;
     font-weight: 700;
-    font-size: 0.85rem;
-    padding: 4px 10px;
-    border-radius: 8px;
+    font-size: 0.82rem;
+    padding: 3px 9px;
+    border-radius: 6px;
     border: 1px solid #A7F3D0;
     display: inline-block;
+    white-space: nowrap;
 }
 
 .badge-category {
     background: #F1F5F9;
     color: #334155;
     font-weight: 600;
-    font-size: 0.75rem;
-    padding: 3px 8px;
-    border-radius: 6px;
+    font-size: 0.72rem;
+    padding: 2.5px 7px;
+    border-radius: 5px;
     border: 1px solid #E2E8F0;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .badge-client-type {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
 }
 
 /* Typography & Display Utilities */
@@ -71,15 +127,18 @@
 }
 
 .text-rep-info {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
 }
 
 .text-officer-info {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
 }
 
 .text-purpose-truncate {
-    max-width: 200px;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Empty State */
@@ -97,35 +156,85 @@
     background: #1A237E;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
+    padding: 12px 18px;
 }
 
 .modal-section-title {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     color: #1A237E;
     border-bottom: 2px solid #EEF2FF;
-    padding-bottom: 6px;
-    margin-bottom: 12px;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 .detail-field-label {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.03em;
     color: #64748B;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
 }
 
 .detail-field-value {
-    font-size: 0.88rem;
+    font-size: 0.83rem;
     font-weight: 600;
     color: #1E293B;
 }
 
 .modal-assessment-text {
     white-space: pre-line;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    max-height: 90px;
+    overflow-y: auto;
+}
+
+/* Laptop Responsive Overrides (1366x768 - 1440x900) */
+@media (max-width: 1440px) {
+    .filter-card {
+        padding: 10px 14px;
+        margin-bottom: 1rem;
+    }
+
+    .filter-card .form-control-sm,
+    .filter-card .form-select-sm {
+        height: 31px;
+        font-size: 0.78rem;
+    }
+
+    .table-clean th {
+        padding: 8px 10px;
+        font-size: 0.7rem;
+    }
+
+    .table-clean td {
+        padding: 8px 10px;
+        font-size: 0.8rem;
+    }
+
+    .text-purpose-truncate {
+        max-width: 140px;
+    }
+
+    #intakeQuickViewModal .modal-dialog {
+        max-width: min(980px, 94vw);
+        margin: 0.75rem auto;
+    }
+
+    #intakeQuickViewModal .modal-body {
+        padding: 0.85rem 1rem !important;
+    }
+
+    #intakeQuickViewModal .card {
+        padding: 0.75rem 0.9rem !important;
+        margin-bottom: 0.65rem !important;
+    }
+
+    #intakeQuickViewModal .modal-assessment-text {
+        max-height: 75px;
+        font-size: 0.75rem;
+    }
 }

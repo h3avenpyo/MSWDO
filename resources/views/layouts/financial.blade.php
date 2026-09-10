@@ -54,7 +54,7 @@
         </nav>
 
         <!-- View Body Content -->
-        <div class="p-4" style="flex: 1;">
+        <div class="financial-content-wrapper p-4" style="flex: 1;">
             @yield('content')
         </div>
     </div>
