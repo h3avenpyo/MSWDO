@@ -71,7 +71,7 @@ class BirthdayController extends Controller
         ];
 
         // Get selected month from request or default to current month
-        $selectedMonth = $request->get('month', now()->format('n'));
+        $selectedMonth = (int) $request->get('month', now()->format('n'));
         $selectedYear = $request->get('year', now()->year);
         $selectedBarangay = $request->get('barangay', '');
         $payoutAmount = 500.00;
@@ -723,7 +723,7 @@ class BirthdayController extends Controller
             'year' => 'nullable|integer',
         ]);
 
-        $selectedMonth = $request->get('month', now()->format('n'));
+        $selectedMonth = (int) $request->get('month', now()->format('n'));
         $selectedYear = $request->get('year', now()->year);
         $payoutAmount = 500.00;
         $currentMonthName = date('F', mktime(0, 0, 0, $selectedMonth, 1));
@@ -789,7 +789,7 @@ class BirthdayController extends Controller
             'year' => 'nullable|integer',
         ]);
 
-        $selectedMonth = $request->get('month', now()->format('n'));
+        $selectedMonth = (int) $request->get('month', now()->format('n'));
         $selectedYear = $request->get('year', now()->year);
         $payoutAmount = 500.00;
 
@@ -879,7 +879,7 @@ class BirthdayController extends Controller
         ]);
 
         $barangay = $request->barangay;
-        $selectedMonth = $request->get('month', now()->format('n'));
+        $selectedMonth = (int) $request->get('month', now()->format('n'));
         $selectedYear = $request->get('year', now()->year);
         $payoutAmount = 500.00;
         $currentMonthName = date('F', mktime(0, 0, 0, $selectedMonth, 1));
@@ -948,7 +948,7 @@ class BirthdayController extends Controller
         ]);
 
         $barangay = $request->barangay;
-        $selectedMonth = $request->get('month', now()->format('n'));
+        $selectedMonth = (int) $request->get('month', now()->format('n'));
         $selectedYear = $request->get('year', now()->year);
         $payoutAmount = 500.00;
 

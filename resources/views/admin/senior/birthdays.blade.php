@@ -42,6 +42,7 @@
         .filter-select{width:100%;height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
         .filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
         #filterGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;}
+        #filterGridWrapper{display:flex;gap:12px;align-items:flex-start;}
 
         /* ── Budget Overview ── */
         .budget-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.2);}
@@ -129,6 +130,7 @@
         @media (min-width:1200px){
             header{margin-bottom:0.75rem !important;}
             #filterGrid{grid-template-columns:160px 110px !important;}
+            #filterGridWrapper{flex-wrap:nowrap !important;}
             .filter-section h2{font-size:22px !important;}
             .filter-section p{font-size:15px !important;}
             .filter-section div[style*="font-size:28px"]{font-size:36px !important;}
@@ -183,6 +185,7 @@
             .brgy-card-actions{padding-top:14px;}
             .brgy-card-actions .btn,.brgy-card-actions > div{min-height:44px;}
             #filterGrid{grid-template-columns:1fr !important;}
+            #filterGridWrapper{flex-direction:column !important;}
             header{margin-bottom:0.75rem !important;}
             .modal-overlay{padding:12px !important;}
             .modal-box{max-width:100% !important;border-radius:12px !important;max-height:90vh !important;}
@@ -270,19 +273,24 @@
                         <i data-lucide="landmark" style="width:20px;height:20px;color:var(--primary)"></i>
                         Barangay Budget Breakdown
                     </h3>
-                    <div id="filterGrid">
-                        <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                    <div id="filterGrid" style="display:flex;gap:12px;align-items:flex-end">
+                        <div style="display:flex;flex-direction:column;gap:3px;min-width:0;width:160px">
                             <label class="filter-label">Barangay</label>
-                            <select id="barangayFilter" class="filter-select" style="height:44px" onchange="filterByDate()">
+                            <select id="barangayFilter" class="filter-select" style="height:44px" onchange="filterByDate(); updateClearButtonVisibility()">
                                 <option value="">All Barangays</option>
                                 @foreach($barangays as $barangay)
                                     <option value="{{ $barangay }}" {{ $selectedBarangay == $barangay ? 'selected' : '' }}>{{ $barangay }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                        <div style="display:flex;flex-direction:column;gap:3px;min-width:0;width:140px">
                             <label class="filter-label">Date</label>
-                            <input type="month" id="dateFilter" style="width:100%;height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;" value="{{ $selectedYear }}-{{ str_pad($selectedMonth, 2, '0', STR_PAD_LEFT) }}" onchange="filterByDate()">
+                            <input type="month" id="dateFilter" style="width:100%;height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;" value="{{ $selectedYear }}-{{ str_pad($selectedMonth, 2, '0', STR_PAD_LEFT) }}" onchange="filterByDate(); updateClearButtonVisibility()">
+                        </div>
+                        <div id="clearFilterContainer" style="display:none;align-items:flex-end;justify-content:center;padding-bottom:2px;flex-shrink:0">
+                            <button id="clearFiltersBtn" class="btn" style="padding:8px 16px;font-size:13px;color:var(--danger);border-color:var(--danger);background:#FEF2F2;height:44px;white-space:nowrap" onclick="clearFilters()">
+                                <i data-lucide="x" style="width:14px;height:14px"></i> Clear
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -412,6 +420,35 @@
             window.location.href = `${base}?month=${month}&year=${year}&barangay=${barangay}`;
         } else {
             window.location.href = `${base}?barangay=${barangay}`;
+        }
+    }
+
+    // Clear all filters
+    function clearFilters() {
+        const base = "{{ route('admin.senior.birthdays') }}";
+        window.location.href = base;
+    }
+
+    // Show/hide clear button based on active filters
+    function updateClearButtonVisibility() {
+        const barangay = document.getElementById('barangayFilter').value;
+        const dateValue = document.getElementById('dateFilter').value;
+        const clearContainer = document.getElementById('clearFilterContainer');
+
+        // Get current month/year for comparison
+        const now = new Date();
+        const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+        const currentYear = String(now.getFullYear());
+        const currentDateValue = `${currentYear}-${currentMonth}`;
+
+        // Only show clear button if barangay is selected OR date is different from current
+        const hasBarangayFilter = barangay && barangay !== '';
+        const hasDateFilter = dateValue && dateValue !== currentDateValue;
+
+        if (hasBarangayFilter || hasDateFilter) {
+            clearContainer.style.display = 'flex';
+        } else {
+            clearContainer.style.display = 'none';
         }
     }
 
@@ -639,6 +676,9 @@
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeCelebrantsModal();
     });
+
+    // Initialize clear button visibility on page load
+    updateClearButtonVisibility();
 
     lucide.createIcons();
 </script>
