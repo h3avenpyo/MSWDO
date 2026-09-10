@@ -173,7 +173,11 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::post('/release-barangay', [BirthdayController::class, 'releaseBarangayPayouts'])->name('.release-barangay');
     });
     Route::get('/admin/senior/statistics', [SeniorAnalyticsController::class, 'index'])->name('admin.senior.analytics');
-    Route::get('/admin/senior/reports', [SeniorController::class, 'senior'])->name('admin.senior.reports');
+    Route::get('/admin/senior/reports', [SeniorController::class, 'reports'])->name('admin.senior.reports');
+    Route::get('/admin/senior/reports/statistics-pdf', [SeniorController::class, 'statisticsPdfReport'])->name('admin.senior.reports.statistics-pdf');
+    Route::get('/admin/senior/reports/age-distribution', [SeniorController::class, 'ageDistributionReport'])->name('admin.senior.reports.age-distribution');
+    Route::get('/admin/senior/reports/barangay-distribution', [SeniorController::class, 'barangayDistributionReport'])->name('admin.senior.reports.barangay-distribution');
+    Route::get('/admin/senior/reports/gender-breakdown', [SeniorController::class, 'genderBreakdownReport'])->name('admin.senior.reports.gender-breakdown');
     Route::get('/admin/senior/payouts-history', [BirthdayPayoutController::class, 'history'])->name('admin.senior.payouts-history');
     Route::post('/admin/senior/bulk-archive', [SeniorController::class, 'bulkArchive'])->name('admin.senior.bulk-archive');
     Route::post('/admin/senior/bulk-restore', [SeniorController::class, 'bulkRestore'])->name('admin.senior.bulk-restore');

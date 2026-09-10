@@ -43,8 +43,8 @@
         .filter-select{width:100%;height:44px;min-height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
         .filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
         #filterGrid{display:grid;grid-template-columns:1fr;gap:12px;align-items:end;}
-        .filter-actions{display:flex;gap:8px;align-items:center;min-width:0;}
-        .filter-actions .btn{flex:1;}
+        .filter-actions{display:flex;gap:8px;align-items:center;min-width:0;flex-wrap:wrap;}
+        .filter-actions .btn{flex:1;min-width:fit-content;}
 
         /* ── Stat Cards ── */
         .stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-bottom:8px;}
@@ -367,6 +367,9 @@
                         <button type="submit" class="btn primary">
                             <i data-lucide="check" style="width:16px;height:16px"></i> Apply
                         </button>
+                        <button type="button" onclick="generateReport()" class="btn primary" style="background:#16A34A;border-color:#16A34A;">
+                            <i data-lucide="file-text" style="width:16px;height:16px"></i> Generate Report
+                        </button>
                         <a href="{{ route('admin.senior.analytics') }}" class="btn btn-clear">
                             <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> Reset
                         </a>
@@ -446,20 +449,108 @@
 </div>
 
 <script>
-    lucide.createIcons();
+    function generateReport() {
+        // Read filter values from URL parameters instead of dropdown inputs
+        const urlParams = new URLSearchParams(window.location.search);
+        const year = urlParams.get('year');
+        const month = urlParams.get('month');
+        const barangay = urlParams.get('barangay');
+        const gender = urlParams.get('gender');
+        const ageGroup = urlParams.get('age_group');
 
-    // Force barangay filter to "All" on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        const barangayFilter = document.getElementById('barangayFilter');
-        if (barangayFilter) {
-            // Always reset to "All"
-            barangayFilter.value = '';
-            // Remove barangay parameter from URL
-            const url = new URL(window.location);
-            url.searchParams.delete('barangay');
-            window.history.replaceState({}, '', url);
-        }
-    });
+        console.log('[Generate Report] Current URL:', window.location.search);
+        console.log('[Generate Report] URL Parameter Values:', { year, month, barangay, gender, ageGroup });
+
+        let params = new URLSearchParams();
+
+        if (year && year !== '') params.append('year', year);
+        if (month && month !== '') params.append('month', month);
+        if (barangay && barangay !== '') params.append('barangay', barangay);
+        if (gender && gender !== '') params.append('gender', gender);
+        if (ageGroup && ageGroup !== '') params.append('age_group', ageGroup);
+
+        // Cache-buster to ensure a fresh PDF is always generated
+        params.append('_t', Date.now());
+
+        const queryString = params.toString();
+        const url = `/admin/senior/reports/statistics-pdf?${queryString}`;
+
+        console.log('[Generate Report] Final URL:', url);
+        console.log('[Generate Report] Params being sent:', params.toString());
+
+        Swal.fire({
+            title: 'Generate Report',
+            text: 'Generate a PDF report based on current filters?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#16A34A',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Yes, Generate',
+            cancelButtonText: 'Cancel',
+            background:'#ffffff',
+            customClass:{popup:'rounded-4 shadow-lg'}
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Generating Report',
+                    text: 'Please wait while we generate your PDF report...',
+                    icon: 'info',
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    background:'#ffffff',
+                    customClass:{popup:'rounded-4 shadow-lg'},
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                fetch(url, { cache: 'no-store' })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Server returned ' + response.status);
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = 'senior-citizen-statistics-report.pdf';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        window.URL.revokeObjectURL(link.href);
+
+                        Swal.close();
+                        Swal.fire({
+                            title: 'Report Generated!',
+                            text: 'Your PDF report has been generated successfully.',
+                            icon: 'success',
+                            confirmButtonColor: '#16A34A',
+                            confirmButtonText: 'OK',
+                            background:'#ffffff',
+                            customClass:{popup:'rounded-4 shadow-lg'}
+                        }).then(() => {
+                            // keep filters intact, no reload needed
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.close();
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Failed to generate report: ' + error.message,
+                            icon: 'error',
+                            confirmButtonColor: '#DC2626',
+                            confirmButtonText: 'OK',
+                            background:'#ffffff',
+                            customClass:{popup:'rounded-4 shadow-lg'}
+                        });
+                    });
+            }
+        });
+    }
+
+    lucide.createIcons();
 </script>
 
 <script>
