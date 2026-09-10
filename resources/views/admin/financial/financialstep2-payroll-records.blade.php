@@ -394,7 +394,7 @@
                             <th>Contact Number</th>
                             <th class="text-end">Amount of Financial Assistance</th>
                             <th class="text-center">Claim Status</th>
-                            <th class="text-center">Action</th>
+                            <th class="text-center th-col-action">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -448,66 +448,67 @@
                                 </span>
                                 @endif
                             </td>
-                            <td class="text-center" id="claim-action-col-{{ $row->id }}">
-                                <div class="d-flex align-items-center justify-content-center gap-1.5 flex-wrap">
-                                    @if($row->claim_status === 'Claimed')
-                                    <button type="button"
-                                        class="btn btn-sm btn-outline-secondary rounded-pill btn-mark-claim px-2.5 py-1"
-                                        data-intake-id="{{ $row->id }}" data-beneficiary-name="{{ $row->beneficiary_name }}"
-                                        data-status="Unclaimed" data-record-id="{{ $record->id }}"
-                                        data-amount="{{ $row->amount }}" title="Click to revert status to Unclaimed">
-                                        <i class="fas fa-rotate-left me-1"></i> Undo
-                                    </button>
-                                    <button type="button"
-                                        class="btn btn-sm btn-outline-primary rounded-pill btn-message-beneficiary px-2.5 py-1"
-                                        data-intake-id="{{ $row->id }}"
-                                        data-beneficiary-name="{{ $row->beneficiary_name }}"
-                                        data-representative-name="{{ $row->representative_name }}"
-                                        data-is-separate-rep="{{ $row->is_separate_rep ? '1' : '0' }}"
-                                        data-contact-number="{{ $row->contact_number }}"
-                                        data-purpose="{{ $row->purpose ?? 'Financial Assistance' }}"
-                                        data-amount-formatted="{{ $row->formatted_amount }}"
-                                        data-claiming-date="{{ $row->claiming_date ?? '' }}"
-                                        data-raw-claiming-date="{{ $row->raw_claiming_date ?? '' }}"
-                                        data-last-message-date="{{ $row->last_message_date ?? '' }}"
-                                        data-default-template="Follow-up"
-                                        title="Send SMS message to beneficiary">
-                                        <i class="fas fa-comment-sms me-1"></i> Message
-                                    </button>
+                            <td class="text-center align-middle" id="claim-action-col-{{ $row->id }}">
+                                <div class="table-action-wrapper">
+                                    <div class="table-action-group">
+                                        @if($row->claim_status === 'Claimed')
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-secondary rounded-pill btn-mark-claim"
+                                            data-intake-id="{{ $row->id }}" data-beneficiary-name="{{ $row->beneficiary_name }}"
+                                            data-status="Unclaimed" data-record-id="{{ $record->id }}"
+                                            data-amount="{{ $row->amount }}" title="Click to revert status to Unclaimed">
+                                            <i class="fas fa-rotate-left"></i> Undo
+                                        </button>
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-primary rounded-pill btn-message-beneficiary"
+                                            data-intake-id="{{ $row->id }}"
+                                            data-beneficiary-name="{{ $row->beneficiary_name }}"
+                                            data-representative-name="{{ $row->representative_name }}"
+                                            data-is-separate-rep="{{ $row->is_separate_rep ? '1' : '0' }}"
+                                            data-contact-number="{{ $row->contact_number }}"
+                                            data-purpose="{{ $row->purpose ?? 'Financial Assistance' }}"
+                                            data-amount-formatted="{{ $row->formatted_amount }}"
+                                            data-claiming-date="{{ $row->claiming_date ?? '' }}"
+                                            data-raw-claiming-date="{{ $row->raw_claiming_date ?? '' }}"
+                                            data-last-message-date="{{ $row->last_message_date ?? '' }}"
+                                            data-default-template="Follow-up"
+                                            title="Send SMS message to beneficiary">
+                                            <i class="fas fa-comment-sms"></i> Message
+                                        </button>
+                                        @else
+                                        <button type="button"
+                                            class="btn btn-sm btn-primary rounded-pill btn-send-sms fw-semibold"
+                                            data-intake-id="{{ $row->id }}"
+                                            data-beneficiary-name="{{ $row->beneficiary_name }}"
+                                            data-representative-name="{{ $row->representative_name }}"
+                                            data-is-separate-rep="{{ $row->is_separate_rep ? '1' : '0' }}"
+                                            data-contact-number="{{ $row->contact_number }}"
+                                            data-purpose="{{ $row->purpose ?? 'Financial Assistance' }}"
+                                            data-amount-formatted="{{ $row->formatted_amount }}"
+                                            data-claiming-date="{{ $row->claiming_date ?? '' }}"
+                                            data-raw-claiming-date="{{ $row->raw_claiming_date ?? '' }}"
+                                            data-last-message-date="{{ $row->last_message_date ?? '' }}"
+                                            data-default-template="Unclaimed Assistance"
+                                            title="Send unclaimed notification via SMS">
+                                            <i class="fas fa-paper-plane"></i> Send Message
+                                        </button>
+                                        <button type="button"
+                                            class="btn btn-sm btn-success rounded-pill btn-mark-claim"
+                                            data-intake-id="{{ $row->id }}" data-beneficiary-name="{{ $row->beneficiary_name }}"
+                                            data-status="Claimed" data-record-id="{{ $record->id }}"
+                                            data-amount="{{ $row->amount }}" title="Mark financial assistance as Claimed">
+                                            <i class="fas fa-check"></i> Claimed
+                                        </button>
+                                        @endif
+                                    </div>
+                                    @if($row->last_message_date)
+                                    <div class="last-sent-badge text-muted text-2xs" id="last-sent-badge-{{ $row->id }}">
+                                        <i class="fas fa-paper-plane text-primary me-1"></i> Last sent: {{ $row->last_message_date }}
+                                    </div>
                                     @else
-                                    <button type="button"
-                                        class="btn btn-sm btn-primary rounded-pill btn-send-sms px-2.5 py-1 shadow-xs fw-semibold"
-                                        style="background: #1A237E; border-color: #1A237E;"
-                                        data-intake-id="{{ $row->id }}"
-                                        data-beneficiary-name="{{ $row->beneficiary_name }}"
-                                        data-representative-name="{{ $row->representative_name }}"
-                                        data-is-separate-rep="{{ $row->is_separate_rep ? '1' : '0' }}"
-                                        data-contact-number="{{ $row->contact_number }}"
-                                        data-purpose="{{ $row->purpose ?? 'Financial Assistance' }}"
-                                        data-amount-formatted="{{ $row->formatted_amount }}"
-                                        data-claiming-date="{{ $row->claiming_date ?? '' }}"
-                                        data-raw-claiming-date="{{ $row->raw_claiming_date ?? '' }}"
-                                        data-last-message-date="{{ $row->last_message_date ?? '' }}"
-                                        data-default-template="Unclaimed Assistance"
-                                        title="Send unclaimed notification via SMS">
-                                        <i class="fas fa-paper-plane me-1"></i> Send Message
-                                    </button>
-                                    <button type="button"
-                                        class="btn btn-sm btn-success rounded-pill btn-mark-claim shadow-xs px-2.5 py-1"
-                                        data-intake-id="{{ $row->id }}" data-beneficiary-name="{{ $row->beneficiary_name }}"
-                                        data-status="Claimed" data-record-id="{{ $record->id }}"
-                                        data-amount="{{ $row->amount }}" title="Mark financial assistance as Claimed">
-                                        <i class="fas fa-check me-1"></i> Claimed
-                                    </button>
+                                    <div class="last-sent-badge text-muted text-2xs d-none" id="last-sent-badge-{{ $row->id }}"></div>
                                     @endif
                                 </div>
-                                @if($row->last_message_date)
-                                <div class="text-muted text-2xs mt-1" id="last-sent-badge-{{ $row->id }}">
-                                    <i class="fas fa-paper-plane text-primary me-0.5"></i> Last sent: {{ $row->last_message_date }}
-                                </div>
-                                @else
-                                <div class="text-muted text-2xs mt-1 d-none" id="last-sent-badge-{{ $row->id }}"></div>
-                                @endif
                             </td>
                         </tr>
                         @empty

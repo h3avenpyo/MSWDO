@@ -199,6 +199,12 @@
     width: 140px;
 }
 
+.th-col-action {
+    min-width: 220px;
+    width: 230px;
+    white-space: nowrap;
+}
+
 .text-rep-type {
     font-size: 0.68rem;
 }
@@ -225,28 +231,117 @@
     letter-spacing: 0.02em;
 }
 
-.btn-mark-claim {
+/* Unified Table Action System */
+.table-action-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+}
+
+.table-action-group {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+
+.btn-table-action,
+.btn-send-sms,
+.btn-mark-claim,
+.btn-message-beneficiary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border-radius: 50px !important;
-    padding: 5px 14px !important;
+    padding: 5px 12px !important;
     font-size: 0.75rem;
     font-weight: 600;
-    line-height: 1;
+    line-height: 1.2;
     letter-spacing: 0.02em;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
     white-space: nowrap;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    height: 28px;
+    text-decoration: none;
+    cursor: pointer;
+    vertical-align: middle;
+    margin: 0;
 }
 
-.btn-mark-claim:hover {
+.btn-table-action:hover,
+.btn-send-sms:hover,
+.btn-mark-claim:hover,
+.btn-message-beneficiary:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12) !important;
 }
 
-.btn-mark-claim:active {
+.btn-table-action:active,
+.btn-send-sms:active,
+.btn-mark-claim:active,
+.btn-message-beneficiary:active {
     transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Send Message Action Button */
+.btn-send-sms {
+    background-color: var(--color-brand) !important;
+    border: 1px solid var(--color-brand) !important;
+    color: #FFFFFF !important;
+}
+
+.btn-send-sms:hover,
+.btn-send-sms:focus {
+    background-color: var(--color-brand-dark) !important;
+    border-color: var(--color-brand-dark) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(26, 35, 126, 0.25) !important;
+}
+
+.btn-send-sms i,
+.btn-message-beneficiary i,
+.btn-mark-claim i {
+    font-size: 0.72rem;
+    margin-right: 5px;
+    line-height: 1;
+}
+
+.btn-send-sms:hover i {
+    transform: scale(1.08);
+    transition: transform 0.15s ease;
+}
+
+/* Message Beneficiary Button (Claimed state) */
+.btn-message-beneficiary {
+    background-color: #EEF2FF !important;
+    border: 1px solid #C7D2FE !important;
+    color: var(--color-brand) !important;
+}
+
+.btn-message-beneficiary:hover,
+.btn-message-beneficiary:focus {
+    background-color: var(--color-brand) !important;
+    border-color: var(--color-brand) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2) !important;
+}
+
+/* Timestamp status badge */
+.last-sent-badge {
+    font-size: 0.68rem;
+    color: #64748B;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    margin-top: 2px;
 }
 
 .stat-unclaimed-card {
@@ -275,9 +370,26 @@
         padding: 8px 10px;
         font-size: 0.8rem;
     }
-    .btn-mark-claim {
-        padding: 3px 10px !important;
+    .th-col-action {
+        min-width: 200px;
+        width: 205px;
+    }
+    .table-action-group {
+        gap: 5px;
+    }
+    .btn-table-action,
+    .btn-send-sms,
+    .btn-mark-claim,
+    .btn-message-beneficiary {
+        padding: 4px 9px !important;
         font-size: 0.72rem;
+        height: 26px;
+    }
+    .btn-send-sms i,
+    .btn-message-beneficiary i,
+    .btn-mark-claim i {
+        font-size: 0.68rem;
+        margin-right: 4px;
     }
 }
 

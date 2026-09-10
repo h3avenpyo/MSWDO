@@ -38,7 +38,7 @@ return [
     'sms' => [
         'default' => env('SMS_PROVIDER', 'textbee'),
         'api_key' => env('SMS_API_KEY', 'txb_HOZFl1hkAf78sFJ91NGk0l4P4qEDb3Wy'),
-        'api_url' => env('SMS_API_URL'),
+        'api_url' => env('SMS_API_URL', 'https://api.textbee.dev/api/v1/gateway/send-sms'),
         'device_id' => env('SMS_DEVICE_ID'),
         'sender_name' => env('SMS_SENDER_NAME', 'MSWDO'),
     ],

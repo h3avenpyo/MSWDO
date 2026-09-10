@@ -208,6 +208,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 ? parseFloat(res.data.recommended_amount) 
                 : rowAmount;
 
+            // Preserve metadata for SMS action buttons from existing elements
+            const existingSmsBtn = actionCol ? actionCol.querySelector('.btn-send-sms, .btn-message-beneficiary') : null;
+            const repName = existingSmsBtn ? (existingSmsBtn.getAttribute('data-representative-name') || '') : '';
+            const isSeparateRep = existingSmsBtn ? (existingSmsBtn.getAttribute('data-is-separate-rep') || '0') : '0';
+            const contactNo = existingSmsBtn ? (existingSmsBtn.getAttribute('data-contact-number') || '') : '';
+            const purpose = existingSmsBtn ? (existingSmsBtn.getAttribute('data-purpose') || 'Financial Assistance') : 'Financial Assistance';
+            const amountFormatted = existingSmsBtn ? (existingSmsBtn.getAttribute('data-amount-formatted') || '') : '';
+            const claimingDate = existingSmsBtn ? (existingSmsBtn.getAttribute('data-claiming-date') || '') : '';
+            const rawClaimingDate = existingSmsBtn ? (existingSmsBtn.getAttribute('data-raw-claiming-date') || '') : '';
+            const lastMsgDate = existingSmsBtn ? (existingSmsBtn.getAttribute('data-last-message-date') || '') : '';
+
+            // Check existing last-sent-badge
+            const existingBadge = document.getElementById(`last-sent-badge-${intakeId}`);
+            const lastSentDate = lastMsgDate || (existingBadge && !existingBadge.classList.contains('d-none') ? existingBadge.textContent.replace('Last sent:', '').trim() : '');
+            const badgeHtml = lastSentDate 
+                ? `<div class="last-sent-badge text-muted text-2xs" id="last-sent-badge-${intakeId}"><i class="fas fa-paper-plane text-primary me-1"></i> Last sent: ${lastSentDate}</div>`
+                : `<div class="last-sent-badge text-muted text-2xs d-none" id="last-sent-badge-${intakeId}"></div>`;
+
             if (targetStatus === 'Claimed') {
                 if (statusCol) {
                     statusCol.innerHTML = `
@@ -219,16 +237,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 if (actionCol) {
                     actionCol.innerHTML = `
-                        <button type="button"
-                            class="btn btn-sm btn-outline-secondary rounded-pill btn-mark-claim"
-                            data-intake-id="${intakeId}"
-                            data-beneficiary-name="${beneficiaryName}"
-                            data-status="Unclaimed"
-                            data-record-id="${recordId || ''}"
-                            data-amount="${intakeAmount}"
-                            title="Click to revert status to Unclaimed">
-                            <i class="fas fa-rotate-left me-1"></i> Undo
-                        </button>
+                        <div class="table-action-wrapper">
+                            <div class="table-action-group">
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-secondary rounded-pill btn-mark-claim"
+                                    data-intake-id="${intakeId}"
+                                    data-beneficiary-name="${beneficiaryName}"
+                                    data-status="Unclaimed"
+                                    data-record-id="${recordId || ''}"
+                                    data-amount="${intakeAmount}"
+                                    title="Click to revert status to Unclaimed">
+                                    <i class="fas fa-rotate-left"></i> Undo
+                                </button>
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-primary rounded-pill btn-message-beneficiary"
+                                    data-intake-id="${intakeId}"
+                                    data-beneficiary-name="${beneficiaryName}"
+                                    data-representative-name="${repName}"
+                                    data-is-separate-rep="${isSeparateRep}"
+                                    data-contact-number="${contactNo}"
+                                    data-purpose="${purpose}"
+                                    data-amount-formatted="${amountFormatted}"
+                                    data-claiming-date="${claimingDate}"
+                                    data-raw-claiming-date="${rawClaimingDate}"
+                                    data-last-message-date="${lastSentDate}"
+                                    data-default-template="Follow-up"
+                                    title="Send SMS message to beneficiary">
+                                    <i class="fas fa-comment-sms"></i> Message
+                                </button>
+                            </div>
+                            ${badgeHtml}
+                        </div>
                     `;
                 }
 
@@ -244,16 +283,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 if (actionCol) {
                     actionCol.innerHTML = `
-                        <button type="button"
-                            class="btn btn-sm btn-success rounded-pill btn-mark-claim shadow-xs"
-                            data-intake-id="${intakeId}"
-                            data-beneficiary-name="${beneficiaryName}"
-                            data-status="Claimed"
-                            data-record-id="${recordId || ''}"
-                            data-amount="${intakeAmount}"
-                            title="Mark financial assistance as Claimed">
-                            <i class="fas fa-check me-1"></i> Claimed
-                        </button>
+                        <div class="table-action-wrapper">
+                            <div class="table-action-group">
+                                <button type="button"
+                                    class="btn btn-sm btn-primary rounded-pill btn-send-sms fw-semibold"
+                                    data-intake-id="${intakeId}"
+                                    data-beneficiary-name="${beneficiaryName}"
+                                    data-representative-name="${repName}"
+                                    data-is-separate-rep="${isSeparateRep}"
+                                    data-contact-number="${contactNo}"
+                                    data-purpose="${purpose}"
+                                    data-amount-formatted="${amountFormatted}"
+                                    data-claiming-date="${claimingDate}"
+                                    data-raw-claiming-date="${rawClaimingDate}"
+                                    data-last-message-date="${lastSentDate}"
+                                    data-default-template="Unclaimed Assistance"
+                                    title="Send unclaimed notification via SMS">
+                                    <i class="fas fa-paper-plane"></i> Send Message
+                                </button>
+                                <button type="button"
+                                    class="btn btn-sm btn-success rounded-pill btn-mark-claim"
+                                    data-intake-id="${intakeId}"
+                                    data-beneficiary-name="${beneficiaryName}"
+                                    data-status="Claimed"
+                                    data-record-id="${recordId || ''}"
+                                    data-amount="${intakeAmount}"
+                                    title="Mark financial assistance as Claimed">
+                                    <i class="fas fa-check"></i> Claimed
+                                </button>
+                            </div>
+                            ${badgeHtml}
+                        </div>
                     `;
                 }
 

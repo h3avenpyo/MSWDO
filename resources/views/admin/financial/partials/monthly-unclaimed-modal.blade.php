@@ -1,127 +1,161 @@
 <!-- Monthly Unclaimed Financial Assistance Bulk Messaging Modal -->
-<div class="modal fade" id="monthlyUnclaimedModal" tabindex="-1" aria-labelledby="monthlyUnclaimedModalLabel" aria-hidden="true" data-bs-backdrop="static">
+<div class="modal fade" id="monthlyUnclaimedModal" tabindex="-1" aria-labelledby="monthlyUnclaimedModalLabel"
+    aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
             <!-- Modal Header -->
-            <div class="modal-header text-white py-3 px-4" style="background: linear-gradient(135deg, #1A237E 0%, #283593 100%) !important;">
+            <div class="modal-header text-white py-3 px-4" style="background-color: #1A237E !important;">
                 <div class="d-flex align-items-center gap-2.5">
-                    <div class="rounded-circle p-2 bg-white bg-opacity-20 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
-                        <i class="fas fa-bullhorn text-white fs-5"></i>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center"
+                        style="width: 38px; height: 38px; background: rgba(255, 255, 255, 0.15); flex-shrink: 0;">
+                        <i class="fas fa-bullhorn text-white fs-6"></i>
                     </div>
                     <div>
                         <div class="d-flex align-items-center gap-2">
-                            <h5 class="modal-title fw-bold mb-0 text-white" id="monthlyUnclaimedModalLabel">Message Unclaimed Financial Assistance</h5>
-                            <span class="badge bg-warning text-dark rounded-pill px-2.5 py-0.5 text-xs fw-bold" id="monthlyModalMonthBadge">Loading...</span>
+                            <h5 class="modal-title fw-bold mb-0 text-white" id="monthlyUnclaimedModalLabel">Message Unclaimed Beneficiaries</h5>
+                            <span id="monthlyModalMonthBadge" class="badge bg-warning text-dark rounded-pill px-2.5 py-0.5 text-2xs fw-bold">Loading...</span>
                         </div>
-                        <span class="text-white-50 small">Send Tagalog SMS notifications to beneficiaries with unclaimed financial assistance for the selected month</span>
+                        <span class="text-white-50 small" style="font-size: 0.78rem;">Financial Assistance Step 2 Notification System</span>
                     </div>
                 </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
 
             <!-- Modal Body -->
-            <div class="modal-body p-4 bg-light bg-opacity-25">
-                
-                <!-- Month Filter & Overview Controls Bar -->
-                <div class="card border rounded-3 p-3 mb-3 bg-white shadow-xs">
-                    <div class="row g-3 align-items-end">
-                        <!-- Month Selector -->
-                        <div class="col-md-6 col-12">
-                            <label class="form-label small fw-bold text-dark mb-1">
-                                <i class="fas fa-calendar-alt text-primary me-1"></i> Select Payroll Month
+            <div class="modal-body p-4">
+
+                <!-- Filter Bar: Month Selector & Search -->
+                <div class="row g-3 mb-3 pb-2 border-bottom">
+                    <div class="col-md-5 col-12">
+                        <label class="form-label small fw-bold text-dark mb-1" for="monthlyUnclaimedSelect">
+                            <i class="fas fa-calendar-alt text-primary me-1"></i> Payroll Month
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <select class="form-select form-select-sm rounded-start-3" id="monthlyUnclaimedSelect">
+                                <option value="" disabled selected>Loading available months...</option>
+                            </select>
+                            <button type="button" class="btn btn-outline-secondary rounded-end-3" id="btnRefreshMonthlyUnclaimed"
+                                title="Refresh">
+                                <i class="fas fa-rotate"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-7 col-12">
+                        <label class="form-label small fw-bold text-dark mb-1" for="monthlySearchInput">
+                            <i class="fas fa-search text-primary me-1"></i> Search in Table
+                        </label>
+                        <input type="text" class="form-control form-control-sm rounded-3" id="monthlySearchInput"
+                            placeholder="Filter by beneficiary name, representative, barangay, or contact number...">
+                    </div>
+                </div>
+
+                <!-- Two-Section Layout: Claiming Date & SMS Message -->
+                <div class="card border rounded-3 p-3 mb-3 bg-light bg-opacity-50">
+                    <div class="row g-3">
+                        <!-- Section 1: Claiming Date -->
+                        <div class="col-md-4 col-12">
+                            <label class="form-label small fw-bold text-dark mb-1" for="monthlyBulkClaimingDate">
+                                <i class="fas fa-calendar-day text-primary me-1"></i> Claiming Date <span class="text-danger">*</span>
                             </label>
-                            <div class="input-group input-group-sm">
-                                <select class="form-select form-select-sm rounded-start-3 fw-semibold" id="monthlyUnclaimedSelect">
-                                    <option value="" disabled selected>Loading available months...</option>
-                                </select>
-                                <button type="button" class="btn btn-outline-secondary rounded-end-3" id="btnRefreshMonthlyUnclaimed" title="Refresh records for this month">
-                                    <i class="fas fa-rotate"></i>
+                            <input type="date" class="form-control form-control-sm rounded-3 mb-1.5"
+                                id="monthlyBulkClaimingDate" required min="{{ date('Y-m-d') }}"
+                                value="{{ date('Y-m-d') }}">
+                            <div class="text-muted small" style="font-size: 0.78rem; line-height: 1.35;">
+                                Select the date when beneficiaries can claim their financial assistance.
+                            </div>
+                        </div>
+
+                        <!-- Section 2: SMS Message -->
+                        <div class="col-md-8 col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label small fw-bold text-dark mb-0" for="monthlyBulkMessageBody">
+                                    <i class="fas fa-comment-dots text-primary me-1"></i> SMS Message <span class="text-danger">*</span>
+                                </label>
+                                <button type="button"
+                                    class="btn btn-link btn-sm p-0 text-decoration-none text-secondary"
+                                    id="btnResetBulkTemplate" style="font-size: 0.78rem;">
+                                    <i class="fas fa-rotate-left me-1"></i> Reset to Default
                                 </button>
                             </div>
-                        </div>
 
-                        <!-- Search within Modal -->
-                        <div class="col-md-6 col-12">
-                            <label class="form-label small fw-bold text-dark mb-1">
-                                <i class="fas fa-search text-muted me-1"></i> Search Beneficiaries in this Month
-                            </label>
-                            <input type="text" class="form-control form-control-sm rounded-3" id="monthlySearchInput" 
-                                placeholder="Filter by beneficiary name, rep, barangay...">
-                        </div>
-                    </div>
-                </div>
+                            <!-- User-Friendly Insert Options -->
+                            <div class="d-flex align-items-center gap-1.5 mb-1.5 flex-wrap">
+                                <span class="text-muted small me-1" style="font-size: 0.78rem;">Click to insert:</span>
+                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill py-0.5 px-2.5"
+                                    id="btnInsertNameTag" style="font-size: 0.78rem;" title="Automatically insert the beneficiary's full name">
+                                    <i class="fas fa-user-plus me-1"></i> Insert Beneficiary Name
+                                </button>
+                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill py-0.5 px-2.5"
+                                    id="btnInsertDateTag" style="font-size: 0.78rem;" title="Automatically insert the selected claiming date">
+                                    <i class="fas fa-calendar-plus me-1"></i> Insert Claiming Date
+                                </button>
+                            </div>
 
-                <!-- Template Preview Card -->
-                <div class="alert alert-info py-2.5 px-3 rounded-3 mb-3 border-info-subtle bg-info-subtle bg-opacity-50">
-                    <div class="d-flex align-items-start gap-2">
-                        <i class="fas fa-info-circle text-primary mt-1"></i>
-                        <div class="small text-dark">
-                            <strong>Tagalog Default Template:</strong>
-                            <span class="fst-italic text-secondary d-block mt-0.5">
-                                "Magandang araw, [Beneficiary Name]. Ito po ay mula sa Municipal Social Welfare and Development Office (MSWDO). Ang inyong tulong pinansyal ay maaari nang kunin sa [Claiming Date]. Mangyaring magtungo sa aming tanggapan sa naturang petsa at dalhin ang inyong valid ID at mga kinakailangang dokumento. Maraming salamat po."
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                            <textarea class="form-control rounded-3 border"
+                                id="monthlyBulkMessageBody" rows="4" placeholder="Enter SMS message text..."
+                                style="resize: vertical; font-size: 0.90rem;"></textarea>
 
-                <!-- Results Notification Alert Banner (Appears after bulk send) -->
-                <div id="bulkSendResultAlert" class="alert alert-success d-none rounded-3 mb-3 p-3 shadow-xs border-success" role="alert">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-check-circle fs-4 text-success me-2.5"></i>
-                            <div>
-                                <h6 class="fw-bold mb-0 text-success" id="bulkResultTitle">Bulk messaging completed successfully!</h6>
-                                <div class="small text-muted" id="bulkResultSubtitle">Processed 0 beneficiaries.</div>
+                            <div class="d-flex justify-content-between align-items-center mt-1 text-muted small px-1"
+                                style="font-size: 0.78rem;">
+                                <span>Tip: You can freely edit this message or insert the beneficiary name and date above.</span>
+                                <span id="monthlyBulkCharCount" class="fw-semibold text-dark">0 characters (1 SMS)</span>
                             </div>
                         </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="badge bg-success rounded-pill px-2.5 py-1 text-xs" id="bulkResultSentBadge">0 Sent</span>
-                            <span class="badge bg-danger rounded-pill px-2.5 py-1 text-xs" id="bulkResultFailedBadge">0 Failed</span>
-                            <span class="badge bg-warning text-dark rounded-pill px-2.5 py-1 text-xs" id="bulkResultNoContactBadge">0 No Contact</span>
+                    </div>
+                </div>
+
+                <!-- Results Notification Alert Banner -->
+                <div id="bulkSendResultAlert" class="alert alert-success d-flex align-items-center justify-content-between rounded-3 mb-3 py-2 px-3 d-none" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-check-circle fs-5 me-2 text-success"></i>
+                        <div>
+                            <span class="fw-semibold text-dark" id="bulkResultTitle">Bulk messaging completed.</span>
+                            <span class="text-muted small ms-1" id="bulkResultSubtitle">Processed 0 beneficiaries.</span>
                         </div>
+                    </div>
+                    <div class="d-flex gap-1.5">
+                        <span class="badge bg-success rounded-pill px-2.5 py-1 text-xs fw-bold" id="bulkResultSentBadge">0 Sent</span>
+                        <span class="badge bg-danger rounded-pill px-2.5 py-1 text-xs fw-bold" id="bulkResultFailedBadge">0 Failed</span>
+                        <span class="badge bg-secondary rounded-pill px-2.5 py-1 text-xs fw-bold" id="bulkResultNoContactBadge">0 No Contact</span>
                     </div>
                 </div>
 
                 <!-- Table Header Selection Controls -->
-                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="form-check form-check-inline mb-0">
-                            <input class="form-check-input" type="checkbox" id="masterSelectAllCheckbox">
-                            <label class="form-check-label small fw-bold text-dark user-select-none" for="masterSelectAllCheckbox">
-                                Select All Unclaimed (<span id="monthlySelectedCount">0</span> selected)
-                            </label>
-                        </div>
-                        <button type="button" class="btn btn-link btn-sm text-secondary p-0 text-decoration-none small" id="btnDeselectAll">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="form-check mb-0">
+                        <input class="form-check-input" type="checkbox" id="masterSelectAllCheckbox">
+                        <label class="form-check-label small fw-semibold text-dark" for="masterSelectAllCheckbox">
+                            Select All (<span id="monthlySelectedCount" class="fw-bold text-primary">0</span> selected)
+                        </label>
+                        <button type="button" class="btn btn-link btn-sm p-0 ms-2 text-decoration-none text-muted"
+                            id="btnDeselectAll" style="font-size: 0.78rem;">
                             Deselect All
                         </button>
                     </div>
                     <div class="small text-muted">
-                        <i class="fas fa-shield-alt text-success me-1"></i> Messages sent individually with personalized beneficiary details
+                        Showing <strong id="monthlyShowingCount" class="text-dark">0</strong> records
                     </div>
                 </div>
 
-                <!-- Beneficiaries Master Table -->
-                <div class="table-responsive rounded-3 border bg-white shadow-xs" style="max-height: 420px;">
-                    <table class="table table-hover table-clean align-middle mb-0 small">
-                        <thead class="table-light sticky-top shadow-xs">
+                <!-- Beneficiaries Table -->
+                <div class="table-responsive rounded-3 border" style="max-height: 380px;">
+                    <table class="table table-sm table-hover align-middle mb-0 small">
+                        <thead class="table-light sticky-top">
                             <tr>
-                                <th class="text-center" style="width: 40px;">
-                                    <span class="visually-hidden">Select</span>
-                                </th>
-                                <th class="text-center" style="width: 45px;">#</th>
+                                <th class="text-center" style="width: 38px;"></th>
+                                <th class="text-center" style="width: 40px;">#</th>
                                 <th>Beneficiary Name</th>
                                 <th>Barangay</th>
                                 <th>Contact Number</th>
                                 <th class="text-end">Amount</th>
                                 <th>Claiming Date</th>
-                                <th>Notification Status</th>
-                                <th class="text-center" style="width: 110px;">Action</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody id="monthlyUnclaimedTableBody">
                             <tr>
-                                <td colspan="9" class="text-center py-5 text-muted">
-                                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                                <td colspan="8" class="text-center py-4 text-muted">
                                     Loading unclaimed records for the selected month...
                                 </td>
                             </tr>
@@ -132,23 +166,19 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="modal-footer bg-light py-2.5 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <div class="text-muted small">
-                    Showing <strong id="monthlyShowingCount">0</strong> unclaimed assistance records
-                </div>
+            <div class="modal-footer bg-light py-2.5 px-4 d-flex justify-content-between align-items-center">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
+                    Close
+                </button>
                 <div class="d-flex align-items-center gap-2">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill px-3.5 btn-sm" data-bs-dismiss="modal">
-                        Close
-                    </button>
-                    <!-- Send to Selected -->
-                    <button type="button" class="btn btn-outline-primary rounded-pill px-3.5 btn-sm fw-semibold shadow-xs" id="btnSendSelectedUnclaimed" disabled>
+                    <button type="button" class="btn btn-outline-primary rounded-pill px-3.5 fw-semibold" id="btnSendSelectedUnclaimed" disabled>
                         <i class="fas fa-check-double me-1"></i> Send to Selected (<span id="btnSelectedCountSpan">0</span>)
                     </button>
-                    <!-- Send to All Unclaimed -->
-                    <button type="button" class="btn btn-primary rounded-pill px-4 btn-sm fw-semibold shadow-xs" id="btnSendAllUnclaimed" style="background: #1A237E; border-color: #1A237E;">
-                        <span class="spinner-border spinner-border-sm me-1 d-none" id="bulkSendSpinner" role="status" aria-hidden="true"></span>
-                        <i class="fas fa-paper-plane me-1" id="bulkSendIcon"></i>
-                        <span id="btnSendAllText">Send Message to All Unclaimed</span>
+                    <button type="button" class="btn btn-primary rounded-pill px-4 shadow-xs fw-semibold btn-brand-primary" id="btnSendAllUnclaimed">
+                        <span class="spinner-border spinner-border-sm me-1.5 d-none" id="bulkSendSpinner" role="status"
+                            aria-hidden="true"></span>
+                        <i class="fas fa-paper-plane me-1.5" id="bulkSendIcon"></i>
+                        <span id="btnSendAllText">Send to All Unclaimed</span>
                     </button>
                 </div>
             </div>

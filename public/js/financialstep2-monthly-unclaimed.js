@@ -4,6 +4,8 @@
 (function () {
     'use strict';
 
+    const DEFAULT_BULK_MESSAGE = "Magandang araw, [Beneficiary Name]. Ito po ay mula sa Municipal Social Welfare and Development Office (MSWDO). Ang inyong tulong pinansyal ay maaari nang kunin sa [Claiming Date]. Mangyaring magtungo sa aming tanggapan sa naturang petsa at dalhin ang inyong valid ID at mga kinakailangang dokumento. Maraming salamat po.";
+
     let modalEl = null;
     let bsModal = null;
     let monthSelectEl = null;
@@ -15,6 +17,14 @@
     let sendAllSpinnerEl = null;
     let sendAllIconEl = null;
     let sendAllTextEl = null;
+
+    // Bulk Message Customization & Claiming Date Elements
+    let claimingDateInputEl = null;
+    let messageBodyInputEl = null;
+    let charCountEl = null;
+    let btnInsertNameTagEl = null;
+    let btnInsertDateTagEl = null;
+    let btnResetTemplateEl = null;
 
     // State
     const state = {
@@ -33,13 +43,76 @@
     }
 
     /**
+     * Format a raw YYYY-MM-DD date string into human-readable Month Day, Year.
+     */
+    function formatDateToHuman(dateStr) {
+        if (!dateStr) return '';
+        try {
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                const year = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1;
+                const day = parseInt(parts[2], 10);
+                const d = new Date(year, month, day);
+                return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            }
+            return new Date(dateStr).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        } catch (e) {
+            return dateStr;
+        }
+    }
+
+    /**
+     * Update character and SMS segment counter.
+     */
+    function updateCharCounter() {
+        if (!messageBodyInputEl || !charCountEl) return;
+        const text = messageBodyInputEl.value || '';
+        const len = text.length;
+        const segments = Math.ceil(len / 160) || 1;
+        charCountEl.textContent = `${len} characters (${segments} SMS)`;
+    }
+
+    const updateLivePreview = updateCharCounter;
+
+    /**
+     * Insert tag/placeholder into the message textarea at current cursor location.
+     */
+    function insertTagAtCursor(tag) {
+        if (!messageBodyInputEl) return;
+        const start = messageBodyInputEl.selectionStart || 0;
+        const end = messageBodyInputEl.selectionEnd || 0;
+        const text = messageBodyInputEl.value;
+        messageBodyInputEl.value = text.substring(0, start) + tag + text.substring(end);
+        messageBodyInputEl.selectionStart = messageBodyInputEl.selectionEnd = start + tag.length;
+        messageBodyInputEl.focus();
+        updateLivePreview();
+    }
+
+    /**
+     * Set quick claiming date shortcut.
+     */
+    function setQuickDate(daysToAdd) {
+        const d = new Date();
+        d.setDate(d.getDate() + parseInt(daysToAdd, 10));
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+        if (claimingDateInputEl) {
+            claimingDateInputEl.value = dateStr;
+            updateLivePreview();
+        }
+    }
+
+    /**
      * Fetch unclaimed records for the selected month from the server.
      */
     function fetchUnclaimedRecords(month) {
         state.isLoading = true;
         tableBodyEl.innerHTML = `
             <tr>
-                <td colspan="9" class="text-center py-5 text-muted">
+                <td colspan="8" class="text-center py-5 text-muted">
                     <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
                     Loading unclaimed financial assistance records...
                 </td>
@@ -53,38 +126,41 @@
                 'X-Requested-With': 'XMLHttpRequest',
             }
         })
-        .then(res => res.json())
-        .then(data => {
-            state.isLoading = false;
-            if (data.success) {
-                state.currentMonth = data.month;
-                state.monthLabel = data.month_label;
-                state.availableMonths = data.available_months || [];
-                state.records = data.records || [];
-                state.filteredRecords = [...state.records];
-                state.selectedIds.clear();
+            .then(res => res.json())
+            .then(data => {
+                state.isLoading = false;
+                if (data.success) {
+                    state.currentMonth = data.month;
+                    state.monthLabel = data.month_label;
+                    state.availableMonths = data.available_months || [];
+                    state.records = data.records || [];
+                    state.filteredRecords = [...state.records];
+                    state.selectedIds.clear();
 
-                // Update Month Badge & Header
-                const badgeEl = document.getElementById('monthlyModalMonthBadge');
-                if (badgeEl) badgeEl.textContent = state.monthLabel;
+                    // Update Month Badge & Header
+                    const badgeEl = document.getElementById('monthlyModalMonthBadge');
+                    if (badgeEl) badgeEl.textContent = state.monthLabel;
 
-                // Populate Month Dropdown if needed
-                populateMonthSelect();
+                    // Populate Month Dropdown if needed
+                    populateMonthSelect();
 
-                // Update Metric Counters
-                updateCounters(data.total_unclaimed, data.valid_contact_count, data.missing_contact_count);
+                    // Update Metric Counters
+                    updateCounters(data.total_unclaimed, data.valid_contact_count, data.missing_contact_count);
 
-                // Render Table
-                renderTable();
-            } else {
-                tableBodyEl.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-danger">Failed to load records: ${data.message || 'Unknown error'}</td></tr>`;
-            }
-        })
-        .catch(err => {
-            state.isLoading = false;
-            console.error('Error fetching monthly unclaimed:', err);
-            tableBodyEl.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-danger">A network error occurred while loading records.</td></tr>`;
-        });
+                    // Render Table
+                    renderTable();
+
+                    // Update live preview with first record name
+                    updateLivePreview();
+                } else {
+                    tableBodyEl.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-danger">Failed to load records: ${data.message || 'Unknown error'}</td></tr>`;
+                }
+            })
+            .catch(err => {
+                state.isLoading = false;
+                console.error('Error fetching monthly unclaimed:', err);
+                tableBodyEl.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-danger">A network error occurred while loading records.</td></tr>`;
+            });
     }
 
     /**
@@ -147,10 +223,13 @@
         if (sendAllBtnEl) {
             sendAllBtnEl.disabled = state.records.length === 0;
         }
+
+        // Update live preview to reflect selected recipient sample
+        updateLivePreview();
     }
 
     /**
-     * Render the beneficiaries table body.
+     * Render the beneficiaries table body without any individual Action / Send SMS buttons.
      */
     function renderTable() {
         if (!tableBodyEl) return;
@@ -158,7 +237,7 @@
         if (state.filteredRecords.length === 0) {
             tableBodyEl.innerHTML = `
                 <tr>
-                    <td colspan="9" class="text-center py-5 text-muted">
+                    <td colspan="8" class="text-center py-5 text-muted">
                         <i class="fas fa-search fa-2x mb-2 text-muted opacity-50 d-block"></i>
                         No unclaimed financial assistance records found for <strong>${state.monthLabel}</strong>.
                     </td>
@@ -171,81 +250,47 @@
         state.filteredRecords.forEach((row, idx) => {
             const isChecked = state.selectedIds.has(row.id) ? 'checked' : '';
 
-            // Contact Number badge
+            // Contact Number
             let contactHtml = '';
             if (row.has_valid_contact) {
-                contactHtml = `
-                    <div class="fw-semibold font-monospace text-dark">${row.contact_number}</div>
-                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill text-2xs px-2 py-0.5">
-                        <i class="fas fa-check-circle me-0.5"></i> Valid
-                    </span>`;
+                contactHtml = `<span class="fw-semibold font-monospace">${row.contact_number}</span>`;
             } else {
-                contactHtml = `
-                    <div class="text-danger small fst-italic">${row.contact_number}</div>
-                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill text-2xs px-2 py-0.5">
-                        <i class="fas fa-times-circle me-0.5"></i> No Number
-                    </span>`;
+                contactHtml = `<span class="text-danger fst-italic">${row.contact_number || 'No contact'}</span>`;
             }
 
-            // Notification Status badge
+            // Notification Status
             let notifHtml = '';
             if (row.has_sent_message) {
-                notifHtml = `
-                    <span class="badge bg-light text-primary border rounded-pill px-2 py-0.5 text-2xs" id="row-notif-${row.id}">
-                        <i class="fas fa-paper-plane me-0.5"></i> Sent: ${row.last_message_date}
-                    </span>`;
+                notifHtml = `<span class="text-success small" id="row-notif-${row.id}"><i class="fas fa-check me-1"></i>Sent (${row.last_message_date})</span>`;
             } else {
-                notifHtml = `
-                    <span class="badge bg-light text-muted border rounded-pill px-2 py-0.5 text-2xs" id="row-notif-${row.id}">
-                        <i class="fas fa-clock me-0.5"></i> Not yet notified
-                    </span>`;
+                notifHtml = `<span class="text-muted small" id="row-notif-${row.id}">Not sent</span>`;
             }
 
             // Claiming Date
-            let claimingHtml = '';
-            if (row.claiming_date) {
-                claimingHtml = `<span class="fw-semibold text-dark">${row.claiming_date}</span>`;
-            } else {
-                claimingHtml = `<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle text-2xs">Pending Date</span>`;
-            }
+            let claimingHtml = row.claiming_date
+                ? `<span>${row.claiming_date}</span>`
+                : `<span class="text-muted fst-italic">Not set</span>`;
 
             html += `
                 <tr id="monthly-row-${row.id}" class="${isChecked ? 'table-active' : ''}">
                     <td class="text-center">
                         <input class="form-check-input row-select-checkbox" type="checkbox" data-id="${row.id}" ${isChecked}>
                     </td>
-                    <td class="text-center text-muted fw-bold">${idx + 1}</td>
+                    <td class="text-center text-muted">${idx + 1}</td>
                     <td>
-                        <div class="fw-bold text-dark">${row.beneficiary_name}</div>
-                        ${row.is_separate_rep ? `<div class="text-muted text-2xs"><span class="badge bg-info-subtle text-info border text-2xs">Rep:</span> ${row.representative_name}</div>` : ''}
-                        <div class="text-muted text-2xs font-monospace">${row.control_number}</div>
+                        <div class="fw-semibold text-dark">${row.beneficiary_name}</div>
+                        ${row.is_separate_rep ? `<div class="text-muted small">Rep: ${row.representative_name}</div>` : ''}
+                        <div class="text-muted small">${row.control_number}</div>
                     </td>
                     <td>
-                        <div class="text-dark small"><i class="fas fa-map-marker-alt text-muted me-1"></i>${row.barangay}</div>
+                        <div class="text-dark small">${row.barangay}</div>
                     </td>
                     <td>${contactHtml}</td>
                     <td class="text-end">
-                        <span class="badge bg-light text-dark border fw-bold font-monospace">${row.formatted_amount}</span>
+                        <span class="fw-semibold">${row.formatted_amount}</span>
                     </td>
                     <td>${claimingHtml}</td>
                     <td>${notifHtml}</td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1 btn-individual-sms shadow-xs text-xs fw-semibold"
-                            data-intake-id="${row.id}"
-                            data-beneficiary-name="${row.beneficiary_name.replace(/"/g, '&quot;')}"
-                            data-representative-name="${(row.representative_name || '').replace(/"/g, '&quot;')}"
-                            data-is-separate-rep="${row.is_separate_rep ? '1' : '0'}"
-                            data-contact-number="${row.contact_number}"
-                            data-purpose="${(row.purpose || 'Financial Assistance').replace(/"/g, '&quot;')}"
-                            data-amount-formatted="${row.formatted_amount}"
-                            data-claiming-date="${row.claiming_date || ''}"
-                            data-raw-claiming-date="${row.raw_claiming_date || ''}"
-                            data-last-message-date="${row.last_message_date || ''}"
-                            data-default-template="Unclaimed Assistance"
-                            title="Send individual SMS to this beneficiary">
-                            <i class="fas fa-paper-plane me-1"></i> Send SMS
-                        </button>
-                    </td>
                 </tr>`;
         });
 
@@ -263,10 +308,10 @@
         } else {
             state.filteredRecords = state.records.filter(r => {
                 return (r.beneficiary_name && r.beneficiary_name.toLowerCase().includes(q)) ||
-                       (r.representative_name && r.representative_name.toLowerCase().includes(q)) ||
-                       (r.barangay && r.barangay.toLowerCase().includes(q)) ||
-                       (r.control_number && r.control_number.toLowerCase().includes(q)) ||
-                       (r.contact_number && r.contact_number.includes(q));
+                    (r.representative_name && r.representative_name.toLowerCase().includes(q)) ||
+                    (r.barangay && r.barangay.toLowerCase().includes(q)) ||
+                    (r.control_number && r.control_number.toLowerCase().includes(q)) ||
+                    (r.contact_number && r.contact_number.includes(q));
             });
         }
         renderTable();
@@ -294,55 +339,80 @@
             return;
         }
 
+        const claimingDate = claimingDateInputEl ? claimingDateInputEl.value : '';
+        if (!claimingDate) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Claiming Date Required',
+                    text: 'Please select a Claiming Date that will be included in the message for the beneficiaries.',
+                    confirmButtonColor: '#1A237E'
+                });
+            } else {
+                alert('Please select a Claiming Date.');
+            }
+            if (claimingDateInputEl) claimingDateInputEl.focus();
+            return;
+        }
+
+        const messageText = messageBodyInputEl ? messageBodyInputEl.value.trim() : '';
+        if (!messageText) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Message Body Required',
+                    text: 'Please enter or customize the SMS message before sending.',
+                    confirmButtonColor: '#1A237E'
+                });
+            } else {
+                alert('Please enter an SMS message body.');
+            }
+            if (messageBodyInputEl) messageBodyInputEl.focus();
+            return;
+        }
+
         // Count how many have valid contact numbers
-        const targetRecords = isAll 
-            ? state.records 
+        const targetRecords = isAll
+            ? state.records
             : state.records.filter(r => state.selectedIds.has(r.id));
-        
+
         const validCount = targetRecords.filter(r => r.has_valid_contact).length;
         const missingCount = targetRecords.filter(r => !r.has_valid_contact).length;
+        const humanClaimingDate = formatDateToHuman(claimingDate);
 
-        // Confirmation Prompt as specified by User:
-        // Send Message to All Unclaimed?
-        // Month: September 2026
-        // Unclaimed Beneficiaries: 24
-        // Cancel | Send to All
-        const titleText = isAll 
-            ? 'Send Message to All Unclaimed?' 
+        const titleText = isAll
+            ? 'Send Message to All Unclaimed?'
             : `Send Message to ${count} Selected Beneficiaries?`;
 
         const confirmButtonText = isAll ? 'Send to All' : 'Send to Selected';
 
         if (typeof Swal !== 'undefined') {
             Swal.fire({
-                title: `<span style="font-size: 1.25rem; font-weight: 700;">${titleText}</span>`,
+                title: `<span style="font-size: 1.15rem; font-weight: 600;">${titleText}</span>`,
                 html: `
-                    <div class="text-start p-3 bg-light rounded-3 small border mb-3">
-                        <div class="mb-1.5"><strong>Month:</strong> <span class="fw-bold text-primary">${state.monthLabel}</span></div>
-                        <div class="mb-1.5"><strong>Unclaimed Beneficiaries:</strong> <span class="fw-bold text-dark fs-6">${count}</span></div>
-                        <div class="mb-1"><strong>With Valid Phone Numbers:</strong> <span class="text-success fw-semibold">${validCount}</span></div>
-                        ${missingCount > 0 ? `<div class="mb-0 text-danger small"><i class="fas fa-exclamation-triangle me-1"></i> Notice: ${missingCount} record(s) have no contact number and will be skipped.</div>` : ''}
-                    </div>
-                    <div class="alert alert-info py-2 px-2.5 text-start text-2xs mb-0">
-                        <i class="fas fa-info-circle me-1"></i> Messages will be sent individually in Tagalog with each beneficiary's own name and claiming date.
+                    <div class="text-start p-2.5 bg-light rounded border mb-2 small">
+                        <div class="mb-1"><strong>Payroll Month:</strong> ${state.monthLabel}</div>
+                        <div class="mb-1"><strong>Recipients:</strong> ${count} (${validCount} with valid mobile number)</div>
+                        ${missingCount > 0 ? `<div class="mb-1 text-danger">Notice: ${missingCount} record(s) have no contact number and will be skipped.</div>` : ''}
+                        <div><strong>Claiming Date:</strong> ${humanClaimingDate}</div>
                     </div>
                 `,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: `<i class="fas fa-paper-plane me-1"></i> ${confirmButtonText}`,
+                confirmButtonText: confirmButtonText,
                 cancelButtonText: 'Cancel',
                 confirmButtonColor: '#1A237E',
-                cancelButtonColor: '#6B7280',
+                cancelButtonColor: '#6c757d',
                 reverseButtons: true,
                 focusConfirm: true,
             }).then((result) => {
                 if (result.isConfirmed) {
-                    dispatchBulkSend(intakeIds);
+                    dispatchBulkSend(intakeIds, claimingDate, messageText);
                 }
             });
         } else {
-            if (confirm(`${titleText}\n\nMonth: ${state.monthLabel}\nUnclaimed Beneficiaries: ${count}\n\nContinue?`)) {
-                dispatchBulkSend(intakeIds);
+            if (confirm(`${titleText}\n\nMonth: ${state.monthLabel}\nBeneficiaries: ${count}\nClaiming Date: ${humanClaimingDate}\n\nContinue?`)) {
+                dispatchBulkSend(intakeIds, claimingDate, messageText);
             }
         }
     }
@@ -350,7 +420,7 @@
     /**
      * Dispatch the bulk send POST request to the backend.
      */
-    function dispatchBulkSend(intakeIds) {
+    function dispatchBulkSend(intakeIds, claimingDate, messageText) {
         // Show loading state
         sendAllBtnEl.disabled = true;
         sendSelectedBtnEl.disabled = true;
@@ -361,6 +431,8 @@
         const payload = {
             month: state.currentMonth,
             intake_ids: intakeIds.length > 0 ? intakeIds : null,
+            claiming_date: claimingDate,
+            message: messageText,
         };
 
         fetch('/admin/financial/financialstep2/messages/send-bulk-unclaimed', {
@@ -373,98 +445,98 @@
             },
             body: JSON.stringify(payload)
         })
-        .then(res => res.json().then(data => ({ status: res.status, body: data })))
-        .then(({ status, body }) => {
-            // Reset loading state
-            sendAllSpinnerEl.classList.add('d-none');
-            sendAllIconEl.classList.remove('d-none');
-            sendAllTextEl.textContent = 'Send Message to All Unclaimed';
-            sendAllBtnEl.disabled = false;
-            sendSelectedBtnEl.disabled = state.selectedIds.size === 0;
+            .then(res => res.json().then(data => ({ status: res.status, body: data })))
+            .then(({ status, body }) => {
+                // Reset loading state
+                sendAllSpinnerEl.classList.add('d-none');
+                sendAllIconEl.classList.remove('d-none');
+                sendAllTextEl.textContent = 'Send Message to All Unclaimed';
+                sendAllBtnEl.disabled = false;
+                sendSelectedBtnEl.disabled = state.selectedIds.size === 0;
 
-            if (status === 200 && body.success) {
-                // Show result summary alert in modal
-                const resultAlert = document.getElementById('bulkSendResultAlert');
-                const titleEl = document.getElementById('bulkResultTitle');
-                const subtitleEl = document.getElementById('bulkResultSubtitle');
-                const sentBadge = document.getElementById('bulkResultSentBadge');
-                const failedBadge = document.getElementById('bulkResultFailedBadge');
-                const noContactBadge = document.getElementById('bulkResultNoContactBadge');
+                if (status === 200 && body.success) {
+                    // Show result summary alert in modal
+                    const resultAlert = document.getElementById('bulkSendResultAlert');
+                    const titleEl = document.getElementById('bulkResultTitle');
+                    const subtitleEl = document.getElementById('bulkResultSubtitle');
+                    const sentBadge = document.getElementById('bulkResultSentBadge');
+                    const failedBadge = document.getElementById('bulkResultFailedBadge');
+                    const noContactBadge = document.getElementById('bulkResultNoContactBadge');
 
-                if (resultAlert) {
-                    resultAlert.classList.remove('d-none');
-                    titleEl.textContent = `Bulk messaging completed for ${body.month_label}!`;
-                    subtitleEl.textContent = `Processed ${body.total_attempted} beneficiaries.`;
-                    sentBadge.textContent = `${body.sent_count} Successfully Sent`;
-                    failedBadge.textContent = `${body.failed_count} Failed`;
-                    noContactBadge.textContent = `${body.no_contact_count} No Contact Number`;
-                }
+                    if (resultAlert) {
+                        resultAlert.classList.remove('d-none');
+                        titleEl.textContent = `Bulk messaging completed for ${body.month_label}!`;
+                        subtitleEl.textContent = `Processed ${body.total_attempted} beneficiaries.`;
+                        sentBadge.textContent = `${body.sent_count} Successfully Sent`;
+                        failedBadge.textContent = `${body.failed_count} Failed`;
+                        noContactBadge.textContent = `${body.no_contact_count} No Contact Number`;
+                    }
 
-                // Show SweetAlert confirmation summary
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: body.failed_count === 0 ? 'success' : 'info',
-                        title: 'Bulk Messaging Results',
-                        html: `
-                            <div class="text-start p-3 bg-light rounded-3 small border mb-2">
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span><strong>Month:</strong></span>
-                                    <span class="text-primary fw-bold">${body.month_label}</span>
+                    // Show SweetAlert confirmation summary
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: body.failed_count === 0 ? 'success' : 'info',
+                            title: 'Bulk Messaging Results',
+                            html: `
+                            <div class="text-start p-2.5 bg-light rounded border mb-2 small">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Payroll Month:</span>
+                                    <strong>${body.month_label}</strong>
                                 </div>
                                 <div class="d-flex justify-content-between mb-1 text-success">
-                                    <span><i class="fas fa-check-circle me-1"></i> <strong>Successfully Sent:</strong></span>
-                                    <span class="fw-bold">${body.sent_count}</span>
+                                    <span>Successfully Sent:</span>
+                                    <strong>${body.sent_count}</strong>
                                 </div>
                                 <div class="d-flex justify-content-between mb-1 text-danger">
-                                    <span><i class="fas fa-times-circle me-1"></i> <strong>Failed:</strong></span>
-                                    <span class="fw-bold">${body.failed_count}</span>
+                                    <span>Failed:</span>
+                                    <strong>${body.failed_count}</strong>
                                 </div>
-                                <div class="d-flex justify-content-between mb-0 text-warning-emphasis">
-                                    <span><i class="fas fa-exclamation-circle me-1"></i> <strong>No Contact Number:</strong></span>
-                                    <span class="fw-bold">${body.no_contact_count}</span>
+                                <div class="d-flex justify-content-between mb-0 text-secondary">
+                                    <span>No Contact Number:</span>
+                                    <strong>${body.no_contact_count}</strong>
                                 </div>
                             </div>
                         `,
-                        confirmButtonColor: '#1A237E',
-                        confirmButtonText: 'Done'
-                    });
+                            confirmButtonColor: '#1A237E',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+
+                    // Re-fetch records to update rows and display updated claiming dates & last-sent statuses
+                    fetchUnclaimedRecords(state.currentMonth);
+
+                } else {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Bulk Messaging Failed',
+                            text: body.message || 'An error occurred during bulk messaging.',
+                            confirmButtonColor: '#1A237E'
+                        });
+                    } else {
+                        alert('Bulk messaging failed: ' + (body.message || 'Unknown error'));
+                    }
                 }
+            })
+            .catch(err => {
+                console.error('Bulk Send Error:', err);
+                sendAllSpinnerEl.classList.add('d-none');
+                sendAllIconEl.classList.remove('d-none');
+                sendAllTextEl.textContent = 'Send Message to All Unclaimed';
+                sendAllBtnEl.disabled = false;
+                sendSelectedBtnEl.disabled = state.selectedIds.size === 0;
 
-                // Re-fetch records to update rows and last-sent statuses
-                fetchUnclaimedRecords(state.currentMonth);
-
-            } else {
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Bulk Messaging Failed',
-                        text: body.message || 'An error occurred during bulk messaging.',
+                        title: 'Network Error',
+                        text: 'A network error occurred while sending messages. Please try again.',
                         confirmButtonColor: '#1A237E'
                     });
                 } else {
-                    alert('Bulk messaging failed: ' + (body.message || 'Unknown error'));
+                    alert('A network error occurred.');
                 }
-            }
-        })
-        .catch(err => {
-            console.error('Bulk Send Error:', err);
-            sendAllSpinnerEl.classList.add('d-none');
-            sendAllIconEl.classList.remove('d-none');
-            sendAllTextEl.textContent = 'Send Message to All Unclaimed';
-            sendAllBtnEl.disabled = false;
-            sendSelectedBtnEl.disabled = state.selectedIds.size === 0;
-
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Network Error',
-                    text: 'A network error occurred while sending messages. Please try again.',
-                    confirmButtonColor: '#1A237E'
-                });
-            } else {
-                alert('A network error occurred.');
-            }
-        });
+            });
     }
 
     /**
@@ -482,6 +554,22 @@
 
         // Clear search input
         if (searchInputEl) searchInputEl.value = '';
+
+        // Reset message template to default if blank
+        if (messageBodyInputEl && !messageBodyInputEl.value.trim()) {
+            messageBodyInputEl.value = DEFAULT_BULK_MESSAGE;
+        }
+
+        // Default date to today if blank
+        if (claimingDateInputEl && !claimingDateInputEl.value) {
+            const today = new Date();
+            const y = today.getFullYear();
+            const m = String(today.getMonth() + 1).padStart(2, '0');
+            const d = String(today.getDate()).padStart(2, '0');
+            claimingDateInputEl.value = `${y}-${m}-${d}`;
+        }
+
+        updateLivePreview();
 
         // Show modal
         if (bsModal) {
@@ -507,6 +595,67 @@
         sendAllSpinnerEl = document.getElementById('bulkSendSpinner');
         sendAllIconEl = document.getElementById('bulkSendIcon');
         sendAllTextEl = document.getElementById('btnSendAllText');
+
+        // Bulk SMS customization elements
+        claimingDateInputEl = document.getElementById('monthlyBulkClaimingDate');
+        messageBodyInputEl = document.getElementById('monthlyBulkMessageBody');
+        charCountEl = document.getElementById('monthlyBulkCharCount');
+        btnInsertNameTagEl = document.getElementById('btnInsertNameTag');
+        btnInsertDateTagEl = document.getElementById('btnInsertDateTag');
+        btnResetTemplateEl = document.getElementById('btnResetBulkTemplate');
+
+        // Initialize default message in textarea if empty
+        if (messageBodyInputEl && !messageBodyInputEl.value.trim()) {
+            messageBodyInputEl.value = DEFAULT_BULK_MESSAGE;
+        }
+
+        // Message input listener for live counter & preview
+        if (messageBodyInputEl) {
+            messageBodyInputEl.addEventListener('input', updateLivePreview);
+        }
+
+        // Claiming Date change listener
+        if (claimingDateInputEl) {
+            claimingDateInputEl.addEventListener('change', updateLivePreview);
+        }
+
+        // Variable insertion buttons
+        if (btnInsertNameTagEl) {
+            btnInsertNameTagEl.addEventListener('click', function (e) {
+                e.preventDefault();
+                insertTagAtCursor('[Beneficiary Name]');
+            });
+        }
+
+        if (btnInsertDateTagEl) {
+            btnInsertDateTagEl.addEventListener('click', function (e) {
+                e.preventDefault();
+                insertTagAtCursor('[Claiming Date]');
+            });
+        }
+
+        // Reset template button
+        if (btnResetTemplateEl) {
+            btnResetTemplateEl.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (messageBodyInputEl) {
+                    messageBodyInputEl.value = DEFAULT_BULK_MESSAGE;
+                    updateLivePreview();
+                }
+            });
+        }
+
+        // Quick date buttons
+        document.querySelectorAll('.btn-quick-date').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const days = this.getAttribute('data-days') || 0;
+                setQuickDate(days);
+            });
+        });
+
+        // Initial preview render
+        updateLivePreview();
 
         // Month Selector change
         if (monthSelectEl) {
@@ -573,29 +722,6 @@
             if (rowEl) {
                 if (cb.checked) rowEl.classList.add('table-active');
                 else rowEl.classList.remove('table-active');
-            }
-        });
-
-        // Individual "Send SMS" in row delegates to existing window.openSmsModal
-        tableBodyEl.addEventListener('click', function (e) {
-            const btn = e.target.closest('.btn-individual-sms');
-            if (!btn) return;
-            e.preventDefault();
-
-            if (typeof window.openSmsModal === 'function') {
-                window.openSmsModal({
-                    intakeId: btn.getAttribute('data-intake-id'),
-                    beneficiaryName: btn.getAttribute('data-beneficiary-name'),
-                    representativeName: btn.getAttribute('data-representative-name'),
-                    isSeparateRep: btn.getAttribute('data-is-separate-rep') === '1',
-                    contactNumber: btn.getAttribute('data-contact-number'),
-                    purpose: btn.getAttribute('data-purpose'),
-                    amount: btn.getAttribute('data-amount-formatted'),
-                    claimingDate: btn.getAttribute('data-claiming-date'),
-                    rawClaimingDate: btn.getAttribute('data-raw-claiming-date'),
-                    lastMessageDate: btn.getAttribute('data-last-message-date'),
-                    defaultTemplate: 'Unclaimed Assistance',
-                });
             }
         });
 

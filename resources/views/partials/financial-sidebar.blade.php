@@ -8,7 +8,7 @@
         <li>
             <a href="{{ route('admin.financial.financialstep2') }}"
                 class="{{ request()->routeIs('admin.financial.financialstep2') ? 'active' : '' }}">
-                <i class="fas fa-hand-holding-usd"></i> Step 2 Masterlist
+                <i class="fas fa-hand-holding-usd"></i> Step 2 Dashboard
             </a>
         </li>
         <li>
@@ -32,7 +32,7 @@
         <li>
             <a href="{{ route('admin.financial.financialstep2.all-intakes') }}"
                 class="{{ request()->routeIs('admin.financial.financialstep2.all-intakes') ? 'active' : '' }}">
-                <i class="fas fa-layer-group"></i> All Intakes
+                <i class="fas fa-layer-group"></i> All Masterlist
             </a>
         </li>
         <li>

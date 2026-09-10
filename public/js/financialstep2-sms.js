@@ -11,6 +11,7 @@
         representativeName: '',
         isSeparateRep: false,
         contactNumber: '',
+        convertedContactNumber: '',
         purpose: '',
         amount: '',
         claimingDateFormatted: '',
@@ -35,6 +36,60 @@
     function getCsrfToken() {
         const meta = document.querySelector('meta[name="csrf-token"]');
         return meta ? meta.getAttribute('content') : '';
+    }
+
+    /**
+     * Convert any valid Philippine mobile number format into +63XXXXXXXXXX format.
+     * Accepts:
+     * - 09XXXXXXXXX (11 digits local format)
+     * - +639XXXXXXXXX (13 chars international format with plus)
+     * - 639XXXXXXXXX (12 digits international format without plus)
+     * - 9XXXXXXXXX (10 digits without leading zero)
+     * - Formats with hyphens, spaces, parentheses: e.g. +63 917-123-4567
+     * - Accidental +6309XXXXXXXXX format
+     * Returns string formatted as +63XXXXXXXXXX (e.g. +639171234567) or null if invalid.
+     */
+    function convertToPhilippineInternational(number) {
+        if (!number) return null;
+        const trimmed = String(number).trim();
+        if (trimmed === 'N/A' || trimmed === 'No contact' || trimmed.toLowerCase() === 'none') {
+            return null;
+        }
+
+        const hasPlus = trimmed.startsWith('+');
+        const digits = trimmed.replace(/\D/g, '');
+        if (!digits) return null;
+
+        // Case 1: 12 digits starting with 639 or 6389 (e.g. 639171234567 or +639171234567)
+        if (digits.length === 12 && (digits.startsWith('639') || digits.startsWith('6389'))) {
+            return '+' + digits;
+        }
+
+        // Case 2: 13 digits starting with 6309 or 63089 (accidental leading 0 after 63)
+        if (digits.length === 13 && (digits.startsWith('6309') || digits.startsWith('63089'))) {
+            return '+63' + digits.substring(3);
+        }
+
+        // Case 3: 11 digits starting with 09 or 089 (local format e.g. 09171234567)
+        if (digits.length === 11 && (digits.startsWith('09') || digits.startsWith('089'))) {
+            return '+63' + digits.substring(1);
+        }
+
+        // Case 4: 10 digits starting with 9 or 89 (e.g. 9171234567)
+        if (digits.length === 10 && (digits.startsWith('9') || digits.startsWith('89'))) {
+            return '+63' + digits;
+        }
+
+        // International format with other country codes (+ followed by 10-15 digits)
+        if (hasPlus && digits.length >= 10 && digits.length <= 15) {
+            return '+' + digits;
+        }
+
+        return null;
+    }
+
+    function isValidPhilippineNumber(number) {
+        return convertToPhilippineInternational(number) !== null;
     }
 
     /**
@@ -100,7 +155,8 @@
     function validateForm() {
         if (!sendBtnEl) return;
 
-        const hasContact = Boolean(smsState.contactNumber && smsState.contactNumber !== 'N/A' && smsState.contactNumber !== 'No contact');
+        const convertedContact = convertToPhilippineInternational(smsState.contactNumber);
+        const hasValidContact = Boolean(convertedContact);
         const hasMessage = Boolean(messageBodyEl && messageBodyEl.value.trim().length >= 3);
         const hasClaimingDate = Boolean(smsState.claimingDateFormatted && smsState.claimingDateFormatted !== '[Claiming Date]');
 
@@ -114,7 +170,7 @@
         }
 
         // For Unclaimed Assistance, claiming date is required
-        let isValid = hasContact && hasMessage;
+        let isValid = hasValidContact && hasMessage;
         if (smsState.activeTemplate === 'Unclaimed Assistance' && !hasClaimingDate) {
             isValid = false;
         }
@@ -172,6 +228,86 @@
     }
 
     /**
+     * Update the contact number display, conversion preview, and validation status in the modal.
+     */
+    function updateContactNumberDisplay() {
+        const contactEl = document.getElementById('smsModalContactNumber');
+        const convertedContainer = document.getElementById('smsModalConvertedContainer');
+        const convertedEl = document.getElementById('smsModalConvertedNumber');
+        const noContactAlert = document.getElementById('smsNoContactAlert');
+        const noContactTitle = document.getElementById('smsNoContactTitle');
+        const noContactSubtitle = document.getElementById('smsNoContactSubtitle');
+        const contactBadge = document.getElementById('smsContactStatusBadge');
+        const invalidContactAlert = document.getElementById('smsInvalidContactAlert');
+
+        const raw = smsState.contactNumber ? String(smsState.contactNumber).trim() : '';
+        const converted = convertToPhilippineInternational(raw);
+        smsState.convertedContactNumber = converted || '';
+
+        // Keep hidden form field synced with converted international format (or raw if empty)
+        const recipientHiddenInput = document.getElementById('smsRecipientNumber');
+        if (recipientHiddenInput) {
+            recipientHiddenInput.value = converted || raw;
+        }
+
+        if (!raw || raw === 'N/A' || raw === 'No contact' || raw.toLowerCase() === 'none') {
+            if (contactEl) contactEl.textContent = 'No contact number';
+            if (contactBadge) {
+                contactBadge.className = 'badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill py-0.5 px-2';
+                contactBadge.style.fontSize = '0.72rem';
+                contactBadge.style.fontWeight = '500';
+                contactBadge.innerHTML = '<i class="fas fa-times-circle me-0.5"></i> Missing';
+            }
+            if (convertedContainer) convertedContainer.classList.add('d-none');
+            if (noContactAlert) {
+                noContactAlert.classList.remove('d-none');
+                if (noContactTitle) noContactTitle.textContent = 'No contact number is available for this beneficiary.';
+                if (noContactSubtitle) noContactSubtitle.textContent = 'SMS messaging requires a valid Philippine mobile number (e.g. 09XXXXXXXXX or +63XXXXXXXXXX).';
+            }
+            if (invalidContactAlert) invalidContactAlert.classList.add('d-none');
+        } else if (!converted) {
+            // Provided number but invalid format
+            if (contactEl) contactEl.textContent = raw;
+            if (contactBadge) {
+                contactBadge.className = 'badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill py-0.5 px-2';
+                contactBadge.style.fontSize = '0.72rem';
+                contactBadge.style.fontWeight = '500';
+                contactBadge.innerHTML = '<i class="fas fa-exclamation-triangle me-0.5"></i> Invalid Format';
+            }
+            if (convertedContainer) convertedContainer.classList.add('d-none');
+            if (noContactAlert) {
+                noContactAlert.classList.remove('d-none');
+                if (noContactTitle) noContactTitle.textContent = 'Invalid Philippine mobile number format.';
+                if (noContactSubtitle) noContactSubtitle.textContent = 'Please update the number to a valid format (e.g. 09XXXXXXXXX or +63XXXXXXXXXX).';
+            }
+            if (invalidContactAlert) invalidContactAlert.classList.remove('d-none');
+        } else {
+            // Valid Philippine mobile number!
+            if (contactEl) contactEl.textContent = raw;
+            if (contactBadge) {
+                contactBadge.className = 'badge bg-success-subtle text-success border border-success-subtle rounded-pill py-0.5 px-2';
+                contactBadge.style.fontSize = '0.72rem';
+                contactBadge.style.fontWeight = '500';
+                contactBadge.innerHTML = '<i class="fas fa-check-circle me-0.5"></i> Valid (PH +63)';
+            }
+            if (convertedContainer && convertedEl) {
+                // If raw number is already formatted in +63 international format, avoid duplicate display
+                const isAlreadyInternational = (raw.startsWith('+63') || raw.startsWith('+')) && (raw.replace(/\D/g, '') === converted.replace(/\D/g, ''));
+                if (isAlreadyInternational || raw === converted) {
+                    convertedContainer.classList.add('d-none');
+                } else {
+                    convertedEl.textContent = converted;
+                    convertedContainer.classList.remove('d-none');
+                }
+            }
+            if (noContactAlert) noContactAlert.classList.add('d-none');
+            if (invalidContactAlert) invalidContactAlert.classList.add('d-none');
+        }
+
+        validateForm();
+    }
+
+    /**
      * Populate and open the SMS Messaging Modal.
      */
     function openSmsModal(data) {
@@ -180,6 +316,7 @@
         smsState.representativeName = data.representativeName || '';
         smsState.isSeparateRep = Boolean(data.isSeparateRep && data.representativeName && data.representativeName !== data.beneficiaryName);
         smsState.contactNumber = data.contactNumber || '';
+        smsState.convertedContactNumber = convertToPhilippineInternational(smsState.contactNumber) || '';
         smsState.purpose = data.purpose || 'Financial Assistance';
         smsState.amount = data.amount || '₱0.00';
         smsState.claimingDateFormatted = data.claimingDate || '';
@@ -189,7 +326,7 @@
 
         // Populate hidden form inputs
         document.getElementById('smsIntakeId').value = smsState.intakeId;
-        document.getElementById('smsRecipientNumber').value = smsState.contactNumber;
+        document.getElementById('smsRecipientNumber').value = smsState.convertedContactNumber || smsState.contactNumber;
         document.getElementById('smsClaimingDateHidden').value = smsState.claimingDateRaw;
 
         // Populate Beneficiary Info
@@ -204,23 +341,12 @@
             repContainer.classList.add('d-none');
         }
 
-        // Contact Number & Missing Contact Alert
-        const contactEl = document.getElementById('smsModalContactNumber');
-        const noContactAlert = document.getElementById('smsNoContactAlert');
-        const contactBadge = document.getElementById('smsContactStatusBadge');
+        // Contact Number & Missing/Invalid Contact Alerts
+        updateContactNumberDisplay();
 
-        const hasValidContact = Boolean(smsState.contactNumber && smsState.contactNumber !== 'N/A' && smsState.contactNumber !== 'No contact');
-        if (hasValidContact) {
-            contactEl.textContent = smsState.contactNumber;
-            contactBadge.className = 'badge bg-success-subtle text-success border border-success-subtle text-2xs rounded-pill';
-            contactBadge.innerHTML = '<i class="fas fa-check-circle me-0.5"></i> Verified';
-            noContactAlert.classList.add('d-none');
-        } else {
-            contactEl.textContent = 'No contact number';
-            contactBadge.className = 'badge bg-danger-subtle text-danger border border-danger-subtle text-2xs rounded-pill';
-            contactBadge.innerHTML = '<i class="fas fa-times-circle me-0.5"></i> Missing';
-            noContactAlert.classList.remove('d-none');
-        }
+        // Close inline contact editor if open
+        const inlineContactGroup = document.getElementById('smsInlineContactGroup');
+        if (inlineContactGroup) inlineContactGroup.classList.add('d-none');
 
         // Purpose and Amount
         document.getElementById('smsModalPurpose').textContent = smsState.purpose;
@@ -274,6 +400,9 @@
         // Load History
         loadHistory(smsState.intakeId);
 
+        // Check Gateway Status
+        checkGatewayStatus();
+
         // Validate
         validateForm();
 
@@ -285,19 +414,60 @@
     }
 
     /**
+     * Check and display SMS gateway & device status in the modal header.
+     */
+    function checkGatewayStatus() {
+        const pill = document.getElementById('smsGatewayStatusPill');
+        if (!pill) return;
+
+        fetch('/admin/financial/financialstep2/messages/gateway-status', {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(res => res.json())
+        .then(res => {
+            const data = res.data || {};
+            pill.classList.remove('d-none');
+
+            if (data.status === 'online') {
+                pill.className = 'badge bg-success bg-opacity-75 text-white rounded-pill px-2 py-0.5 text-2xs fw-semibold';
+                pill.innerHTML = '<i class="fas fa-signal me-1"></i> Gateway Online';
+                pill.title = data.message || 'SMS Gateway is connected and online';
+            } else if (data.status === 'offline') {
+                pill.className = 'badge bg-warning text-dark rounded-pill px-2 py-0.5 text-2xs fw-semibold';
+                pill.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i> Device Offline';
+                pill.title = data.message || 'Device is offline in TextBee app';
+            } else if (data.status === 'no_devices') {
+                pill.className = 'badge bg-danger text-white rounded-pill px-2 py-0.5 text-2xs fw-semibold';
+                pill.innerHTML = '<i class="fas fa-mobile-screen-button me-1"></i> No Device';
+                pill.title = data.message || 'No Android device registered in TextBee';
+            } else {
+                pill.className = 'badge bg-secondary text-white rounded-pill px-2 py-0.5 text-2xs fw-normal';
+                pill.innerHTML = '<i class="fas fa-tower-broadcast me-1"></i> Gateway Active';
+            }
+        })
+        .catch(err => {
+            console.warn('Gateway status check skipped:', err);
+        });
+    }
+
+    /**
      * Submit SMS message with pre-send SweetAlert confirmation dialog.
      */
     function submitSms() {
-        if (!smsState.contactNumber || smsState.contactNumber === 'N/A' || smsState.contactNumber === 'No contact') {
+        const converted = convertToPhilippineInternational(smsState.contactNumber);
+        if (!converted) {
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Missing Contact Number',
-                    text: 'No contact number is available for this beneficiary. Message cannot be sent.',
+                    title: 'Invalid Contact Number',
+                    text: 'Please provide a valid Philippine mobile number (e.g. 09XXXXXXXXX or +63XXXXXXXXXX). Message cannot be sent.',
                     confirmButtonColor: '#1A237E'
                 });
             } else {
-                alert('No contact number is available for this beneficiary.');
+                alert('Please provide a valid Philippine mobile number (e.g. 09XXXXXXXXX or +63XXXXXXXXXX).');
             }
             return;
         }
@@ -316,6 +486,7 @@
         }
 
         const claimingDateDisplay = smsState.claimingDateFormatted || 'Not Specified';
+        const rawContactDisplay = smsState.contactNumber || '';
 
         // Confirmation dialog before sending
         if (typeof Swal !== 'undefined') {
@@ -323,12 +494,12 @@
                 title: `<span style="font-size: 1.15rem; font-weight: 700;">Are you sure you want to send this message to ${smsState.beneficiaryName}?</span>`,
                 html: `
                     <div class="text-start p-3 bg-light rounded-3 small border mb-2">
-                        <div class="mb-1.5"><strong>Recipient Number:</strong> <span class="font-monospace text-primary">${smsState.contactNumber}</span></div>
-                        <div class="mb-1.5"><strong>Claiming Date:</strong> <span class="fw-semibold text-dark">${claimingDateDisplay}</span></div>
-                        <div class="mt-2 pt-2 border-top">
-                            <strong class="d-block mb-1 text-muted">Message Preview:</strong>
-                            <div class="p-2 bg-white rounded border fst-italic text-dark">${message}</div>
+                        <div class="mb-1.5">
+                            <strong>Recipient Number:</strong>
+                            <span class="font-monospace text-primary fw-bold">${converted}</span>
+                            ${rawContactDisplay && rawContactDisplay !== converted ? `<span class="text-muted small ms-1">(from ${rawContactDisplay})</span>` : ''}
                         </div>
+                        <div><strong>Claiming Date:</strong> <span class="fw-semibold text-dark">${claimingDateDisplay}</span></div>
                     </div>
                     ${smsState.lastMessageDate ? '<div class="alert alert-warning py-1.5 px-2 text-start small mb-0"><i class="fas fa-exclamation-triangle me-1"></i> Notice: This beneficiary was already contacted previously.</div>' : ''}
                 `,
@@ -346,7 +517,7 @@
                 }
             });
         } else {
-            if (confirm(`Are you sure you want to send this SMS to ${smsState.beneficiaryName}?\nClaiming Date: ${claimingDateDisplay}\n\nMessage:\n"${message}"`)) {
+            if (confirm(`Are you sure you want to send this SMS to ${smsState.beneficiaryName}?\nRecipient: ${converted}\nClaiming Date: ${claimingDateDisplay}\n\nMessage:\n"${message}"`)) {
                 dispatchSendRequest(message);
             }
         }
@@ -367,7 +538,7 @@
             message: message,
             message_type: smsState.activeTemplate,
             claiming_date: smsState.claimingDateRaw || null,
-            recipient_contact_number: smsState.contactNumber,
+            recipient_contact_number: smsState.convertedContactNumber || convertToPhilippineInternational(smsState.contactNumber) || smsState.contactNumber,
         };
 
         fetch('/admin/financial/financialstep2/messages/send', {
@@ -465,7 +636,7 @@
         // Update send message button to show last sent badge
         const lastSentSpan = document.getElementById(`last-sent-badge-${intakeId}`);
         if (lastSentSpan) {
-            lastSentSpan.textContent = `Sent: ${sentDate}`;
+            lastSentSpan.innerHTML = `<i class="fas fa-paper-plane text-primary me-1"></i> Last sent: ${sentDate}`;
             lastSentSpan.classList.remove('d-none');
         }
 
@@ -609,6 +780,46 @@
         if (btnSaveInline) {
             btnSaveInline.addEventListener('click', function () {
                 saveInlineClaimingDate();
+            });
+        }
+
+        // Inline Contact Number Edit Triggers
+        const btnEditContact = document.getElementById('btnEditContactNumber');
+        const inlineContactGroup = document.getElementById('smsInlineContactGroup');
+        const inlineContactInput = document.getElementById('smsInlineContactInput');
+        const btnSaveContact = document.getElementById('btnSaveInlineContact');
+        const btnCancelContact = document.getElementById('btnCancelInlineContact');
+
+        if (btnEditContact && inlineContactGroup && inlineContactInput) {
+            btnEditContact.addEventListener('click', function () {
+                inlineContactGroup.classList.remove('d-none');
+                inlineContactInput.value = smsState.contactNumber || '';
+                inlineContactInput.focus();
+            });
+        }
+
+        if (btnCancelContact && inlineContactGroup) {
+            btnCancelContact.addEventListener('click', function () {
+                inlineContactGroup.classList.add('d-none');
+            });
+        }
+
+        if (btnSaveContact && inlineContactInput) {
+            btnSaveContact.addEventListener('click', function () {
+                const val = inlineContactInput.value.trim();
+                smsState.contactNumber = val;
+                inlineContactGroup.classList.add('d-none');
+                updateContactNumberDisplay();
+            });
+
+            inlineContactInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    btnSaveContact.click();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    if (btnCancelContact) btnCancelContact.click();
+                }
             });
         }
 

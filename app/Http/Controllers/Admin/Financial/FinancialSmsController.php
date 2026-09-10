@@ -50,11 +50,11 @@ class FinancialSmsController extends Controller
             ], 422);
         }
 
-        $normalizedNumber = SmsService::normalizeContactNumber($rawContactNumber);
+        $normalizedNumber = SmsService::formatToPhilippineInternational($rawContactNumber);
         if (!$normalizedNumber) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid contact number format. Please verify the phone number (e.g. 09171234567).',
+                'message' => 'Invalid Philippine mobile number format. Please verify the phone number (e.g. 09171234567 or +639171234567).',
             ], 422);
         }
 
@@ -273,7 +273,7 @@ class FinancialSmsController extends Controller
                 $rawContact = $intake->rep_contact_number;
             }
 
-            $normalizedContact = SmsService::normalizeContactNumber($rawContact);
+            $normalizedContact = SmsService::formatToPhilippineInternational($rawContact);
             $hasValidContact = !empty($normalizedContact);
 
             $claimingDate = $intake->effective_claiming_date;
@@ -322,6 +322,8 @@ class FinancialSmsController extends Controller
             'month' => ['required', 'string', 'regex:/^\d{4}-\d{2}$/'],
             'intake_ids' => ['nullable', 'array'],
             'intake_ids.*' => ['integer', 'exists:beneficiary_intakes,id'],
+            'claiming_date' => ['nullable', 'date'],
+            'message' => ['nullable', 'string', 'min:3', 'max:1000'],
         ]);
 
         $selectedMonth = $request->month;
@@ -360,6 +362,19 @@ class FinancialSmsController extends Controller
 
         $officer = session('financial_step2_authorized_user') ?? session('admin_user_name') ?? 'MSWDO Staff';
 
+        // Prepare batch claiming date if provided
+        $batchClaimingDate = null;
+        $batchFormattedClaimingDate = null;
+        if ($request->filled('claiming_date')) {
+            $parsedDate = Carbon::parse($request->claiming_date);
+            $batchClaimingDate = $parsedDate->format('Y-m-d');
+            $batchFormattedClaimingDate = $parsedDate->format('F d, Y');
+        }
+
+        $templateMessage = $request->filled('message')
+            ? trim($request->message)
+            : SmsService::generateUnclaimedMessage('{NAME}', '{DATE}');
+
         $totalAttempted = $intakes->count();
         $sentCount = 0;
         $failedCount = 0;
@@ -376,9 +391,29 @@ class FinancialSmsController extends Controller
                 $rawContact = $intake->rep_contact_number;
             }
 
-            $normalizedNumber = SmsService::normalizeContactNumber($rawContact);
+            $normalizedNumber = SmsService::formatToPhilippineInternational($rawContact);
+
+            // Apply selected batch claiming date to all beneficiaries included in this bulk SMS
+            if (!empty($batchClaimingDate)) {
+                $intake->claiming_date = $batchClaimingDate;
+                $intake->save();
+            }
+
             $effectiveClaimingDate = $intake->effective_claiming_date;
-            $formattedClaimingDate = $intake->formatted_claiming_date;
+            $formattedClaimingDate = $batchFormattedClaimingDate ?: ($effectiveClaimingDate ? $effectiveClaimingDate->format('F d, Y') : null);
+
+            // Personalize message with beneficiary's name and the claiming date
+            $personalizedMessage = str_replace(
+                [
+                    '[Beneficiary Name]', '[beneficiary name]', '[Pangalan ng Benepisyaryo]', '[Pangalan]', '[pangalan]', '{NAME}', '{name}',
+                    '[Claiming Date]', '[claiming date]', '[Petsa ng Pagkuha]', '[Petsa]', '[petsa]', '{DATE}', '{date}'
+                ],
+                [
+                    $beneficiaryName, $beneficiaryName, $beneficiaryName, $beneficiaryName, $beneficiaryName, $beneficiaryName, $beneficiaryName,
+                    $formattedClaimingDate ?: '[Claiming Date]', $formattedClaimingDate ?: '[Claiming Date]', $formattedClaimingDate ?: '[Claiming Date]', $formattedClaimingDate ?: '[Claiming Date]', $formattedClaimingDate ?: '[Claiming Date]', $formattedClaimingDate ?: '[Claiming Date]', $formattedClaimingDate ?: '[Claiming Date]'
+                ],
+                $templateMessage
+            );
 
             // Missing or invalid contact number check
             if (!$normalizedNumber) {
@@ -389,11 +424,11 @@ class FinancialSmsController extends Controller
                     'beneficiary_name' => $beneficiaryName,
                     'recipient_name' => $recipientName,
                     'recipient_contact_number' => $rawContact ?: 'N/A',
-                    'message_body' => SmsService::generateUnclaimedMessage($beneficiaryName, $formattedClaimingDate),
+                    'message_body' => $personalizedMessage,
                     'message_type' => 'Unclaimed Assistance',
-                    'claiming_date' => $effectiveClaimingDate ? $effectiveClaimingDate->format('Y-m-d') : null,
+                    'claiming_date' => $effectiveClaimingDate ? $effectiveClaimingDate->format('Y-m-d') : $batchClaimingDate,
                     'status' => 'Failed',
-                    'error_message' => 'No contact number or invalid phone number format.',
+                    'error_message' => 'No contact number or invalid Philippine mobile number format.',
                     'sent_by' => $officer,
                     'sent_at' => null,
                 ]);
@@ -402,16 +437,13 @@ class FinancialSmsController extends Controller
                     'intake_id' => $intake->id,
                     'beneficiary_name' => $beneficiaryName,
                     'status' => 'no_contact',
-                    'message' => 'No contact number or invalid format.',
+                    'message' => 'No contact number or invalid Philippine mobile format.',
                 ];
                 continue;
             }
 
-            // Generate personalized message in Tagalog using individual's own name and claiming date
-            $message = SmsService::generateUnclaimedMessage($beneficiaryName, $formattedClaimingDate);
-
             // Send via SmsService
-            $result = $this->smsService->send($normalizedNumber, $message);
+            $result = $this->smsService->send($normalizedNumber, $personalizedMessage);
 
             if ($result['success']) {
                 $sentCount++;
@@ -421,9 +453,9 @@ class FinancialSmsController extends Controller
                     'beneficiary_name' => $beneficiaryName,
                     'recipient_name' => $recipientName,
                     'recipient_contact_number' => $normalizedNumber,
-                    'message_body' => $message,
+                    'message_body' => $personalizedMessage,
                     'message_type' => 'Unclaimed Assistance',
-                    'claiming_date' => $effectiveClaimingDate ? $effectiveClaimingDate->format('Y-m-d') : null,
+                    'claiming_date' => $effectiveClaimingDate ? $effectiveClaimingDate->format('Y-m-d') : $batchClaimingDate,
                     'status' => 'Sent',
                     'reference_id' => $result['reference_id'] ?? null,
                     'sent_by' => $officer,
@@ -472,6 +504,19 @@ class FinancialSmsController extends Controller
             'failed_count' => $failedCount,
             'no_contact_count' => $noContactCount,
             'details' => $details,
+        ]);
+    }
+
+    /**
+     * Check SMS gateway connectivity and active device status.
+     */
+    public function gatewayStatus()
+    {
+        $status = $this->smsService->checkGatewayStatus();
+
+        return response()->json([
+            'success' => $status['status'] === 'online' || $status['status'] === 'ready',
+            'data' => $status,
         ]);
     }
 }

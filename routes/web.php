@@ -145,6 +145,7 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::post('/admin/financial/financialstep2/intakes/{id}/claiming-date', [FinancialSmsController::class, 'updateClaimingDate'])->name('admin.financial.financialstep2.intakes.claiming-date');
         Route::get('/admin/financial/financialstep2/messages/unclaimed-by-month', [FinancialSmsController::class, 'getUnclaimedByMonth'])->name('admin.financial.financialstep2.messages.unclaimed-by-month');
         Route::post('/admin/financial/financialstep2/messages/send-bulk-unclaimed', [FinancialSmsController::class, 'sendBulkUnclaimed'])->name('admin.financial.financialstep2.messages.send-bulk-unclaimed');
+        Route::get('/admin/financial/financialstep2/messages/gateway-status', [FinancialSmsController::class, 'gatewayStatus'])->name('admin.financial.financialstep2.messages.gateway-status');
     });
 });
 
