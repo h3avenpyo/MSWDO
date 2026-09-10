@@ -1060,15 +1060,9 @@
                 notice.style.display = 'flex';
                 document.getElementById('selectAllPagesText').textContent = `All ${total} senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.`;
             }
-            // Show bulk actions button
-            const bulkButton = document.getElementById('bulkActionButton');
-            if (bulkButton) bulkButton.style.display = 'inline-flex';
         } else {
             window.selectAllMatching = false;
             if (notice) notice.style.display = 'none';
-            // Hide bulk actions button
-            const bulkButton = document.getElementById('bulkActionButton');
-            if (bulkButton) bulkButton.style.display = 'none';
         }
 
         updateBulkActions();
@@ -1112,64 +1106,100 @@
         updateBulkActions();
     }
 
-    function updateBulkActions() {
-        const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
-        const button = document.getElementById('bulkActionButton');
-        const countSpan = document.getElementById('selectedCount');
-        const mobileCount = document.getElementById('mobileSelectedCount');
-        const mobileAll = document.getElementById('mobileSelectAll');
-        const clearSelectionsBtn = document.getElementById('clearSelectionsBtn');
-        const totalMatching = {{ $seniors->total() ?? 0 }};
-        const pageTotal = document.querySelectorAll('.senior-checkbox').length;
+    function updateBulkActions() { syncActionButtons(); }
+    function updateClearButtonVisibility() { syncActionButtons(); }
 
-        // Get all selected IDs from localStorage and merge with current page selections
-        const savedIds = localStorage.getItem('selectedSeniorIds');
-        let allSelectedIds = savedIds ? JSON.parse(savedIds) : [];
-        const currentPageIds = Array.from(checkboxes).map(cb => cb.dataset.id);
+    /**
+     * Single source of truth for all action button visibility.
+     *
+     * Priority 1 — 2+ rows selected  → show Bulk Actions + Clear Selections, HIDE Clear filter
+     * Priority 2 — filter active only → show Clear filter, HIDE Bulk Actions + Clear Selections
+     * Priority 3 — nothing active     → hide all three
+     */
+    function syncActionButtons() {
+        // ── Elements ──────────────────────────────────────────────────────────
+        const bulkBtn          = document.getElementById('bulkActionButton');
+        const clearSelectBtn   = document.getElementById('clearSelectionsBtn');
+        const clearFilterBtn   = document.getElementById('clearFiltersBtn');
+        const countSpan        = document.getElementById('selectedCount');
+        const mobileCount      = document.getElementById('mobileSelectedCount');
+        const mobileAll        = document.getElementById('mobileSelectAll');
 
-        // Remove IDs from current page from saved list, then add current selections
+        // ── Compute selection count ───────────────────────────────────────────
+        const checkedBoxes     = document.querySelectorAll('.senior-checkbox:checked');
+        const pageTotal        = document.querySelectorAll('.senior-checkbox').length;
+        const totalMatching    = {{ $seniors->total() ?? 0 }};
+
+        // Merge current page selection into localStorage
+        const savedIds         = localStorage.getItem('selectedSeniorIds');
+        let allSelectedIds     = savedIds ? JSON.parse(savedIds) : [];
+        const currentPageIds   = Array.from(checkedBoxes).map(cb => cb.dataset.id);
         const currentPageAllIds = Array.from(document.querySelectorAll('.senior-checkbox')).map(cb => cb.dataset.id);
         allSelectedIds = allSelectedIds.filter(id => !currentPageAllIds.includes(id));
         allSelectedIds = [...allSelectedIds, ...currentPageIds];
-
         localStorage.setItem('selectedSeniorIds', JSON.stringify(allSelectedIds));
 
-        const count = window.selectAllMatching ? totalMatching : allSelectedIds.length;
+        const selectionCount = window.selectAllMatching ? totalMatching : allSelectedIds.length;
 
-        countSpan.textContent = count;
+        // Update count badge & mobile counter
+        if (countSpan) countSpan.textContent = selectionCount;
         if (mobileCount) {
-            mobileCount.textContent = count > 0 ? (window.selectAllMatching ? `${count} / ${totalMatching} selected (all pages)` : `${count} / ${pageTotal} selected`) : '';
+            mobileCount.textContent = selectionCount > 0
+                ? (window.selectAllMatching
+                    ? `${selectionCount} / ${totalMatching} selected (all pages)`
+                    : `${selectionCount} / ${pageTotal} selected`)
+                : '';
         }
         if (mobileAll) {
-            mobileAll.checked = checkboxes.length === pageTotal && pageTotal > 0;
+            mobileAll.checked = checkedBoxes.length === pageTotal && pageTotal > 0;
         }
-
-        if (checkboxes.length < pageTotal) {
+        if (checkedBoxes.length < pageTotal) {
             window.selectAllMatching = false;
             const notice = document.getElementById('selectAllPagesNotice');
             if (notice) notice.style.display = 'none';
         }
 
-        if (count > 0) {
-            button.disabled = false;
-            button.style.opacity = '1';
-            button.style.display = 'inline-flex';
-            button.style.background = '#3730A3';
-            button.style.color = 'white';
-            button.style.borderColor = '#312E81';
-            if (clearSelectionsBtn) {
-                clearSelectionsBtn.style.display = 'inline-flex';
+        // ── Compute filter state ──────────────────────────────────────────────
+        const searchInput  = document.getElementById('searchInput');
+        const barangaySelect = document.getElementById('barangaySelect');
+        const hasFilter    = (searchInput && searchInput.value.trim() !== '')
+                          || (barangaySelect && barangaySelect.value !== '');
+
+        // ── Apply Priority Rules ──────────────────────────────────────────────
+        if (selectionCount >= 2) {
+            // PRIORITY 1: selection mode
+            if (bulkBtn) {
+                bulkBtn.style.display    = 'inline-flex';
+                bulkBtn.disabled         = false;
+                bulkBtn.style.opacity    = '1';
+                bulkBtn.style.background = '#3730A3';
+                bulkBtn.style.color      = 'white';
+                bulkBtn.style.borderColor = '#312E81';
             }
+            if (clearSelectBtn) clearSelectBtn.style.display = 'inline-flex';
+            if (clearFilterBtn) clearFilterBtn.style.display = 'none';          // hidden in selection mode
+
+        } else if (hasFilter) {
+            // PRIORITY 2: filter active, no bulk selection
+            if (bulkBtn) {
+                bulkBtn.style.display = 'none';
+                bulkBtn.disabled      = true;
+            }
+            if (clearSelectBtn) clearSelectBtn.style.display = 'none';
+            if (clearFilterBtn) clearFilterBtn.style.display = 'inline-flex';   // only clear filter shows
+
         } else {
-            button.disabled = true;
-            button.style.opacity = '0.45';
-            button.style.display = 'none';
-            button.style.background = '#E0E7FF';
-            button.style.color = '#3730A3';
-            button.style.borderColor = '#C7D2FE';
-            if (clearSelectionsBtn) {
-                clearSelectionsBtn.style.display = 'none';
+            // PRIORITY 3: nothing active — hide all
+            if (bulkBtn) {
+                bulkBtn.style.display    = 'none';
+                bulkBtn.disabled         = true;
+                bulkBtn.style.opacity    = '0.45';
+                bulkBtn.style.background = '#E0E7FF';
+                bulkBtn.style.color      = '#3730A3';
+                bulkBtn.style.borderColor = '#C7D2FE';
             }
+            if (clearSelectBtn) clearSelectBtn.style.display = 'none';
+            if (clearFilterBtn) clearFilterBtn.style.display = 'none';
         }
     }
 
@@ -1184,7 +1214,7 @@
                     cb.checked = true;
                 }
             });
-            updateBulkActions();
+            syncActionButtons();
         }
     }
 
@@ -1406,48 +1436,17 @@
         });
     }
 
-    function updateClearButtonVisibility() {
-        const searchInput = document.getElementById('searchInput');
-        const barangaySelect = document.getElementById('barangaySelect');
-        const clearBtn = document.getElementById('clearFiltersBtn');
-        const clearSelectionsBtn = document.getElementById('clearSelectionsBtn');
-
-        const hasSearch = searchInput && searchInput.value.trim() !== '';
-        const hasBarangay = barangaySelect && barangaySelect.value !== '';
-
-        if (clearBtn) {
-            if (hasSearch || hasBarangay) {
-                clearBtn.style.display = 'inline-flex';
-            } else {
-                clearBtn.style.display = 'none';
-            }
-        }
-
-        // Handle clear selections button visibility separately based on saved selections
-        const savedIds = localStorage.getItem('selectedSeniorIds');
-        const hasSelections = savedIds && JSON.parse(savedIds).length > 0;
-        if (clearSelectionsBtn) {
-            clearSelectionsBtn.style.display = hasSelections ? 'inline-flex' : 'none';
-        }
-    }
 
     function clearFilters() {
         const searchInput = document.getElementById('searchInput');
         const barangaySelect = document.getElementById('barangaySelect');
 
-        if (searchInput) {
-            searchInput.value = '';
-        }
-        if (barangaySelect) {
-            barangaySelect.value = '';
-        }
-
-        // Also clear selections when clearing filters
-        clearSelections();
+        if (searchInput) searchInput.value = '';
+        if (barangaySelect) barangaySelect.value = '';
 
         updateClearButtonVisibility();
 
-        // Submit form to clear filters
+        // Submit form to apply cleared filters
         document.getElementById('filterForm').submit();
     }
 
