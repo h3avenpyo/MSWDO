@@ -58,7 +58,7 @@
                 <td>{{ $s['age_turning'] }}</td>
                 <td>{{ $s['barangay'] }}</td>
                 <td>{{ $s['contact_number'] }}</td>
-                <td>{{ ucfirst($s['status']) }}</td>
+                <td>{{ ucfirst($s['status']->value ?? $s['status']) }}</td>
             </tr>
             @endforeach
         </tbody>

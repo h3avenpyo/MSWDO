@@ -220,7 +220,7 @@ class SocialCaseEligibilityRoleTest extends TestCase
 
         $submitted = SocialCaseStudy::create([
             'client_id' => $client->id,
-            'officer_id' => $checker->id,
+            'officer_id' => $worker->id,
             'case_number' => 'MSWD-O-2026-08-SUB1',
             'status' => 'Draft',
             'eligibility_status' => 'eligible',
@@ -235,8 +235,15 @@ class SocialCaseEligibilityRoleTest extends TestCase
             ->assertSee('Eligibility Checker', false)
             ->assertSee('Encode');
 
+        // Another social worker should NOT see this case
+        $otherWorker = $this->makeUser('social_worker');
+        $this->sessionAs($otherWorker)->get(route('admin.social-case.submitted'))
+            ->assertOk()
+            ->assertDontSee($client->full_name, false);
+
         $submitted->delete();
         $client->delete();
+        $otherWorker->delete();
         $worker->delete();
         $checker->delete();
     }
@@ -271,6 +278,47 @@ class SocialCaseEligibilityRoleTest extends TestCase
         $response->assertDontSee('/admin/social-case/cases');
         $response->assertDontSee('/admin/social-case/archive');
 
+        $checker->delete();
+    }
+
+    public function test_get_encoders_returns_active_encoder_accounts(): void
+    {
+        $checker = $this->makeUser('eligibility_checker');
+        $worker = $this->makeUser('social_worker');
+
+        $response = $this->sessionAs($checker)->getJson(route('admin.social-case.api.encoders'));
+        $response->assertOk();
+        $this->assertNotEmpty($response->json());
+
+        $workerIds = collect($response->json())->pluck('id')->all();
+        $this->assertContains($worker->id, $workerIds);
+
+        $worker->delete();
+        $checker->delete();
+    }
+
+    public function test_submit_eligibility_assigns_chosen_encoder(): void
+    {
+        $checker = $this->makeUser('eligibility_checker');
+        $worker = $this->makeUser('social_worker');
+        $clientName = 'EncoderSelect ' . uniqid();
+
+        $resp = $this->sessionAs($checker)->postJson(route('admin.social-case.api.eligibility.submit'), [
+            'client_name' => $clientName,
+            'encoder_id'  => $worker->id,
+        ]);
+
+        $resp->assertStatus(201);
+        $caseId = $resp->json('case.id');
+        $this->assertNotNull($caseId);
+
+        $case = SocialCaseStudy::find($caseId);
+        $this->assertSame($worker->id, $case->officer_id);
+        $this->assertSame($checker->id, $case->eligible_by);
+
+        $case->delete();
+        Client::where('id', $case->client_id)->delete();
+        $worker->delete();
         $checker->delete();
     }
 }

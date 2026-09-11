@@ -30,7 +30,7 @@ body {
 
 .sidebar {
     background: var(--sidebar-bg);
-    width: 260px;
+    width: 280px;
     min-height: 100vh;
     position: fixed;
     left: 0; top: 0;
@@ -41,17 +41,21 @@ body {
 }
 
 .sidebar-brand {
-    padding: 1.5rem;
+    padding: 0 1.25rem;
+    height: 72px;
     border-bottom: 1px solid rgba(255,255,255,.1);
     color: #fff;
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     display: flex;
     align-items: center;
     gap: .65rem;
+    white-space: nowrap;
 }
 
-.sidebar-brand i { font-size: 1.3rem; color: var(--accent); }
+.sidebar-brand img { flex-shrink: 0; }
+.sidebar-brand span { white-space: nowrap; }
+.sidebar-brand i { font-size: 1.3rem; color: var(--accent); flex-shrink: 0; }
 
 .sidebar-menu {
     list-style: none;

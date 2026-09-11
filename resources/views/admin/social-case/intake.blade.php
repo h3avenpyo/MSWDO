@@ -34,7 +34,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <i data-lucide="file-text" style="width:24px;height:24px"></i>
+        <img src="{{ asset('images/dswd.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;" alt="DSWD">
         <span>Social Case Study</span>
     </div>
     <ul class="sidebar-menu">
@@ -95,7 +95,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         </div>
     </div>
 
-    <div id="intakeFormContent" style="overflow-y: auto; max-height: calc(100vh - 250px); padding-right: 10px;" class="intake-scroll"></div>
+    <div id="intakeFormContent" style="overflow-y: visible; height: auto; padding-right: 10px;" class="intake-scroll"></div>
 </div>
 @endsection
 
@@ -114,4 +114,44 @@ function toggleDropdown(id) {
         loadIntakeForm();
     });
 </script>
+@endpush
+
+@push('styles')
+<style>
+    /* Mobile layout fixes for intake form */
+    @media (max-width: 767.98px) {
+        .family-member-row {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+        }
+        .family-member-row .field {
+            margin-bottom: 0;
+        }
+        .family-member-row .field label {
+            font-size: 12px !important;
+        }
+        .family-member-row .field input,
+        .family-member-row .field select {
+            font-size: 13px !important;
+            padding: 6px 8px !important;
+        }
+
+        /* Signatories mobile layout - vertical stacking */
+        .field-row {
+            flex-direction: column !important;
+            gap: 8px !important;
+        }
+        .field-row .field {
+            flex: 1 !important;
+            width: 100% !important;
+        }
+        .field-row .field label {
+            font-size: 12px !important;
+        }
+        .field-row .field input {
+            font-size: 13px !important;
+            padding: 6px 8px !important;
+        }
+    }
+</style>
 @endpush

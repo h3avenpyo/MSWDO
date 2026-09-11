@@ -38,7 +38,7 @@ class SocialCaseController extends Controller
             'forwarded_to_encoder' => 0,
             'rejected_clients' => 0,
             'total_clients' => 0,
-            'for_encoding' => 0,
+            'forwarded_to_me' => 0,
             'released_today' => 0,
             'total_released' => 0,
         ];
@@ -52,10 +52,12 @@ class SocialCaseController extends Controller
                 ->count();
             $stats['rejected_clients'] = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
         } else {
-            // Case encoder stats
+            // Case encoder stats - only count cases forwarded to this encoder
+            $currentUserId = session('admin_user_id');
             $stats['total_clients'] = Client::has('socialCaseStudies')->count();
-            $stats['for_encoding'] = SocialCaseStudy::where('eligibility_status', 'eligible')
+            $stats['forwarded_to_me'] = SocialCaseStudy::where('eligibility_status', 'eligible')
                 ->where('status', 'Draft')
+                ->where('officer_id', $currentUserId)
                 ->count();
             $stats['released_today'] = SocialCaseStudy::where('status', 'Released')
                 ->whereDate('released_at', today())
@@ -138,13 +140,21 @@ class SocialCaseController extends Controller
      */
     public function socialCaseSubmitted()
     {
-        $submitted = SocialCaseStudy::with('client', 'eligibleByUser')
+        $userId = session('admin_user_id');
+        $userRole = (string) session('admin_user_role');
+
+        $query = SocialCaseStudy::with('client', 'eligibleByUser', 'officer')
             ->where('eligibility_status', 'eligible')
             ->whereNotNull('eligible_by')
             ->whereNull('encoded_by')
-            ->whereNotIn('status', ['Review', 'Approved', 'Printed', 'Released', 'Archived'])
-            ->orderByDesc('eligible_at')
-            ->get();
+            ->whereNotIn('status', ['Review', 'Approved', 'Printed', 'Released', 'Archived']);
+
+        // Case encoder accounts should only see submitted clients assigned to them
+        if ($userRole === 'social_worker') {
+            $query->where('officer_id', $userId);
+        }
+
+        $submitted = $query->orderByDesc('eligible_at')->get();
 
         $acceptedOnlineRequests = OnlineRequest::with('attachments')
             ->where('status', 'approved')
@@ -211,6 +221,37 @@ class SocialCaseController extends Controller
         return response()->json($cases);
     }
 
+    /**
+     * Return active accounts available for social case encoding.
+     */
+    public function getEncoders()
+    {
+        $encoders = User::where('role', 'social_worker')
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get(['id', 'name', 'email', 'role', 'position'])
+            ->map(function ($user) {
+                $activeCount = SocialCaseStudy::where('officer_id', $user->id)
+                    ->whereNotIn('status', ['Printed', 'Released', 'Archived'])
+                    ->count();
+
+                $roleValue = $user->role instanceof \App\Enums\UserRole ? $user->role->value : (string) $user->role;
+                $roleLabel = $user->role instanceof \App\Enums\UserRole ? $user->role->label() : ucfirst(str_replace('_', ' ', $user->role));
+
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $roleValue,
+                    'role_label' => $roleLabel,
+                    'position' => $user->position ?: $roleLabel,
+                    'active_cases_count' => $activeCount,
+                ];
+            });
+
+        return response()->json($encoders);
+    }
+
     public function getCase($id)
     {
         $case = SocialCaseStudy::with('client', 'officer', 'encoder', 'eligibleByUser', 'releasedByUser', 'interview', 'familyMembers')->find($id);
@@ -246,10 +287,14 @@ class SocialCaseController extends Controller
             }
         }
 
+        // Get the document reference number from the case (set when case was created)
+        $documentRefNumber = $case->document_ref_number ?? 1;
+
         return response()->json([
             'document_date'     => $today->toDateString(),
             'client_age'        => $documentAge,
             'client_birthdate'  => $client?->birthdate?->toDateString(),
+            'document_ref_number' => $documentRefNumber,
         ]);
     }
 
@@ -470,10 +515,24 @@ class SocialCaseController extends Controller
         $request->validate([
             'client_name' => 'required|string|max:255',
             'override'    => 'sometimes|boolean',
+            'encoder_id'  => 'nullable|integer|exists:users,id',
         ]);
 
-        $name     = trim($request->input('client_name'));
-        $override = $request->boolean('override');
+        $name      = trim($request->input('client_name'));
+        $override  = $request->boolean('override');
+        $encoderId = $request->input('encoder_id');
+
+        if ($encoderId) {
+            $encoderUser = User::where('id', $encoderId)
+                ->where('status', 'active')
+                ->where('role', 'social_worker')
+                ->first();
+            if (! $encoderUser) {
+                return response()->json([
+                    'error' => 'The selected account is not a Case Encoding account or is inactive.',
+                ], 422);
+            }
+        }
 
         // Use the same normalized matching as checkEligibility
         $parsed    = NameMatcher::parseFullName($name);
@@ -517,10 +576,33 @@ class SocialCaseController extends Controller
             ], 409);
         }
 
-        $case = DB::transaction(function () use ($client) {
+        $case = DB::transaction(function () use ($client, $encoderId) {
+            // Increment global document reference counter
+            $counter = DB::table('document_reference_counters')
+                ->where('type', 'social_case')
+                ->lockForUpdate()
+                ->first();
+            
+            if ($counter) {
+                $counter->current_number = $counter->current_number + 1;
+                DB::table('document_reference_counters')
+                    ->where('id', $counter->id)
+                    ->update(['current_number' => $counter->current_number]);
+                $documentRefNumber = $counter->current_number;
+            } else {
+                // Initialize if not exists
+                DB::table('document_reference_counters')->insert([
+                    'type' => 'social_case',
+                    'current_number' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                $documentRefNumber = 1;
+            }
+
             $case = SocialCaseStudy::create([
                 'client_id'          => $client->id,
-                'officer_id'         => session('admin_user_id'),
+                'officer_id'         => $encoderId ?? session('admin_user_id'),
                 'case_number'        => $this->generateCaseNumber(),
                 'date_processed'     => now()->toDateString(),
                 'encoded_by'         => null,
@@ -529,15 +611,26 @@ class SocialCaseController extends Controller
                 'eligible_by'        => session('admin_user_id'),
                 'eligible_at'        => now(),
                 'workflow_step'       => 'requirements_verification',
+                'document_ref_number' => $documentRefNumber,
             ]);
 
             return $case;
         });
 
+        $assignedOfficer = $case->officer;
+        $message = $assignedOfficer
+            ? "Client passed eligibility and was forwarded to {$assignedOfficer->name} for case encoding."
+            : 'Client passed eligibility and was forwarded for case encoding.';
+
         return response()->json([
             'eligible' => true,
-            'case' => $case->load('client'),
-            'message' => 'Client passed eligibility and was forwarded for case encoding.',
+            'case' => $case->load('client', 'officer', 'eligibleByUser'),
+            'assigned_officer' => $assignedOfficer ? [
+                'id' => $assignedOfficer->id,
+                'name' => $assignedOfficer->name,
+                'role' => $assignedOfficer->role instanceof \App\Enums\UserRole ? $assignedOfficer->role->label() : (string) $assignedOfficer->role,
+            ] : null,
+            'message' => $message,
         ], 201);
     }
 
@@ -637,6 +730,36 @@ class SocialCaseController extends Controller
         }
 
         $case = DB::transaction(function () use ($data, $clientId, $agencies, $encodedById, $caseId) {
+            // Increment global document reference counter for new cases only
+            $documentRefNumber = null;
+            if (!$caseId) {
+                $counter = DB::table('document_reference_counters')
+                    ->where('type', 'social_case')
+                    ->lockForUpdate()
+                    ->first();
+                
+                \Log::info('Document counter before increment:', ['counter' => $counter]);
+                
+                if ($counter) {
+                    $counter->current_number = $counter->current_number + 1;
+                    DB::table('document_reference_counters')
+                        ->where('id', $counter->id)
+                        ->update(['current_number' => $counter->current_number]);
+                    $documentRefNumber = $counter->current_number;
+                    \Log::info('Document counter incremented to:', ['documentRefNumber' => $documentRefNumber]);
+                } else {
+                    // Initialize if not exists
+                    DB::table('document_reference_counters')->insert([
+                        'type' => 'social_case',
+                        'current_number' => 1,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    $documentRefNumber = 1;
+                    \Log::info('Document counter initialized to:', ['documentRefNumber' => $documentRefNumber]);
+                }
+            }
+
             $case = $caseId
                 ? SocialCaseStudy::find($caseId)
                 : SocialCaseStudy::create([
@@ -645,9 +768,12 @@ class SocialCaseController extends Controller
                     'case_number'        => $this->generateCaseNumber(),
                     'date_processed'     => now()->toDateString(),
                     'workflow_step'       => 'requirements_verification',
+                    'document_ref_number' => $documentRefNumber,
                 ]);
+            
+            \Log::info('Case created with document_ref_number:', ['document_ref_number' => $case->document_ref_number]);
 
-            $case->update([
+            $updatePayload = [
                 'client_id'            => $clientId,
                 'date_processed'       => now()->toDateString(),
                 'interview_date'       => $data['interview']['report_date'] ?? null,
@@ -659,7 +785,12 @@ class SocialCaseController extends Controller
                 'summary'              => $data['interview']['problem_presented'] ?? null,
                 'requirements_complete' => !empty($data['requirements']),
                 'signers'              => $data['signers'] ?? [],
-            ]);
+            ];
+            // Only set document_ref_number for brand-new cases; never overwrite an existing one with null
+            if ($documentRefNumber !== null) {
+                $updatePayload['document_ref_number'] = $documentRefNumber;
+            }
+            $case->update($updatePayload);
 
             $interview = $data['interview'];
             \App\Models\SocialCase\CaseInterview::updateOrCreate(
@@ -700,6 +831,19 @@ class SocialCaseController extends Controller
         });
 
         return response()->json($case->load('client'), 201);
+    }
+    
+    // Debug endpoint to check document counter
+    public function debugDocumentCounter()
+    {
+        $counter = DB::table('document_reference_counters')
+            ->where('type', 'social_case')
+            ->first();
+        
+        return response()->json([
+            'counter' => $counter,
+            'message' => 'Document counter status'
+        ]);
     }
 
     private function findOrCreateClient(array $clientData): int

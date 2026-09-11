@@ -34,8 +34,8 @@
         .btn-bulk{background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE;}
         .btn-bulk:hover{border-color:#3730A3;transform:none;}
         .btn-bulk:disabled{opacity:.45;cursor:not-allowed;pointer-events:none;}
-        .btn-clear{background:var(--surface);color:var(--danger);border:1px solid #FECACA;}
-        .btn-clear:hover{border-color:var(--danger);}
+        .btn-clear{background:#FEF2F2;color:var(--danger);border:1px solid #FECACA;font-weight:600;}
+        .btn-clear:hover{border-color:var(--danger);background:#FEE2E2;}
 
         /* ── Modal ── */
         .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
@@ -52,6 +52,8 @@
         .modal-btn svg{width:20px;height:20px;}
         .modal-btn-danger{background:#DC2626;}
         .modal-btn-danger:hover{background:#B91C1C;}
+        .modal-btn-success{background:#10B981;}
+        .modal-btn-success:hover{background:#059669;}
         .modal-btn-indigo{background:var(--primary);}
         .modal-btn-indigo:hover{background:var(--primary-hover);}
 
@@ -534,7 +536,7 @@
                     </div>
                     <div class="filter-field">
                         <label class="filter-label" for="barangaySelect">Filter by Barangay</label>
-                        <select class="filter-select" id="barangaySelect" name="barangay" onchange="this.form.submit()">
+                        <select class="filter-select" id="barangaySelect" name="barangay">
                             <option value="">All Barangays</option>
                             <option value="Acacia" {{ request('barangay') == 'Acacia' ? 'selected' : '' }}>Acacia</option>
                             <option value="Adlas" {{ request('barangay') == 'Adlas' ? 'selected' : '' }}>Adlas</option>
@@ -609,6 +611,9 @@
                                 <i data-lucide="list-checks"></i> <span>Bulk Actions</span>
                                 <span id="selectedCount" class="selected-count-badge">0</span>
                             </button>
+                            <button type="button" id="clearSelectionsBtn" class="btn btn-clear" onclick="clearSelections()" style="display: none;">
+                                <i data-lucide="x"></i> <span>Clear Selections</span>
+                            </button>
                             <button type="button" id="clearFiltersBtn" class="btn btn-clear" onclick="clearFilters()" style="display: none;">
                                 <i data-lucide="x"></i> <span>Clear</span>
                             </button>
@@ -662,6 +667,9 @@
                                     <div class="actions">
                                         <button class="action-btn" style="background:var(--primary);border-color:var(--primary);color:#fff;" onclick="viewProfile({{ $senior->id }})" title="View Profile">
                                             <i data-lucide="eye"></i>
+                                        </button>
+                                        <button class="action-btn" style="background:#10B981;border-color:#10B981;color:#fff;" onclick="generateIdCard({{ $senior->id }})" title="Generate ID Card">
+                                            <i data-lucide="id-card"></i>
                                         </button>
                                         <button class="action-btn archive-senior-btn"
                                             data-id="{{ $senior->id }}"
@@ -812,6 +820,9 @@
                 <button type="button" class="modal-btn modal-btn-danger" onclick="bulkArchive(event)">
                     <i data-lucide="archive"></i> Archive Selected
                 </button>
+                <button type="button" class="modal-btn modal-btn-success" onclick="bulkPrintIdCards(event)">
+                    <i data-lucide="printer"></i> Print Selected IDs
+                </button>
                 <button type="button" class="modal-btn modal-btn-indigo" onclick="exportPdf(event)">
                     <i data-lucide="file-output"></i> Export Selected (PDF)
                 </button>
@@ -901,6 +912,91 @@
             });
     }
 
+    // Generate ID Card function
+    function generateIdCard(id) {
+        window.location.href = `{{ route('admin.senior.generate-id-card', 0) }}`.replace('/0', `/${id}`);
+    }
+
+    function bulkPrintIdCards(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        closeBulkModal();
+
+        const selectAll = document.getElementById('selectAll');
+        
+        // Get all selected IDs from localStorage
+        const savedIds = localStorage.getItem('selectedSeniorIds');
+        const ids = savedIds ? JSON.parse(savedIds) : [];
+
+        if (ids.length === 0 && !selectAll.checked) {
+            Swal.fire('No Selection', 'Please select at least one record.', 'warning');
+            return;
+        }
+
+        const count = selectAll.checked ? {{ $seniors->total() ?? 0 }} : ids.length;
+
+        Swal.fire({
+            title: 'Print Selected IDs?',
+            text: `You are about to generate ID cards for ${count} senior(s). Continue?`,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#1A237E',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Yes, Generate',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route('admin.senior.bulk-print-ids') }}';
+                
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = '{{ csrf_token() }}';
+                form.appendChild(csrfInput);
+                
+                if (selectAll.checked) {
+                    // Send filter parameters instead of IDs
+                    const searchInput = document.getElementById('searchInput');
+                    const barangaySelect = document.getElementById('barangaySelect');
+                    
+                    if (searchInput && searchInput.value) {
+                        const searchInput2 = document.createElement('input');
+                        searchInput2.type = 'hidden';
+                        searchInput2.name = 'search';
+                        searchInput2.value = searchInput.value;
+                        form.appendChild(searchInput2);
+                    }
+                    
+                    if (barangaySelect && barangaySelect.value) {
+                        const barangayInput = document.createElement('input');
+                        barangayInput.type = 'hidden';
+                        barangayInput.name = 'barangay';
+                        barangayInput.value = barangaySelect.value;
+                        form.appendChild(barangayInput);
+                    }
+                    
+                    const selectAllInput = document.createElement('input');
+                    selectAllInput.type = 'hidden';
+                    selectAllInput.name = 'select_all';
+                    selectAllInput.value = '1';
+                    form.appendChild(selectAllInput);
+                } else {
+                    const idsInput = document.createElement('input');
+                    idsInput.type = 'hidden';
+                    idsInput.name = 'ids';
+                    idsInput.value = JSON.stringify(ids);
+                    form.appendChild(idsInput);
+                }
+
+                clearSelections();
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+            }
+        });
+    }
+
     // Event delegation for Archive buttons
     document.addEventListener('click', function(e) {
         const button = e.target.closest ? e.target.closest('.archive-senior-btn') : null;
@@ -964,15 +1060,9 @@
                 notice.style.display = 'flex';
                 document.getElementById('selectAllPagesText').textContent = `All ${total} senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.`;
             }
-            // Show bulk actions button
-            const bulkButton = document.getElementById('bulkActionButton');
-            if (bulkButton) bulkButton.style.display = 'inline-flex';
         } else {
             window.selectAllMatching = false;
             if (notice) notice.style.display = 'none';
-            // Hide bulk actions button
-            const bulkButton = document.getElementById('bulkActionButton');
-            if (bulkButton) bulkButton.style.display = 'none';
         }
 
         updateBulkActions();
@@ -1016,45 +1106,115 @@
         updateBulkActions();
     }
 
-    function updateBulkActions() {
-        const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
-        const button = document.getElementById('bulkActionButton');
-        const countSpan = document.getElementById('selectedCount');
-        const mobileCount = document.getElementById('mobileSelectedCount');
-        const mobileAll = document.getElementById('mobileSelectAll');
-        const totalMatching = {{ $seniors->total() ?? 0 }};
-        const pageTotal = document.querySelectorAll('.senior-checkbox').length;
+    function updateBulkActions() { syncActionButtons(); }
+    function updateClearButtonVisibility() { syncActionButtons(); }
 
-        const count = window.selectAllMatching ? totalMatching : checkboxes.length;
+    /**
+     * Single source of truth for all action button visibility.
+     *
+     * Priority 1 — 2+ rows selected  → show Bulk Actions + Clear Selections, HIDE Clear filter
+     * Priority 2 — filter active only → show Clear filter, HIDE Bulk Actions + Clear Selections
+     * Priority 3 — nothing active     → hide all three
+     */
+    function syncActionButtons() {
+        // ── Elements ──────────────────────────────────────────────────────────
+        const bulkBtn          = document.getElementById('bulkActionButton');
+        const clearSelectBtn   = document.getElementById('clearSelectionsBtn');
+        const clearFilterBtn   = document.getElementById('clearFiltersBtn');
+        const countSpan        = document.getElementById('selectedCount');
+        const mobileCount      = document.getElementById('mobileSelectedCount');
+        const mobileAll        = document.getElementById('mobileSelectAll');
 
-        countSpan.textContent = count;
+        // ── Compute selection count ───────────────────────────────────────────
+        const checkedBoxes     = document.querySelectorAll('.senior-checkbox:checked');
+        const pageTotal        = document.querySelectorAll('.senior-checkbox').length;
+        const totalMatching    = {{ $seniors->total() ?? 0 }};
+
+        // Merge current page selection into localStorage
+        const savedIds         = localStorage.getItem('selectedSeniorIds');
+        let allSelectedIds     = savedIds ? JSON.parse(savedIds) : [];
+        const currentPageIds   = Array.from(checkedBoxes).map(cb => cb.dataset.id);
+        const currentPageAllIds = Array.from(document.querySelectorAll('.senior-checkbox')).map(cb => cb.dataset.id);
+        allSelectedIds = allSelectedIds.filter(id => !currentPageAllIds.includes(id));
+        allSelectedIds = [...allSelectedIds, ...currentPageIds];
+        localStorage.setItem('selectedSeniorIds', JSON.stringify(allSelectedIds));
+
+        const selectionCount = window.selectAllMatching ? totalMatching : allSelectedIds.length;
+
+        // Update count badge & mobile counter
+        if (countSpan) countSpan.textContent = selectionCount;
         if (mobileCount) {
-            mobileCount.textContent = count > 0 ? (window.selectAllMatching ? `${count} / ${totalMatching} selected (all pages)` : `${count} / ${pageTotal} selected`) : '';
+            mobileCount.textContent = selectionCount > 0
+                ? (window.selectAllMatching
+                    ? `${selectionCount} / ${totalMatching} selected (all pages)`
+                    : `${selectionCount} / ${pageTotal} selected`)
+                : '';
         }
         if (mobileAll) {
-            mobileAll.checked = checkboxes.length === pageTotal && pageTotal > 0;
+            mobileAll.checked = checkedBoxes.length === pageTotal && pageTotal > 0;
         }
-
-        if (checkboxes.length < pageTotal) {
+        if (checkedBoxes.length < pageTotal) {
             window.selectAllMatching = false;
             const notice = document.getElementById('selectAllPagesNotice');
             if (notice) notice.style.display = 'none';
         }
 
-        if (count > 0) {
-            button.disabled = false;
-            button.style.opacity = '1';
-            button.style.display = 'inline-flex';
-            button.style.background = '#3730A3';
-            button.style.color = 'white';
-            button.style.borderColor = '#312E81';
+        // ── Compute filter state ──────────────────────────────────────────────
+        const searchInput  = document.getElementById('searchInput');
+        const barangaySelect = document.getElementById('barangaySelect');
+        const hasFilter    = (searchInput && searchInput.value.trim() !== '')
+                          || (barangaySelect && barangaySelect.value !== '');
+
+        // ── Apply Priority Rules ──────────────────────────────────────────────
+        if (selectionCount >= 2) {
+            // PRIORITY 1: selection mode
+            if (bulkBtn) {
+                bulkBtn.style.display    = 'inline-flex';
+                bulkBtn.disabled         = false;
+                bulkBtn.style.opacity    = '1';
+                bulkBtn.style.background = '#3730A3';
+                bulkBtn.style.color      = 'white';
+                bulkBtn.style.borderColor = '#312E81';
+            }
+            if (clearSelectBtn) clearSelectBtn.style.display = 'inline-flex';
+            if (clearFilterBtn) clearFilterBtn.style.display = 'none';          // hidden in selection mode
+
+        } else if (hasFilter) {
+            // PRIORITY 2: filter active, no bulk selection
+            if (bulkBtn) {
+                bulkBtn.style.display = 'none';
+                bulkBtn.disabled      = true;
+            }
+            if (clearSelectBtn) clearSelectBtn.style.display = 'none';
+            if (clearFilterBtn) clearFilterBtn.style.display = 'inline-flex';   // only clear filter shows
+
         } else {
-            button.disabled = true;
-            button.style.opacity = '0.45';
-            button.style.display = 'none';
-            button.style.background = '#E0E7FF';
-            button.style.color = '#3730A3';
-            button.style.borderColor = '#C7D2FE';
+            // PRIORITY 3: nothing active — hide all
+            if (bulkBtn) {
+                bulkBtn.style.display    = 'none';
+                bulkBtn.disabled         = true;
+                bulkBtn.style.opacity    = '0.45';
+                bulkBtn.style.background = '#E0E7FF';
+                bulkBtn.style.color      = '#3730A3';
+                bulkBtn.style.borderColor = '#C7D2FE';
+            }
+            if (clearSelectBtn) clearSelectBtn.style.display = 'none';
+            if (clearFilterBtn) clearFilterBtn.style.display = 'none';
+        }
+    }
+
+    // Restore selections from localStorage on page load
+    function restoreSelections() {
+        const savedIds = localStorage.getItem('selectedSeniorIds');
+        if (savedIds) {
+            const ids = JSON.parse(savedIds);
+            const checkboxes = document.querySelectorAll('.senior-checkbox');
+            checkboxes.forEach(cb => {
+                if (ids.includes(cb.dataset.id)) {
+                    cb.checked = true;
+                }
+            });
+            syncActionButtons();
         }
     }
 
@@ -1062,8 +1222,9 @@
         if (e) { e.preventDefault(); e.stopPropagation(); }
         closeBulkModal();
 
-        const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
-        const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+        // Get all selected IDs from localStorage
+        const savedIds = localStorage.getItem('selectedSeniorIds');
+        const ids = savedIds ? JSON.parse(savedIds) : [];
 
         if (ids.length === 0 && !window.selectAllMatching) {
             Swal.fire('No Selection', 'Please select at least one record.', 'warning');
@@ -1085,7 +1246,7 @@
             customClass: { popup: 'rounded-4 shadow-lg' }
         }).then((result) => {
             if (result.isConfirmed) {
-                const payload = window.selectAllMatching 
+                const payload = window.selectAllMatching
                     ? { select_all: true, barangay: `{{ request('barangay') ?? '' }}`, search: `{{ request('search') ?? '' }}` }
                     : { ids: ids };
 
@@ -1100,6 +1261,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        clearSelections();
                         Swal.fire('Archived!', 'Selected records have been archived.', 'success');
                         setTimeout(() => location.reload(), 1500);
                     } else {
@@ -1113,11 +1275,41 @@
         });
     }
 
+    function clearSelections() {
+        localStorage.removeItem('selectedSeniorIds');
+        const checkboxes = document.querySelectorAll('.senior-checkbox');
+        checkboxes.forEach(cb => cb.checked = false);
+
+        // Hide both buttons
+        const bulkBtn = document.getElementById('bulkActionButton');
+        const clearSelectBtn = document.getElementById('clearSelectionsBtn');
+        if (bulkBtn) bulkBtn.style.display = 'none';
+        if (clearSelectBtn) clearSelectBtn.style.display = 'none';
+
+        // Update select all checkbox
+        const selectAll = document.getElementById('selectAll');
+        const mobileSelectAll = document.getElementById('mobileSelectAll');
+        if (selectAll) selectAll.checked = false;
+        if (mobileSelectAll) mobileSelectAll.checked = false;
+
+        // Clear select all matching flag
+        window.selectAllMatching = false;
+
+        // Update counts
+        const countSpan = document.getElementById('selectedCount');
+        const mobileCount = document.getElementById('mobileSelectedCount');
+        if (countSpan) countSpan.textContent = '0';
+        if (mobileCount) mobileCount.textContent = '';
+
+        // Hide select all pages notice
+        const selectAllPagesNotice = document.getElementById('selectAllPagesNotice');
+        if (selectAllPagesNotice) selectAllPagesNotice.style.display = 'none';
+    }
+
     async function exportPdf(e) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
         closeBulkModal();
 
-        const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
         const selectAll = document.getElementById('selectAll');
         const isAllPageChecked = selectAll && selectAll.checked;
         const currentBarangay = `{{ request('barangay') ?? '' }}`;
@@ -1125,9 +1317,12 @@
 
         let baseQuery = `barangay=${encodeURIComponent(currentBarangay)}&search=${encodeURIComponent(currentSearch)}`;
 
+        // Get all selected IDs from localStorage
+        const savedIds = localStorage.getItem('selectedSeniorIds');
+        const ids = savedIds ? JSON.parse(savedIds) : [];
+
         // If specific individual checkboxes are checked AND NOT select-all / selectAllMatching
-        if (checkboxes.length > 0 && !window.selectAllMatching && !isAllPageChecked) {
-            const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+        if (ids.length > 0 && !window.selectAllMatching && !isAllPageChecked) {
             baseQuery += `&ids=${ids.join(',')}`;
         }
 
@@ -1255,6 +1450,7 @@
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
+                clearSelections();
                 if (window.selectAllMatching) {
                     window.location.href = `{{ route('admin.senior.export') }}?barangay=${encodeURIComponent(currentBarangay)}&search=${encodeURIComponent(currentSearch)}`;
                 } else {
@@ -1264,55 +1460,51 @@
         });
     }
 
-    function updateClearButtonVisibility() {
-        const searchInput = document.getElementById('searchInput');
-        const barangaySelect = document.getElementById('barangaySelect');
-        const clearBtn = document.getElementById('clearFiltersBtn');
-        
-        const hasSearch = searchInput && searchInput.value.trim() !== '';
-        const hasBarangay = barangaySelect && barangaySelect.value !== '';
-        
-        if (clearBtn) {
-            if (hasSearch || hasBarangay) {
-                clearBtn.style.display = 'inline-flex';
-            } else {
-                clearBtn.style.display = 'none';
-            }
-        }
-    }
 
     function clearFilters() {
         const searchInput = document.getElementById('searchInput');
         const barangaySelect = document.getElementById('barangaySelect');
-        
-        if (searchInput) {
-            searchInput.value = '';
-        }
-        if (barangaySelect) {
-            barangaySelect.value = '';
-        }
-        
+
+        if (searchInput) searchInput.value = '';
+        if (barangaySelect) barangaySelect.value = '';
+
         updateClearButtonVisibility();
-        
-        // Submit form to clear filters
+
+        // Submit form to apply cleared filters
         document.getElementById('filterForm').submit();
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
 
+        // Restore selections from localStorage
+        restoreSelections();
+
         // Check if filters are active and show/hide clear button
         updateClearButtonVisibility();
 
-        // Listen for input changes to show/hide clear button
+        // Listen for input changes to show/hide clear button and auto-refresh
         const searchInput = document.getElementById('searchInput');
         const barangaySelect = document.getElementById('barangaySelect');
+        const filterForm = document.getElementById('filterForm');
         
+        // Debounce function for search input
+        let searchTimeout;
         if (searchInput) {
-            searchInput.addEventListener('input', updateClearButtonVisibility);
+            searchInput.addEventListener('input', function() {
+                updateClearButtonVisibility();
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function() {
+                    filterForm.submit();
+                }, 1000);
+            });
         }
+        
         if (barangaySelect) {
-            barangaySelect.addEventListener('change', updateClearButtonVisibility);
+            barangaySelect.addEventListener('change', function() {
+                updateClearButtonVisibility();
+                filterForm.submit();
+            });
         }
 
         @if(session('success'))

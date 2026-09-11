@@ -1,5 +1,8 @@
 <div class="sidebar" id="sidebar">
-    <div class="sidebar-brand"><i class="fas fa-building"></i> MSWDO Admin</div>
+    <div class="sidebar-brand">
+        <img src="{{ asset('images/dswd.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;" alt="DSWD">
+        <span>MSWDO Admin</span>
+    </div>
     <ul class="sidebar-menu">
         <li><a href="/admin/social-case/dashboard" class="{{ request()->is('admin/social-case/dashboard') ? 'active' : '' }}"><i class="fas fa-home"></i> Dashboard</a></li>
         

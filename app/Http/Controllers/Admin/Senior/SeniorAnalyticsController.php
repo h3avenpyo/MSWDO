@@ -24,24 +24,24 @@ class SeniorAnalyticsController extends Controller
         ];
 
         // Get filter parameters
-        $year = $request->get('year', now()->year);
-        $month = $request->get('month');
-        $barangay = $request->get('barangay');
-        $gender = $request->get('gender');
-        $ageGroup = $request->get('age_group');
+        $year = $request->filled('year') ? $request->get('year') : now()->year;
+        $month = $request->filled('month') ? $request->get('month') : null;
+        $barangay = $request->filled('barangay') ? $request->get('barangay') : null;
+        $gender = $request->filled('gender') ? $request->get('gender') : null;
+        $ageGroup = $request->filled('age_group') ? $request->get('age_group') : null;
 
         // Build base query with filters
         $baseQuery = SeniorCitizenRecord::where('status', 'active')
             ->whereNotNull('birth_date')
             ->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) >= 60');
 
-        if ($barangay) {
+        if ($barangay && $barangay !== 'All') {
             $baseQuery->where('barangay', $barangay);
         }
-        if ($gender) {
+        if ($gender && $gender !== 'All') {
             $baseQuery->where('sex', $gender);
         }
-        if ($ageGroup) {
+        if ($ageGroup && $ageGroup !== 'All') {
             $ageExpr = DB::raw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE())');
             switch ($ageGroup) {
                 case '60-69':

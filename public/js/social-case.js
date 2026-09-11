@@ -100,7 +100,7 @@ let view = {tab:"dashboard", caseId:null, docAgency:null, newCaseStep:"search", 
 let selectedAgency = "PCSO";
 let draftIntake = null;
 
-/* ---------------- Role / permission helpers ---------------- */
+const CURRENT_USER_ID = (document.querySelector('meta[name="user-id"]')?.content || '').trim();
 const CURRENT_USER_ROLE = (document.querySelector('meta[name="user-role"]')?.content || '').toLowerCase();
 const CURRENT_USER_NAME = (document.querySelector('meta[name="user-name"]')?.content || '').trim();
 const ADMIN_NAME = (document.querySelector('meta[name="admin-name"]')?.content || '').trim();
@@ -738,20 +738,127 @@ async function submitForEncoding(){
     return;
   }
 
-  const confirm = await Swal.fire({
-    title: 'Submit for Case Encoding?',
-    html: `Forward <strong>${escapeHtml(name)}</strong> to the case encoder for encoding?`,
-    icon: 'question',
+  // Show quick loading while fetching available encoders
+  Swal.fire({
+    title: 'Loading Accounts...',
+    html: '<div style="padding:14px 0;color:#6B7280;font-size:14px;">Fetching social case encoder accounts...</div>',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+
+  let encoders = [];
+  try {
+    const encRes = await fetch('/admin/social-case/api/encoders');
+    if(encRes.ok){
+      encoders = await encRes.json();
+    } else {
+      throw new Error('Failed to load encoders list');
+    }
+  } catch(err){
+    console.error('Error fetching encoders:', err);
+    Swal.fire({
+      title: 'Error',
+      text: 'Could not load encoder accounts. Please try again or check your connection.',
+      icon: 'error',
+      confirmButtonColor: '#DC2626'
+    });
+    return;
+  }
+
+  if(!encoders || encoders.length === 0){
+    Swal.fire({
+      title: 'No Encoder Accounts Found',
+      text: 'There are no active accounts configured for social case encoding.',
+      icon: 'warning',
+      confirmButtonColor: '#1A237E'
+    });
+    return;
+  }
+
+  const encodersListHtml = encoders.map((enc, index) => {
+    const isChecked = index === 0 ? 'checked' : '';
+    const initials = (enc.name || 'SC')
+      .split(' ')
+      .map(w => w[0])
+      .filter(Boolean)
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+
+    return `
+      <label class="encoder-option-card ${index === 0 ? 'selected' : ''}" for="enc_opt_${enc.id}" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border:2px solid ${index === 0 ? '#1A237E' : '#E2E8F0'};border-radius:10px;margin-bottom:8px;cursor:pointer;background:${index === 0 ? '#F8FAFC' : '#FFFFFF'};transition:all .15s ease;text-align:left;user-select:none;">
+        <input type="radio" id="enc_opt_${enc.id}" name="selected_encoder" value="${enc.id}" ${isChecked} style="width:18px;height:18px;accent-color:#1A237E;cursor:pointer;margin:0;flex-shrink:0;">
+        <div style="width:38px;height:38px;border-radius:50%;background:#1A237E;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">
+          ${escapeHtml(initials)}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <span style="font-size:15px;font-weight:600;color:#0F172A;">${escapeHtml(enc.name)}</span>
+        </div>
+      </label>
+    `;
+  }).join('');
+
+  const modalResult = await Swal.fire({
+    title: 'Select Case Encoder',
+    html: `
+      <div style="text-align:left;padding:0 2px;">
+        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+          <div style="width:24px;height:24px;border-radius:50%;background:#16A34A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">✓</div>
+          <div style="font-size:13px;color:#166534;line-height:1.4;">
+            Client <strong>${escapeHtml(name)}</strong> is eligible. Choose a Case Encoding account to forward this client to:
+          </div>
+        </div>
+        <div id="encodersSelectionContainer" style="max-height:300px;overflow-y:auto;padding-right:4px;">
+          ${encodersListHtml}
+        </div>
+      </div>
+    `,
     showCancelButton: true,
-    confirmButtonText: 'Yes, Submit',
+    confirmButtonText: 'Submit to Selected Encoder',
     cancelButtonText: 'Cancel',
     confirmButtonColor: '#1A237E',
     cancelButtonColor: '#6B7280',
     background: '#ffffff',
-    customClass: { popup: 'rounded-4 shadow-lg' }
+    customClass: {
+      popup: 'rounded-4 shadow-lg'
+    },
+    didOpen: () => {
+      const container = document.getElementById('encodersSelectionContainer');
+      if(container){
+        const cards = container.querySelectorAll('.encoder-option-card');
+        cards.forEach(card => {
+          card.addEventListener('click', () => {
+            cards.forEach(c => {
+              c.style.borderColor = '#E2E8F0';
+              c.style.background = '#FFFFFF';
+            });
+            card.style.borderColor = '#1A237E';
+            card.style.background = '#F8FAFC';
+            const radio = card.querySelector('input[type="radio"]');
+            if(radio) radio.checked = true;
+          });
+        });
+      }
+    },
+    preConfirm: () => {
+      const selectedRadio = document.querySelector('input[name="selected_encoder"]:checked');
+      if(!selectedRadio){
+        Swal.showValidationMessage('Please select an encoder account');
+        return false;
+      }
+      return selectedRadio.value;
+    }
   });
 
-  if(!confirm.isConfirmed) return;
+  if(!modalResult.isConfirmed || !modalResult.value) return;
+
+  const selectedEncoderId = modalResult.value;
+  const selectedEncoder = encoders.find(e => String(e.id) === String(selectedEncoderId));
+  const encoderName = selectedEncoder ? selectedEncoder.name : 'the case encoder';
 
   try {
     const response = await fetch('/admin/social-case/api/eligibility/submit', {
@@ -761,7 +868,11 @@ async function submitForEncoding(){
         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
         'Accept': 'application/json'
       },
-      body: JSON.stringify({client_name: name, override: !!view.eligOverride})
+      body: JSON.stringify({
+        client_name: name,
+        override: !!view.eligOverride,
+        encoder_id: selectedEncoderId
+      })
     });
 
     const data = await response.json();
@@ -775,14 +886,17 @@ async function submitForEncoding(){
       return;
     }
 
-    logActivity('created', 'Client forwarded for case encoding', {
+    const assignedName = data.assigned_officer?.name || encoderName;
+
+    logActivity('created', `Client forwarded to ${assignedName} for case encoding`, {
       clientName: data.case?.client?.name || name,
-      controlNo: data.case?.case_number || ''
+      controlNo: data.case?.case_number || '',
+      assignedEncoder: assignedName
     });
 
     Swal.fire({
-      title: 'Forwarded!',
-      text: data.message || 'Client passed eligibility and was forwarded for case encoding.',
+      title: 'Forwarded Successfully!',
+      html: `<strong>${escapeHtml(data.case?.client?.name || name)}</strong> was successfully forwarded and assigned to <strong>${escapeHtml(assignedName)}</strong> for case encoding.`,
       icon: 'success',
       confirmButtonColor: '#1A237E'
     });
@@ -857,6 +971,14 @@ function saveNewCase(){
             throw new Error('Validation failed:\n' + msgs.join('\n'));
           } catch(e) {
             if(e.message.startsWith('Validation')) throw e;
+          }
+        }
+        if(response.status === 409){
+          try {
+            const json = JSON.parse(text);
+            throw new Error(json.error || 'Case already exists');
+          } catch(e) {
+            if(e.message !== 'Case already exists') throw e;
           }
         }
         console.error('Server returned error:', response.status, text);
@@ -1458,6 +1580,13 @@ function formatDateTime(dateStr){
   return `${d} ${t}`;
 }
 
+function formatNumberWithCommas(value){
+  if(!value) return '';
+  const numericValue = value.toString().replace(/,/g, '');
+  if(numericValue === '' || isNaN(numericValue)) return value;
+  return parseFloat(numericValue).toLocaleString('en-US');
+}
+
 function initCharts(){
   // Assistance Type Chart
   const assistanceCtx = document.getElementById('assistanceChart');
@@ -1563,7 +1692,15 @@ function renderEncoderQueue(){
   const container = document.getElementById('encoderQueue');
   if(!container) return;
 
-  const waiting = cases.filter(c => c.eligibilityStatus === 'eligible' && c.status === 'Draft' && c.eligibleBy && !(c.interview && c.interview.interviewSituation));
+  const waiting = cases.filter(c => {
+    const isWaiting = c.eligibilityStatus === 'eligible' && c.status === 'Draft' && c.eligibleBy && !(c.interview && c.interview.interviewSituation);
+    if (!isWaiting) return false;
+    if (CURRENT_USER_ROLE === 'social_worker' && CURRENT_USER_ID) {
+      const assignedId = c.officerId || c.officer_id || c.officer?.id;
+      return String(assignedId) === String(CURRENT_USER_ID);
+    }
+    return true;
+  });
 
   if(waiting.length === 0){
     container.innerHTML = `
@@ -1583,7 +1720,7 @@ function renderEncoderQueue(){
           ${escapeHtml(String(c.client?.age || ''))} • ${escapeHtml(c.client?.sex || c.client?.gender || '')} • ${escapeHtml(c.client?.address || c.client?.barangay || '—')}
         </div>
         <div style="font-size:11px;color:var(--text-muted);margin-top:2px">
-          Forwarded by ${escapeHtml(c.eligibleByUser?.name || 'Eligibility Checker')}${c.eligibleAt ? ' • ' + fmtDate(c.eligibleAt) : ''}
+          Forwarded by ${escapeHtml(c.eligibleByUser?.name || 'Eligibility Checker')}${c.officer?.name ? ` • Assigned to: <strong style="color:#1A237E">${escapeHtml(c.officer.name)}</strong>` : ''}${c.eligibleAt ? ' • ' + fmtDate(c.eligibleAt) : ''}
         </div>
       </div>
       <div style="display:flex;gap:6px;flex-shrink:0">
@@ -2018,9 +2155,12 @@ function renderCheckerEligibilityResult(data){
 
   if(!status) return;
 
-  const clientName = data.client
-    ? escapeHtml(`${data.client.first_name || ''} ${data.client.middle_name || ''} ${data.client.last_name || ''}`.replace(/\s+/g,' ').trim())
-    : escapeHtml(view.eligClientName || '');
+  // Title case function to capitalize first letter of each word while preserving periods and other characters
+  const toTitleCase = (str) => {
+    return str.replace(/\b[a-z]/g, char => char.toUpperCase());
+  };
+
+  const clientName = escapeHtml(toTitleCase(view.eligClientName || ''));
 
   const matchBadge = data.match_type === 'partial'
     ? `<span style="display:inline-block;background:#FEF3C7;color:#92400E;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-left:8px">Partial Name Match</span>`
@@ -2272,115 +2412,173 @@ function renderIntakeForm(){
   const container = document.getElementById('intakeFormContent');
   if(!container) return;
 
+  // Allow the page to scroll instead of just the container
+  container.style.overflow = 'visible';
+  container.style.height = 'auto';
+
+  // Also check and modify parent container if it exists
+  if (container.parentElement) {
+    container.parentElement.style.overflow = 'visible';
+    container.parentElement.style.height = 'auto';
+  }
+
   const d = draftIntake;
   d.signers.preparedByTitle = "MSWDO Staff";
   d.signers.notedByTitle = "MSWDO Head";
   container.innerHTML = `
-  <div class="panel">
-    <h3>Report details</h3>
-    <div class="field-row">
-      <div class="field field-control-no"><label>Control no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.controlNo)}" oninput="draftIntake.controlNo=this.value" placeholder="Control no."></div>
-      <div class="field"><label>Report date <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.interview.reportDate}" oninput="draftIntake.interview.reportDate=this.value"></div>
+  <div style="width:100%;overflow:visible;padding-bottom:20px;box-sizing:border-box">
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
+    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Report details</h3>
+    <div class="field-row" style="display:flex;gap:10px">
+      <div class="field field-control-no" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Control no. <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.controlNo)}" oninput="draftIntake.controlNo=this.value" placeholder="e.g. MSWD-O-2026-09-0001" style="padding:6px 8px;font-size:13px;width:100%"></div>
+      <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Report date <span style="color:#DC2626;font-weight:700">*</span></label><input type="date" value="${d.interview.reportDate}" oninput="draftIntake.interview.reportDate=this.value" style="padding:6px 8px;font-size:13px;width:100%"></div>
     </div>
   </div>
 
-  <div class="panel">
-    <h3>I. Identifying information</h3>
-      <div class="field"><label>Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value" required maxlength="255" placeholder="Enter full name"></div>
-      <div class="field-row">
-        <div class="field"><label>Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="number" id="clientAgeInput" value="${escapeHtml(String(d.client.age))}" min="0" max="150" placeholder="Auto-computed" readonly style="background:#F3F4F6;cursor:not-allowed"></div>
-        <div class="field"><label>Sex <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-          <select oninput="draftIntake.client.sex=this.value" required>
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
+    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">I. Identifying information</h3>
+      <div class="field" style="margin:0 0 8px 0"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Name <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value" required maxlength="255" placeholder="e.g. Juan A. Santos" style="padding:6px 8px;font-size:13px;width:100%"></div>
+      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Age <span style="color:#DC2626;font-weight:700">*</span></label><input type="number" id="clientAgeInput" value="${escapeHtml(String(d.client.age))}" min="0" max="150" placeholder="Auto-computed from birthdate" readonly style="background:#F3F4F6;cursor:not-allowed;padding:6px 8px;font-size:13px;width:100%"></div>
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Sex <span style="color:#DC2626;font-weight:700">*</span></label>
+          <select oninput="draftIntake.client.sex=this.value" required style="padding:6px 8px;font-size:13px;width:100%">
             ${["","Male","Female"].map(o=>`<option ${d.client.sex===o?'selected':''}>${o}</option>`).join("")}
           </select>
         </div>
       </div>
-      <div class="field-sep"></div>
-      <div class="field"><label>Address (Barangay) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-        <select oninput="draftIntake.client.address=this.value" required>
+      <div class="field" style="margin:0 0 8px 0"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Address (Barangay) <span style="color:#DC2626;font-weight:700">*</span></label>
+        <select oninput="draftIntake.client.address=this.value" required style="padding:6px 8px;font-size:13px;width:100%">
           <option value="">Select Barangay</option>
           ${BARANGAYS.map(b=>`<option ${d.client.address===b?'selected':''}>${b}</option>`).join("")}
         </select>
       </div>
-      <div class="field-sep"></div>
-      <div class="field-row">
-        <div class="field"><label>Birthdate <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value; updateClientAge()"></div>
-        <div class="field"><label>Birthplace <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value" placeholder="Birthplace"></div>
+      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Birthdate <span style="color:#DC2626;font-weight:700">*</span></label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value; updateClientAge()" style="padding:6px 8px;font-size:13px;width:100%"></div>
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Birthplace <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value" placeholder="e.g. Cavite City" style="padding:6px 8px;font-size:13px;width:100%"></div>
       </div>
-      <div class="field"><label>Religion <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.religion)}" oninput="draftIntake.client.religion=this.value" placeholder="Enter religion"></div>
-      <div class="field"><label>Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.education)}" oninput="draftIntake.client.education=this.value" placeholder="Educational attainment"></div>
-      <div class="field-sep"></div>
-      <div class="field-row">
-        <div class="field"><label>Civil status <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-          <select oninput="draftIntake.client.civilStatus=this.value">
+      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Religion <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.religion)}" oninput="draftIntake.client.religion=this.value" placeholder="e.g. Roman Catholic" style="padding:6px 8px;font-size:13px;width:100%"></div>
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Educational attainment <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.education)}" oninput="draftIntake.client.education=this.value" placeholder="e.g. College Graduate" style="padding:6px 8px;font-size:13px;width:100%"></div>
+      </div>
+      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Civil status <span style="color:#DC2626;font-weight:700">*</span></label>
+          <select oninput="draftIntake.client.civilStatus=this.value" style="padding:6px 8px;font-size:13px;width:100%">
             ${["","Single","Married","Widowed","Separated"].map(o=>`<option ${d.client.civilStatus===o?'selected':''}>${o}</option>`).join("")}
           </select>
         </div>
-        <div class="field"><label>Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="Enter occupation"></div>
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Occupation <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="e.g. Teacher" style="padding:6px 8px;font-size:13px;width:100%"></div>
       </div>
-      <div class="field-row">
-        <div class="field"><label>Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.client.income)}" oninput="draftIntake.client.income=this.value" placeholder="Income (N/A if none)"></div>
-        <div class="field"><label>Contact no. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="tel" value="${escapeHtml(d.client.contact)}" oninput="draftIntake.client.contact=this.value" pattern="09[0-9]{9}" maxlength="11" placeholder="e.g. 09171234567" title="Must be a valid PH mobile number (09xxxxxxxxx)"></div>
+      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Income <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.income)}" oninput="this.value=formatNumberWithCommas(this.value); draftIntake.client.income=this.value" placeholder="e.g. 15,000 or N/A" style="padding:6px 8px;font-size:13px;width:100%"></div>
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Contact no. <span style="color:#DC2626;font-weight:700">*</span></label><input type="tel" value="${escapeHtml(d.client.contact)}" oninput="draftIntake.client.contact=this.value" pattern="09[0-9]{9}" maxlength="11" placeholder="e.g. 09171234567" title="Must be a valid PH mobile number (09xxxxxxxxx)" style="padding:6px 8px;font-size:13px;width:100%"></div>
       </div>
   </div>
 
-  <div class="panel">
-    <h3>II. Family composition</h3>
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
+    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">II. Family composition</h3>
     ${d.household.map((m,i)=>`
-      <div class="grid3" style="margin-bottom:8px;align-items:end;padding-bottom:8px;border-bottom:1px solid var(--surface-sunken)">
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value" placeholder="Enter name"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Relationship <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><select oninput="draftIntake.household[${i}].relationship=this.value"><option value="">Select relationship</option>${RELATIONSHIPS.map(o=>`<option ${m.relationship===o?'selected':''}>${o}</option>`).join("")}</select></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Age <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="number" value="${escapeHtml(String(m.age))}" oninput="draftIntake.household[${i}].age=this.value" min="0" max="150" placeholder="Enter age"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Educational attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value" placeholder="Educational attainment"></div>
-        <div class="field" style="margin-bottom:0"><label>${i===0?'Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="Enter occupation"></div>
-        <div class="field" style="margin-bottom:0;display:flex;gap:6px">
-          <div style="flex:1"><label>${i===0?'Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span>':''}</label><input type="text" value="${escapeHtml(m.income)}" oninput="draftIntake.household[${i}].income=this.value" placeholder="Income (N/A if none)"></div>
-          ${i>0?`<button class="btn ghost btn-sm" style="align-self:flex-end" onclick="draftIntake.household.splice(${i},1); renderIntakeForm();"><i data-lucide="x" style="width:16px;height:16px"></i></button>`:""}
+      <div class="family-member-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:5px;align-items:end;padding-bottom:5px;border-bottom:1px solid var(--surface-sunken)">
+        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Name <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value" placeholder="e.g. Maria Santos" style="padding:4px 6px;font-size:12px;width:100%"></div>
+        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Relationship <span style="color:#DC2626;font-weight:700">*</span></label><select oninput="draftIntake.household[${i}].relationship=this.value" style="padding:4px 6px;font-size:12px;width:100%"><option value="">Select</option>${RELATIONSHIPS.map(o=>`<option ${m.relationship===o?'selected':''}>${o}</option>`).join("")}</select></div>
+        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Age <span style="color:#DC2626;font-weight:700">*</span></label><input type="number" value="${escapeHtml(String(m.age))}" oninput="draftIntake.household[${i}].age=this.value" min="0" max="150" placeholder="e.g. 25" style="padding:4px 6px;font-size:12px;width:100%"></div>
+        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Education <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value" placeholder="e.g. High School" style="padding:4px 6px;font-size:12px;width:100%"></div>
+        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Occupation <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="e.g. Driver" style="padding:4px 6px;font-size:12px;width:100%"></div>
+        <div class="field" style="margin:0;display:flex;gap:3px">
+          <div style="flex:1"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Income <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(m.income)}" oninput="this.value=formatNumberWithCommas(this.value); draftIntake.household[${i}].income=this.value" placeholder="e.g. 10,000" style="padding:4px 6px;font-size:12px;width:100%"></div>
+          ${i>0?`<button class="btn ghost btn-sm" style="align-self:flex-end;padding:3px 6px" onclick="draftIntake.household.splice(${i},1); renderIntakeForm();"><i data-lucide="x" style="width:12px;height:12px"></i></button>`:""}
         </div>
       </div>`).join("")}
-    <button class="btn ghost btn-sm" onclick="draftIntake.household.push({name:'',relationship:'',age:'',education:'',occupation:'',income:''}); renderIntakeForm();"><i data-lucide="plus" style="width:16px;height:16px"></i> Add family member</button>
+    <button class="btn ghost btn-sm" onclick="draftIntake.household.push({name:'',relationship:'',age:'',education:'',occupation:'',income:''}); renderIntakeForm();" style="padding:6px 12px;font-size:12px"><i data-lucide="plus" style="width:14px;height:14px"></i> Add family member</button>
   </div>
 
-  <div class="panel">
-    <h3>Narrative sections</h3>
-    <div class="field"><label>III. Problem presented <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><textarea oninput="draftIntake.interview.problemPresented=this.value">${escapeHtml(d.interview.problemPresented)}</textarea></div>
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
+    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Narrative sections</h3>
+    <div class="field" style="margin:0"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">III. Problem presented <span style="color:#DC2626;font-weight:700">*</span></label><textarea oninput="draftIntake.interview.problemPresented=this.value" style="padding:6px 8px;font-size:13px;min-height:80px;width:100%">${escapeHtml(d.interview.problemPresented)}</textarea></div>
   </div>
 
-  <div class="panel">
-    <h3>Signatories</h3>
-      <div class="field"><label>Prepared by (name) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.preparedByName)}" oninput="draftIntake.signers.preparedByName=this.value" required maxlength="255" placeholder="Enter prepared by name"></div>
-      <div class="field"><label>Prepared by (title)</label><input type="text" value="MSWDO Staff" readonly style="background:#F3F4F6;cursor:not-allowed"></div>
-      <div class="field-sep"></div>
-      <div class="field"><label>Noted by (name) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label><input type="text" value="${escapeHtml(d.signers.notedByName)}" oninput="draftIntake.signers.notedByName=this.value" required maxlength="255" placeholder="Enter noted by name"></div>
-      <div class="field"><label>Noted by (title)</label><input type="text" value="MSWDO Head" readonly style="background:#F3F4F6;cursor:not-allowed"></div>
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
+    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Signatories</h3>
+      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Prepared by (name) <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.signers.preparedByName)}" oninput="draftIntake.signers.preparedByName=this.value" required maxlength="255" placeholder="Enter prepared by name" style="padding:6px 8px;font-size:13px;width:100%"></div>
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Prepared by (title)</label><input type="text" value="MSWDO Staff" readonly style="background:#F3F4F6;cursor:not-allowed;padding:6px 8px;font-size:13px;width:100%"></div>
+      </div>
+      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Noted by (name) <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.signers.notedByName)}" oninput="draftIntake.signers.notedByName=this.value" required maxlength="255" placeholder="Enter noted by name" style="padding:6px 8px;font-size:13px;width:100%"></div>
+        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Noted by (title)</label><input type="text" value="MSWDO Head" readonly style="background:#F3F4F6;cursor:not-allowed;padding:6px 8px;font-size:13px;width:100%"></div>
+      </div>
   </div>
 
-  <div class="panel">
-    <h3>Agencies & Purpose</h3>
-    <div class="field"><label>Purpose <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-      <select oninput="draftIntake.purpose=this.value">
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
+    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Agencies & Purpose</h3>
+    <div class="field" style="margin:0 0 6px 0"><label style="font-size:14px;margin-bottom:8px;font-weight:600;color:#111827">Purpose <span style="color:#DC2626;font-weight:700">*</span></label>
+      <select oninput="draftIntake.purpose=this.value" style="padding:5px 7px;font-size:12px;width:100%">
         ${PURPOSES.map(p=>`<option ${d.purpose===p?'selected':''}>${p}</option>`).join("")}
       </select>
     </div>
-    <div class="field"><label>Agencies (select all that apply) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-      <div style="display:flex;flex-wrap:wrap;gap:8px">
-        ${AGENCIES.map(a=>`<label class="pill-check ${d.agencies.includes(a.key)?'on':''}" onclick="toggleAgency('${a.key}')">${a.name}</label>`).join("")}
+    <div class="field" style="margin:0"><label style="font-size:14px;margin-bottom:16px;display:block;text-align:left;font-weight:600;color:#111827">Agencies (select all that apply) <span style="color:#DC2626;font-weight:700">*</span></label>
+      <div class="agencies-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
+        ${AGENCIES.map(a=>`<label class="pill-check ${d.agencies.includes(a.key)?'on':''}" style="font-size:13px;padding:12px 16px;font-weight:500;min-height:52px;display:flex;align-items:center;gap:8px;text-align:center;white-space:normal;line-height:1.4;word-wrap:break-word;overflow-wrap:break-word;cursor:pointer;border:1px solid #D1D5DB;border-radius:8px;background:#F9FAFB;transition:all 0.2s ease !important">
+          <input type="checkbox" ${d.agencies.includes(a.key)?'checked':''} onchange="toggleAgency('${a.key}')" style="flex-shrink:0;margin:0;width:18px;height:18px;pointer-events:none"> <span style="flex:1;text-align:center">${a.name}</span>
+        </label>`).join("")}
       </div>
     </div>
+    <style>
+      .agencies-grid .pill-check.on {
+        background: #1A237E !important;
+        border-color: #1A237E !important;
+        color: white !important;
+      }
+      .agencies-grid .pill-check.on:hover {
+        background: #121858 !important;
+        border-color: #121858 !important;
+      }
+      .agencies-grid .pill-check:hover {
+        border-color: #1A237E !important;
+        background: #F1F5F9 !important;
+      }
+      @media (max-width: 768px) {
+        .agencies-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </div>
 
-  <div class="panel">
-    <h3>Requirements</h3>
-    ${d.requirements.map((r,i)=>`
-      <label class="pill-check ${r.submitted?'on':''}" style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <input type="checkbox" ${r.submitted?'checked':''} onchange="toggleRequirement(${i})"> ${escapeHtml(r.name)}
-      </label>
-    `).join("")}
+  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
+    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Requirements</h3>
+    <div class="requirements-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+      ${d.requirements.map((r,i)=>`
+        <label class="pill-check ${r.submitted?'on':''}" style="font-size:13px;padding:12px 16px;font-weight:500;min-height:52px;display:flex;align-items:center;gap:8px;text-align:left;white-space:normal;line-height:1.4;word-wrap:break-word;overflow-wrap:break-word;cursor:pointer;border:1px solid #D1D5DB;border-radius:8px;background:#F9FAFB;transition:all 0.2s ease !important">
+          <input type="checkbox" ${r.submitted?'checked':''} onchange="toggleRequirement(${i})" style="flex-shrink:0;margin:0;width:18px;height:18px;pointer-events:none"> <span style="flex:1">${escapeHtml(r.name)}</span>
+        </label>
+      `).join("")}
+    </div>
+    <style>
+      .requirements-grid .pill-check.on {
+        background: #1A237E !important;
+        border-color: #1A237E !important;
+        color: white !important;
+      }
+      .requirements-grid .pill-check.on:hover {
+        background: #121858 !important;
+        border-color: #121858 !important;
+      }
+      .requirements-grid .pill-check:hover {
+        border-color: #1A237E !important;
+        background: #F1F5F9 !important;
+      }
+      @media (max-width: 768px) {
+        .requirements-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </div>
 
-  <div class="intake-actions" style="display:flex;gap:12px;margin-top:20px;justify-content:flex-end">
+  <div class="intake-actions" style="display:flex;gap:12px;margin-top:20px;margin-bottom:20px;justify-content:flex-end">
     <button class="btn primary" onclick="reviewIntake()"><i data-lucide="eye" style="width:16px;height:16px"></i> Review & Save</button>
     <button class="btn" style="background-color: #dc3545; color: white; border: 1px solid #dc3545;" onclick="window.location.href='/admin/social-case/submitted'"><i data-lucide="x" style="width:16px;height:16px"></i> Cancel</button>
+  </div>
   </div>
   `;
   
@@ -3020,8 +3218,8 @@ async function printDocument(){
   let allPages = '';
   
   try {
-    // Fetch template once
-    const response = await fetch('/templates/social-case-report.html');
+    // Fetch template once with cache busting
+    const response = await fetch('/templates/social-case-report.html?v=' + Date.now());
     if (!response.ok) throw new Error('Failed to load template');
     const template = await response.text();
     
@@ -3032,6 +3230,9 @@ async function printDocument(){
     const pronoun = clientSexLower === 'male' ? 'his' : 'her';
     const pronounCap = clientSexLower === 'male' ? 'His' : 'Her';
     const clientPronoun = clientSexLower === 'male' ? 'him' : 'her';
+    
+    // Prepare document reference number
+    const docRefNumber = String(docData?.document_ref_number || 1).padStart(2, '0');
     
     const homeConditionDefault = `The client resides in a modest home with ${pronoun} family. The home of the family in modest circumstances is simple but functional. While the house may not have the latest appliances or decor, it is clean and maintained to the best of the family's ability. The family may prioritize practicality over style, and although they may face financial challenges, their home remains a place of warmth, care, and togetherness.`;
     const _purposeForDefault = (c.purpose || "").toLowerCase();
@@ -3077,25 +3278,25 @@ async function printDocument(){
     const notedLicense = escapeHtml(c.signers?.notedByLicense || "");
 
     const familyTable = famRows.length ? `
-      <table style="border-radius: 0;">
+      <table style="border-radius: 0; ${famRows.length > 1 ? 'font-size: 11px;' : ''}">
         <thead>
           <tr>
-            <th style="border-radius: 0;">RELATIVES</th>
-            <th style="border-radius: 0;">RELATIONSHIP</th>
-            <th style="border-radius: 0;">AGE</th>
-            <th style="border-radius: 0;">EDUCATIONAL<br>ATTAINMENT</th>
-            <th style="border-radius: 0;">OCCUPATION</th>
-            <th style="border-radius: 0;">INCOME</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIVES</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIONSHIP</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">AGE</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">EDUCATIONAL ATTAINMENT</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">OCCUPATION</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">INCOME</th>
           </tr>
         </thead>
         <tbody>
           ${famRows.map(m=>`<tr>
-            <td style="border-radius: 0;">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
-            <td align="center" style="border-radius: 0;">${escapeHtml(String(m.age || "")) || "—"}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.education || "—").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
+            <td align="center" style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.age || "")) || "—"}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.education || "—").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
           </tr>`).join("")}
         </tbody>
       </table>` : `<div style="color:#999;margin-top:8px;font-style:italic;">None listed.</div>`;
@@ -3137,6 +3338,7 @@ async function printDocument(){
       pageTemplate = pageTemplate.replace(/{{NOTED_TITLE}}/g, notedTitle);
       pageTemplate = pageTemplate.replace(/{{NOTED_LICENSE}}/g, notedLicense ? 'License No. ' + notedLicense : '');
       pageTemplate = pageTemplate.replace(/{{AGENCY_NAME}}/g, escapeHtml(agencyName));
+      pageTemplate = pageTemplate.replace(/{{DOCUMENT_REF_NUMBER}}/g, docRefNumber);
       
       // Split by PAGE_BREAK to get individual pages
       const parts = pageTemplate.split('<!--PAGE_BREAK-->');
@@ -3933,6 +4135,11 @@ async function loadDocumentPreview(caseId){
   // Fetch authoritative document date + age from the backend
   const docData = await fetchDocumentData(caseId);
 
+  // Prepare document reference number
+  const docRefNumber = String(docData?.document_ref_number || 1).padStart(2, '0');
+  console.log('loadDocumentPreview - docData:', docData);
+  console.log('loadDocumentPreview - docRefNumber:', docRefNumber);
+
   const c = getCase(caseId);
   console.log('Case data:', c);
   if(!c){
@@ -4005,25 +4212,25 @@ async function loadDocumentPreview(caseId){
     console.log('Template loaded, length:', template.length);
 
     const familyTable = famRows.length ? `
-      <table style="border-radius: 0;">
+      <table style="border-radius: 0; ${famRows.length > 1 ? 'font-size: 11px;' : ''}">
         <thead>
           <tr>
-            <th style="border-radius: 0;">RELATIVES</th>
-            <th style="border-radius: 0;">RELATIONSHIP</th>
-            <th style="border-radius: 0;">AGE</th>
-            <th style="border-radius: 0;">EDUCATIONAL<br>ATTAINMENT</th>
-            <th style="border-radius: 0;">OCCUPATION</th>
-            <th style="border-radius: 0;">INCOME</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIVES</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIONSHIP</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">AGE</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">EDUCATIONAL ATTAINMENT</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">OCCUPATION</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">INCOME</th>
           </tr>
         </thead>
         <tbody>
           ${famRows.map(m=>`<tr>
-            <td style="border-radius: 0;">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
-            <td align="center" style="border-radius: 0;">${escapeHtml(String(m.age || "")) || "—"}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.education || "—").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
+            <td align="center" style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.age || "")) || "—"}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.education || "—").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
           </tr>`).join("")}
         </tbody>
       </table>` : `<div style="color:#999;margin-top:8px;font-style:italic;">None listed.</div>`;
@@ -4059,6 +4266,8 @@ async function loadDocumentPreview(caseId){
     const agencyInfo = AGENCIES.find(a => a.key === selectedAgency) || AGENCIES[0];
     const agencyName = agencyInfo.name;
     pageTemplate = pageTemplate.replace(/{{AGENCY_NAME}}/g, escapeHtml(agencyName));
+    pageTemplate = pageTemplate.replace(/{{DOCUMENT_REF_NUMBER}}/g, docRefNumber);
+    console.log('loadDocumentPreview - replaced DOCUMENT_REF_NUMBER with:', docRefNumber);
     const parts = pageTemplate.split('<!--PAGE_BREAK-->');
     const totalPages = parts.length;
     
@@ -4312,8 +4521,12 @@ async function loadDocument(caseId, agency){
 }
 
 async function renderDocument(){
+  console.log('renderDocument called');
   const container = document.getElementById('documentContent');
-  if(!container) return;
+  if(!container) {
+    console.log('Container not found');
+    return;
+  }
 
   const c = getCase(view.caseId);
   console.log('Case object:', c);
@@ -4327,6 +4540,23 @@ async function renderDocument(){
 
   // Fetch authoritative document date + age from the backend
   const docData = await fetchDocumentData(view.caseId);
+
+  // Prepare document reference number
+  const docRefNumber = String(docData?.document_ref_number || 1).padStart(2, '0');
+  console.log('docData:', docData);
+  console.log('docRefNumber:', docRefNumber);
+
+  // Debug: Add debug info to container
+  const debugDiv = document.createElement('div');
+  debugDiv.style.cssText = 'position:fixed;top:10px;right:10px;background:yellow;padding:10px;z-index:9999;font-size:12px;border:2px solid red;';
+  debugDiv.innerHTML = `
+    <strong>DEBUG:</strong><br>
+    docData: ${JSON.stringify(docData)}<br>
+    docRefNumber: ${docRefNumber}<br>
+    Template before: {{DOCUMENT_REF_NUMBER}}<br>
+    Template after: ${docRefNumber}
+  `;
+  document.body.appendChild(debugDiv);
 
   const agenciesToPrint = view.docAgency === 'all'
     ? (c.agencies && c.agencies.length ? c.agencies : ['PCSO'])
@@ -4574,33 +4804,36 @@ async function renderDocument(){
   </div>`;
 
   try {
-    const response = await fetch('/templates/social-case-report.html');
+    const response = await fetch('/templates/social-case-report.html?v=' + Date.now());
     if (!response.ok) throw new Error('Failed to load template');
     let template = await response.text();
 
     const familyTable = famRows.length ? `
-      <table style="border-radius: 0;">
+      <table style="border-radius: 0; ${famRows.length > 1 ? 'font-size: 11px;' : ''}">
         <thead>
           <tr>
-            <th style="border-radius: 0;">RELATIVES</th>
-            <th style="border-radius: 0;">RELATIONSHIP</th>
-            <th style="border-radius: 0;">AGE</th>
-            <th style="border-radius: 0;">EDUCATIONAL<br>ATTAINMENT</th>
-            <th style="border-radius: 0;">OCCUPATION</th>
-            <th style="border-radius: 0;">INCOME</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIVES</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">RELATIONSHIP</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">AGE</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">EDUCATIONAL ATTAINMENT</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">OCCUPATION</th>
+            <th style="border-radius: 0; ${famRows.length > 1 ? 'padding: 4px 6px; font-size: 10px;' : ''}">INCOME</th>
           </tr>
         </thead>
         <tbody>
           ${famRows.map(m=>`<tr>
-            <td style="border-radius: 0;">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
-            <td align="center" style="border-radius: 0;">${escapeHtml(String(m.age || "")) || "—"}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.education || "—").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
-            <td style="border-radius: 0;">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.fullName || m.full_name || m.name || "").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.relationship || "—").toUpperCase())}</td>
+            <td align="center" style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.age || "")) || "—"}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.education || "—").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml((m.occupation || "N/A").toUpperCase())}</td>
+            <td style="border-radius: 0; ${famRows.length > 1 ? 'padding: 3px 6px;' : ''}">${escapeHtml(String(m.monthlyIncome || m.income || "")) || "N/A"}</td>
           </tr>`).join("")}
         </tbody>
       </table>` : `<div style="color:#999;margin-top:8px;font-style:italic;">None listed.</div>`;
+
+    // Prepare document reference number
+    const docRefNumber = String(docData?.document_ref_number || 1).padStart(2, '0');
 
     const pageParts = agenciesToPrint.map((agencyKey, pageIndex) => {
       const ag = AGENCIES.find(a => a.key === agencyKey) || { name: agencyKey };
@@ -4633,6 +4866,8 @@ async function renderDocument(){
       pageTemplate = pageTemplate.replace(/{{NOTED_TITLE}}/g, notedTitle);
       pageTemplate = pageTemplate.replace(/{{NOTED_LICENSE}}/g, notedLicense ? 'License No. ' + notedLicense : '');
       pageTemplate = pageTemplate.replace(/{{AGENCY_NAME}}/g, escapeHtml(ag.name || agencyKey));
+      pageTemplate = pageTemplate.replace(/{{DOCUMENT_REF_NUMBER}}/g, docRefNumber);
+      console.log('Template replacement done, docRefNumber:', docRefNumber);
 
       return pageTemplate.split('<!--PAGE_BREAK-->');
     }).flat();

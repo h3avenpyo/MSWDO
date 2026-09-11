@@ -64,7 +64,7 @@ class OnlineRequestController extends Controller
 
             // Check for existing client using the normalized name map
             $client = $clientMap[$normalizedName] ?? NameMatcher::findMatchingClient($fullName);
-            $req->warning_existing = (bool) $client;
+            $req->warning_existing = false;
 
             $req->warning_recent = false;
             if ($client) {
@@ -84,9 +84,8 @@ class OnlineRequestController extends Controller
                     })
                     ->exists();
 
-                $isRecentClient = $client->created_at >= $sixMonthsAgo;
-
-                if ($hasRecentCase || $hasRecentAssistance || $isRecentClient) {
+                // Only warn if they have recent assistance (case or assistance record), not just a recent client account
+                if ($hasRecentCase || $hasRecentAssistance) {
                     $req->warning_recent = true;
                 }
             }
@@ -127,7 +126,7 @@ class OnlineRequestController extends Controller
         $fullName     = trim($request->first_name . ' ' . $request->last_name);
         $client       = NameMatcher::findMatchingClient($fullName);
 
-        $warningExisting = (bool) $client;
+        $warningExisting = false;
         $warningRecent   = false;
 
         if ($client) {
@@ -147,10 +146,10 @@ class OnlineRequestController extends Controller
                 })
                 ->exists();
 
-            $isRecentClient = $client->created_at >= $sixMonthsAgo;
-
-            if ($hasRecentCase || $hasRecentAssistance || $isRecentClient) {
+            // Only warn if they have recent assistance (case or assistance record), not just a recent client account
+            if ($hasRecentCase || $hasRecentAssistance) {
                 $warningRecent = true;
+                $warningExisting = true;
             }
         }
 
@@ -160,6 +159,9 @@ class OnlineRequestController extends Controller
                 ->whereRaw('LOWER(CONCAT(first_name, " ", last_name)) = ?', [$normalizedName])
                 ->where('created_at', '>=', $sixMonthsAgo)
                 ->exists();
+            if ($warningRecent) {
+                $warningExisting = true;
+            }
         }
 
         $attachmentsHtml = '';
@@ -212,6 +214,49 @@ class OnlineRequestController extends Controller
             $attachmentsHtml = '<div style="margin-top: 12px;"><p style="margin: 0; font-size: 14px; color: #6B7280;">No files attached</p></div>';
         }
         
+        // Check for existing client & recent record
+        $sixMonthsAgo = now()->subMonths(6);
+        $fullName     = trim($request->first_name . ' ' . $request->last_name);
+        $client       = NameMatcher::findMatchingClient($fullName);
+
+        $warningExisting = false;
+        $warningRecent   = false;
+
+        if ($client) {
+            $hasRecentCase = $client->socialCaseStudies()
+                ->where(function ($q) use ($sixMonthsAgo) {
+                    $q->where('created_at', '>=', $sixMonthsAgo)
+                      ->orWhere('date_processed', '>=', $sixMonthsAgo)
+                      ->orWhere('assistance_date', '>=', $sixMonthsAgo)
+                      ->orWhere('released_at', '>=', $sixMonthsAgo);
+                })
+                ->exists();
+
+            $hasRecentAssistance = $client->assistanceRecords()
+                ->where(function ($q) use ($sixMonthsAgo) {
+                    $q->where('release_date', '>=', $sixMonthsAgo->toDateString())
+                      ->orWhere('created_at', '>=', $sixMonthsAgo);
+                })
+                ->exists();
+
+            // Only warn if they have recent assistance (case or assistance record), not just a recent client account
+            if ($hasRecentCase || $hasRecentAssistance) {
+                $warningRecent = true;
+                $warningExisting = true;
+            }
+        }
+
+        if (!$warningRecent) {
+            $normalizedName = NameMatcher::normalizeName($fullName);
+            $warningRecent  = OnlineRequest::where('id', '!=', $request->id)
+                ->whereRaw('LOWER(CONCAT(first_name, " ", last_name)) = ?', [$normalizedName])
+                ->where('created_at', '>=', $sixMonthsAgo)
+                ->exists();
+            if ($warningRecent) {
+                $warningExisting = true;
+            }
+        }
+
         return response()->json([
             'id' => $request->id,
             'first_name' => $request->first_name,
@@ -225,7 +270,9 @@ class OnlineRequestController extends Controller
             'created_at' => $request->created_at->format('M d, Y g:i A'),
             'situation' => $request->situation ?? 'N/A',
             'notes' => $request->notes ?? 'N/A',
-            'attachments_html' => $attachmentsHtml
+            'attachments_html' => $attachmentsHtml,
+            'warning_existing' => $warningExisting,
+            'warning_recent' => $warningRecent
         ]);
     }
 

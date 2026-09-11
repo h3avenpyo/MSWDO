@@ -334,7 +334,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <i data-lucide="file-text" style="width:24px;height:24px"></i>
+        <img src="{{ asset('images/dswd.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;" alt="DSWD">
         <span>Social Case Study</span>
     </div>
     <ul class="sidebar-menu">

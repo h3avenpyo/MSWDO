@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="user-id" content="{{ session('admin_user_id') }}">
     <meta name="user-role" content="{{ session('admin_user_role') }}">
     <meta name="user-name" content="{{ session('admin_user_name') ?? 'Social Case Study Officer' }}">
     <meta name="admin-name" content="{{ optional(\App\Models\User::where('role', 'admin')->first())->name ?? '' }}">
@@ -59,7 +60,7 @@
             --icon-teal: #0D9488;
             
             /* Dimensions */
-            --sidebar-width: 260px;
+            --sidebar-width: 280px;
             --topnav-height: 70px;
             --content-padding: 20px;
             --card-gap: 16px;
@@ -73,7 +74,7 @@
         }
         
         *{box-sizing:border-box;}
-        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100%;overflow-x:auto;overflow-y:auto;}
+        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:auto;overflow-x:auto;overflow-y:auto;}
         body{font-size:14px;line-height:1.5;}
         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;}
         button{font-family:inherit;cursor:pointer;}
@@ -99,16 +100,23 @@
         .sidebar.show{transform:translateX(0);}
         .sidebar-brand{
             height:72px;
-            padding:0 1.5rem;
+            padding:0 1.25rem;
             border-bottom:1px solid rgba(255,255,255,.1);
             color:#fff;
             font-weight:700;
-            font-size:1.1rem;
+            font-size:1.05rem;
             display:flex;
             align-items:center;
             gap:.65rem;
+            white-space:nowrap;
         }
-        .sidebar-brand i,.sidebar-brand [data-lucide]{width:24px;height:24px;color:var(--accent-yellow);}
+        .sidebar-brand img{
+            flex-shrink:0;
+        }
+        .sidebar-brand span{
+            white-space:nowrap;
+        }
+        .sidebar-brand i,.sidebar-brand [data-lucide]{width:24px;height:24px;color:var(--accent-yellow);flex-shrink:0;}
         .sidebar-menu{
             list-style:none;
             margin:0;
@@ -979,8 +987,8 @@
             margin-left:0;
             padding:20px;
             max-width:100%;
-            min-height:100vh;
-            overflow-y:auto;
+            min-height:auto;
+            overflow-y:visible;
             overflow-x:auto;
             display:flex;
             flex-direction:column;
@@ -1936,6 +1944,13 @@
         @media (max-width: 767.98px) {
             .mobile-header { display: flex !important; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #1A237E; color: #fff; padding: 0 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); align-items: center; justify-content: space-between; height: 60px; }
         }
+
+        /* ── Mobile Welcome Message ── */
+        .mobile-welcome { display: none !important; }
+        @media (max-width: 767.98px) {
+            .mobile-welcome { display: block !important; padding: 20px 16px 10px; background: #F5F7FB; }
+            .mobile-welcome-title { font-size: 18px; font-weight: 600; color: #111827; margin: 0; }
+        }
         .mobile-header-brand {
             display: flex;
             align-items: center;
@@ -2377,8 +2392,8 @@
                 overflow: hidden !important;
             }
             /* Restore full sidebar label visibility at 1200px+ */
-            .sidebar-brand { justify-content: flex-start !important; padding: 0 1.5rem !important; gap: 0.65rem !important; }
-            .sidebar-brand span { display: inline !important; }
+            .sidebar-brand { justify-content: flex-start !important; padding: 0 1.25rem !important; gap: 0.65rem !important; }
+            .sidebar-brand span { display: inline !important; white-space: nowrap !important; }
             .sidebar-menu a { justify-content: flex-start !important; padding: 0.75rem 1.5rem !important; gap: 0.75rem !important; }
             .sidebar-menu a span:not(.badge-count) { display: inline !important; position: static !important; background: none !important; color: inherit !important; padding: 0 !important; border-radius: 0 !important; font-size: inherit !important; font-weight: inherit !important; white-space: normal !important; box-shadow: none !important; pointer-events: auto !important; transform: none !important; }
             .sidebar-dropdown-menu a { justify-content: flex-start !important; padding: 0.6rem 1.25rem 0.6rem 2.25rem !important; gap: 0.65rem !important; }
@@ -2530,6 +2545,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
 </div>
 @include('admin.partials.account-status')
+@stack('styles')
 @stack('scripts')
 <script>
     function confirmLogout(event) {
