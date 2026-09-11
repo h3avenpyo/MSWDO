@@ -109,13 +109,6 @@ class InBetweenBenefitController extends Controller
             $query->where('barangay', $request->barangay);
         }
 
-        if ($request->filled('interval')) {
-            $interval = $request->interval;
-            $startAge = (int)substr($interval, 0, 2);
-            $endAge = (int)substr($interval, 3, 2);
-            $query->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN ? AND ?", [$startAge, $endAge]);
-        }
-
         if ($request->filled('status')) {
             $status = $request->status;
             if ($status === 'eligible') {

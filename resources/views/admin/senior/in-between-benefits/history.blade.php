@@ -983,7 +983,7 @@
 
                         <div class="filter-btn-group">
                             <button type="submit" class="btn btn-primary" title="Apply Filter">
-                                <i data-lucide="search"></i> Filter
+                                Apply
                             </button>
                             @if(request()->hasAny(['search', 'barangay', 'interval', 'status', 'from_date', 'to_date']))
                                 <a href="{{ route('admin.senior.in-between.history') }}" class="btn btn-clear" title="Reset Filters">

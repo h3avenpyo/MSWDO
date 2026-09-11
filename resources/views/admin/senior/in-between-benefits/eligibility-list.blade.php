@@ -1052,17 +1052,6 @@
                         </div>
 
                         <div class="filter-field">
-                            <label class="filter-label" for="intervalFilter">Interval</label>
-                            <select id="intervalFilter" name="interval" class="filter-select" onchange="this.form.submit()">
-                                <option value="">All Intervals</option>
-                                <option value="81-84" {{ request('interval') == '81-84' ? 'selected' : '' }}>81–84</option>
-                                <option value="86-89" {{ request('interval') == '86-89' ? 'selected' : '' }}>86–89</option>
-                                <option value="91-94" {{ request('interval') == '91-94' ? 'selected' : '' }}>91–94</option>
-                                <option value="96-99" {{ request('interval') == '96-99' ? 'selected' : '' }}>96–99</option>
-                            </select>
-                        </div>
-
-                        <div class="filter-field">
                             <label class="filter-label" for="statusFilter">Status</label>
                             <select id="statusFilter" name="status" class="filter-select" onchange="this.form.submit()">
                                 <option value="">All Statuses</option>
@@ -1074,11 +1063,11 @@
 
                         <div class="filter-btn-group">
                             <button type="submit" class="btn btn-primary" title="Apply Filter">
-                                <i data-lucide="filter"></i> Filter
+                                Apply
                             </button>
-                            @if(request()->hasAny(['search', 'barangay', 'interval', 'status']))
-                                <a href="{{ route('admin.senior.in-between.eligibility-list') }}" class="btn btn-clear" title="Reset Filters">
-                                    <i data-lucide="rotate-ccw"></i> Reset
+                            @if(request()->hasAny(['search', 'barangay', 'status']))
+                                <a href="{{ route('admin.senior.in-between.eligibility-list') }}" class="btn btn-clear" title="Clear Filters">
+                                    <i data-lucide="x"></i> Clear
                                 </a>
                             @endif
                         </div>
@@ -1202,7 +1191,7 @@
                                             </div>
                                             @if(request()->hasAny(['search', 'barangay', 'interval', 'status']))
                                                 <a href="{{ route('admin.senior.in-between.eligibility-list') }}" class="btn btn-primary" style="margin-top:8px;">
-                                                    <i data-lucide="rotate-ccw"></i> Reset Filters
+                                                    <i data-lucide="x"></i> Clear Filters
                                                 </a>
                                             @endif
                                         </div>
@@ -1593,7 +1582,6 @@
                         select_all: true,
                         search: document.getElementById('searchInput')?.value || '',
                         barangay: document.getElementById('barangayFilter')?.value || '',
-                        interval: document.getElementById('intervalFilter')?.value || '',
                         status: document.getElementById('statusFilter')?.value || ''
                     }
                     : { ids: ids };
@@ -1795,8 +1783,7 @@
                 ? {
                     select_all: true,
                     search: document.getElementById('searchInput')?.value || '',
-                    barangay: document.getElementById('barangayFilter')?.value || '',
-                    interval: document.getElementById('intervalFilter')?.value || ''
+                    barangay: document.getElementById('barangayFilter')?.value || ''
                 }
                 : { ids };
             const csrfMeta = document.querySelector('meta[name="csrf-token"]');
@@ -2094,7 +2081,7 @@
             }
         });
 
-        const filters = ['barangayFilter', 'intervalFilter', 'statusFilter'];
+        const filters = ['barangayFilter', 'statusFilter'];
         filters.forEach(filterId => {
             const filter = document.getElementById(filterId);
             if (filter) {
