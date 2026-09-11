@@ -215,6 +215,67 @@ class InBetweenBenefitController extends Controller
         return response()->json($eligibility);
     }
 
+    public function eligibilityExportData(Request $request)
+    {
+        $query = SeniorCitizenRecord::where('status', 'active')
+            ->whereNotNull('birth_date');
+
+        if ($request->boolean('select_all')) {
+            $sixYearsAgo = Carbon::now()->subYears(6);
+            $query->where(function ($q) {
+                $q->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 81 AND 84")
+                    ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 86 AND 89")
+                    ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 91 AND 94")
+                    ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 96 AND 99");
+            })->whereDoesntHave('inBetweenBenefits', function ($q) use ($sixYearsAgo) {
+                $q->claimed()->where('payout_date', '>=', $sixYearsAgo);
+            })->whereDoesntHave('inBetweenBenefits', function ($q) {
+                $q->pending();
+            });
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('control_number', 'like', "%{$search}%")
+                        ->orWhere('senior_id_number', 'like', "%{$search}%");
+                });
+            }
+
+            if ($request->filled('barangay')) {
+                $query->where('barangay', $request->barangay);
+            }
+
+            if ($request->filled('interval')) {
+                $startAge = (int) substr($request->interval, 0, 2);
+                $endAge = (int) substr($request->interval, 3, 2);
+                $query->whereRaw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN ? AND ?', [$startAge, $endAge]);
+            }
+        } else {
+            $query->whereIn('id', $request->input('ids', []));
+        }
+
+        $benefitAmount = (float) ($this->config->benefit_amount ?? 1000.00);
+        $records = $query->orderByDesc('id')->get()->map(function ($senior) use ($benefitAmount) {
+            $interval = $this->getEligibilityInterval($senior);
+
+            return [
+                'senior_id' => $senior->senior_id_number ?? ('#' . $senior->id),
+                'control_number' => $senior->control_number ?? ('#' . $senior->id),
+                'full_name' => $senior->full_name,
+                'barangay' => $senior->barangay ?? 'N/A',
+                'birth_date' => $senior->birth_date?->format('M d, Y') ?? 'N/A',
+                'age' => $senior->age,
+                'amount' => $benefitAmount,
+                'interval' => $interval ?? 'N/A',
+                'status' => $this->hasClaimedInterval($senior, $interval) ? 'Claimed' : ($this->hasPendingClaim($senior, $interval) ? 'Pending' : 'Eligible'),
+            ];
+        });
+
+        return response()->json(['records' => $records]);
+    }
+
     public function processClaim(Request $request, $seniorId)
     {
         $request->validate([
@@ -520,6 +581,67 @@ class InBetweenBenefitController extends Controller
             'success' => true,
             'updated_count' => $updated,
         ]);
+    }
+
+    public function exportBenefitHistoryData(Request $request)
+    {
+        $query = InBetweenBenefitHistory::with('senior')
+            ->where('is_exported', false);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                    ->orWhere('reference_number', 'like', "%{$search}%")
+                    ->orWhere('senior_id', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('senior_id')) {
+            $query->where('senior_id', $request->senior_id);
+        }
+
+        if ($request->filled('interval')) {
+            $query->where('eligibility_interval', $request->interval);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('barangay')) {
+            $query->whereHas('senior', function ($q) use ($request) {
+                $q->where('barangay', $request->barangay);
+            });
+        }
+
+        if ($request->filled('from_date')) {
+            $query->whereDate('application_date', '>=', $request->from_date);
+        }
+
+        if ($request->filled('to_date')) {
+            $query->whereDate('application_date', '<=', $request->to_date);
+        }
+
+        if ($request->filled('ids') && is_array($request->ids)) {
+            $query->whereIn('id', $request->ids);
+        }
+
+        $records = $query->orderBy('application_date', 'desc')->get()->map(function ($benefit) {
+            return [
+                'id' => $benefit->id,
+                'control_number' => $benefit->senior->control_number ?? $benefit->senior->senior_id_number ?? ('#' . $benefit->senior_id),
+                'name' => $benefit->full_name,
+                'barangay' => $benefit->senior->barangay ?? 'N/A',
+                'age' => $benefit->current_age,
+                'amount' => (float) $benefit->amount,
+                'status' => ucfirst($benefit->status),
+                'application_date' => $benefit->application_date?->format('M d, Y') ?? 'N/A',
+                'next_eligible' => $benefit->payout_date?->copy()->addYears(6)->format('M d, Y') ?? 'Pending payout',
+            ];
+        });
+
+        return response()->json(['records' => $records]);
     }
 
     public function seniorBenefitCard($seniorId)

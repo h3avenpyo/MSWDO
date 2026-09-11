@@ -1300,7 +1300,7 @@
     });
 
     window.selectAllMatching = false;
-    window.totalRecords = {{ $totalAllRecords ?? $benefits->total() ?? 0 }};
+    window.totalRecords = {{ $benefits->total() ?? 0 }};
 
     function toggleSelectAll() {
         const selectAll = document.getElementById('selectAll');
@@ -1330,6 +1330,18 @@
         const checkedBoxes = document.querySelectorAll('.record-checkbox:checked');
         const count = checkedBoxes.length;
         const total = document.querySelectorAll('.record-checkbox').length;
+        const selectAllStored = localStorage.getItem('historySelectAll') === 'true';
+
+        // An individual uncheck cancels select-all mode and uses the visible selection.
+        if ((window.selectAllMatching || selectAllStored) && count < total) {
+            window.selectAllMatching = false;
+            localStorage.removeItem('historySelectAll');
+            localStorage.removeItem('historyTotalRecords');
+        }
+
+        if (!window.selectAllMatching && localStorage.getItem('historySelectAll') !== 'true') {
+            localStorage.setItem('selectedHistoryIds', JSON.stringify(Array.from(checkedBoxes).map(cb => cb.value)));
+        }
         
         const countSpan = document.getElementById('selectedCount');
         const badge = document.getElementById('selectedCountBadge');
@@ -1371,6 +1383,7 @@
         const selectAll = localStorage.getItem('historySelectAll');
         if (selectAll === 'true') {
             window.selectAllMatching = true;
+            localStorage.setItem('historyTotalRecords', window.totalRecords);
             const selectAllCheckbox = document.getElementById('selectAll');
             if (selectAllCheckbox) {
                 selectAllCheckbox.checked = true;
@@ -1378,6 +1391,11 @@
             // Check all current page checkboxes
             document.querySelectorAll('.record-checkbox').forEach(cb => {
                 cb.checked = true;
+            });
+        } else {
+            const selectedIds = JSON.parse(localStorage.getItem('selectedHistoryIds') || '[]');
+            document.querySelectorAll('.record-checkbox').forEach(cb => {
+                cb.checked = selectedIds.includes(cb.value);
             });
         }
         updateSelectedCount();
@@ -1397,15 +1415,16 @@
     function showBulkActionPopup() {
         const checkboxes = document.querySelectorAll('.record-checkbox:checked');
         const ids = Array.from(checkboxes).map(cb => cb.value);
+        const selectAll = window.selectAllMatching || localStorage.getItem('historySelectAll') === 'true';
         
-        if (ids.length === 0) {
+        if (ids.length === 0 && !selectAll) {
             Swal.fire('No Selection', 'Please select at least one record.', 'warning');
             return;
         }
 
         const summary = document.getElementById('bulkModalSummary');
         if (summary) {
-            summary.textContent = `${ids.length} record(s) selected`;
+            summary.textContent = `${selectAll ? window.totalRecords : ids.length} record(s) selected`;
         }
 
         const modal = document.getElementById('bulkActionModal');
@@ -1430,21 +1449,39 @@
         if (e) { e.preventDefault(); e.stopPropagation(); }
         closeBulkModal();
 
-        const checkboxes = document.querySelectorAll('.record-checkbox:checked');
-        const ids = Array.from(checkboxes).map(cb => cb.value);
+        const savedIds = localStorage.getItem('selectedHistoryIds');
+        const ids = savedIds ? JSON.parse(savedIds) : Array.from(document.querySelectorAll('.record-checkbox:checked')).map(cb => cb.value);
         
-        if (ids.length === 0) {
+        const selectAll = window.selectAllMatching || localStorage.getItem('historySelectAll') === 'true';
+        if (ids.length === 0 && !selectAll) {
             Swal.fire('No Selection', 'Please select at least one record to export.', 'warning');
             return;
         }
 
         try {
-            const table = document.querySelector('.archive-table');
-            const rows = Array.from(table.querySelectorAll('tbody tr'));
-            const selectedRows = rows.filter(row => {
-                const checkbox = row.querySelector('.record-checkbox:checked');
-                return checkbox !== null;
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            const payload = selectAll ? {
+                search: document.getElementById('searchInput')?.value || '',
+                barangay: document.getElementById('barangayFilter')?.value || '',
+                interval: document.getElementById('intervalSelect')?.value || '',
+                status: document.getElementById('statusSelect')?.value || '',
+                from_date: document.getElementById('fromDateInput')?.value || '',
+                to_date: document.getElementById('toDateInput')?.value || ''
+            } : { ids };
+            const dataResponse = await fetch('/admin/senior/in-between/history-export-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfMeta ? csrfMeta.content : ''
+                },
+                body: JSON.stringify(payload)
             });
+            if (!dataResponse.ok) throw new Error('Unable to retrieve the selected history records.');
+            const exportData = await dataResponse.json();
+            const exportRecords = exportData.records || [];
+            const exportIds = exportRecords.map(record => record.id);
+            if (exportRecords.length === 0) throw new Error('No records were found for this export.');
 
             const printContent = `
                 <html>
@@ -1637,13 +1674,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            ${selectedRows.map(row => {
-                                const cells = row.querySelectorAll('td');
-                                return `<tr>
-                                    ${Array.from(cells).slice(1, 9).map(cell => `<td>${cell.textContent.trim()}</td>`).join('')}
-                                    <td style="border-bottom: 1px solid #94a3b8; height: 40px;"></td>
-                                </tr>`;
-                            }).join('')}
+                            ${exportRecords.map(record => `<tr>
+                                <td>${record.control_number}</td>
+                                <td>${record.name}</td>
+                                <td>${record.barangay}</td>
+                                <td>${record.age}</td>
+                                <td>₱${Number(record.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td>${record.status}</td>
+                                <td>${record.application_date}</td>
+                                <td>${record.next_eligible}</td>
+                                <td style="border-bottom: 1px solid #94a3b8; height: 40px;"></td>
+                            </tr>`).join('')}
                         </tbody>
                     </table>
                     
@@ -1686,7 +1727,7 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
-                    body: JSON.stringify({ ids: ids })
+                    body: JSON.stringify({ ids: exportIds })
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -1694,7 +1735,7 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Export Complete',
-                            text: `PDF exported and ${ids.length} record(s) moved to payout history.`,
+                            text: `PDF exported and ${exportIds.length} record(s) moved to payout history.`,
                             confirmButtonColor: '#1A237E',
                             timer: 3000,
                             timerProgressBar: true

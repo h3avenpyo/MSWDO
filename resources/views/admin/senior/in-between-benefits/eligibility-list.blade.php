@@ -852,6 +852,52 @@
             .archive-table tbody td[data-label="Action"]::before{display:none;}
             .archive-table tbody td[data-label="Action"] .btn{width:100%;}
         }
+
+        .claim-process-popup{
+            width:min(520px, calc(100vw - 24px)) !important;
+            padding:0 0 18px !important;
+            border:1px solid #CBD5E1 !important;
+            border-radius:16px !important;
+            box-shadow:0 24px 60px rgba(15,23,42,.22) !important;
+            overflow:hidden;
+        }
+        .claim-process-title{margin:0 !important;padding:20px 24px 16px !important;background:#1A237E;color:#fff !important;font-size:1.05rem !important;font-weight:800 !important;text-align:left !important;}
+        .claim-process-icon{margin:18px auto 0 !important;transform:scale(.78);}
+        .claim-process-content{margin:0 !important;padding:18px 24px 0 !important;color:#334155 !important;}
+        .claim-process-summary{margin:0 !important;padding:4px 16px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;text-align:left;}
+        .claim-process-row{display:grid;grid-template-columns:minmax(120px,1fr) minmax(0,1.5fr);align-items:center;gap:16px;min-height:42px;padding:8px 0;border-bottom:1px solid #E2E8F0;}
+        .claim-process-row:last-child{border-bottom:0;}
+        .claim-process-label{color:#64748B;font-size:12px;font-weight:700;}
+        .claim-process-value{color:#0F172A;font-size:13px;font-weight:600;text-align:right;overflow-wrap:anywhere;}
+        .claim-process-id,.claim-process-interval{display:inline-block;padding:3px 8px;border-radius:6px;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;}
+        .claim-process-amount{color:#059669;font-size:16px;font-weight:800;}
+        .claim-process-remarks{margin-top:16px;text-align:left;}
+        .claim-process-remarks label{display:block;margin-bottom:6px;color:#475569;font-size:12px;font-weight:700;}
+        .claim-process-remarks input{width:100%;height:42px;padding:0 12px;border:1px solid #CBD5E1;border-radius:8px;color:#1E293B;background:#fff;font:inherit;outline:none;}
+        .claim-process-remarks input:focus{border-color:#1A237E;box-shadow:0 0 0 3px rgba(26,35,126,.12);}
+        .claim-process-confirm,.claim-process-cancel{min-width:132px !important;height:40px !important;padding:0 18px !important;border-radius:8px !important;font-family:inherit !important;font-size:13px !important;font-weight:700 !important;}
+        .claim-process-confirm{background:#1A237E !important;}
+        .claim-process-confirm:hover{background:#121858 !important;}
+        .claim-process-cancel{color:#334155 !important;border:1px solid #CBD5E1 !important;background:#fff !important;}
+        .claim-process-cancel:hover{background:#F8FAFC !important;}
+        @media (max-width:520px){
+            .claim-process-title{padding:18px 18px 14px !important;font-size:1rem !important;}
+            .claim-process-content{padding:16px 18px 0 !important;}
+            .claim-process-row{grid-template-columns:1fr;gap:3px;min-height:0;}
+            .claim-process-value{text-align:left;}
+            .claim-process-popup .swal2-actions{width:calc(100% - 36px);margin:18px auto 0;}
+            .claim-process-confirm,.claim-process-cancel{width:100%;}
+        }
+        .claim-process-dialog{max-width:520px;}
+        .claim-process-dialog .senior-modal-header{background:#1A237E;}
+        .claim-process-dialog .senior-modal-body{padding:20px 24px;}
+        .claim-process-dialog .claim-process-summary{margin:0;}
+        .claim-process-error{display:none;margin-top:14px;padding:10px 12px;border:1px solid #FECACA;border-radius:8px;background:#FEF2F2;color:#991B1B;font-size:13px;text-align:left;}
+        .claim-process-success{display:none;padding:18px;border:1px solid #A7F3D0;border-radius:10px;background:#ECFDF5;color:#065F46;text-align:center;font-size:14px;font-weight:600;}
+        .claim-process-confirmation{display:flex;align-items:flex-start;gap:9px;margin-top:16px;color:#334155;font-size:13px;font-weight:600;text-align:left;line-height:1.4;}
+        .claim-process-confirmation input{width:17px;height:17px;flex:0 0 auto;margin:1px 0 0;accent-color:#1A237E;cursor:pointer;}
+        .claim-process-dialog.is-loading .claim-process-confirm{opacity:.65;pointer-events:none;}
+        @media (max-width:520px){.claim-process-dialog .senior-modal-body{padding:18px;}}
     </style>
 </head>
 <body>
@@ -1185,7 +1231,7 @@
         <div class="senior-modal-header">
             <h5 class="senior-modal-title">
                 <i data-lucide="user" style="width:20px;height:20px;"></i>
-                Senior Citizen Details
+                Benefit Transaction Details
             </h5>
             <button onclick="closeSeniorModal()" class="senior-modal-close" aria-label="Close modal">
                 <i data-lucide="x" style="width:20px;height:20px;"></i>
@@ -1218,6 +1264,10 @@
                     <div class="senior-modal-value" id="modalAge">—</div>
                 </div>
                 <div class="senior-modal-field">
+                    <label class="senior-modal-label">Eligibility Interval</label>
+                    <div class="senior-modal-value" id="modalInterval">—</div>
+                </div>
+                <div class="senior-modal-field">
                     <label class="senior-modal-label">Benefit Amount</label>
                     <div class="senior-modal-value" id="modalAmount">—</div>
                 </div>
@@ -1228,6 +1278,45 @@
                 Close
             </button>
             <button type="button" id="modalProcessClaimBtn" onclick="processClaimFromModal()" class="btn btn-primary" style="height:38px; padding:0 22px; display:none;">
+                <i data-lucide="gift" style="width:16px;height:16px;"></i> Process Claim
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Process Claim Modal -->
+<div id="processClaimModal" class="senior-modal-backdrop">
+    <div class="senior-modal-dialog claim-process-dialog">
+        <div class="senior-modal-header">
+            <h5 class="senior-modal-title">
+                <i data-lucide="gift" style="width:20px;height:20px;"></i>
+                Process In-Between Birthday Cash Gift
+            </h5>
+            <button type="button" onclick="closeProcessClaimModal()" class="senior-modal-close" aria-label="Close modal">
+                <i data-lucide="x" style="width:20px;height:20px;"></i>
+            </button>
+        </div>
+        <div class="senior-modal-body">
+            <div id="processClaimSummary" class="claim-process-summary">
+                <div class="claim-process-row"><span class="claim-process-label">Senior ID</span><span id="processModalSeniorId" class="claim-process-value claim-process-id">—</span></div>
+                <div class="claim-process-row"><span class="claim-process-label">Name</span><span id="processModalName" class="claim-process-value">—</span></div>
+                <div class="claim-process-row"><span class="claim-process-label">Age</span><span id="processModalAge" class="claim-process-value">—</span></div>
+                <div class="claim-process-row"><span class="claim-process-label">Amount</span><span id="processModalAmount" class="claim-process-value claim-process-amount">—</span></div>
+            </div>
+            <div id="processClaimSuccess" class="claim-process-success">Claim processed successfully. Reloading the eligibility list...</div>
+            <div id="processClaimError" class="claim-process-error" role="alert"></div>
+            <div class="claim-process-remarks">
+                <label for="processModalRemarks">Remarks (Optional)</label>
+                <input id="processModalRemarks" type="text" placeholder="e.g. Approved and processed">
+            </div>
+            <label class="claim-process-confirmation" for="processModalConfirm">
+                <input id="processModalConfirm" type="checkbox">
+                <span>I am sure I want to process this claim.</span>
+            </label>
+        </div>
+        <div class="senior-modal-footer">
+            <button type="button" onclick="closeProcessClaimModal()" class="btn btn-outline" style="height:38px;padding:0 22px;">Cancel</button>
+            <button type="button" id="processModalSubmit" onclick="submitProcessClaim()" class="btn btn-primary" style="height:38px;padding:0 22px;">
                 <i data-lucide="gift" style="width:16px;height:16px;"></i> Process Claim
             </button>
         </div>
@@ -1640,22 +1729,37 @@
         if (e) { e.preventDefault(); e.stopPropagation(); }
         closeBulkModal();
 
-        const checkboxes = document.querySelectorAll('.senior-checkbox:checked');
-        const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+        const savedIds = localStorage.getItem('selectedInBetweenSeniorIds');
+        const ids = savedIds ? JSON.parse(savedIds) : Array.from(document.querySelectorAll('.senior-checkbox:checked')).map(cb => cb.dataset.id);
         
-        if (ids.length === 0) {
+        if (ids.length === 0 && !window.selectAllMatching) {
             Swal.fire('No Selection', 'Please select at least one record to export.', 'warning');
             return;
         }
 
         try {
-            // Get only the selected rows
-            const table = document.querySelector('.archive-table');
-            const rows = Array.from(table.querySelectorAll('tbody tr'));
-            const selectedRows = rows.filter(row => {
-                const checkbox = row.querySelector('.senior-checkbox:checked');
-                return checkbox !== null;
+            const payload = window.selectAllMatching
+                ? {
+                    select_all: true,
+                    search: document.getElementById('searchInput')?.value || '',
+                    barangay: document.getElementById('barangayFilter')?.value || '',
+                    interval: document.getElementById('intervalFilter')?.value || ''
+                }
+                : { ids };
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            const dataResponse = await fetch('/admin/senior/in-between/eligibility-export-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfMeta ? csrfMeta.content : ''
+                },
+                body: JSON.stringify(payload)
             });
+            if (!dataResponse.ok) throw new Error('Unable to retrieve the selected records.');
+            const exportData = await dataResponse.json();
+            const exportRecords = exportData.records || [];
+            if (exportRecords.length === 0) throw new Error('No records were found for this export.');
 
             // Create a professional government-style PDF template with logos
             const printContent = `
@@ -1823,21 +1927,29 @@
                     <table class="data-table">
                         <thead>
                             <tr>
+                                <th>Senior ID</th>
                                 <th>Control Number</th>
                                 <th>Name</th>
                                 <th>Barangay</th>
+                                <th>Birth Date</th>
                                 <th>Age</th>
                                 <th>Amount</th>
+                                <th>Interval</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${selectedRows.map(row => {
-                                const cells = row.querySelectorAll('td');
-                                return `<tr>
-                                    ${Array.from(cells).slice(1, 7).map(cell => `<td>${cell.textContent.trim()}</td>`).join('')}
-                                </tr>`;
-                            }).join('')}
+                            ${exportRecords.map(record => `<tr>
+                                <td>${record.senior_id}</td>
+                                <td>${record.control_number}</td>
+                                <td>${record.full_name}</td>
+                                <td>${record.barangay}</td>
+                                <td>${record.birth_date}</td>
+                                <td>${record.age}</td>
+                                <td>₱${Number(record.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td>${record.interval}</td>
+                                <td>${record.status}</td>
+                            </tr>`).join('')}
                         </tbody>
                     </table>
                     
@@ -1913,10 +2025,18 @@
             });
         }
 
+        const processModal = document.getElementById('processClaimModal');
+        if (processModal) {
+            processModal.addEventListener('click', function(e) {
+                if (e.target === this) closeProcessClaimModal();
+            });
+        }
+
         // Escape key closes modals
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeSeniorModal();
+                closeProcessClaimModal();
                 closeBulkModal();
             }
         });
@@ -2019,143 +2139,111 @@
         );
     }
 
+    let processClaimData = null;
+
     async function processClaim(seniorId, fullName, age, interval, amount, seniorIdNum) {
-        let displaySeniorId = seniorIdNum || ('#' + seniorId);
         let displayName = fullName || '';
         let displayAge = age || '';
         let displayInterval = interval || '';
         let displayAmountNum = amount || 1000;
+        let displaySeniorId = seniorIdNum || ('#' + seniorId);
 
-        // If any critical information is missing, fetch fresh data from server
         if (!displayName || !displayAge || !displayInterval) {
-            Swal.fire({
-                title: 'Loading Details...',
-                text: 'Checking eligibility and retrieving senior citizen details...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
             try {
                 const checkRes = await fetch(`/admin/senior/in-between/check-eligibility/${seniorId}`);
                 const data = await checkRes.json();
-
                 if (!data.is_eligible) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Not Eligible',
-                        text: data.reason || 'This senior citizen is not currently eligible for the in-between birthday cash gift.',
-                        confirmButtonColor: '#1A237E'
-                    });
+                    showProcessClaimError(data.reason || 'This senior citizen is not currently eligible for the in-between birthday cash gift.');
                     return;
                 }
-
-                displaySeniorId = data.senior_id || ('#' + seniorId);
+                displaySeniorId = data.senior_id || displaySeniorId;
                 displayName = data.full_name;
                 displayAge = data.current_age;
                 displayInterval = data.eligibility_interval;
                 displayAmountNum = data.benefit_amount || 1000;
-            } catch (err) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Unable to retrieve senior citizen details. Please check your connection and try again.',
-                    confirmButtonColor: '#1A237E'
-                });
+            } catch (error) {
+                showProcessClaimError('Unable to retrieve senior citizen details. Please check your connection and try again.');
                 return;
             }
         }
 
-        const formattedAmount = '₱' + Number(displayAmountNum).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        processClaimData = { seniorId, displaySeniorId, displayName, displayAge, displayInterval, displayAmountNum };
+        document.getElementById('processModalSeniorId').textContent = displaySeniorId;
+        document.getElementById('processModalName').textContent = displayName;
+        document.getElementById('processModalAge').textContent = `${displayAge} yrs old`;
+        document.getElementById('processModalAmount').textContent = '₱' + Number(displayAmountNum).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('processModalRemarks').value = '';
+        document.getElementById('processModalConfirm').checked = false;
+        document.getElementById('processClaimError').style.display = 'none';
+        document.getElementById('processClaimSuccess').style.display = 'none';
+        document.getElementById('processClaimSummary').style.display = 'block';
+        document.querySelector('#processClaimModal .claim-process-remarks').style.display = 'block';
+        document.getElementById('processModalSubmit').style.display = 'inline-flex';
+        showProcessClaimModal();
+    }
 
-        const modalHtml = `
-            <div style="text-align: left; margin: 10px 0 6px;">
-                <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 18px; font-size: 14px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #E2E8F0;">
-                        <span style="color: #64748B; font-weight: 600;">Senior ID:</span>
-                        <span id="seniorId" style="font-weight: 700; font-family: monospace; font-size: 13px; background: #EEF2FF; color: #3730A3; padding: 2px 8px; border-radius: 6px;">${displaySeniorId}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #E2E8F0;">
-                        <span style="color: #64748B; font-weight: 600;">Name:</span>
-                        <span id="seniorName" style="color: #0F172A; font-weight: 700;">${displayName}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #E2E8F0;">
-                        <span style="color: #64748B; font-weight: 600;">Age:</span>
-                        <span id="seniorAge" style="color: #0F172A; font-weight: 600;">${displayAge} yrs old</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #E2E8F0;">
-                        <span style="color: #64748B; font-weight: 600;">Eligibility Interval:</span>
-                        <span id="eligibilityInterval" style="background: #EEF2FF; color: #3730A3; border: 1px solid #C7D2FE; padding: 3px 12px; border-radius: 999px; font-weight: 700; font-size: 12px;">${displayInterval}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0 2px;">
-                        <span style="color: #64748B; font-weight: 600;">Amount:</span>
-                        <span id="benefitAmount" style="color: #059669; font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums;">${formattedAmount}</span>
-                    </div>
-                </div>
-                <div style="margin-top: 14px;">
-                    <label for="swalClaimRemarks" style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 4px;">Remarks (Optional):</label>
-                    <input id="swalClaimRemarks" type="text" placeholder="e.g. Approved and processed" style="width: 100%; height: 38px; border: 1px solid #CBD5E1; border-radius: 8px; padding: 0 12px; font-size: 13px; box-sizing: border-box; font-family: inherit; outline: none;">
-                </div>
-            </div>
-        `;
+    function showProcessClaimModal() {
+        const modal = document.getElementById('processClaimModal');
+        if (!modal) return;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => { modal.style.opacity = '1'; }, 10);
+        lucide.createIcons();
+    }
 
-        Swal.fire({
-            title: 'Process In-Between Birthday Cash Gift',
-            html: modalHtml,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Process Claim',
-            cancelButtonText: 'Cancel',
-            confirmButtonColor: '#1A237E',
-            cancelButtonColor: '#94A3B8',
-            showLoaderOnConfirm: true,
-            allowOutsideClick: () => !Swal.isLoading(),
-            preConfirm: async () => {
-                const remarks = document.getElementById('swalClaimRemarks') ? document.getElementById('swalClaimRemarks').value : '';
-                const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-                const csrfToken = csrfMeta ? csrfMeta.content : '';
+    function closeProcessClaimModal() {
+        const modal = document.getElementById('processClaimModal');
+        if (!modal || modal.classList.contains('is-loading')) return;
+        modal.style.opacity = '0';
+        setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = ''; }, 200);
+    }
 
-                try {
-                    const response = await fetch(`/admin/senior/in-between/process-claim/${seniorId}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            confirmation: true,
-                            remarks: remarks
-                        })
-                    });
+    function showProcessClaimError(message) {
+        const error = document.getElementById('processClaimError');
+        if (!error) return;
+        error.textContent = message;
+        error.style.display = 'block';
+        showProcessClaimModal();
+    }
 
-                    const result = await response.json();
-                    if (!response.ok || !result.success) {
-                        throw new Error(result.message || 'Failed to process claim.');
-                    }
-                    return result;
-                } catch (error) {
-                    Swal.showValidationMessage(error.message || 'Error occurred while processing claim.');
-                }
-            }
-        }).then((result) => {
-            if (result.isConfirmed && result.value) {
-                const refNo = result.value.benefit?.reference_number;
-                Swal.fire({
-                    title: 'Claim Processed!',
-                    html: `
-                        <p style="margin-bottom:8px;font-size:14px;color:#334155;">The in-between birthday cash gift claim has been successfully processed.</p>
-                        ${refNo ? `<div style="background:#F1F5F9;padding:8px 12px;border-radius:8px;display:inline-block;font-size:13px;color:#475569;">Reference No: <strong style="color:#1A237E;font-family:monospace;">${refNo}</strong></div>` : ''}
-                    `,
-                    icon: 'success',
-                    confirmButtonColor: '#1A237E',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    window.location.reload();
-                });
-            }
-        });
+    async function submitProcessClaim() {
+        if (!processClaimData) return;
+        const modal = document.getElementById('processClaimModal');
+        const submit = document.getElementById('processModalSubmit');
+        const remarks = document.getElementById('processModalRemarks').value;
+        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        const confirmation = document.getElementById('processModalConfirm');
+        if (!confirmation.checked) {
+            const error = document.getElementById('processClaimError');
+            error.textContent = 'Please confirm that you are sure before processing this claim.';
+            error.style.display = 'block';
+            return;
+        }
+        modal.classList.add('is-loading');
+        submit.disabled = true;
+        submit.innerHTML = '<i data-lucide="loader-circle" style="width:16px;height:16px;"></i> Processing...';
+        lucide.createIcons();
+
+        try {
+            const response = await fetch(`/admin/senior/in-between/process-claim/${processClaimData.seniorId}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfMeta ? csrfMeta.content : '', 'Accept': 'application/json'},
+                body: JSON.stringify({ confirmation: true, remarks })
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) throw new Error(result.message || 'Failed to process claim.');
+            document.getElementById('processClaimSummary').style.display = 'none';
+            document.querySelector('#processClaimModal .claim-process-remarks').style.display = 'none';
+            document.getElementById('processClaimSuccess').style.display = 'block';
+            setTimeout(() => window.location.reload(), 1400);
+        } catch (error) {
+            modal.classList.remove('is-loading');
+            submit.disabled = false;
+            submit.innerHTML = '<i data-lucide="gift" style="width:16px;height:16px;"></i> Process Claim';
+            document.getElementById('processClaimError').textContent = error.message || 'Error occurred while processing claim.';
+            document.getElementById('processClaimError').style.display = 'block';
+            lucide.createIcons();
+        }
     }
 
     function viewClaim(seniorId) {
