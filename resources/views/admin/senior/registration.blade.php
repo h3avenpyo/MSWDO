@@ -213,6 +213,10 @@
                 padding: 8px 12px;
             }
         }
+
+        @media (max-width:575.98px){
+            .form-card{padding:22px;}
+        }
     </style>
 </head>
 <body>
@@ -410,7 +414,7 @@
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex justify-end gap-3 mt-6">
+                <div class="flex flex-wrap justify-end gap-3 mt-6">
                     <button type="button" class="btn" style="height:44px;" onclick="location.href='/admin/senior'">Cancel</button>
                     <button type="button" class="btn primary" style="height:44px;" onclick="confirmSubmit(event)">
                         <i data-lucide="user-plus" style="width:16px;height:16px"></i> Register Senior Citizen

@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="{{ asset('css/responsive.css') }}">
 <style>
     /* ══════════════════════════════════════════════════════════
        SENIOR CITIZEN MODULE — SHARED NAVIGATION / LAYOUT WRAPPER

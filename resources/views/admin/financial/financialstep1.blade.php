@@ -8,6 +8,23 @@
 $userName = session('admin_user_name') ?? 'Officer';
 @endphp
 
+<style>
+@media (max-width: 575.98px) {
+    .step-label {
+        white-space: normal;
+        font-size: 0.7rem;
+    }
+    .step-item-pill {
+        padding: 0.3rem 0.5rem;
+    }
+    form.row.g-2 > [class*="col-md-"] {
+        width: 100%;
+        max-width: 100%;
+        flex: 0 0 100%;
+    }
+}
+</style>
+
 <!-- Alerts -->
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4 shadow-xs" role="alert">

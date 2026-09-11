@@ -651,6 +651,18 @@
                 display: none !important;
             }
         }
+
+        /* Family composition grid responsive override (inline style uses repeat(3,1fr)) */
+        @media (max-width: 767px) {
+            .panel > div[style*="grid-template-columns:repeat(3"] {
+                grid-template-columns: 1fr 1fr !important;
+            }
+        }
+        @media (max-width: 480px) {
+            .panel > div[style*="grid-template-columns:repeat(3"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
     </style>
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
@@ -1426,7 +1438,6 @@
 
         loadCases();
 
-<<<<<<< HEAD
         /* ---------------- Responsive handlers ---------------- */
         (function() {
             var overlay = document.getElementById('sidebarOverlay');
@@ -1447,7 +1458,7 @@
                 }
             });
             window.addEventListener('resize', function() {
-                if (window.innerWidth >= 1024) {
+                if (window.innerWidth >= 1200) {
                     var sidebar = document.querySelector('.sidebar');
                     var ov = document.getElementById('sidebarOverlay');
                     if (sidebar && sidebar.classList.contains('show')) {
@@ -1460,40 +1471,6 @@
         })();
 
     </script>
-    =======
-    /* ---------------- Responsive handlers ---------------- */
-    (function(){
-    var overlay = document.getElementById('sidebarOverlay');
-    if(overlay) overlay.addEventListener('click', function(){
-    var sidebar = document.querySelector('.sidebar');
-    if(sidebar) sidebar.classList.remove('show');
-    overlay.classList.remove('active');
-    document.body.style.overflow = '';
-    });
-    document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape'){
-    var sidebar = document.querySelector('.sidebar');
-    if(sidebar && sidebar.classList.contains('show')){
-    sidebar.classList.remove('show');
-    if(overlay) overlay.classList.remove('active');
-    document.body.style.overflow = '';
-    }
-    }
-    });
-    window.addEventListener('resize', function(){
-    if(window.innerWidth >= 1200){
-    var sidebar = document.querySelector('.sidebar');
-    var ov = document.getElementById('sidebarOverlay');
-    if(sidebar && sidebar.classList.contains('show')){
-    sidebar.classList.remove('show');
-    if(ov) ov.classList.remove('active');
-    document.body.style.overflow = '';
-    }
-    }
-    });
-    })();
-    </script>
-    >>>>>>> 5c79a03401b44599faa0ee97242d93d2ff55b903
 </body>
 
 </html>

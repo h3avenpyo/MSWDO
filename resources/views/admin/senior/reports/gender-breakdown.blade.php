@@ -23,7 +23,13 @@
         .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center;}
         .stat-value{font-size:48px;font-weight:700;color:var(--primary);}
         .stat-label{font-size:16px;color:var(--text-secondary);margin-top:8px;}
-        .gender-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:6;}
+        .gender-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
+
+        @media (max-width:575.98px){
+            .form-card{padding:22px;}
+            .stat-card{padding:16px;}
+            .btn{width:100%;}
+        }
     </style>
 </head>
 <body>
@@ -33,12 +39,12 @@
     <div class="main">
         <div class="main-scroll">
         <div class="form-card">
-            <div class="flex justify-between items-center mb-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                     <h2 class="text-lg font-bold mb-1">Gender Breakdown Report</h2>
                     <p class="text-sm" style="color:var(--text-secondary)">Distribution of senior citizens by gender</p>
                 </div>
-                <div class="flex gap-2">
+                <div class="flex flex-wrap gap-2">
                     <button onclick="window.print()" class="btn primary">
                         <i data-lucide="printer" style="width:16px;height:16px"></i> Print Report
                     </button>

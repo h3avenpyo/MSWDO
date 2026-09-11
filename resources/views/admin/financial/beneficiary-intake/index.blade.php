@@ -5,13 +5,22 @@
 
 @section('page-styles')
 <link href="{{ asset('css/beneficiary-intake/index.css') }}" rel="stylesheet">
+<style>
+@media (max-width: 575.98px) {
+    .filter-card .row.g-3 > [class*="col-"] {
+        width: 100%;
+        max-width: 100%;
+        flex: 0 0 100%;
+    }
+}
+</style>
 @endsection
 
 @section('content')
 <div class="container-fluid">
 
     <!-- Header Actions -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
             <h4 class="fw-bold mb-1" style="color: #1A237E;">Beneficiary Intake Records</h4>
             <p class="text-muted small mb-0">View, search, edit, and manage all intake sheets.</p>

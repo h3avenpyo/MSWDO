@@ -291,6 +291,14 @@ $initials = count($words) >= 2
         .sc-pagination-controls { justify-content: center !important; }
         .sc-pagination-info { text-align: center !important; }
         
+        .filter-item.filter-search {
+            width: 100%;
+        }
+        .filter-item.filter-search .filter-search-wrap .form-control {
+            flex: 1 !important;
+            width: 0 !important;
+            min-width: 0 !important;
+        }
         .filter-dropdown { min-width: 0; width: 100%; }
         .filter-select-btn { width: 100%; }
     }

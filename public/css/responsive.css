@@ -1,0 +1,77 @@
+/* ══════════════════════════════════════════════════════════════
+   MSWDO — UNIFIED RESPONSIVE LAYER
+   Shared, mobile-first fixes safe across every admin system:
+   Tailwind Play CDN pages, Bootstrap 5.3 CDN pages, Bootstrap-compat.
+   Loaded AFTER each layout's own CSS so overrides apply on mobile only.
+   Breakpoints follow Tailwind v4 defaults:
+     sm 640 / md 768 / lg 1024 / xl 1280 / 2xl 1536
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Images & media never overflow their container ── */
+img, svg, video, canvas, embed, iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ── Tables: let wide tables scroll horizontally instead of bursting the layout ──
+   Applies to plain <table> and Bootstrap .table components.
+   Tables that convert to stacked cards keep their own rules (higher specificity
+   / later cascade in the page wins). */
+@media (max-width: 767.98px) {
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    table {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ── Keep tables printable ── */
+@media print {
+    table {
+        display: table;
+        width: auto;
+        max-width: none;
+        overflow: visible;
+    }
+    body {
+        overflow: visible;
+    }
+}
+
+/* ── Bootstrap form rows / button rails stack on very small screens ── */
+@media (max-width: 575.98px) {
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .form-group label {
+        margin-bottom: .25rem;
+    }
+    .input-group {
+        flex-wrap: wrap;
+    }
+    .btn-toolbar,
+    .btn-group {
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+}
+
+/* ── Modal safety on small phones ── */
+@media (max-width: 575.98px) {
+    .modal-dialog {
+        margin: .75rem;
+        max-width: calc(100vw - 1.5rem);
+    }
+    .modal-content {
+        max-height: 90dvh;
+        overflow-y: auto;
+    }
+}

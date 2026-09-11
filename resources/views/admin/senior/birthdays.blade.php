@@ -186,7 +186,8 @@
             .brgy-card{padding:14px !important;}
             .brgy-card-actions{padding-top:14px;}
             .brgy-card-actions .btn,.brgy-card-actions > div{min-height:44px;}
-            #filterGrid{grid-template-columns:1fr !important;}
+            #filterGrid{display:grid !important;grid-template-columns:1fr !important;}
+            #filterGrid > div{width:100% !important;min-width:0 !important;max-width:100% !important;}
             #filterGridWrapper{flex-direction:column !important;}
             header{margin-bottom:0.75rem !important;}
             .modal-overlay{padding:12px !important;}

@@ -11,7 +11,7 @@
 <div class="container-fluid no-print">
 
     <!-- Header Actions -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
             <h4 class="fw-bold mb-1" style="color: #1A237E;">GENERAL INTAKE SHEET: {{ $intake->control_number }}</h4>
             <p class="text-muted small mb-0">Processed on {{ $intake->date_processed ? $intake->date_processed->format('F d, Y') : 'N/A' }} • Client Status: <strong>{{ $intake->client_type ?? 'New' }}</strong></p>

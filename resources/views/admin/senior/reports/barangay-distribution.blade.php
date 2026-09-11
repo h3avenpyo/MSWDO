@@ -24,6 +24,11 @@
         .data-table th,.data-table td{padding:12px;text-align:left;border-bottom:1px solid var(--border);}
         .data-table th{background:var(--background);font-weight:600;color:var(--text-primary);}
         .data-table tr:hover{background:var(--background);}
+
+        @media (max-width:575.98px){
+            .form-card{padding:22px;}
+            .btn{width:100%;}
+        }
     </style>
 </head>
 <body>
@@ -33,12 +38,12 @@
     <div class="main">
         <div class="main-scroll">
         <div class="form-card">
-            <div class="flex justify-between items-center mb-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                     <h2 class="text-lg font-bold mb-1">Barangay Distribution Report</h2>
                     <p class="text-sm" style="color:var(--text-secondary)">Distribution of senior citizens by barangay</p>
                 </div>
-                <div class="flex gap-2">
+                <div class="flex flex-wrap gap-2">
                     <button onclick="window.print()" class="btn primary">
                         <i data-lucide="printer" style="width:16px;height:16px"></i> Print Report
                     </button>

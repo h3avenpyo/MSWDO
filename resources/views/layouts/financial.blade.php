@@ -19,6 +19,7 @@
 
     <!-- External Module Stylesheet -->
     <link href="{{ asset('css/financialstep1.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/responsive.css') }}" rel="stylesheet">
     @yield('page-styles')
 </head>
 <body>

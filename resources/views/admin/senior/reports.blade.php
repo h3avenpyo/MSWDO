@@ -29,6 +29,10 @@
         .report-card h3{font-size:16px;font-weight:600;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
         .report-card .btn{width:100%;justify-content:center;margin-bottom:8px;}
         .report-card .btn:last-child{margin-bottom:0;}
+
+        @media (max-width:575.98px){
+            .form-card{padding:22px;}
+        }
     </style>
 </head>
 <body>

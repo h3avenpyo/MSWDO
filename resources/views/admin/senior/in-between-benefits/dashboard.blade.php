@@ -70,6 +70,18 @@
         .page-header{margin-bottom:24px;}
         .page-header h1{font-size:28px;font-weight:700;margin:0 0 8px 0;color:var(--text-primary);}
         .page-header p{margin:0;color:var(--text-secondary);}
+
+        @media (max-width:767px){
+            .stat-cards{grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px;}
+            .dashboard-grid{grid-template-columns:1fr;gap:16px;}
+            .analytics-card{padding:16px;}
+            .stat-card{padding:16px;}
+        }
+        @media (max-width:479px){
+            .stat-card{flex-direction:column;align-items:flex-start;gap:10px;}
+            .stat-card-content{width:100%;}
+            .page-header h1{font-size:22px;}
+        }
     </style>
 </head>
 <body>

@@ -5,6 +5,15 @@
 
 @section('page-styles')
 <link href="{{ asset('css/financialstep2-payroll.css') }}" rel="stylesheet">
+<style>
+@media (max-width: 575.98px) {
+    .filter-card .row.g-2 > [class*="col-md-"] {
+        width: 100%;
+        max-width: 100%;
+        flex: 0 0 100%;
+    }
+}
+</style>
 @endsection
 
 @section('content')

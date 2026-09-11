@@ -292,6 +292,9 @@ $initials = count($words) >= 2
             padding: 6px 12px;
             font-size: 0.8rem;
         }
+        .analytics-grid {
+            grid-template-columns: 1fr !important;
+        }
     }
 
     @media (max-width: 480px) {
