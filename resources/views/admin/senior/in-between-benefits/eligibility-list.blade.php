@@ -965,7 +965,7 @@
             <div class="history-header-card">
                 <div class="history-header-left">
                     <h1><i data-lucide="gift" style="width:26px;height:26px;color:var(--primary);"></i> In-Between Birthday Cash Gift</h1>
-                    <p>Eligible senior citizens for milestone interval cash gifts (ages 81–84, 86–89, 91–94, 96–99)</p>
+                    <p>Eligible senior citizens for milestone interval cash gifts</p>
                 </div>
                 <div class="history-header-actions">
                     <a href="/admin/senior/in-between/history" class="btn btn-primary">
@@ -1187,7 +1187,7 @@
                                             </div>
                                             <div style="font-size:16px; font-weight:700; color:#1E293B;">No eligible senior citizens found</div>
                                             <div style="font-size:13px; color:#64748B; max-width:360px;">
-                                                No records match your selected filters. Try resetting the filters or check milestone age brackets (81–84, 86–89, 91–94, 96–99).
+                                                No records match your selected filters. Try clearing the filters or check the eligibility list for available beneficiaries.
                                             </div>
                                             @if(request()->hasAny(['search', 'barangay', 'interval', 'status']))
                                                 <a href="{{ route('admin.senior.in-between.eligibility-list') }}" class="btn btn-primary" style="margin-top:8px;">
