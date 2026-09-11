@@ -1803,11 +1803,13 @@
             const printWindow = window.open('', '_blank');
             printWindow.document.write(printContent);
             printWindow.document.close();
-            
+
             printWindow.onload = function() {
                 printWindow.print();
-                
-                // After PDF is generated, mark records as exported
+            };
+
+            printWindow.onafterprint = function() {
+                printWindow.close();
                 fetch('/admin/senior/in-between/mark-exported', {
                     method: 'POST',
                     headers: {
@@ -1818,34 +1820,11 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Export Complete',
-                            text: `PDF exported and ${exportIds.length} record(s) moved to payout history.`,
-                            confirmButtonColor: '#1A237E',
-                            timer: 3000,
-                            timerProgressBar: true
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Export Complete',
-                            text: 'PDF exported but records could not be moved.',
-                            confirmButtonColor: '#1A237E'
-                        });
-                    }
+                    window.location.href = '{{ route("admin.senior.in-between.history") }}?exported=1';
                 })
                 .catch(err => {
                     console.error('Mark Exported Error:', err);
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Export Complete',
-                        text: 'PDF exported but records could not be moved.',
-                        confirmButtonColor: '#1A237E'
-                    });
+                    window.location.href = '{{ route("admin.senior.in-between.history") }}?exported=1';
                 });
             };
         } catch (err) {
@@ -1902,6 +1881,18 @@
             document.body.style.overflow = '';
         }, 200);
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('exported') === '1') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Export Complete',
+                text: 'Selected records exported successfully.',
+                confirmButtonColor: '#1A237E'
+            });
+        }
+    });
 </script>
 </body>
 </html>

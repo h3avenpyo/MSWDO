@@ -385,8 +385,9 @@
         .table-card-header{
             padding:16px 20px;
             display:flex;
-            justify-content:space-between;
-            align-items:center;
+            flex-direction:column;
+            align-items:flex-start;
+            gap:10px;
             border-bottom:1px solid var(--border-light);
             background:#fff;
         }
@@ -407,6 +408,9 @@
             padding:2px 8px;
             border-radius:999px;
             border:1px solid #C7D2FE;
+            display:inline-flex;
+            align-items:center;
+            line-height:1;
         }
         .archive-table-wrap{
             border:none;
@@ -794,7 +798,11 @@
         @media (max-width:767px){
             .metrics-grid{grid-template-columns:1fr;}
             .filter-grid{
-                grid-template-columns:1fr;
+                grid-template-columns:1fr 1fr;
+            }
+            .filter-field:first-child,
+            .filter-btn-group{
+                grid-column:1 / -1;
             }
             .filter-btn-group{
                 width:100%;
@@ -1157,7 +1165,7 @@
                 </div>
                 <div class="history-header-actions">
                     <a href="/admin/senior/in-between/history" class="btn btn-primary">
-                        <i data-lucide="history"></i> Benefit History
+                        <i data-lucide="history"></i> Process Client
                     </a>
                 </div>
             </div>
@@ -1270,8 +1278,8 @@
                         <i data-lucide="users"></i> Eligible Beneficiaries
                         <span class="table-count-badge">{{ $seniors->total() }}</span>
                     </h3>
-                    <div id="bulkHeaderActions" style="display:none; align-items:center; gap:8px;">
-                        <span id="selectedCountBadge" style="font-size:12px; font-weight:700; color:#3730A3; background:#EEF2FF; padding:4px 10px; border-radius:999px; border:1px solid #C7D2FE;">
+                    <div id="bulkHeaderActions" style="display:none; align-items:center; gap:8px; margin-left:auto; margin-right:16px;">
+                        <span id="selectedCountBadge" style="display:inline-flex; align-items:center; font-size:12px; font-weight:700; color:#3730A3; background:#EEF2FF; padding:4px 10px; border-radius:999px; border:1px solid #C7D2FE; white-space:nowrap;">
                             <span id="selectedCount">0</span> selected
                         </span>
                         <button type="button" id="bulkActionButton" class="btn btn-primary btn-sm" onclick="showBulkActionPopup()">
@@ -2434,7 +2442,18 @@
             if (noBtn) noBtn.style.display = 'none';
             submit.style.display = 'none';
             document.getElementById('processClaimSuccess').style.display = 'block';
-            setTimeout(() => window.location.reload(), 1400);
+            modal.style.display = 'none';
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Claim Processed',
+                    text: 'The claim has been processed successfully.',
+                    confirmButtonColor: '#1A237E',
+                    timer: 5000,
+                    timerProgressBar: true,
+                    didClose: () => window.location.reload()
+                });
+            }, 600);
         } catch (error) {
             modal.classList.remove('is-loading');
             submit.disabled = false;
