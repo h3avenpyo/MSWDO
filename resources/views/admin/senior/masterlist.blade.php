@@ -717,7 +717,7 @@
                     @endif
                 </div>
                 <div class="sc-pagination-controls">
-                    @if($seniors->hasPages())
+                    @if($seniors->count() > 0)
                         @if($seniors->onFirstPage())
                             <span class="sc-page-btn" disabled>Previous</span>
                         @else

@@ -77,6 +77,7 @@
         .sex-letter{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#6B7280;color:white;font-size:11px;font-weight:700;flex-shrink:0;}
         .sex-sep{color:var(--text-muted);font-size:13px;}
         .badge-archived{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:rgba(156,163,175,.15);color:#6B7280;}
+        .archive-table td[data-label="Barangay"] .badge-archived{padding:3px 9px;font-size:.72rem;background:rgba(156,163,175,.10);width:fit-content;max-width:100%;justify-self:start;}
         .btn-restore{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:500;background:#ECFDF5;color:#16A34A;border:1px solid #6EE7B7;cursor:pointer;transition:all .2s ease;font-family:inherit;white-space:nowrap;text-decoration:none;}
         .btn-restore:hover{background:#D1FAE5;}
         .btn-restore svg{width:14px;height:14px;}
@@ -110,8 +111,10 @@
 
         /* ── Mobile Pagination ── */
         @media (max-width: 767.98px) {
-            .sc-pagination { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; background: #fff !important; padding: 15px 0 !important; z-index: 100 !important; border-top: 1px solid #E5E7EB !important; flex-direction: column; align-items: center; gap: 8px; }
-            .sc-pagination-controls { justify-content: flex-end; padding-right: 20px; }
+            .sc-pagination { flex-direction: column; align-items: stretch; gap: 12px; padding: 14px 0 4px; border-top: 1px solid var(--border); margin-top: 14px; }
+            .sc-pagination-info { text-align: center; }
+            .sc-pagination-controls { justify-content: center; gap: 8px; width: 100%; }
+            .sc-page-btn { flex: 0 1 auto; min-width: 44px; height: 44px; min-height: 44px; justify-content: center; }
         }
 
         /* ── Flash Messages ── */
@@ -219,109 +222,42 @@
             .td-addr{font-size:10px !important;white-space:normal !important;overflow:visible !important;text-overflow:clip !important;}
         }
 
-        /* ── Large Mobile (576–767px): stacked filters, table → cards ── */
+        /* ── Large Mobile (576–767px): summary in one column ── */
         @media (min-width:576px) and (max-width:767px){
             .section-spacing{margin-bottom:18px;}
             #summaryGrid{grid-template-columns:1fr;gap:12px;}
             .table-card-title{font-size:1.1rem !important;padding:0 14px !important;}
-            .table-responsive{margin:0 14px 14px 0 !important;}
             .mobile-select-all{margin:0 14px 10px 0 !important;}
             .bulk-btn{flex:1 1 auto;}
             .empty-state{min-height:180px;padding:2rem 1rem;}
             .empty-state [data-lucide]{width:48px !important;height:48px !important;}
             .empty-state h5{font-size:.95rem !important;}
             .empty-state p{font-size:.8rem !important;}
-
-            /* Table → stacked cards */
-            .table-responsive{overflow:visible !important;border:none !important;background:transparent !important;box-shadow:none !important;border-radius:0 !important;}
-            .table-responsive table{display:block !important;width:100% !important;min-width:0 !important;table-layout:auto !important;}
-            .table-responsive thead{display:none !important;}
-            .table-responsive tbody{display:block;}
-            .table-responsive tbody tr{display:block;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;padding:12px 14px;box-shadow:var(--shadow);}
-            .table-responsive tbody tr:last-child{margin-bottom:0;}
-            .table-responsive tbody td{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border:none;border-bottom:1px solid var(--border);font-size:13px !important;white-space:normal;word-break:break-word;text-align:right;}
-            .table-responsive tbody td:last-child{border-bottom:none;}
-            .table-responsive tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:11px;text-transform:uppercase;letter-spacing:.03em;flex-shrink:0;min-width:88px;text-align:left;}
-            .table-responsive tbody td.col-check{justify-content:flex-end;border-bottom:none;padding:0 0 6px;}
-            .table-responsive tbody td.col-check::before{display:none !important;}
-            .table-responsive tbody td[data-label="Control No."]{white-space:nowrap;}
-            .table-responsive tbody td[data-label="Action"]{justify-content:flex-end;border-bottom:none;padding-top:10px;}
-            .table-responsive tbody td[data-label="Action"]::before{display:none !important;}
-            .table-responsive tbody td.empty-state-cell{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:0 !important;}
-            .table-responsive tbody td.empty-state-cell::before{display:none !important;}
-            .td-name{font-size:14px !important;}
-            .td-addr{white-space:normal;overflow:visible;text-overflow:clip;}
-            .btn-restore{min-height:42px;padding:9px 14px;font-size:13px;}
         }
 
-        /* ── Mobile (<576px): stacked filters, table → cards ── */
+        /* ── Mobile (<576px): summary in one column ── */
         @media (max-width:575px){
             .section-spacing{margin-bottom:16px;}
             #summaryGrid{grid-template-columns:1fr;gap:10px;}
             .table-card-title{font-size:1rem !important;padding:0 12px !important;}
-            .table-responsive{margin:0 12px 12px 0 !important;}
             .mobile-select-all{margin:0 12px 10px 0 !important;}
             .bulk-btn{flex:1 1 auto;}
             .empty-state{min-height:180px;padding:2rem 1rem;}
             .empty-state [data-lucide]{width:48px !important;height:48px !important;}
             .empty-state h5{font-size:.95rem !important;}
             .empty-state p{font-size:.8rem !important;}
-
-            /* Table → stacked cards (matches masterlist) */
-            .table-responsive{overflow:visible !important;border:none !important;background:transparent !important;box-shadow:none !important;border-radius:0 !important;}
-            .table-responsive table{display:block !important;width:100% !important;min-width:0 !important;table-layout:auto !important;}
-            .table-responsive thead{display:none !important;}
-            .table-responsive tbody{display:block;}
-            .table-responsive tbody tr{display:block;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;padding:12px 14px;box-shadow:var(--shadow);}
-            .table-responsive tbody tr:last-child{margin-bottom:0;}
-            .table-responsive tbody td{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border:none;border-bottom:1px solid var(--border);font-size:13px !important;white-space:normal;word-break:break-word;text-align:right;}
-            .table-responsive tbody td:last-child{border-bottom:none;}
-            .table-responsive tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:11px;text-transform:uppercase;letter-spacing:.03em;flex-shrink:0;min-width:88px;text-align:left;}
-            .table-responsive tbody td.col-check{justify-content:flex-end;border-bottom:none;padding:0 0 6px;}
-            .table-responsive tbody td.col-check::before{display:none !important;}
-            .table-responsive tbody td[data-label="Control No."]{white-space:nowrap;}
-            .table-responsive tbody td[data-label="Action"]{justify-content:flex-end;border-bottom:none;padding-top:10px;}
-            .table-responsive tbody td[data-label="Action"]::before{display:none !important;}
-            .table-responsive tbody td.empty-state-cell{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:0 !important;}
-            .table-responsive tbody td.empty-state-cell::before{display:none !important;}
-            .td-addr{white-space:normal;overflow:visible;text-overflow:clip;}
-            .btn-restore{min-height:44px;padding:10px 14px;font-size:13px;}
         }
 
-        /* ── Small Mobile (<480px): stacked filters, table → cards ── */
+        /* ── Small Mobile (<480px): summary in one column ── */
         @media (max-width:479px){
             .section-spacing{margin-bottom:14px;}
             #summaryGrid{grid-template-columns:1fr;gap:8px;}
             .table-card-title{font-size:.95rem !important;padding:0 10px !important;}
-            .table-responsive{margin:0 10px 10px 0 !important;}
-            .mobile-select-all{margin:0 10px 10px 0 !important;}
-            .bulk-btn{flex:1 1 auto;}
             .mobile-select-all{display:flex;}
             .empty-state{min-height:160px;padding:1.5rem 0.75rem;}
             .empty-state [data-lucide]{width:44px !important;height:44px !important;}
             .empty-state h5{font-size:.9rem !important;}
             .empty-state p{font-size:.75rem !important;}
-
-            /* Table → stacked cards */
-            .table-responsive{overflow:visible !important;border:none !important;background:transparent !important;box-shadow:none !important;border-radius:0 !important;}
-            .table-responsive table{display:block !important;width:100% !important;min-width:0 !important;table-layout:auto !important;}
-            .table-responsive thead{display:none !important;}
-            .table-responsive tbody{display:block;}
-            .table-responsive tbody tr{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;padding:10px 12px;box-shadow:var(--shadow);}
-            .table-responsive tbody tr:last-child{margin-bottom:0;}
-            .table-responsive tbody td{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border:none;border-bottom:1px solid var(--border);font-size:12px !important;white-space:normal;word-break:break-word;text-align:right;}
-            .table-responsive tbody td:last-child{border-bottom:none;}
-            .table-responsive tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:10px;text-transform:uppercase;letter-spacing:.03em;flex-shrink:0;min-width:70px;text-align:left;}
-            .table-responsive tbody td.col-check{justify-content:flex-end;border-bottom:none;padding:0 0 6px;}
-            .table-responsive tbody td.col-check::before{display:none !important;}
-            .table-responsive tbody td[data-label="Control No."]{white-space:nowrap;}
-            .table-responsive tbody td[data-label="Action"]{justify-content:flex-end;border-bottom:none;padding-top:10px;}
-            .table-responsive tbody td[data-label="Action"]::before{display:none !important;}
-            .table-responsive tbody td.empty-state-cell{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:0 !important;}
-            .table-responsive tbody td.empty-state-cell::before{display:none !important;}
-            .td-name{font-size:13px !important;}
-            .td-addr{white-space:normal;overflow:visible;text-overflow:clip;}
-            .btn-restore{min-height:40px;padding:8px 12px;font-size:12px;}
         }
 
         /* ══════════════════════════════════════════════
@@ -345,6 +281,50 @@
         .empty-icon-wrap svg{width:32px;height:32px;}
         .empty-title{font-size:1.125rem;font-weight:700;color:#1F2937;margin-bottom:4px;}
         .empty-subtitle{font-size:0.875rem;color:#6B7280;}
+
+        /* ── Mobile (<768px): archive-table → stacked cards ── */
+        @media (max-width:767.98px){
+            .archive-panel-wrap{padding:.75rem;}
+            .archive-table-wrap{width:100%;max-width:100%;max-height:none;overflow:visible !important;border:none !important;border-radius:0 !important;background:transparent !important;box-shadow:none !important;}
+            .archive-table{display:block;width:100%;max-width:100%;}
+            .archive-table thead{display:none;}
+            .archive-table tbody{display:block;width:100%;max-width:100%;}
+            .archive-table tbody tr{display:flex;flex-direction:column;position:relative;box-sizing:border-box;width:100%;max-width:100%;background:var(--surface);border:1px solid #D1D5DB;border-radius:12px;margin-bottom:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+            .archive-table tbody tr:last-child{margin-bottom:0;}
+            .archive-table tbody td{display:grid;grid-template-columns:96px minmax(0,1fr);align-items:start;gap:88px;padding:9px 0;border:none;font-size:.82rem;overflow-wrap:anywhere;text-align:left;}
+            .archive-table tbody td:not(:last-child){border-bottom:1px solid var(--border);}
+            .archive-table tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;text-align:left;line-height:1.5;grid-column:1;}
+            .archive-table tbody td.col-check{order:-4;display:flex;justify-content:flex-end;align-items:center;padding:0 0 8px;border-bottom:none;}
+            .archive-table tbody td.col-check::before{display:none;}
+            .archive-table tbody td[data-label="Full Name"]{order:-3;display:block;padding:2px 120px 12px 0;border-bottom:none;font-size:1.02rem;font-weight:700;line-height:1.35;color:#1A237E;}
+            .archive-table tbody td[data-label="Full Name"]::before{display:none;}
+            .archive-table tbody td[data-label="Status"]{position:absolute;top:30px;right:14px;display:flex;align-items:center;gap:8px;}
+            .archive-table tbody td[data-label="Status"]::before{display:none;}
+            .archive-table tbody td[data-label="Control No."]{padding-top:32px;white-space:nowrap;}
+            .archive-table tbody td[data-label="Action"]{display:flex;justify-content:flex-end;align-items:center;padding-top:10px;border-bottom:none;}
+            .archive-table tbody td[data-label="Action"]::before{display:none;}
+            .archive-table tbody tr.empty-row{display:block !important;background:transparent !important;border:none !important;box-shadow:none !important;padding:0 !important;margin:0 !important;}
+            .archive-table tbody td.empty-cell{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:0 !important;}
+            .archive-table tbody td.empty-cell::before{display:none !important;}
+            .td-name{font-size:1.05rem !important;font-weight:700 !important;color:#1A237E !important;}
+            .td-addr{white-space:normal !important;overflow:visible !important;text-overflow:clip !important;font-size:.85rem !important;color:var(--text-secondary);margin-top:3px;}
+            .sex-age-wrap{white-space:nowrap;}
+            .btn-restore{min-height:44px;padding:10px 14px;font-size:13px;}
+            .mobile-select-all{display:flex;}
+            .filter-field{width:100%;}
+            .filter-select,.input-group input{width:100%;}
+        }
+
+        /* ── Small Mobile (<480px): archive-table → cards ── */
+        @media (max-width:479px){
+            .archive-panel-wrap{padding:.5rem;}
+            .archive-table tbody tr{border-radius:10px;padding:10px 12px;}
+            .archive-table tbody td{font-size:.75rem !important;grid-template-columns:76px minmax(0,1fr);gap:56px;padding:8px 0;}
+            .archive-table tbody td::before{font-size:.65rem;}
+            .archive-table tbody td[data-label="Full Name"]{font-size:.92rem;}
+            .btn-restore{min-height:40px;padding:8px 12px;font-size:12px;}
+        }
+
         /* Tablet (768-1199px): empty state stays a full-width centered row */
         @media (min-width:768px) and (max-width:1199px){
             .archive-table tbody tr.empty-row{display:table-row !important;background:transparent !important;border:none !important;box-shadow:none !important;margin:0 !important;}
@@ -392,22 +372,10 @@
             .bulk-actions-row .btn-clear{flex:1 1 100%;min-width:100%;height:42px;min-height:42px;padding:0 10px;font-size:13px;}
         }
 
-        /* Mobile (<768px): table → stacked cards (matches Social Case archive) */
+        /* Mobile (<768px): summary / filters */
         @media (max-width:767px){
             .archive-panel-wrap{padding:.75rem;}
             .archive-table-wrap{border:none;border-radius:0;overflow:visible;}
-            .archive-table thead{display:none;}
-            .archive-table tbody tr{display:block;background:var(--surface);border:1px solid #D1D5DB;border-radius:10px;margin-bottom:10px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
-            .archive-table tbody tr:last-child{margin-bottom:0;}
-            .archive-table tbody td{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border:none;font-size:.82rem;gap:8px;text-align:right;}
-            .archive-table tbody td:not(:last-child){border-bottom:1px solid var(--border);}
-            .archive-table tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;flex-shrink:0;min-width:70px;text-align:left;}
-            .archive-table tbody td.col-check{justify-content:flex-end;padding:0 0 6px;border-bottom:none;}
-            .archive-table tbody td.col-check::before{display:none;}
-            .archive-table tbody td[data-label="Action"]{justify-content:flex-end;padding-top:8px;border-bottom:none;}
-            .archive-table tbody td[data-label="Action"]::before{display:none;}
-            .archive-table tbody td.empty-cell{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:0 !important;}
-            .archive-table tbody td.empty-cell::before{display:none !important;}
         }
     </style>
 </head>
@@ -556,7 +524,7 @@
                         @endif
                     </div>
                     <div class="sc-pagination-controls">
-                        @if($archivedSeniors->count() > 0 && $archivedSeniors->hasPages())
+                        @if($archivedSeniors->count() > 0)
                             @if($archivedSeniors->onFirstPage())
                                 <span class="sc-page-btn" disabled>Previous</span>
                             @else
