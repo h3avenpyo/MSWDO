@@ -60,7 +60,7 @@
             --icon-teal: #0D9488;
             
             /* Dimensions */
-            --sidebar-width: 260px;
+            --sidebar-width: 280px;
             --topnav-height: 70px;
             --content-padding: 20px;
             --card-gap: 16px;
@@ -100,16 +100,23 @@
         .sidebar.show{transform:translateX(0);}
         .sidebar-brand{
             height:72px;
-            padding:0 1.5rem;
+            padding:0 1.25rem;
             border-bottom:1px solid rgba(255,255,255,.1);
             color:#fff;
             font-weight:700;
-            font-size:1.1rem;
+            font-size:1.05rem;
             display:flex;
             align-items:center;
             gap:.65rem;
+            white-space:nowrap;
         }
-        .sidebar-brand i,.sidebar-brand [data-lucide]{width:24px;height:24px;color:var(--accent-yellow);}
+        .sidebar-brand img{
+            flex-shrink:0;
+        }
+        .sidebar-brand span{
+            white-space:nowrap;
+        }
+        .sidebar-brand i,.sidebar-brand [data-lucide]{width:24px;height:24px;color:var(--accent-yellow);flex-shrink:0;}
         .sidebar-menu{
             list-style:none;
             margin:0;
@@ -2385,8 +2392,8 @@
                 overflow: hidden !important;
             }
             /* Restore full sidebar label visibility at 1200px+ */
-            .sidebar-brand { justify-content: flex-start !important; padding: 0 1.5rem !important; gap: 0.65rem !important; }
-            .sidebar-brand span { display: inline !important; }
+            .sidebar-brand { justify-content: flex-start !important; padding: 0 1.25rem !important; gap: 0.65rem !important; }
+            .sidebar-brand span { display: inline !important; white-space: nowrap !important; }
             .sidebar-menu a { justify-content: flex-start !important; padding: 0.75rem 1.5rem !important; gap: 0.75rem !important; }
             .sidebar-menu a span:not(.badge-count) { display: inline !important; position: static !important; background: none !important; color: inherit !important; padding: 0 !important; border-radius: 0 !important; font-size: inherit !important; font-weight: inherit !important; white-space: normal !important; box-shadow: none !important; pointer-events: auto !important; transform: none !important; }
             .sidebar-dropdown-menu a { justify-content: flex-start !important; padding: 0.6rem 1.25rem 0.6rem 2.25rem !important; gap: 0.65rem !important; }

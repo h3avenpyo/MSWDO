@@ -57,7 +57,7 @@
             --icon-teal: #0D9488;
             
             /* Dimensions */
-            --sidebar-width: 260px;
+            --sidebar-width: 280px;
             --content-padding: 24px;
             --radius: 16px;
             --shadow: 0 10px 30px rgba(15,23,42,.06);
@@ -102,19 +102,27 @@
         .sidebar.show { transform: translateX(0); }
         .sidebar-brand {
             height: 72px;
-            padding: 0 1.5rem;
+            padding: 0 1.25rem;
             border-bottom: 1px solid rgba(255,255,255,.1);
             color: #fff;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             display: flex;
             align-items: center;
             gap: .65rem;
+            white-space: nowrap;
+        }
+        .sidebar-brand img {
+            flex-shrink: 0;
+        }
+        .sidebar-brand span {
+            white-space: nowrap;
         }
         .sidebar-brand i, .sidebar-brand [data-lucide] {
             width: 24px;
             height: 24px;
             color: var(--accent-yellow);
+            flex-shrink: 0;
         }
         .sidebar-menu {
             list-style: none;
@@ -245,8 +253,10 @@
 
         /* ---------- Desktop (1200px+) ---------- */
         @media (min-width: 1200px) {
-            .sidebar { transform: translateX(0) !important; z-index: 1000 !important; }
+            .sidebar { transform: translateX(0) !important; z-index: 1000 !important; width: var(--sidebar-width) !important; }
             .sidebar.show { transform: translateX(0) !important; }
+            .sidebar-brand { justify-content: flex-start !important; padding: 0 1.25rem !important; gap: 0.65rem !important; }
+            .sidebar-brand span { display: inline !important; white-space: nowrap !important; }
             .main {
                 margin-left: var(--sidebar-width) !important;
                 width: calc(100% - var(--sidebar-width)) !important;
@@ -463,7 +473,7 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <i data-lucide="layout-grid"></i>
+            <img src="{{ asset('images/dswd.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;" alt="DSWD">
             <span>MSWDO Admin</span>
         </div>
         <ul class="sidebar-menu">

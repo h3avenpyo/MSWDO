@@ -105,8 +105,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <img src="{{ asset('images/dswd.png') }}" style="width:56px;height:56px;object-fit:contain;align-self:center;" alt="DSWD">
-        <span style="align-self:center;">Social Case Study</span>
+        <img src="{{ asset('images/dswd.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;" alt="DSWD">
+        <span>Social Case Study</span>
     </div>
     <ul class="sidebar-menu">
         <li><a href="/admin/social-case/dashboard" class="active"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
@@ -320,7 +320,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                 minute: '2-digit',
                 hour12: true
             };
-            const dateTimeStr = now.toLocaleDateString('en-US', options).replace(',', ' at');
+            const dateTimeStr = now.toLocaleDateString('en-US', options).replace(',', '') + ' at';
             document.getElementById('currentDateTime').textContent = dateTimeStr;
         }
         updateDateTime();
