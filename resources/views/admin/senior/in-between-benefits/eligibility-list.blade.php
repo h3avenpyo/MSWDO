@@ -898,6 +898,59 @@
         .claim-process-confirmation input{width:17px;height:17px;flex:0 0 auto;margin:1px 0 0;accent-color:#1A237E;cursor:pointer;}
         .claim-process-dialog.is-loading .claim-process-confirm{opacity:.65;pointer-events:none;}
         @media (max-width:520px){.claim-process-dialog .senior-modal-body{padding:18px;}}
+
+        /* Match the senior masterlist table treatment. */
+        .table-card{
+            width:100%;
+            padding:1rem;
+            margin-bottom:1rem;
+            border:1px solid var(--border-light);
+            border-radius:12px;
+            background:#fff;
+            box-shadow:none;
+        }
+        .table-card-header{
+            padding:0 0 1rem;
+            border-bottom:0;
+            background:transparent;
+        }
+        .archive-table-wrap{
+            max-height:500px;
+            border:2px solid #CBD5E1;
+            border-radius:8px;
+            overflow:auto;
+        }
+        .archive-table{
+            min-width:0;
+            table-layout:auto;
+            font-size:14px;
+        }
+        .archive-table thead{background:#E2E8F0;}
+        .archive-table th{
+            padding:14px 16px;
+            font-size:12px;
+            font-weight:600;
+            letter-spacing:.03em;
+            color:#1E293B;
+            border-bottom:2px solid #94A3B8;
+        }
+        .archive-table td{
+            padding:14px 16px;
+            font-size:13px;
+            color:var(--text-primary);
+            border-bottom:1px solid #CBD5E1;
+            white-space:normal;
+            word-break:break-word;
+        }
+        .archive-table tbody tr:hover{background:#F8FAFC;}
+        .archive-table tbody tr:last-child td{border-bottom:none;}
+        .archive-table input[type="checkbox"]{width:16px;height:16px;}
+        .btn-view-senior{width:34px;height:34px;border-radius:8px;box-shadow:none;}
+        .badge{padding:6px 12px;font-size:12px;font-weight:500;}
+        @media (min-width:1200px){
+            .table-card{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;}
+            .archive-table-wrap{flex:1;min-height:0;}
+        }
     </style>
 </head>
 <body>
