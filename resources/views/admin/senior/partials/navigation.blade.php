@@ -166,6 +166,7 @@
         <li><a href="/admin/senior/registration" class="{{ ($active ?? '') === 'registration' ? 'active' : '' }}"><i data-lucide="users" style="width:20px;height:20px"></i><span>Registration</span></a></li>
         <li><a href="/admin/senior/masterlist" class="{{ ($active ?? '') === 'masterlist' ? 'active' : '' }}"><i data-lucide="list" style="width:20px;height:20px"></i><span>Masterlist</span></a></li>
         <li><a href="/admin/senior/birthdays" class="{{ ($active ?? '') === 'birthdays' ? 'active' : '' }}"><i data-lucide="cake" style="width:20px;height:20px"></i><span>Birthday Beneficiaries</span></a></li>
+        <li><a href="/admin/senior/in-between/dashboard" class="{{ ($active ?? '') === 'in-between' ? 'active' : '' }}"><i data-lucide="gift" style="width:20px;height:20px"></i><span>In-Between Benefits</span></a></li>
         <li><a href="/admin/senior/payouts-history" class="{{ ($active ?? '') === 'payouts' ? 'active' : '' }}"><i data-lucide="history" style="width:20px;height:20px"></i><span>Payout History</span></a></li>
         <li><a href="/admin/senior/statistics" class="{{ ($active ?? '') === 'statistics' ? 'active' : '' }}"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i><span>Statistics</span></a></li>
         <li><a href="/admin/senior/archive" class="{{ ($active ?? '') === 'archive' ? 'active' : '' }}"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>

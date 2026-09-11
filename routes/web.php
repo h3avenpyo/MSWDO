@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\Senior\SeniorController;
 use App\Http\Controllers\Admin\Senior\BirthdayController;
 use App\Http\Controllers\Admin\Senior\BirthdayPayoutController;
 use App\Http\Controllers\Admin\Senior\SeniorAnalyticsController;
+use App\Http\Controllers\InBetweenBenefitController;
 use App\Http\Controllers\Admin\Auth\PasswordResetManagementController;
 use App\Http\Controllers\Admin\OnlineRequestController;
 use App\Http\Controllers\ServiceRequestController;
@@ -183,6 +184,18 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::post('/admin/senior/bulk-restore', [SeniorController::class, 'bulkRestore'])->name('admin.senior.bulk-restore');
     Route::get('/admin/senior/export', [SeniorController::class, 'exportSeniors'])->name('admin.senior.export');
     Route::get('/admin/senior/export-pdf', [SeniorController::class, 'exportSeniorsPdf'])->name('admin.senior.export-pdf');
+    
+    // In-Between Birthday Cash Gift Routes (integrated into senior module)
+    Route::prefix('admin/senior/in-between')->name('admin.senior.in-between.')->group(function () {
+        Route::get('/dashboard', [InBetweenBenefitController::class, 'dashboard'])->name('dashboard');
+        Route::get('/eligibility-list', [InBetweenBenefitController::class, 'eligibilityList'])->name('eligibility-list');
+        Route::get('/check-eligibility/{id}', [InBetweenBenefitController::class, 'checkEligibility'])->name('check-eligibility');
+        Route::post('/process-claim/{id}', [InBetweenBenefitController::class, 'processClaim'])->name('process-claim');
+        Route::get('/history', [InBetweenBenefitController::class, 'benefitHistory'])->name('history');
+        Route::get('/senior-card/{id}', [InBetweenBenefitController::class, 'seniorBenefitCard'])->name('senior-card');
+        Route::get('/reports', [InBetweenBenefitController::class, 'reports'])->name('reports');
+    });
+    
     Route::get('/admin/multi-database', [MultiDatabaseDemoController::class, 'index'])->name('admin.multi-database.index');
     Route::post('/admin/multi-database', [MultiDatabaseDemoController::class, 'store'])->name('admin.multi-database.store');
 });

@@ -619,8 +619,65 @@
             </div>
         </div>
 
-
-
+        <!-- In-Between Birthday Cash Gift Section -->
+        <div class="analytics-card" style="margin-bottom:20px;">
+            <div class="flex items-center justify-between mb-4">
+                <h3><i data-lucide="gift" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px;color:var(--icon-purple)"></i>In-Between Birthday Cash Gift</h3>
+                <a href="/admin/senior/in-between/dashboard" class="text-sm font-medium" style="color:var(--primary);">View Details <i data-lucide="arrow-right" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-left:2px;"></i></a>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;">
+                @php
+                    use App\Models\InBetweenBenefitConfiguration;
+                    use App\Models\InBetweenBenefitHistory;
+                    
+                    $config = InBetweenBenefitConfiguration::active()->first();
+                    if (!$config) {
+                        $config = InBetweenBenefitConfiguration::create([
+                            'benefit_name' => 'In-Between Birthday Cash Gift',
+                            'description' => 'Municipality of Silang In-Between Birthday Cash Gift for Senior Citizens',
+                            'benefit_amount' => 1000.00,
+                            'milestone_ages' => [80, 85, 90, 95, 100],
+                            'eligible_intervals' => ['81-84', '86-89', '91-94', '96-99'],
+                            'is_active' => true,
+                            'effective_date' => now(),
+                        ]);
+                    }
+                    
+                    $totalEligible = SeniorCitizenRecord::where('status', 'active')
+                        ->whereNotNull('birth_date')
+                        ->get()
+                        ->filter(function ($senior) use ($config) {
+                            $age = $senior->age;
+                            $interval = $config->getEligibilityIntervalForAge($age);
+                            if (!$interval) return false;
+                            return !InBetweenBenefitHistory::bySenior($senior->id)
+                                ->byInterval($interval)
+                                ->claimed()
+                                ->exists();
+                        })
+                        ->count();
+                    
+                    $totalClaimed = InBetweenBenefitHistory::claimed()->count();
+                    $totalAmountReleased = InBetweenBenefitHistory::released()->sum('amount');
+                @endphp
+                <div style="background:var(--purple-bg);border-radius:12px;padding:16px;">
+                    <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Eligible Seniors</div>
+                    <div style="font-size:24px;font-weight:700;color:var(--purple);">{{ $totalEligible }}</div>
+                </div>
+                <div style="background:var(--success-bg);border-radius:12px;padding:16px;">
+                    <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Claims Processed</div>
+                    <div style="font-size:24px;font-weight:700;color:var(--success);">{{ $totalClaimed }}</div>
+                </div>
+                <div style="background:var(--info-bg);border-radius:12px;padding:16px;">
+                    <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Amount Released</div>
+                    <div style="font-size:24px;font-weight:700;color:var(--info);">₱{{ number_format($totalAmountReleased, 2) }}</div>
+                </div>
+                <div style="background:var(--background);border-radius:12px;padding:16px;border:1px solid var(--border);">
+                    <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Benefit Amount</div>
+                    <div style="font-size:24px;font-weight:700;color:var(--text-primary);">₱{{ number_format($config->benefit_amount, 2) }}</div>
+                </div>
+            </div>
+        </div>
 
         <!-- Dashboard Grid -->
         <div class="dashboard-grid">
