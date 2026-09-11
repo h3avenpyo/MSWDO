@@ -791,9 +791,13 @@
         }
         @media (max-width:767px){
             .filter-grid{
-                grid-template-columns:1fr;
+                grid-template-columns:1fr 1fr;
+                gap:12px;
             }
+            .filter-field:first-child,
+            .filter-field:nth-child(2){grid-column:1 / -1;}
             .filter-btn-group{
+                grid-column:1 / -1;
                 width:100%;
                 display:flex;
             }
@@ -801,47 +805,138 @@
             .history-header-card{flex-direction:column;align-items:flex-start;}
             .history-header-actions{width:100%;}
             .history-header-actions .btn{width:100%;}
+            .metrics-grid{grid-template-columns:1fr;}
+            .table-card{background:transparent;border:none;box-shadow:none;overflow:visible;}
+            .table-card-header{margin-bottom:12px;padding-bottom:12px;}
 
             /* Mobile Table to Card transformation */
-            .archive-table thead{display:none;}
-            .archive-table tbody tr{
-                display:block;
-                background:#fff;
-                border:1px solid #CBD5E1;
-                border-radius:10px;
-                margin:12px;
-                padding:14px;
-                box-shadow:var(--shadow-sm);
+            .archive-table-wrap{
+                width:100%;
+                max-width:100%;
+                max-height:none;
+                overflow:visible;
+                border:none;
+                border-radius:0;
+                box-shadow:none;
             }
-            .archive-table tbody td{
+            .archive-table{
+                display:block;
+                width:100%;
+                max-width:100%;
+                min-width:0;
+            }
+            .archive-table thead{display:none;}
+            .archive-table tbody{display:block;width:100%;max-width:100%;}
+            .archive-table tbody tr{
                 display:flex;
-                justify-content:space-between;
-                align-items:center;
-                padding:7px 0;
+                flex-direction:column;
+                position:relative;
+                box-sizing:border-box;
+                width:100%;
+                max-width:100%;
+                background:#fff;
+                border:1px solid #D1D5DB;
+                border-radius:12px;
+                margin-bottom:12px;
+                padding:14px;
+                box-shadow:0 2px 8px rgba(0,0,0,.08);
+            }
+            .archive-table tbody tr:last-child{margin-bottom:0;}
+            .archive-table tbody td{
+                display:grid;
+                grid-template-columns:160px minmax(0,1fr);
+                align-items:start;
+                gap:16px;
+                padding:9px 0;
                 border:none;
                 font-size:0.82rem;
-                gap:10px;
-                text-align:right;
+                overflow-wrap:anywhere;
+                text-align:left;
             }
             .archive-table tbody td:not(:last-child){
-                border-bottom:1px solid #F1F5F9;
+                border-bottom:1px solid var(--border);
             }
             .archive-table tbody td::before{
                 content:attr(data-label);
-                font-weight:700;
-                color:#64748B;
-                font-size:0.75rem;
+                font-weight:600;
+                color:var(--text-secondary);
+                font-size:0.72rem;
                 text-transform:uppercase;
-                letter-spacing:0.04em;
-                flex-shrink:0;
-                text-align:left;
+                letter-spacing:0.03em;
+                line-height:1.5;
+                grid-column:1;
             }
+            .archive-table tbody td.col-check{
+                order:-5;
+                display:flex;
+                justify-content:flex-start;
+                align-items:center;
+                padding:0 0 8px;
+                border-bottom:none;
+            }
+            .archive-table tbody td.col-check::before{display:none;}
+            .archive-table tbody td[data-label="Senior Citizen"]{
+                order:-4;
+                display:block;
+                padding:2px 120px 12px 0;
+                border-bottom:none;
+                font-size:1.02rem;
+                font-weight:700;
+                line-height:1.35;
+                color:#1A237E;
+            }
+            .archive-table tbody td[data-label="Senior Citizen"]::before{display:none;}
+            .archive-table tbody td[data-label="Status"]{
+                position:absolute;
+                top:40px;
+                right:14px;
+                display:flex;
+                align-items:center;
+                gap:8px;
+                padding:0;
+                white-space:nowrap;
+            }
+            .archive-table tbody td[data-label="Status"]::before{display:none;}
+            .archive-table tbody td[data-label="Control Number"]{padding-top:16px;white-space:normal;}
+            .archive-table tbody td[data-label="Date Applied"],
+            .archive-table tbody td[data-label="Next Eligible"]{grid-template-columns:135px minmax(0,1fr);gap:16px;text-align:left !important;}
+            .archive-table tbody td[data-label="Barangay"] div{overflow-wrap:anywhere;}
+            .archive-table tbody td[data-label="Age"]{text-align:left !important;}
+            .archive-table tbody td[data-label="Amount"]{text-align:left !important;white-space:normal !important;}
             .archive-table tbody td[data-label="Action"]{
+                display:flex;
                 justify-content:flex-end;
+                align-items:center;
                 padding-top:10px;
                 border-bottom:none;
             }
             .archive-table tbody td[data-label="Action"]::before{display:none;}
+            .archive-table tbody td[data-label="Action"] .btn-icon{width:44px;height:44px;border-radius:8px;}
+            .archive-table tbody td.empty-cell,
+            .archive-table tbody td[colspan]{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:56px 20px !important;width:100% !important;border-bottom:none !important;}
+            .archive-table tbody td.empty-cell::before,
+            .archive-table tbody td[colspan]::before{display:none !important;}
+
+            /* Bulk header + pagination stacked on mobile */
+            .table-card-header{flex-direction:column;align-items:flex-start;gap:10px;}
+            #bulkHeaderActions{width:100%;flex-wrap:wrap;}
+            #bulkHeaderActions .btn{flex:1;min-height:44px;}
+            #bulkHeaderActions .btn-sm{height:44px;}
+            #bulkHeaderActions .btn[style*="height:34"]{height:44px !important;}
+            #selectedCountBadge{padding:6px 18px !important;font-size:13px !important;line-height:1.4;display:inline-flex;align-items:center;vertical-align:middle;white-space:nowrap;}
+            .pagination-container{flex-direction:column;align-items:stretch;gap:12px;padding:14px 0 4px;}
+            .sc-pagination-info{text-align:center;}
+            .sc-pagination-controls{justify-content:center;gap:8px;width:100%;}
+            .sc-page-btn{flex:0 1 auto;min-width:44px;height:44px;min-height:44px;justify-content:center;}
+        }
+
+        @media (max-width:479px){
+            .metrics-grid{grid-template-columns:1fr;}
+            .archive-table tbody tr{padding:12px;}
+            .archive-table tbody td{font-size:.75rem !important;grid-template-columns:140px minmax(0,1fr);gap:12px;padding:8px 0;}
+            .archive-table tbody td::before{font-size:.65rem;}
+            .archive-table tbody td[data-label="Senior Citizen"]{padding:2px 90px 10px 0;font-size:.95rem !important;}
+            .archive-table tbody td[data-label="Status"]{top:36px;right:12px;}
         }
     </style>
 </head>
@@ -1011,7 +1106,7 @@
                         <button type="button" class="btn btn-primary btn-sm" onclick="showBulkActionPopup()">
                             <i data-lucide="list-checks"></i> Bulk Actions
                         </button>
-                        <button type="button" class="btn btn-outline" style="height:34px; padding:0 12px; font-size:12px;" onclick="clearSelections()">
+                        <button type="button" class="btn btn-clear" style="height:34px; padding:0 12px; font-size:12px;" onclick="clearSelections()">
                             <i data-lucide="x" style="width:14px;height:14px;"></i> Clear Selection
                         </button>
                     </div>
@@ -1042,7 +1137,7 @@
                                         <input type="checkbox" class="record-checkbox" value="{{ $benefit->id }}" onchange="updateSelectedCount()" style="cursor:pointer; width:16px; height:16px; accent-color:var(--primary);">
                                     </td>
                                     <td class="col-control" data-label="Control Number">
-                                        <span class="ref-badge" style="background:#F1F5F9; color:#334155; border-color:#CBD5E1;">{{ $benefit->senior->control_number ?? $benefit->senior->senior_id_number ?? ('#' . $benefit->senior_id) }}</span>
+                                        <span class="ref-badge" style="background:transparent; color:#334155; border-color:transparent; padding:0;">{{ $benefit->senior->control_number ?? $benefit->senior->senior_id_number ?? ('#' . $benefit->senior_id) }}</span>
                                     </td>
                                     <td class="col-senior" data-label="Senior Citizen">
                                         <div style="font-weight:600; color:#0F172A;">{{ $benefit->full_name }}</div>
@@ -1173,10 +1268,6 @@
         <div class="senior-modal-body">
             <div class="senior-modal-grid">
                 <div class="senior-modal-field">
-                    <label class="senior-modal-label">Reference Number</label>
-                    <div class="senior-modal-value" id="modalReference">—</div>
-                </div>
-                <div class="senior-modal-field">
                     <label class="senior-modal-label">Control Number</label>
                     <div class="senior-modal-value" id="modalControlNumber">—</div>
                 </div>
@@ -1211,10 +1302,6 @@
                 <div class="senior-modal-field">
                     <label class="senior-modal-label">Processed By</label>
                     <div class="senior-modal-value" id="modalProcessedBy">—</div>
-                </div>
-                <div class="senior-modal-field">
-                    <label class="senior-modal-label">Approved By</label>
-                    <div class="senior-modal-value" id="modalApprovedBy">—</div>
                 </div>
                 <div class="senior-modal-field senior-modal-col-span2">
                     <label class="senior-modal-label">Remarks</label>
@@ -1773,8 +1860,7 @@
     }
 
     function openBenefitDetails(data) {
-        document.getElementById('modalReference').innerHTML = `<span class="ref-badge">${data.reference}</span>`;
-        document.getElementById('modalControlNumber').innerHTML = `<span class="ref-badge" style="background:#F1F5F9; color:#334155; border-color:#CBD5E1;">${data.senior_id}</span>`;
+        document.getElementById('modalControlNumber').innerHTML = `<span class="ref-badge" style="background:transparent; color:#334155; border-color:transparent; padding:0;">${data.senior_id}</span>`;
         
         const statusColors = {
             approved: { bg: '#EEF2FF', text: '#3730A3', border: '#C7D2FE', dot: '#4F46E5' },
@@ -1797,7 +1883,6 @@
         document.getElementById('modalAppDate').textContent = data.application_date || '—';
         document.getElementById('modalPayoutDate').textContent = data.payout_date || '—';
         document.getElementById('modalProcessedBy').textContent = data.processed_by || '—';
-        document.getElementById('modalApprovedBy').textContent = data.approved_by || '—';
         document.getElementById('modalRemarks').textContent = data.remarks || 'None';
 
         const modal = document.getElementById('benefitDetailsModal');
