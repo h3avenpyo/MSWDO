@@ -93,8 +93,10 @@
 
         /* ── Mobile Pagination ── */
         @media (max-width: 767.98px) {
-            .sc-pagination { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; background: #fff !important; padding: 15px 0 !important; z-index: 100 !important; border-top: 1px solid #E5E7EB !important; flex-direction: column; align-items: center; gap: 8px; }
-            .sc-pagination-controls { justify-content: flex-end; padding-right: 20px; }
+            .sc-pagination { flex-direction: column; align-items: stretch; gap: 12px; padding: 14px 0 4px; border-top: 1px solid var(--border); margin-top: 14px; }
+            .sc-pagination-info { text-align: center; }
+            .sc-pagination-controls { justify-content: center; gap: 8px; width: 100%; }
+            .sc-page-btn { flex: 0 1 auto; min-width: 44px; height: 44px; min-height: 44px; justify-content: center; }
         }
 
         /* ── Flash Messages ── */
@@ -187,34 +189,51 @@
         /* ── Large Mobile (576–767px): stacked filters, table → cards ── */
         @media (min-width:576px) and (max-width:767px){
             .section-spacing{margin-bottom:18px;}
-            #filterGrid{grid-template-columns:1fr;gap:12px;}
-            .filter-actions-row{flex-direction:column;gap:8px;}
+            #filterGrid{grid-template-columns:1fr 1fr;gap:12px;}
+            #filterGrid .filter-field:first-child{grid-column:1 / -1;}
+            #filterGrid .filter-field:last-child{grid-column:1 / -1;}
+            .filter-actions-row{width:100%;}
             .filter-actions-row .btn{width:100%;flex:1 1 auto;min-height:44px;}
         }
 
         /* ── Mobile (<768px): table → stacked cards (matches archive) ── */
         @media (max-width:767px){
             .archive-panel-wrap{padding:.75rem;}
-            .archive-table-wrap{border:none;border-radius:0;overflow:visible;}
+            .archive-table-wrap{width:100%;max-width:100%;max-height:none;overflow:visible;border:none;border-radius:0;box-shadow:none;}
+            .archive-table{display:block;width:100%;max-width:100%;}
             .archive-table thead{display:none;}
-            .archive-table tbody tr{display:block;background:var(--surface);border:1px solid #D1D5DB;border-radius:10px;margin-bottom:10px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+            .archive-table tbody{display:block;width:100%;max-width:100%;}
+            .archive-table tbody tr{display:flex;flex-direction:column;position:relative;box-sizing:border-box;width:100%;max-width:100%;background:var(--surface);border:1px solid #D1D5DB;border-radius:12px;margin-bottom:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
             .archive-table tbody tr:last-child{margin-bottom:0;}
-            .archive-table tbody td{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border:none;font-size:.82rem;gap:8px;text-align:right;}
+            .archive-table tbody td{display:grid;grid-template-columns:96px minmax(0,1fr);align-items:start;gap:48px;padding:9px 0;border:none;font-size:.82rem;overflow-wrap:anywhere;text-align:left;}
             .archive-table tbody td:not(:last-child){border-bottom:1px solid var(--border);}
-            .archive-table tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;flex-shrink:0;min-width:80px;text-align:left;}
-            .archive-table tbody td[data-label="Action"]{justify-content:flex-end;padding-top:8px;border-bottom:none;}
+            .archive-table tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;line-height:1.5;grid-column:1;}
+            .archive-table tbody td[data-label="Action"]{position:absolute;top:15px;right:14px;display:flex;justify-content:flex-start;align-items:center;padding:0;border-bottom:none;}
             .archive-table tbody td[data-label="Action"]::before{display:none;}
-            .archive-table tbody td.empty-cell{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:0 !important;}
+            .archive-table tbody td[data-label="Date & Time"]{padding-right:140px;}
+            .archive-table tbody td[data-label="Details"] div{overflow-wrap:anywhere;}
+            .archive-table tbody tr.empty-row{background:transparent !important;border:none !important;box-shadow:none !important;margin:0 !important;}
+            .archive-table tbody td.empty-cell{display:flex !important;flex-direction:column !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:2.5rem 1rem !important;width:100% !important;}
             .archive-table tbody td.empty-cell::before{display:none !important;}
+            .archive-table tbody td.empty-cell .empty-state-content{width:100%;max-width:320px;}
+            .empty-title{font-size:1rem !important;}
+            .empty-subtitle{font-size:.85rem !important;line-height:1.5;}
         }
 
         /* ── Small Mobile (<480px) ── */
         @media (max-width:479px){
             .section-spacing{margin-bottom:14px;}
-            #filterGrid{grid-template-columns:1fr;gap:10px;}
-            .archive-table tbody td{font-size:.75rem;}
-            .archive-table tbody td::before{font-size:.65rem;min-width:70px;}
+            #filterGrid{grid-template-columns:1fr 1fr;gap:10px;}
+            #filterGrid .filter-field:first-child{grid-column:1 / -1;}
+            #filterGrid .filter-field:last-child{grid-column:1 / -1;}
+            .archive-table tbody tr{padding:10px 12px;}
+            .archive-table tbody td{font-size:.75rem !important;grid-template-columns:76px minmax(0,1fr);gap:32px;padding:8px 0;}
+            .archive-table tbody td::before{font-size:.65rem;}
         }
+
+        /* ── History toggle buttons ── */
+        .history-toggle{flex-wrap:wrap;}
+        .history-toggle .btn{flex:1 1 0;min-width:0;white-space:normal;text-align:center;font-size:13px;padding:10px 8px;}
     </style>
 </head>
 <body>
@@ -280,7 +299,7 @@
             </form>
 
             {{-- Toggle Buttons --}}
-            <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+            <div class="history-toggle" style="margin-bottom: 20px; display: flex; gap: 12px;">
                 <button type="button" id="showBirthdayBtn" class="btn primary" onclick="showTable('birthday')">
                     <i data-lucide="cake" style="width: 16px; height: 16px;"></i>
                     Birthday Payout History
@@ -292,9 +311,10 @@
             </div>
 
             {{-- History Table --}}
-            <div class="archive-panel-wrap hidden-table" id="birthdayTableSection">
-                <div class="archive-table-wrap">
-                    <table class="archive-table">
+            <div class="hidden-table" id="birthdayTableSection">
+                <div class="archive-panel-wrap">
+                    <div class="archive-table-wrap">
+                        <table class="archive-table">
                         <thead>
                             <tr>
                                 <th>Date &amp; Time</th>
@@ -350,40 +370,40 @@
                         </tbody>
                     </table>
                 </div>
-
-                <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
-
-                <div class="sc-pagination">
-                    <div class="sc-pagination-info">
-                        @if($history->total() === 0)
-                            Showing 0 of 0 Records
-                        @else
-                            Showing {{ $history->firstItem() }}–{{ $history->lastItem() }} of {{ $history->total() }} Records
-                        @endif
-                    </div>
-                    <div class="sc-pagination-controls">
-                        @if($history->hasPages())
-                            @if($history->onFirstPage())
-                                <span class="sc-page-btn" disabled>Previous</span>
-                            @else
-                                <a href="{{ $history->previousPageUrl() }}" class="sc-page-btn">Previous</a>
-                            @endif
-
-                            <span class="sc-page-btn active">{{ $history->currentPage() }}</span>
-
-                            @if($history->hasMorePages())
-                                <a href="{{ $history->nextPageUrl() }}" class="sc-page-btn">Next</a>
-                            @else
-                                <span class="sc-page-btn" disabled>Next</span>
-                            @endif
-                        @endif
-                    </div>
-                </div>
             </div>
 
-            <div class="archive-panel-wrap hidden-table" id="inBetweenTableSection">
-                <div class="archive-table-wrap">
-                    <table class="archive-table">
+            <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
+
+            <div class="sc-pagination">
+                <div class="sc-pagination-info">
+                    @if($history->total() === 0)
+                        Showing 0 of 0 Records
+                    @else
+                        Showing {{ $history->firstItem() }}–{{ $history->lastItem() }} of {{ $history->total() }} Records
+                    @endif
+                </div>
+                <div class="sc-pagination-controls">
+                    @if($history->onFirstPage())
+                        <span class="sc-page-btn" disabled>Previous</span>
+                    @else
+                        <a href="{{ $history->previousPageUrl() }}" class="sc-page-btn">Previous</a>
+                    @endif
+
+                    <span class="sc-page-btn active">{{ $history->currentPage() }}</span>
+
+                    @if($history->hasMorePages())
+                        <a href="{{ $history->nextPageUrl() }}" class="sc-page-btn">Next</a>
+                    @else
+                        <span class="sc-page-btn" disabled>Next</span>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+            <div class="hidden-table" id="inBetweenTableSection">
+                <div class="archive-panel-wrap">
+                    <div class="archive-table-wrap">
+                        <table class="archive-table">
                         <thead>
                             <tr>
                                 <th>Date &amp; Time</th>
@@ -443,34 +463,32 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
 
-                <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
+            <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
 
-                <div class="sc-pagination">
-                    <div class="sc-pagination-info">
-                        @if($inBetweenHistory->total() === 0)
-                            Showing 0 of 0 Records
-                        @else
-                            Showing {{ $inBetweenHistory->firstItem() }}–{{ $inBetweenHistory->lastItem() }} of {{ $inBetweenHistory->total() }} Records
-                        @endif
-                    </div>
-                    <div class="sc-pagination-controls">
-                        @if($inBetweenHistory->hasPages())
-                            @if($inBetweenHistory->onFirstPage())
-                                <span class="sc-page-btn" disabled>Previous</span>
-                            @else
-                                <a href="{{ $inBetweenHistory->previousPageUrl() }}" class="sc-page-btn">Previous</a>
-                            @endif
+            <div class="sc-pagination">
+                <div class="sc-pagination-info">
+                    @if($inBetweenHistory->total() === 0)
+                        Showing 0 of 0 Records
+                    @else
+                        Showing {{ $inBetweenHistory->firstItem() }}–{{ $inBetweenHistory->lastItem() }} of {{ $inBetweenHistory->total() }} Records
+                    @endif
+                </div>
+                <div class="sc-pagination-controls">
+                    @if($inBetweenHistory->onFirstPage())
+                        <span class="sc-page-btn" disabled>Previous</span>
+                    @else
+                        <a href="{{ $inBetweenHistory->previousPageUrl() }}" class="sc-page-btn">Previous</a>
+                    @endif
 
-                            <span class="sc-page-btn active">{{ $inBetweenHistory->currentPage() }}</span>
+                    <span class="sc-page-btn active">{{ $inBetweenHistory->currentPage() }}</span>
 
-                            @if($inBetweenHistory->hasMorePages())
-                                <a href="{{ $inBetweenHistory->nextPageUrl() }}" class="sc-page-btn">Next</a>
-                            @else
-                                <span class="sc-page-btn" disabled>Next</span>
-                            @endif
-                        @endif
-                    </div>
+                    @if($inBetweenHistory->hasMorePages())
+                        <a href="{{ $inBetweenHistory->nextPageUrl() }}" class="sc-page-btn">Next</a>
+                    @else
+                        <span class="sc-page-btn" disabled>Next</span>
+                    @endif
                 </div>
             </div>
         </div>
