@@ -78,7 +78,13 @@ class InBetweenBenefitController extends Controller
     public function eligibilityList(Request $request)
     {
         $query = SeniorCitizenRecord::where('status', 'active')
-            ->whereNotNull('birth_date');
+            ->whereNotNull('birth_date')
+            ->where(function ($q) {
+                $q->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 81 AND 84")
+                    ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 86 AND 89")
+                    ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 91 AND 94")
+                    ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 96 AND 99");
+            });
 
         // Search filters
         if ($request->filled('search')) {
@@ -99,17 +105,21 @@ class InBetweenBenefitController extends Controller
             $interval = $request->interval;
             $startAge = (int)substr($interval, 0, 2);
             $endAge = (int)substr($interval, 3, 2);
-            $query->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE) BETWEEN ? AND ?", [$startAge, $endAge]);
+            $query->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN ? AND ?", [$startAge, $endAge]);
         }
 
         if ($request->filled('status')) {
             $status = $request->status;
             if ($status === 'eligible') {
                 $query->where(function ($q) {
-                    $q->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE) BETWEEN 81 AND 84")
-                        ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE) BETWEEN 86 AND 89")
-                        ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE) BETWEEN 91 AND 94")
-                        ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE) BETWEEN 96 AND 99");
+                    $q->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 81 AND 84")
+                        ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 86 AND 89")
+                        ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 91 AND 94")
+                        ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 96 AND 99");
+                })->whereDoesntHave('inBetweenBenefits', function ($q) {
+                    $q->claimed();
+                })->whereDoesntHave('inBetweenBenefits', function ($q) {
+                    $q->pending();
                 });
             } elseif ($status === 'claimed') {
                 $query->whereHas('inBetweenBenefits', function ($q) {
@@ -122,18 +132,52 @@ class InBetweenBenefitController extends Controller
             }
         }
 
-        $seniors = $query->paginate(20);
+        // Prioritize in-between interval seniors at the top, followed by newest registrations
+        $query->orderByRaw("
+            CASE 
+                WHEN (TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 81 AND 84
+                   OR TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 86 AND 89
+                   OR TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 91 AND 94
+                   OR TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 96 AND 99) THEN 0
+                ELSE 1
+            END ASC, id DESC
+        ");
+
+        $seniors = $query->paginate(20)->withQueryString();
 
         // Add eligibility information to each senior
         $seniors->getCollection()->transform(function ($senior) {
             $senior->eligibility_interval = $this->getEligibilityInterval($senior);
-            $senior->is_eligible = $this->isEligible($senior);
             $senior->has_claimed = $this->hasClaimedInterval($senior, $senior->eligibility_interval);
+            $senior->is_pending = $this->hasPendingClaim($senior, $senior->eligibility_interval);
+            $senior->is_eligible = $this->isEligible($senior);
             $senior->benefit_amount = $this->config->benefit_amount;
             return $senior;
         });
 
-        return view('admin.senior.in-between-benefits.eligibility-list', compact('seniors'));
+        // Summary Metric Aggregates
+        $benefitAmount = (float)($this->config->benefit_amount ?? 1000.00);
+        $totalEligible = SeniorCitizenRecord::where('status', 'active')
+            ->whereNotNull('birth_date')
+            ->where(function ($q) {
+                $q->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 81 AND 84")
+                    ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 86 AND 89")
+                    ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 91 AND 94")
+                    ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 96 AND 99");
+            })
+            ->count();
+
+        $totalEstimatedBudget = $totalEligible * $benefitAmount;
+        $totalClaimed = InBetweenBenefitHistory::whereIn('status', ['approved', 'released'])->count();
+        $totalPending = InBetweenBenefitHistory::where('status', 'pending')->count();
+
+        return view('admin.senior.in-between-benefits.eligibility-list', compact(
+            'seniors',
+            'totalEligible',
+            'totalEstimatedBudget',
+            'totalClaimed',
+            'totalPending'
+        ));
     }
 
     public function checkEligibility($seniorId)
@@ -141,13 +185,16 @@ class InBetweenBenefitController extends Controller
         $senior = SeniorCitizenRecord::findOrFail($seniorId);
         
         $eligibility = [
-            'senior_id' => $senior->id,
+            'senior_id' => $senior->senior_id_number ?? $senior->control_number ?? ('#' . $senior->id),
+            'database_id' => $senior->id,
+            'senior_id_number' => $senior->senior_id_number,
+            'control_number' => $senior->control_number,
             'full_name' => $senior->full_name,
             'birth_date' => $senior->birth_date,
             'current_age' => $senior->age,
             'eligibility_interval' => $this->getEligibilityInterval($senior),
             'is_eligible' => $this->isEligible($senior),
-            'benefit_amount' => $this->config->benefit_amount,
+            'benefit_amount' => (float)($this->config->benefit_amount ?? 1000.00),
             'reason' => null,
             'previous_claims' => $this->getPreviousClaims($senior),
         ];
@@ -187,6 +234,9 @@ class InBetweenBenefitController extends Controller
         try {
             DB::beginTransaction();
 
+            $adminId = session('admin_user_id') ?? auth()->id();
+            $adminName = session('admin_user_name') ?? (auth()->user() ? auth()->user()->name : 'Admin');
+
             $benefit = InBetweenBenefitHistory::create([
                 'senior_id' => $senior->id,
                 'full_name' => $senior->full_name,
@@ -198,19 +248,22 @@ class InBetweenBenefitController extends Controller
                 'amount' => $this->config->benefit_amount,
                 'application_date' => now(),
                 'status' => 'approved',
-                'reference_number' => null, // Will be generated after save
-                'processed_by' => auth()->id(),
-                'approved_by' => auth()->id(),
+                'reference_number' => InBetweenBenefitHistory::generateNextReferenceNumber(),
+                'processed_by' => $adminId,
+                'approved_by' => $adminId,
                 'remarks' => $request->remarks ?? null,
             ]);
 
-            // Generate reference number
-            $benefit->reference_number = $benefit->generateReferenceNumber();
-            $benefit->save();
+            // Sync reference number with record id if preferred
+            $formattedRef = 'IBG-' . now()->format('Y') . '-' . str_pad($benefit->id, 8, '0', STR_PAD_LEFT);
+            if ($benefit->reference_number !== $formattedRef && !InBetweenBenefitHistory::where('reference_number', $formattedRef)->exists()) {
+                $benefit->reference_number = $formattedRef;
+                $benefit->save();
+            }
 
             // Add audit trail
-            $benefit->addAuditTrail('CREATED', 'Benefit claim created and approved', auth()->id());
-            $benefit->addAuditTrail('APPROVED', 'Benefit approved by ' . auth()->user()->name, auth()->id());
+            $benefit->addAuditTrail('CREATED', 'Benefit claim created and approved', $adminId);
+            $benefit->addAuditTrail('APPROVED', 'Benefit approved by ' . $adminName, $adminId);
 
             DB::commit();
 
@@ -229,11 +282,175 @@ class InBetweenBenefitController extends Controller
         }
     }
 
+    public function bulkProcessClaims(Request $request)
+    {
+        $selectAll = $request->boolean('select_all');
+
+        if ($selectAll) {
+            $query = SeniorCitizenRecord::where('status', 'active')
+                ->whereNotNull('birth_date')
+                ->where(function ($q) {
+                    $q->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 81 AND 84")
+                        ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 86 AND 89")
+                        ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 91 AND 94")
+                        ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 96 AND 99");
+                });
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('control_number', 'like', "%{$search}%")
+                        ->orWhere('senior_id_number', 'like', "%{$search}%");
+                });
+            }
+
+            if ($request->filled('barangay')) {
+                $query->where('barangay', $request->barangay);
+            }
+
+            if ($request->filled('interval')) {
+                $interval = $request->interval;
+                $startAge = (int)substr($interval, 0, 2);
+                $endAge = (int)substr($interval, 3, 2);
+                $query->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN ? AND ?", [$startAge, $endAge]);
+            }
+
+            if ($request->filled('status')) {
+                $status = $request->status;
+                if ($status === 'eligible') {
+                    $query->where(function ($q) {
+                        $q->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 81 AND 84")
+                            ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 86 AND 89")
+                            ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 91 AND 94")
+                            ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 96 AND 99");
+                    });
+                } elseif ($status === 'claimed') {
+                    $query->whereHas('inBetweenBenefits', function ($q) {
+                        $q->claimed();
+                    });
+                } elseif ($status === 'pending') {
+                    $query->whereHas('inBetweenBenefits', function ($q) {
+                        $q->pending();
+                    });
+                }
+            }
+
+            $seniors = $query->get();
+        } else {
+            $ids = $request->input('ids', []);
+            if (is_string($ids)) {
+                $ids = json_decode($ids, true) ?? explode(',', $ids);
+            }
+            if (empty($ids) || !is_array($ids)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No seniors selected.',
+                ], 400);
+            }
+            $seniors = SeniorCitizenRecord::whereIn('id', $ids)
+                ->where('status', 'active')
+                ->whereNotNull('birth_date')
+                ->get();
+        }
+
+        if ($seniors->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No active senior citizen records found for processing.',
+            ], 400);
+        }
+
+        $adminId = session('admin_user_id') ?? auth()->id();
+        $adminName = session('admin_user_name') ?? (auth()->user() ? auth()->user()->name : 'Admin');
+        $processedCount = 0;
+        $skippedCount = 0;
+        $errors = [];
+
+        foreach ($seniors as $senior) {
+            // Check eligibility
+            if (!$this->isEligible($senior)) {
+                $skippedCount++;
+                continue;
+            }
+
+            // Check if already claimed
+            $interval = $this->getEligibilityInterval($senior);
+            if ($this->hasClaimedInterval($senior, $interval)) {
+                $skippedCount++;
+                continue;
+            }
+
+            try {
+                DB::beginTransaction();
+
+                    $benefit = InBetweenBenefitHistory::create([
+                        'senior_id' => $senior->id,
+                        'full_name' => $senior->full_name,
+                        'birth_date' => $senior->birth_date,
+                        'current_age' => $senior->age,
+                        'benefit_type' => 'IN_BETWEEN_BIRTHDAY_GIFT',
+                        'eligibility_interval' => $interval,
+                        'birthday_year' => Carbon::parse($senior->birth_date)->year + $senior->age,
+                        'amount' => $this->config->benefit_amount,
+                        'application_date' => now(),
+                        'status' => 'approved',
+                        'reference_number' => InBetweenBenefitHistory::generateNextReferenceNumber(),
+                        'processed_by' => $adminId,
+                        'approved_by' => $adminId,
+                        'remarks' => $request->remarks ?? 'Bulk processed claim',
+                    ]);
+
+                    $formattedRef = 'IBG-' . now()->format('Y') . '-' . str_pad($benefit->id, 8, '0', STR_PAD_LEFT);
+                    if ($benefit->reference_number !== $formattedRef && !InBetweenBenefitHistory::where('reference_number', $formattedRef)->exists()) {
+                        $benefit->reference_number = $formattedRef;
+                        $benefit->save();
+                    }
+
+                $benefit->addAuditTrail('CREATED', 'Benefit claim created and approved via bulk processing', $adminId);
+                $benefit->addAuditTrail('APPROVED', 'Benefit approved by ' . $adminName, $adminId);
+
+                DB::commit();
+                $processedCount++;
+            } catch (\Exception $e) {
+                DB::rollBack();
+                $errors[] = "Failed for {$senior->full_name} (ID: {$senior->id}): " . $e->getMessage();
+            }
+        }
+
+        if ($processedCount === 0 && $skippedCount > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => "All {$skippedCount} selected senior(s) were skipped because they are either not eligible or have already claimed.",
+                'processed_count' => 0,
+                'skipped_count' => $skippedCount,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Successfully processed {$processedCount} claim(s)." . ($skippedCount > 0 ? " ({$skippedCount} skipped: ineligible or already claimed)" : ""),
+            'processed_count' => $processedCount,
+            'skipped_count' => $skippedCount,
+            'errors' => $errors,
+        ]);
+    }
+
     public function benefitHistory(Request $request)
     {
         $query = InBetweenBenefitHistory::with(['senior', 'processedBy', 'approvedBy']);
 
         // Filters
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                    ->orWhere('reference_number', 'like', "%{$search}%")
+                    ->orWhere('senior_id', 'like', "%{$search}%");
+            });
+        }
+
         if ($request->filled('senior_id')) {
             $query->where('senior_id', $request->senior_id);
         }
@@ -253,16 +470,27 @@ class InBetweenBenefitController extends Controller
         }
 
         if ($request->filled('from_date')) {
-            $query->where('application_date', '>=', $request->from_date);
+            $query->whereDate('application_date', '>=', $request->from_date);
         }
 
         if ($request->filled('to_date')) {
-            $query->where('application_date', '<=', $request->to_date);
+            $query->whereDate('application_date', '<=', $request->to_date);
         }
+
+        $totalRecords = InBetweenBenefitHistory::count();
+        $totalAmount = (float) InBetweenBenefitHistory::sum('amount');
+        $approvedCount = InBetweenBenefitHistory::where('status', 'approved')->count();
+        $releasedCount = InBetweenBenefitHistory::where('status', 'released')->count();
 
         $benefits = $query->orderBy('application_date', 'desc')->paginate(15)->withQueryString();
 
-        return view('admin.senior.in-between-benefits.history', compact('benefits'));
+        return view('admin.senior.in-between-benefits.history', compact(
+            'benefits',
+            'totalRecords',
+            'totalAmount',
+            'approvedCount',
+            'releasedCount'
+        ));
     }
 
     public function seniorBenefitCard($seniorId)
@@ -328,6 +556,11 @@ class InBetweenBenefitController extends Controller
             return false;
         }
 
+        // Check if has a pending claim for this interval
+        if ($this->hasPendingClaim($senior, $interval)) {
+            return false;
+        }
+
         return true;
     }
 
@@ -346,6 +579,18 @@ class InBetweenBenefitController extends Controller
         return InBetweenBenefitHistory::bySenior($senior->id)
             ->byInterval($interval)
             ->claimed()
+            ->exists();
+    }
+
+    private function hasPendingClaim(SeniorCitizenRecord $senior, ?string $interval): bool
+    {
+        if (!$interval) {
+            return false;
+        }
+
+        return InBetweenBenefitHistory::bySenior($senior->id)
+            ->byInterval($interval)
+            ->pending()
             ->exists();
     }
 

@@ -48,18 +48,6 @@
         *,*::before,*::after{box-sizing:border-box;}
         html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);min-height:100%;}
         body{font-size:14px;line-height:1.5;overflow-x:hidden;}
-        .main{display:flex;min-height:100vh;}
-        .sidebar{width:var(--sidebar-width);background:var(--sidebar-bg);color:white;position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:50;transition:transform .3s ease;}
-        .sidebar-brand{height:72px;display:flex;align-items:center;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.1);}
-        .sidebar-brand img{width:56px;height:56px;object-fit:contain;}
-        .sidebar-brand span{font-size:18px;font-weight:600;margin-left:12px;}
-        .sidebar-menu{list-style:none;padding:20px 0;margin:0;}
-        .sidebar-menu li{margin:0;}
-        .sidebar-menu a{display:flex;align-items:center;padding:12px 20px;color:rgba(255,255,255,.8);text-decoration:none;transition:all .2s ease;}
-        .sidebar-menu a:hover{background:rgba(255,255,255,.1);color:white;}
-        .sidebar-menu a.active{background:rgba(255,255,255,.15);color:white;font-weight:500;}
-        .sidebar-menu i{margin-right:12px;}
-        .main-content{flex:1;margin-left:var(--sidebar-width);padding:var(--content-padding);min-height:100vh;}
         .page-header{margin-bottom:24px;}
         .page-header h1{font-size:28px;font-weight:700;margin:0 0 8px 0;color:var(--text-primary);}
         .page-header p{margin:0;color:var(--text-secondary);}
@@ -70,39 +58,17 @@
         .quick-action-icon{width:48px;height:48px;border-radius:12px;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
         .quick-action-title{font-weight:600;font-size:16px;margin-bottom:4px;}
         .quick-action-description{font-size:13px;color:var(--text-secondary);}
-        @media(max-width:1024px){
-            .sidebar{transform:translateX(-100%);}
-            .main-content{margin-left:0;}
-        }
     </style>
 </head>
 <body>
-<div class="main">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-brand">
-            <img src="{{ asset('images/dswd.png') }}" alt="DSWD">
-            <span>Senior Citizen</span>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="/admin/senior"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
-            <li><a href="/admin/senior/registration"><i data-lucide="users" style="width:20px;height:20px"></i><span>Registration</span></a></li>
-            <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i><span>Masterlist</span></a></li>
-            <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i><span>Birthday Beneficiaries</span></a></li>
-            <li><a href="/admin/senior/in-between/dashboard" class="active"><i data-lucide="gift" style="width:20px;height:20px"></i><span>In-Between Benefits</span></a></li>
-            <li><a href="/admin/senior/payouts-history"><i data-lucide="history" style="width:20px;height:20px"></i><span>Payout History</span></a></li>
-            <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i><span>Statistics</span></a></li>
-            <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
-            <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a></li>
-        </ul>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="page-header">
-            <h1>In-Between Birthday Benefit - {{ $senior->full_name }}</h1>
-            <p class="text-gray-600">Senior Citizen Profile: {{ $senior->control_number ?? $senior->senior_id_number }}</p>
-        </div>
+<div class="app">
+    @include('admin.senior.partials.navigation', ['active' => 'in-between', 'mobileSubtitle' => 'Senior Card'])
+    <div class="main">
+        <div class="main-scroll">
+            <div class="page-header">
+                <h1>In-Between Birthday Benefit - {{ $senior->full_name }}</h1>
+                <p class="text-gray-600">Senior Citizen Profile: {{ $senior->control_number ?? $senior->senior_id_number }}</p>
+            </div>
 
         <!-- Benefit Card -->
         <div class="analytics-card" style="margin-bottom:20px;">
@@ -224,19 +190,11 @@
                 </div>
             </a>
         </div>
+        </div>
     </div>
 </div>
 
-<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display:none">@csrf</form>
-
 <script>
-    function confirmLogout(event) {
-        event.preventDefault();
-        if (confirm('Are you sure you want to logout?')) {
-            document.getElementById('logout-form').submit();
-        }
-    }
-
     function processClaim(seniorId) {
         Swal.fire({
             title: 'Process In-Between Birthday Cash Gift',

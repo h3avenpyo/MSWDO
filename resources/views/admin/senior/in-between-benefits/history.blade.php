@@ -7,308 +7,1250 @@
     <title>In-Between Birthday Cash Gift - Benefit History</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = { corePlugins: { preflight: false } }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root{
             --primary:#1A237E;
             --primary-hover:#121858;
-            --primary-dark:#121858;
+            --primary-dark:#0D1442;
             --sidebar-bg:#1A237E;
+            --sidebar-width:260px;
             --accent-yellow:#FBC02D;
             --background:#F1F5F9;
             --surface:#FFFFFF;
-            --border:#E5E7EB;
-            --text-primary:#111827;
-            --text-secondary:#6B7280;
-            --text-muted:#9CA3AF;
-            --success:#16A34A;
-            --success-bg:#ECFDF5;
-            --danger:#DC2626;
-            --danger-bg:#FEF2F2;
-            --info:#3B82F6;
-            --info-bg:#EEF2FF;
-            --purple:#7C3AED;
-            --purple-bg:#F3E8FF;
-            --icon-blue:#3B82F6;
-            --icon-green:#16A34A;
-            --icon-purple:#7C3AED;
-            --sidebar-width:260px;
-            --content-padding:32px;
-            --shadow:0 10px 30px rgba(15,23,42,.08);
-            --shadow-hover:0 20px 40px rgba(15,23,42,.12);
-            --font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+            --border:#CBD5E1;
+            --border-light:#E2E8F0;
+            --text-primary:#0F172A;
+            --text-secondary:#475569;
+            --text-muted:#94A3B8;
+            --font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+            --content-padding:28px;
+            --radius-md:10px;
+            --radius-lg:14px;
+            --shadow-sm:0 1px 3px rgba(15,23,42,0.06);
+            --shadow-md:0 4px 12px rgba(15,23,42,0.08);
         }
+
         *,*::before,*::after{box-sizing:border-box;}
         html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);min-height:100%;}
         body{font-size:14px;line-height:1.5;overflow-x:hidden;}
-        .main{display:flex;min-height:100vh;}
-        .sidebar{width:var(--sidebar-width);background:var(--sidebar-bg);color:white;position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:50;transition:transform .3s ease;}
-        .sidebar-brand{height:72px;display:flex;align-items:center;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.1);}
-        .sidebar-brand img{width:56px;height:56px;object-fit:contain;}
-        .sidebar-brand span{font-size:18px;font-weight:600;margin-left:12px;}
-        .sidebar-menu{list-style:none;padding:20px 0;margin:0;}
-        .sidebar-menu li{margin:0;}
-        .sidebar-menu a{display:flex;align-items:center;padding:12px 20px;color:rgba(255,255,255,.8);text-decoration:none;transition:all .2s ease;}
-        .sidebar-menu a:hover{background:rgba(255,255,255,.1);color:white;}
-        .sidebar-menu a.active{background:rgba(255,255,255,.15);color:white;font-weight:500;}
-        .sidebar-menu i{margin-right:12px;}
-        .main-content{flex:1;margin-left:var(--sidebar-width);padding:var(--content-padding);min-height:100vh;}
-        .page-header{margin-bottom:24px;}
-        .page-header h1{font-size:28px;font-weight:700;margin:0 0 8px 0;color:var(--text-primary);}
-        .page-header p{margin:0;color:var(--text-secondary);}
-        .analytics-card{background:var(--surface);border-radius:16px;padding:24px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:20px;}
-        .form-input{font-family:var(--font-family);}
 
-        /* ── Pagination ── */
-        .sc-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-shrink: 0; padding: 4px 0; flex-wrap: wrap; }
-        .sc-pagination-info { font-size: 0.813rem; color: #6B7280; font-weight: 500; }
-        .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
-        .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; text-decoration: none; }
-        .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
-        .sc-page-btn.active { background: #1A237E; color: #fff; border-color: #1A237E; font-weight: 700; }
-        .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        /* ── Table (Masterlist style) ── */
-        .archive-table-wrap{border:2px solid #CBD5E1;border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;max-height: 500px; overflow-y: auto;}
-        .archive-table{width:100%;border-collapse:collapse;font-size:14px;}
-        .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:#1E293B;text-align:left;border-bottom:2px solid #94A3B8;background:#E2E8F0;white-space:nowrap;position: sticky; top: 0; z-index: 10;}
-        .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid #CBD5E1;vertical-align:middle;white-space:normal;word-break:break-word;}
-        .archive-table tbody tr:last-child td{border-bottom:none;}
-        .td-sub{font-size:0.75rem;color:var(--text-secondary);margin-top:2px;}
-
-        /* ── Badges ── */
-        .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;}
-        .badge-pending{background:#FEF3C7;color:#92400E;}
-        .badge-approved{background:var(--info-bg);color:var(--info);}
-        .badge-released{background:var(--success-bg);color:var(--success);}
-        .badge-rejected{background:var(--danger-bg);color:var(--danger);}
-        .badge-cancelled{background:#F3F4F6;color:#6B7280;}
-
-        /* ── Action buttons (Flat Design) ── */
-        .actions{display:flex;gap:6px;align-items:center;}
-        .action-btn{width:34px !important;height:34px !important;min-height:34px !important;max-height:34px !important;padding:0 !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;border-radius:8px !important;box-shadow:none !important;cursor:pointer;transition:background .15s ease, border-color .15s ease;}
-        .action-btn:hover{transform:none;}
-        .action-btn svg, .action-btn i{width:16px !important;height:16px !important;}
-
-        /* ── Empty State ── */
-        .empty-row{background:transparent !important;border:none !important;box-shadow:none !important;padding:0 !important;margin:0 !important;}
-        .empty-cell{padding:2.5rem 1rem !important;border:none !important;display:flex !important;flex-direction:column !important;align-items:center !important;justify-content:center !important;width:100% !important;}
-        .empty-cell::before{display:none !important;}
-        .empty-state-content{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
-        .empty-icon-wrap{width:64px;height:64px;border-radius:50%;background:#F3F4F6;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:#9CA3AF;}
-        .empty-icon-wrap svg{width:32px;height:32px;}
-        .empty-title{font-size:1.125rem;font-weight:700;color:#1F2937;margin-bottom:4px;}
-        .empty-subtitle{font-size:0.875rem;color:#6B7280;}
-
-        @media (max-width: 767.98px) {
-            .sc-pagination { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; background: #fff !important; padding: 15px 0 !important; z-index: 100 !important; border-top: 1px solid #E5E7EB !important; flex-direction: column; align-items: center; gap: 8px; }
-            .sc-pagination-controls { justify-content: flex-end; padding-right: 20px; }
-            .archive-table-wrap{border:none;border-radius:0;overflow:visible;}
-            .archive-table thead{display:none;}
-            .archive-table tbody tr{display:block;background:var(--surface);border:1px solid #D1D5DB;border-radius:10px;margin-bottom:10px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
-            .archive-table tbody tr:last-child{margin-bottom:0;}
-            .archive-table tbody td{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border:none;font-size:.82rem;gap:8px;text-align:right;}
-            .archive-table tbody td:not(:last-child){border-bottom:1px solid var(--border);}
-            .archive-table tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;flex-shrink:0;min-width:80px;text-align:left;}
-            .archive-table tbody td[data-label="Actions"]{justify-content:flex-end;padding-top:8px;border-bottom:none;}
-            .archive-table tbody td[data-label="Actions"]::before{display:none;}
-            .archive-table tbody td.empty-cell{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:0 !important;}
-            .archive-table tbody td.empty-cell::before{display:none !important;}
+        /* Page Header */
+        .history-header-card{
+            background:#fff;
+            border:1px solid var(--border-light);
+            border-radius:var(--radius-lg);
+            padding:20px 24px;
+            margin-bottom:20px;
+            box-shadow:var(--shadow-sm);
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:16px;
+        }
+        .history-header-left h1{
+            font-size:1.45rem;
+            font-weight:800;
+            color:#0F172A;
+            margin:0 0 4px 0;
+            display:flex;
+            align-items:center;
+            gap:10px;
+            letter-spacing:-0.01em;
+        }
+        .history-header-left p{
+            font-size:0.875rem;
+            color:var(--text-secondary);
+            margin:0;
+        }
+        .history-header-actions{
+            display:flex;
+            gap:10px;
+            align-items:center;
+            flex-wrap:wrap;
         }
 
-        @media(max-width:1024px){
-            .sidebar{transform:translateX(-100%);}
-            .main-content{margin-left:0;}
+        /* Constrained Layout Container */
+        .page-container{
+            width:100%;
+            max-width:1380px;
+            margin:0;
+            box-sizing:border-box;
+        }
+
+        /* Metric Chips */
+        .metrics-grid{
+            display:grid;
+            grid-template-columns:repeat(4, 1fr);
+            gap:14px;
+            margin-bottom:16px;
+            width:100%;
+        }
+        .metric-card{
+            background:#fff;
+            border:1px solid var(--border-light);
+            border-radius:var(--radius-md);
+            padding:16px 18px;
+            display:flex;
+            align-items:center;
+            gap:14px;
+            box-shadow:var(--shadow-sm);
+        }
+        .metric-icon{
+            width:44px;
+            height:44px;
+            border-radius:10px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-shrink:0;
+        }
+        .metric-icon svg{width:22px;height:22px;}
+        .metric-info{min-width:0;flex:1;}
+        .metric-label{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px;}
+        .metric-value{font-size:1.35rem;font-weight:800;color:#0F172A;line-height:1.2;font-variant-numeric:tabular-nums;}
+
+        /* Filter Panel */
+        .filter-panel{
+            background:#fff;
+            border:1px solid var(--border-light);
+            border-radius:var(--radius-lg);
+            padding:18px 20px;
+            margin-bottom:20px;
+            box-shadow:var(--shadow-sm);
+        }
+        .filter-panel-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:14px;
+            padding-bottom:10px;
+            border-bottom:1px solid var(--border-light);
+        }
+        .filter-panel-title{
+            font-size:13px;
+            font-weight:700;
+            color:#1E293B;
+            display:flex;
+            align-items:center;
+            gap:6px;
+            text-transform:uppercase;
+            letter-spacing:0.04em;
+        }
+        .filter-panel-title svg{width:16px;height:16px;color:var(--primary);}
+        .filter-grid{
+            display:grid;
+            grid-template-columns:2fr 1.2fr 1fr 1fr 1.1fr 1.1fr auto;
+            gap:12px;
+            align-items:flex-end;
+        }
+        .filter-field{display:flex;flex-direction:column;gap:6px;}
+        .filter-label{font-size:12px;font-weight:600;color:#475569;}
+        .filter-input{
+            height:42px;
+            border:1px solid #CBD5E1;
+            border-radius:8px;
+            padding:0 12px;
+            font-size:13px;
+            color:#1E293B;
+            background:#fff;
+            font-family:inherit;
+            outline:none;
+            transition:border-color .15s, box-shadow .15s;
+            width:100%;
+        }
+        .filter-input:focus{
+            border-color:var(--primary);
+            box-shadow:0 0 0 3px rgba(26,35,126,0.12);
+        }
+        .filter-select{
+            height:42px;
+            border:1px solid #CBD5E1;
+            border-radius:8px;
+            padding:0 32px 0 12px;
+            font-size:13px;
+            color:#1E293B;
+            background:#fff;
+            font-family:inherit;
+            outline:none;
+            transition:border-color .15s, box-shadow .15s;
+            width:100%;
+            cursor:pointer;
+            appearance:none;
+            -webkit-appearance:none;
+            background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2364748B' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat:no-repeat;
+            background-position:right 12px center;
+            background-size:14px 10px;
+        }
+        .filter-select:focus{
+            border-color:var(--primary);
+            box-shadow:0 0 0 3px rgba(26,35,126,0.12);
+        }
+        .input-group{
+            display:flex;
+            align-items:stretch;
+            width:100%;
+            height:42px;
+        }
+        .input-group input{
+            flex:1;
+            min-width:0;
+            height:42px;
+            border:1px solid #CBD5E1;
+            border-right:none;
+            border-radius:8px 0 0 8px;
+            padding:0 14px;
+            font-size:13px;
+            color:#1E293B;
+            background:#fff;
+            outline:none;
+            font-family:inherit;
+            transition:border-color .15s ease, box-shadow .15s ease;
+        }
+        .input-group input:focus{
+            border-color:var(--primary);
+            box-shadow:0 0 0 3px rgba(26,35,126,0.12);
+            position:relative;
+            z-index:1;
+        }
+        .input-group input::placeholder{
+            color:#94A3B8;
+            font-size:13px;
+        }
+        .search-btn{
+            background:var(--primary);
+            color:#fff;
+            border:1px solid var(--primary);
+            border-radius:0 8px 8px 0;
+            cursor:pointer;
+            height:42px;
+            width:44px;
+            flex-shrink:0;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            transition:background .15s ease, border-color .15s ease;
+            outline:none;
+        }
+        .search-btn:hover{
+            background:var(--primary-hover);
+            border-color:var(--primary-hover);
+        }
+        .search-btn svg, .search-btn i{
+            width:16px;
+            height:16px;
+            color:#fff;
+        }
+        .search-group{
+            position:relative;
+            display:flex;
+            align-items:center;
+            width:100%;
+            height:42px;
+        }
+        .search-group svg, .search-group i{
+            position:absolute;
+            left:13px;
+            top:50%;
+            transform:translateY(-50%);
+            width:16px;
+            height:16px;
+            color:#94A3B8;
+            pointer-events:none;
+            z-index:2;
+            transition:color .15s ease;
+        }
+        .search-group:focus-within svg, .search-group:focus-within i{
+            color:var(--primary);
+        }
+        .search-group input{
+            width:100%;
+            height:42px;
+            border:1px solid #CBD5E1;
+            border-radius:8px;
+            padding:0 14px 0 38px;
+            font-size:13px;
+            color:#1E293B;
+            background:#fff;
+            font-family:inherit;
+            outline:none;
+            transition:border-color .15s ease, box-shadow .15s ease;
+        }
+        .search-group input:focus{
+            border-color:var(--primary);
+            box-shadow:0 0 0 3px rgba(26,35,126,0.12);
+        }
+        .search-group input::placeholder{
+            color:#94A3B8;
+            font-size:13px;
+        }
+        .filter-btn-group{
+            display:flex;
+            gap:8px;
+            align-items:center;
+        }
+
+        /* Buttons */
+        .btn{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:8px;
+            height:42px;
+            padding:0 16px;
+            font-size:13px;
+            font-weight:600;
+            border-radius:8px;
+            border:1px solid transparent;
+            cursor:pointer;
+            text-decoration:none;
+            white-space:nowrap;
+            font-family:inherit;
+            transition:all .15s ease;
+        }
+        .btn svg{width:16px;height:16px;}
+        .btn-primary{
+            background:var(--primary);
+            color:#fff;
+            border-color:var(--primary);
+        }
+        .btn-primary:hover{
+            background:var(--primary-hover);
+            border-color:var(--primary-hover);
+            color:#fff;
+        }
+        .btn-outline{
+            background:#fff;
+            color:#334155;
+            border-color:#CBD5E1;
+        }
+        .btn-outline:hover{
+            background:#F8FAFC;
+            border-color:#94A3B8;
+            color:#0F172A;
+        }
+        .btn-clear{
+            background:#FEF2F2;
+            color:#DC2626;
+            border-color:#FECACA;
+        }
+        .btn-clear:hover{
+            background:#FEE2E2;
+            border-color:#DC2626;
+        }
+        .btn-icon{
+            width:34px;
+            height:34px;
+            padding:0;
+            border-radius:8px;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            border:1px solid var(--primary);
+            background:var(--primary);
+            color:#ffffff !important;
+            cursor:pointer;
+            box-shadow:0 1px 2px rgba(26,35,126,0.15);
+            transition:all .15s ease;
+        }
+        .btn-icon:hover{
+            background:var(--primary-hover);
+            border-color:var(--primary-hover);
+            color:#ffffff !important;
+            box-shadow:0 2px 5px rgba(26,35,126,0.25);
+            transform:translateY(-1px);
+        }
+        .btn-icon svg{width:16px;height:16px;color:#ffffff !important;stroke:#ffffff !important;}
+
+        /* Table & Card Wrapper */
+        .table-card{
+            background:#fff;
+            border:1px solid var(--border-light);
+            border-radius:var(--radius-lg);
+            overflow:hidden;
+            box-shadow:var(--shadow-sm);
+            margin-bottom:20px;
+        }
+        .table-card-header{
+            padding:16px 20px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            border-bottom:1px solid var(--border-light);
+            background:#fff;
+        }
+        .table-card-title{
+            font-size:15px;
+            font-weight:700;
+            color:#0F172A;
+            display:flex;
+            align-items:center;
+            gap:8px;
+            margin:0;
+        }
+        .table-count-badge{
+            background:#EEF2FF;
+            color:var(--primary);
+            font-size:12px;
+            font-weight:700;
+            padding:2px 8px;
+            border-radius:999px;
+            border:1px solid #C7D2FE;
+        }
+        .archive-table-wrap{
+            border:none;
+            border-radius:0;
+            overflow-x:auto;
+            -webkit-overflow-scrolling:touch;
+            max-height:550px;
+            overflow-y:auto;
+            width:100%;
+        }
+        .archive-table{
+            width:100%;
+            min-width:1000px;
+            border-collapse:collapse;
+            font-size:13px;
+            table-layout:fixed;
+        }
+        .archive-table thead{
+            background:#E2E8F0;
+            position:sticky;
+            top:0;
+            z-index:10;
+        }
+        .archive-table th{
+            padding:12px 14px;
+            font-size:11.5px;
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:0.04em;
+            color:#1E293B;
+            text-align:left;
+            border-bottom:2px solid #94A3B8;
+            white-space:nowrap;
+            vertical-align:middle;
+        }
+        .archive-table td{
+            padding:12px 14px;
+            font-size:13px;
+            color:#1E293B;
+            border-bottom:1px solid #E2E8F0;
+            vertical-align:middle;
+        }
+        .archive-table td.col-action,
+        .archive-table th.col-action{
+            text-align:center;
+            overflow:visible;
+        }
+        .archive-table tbody tr:hover{
+            background:#F8FAFC;
+        }
+        .archive-table tbody tr:last-child td{
+            border-bottom:none;
+        }
+
+        /* Status & Badges */
+        .badge{
+            display:inline-flex;
+            align-items:center;
+            gap:5px;
+            padding:4px 10px;
+            border-radius:999px;
+            font-size:11.5px;
+            font-weight:700;
+            white-space:nowrap;
+            line-height:1.2;
+        }
+        .badge-dot{
+            width:6px;
+            height:6px;
+            border-radius:50%;
+            display:inline-block;
+        }
+        .badge-approved{background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE;}
+        .badge-approved .badge-dot{background:#4F46E5;}
+        .badge-released{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;}
+        .badge-released .badge-dot{background:#10B981;}
+        .badge-pending{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;}
+        .badge-pending .badge-dot{background:#F59E0B;}
+        .badge-rejected{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA;}
+        .badge-rejected .badge-dot{background:#EF4444;}
+        .badge-cancelled{background:#F1F5F9;color:#475569;border:1px solid #CBD5E1;}
+        .badge-cancelled .badge-dot{background:#94A3B8;}
+
+        .interval-badge{
+            background:#F8FAFC;
+            color:#334155;
+            border:1px solid #CBD5E1;
+            padding:3px 8px;
+            border-radius:6px;
+            font-size:12px;
+            font-weight:700;
+        }
+        .ref-badge{
+            font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+            font-size:12px;
+            font-weight:700;
+            color:#1A237E;
+            background:#EEF2FF;
+            padding:3px 8px;
+            border-radius:6px;
+            border:1px solid #C7D2FE;
+            display:inline-block;
+        }
+
+        /* Pagination (Outside Table Card) */
+        .pagination-container{
+            margin-top:14px;
+            padding:6px 0 24px 0;
+            background:transparent;
+            border:none;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            flex-wrap:wrap;
+            gap:12px;
+        }
+        .sc-pagination-info{
+            font-size:0.813rem;
+            color:#64748B;
+            font-weight:500;
+        }
+        .sc-pagination-controls{
+            display:flex;
+            gap:4px;
+            flex-wrap:wrap;
+        }
+        .sc-page-btn{
+            height:36px;
+            min-width:36px;
+            padding:0 12px;
+            border:1px solid #CBD5E1;
+            border-radius:8px;
+            background:#fff;
+            color:#334155;
+            font-size:0.813rem;
+            font-weight:600;
+            cursor:pointer;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:4px;
+            transition:all .15s;
+            text-decoration:none;
+            box-shadow:0 1px 2px rgba(0,0,0,0.05);
+        }
+        .sc-page-btn:hover:not(:disabled){
+            background:#F8FAFC;
+            border-color:#94A3B8;
+        }
+        .sc-page-btn.active{
+            background:var(--primary);
+            color:#fff;
+            border-color:var(--primary);
+            font-weight:700;
+        }
+        .sc-page-btn[disabled], .sc-page-btn:disabled{
+            opacity:0.4;
+            cursor:not-allowed;
+            pointer-events:none;
+        }
+
+        /* ── Masterlist Style Modal ── */
+        .senior-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+            transition: opacity 0.2s ease;
+            opacity: 0;
+        }
+        .senior-modal-dialog {
+            background: #F8FAFC;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 780px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            border: 1px solid #CBD5E1;
+        }
+        .senior-modal-header {
+            background: #1A237E;
+            color: #ffffff;
+            padding: 14px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .senior-modal-title {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+        }
+        .senior-modal-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            border-radius: 6px;
+        }
+        .senior-modal-close:hover { opacity: 1; background: rgba(255,255,255,0.1); }
+        .senior-modal-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            flex: 1;
+            -webkit-overflow-scrolling: touch;
+        }
+        .senior-modal-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        .senior-modal-col-full {
+            grid-column: 1 / -1;
+        }
+        .senior-modal-col-span2 {
+            grid-column: span 2;
+        }
+        .senior-modal-field {
+            margin-bottom: 0;
+        }
+        .senior-modal-label {
+            font-weight: 700;
+            color: #64748B;
+            font-size: 0.72rem;
+            display: block;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .senior-modal-value {
+            background: #ffffff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: 1px solid #E2E8F0;
+            font-size: 0.85rem;
+            color: #0F172A;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            min-height: 38px;
+            display: flex;
+            align-items: center;
+        }
+        .senior-modal-footer {
+            padding: 12px 24px;
+            border-top: 1px solid #E2E8F0;
+            background: #ffffff;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        @media (max-width:767px){
+            .senior-modal-dialog{
+                max-width:95%;
+                max-height:90vh;
+            }
+            .senior-modal-grid{
+                grid-template-columns:1fr;
+            }
+            .senior-modal-col-span2{
+                grid-column:auto;
+            }
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width:1100px){
+            .metrics-grid{grid-template-columns:repeat(2, 1fr);}
+            .filter-grid{
+                grid-template-columns:1fr 1fr 1fr;
+            }
+            .filter-btn-group{
+                grid-column:1 / -1;
+                justify-content:flex-end;
+            }
+        }
+        @media (max-width:767px){
+            .filter-grid{
+                grid-template-columns:1fr;
+            }
+            .filter-btn-group{
+                width:100%;
+                display:flex;
+            }
+            .filter-btn-group .btn{flex:1;}
+            .history-header-card{flex-direction:column;align-items:flex-start;}
+            .history-header-actions{width:100%;}
+            .history-header-actions .btn{width:100%;}
+
+            /* Mobile Table to Card transformation */
+            .archive-table thead{display:none;}
+            .archive-table tbody tr{
+                display:block;
+                background:#fff;
+                border:1px solid #CBD5E1;
+                border-radius:10px;
+                margin:12px;
+                padding:14px;
+                box-shadow:var(--shadow-sm);
+            }
+            .archive-table tbody td{
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                padding:7px 0;
+                border:none;
+                font-size:0.82rem;
+                gap:10px;
+                text-align:right;
+            }
+            .archive-table tbody td:not(:last-child){
+                border-bottom:1px solid #F1F5F9;
+            }
+            .archive-table tbody td::before{
+                content:attr(data-label);
+                font-weight:700;
+                color:#64748B;
+                font-size:0.75rem;
+                text-transform:uppercase;
+                letter-spacing:0.04em;
+                flex-shrink:0;
+                text-align:left;
+            }
+            .archive-table tbody td[data-label="Action"]{
+                justify-content:flex-end;
+                padding-top:10px;
+                border-bottom:none;
+            }
+            .archive-table tbody td[data-label="Action"]::before{display:none;}
         }
     </style>
 </head>
 <body>
-<div class="main">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-brand">
-            <img src="{{ asset('images/dswd.png') }}" alt="DSWD">
-            <span>Senior Citizen</span>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="/admin/senior"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
-            <li><a href="/admin/senior/registration"><i data-lucide="users" style="width:20px;height:20px"></i><span>Registration</span></a></li>
-            <li><a href="/admin/senior/masterlist"><i data-lucide="list" style="width:20px;height:20px"></i><span>Masterlist</span></a></li>
-            <li><a href="/admin/senior/birthdays"><i data-lucide="cake" style="width:20px;height:20px"></i><span>Birthday Beneficiaries</span></a></li>
-            <li><a href="/admin/senior/in-between/dashboard" class="active"><i data-lucide="gift" style="width:20px;height:20px"></i><span>In-Between Benefits</span></a></li>
-            <li><a href="/admin/senior/payouts-history"><i data-lucide="history" style="width:20px;height:20px"></i><span>Payout History</span></a></li>
-            <li><a href="/admin/senior/statistics"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i><span>Statistics</span></a></li>
-            <li><a href="/admin/senior/archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
-            <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a></li>
-        </ul>
-    </div>
+<div class="app">
+    @include('admin.senior.partials.navigation', ['active' => 'in-between-history', 'mobileSubtitle' => 'Benefit History'])
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="page-header">
-            <h1>In-Between Birthday Cash Gift - Benefit History</h1>
-            <p class="text-gray-600">View all benefit transactions</p>
-        </div>
-
-        <!-- Filters -->
-        <div class="analytics-card" style="margin-bottom:20px;">
-            <div class="flex items-center justify-between mb-4">
-                <h3>Filters</h3>
-                <button onclick="clearFilters()" class="text-sm text-blue-600 hover:text-blue-800">Clear All</button>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
-                <input type="text" id="searchInput" placeholder="Search by name..." class="form-input" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;width:100%;">
-                <select id="intervalFilter" class="form-input" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;width:100%;">
-                    <option value="">All Intervals</option>
-                    <option value="81-84">81-84</option>
-                    <option value="86-89">86-89</option>
-                    <option value="91-94">91-94</option>
-                    <option value="96-99">96-99</option>
-                </select>
-                <select id="statusFilter" class="form-input" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;width:100%;">
-                    <option value="">All Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="released">Released</option>
-                    <option value="rejected">Rejected</option>
-                    <option value="cancelled">Cancelled</option>
-                </select>
-                <input type="date" id="fromDate" class="form-input" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;width:100%;">
-                <input type="date" id="toDate" class="form-input" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;width:100%;">
-            </div>
-        </div>
-
-        <!-- History Table -->
-        <div class="analytics-card">
-            <div class="flex items-center justify-between mb-4">
-                <h3>Benefit Transactions ({{ $benefits->total() }})</h3>
-            </div>
+    <div class="main">
+        <div class="main-scroll">
+            <div class="page-container">
             
-            <div class="archive-table-wrap">
-                <table class="archive-table">
-                    <thead>
-                        <tr>
-                            <th>Reference No.</th>
-                            <th>Name</th>
-                            <th>Age</th>
-                            <th>Interval</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Application Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($benefits as $benefit)
-                            <tr>
-                                <td data-label="Reference No." style="font-weight:600;font-family:monospace;">{{ $benefit->reference_number }}</td>
-                                <td data-label="Name">
-                                    <div style="font-weight:500;">{{ $benefit->full_name }}</div>
-                                    <div class="td-sub">{{ $benefit->senior->barangay ?? 'N/A' }}</div>
-                                </td>
-                                <td data-label="Age">{{ $benefit->current_age }}</td>
-                                <td data-label="Interval">{{ $benefit->eligibility_interval }}</td>
-                                <td data-label="Amount">₱{{ number_format($benefit->amount, 2) }}</td>
-                                <td data-label="Status">
-                                    <span class="badge badge-{{ $benefit->status }}">
-                                        {{ ucfirst($benefit->status) }}
-                                    </span>
-                                </td>
-                                <td data-label="Application Date">{{ $benefit->application_date->format('M d, Y') }}</td>
-                                <td data-label="Actions">
-                                    <div class="actions">
-                                        <button class="action-btn" style="background:var(--primary);border-color:var(--primary);color:#fff;" onclick="viewDetails({{ $benefit->id }})" title="View Details">
-                                            <i data-lucide="eye"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr class="empty-row">
-                                <td colspan="8" class="empty-cell">
-                                    <div class="empty-state-content">
-                                        <div class="empty-icon-wrap">
-                                            <i data-lucide="receipt-text"></i>
-                                        </div>
-                                        <div class="empty-title">No benefit transactions found</div>
-                                        <div class="empty-subtitle">No records match your search criteria</div>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <!-- Page Header Card -->
+            <div class="history-header-card">
+                <div class="history-header-left">
+                    <h1><i data-lucide="history" style="width:26px;height:26px;color:var(--primary);"></i> In-Between Birthday Cash Gift - Benefit History</h1>
+                    <p>Audit trail and release history of approved in-between birthday benefit transactions.</p>
+                </div>
+                <div class="history-header-actions">
+                    <a href="/admin/senior/in-between/eligibility-list" class="btn btn-primary">
+                        <i data-lucide="users"></i> Eligibility List
+                    </a>
+                </div>
             </div>
 
-            <!-- Pagination -->
-            @if($benefits->hasPages())
-                <div class="sc-pagination">
-                    <div class="sc-pagination-info">
-                        @if($benefits->total() === 0)
-                            Showing 0 of 0 Transactions
-                        @else
-                            Showing {{ $benefits->firstItem() }}–{{ $benefits->lastItem() }} of {{ $benefits->total() }} Transactions
-                        @endif
+            <!-- Metrics Summary -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon" style="background:#EEF2FF;color:#3730A3;">
+                        <i data-lucide="receipt-text"></i>
                     </div>
-                    <div class="sc-pagination-controls">
-                        @if($benefits->count() > 0 && $benefits->hasPages())
-                            @if($benefits->onFirstPage())
-                                <span class="sc-page-btn" disabled>Previous</span>
-                            @else
-                                <a href="{{ $benefits->previousPageUrl() }}" class="sc-page-btn">Previous</a>
-                            @endif
-
-                            <span class="sc-page-btn active">{{ $benefits->currentPage() }}</span>
-
-                            @if($benefits->hasMorePages())
-                                <a href="{{ $benefits->nextPageUrl() }}" class="sc-page-btn">Next</a>
-                            @else
-                                <span class="sc-page-btn" disabled>Next</span>
-                            @endif
-                        @endif
+                    <div class="metric-info">
+                        <div class="metric-label">Total Transactions</div>
+                        <div class="metric-value">{{ number_format($totalRecords ?? $benefits->total()) }}</div>
                     </div>
                 </div>
-            @endif
+                <div class="metric-card">
+                    <div class="metric-icon" style="background:#ECFDF5;color:#059669;">
+                        <i data-lucide="banknote"></i>
+                    </div>
+                    <div class="metric-info">
+                        <div class="metric-label">Total Amount Processed</div>
+                        <div class="metric-value">₱{{ number_format($totalAmount ?? 0, 2) }}</div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon" style="background:#FEF3C7;color:#D97706;">
+                        <i data-lucide="check-circle"></i>
+                    </div>
+                    <div class="metric-info">
+                        <div class="metric-label">Approved Claims</div>
+                        <div class="metric-value">{{ number_format($approvedCount ?? 0) }}</div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon" style="background:#F0FDF4;color:#16A34A;">
+                        <i data-lucide="gift"></i>
+                    </div>
+                    <div class="metric-info">
+                        <div class="metric-label">Released Payouts</div>
+                        <div class="metric-value">{{ number_format($releasedCount ?? 0) }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Panel -->
+            <div class="filter-panel">
+                <div class="filter-panel-header">
+                    <div class="filter-panel-title">
+                        <i data-lucide="filter"></i> Filter Benefit History
+                    </div>
+                    @if(request()->hasAny(['search', 'interval', 'status', 'from_date', 'to_date', 'barangay']))
+                        <a href="{{ route('admin.senior.in-between.history') }}" class="text-xs font-semibold text-red-600 hover:text-red-800 flex items-center gap-1" style="text-decoration:none;">
+                            <i data-lucide="x" style="width:14px;height:14px;"></i> Clear All Filters
+                        </a>
+                    @endif
+                </div>
+                <form method="GET" action="{{ route('admin.senior.in-between.history') }}" id="historyFilterForm">
+                    <div class="filter-grid">
+                        <div class="filter-field">
+                            <label class="filter-label" for="searchInput">Search Records</label>
+                            <div class="input-group">
+                                <input type="text" id="searchInput" name="search" placeholder="Search name, ref #, or ID..." value="{{ request('search') }}" autocomplete="off">
+                                <button type="submit" class="search-btn" title="Search">
+                                    <i data-lucide="search"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="filter-field">
+                            <label class="filter-label" for="barangayFilter">Barangay</label>
+                            <select id="barangayFilter" name="barangay" class="filter-select" onchange="this.form.submit()">
+                                <option value="">All Barangays</option>
+                                @php
+                                    $barangays = \App\Models\Senior\SeniorCitizenRecord::where('status', 'active')
+                                        ->whereNotNull('barangay')
+                                        ->pluck('barangay')
+                                        ->unique()
+                                        ->sort()
+                                        ->values();
+                                @endphp
+                                @foreach($barangays as $barangay)
+                                    <option value="{{ $barangay }}" {{ request('barangay') == $barangay ? 'selected' : '' }}>{{ $barangay }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="filter-field">
+                            <label class="filter-label" for="intervalSelect">Interval</label>
+                            <select id="intervalSelect" name="interval" class="filter-select" onchange="this.form.submit()">
+                                <option value="">All Intervals</option>
+                                <option value="81-84" {{ request('interval') == '81-84' ? 'selected' : '' }}>81–84</option>
+                                <option value="86-89" {{ request('interval') == '86-89' ? 'selected' : '' }}>86–89</option>
+                                <option value="91-94" {{ request('interval') == '91-94' ? 'selected' : '' }}>91–94</option>
+                                <option value="96-99" {{ request('interval') == '96-99' ? 'selected' : '' }}>96–99</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-field">
+                            <label class="filter-label" for="statusSelect">Status</label>
+                            <select id="statusSelect" name="status" class="filter-select" onchange="this.form.submit()">
+                                <option value="">All Statuses</option>
+                                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                                <option value="released" {{ request('status') == 'released' ? 'selected' : '' }}>Released</option>
+                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-field">
+                            <label class="filter-label" for="fromDateInput">From Date</label>
+                            <input type="date" id="fromDateInput" name="from_date" class="filter-input" value="{{ request('from_date') }}">
+                        </div>
+
+                        <div class="filter-field">
+                            <label class="filter-label" for="toDateInput">To Date</label>
+                            <input type="date" id="toDateInput" name="to_date" class="filter-input" value="{{ request('to_date') }}">
+                        </div>
+
+                        <div class="filter-btn-group">
+                            <button type="submit" class="btn btn-primary" title="Apply Filter">
+                                <i data-lucide="search"></i> Filter
+                            </button>
+                            @if(request()->hasAny(['search', 'barangay', 'interval', 'status', 'from_date', 'to_date']))
+                                <a href="{{ route('admin.senior.in-between.history') }}" class="btn btn-clear" title="Reset Filters">
+                                    <i data-lucide="rotate-ccw"></i> Reset
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Table Card -->
+            <div class="table-card">
+                <div class="table-card-header">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <h3 class="table-card-title">
+                            <i data-lucide="list"></i> Benefit History Records
+                            <span class="table-count-badge">{{ $benefits->total() }}</span>
+                        </h3>
+                        <span id="selectedCountBadge" style="display:none; font-size:12px; font-weight:700; color:#3730A3; background:#EEF2FF; padding:3px 10px; border-radius:999px; border:1px solid #C7D2FE;">
+                            <span id="selectedCount">0</span> selected
+                        </span>
+                    </div>
+                    <div id="bulkHeaderActions" style="display:none; align-items:center; gap:8px;">
+                        <button type="button" class="btn btn-outline" style="height:34px; padding:0 12px; font-size:12px;" onclick="clearSelections()">
+                            <i data-lucide="x" style="width:14px;height:14px;"></i> Clear Selection
+                        </button>
+                    </div>
+                </div>
+
+                <div class="archive-table-wrap">
+                    <table class="archive-table">
+                        <thead>
+                            <tr>
+                                <th class="col-check" style="width:4%; text-align:center;">
+                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" title="Select All" style="cursor:pointer; width:16px; height:16px; accent-color:var(--primary);">
+                                </th>
+                                <th class="col-control" style="width:14%;">Control Number</th>
+                                <th class="col-senior" style="width:16%;">Senior Citizen</th>
+                                <th class="col-barangay" style="width:12%;">Barangay</th>
+                                <th class="col-age" style="width:5%; text-align:center;">Age</th>
+                                <th class="col-amount" style="width:10%; text-align:right;">Amount</th>
+                                <th class="col-status" style="width:9%; text-align:center;">Status</th>
+                                <th class="col-date" style="width:8%; text-align:center;">Date Applied</th>
+                                <th class="col-action" style="width:8%; text-align:center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($benefits as $benefit)
+                                <tr>
+                                    <td class="col-check" data-label="Select" style="text-align:center;">
+                                        <input type="checkbox" class="record-checkbox" value="{{ $benefit->id }}" onchange="updateSelectedCount()" style="cursor:pointer; width:16px; height:16px; accent-color:var(--primary);">
+                                    </td>
+                                    <td class="col-control" data-label="Control Number">
+                                        <span class="ref-badge" style="background:#F1F5F9; color:#334155; border-color:#CBD5E1;">{{ $benefit->senior->control_number ?? $benefit->senior->senior_id_number ?? ('#' . $benefit->senior_id) }}</span>
+                                    </td>
+                                    <td class="col-senior" data-label="Senior Citizen">
+                                        <div style="font-weight:600; color:#0F172A;">{{ $benefit->full_name }}</div>
+                                    </td>
+                                    <td class="col-barangay" data-label="Barangay">
+                                        <div style="font-size:12.5px; color:#334155; display:flex; align-items:center; gap:5px;">
+                                            <i data-lucide="map-pin" style="width:13px; height:13px; color:#64748B; flex-shrink:0;"></i>
+                                            <span>{{ $benefit->senior->barangay ?? 'N/A' }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="col-age" data-label="Age" style="text-align:center; font-weight:600; color:#0F172A;">
+                                        {{ $benefit->current_age }}
+                                    </td>
+                                    <td class="col-amount" data-label="Amount" style="text-align:right; font-weight:700; color:#059669; font-variant-numeric:tabular-nums; white-space:nowrap;">
+                                        ₱{{ number_format($benefit->amount, 2) }}
+                                    </td>
+                                    <td class="col-status" data-label="Status" style="text-align:center;">
+                                        <span class="badge badge-{{ $benefit->status }}">
+                                            <span class="badge-dot"></span>
+                                            {{ ucfirst($benefit->status) }}
+                                        </span>
+                                    </td>
+                                    <td class="col-date" data-label="Date Applied" style="text-align:center; color:#475569; white-space:nowrap;">
+                                        {{ $benefit->application_date ? $benefit->application_date->format('M d, Y') : '-' }}
+                                    </td>
+                                    <td class="col-action" data-label="Action" style="text-align:center;">
+                                        <button type="button" class="btn-icon btn-view-details" title="View Transaction Details"
+                                            data-reference="{{ $benefit->reference_number }}"
+                                            data-name="{{ $benefit->full_name }}"
+                                            data-senior-id="{{ $benefit->senior->control_number ?? $benefit->senior->senior_id_number ?? ('#' . $benefit->senior_id) }}"
+                                            data-barangay="{{ $benefit->senior->barangay ?? 'N/A' }}"
+                                            data-age="{{ $benefit->current_age }}"
+                                            data-interval="{{ $benefit->eligibility_interval }}"
+                                            data-amount="₱{{ number_format($benefit->amount, 2) }}"
+                                            data-status="{{ ucfirst($benefit->status) }}"
+                                            data-status-raw="{{ $benefit->status }}"
+                                            data-application-date="{{ $benefit->application_date ? $benefit->application_date->format('F d, Y') : 'N/A' }}"
+                                            data-payout-date="{{ $benefit->payout_date ? $benefit->payout_date->format('F d, Y') : 'Pending release' }}"
+                                            data-processed-by="{{ $benefit->processedBy->name ?? 'Admin' }}"
+                                            data-approved-by="{{ $benefit->approvedBy->name ?? 'Admin' }}"
+                                            data-remarks="{{ $benefit->remarks ?? 'None' }}">
+                                            <i data-lucide="eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="9" style="padding:56px 20px; text-align:center;">
+                                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;">
+                                            <div style="width:60px; height:60px; border-radius:50%; background:#F1F5F9; display:flex; align-items:center; justify-content:center; color:#94A3B8;">
+                                                <i data-lucide="receipt-text" style="width:28px; height:28px;"></i>
+                                            </div>
+                                            <div style="font-size:16px; font-weight:700; color:#1E293B;">No benefit transactions found</div>
+                                            <div style="font-size:13px; color:#64748B; max-width:360px;">
+                                                No records match your selected filters. Try resetting the filters or check the eligibility list to process new claims.
+                                            </div>
+                                            <a href="/admin/senior/in-between/eligibility-list" class="btn btn-primary" style="margin-top:8px;">
+                                                <i data-lucide="users"></i> Go to Eligibility List
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div> <!-- End Table Card -->
+
+            <!-- Divider Line -->
+            <div style="border-top:2px solid #CBD5E1; margin:0;"></div>
+
+            <!-- Persistent Pagination (Outside Container) -->
+            <div class="pagination-container">
+                <div class="sc-pagination-info">
+                    @if($benefits->total() === 0)
+                        Showing 0 of 0 Transactions
+                    @else
+                        Showing {{ $benefits->firstItem() }}–{{ $benefits->lastItem() }} of {{ $benefits->total() }} Transactions
+                    @endif
+                </div>
+                <div class="sc-pagination-controls">
+                    @if($benefits->hasPages())
+                        @if($benefits->onFirstPage())
+                            <span class="sc-page-btn" disabled>Previous</span>
+                        @else
+                            <a href="{{ $benefits->appends(request()->except('page'))->previousPageUrl() }}" class="sc-page-btn">Previous</a>
+                        @endif
+
+                        <span class="sc-page-btn active">{{ $benefits->currentPage() }}</span>
+
+                        @if($benefits->hasMorePages())
+                            <a href="{{ $benefits->appends(request()->except('page'))->nextPageUrl() }}" class="sc-page-btn">Next</a>
+                        @else
+                            <span class="sc-page-btn" disabled>Next</span>
+                        @endif
+                    @else
+                        <span class="sc-page-btn" disabled>Previous</span>
+                        <span class="sc-page-btn active">1</span>
+                        <span class="sc-page-btn" disabled>Next</span>
+                    @endif
+                </div>
+            </div>
+
+            </div>
         </div>
     </div>
 </div>
 
-<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display:none">@csrf</form>
+<!-- ======================== TRANSACTION DETAILS MODAL (Masterlist Style) ======================== -->
+<div id="benefitDetailsModal" class="senior-modal-backdrop">
+    <div class="senior-modal-dialog">
+        <div class="senior-modal-header">
+            <h5 class="senior-modal-title">
+                <i data-lucide="receipt-text" style="width:20px;height:20px;"></i>
+                Benefit Transaction Details
+            </h5>
+            <button onclick="closeBenefitModal()" class="senior-modal-close" aria-label="Close modal">
+                <i data-lucide="x" style="width:20px;height:20px;"></i>
+            </button>
+        </div>
+        <div class="senior-modal-body">
+            <div class="senior-modal-grid">
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Reference Number</label>
+                    <div class="senior-modal-value" id="modalReference">—</div>
+                </div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Control Number</label>
+                    <div class="senior-modal-value" id="modalControlNumber">—</div>
+                </div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Status</label>
+                    <div class="senior-modal-value" id="modalStatus">—</div>
+                </div>
+                <div class="senior-modal-field senior-modal-col-span2">
+                    <label class="senior-modal-label">Senior Citizen Full Name</label>
+                    <div class="senior-modal-value" id="modalFullName" style="font-weight:700;">—</div>
+                </div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Barangay</label>
+                    <div class="senior-modal-value" id="modalBarangay">—</div>
+                </div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Age at Claim</label>
+                    <div class="senior-modal-value" id="modalAge">—</div>
+                </div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Eligibility Interval</label>
+                    <div class="senior-modal-value" id="modalInterval">—</div>
+                </div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Benefit Amount</label>
+                    <div class="senior-modal-value" id="modalAmount">—</div>
+                </div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Date Applied</label>
+                    <div class="senior-modal-value" id="modalAppDate">—</div>
+                </div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Payout Date</label>
+                    <div class="senior-modal-value" id="modalPayoutDate">—</div>
+                </div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Processed By</label>
+                    <div class="senior-modal-value" id="modalProcessedBy">—</div>
+                </div>
+                <div class="senior-modal-field">
+                    <label class="senior-modal-label">Approved By</label>
+                    <div class="senior-modal-value" id="modalApprovedBy">—</div>
+                </div>
+                <div class="senior-modal-field senior-modal-col-span2">
+                    <label class="senior-modal-label">Remarks</label>
+                    <div class="senior-modal-value" id="modalRemarks" style="color:#475569;">—</div>
+                </div>
+            </div>
+        </div>
+        <div class="senior-modal-footer">
+            <button type="button" onclick="closeBenefitModal()" class="btn btn-primary" style="height:38px; padding:0 22px;">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
 
 <script>
-    function confirmLogout(event) {
-        event.preventDefault();
-        if (confirm('Are you sure you want to logout?')) {
-            document.getElementById('logout-form').submit();
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-view-details');
+            if (!btn) return;
+            openBenefitDetails({
+                reference: btn.dataset.reference,
+                name: btn.dataset.name,
+                senior_id: btn.dataset.seniorId,
+                barangay: btn.dataset.barangay,
+                age: btn.dataset.age,
+                interval: btn.dataset.interval,
+                amount: btn.dataset.amount,
+                status: btn.dataset.status,
+                status_raw: btn.dataset.statusRaw,
+                application_date: btn.dataset.applicationDate,
+                payout_date: btn.dataset.payoutDate,
+                processed_by: btn.dataset.processedBy,
+                approved_by: btn.dataset.approvedBy,
+                remarks: btn.dataset.remarks
+            });
+        });
+
+        const modalEl = document.getElementById('benefitDetailsModal');
+        if (modalEl) {
+            modalEl.addEventListener('click', function(e) {
+                if (e.target === this) closeBenefitModal();
+            });
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeBenefitModal();
+        });
+    });
+
+    function toggleSelectAll() {
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.record-checkbox');
+        checkboxes.forEach(cb => { cb.checked = selectAll.checked; });
+        updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+        const checkedBoxes = document.querySelectorAll('.record-checkbox:checked');
+        const count = checkedBoxes.length;
+        const total = document.querySelectorAll('.record-checkbox').length;
+        
+        const countSpan = document.getElementById('selectedCount');
+        const badge = document.getElementById('selectedCountBadge');
+        const actions = document.getElementById('bulkHeaderActions');
+        const selectAll = document.getElementById('selectAll');
+        
+        if (countSpan) countSpan.textContent = count;
+        if (badge) badge.style.display = count > 0 ? 'inline-block' : 'none';
+        if (actions) actions.style.display = count > 0 ? 'flex' : 'none';
+        
+        if (selectAll) {
+            selectAll.checked = total > 0 && count === total;
+            selectAll.indeterminate = count > 0 && count < total;
         }
     }
 
-    function clearFilters() {
-        document.getElementById('searchInput').value = '';
-        document.getElementById('intervalFilter').value = '';
-        document.getElementById('statusFilter').value = '';
-        document.getElementById('fromDate').value = '';
-        document.getElementById('toDate').value = '';
-        window.location.href = '{{ url()->current() }}';
+    function clearSelections() {
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll) {
+            selectAll.checked = false;
+            selectAll.indeterminate = false;
+        }
+        document.querySelectorAll('.record-checkbox').forEach(cb => cb.checked = false);
+        updateSelectedCount();
     }
 
-    function viewDetails(benefitId) {
-        // You can implement a modal or redirect to a details page
-        Swal.fire({
-            title: 'Benefit Details',
-            text: 'Benefit ID: ' + benefitId,
-            icon: 'info'
-        });
+    function openBenefitDetails(data) {
+        document.getElementById('modalReference').innerHTML = `<span class="ref-badge">${data.reference}</span>`;
+        document.getElementById('modalControlNumber').innerHTML = `<span class="ref-badge" style="background:#F1F5F9; color:#334155; border-color:#CBD5E1;">${data.senior_id}</span>`;
+        
+        const statusColors = {
+            approved: { bg: '#EEF2FF', text: '#3730A3', border: '#C7D2FE', dot: '#4F46E5' },
+            released: { bg: '#ECFDF5', text: '#065F46', border: '#A7F3D0', dot: '#10B981' },
+            pending: { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A', dot: '#F59E0B' },
+            rejected: { bg: '#FEE2E2', text: '#991B1B', border: '#FECACA', dot: '#EF4444' },
+            cancelled: { bg: '#F1F5F9', text: '#475569', border: '#CBD5E1', dot: '#94A3B8' }
+        };
+        const sColor = statusColors[data.status_raw] || statusColors.approved;
+        document.getElementById('modalStatus').innerHTML = `
+            <span class="badge" style="background:${sColor.bg}; color:${sColor.text}; border:1px solid ${sColor.border};">
+                <span class="badge-dot" style="background:${sColor.dot};"></span> ${data.status}
+            </span>
+        `;
+        
+        document.getElementById('modalFullName').textContent = data.name || '—';
+        document.getElementById('modalBarangay').textContent = data.barangay || '—';
+        document.getElementById('modalAge').textContent = data.age ? `${data.age} yrs old` : '—';
+        document.getElementById('modalInterval').innerHTML = `<span class="interval-badge">${data.interval || '—'}</span>`;
+        document.getElementById('modalAmount').innerHTML = `<span style="color:#059669; font-weight:800; font-size:1.05rem;">${data.amount || '—'}</span>`;
+        document.getElementById('modalAppDate').textContent = data.application_date || '—';
+        document.getElementById('modalPayoutDate').textContent = data.payout_date || '—';
+        document.getElementById('modalProcessedBy').textContent = data.processed_by || '—';
+        document.getElementById('modalApprovedBy').textContent = data.approved_by || '—';
+        document.getElementById('modalRemarks').textContent = data.remarks || 'None';
+
+        const modal = document.getElementById('benefitDetailsModal');
+        if (!modal) return;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => { modal.style.opacity = '1'; }, 10);
+        lucide.createIcons();
     }
 
-    lucide.createIcons();
+    function closeBenefitModal() {
+        const modal = document.getElementById('benefitDetailsModal');
+        if (!modal) return;
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 200);
+    }
 </script>
 </body>
 </html>

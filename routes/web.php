@@ -191,6 +191,7 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::get('/eligibility-list', [InBetweenBenefitController::class, 'eligibilityList'])->name('eligibility-list');
         Route::get('/check-eligibility/{id}', [InBetweenBenefitController::class, 'checkEligibility'])->name('check-eligibility');
         Route::post('/process-claim/{id}', [InBetweenBenefitController::class, 'processClaim'])->name('process-claim');
+        Route::post('/bulk-process-claims', [InBetweenBenefitController::class, 'bulkProcessClaims'])->name('bulk-process-claims');
         Route::get('/history', [InBetweenBenefitController::class, 'benefitHistory'])->name('history');
         Route::get('/senior-card/{id}', [InBetweenBenefitController::class, 'seniorBenefitCard'])->name('senior-card');
         Route::get('/reports', [InBetweenBenefitController::class, 'reports'])->name('reports');

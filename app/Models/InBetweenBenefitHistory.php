@@ -90,9 +90,31 @@ class InBetweenBenefitHistory extends Model
         $this->save();
     }
 
+    protected static function booted()
+    {
+        static::creating(function ($benefit) {
+            if (empty($benefit->reference_number)) {
+                $benefit->reference_number = static::generateNextReferenceNumber();
+            }
+        });
+    }
+
+    public static function generateNextReferenceNumber(): string
+    {
+        $year = now()->format('Y');
+        $maxId = (int) static::max('id');
+        $nextNum = $maxId + 1;
+        $ref = 'IBG-' . $year . '-' . str_pad($nextNum, 8, '0', STR_PAD_LEFT);
+        while (static::where('reference_number', $ref)->exists()) {
+            $nextNum++;
+            $ref = 'IBG-' . $year . '-' . str_pad($nextNum, 8, '0', STR_PAD_LEFT);
+        }
+        return $ref;
+    }
+
     public function generateReferenceNumber(): string
     {
-        return 'IBG-' . now()->format('Y') . '-' . str_pad($this->id, 8, '0', STR_PAD_LEFT);
+        return $this->reference_number ?: ('IBG-' . now()->format('Y') . '-' . str_pad($this->id ?: 1, 8, '0', STR_PAD_LEFT));
     }
 
     public function isClaimed(): bool
