@@ -228,8 +228,9 @@
             .section-spacing{margin-bottom:8px;margin-top:-12px;}
             .filter-section{padding:14px !important;}
             #filterGrid{grid-template-columns:repeat(3,1fr);gap:12px;}
-            .filter-actions{flex-direction:column;gap:8px;}
-            .filter-actions .btn{width:100%;flex:1 1 auto;min-height:44px;}
+            .filter-actions{grid-column:1 / -1;flex-direction:row;flex-wrap:wrap;gap:8px;}
+            .filter-actions .btn{flex:1 1 0;min-width:0;min-height:44px;}
+            .filter-actions .btn-clear{flex:0 0 auto;}
             .stat-cards{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
             .stat-card{padding:16px;flex-direction:column;align-items:flex-start;gap:8px;}
             .stat-card::before{display:none;}
@@ -247,8 +248,9 @@
             .section-spacing{margin-bottom:8px;margin-top:-12px;}
             .filter-section{padding:14px !important;}
             #filterGrid{grid-template-columns:1fr 1fr;gap:12px;}
-            .filter-actions{flex-direction:column;gap:8px;}
-            .filter-actions .btn{width:100%;flex:1 1 auto;min-height:44px;}
+            .filter-actions{grid-column:1 / -1;flex-direction:row;flex-wrap:wrap;gap:8px;}
+            .filter-actions .btn{flex:1 1 0;min-width:0;min-height:44px;}
+            .filter-actions .btn-clear{flex:0 0 auto;}
             .stat-cards{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
             .stat-card{padding:16px;flex-direction:column;align-items:flex-start;gap:8px;}
             .stat-card::before{display:none;}
@@ -266,8 +268,9 @@
             .section-spacing{margin-bottom:8px;margin-top:-12px;}
             .filter-section{padding:14px !important;}
             #filterGrid{grid-template-columns:1fr 1fr;gap:12px;}
-            .filter-actions{flex-direction:column;gap:8px;}
-            .filter-actions .btn{width:100%;flex:1 1 auto;min-height:44px;}
+            .filter-actions{grid-column:1 / -1;flex-direction:row;flex-wrap:wrap;gap:8px;}
+            .filter-actions .btn{flex:1 1 0;min-width:0;min-height:44px;}
+            .filter-actions .btn-clear{flex:0 0 auto;}
             .stat-cards{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
             .stat-card{padding:16px;flex-direction:column;align-items:flex-start;gap:8px;}
             .stat-card::before{display:none;}
@@ -285,8 +288,9 @@
             .section-spacing{margin-bottom:8px;margin-top:-12px;}
             .filter-section{padding:12px !important;}
             #filterGrid{grid-template-columns:1fr 1fr;gap:12px;}
-            .filter-actions{flex-direction:column;gap:8px;}
-            .filter-actions .btn{width:100%;flex:1 1 auto;min-height:44px;}
+            .filter-actions{grid-column:1 / -1;flex-direction:row;flex-wrap:wrap;gap:8px;}
+            .filter-actions .btn{flex:1 1 0;min-width:0;min-height:44px;}
+            .filter-actions .btn-clear{flex:0 0 auto;}
             .stat-cards{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
             .stat-card{padding:14px;flex-direction:column;align-items:flex-start;gap:8px;}
             .stat-card::before{display:none;}
@@ -301,6 +305,11 @@
         /* ── Very small mobile (<360px): filters two per row ── */
         @media (max-width:359px){
             .stat-card-value{font-size:20px;}
+        }
+
+        /* ── When Clear button shows, shrink Generate Report ── */
+        @media (max-width:767px){
+            .filter-actions.has-clear .btn:nth-child(2){font-size:.78rem;padding:0 12px;}
         }
     </style>
 </head>
@@ -573,6 +582,7 @@
 
         if (clearBtn) {
             clearBtn.style.display = hasActiveFilter ? 'inline-flex' : 'none';
+            clearBtn.parentElement.classList.toggle('has-clear', hasActiveFilter);
         }
     }
 
