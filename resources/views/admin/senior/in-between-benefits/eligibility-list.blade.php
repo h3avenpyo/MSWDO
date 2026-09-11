@@ -806,51 +806,120 @@
             .history-header-actions .btn{width:100%;}
 
             /* Mobile Table to Card transformation */
-            .archive-table thead{display:none;}
-            .archive-table tbody tr{
-                display:block;
-                background:#fff;
-                border:1px solid #CBD5E1;
-                border-radius:10px;
-                margin:12px;
-                padding:14px;
-                box-shadow:var(--shadow-sm);
+            .archive-table-wrap{
+                width:100%;
+                max-width:100%;
+                max-height:none;
+                overflow:visible;
+                border:none;
+                border-radius:0;
+                box-shadow:none;
             }
-            .archive-table tbody td{
+            .archive-table{
+                display:block;
+                width:100%;
+                max-width:100%;
+                min-width:0;
+            }
+            .archive-table thead{display:none;}
+            .archive-table tbody{display:block;width:100%;max-width:100%;}
+            .archive-table tbody tr{
                 display:flex;
-                justify-content:space-between;
-                align-items:center;
-                padding:7px 0;
+                flex-direction:column;
+                position:relative;
+                box-sizing:border-box;
+                width:100%;
+                max-width:100%;
+                background:#fff;
+                border:1px solid #D1D5DB;
+                border-radius:12px;
+                margin-bottom:12px;
+                padding:14px;
+                box-shadow:0 2px 8px rgba(0,0,0,.08);
+            }
+            .archive-table tbody tr:last-child{margin-bottom:0;}
+            .archive-table tbody td{
+                display:grid;
+                grid-template-columns:96px minmax(0,1fr);
+                align-items:start;
+                gap:48px;
+                padding:9px 0;
                 border:none;
                 font-size:0.82rem;
-                gap:10px;
-                text-align:right;
+                overflow-wrap:anywhere;
+                text-align:left;
             }
             .archive-table tbody td:not(:last-child){
-                border-bottom:1px solid #F1F5F9;
+                border-bottom:1px solid var(--border);
             }
             .archive-table tbody td::before{
                 content:attr(data-label);
-                font-weight:700;
-                color:#64748B;
-                font-size:0.75rem;
+                font-weight:600;
+                color:var(--text-secondary);
+                font-size:0.72rem;
                 text-transform:uppercase;
-                letter-spacing:0.04em;
-                flex-shrink:0;
+                letter-spacing:0.03em;
+                line-height:1.5;
+                grid-column:1;
                 text-align:left;
             }
-            .archive-table tbody td[data-label="Select"]{
+            .archive-table tbody td.col-check{
+                order:-5;
+                display:flex;
                 justify-content:flex-start;
-                padding-bottom:6px;
+                align-items:center;
+                padding:0 0 8px;
+                border-bottom:none;
             }
-            .archive-table tbody td[data-label="Select"]::before{display:none;}
+            .archive-table tbody td.col-check::before{display:none;}
+            .archive-table tbody td[data-label="Senior Citizen"]{
+                order:-4;
+                display:block;
+                padding:2px 120px 12px 0;
+                border-bottom:none;
+                font-size:1.02rem;
+                font-weight:700;
+                line-height:1.35;
+                color:#1A237E;
+            }
+            .archive-table tbody td[data-label="Senior Citizen"]::before{display:none;}
+            .archive-table tbody td[data-label="Status"]{
+                position:absolute;
+                top:40px;
+                right:14px;
+                display:flex;
+                align-items:center;
+                gap:8px;
+                padding:0;
+            }
+            .archive-table tbody td[data-label="Status"]::before{display:none;}
+            .archive-table tbody td[data-label="Control Number"]{padding-top:16px;white-space:normal;}
+            .archive-table tbody td[data-label="Barangay"] .interval-badge,
+            .archive-table tbody td[data-label="Barangay"] div{overflow-wrap:anywhere;}
+            .archive-table tbody td[data-label="Age"]{text-align:left !important;}
+            .archive-table tbody td[data-label="Amount"]{text-align:left !important;white-space:normal !important;}
             .archive-table tbody td[data-label="Action"]{
+                display:flex;
                 justify-content:flex-end;
+                align-items:center;
                 padding-top:10px;
                 border-bottom:none;
             }
             .archive-table tbody td[data-label="Action"]::before{display:none;}
-            .archive-table tbody td[data-label="Action"] .btn{width:100%;}
+            .archive-table tbody td[data-label="Action"] .btn{width:auto;}
+            .archive-table tbody td[data-label="Action"] .btn-view-senior{width:44px;height:44px;border-radius:8px;}
+            .archive-table tbody td.empty-cell,
+            .archive-table tbody td[colspan]{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:56px 20px !important;width:100% !important;border-bottom:none !important;}
+            .archive-table tbody td.empty-cell::before,
+            .archive-table tbody td[colspan]::before{display:none !important;}
+        }
+
+        @media (max-width:479px){
+            .archive-table tbody tr{padding:12px;}
+            .archive-table tbody td{font-size:.75rem !important;grid-template-columns:76px minmax(0,1fr);gap:32px;padding:8px 0;}
+            .archive-table tbody td::before{font-size:.65rem;}
+            .archive-table tbody td[data-label="Senior Citizen"]{padding:2px 90px 10px 0;font-size:.95rem !important;}
+            .archive-table tbody td[data-label="Status"]{top:36px;right:12px;}
         }
 
         .claim-process-popup{
@@ -950,6 +1019,125 @@
         @media (min-width:1200px){
             .table-card{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;}
             .archive-table-wrap{flex:1;min-height:0;}
+        }
+
+        /* Mobile re-assertion — must come after the masterlist treatment above */
+        @media (max-width:767px){
+            .archive-table-wrap{
+                width:100%;
+                max-width:100%;
+                max-height:none;
+                overflow:visible;
+                border:none;
+                border-radius:0;
+                box-shadow:none;
+                flex:none;
+            }
+            .archive-table{
+                display:block;
+                width:100%;
+                max-width:100%;
+                min-width:0;
+                table-layout:auto;
+            }
+            .archive-table thead{display:none;}
+            .archive-table tbody{display:block;width:100%;max-width:100%;}
+            .archive-table tbody tr{
+                display:flex;
+                flex-direction:column;
+                position:relative;
+                box-sizing:border-box;
+                width:100%;
+                max-width:100%;
+                background:#fff;
+                border:1px solid #D1D5DB;
+                border-radius:12px;
+                margin-bottom:12px;
+                padding:14px;
+                box-shadow:0 2px 8px rgba(0,0,0,.08);
+            }
+            .archive-table tbody tr:last-child{margin-bottom:0;}
+            .archive-table tbody td{
+                display:grid;
+                grid-template-columns:96px minmax(0,1fr);
+                align-items:start;
+                gap:48px;
+                padding:9px 0;
+                border:none;
+                font-size:0.82rem;
+                overflow-wrap:anywhere;
+                text-align:left;
+                white-space:normal;
+                word-break:normal;
+            }
+            .archive-table tbody td:not(:last-child){border-bottom:1px solid var(--border);}
+            .archive-table tbody td::before{
+                content:attr(data-label);
+                font-weight:600;
+                color:var(--text-secondary);
+                font-size:0.72rem;
+                text-transform:uppercase;
+                letter-spacing:0.03em;
+                line-height:1.5;
+                grid-column:1;
+                text-align:left;
+            }
+            .archive-table tbody td.col-check{
+                order:-5;
+                display:flex;
+                justify-content:flex-start;
+                align-items:center;
+                padding:0 0 8px;
+                border-bottom:none;
+            }
+            .archive-table tbody td.col-check::before{display:none;}
+            .archive-table tbody td[data-label="Senior Citizen"]{
+                order:-4;
+                display:block;
+                padding:2px 120px 12px 0;
+                border-bottom:none;
+                font-size:1.02rem;
+                font-weight:700;
+                line-height:1.35;
+                color:#1A237E;
+            }
+            .archive-table tbody td[data-label="Senior Citizen"]::before{display:none;}
+            .archive-table tbody td[data-label="Status"]{
+                position:absolute;
+                top:40px;
+                right:14px;
+                display:flex;
+                align-items:center;
+                gap:8px;
+                padding:0;
+            }
+            .archive-table tbody td[data-label="Status"]::before{display:none;}
+            .archive-table tbody td[data-label="Control Number"]{padding-top:16px;white-space:normal;}
+            .archive-table tbody td[data-label="Barangay"] .interval-badge,
+            .archive-table tbody td[data-label="Barangay"] div{overflow-wrap:anywhere;}
+            .archive-table tbody td[data-label="Age"]{text-align:left !important;}
+            .archive-table tbody td[data-label="Amount"]{text-align:left !important;white-space:normal !important;}
+            .archive-table tbody td[data-label="Action"]{
+                display:flex;
+                justify-content:flex-end;
+                align-items:center;
+                padding-top:10px;
+                border-bottom:none;
+            }
+            .archive-table tbody td[data-label="Action"]::before{display:none;}
+            .archive-table tbody td[data-label="Action"] .btn{width:auto;}
+            .archive-table tbody td[data-label="Action"] .btn-view-senior{width:44px;height:44px;border-radius:8px;}
+            .archive-table tbody td.empty-cell,
+            .archive-table tbody td[colspan]{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:56px 20px !important;width:100% !important;border-bottom:none !important;}
+            .archive-table tbody td.empty-cell::before,
+            .archive-table tbody td[colspan]::before{display:none !important;}
+        }
+        @media (max-width:479px){
+            .archive-table tbody tr{padding:12px;}
+            .archive-table tbody td{font-size:.75rem !important;grid-template-columns:76px minmax(0,1fr);gap:32px;padding:8px 0;}
+            .archive-table tbody td::before{font-size:.65rem;}
+            .archive-table tbody td[data-label="Senior Citizen"]{padding:2px 90px 10px 0;font-size:.95rem !important;}
+            .archive-table tbody td[data-label="Status"]{top:36px;right:12px;}
         }
     </style>
 </head>
@@ -1124,7 +1312,7 @@
                                             style="cursor:pointer; width:16px; height:16px; accent-color:var(--primary);">
                                     </td>
                                     <td class="col-control" data-label="Control Number">
-                                        <span class="ref-badge" style="background:#F1F5F9; color:#334155; border-color:#CBD5E1;">{{ $senior->control_number ?? $senior->senior_id_number ?? ('#' . $senior->id) }}</span>
+                                        <span class="ref-badge" style="background:transparent; color:#334155; border-color:transparent; padding:0;">{{ $senior->control_number ?? $senior->senior_id_number ?? ('#' . $senior->id) }}</span>
                                     </td>
                                     <td class="col-senior" data-label="Senior Citizen">
                                         <div style="font-weight:600; color:#0F172A;">{{ $senior->full_name }}</div>
@@ -1282,10 +1470,6 @@
         <div class="senior-modal-body">
             <div class="senior-modal-grid">
                 <div class="senior-modal-field">
-                    <label class="senior-modal-label">Senior ID</label>
-                    <div class="senior-modal-value" id="modalSeniorId">—</div>
-                </div>
-                <div class="senior-modal-field">
                     <label class="senior-modal-label">Control Number</label>
                     <div class="senior-modal-value" id="modalControlNumber">—</div>
                 </div>
@@ -1304,10 +1488,6 @@
                 <div class="senior-modal-field">
                     <label class="senior-modal-label">Age</label>
                     <div class="senior-modal-value" id="modalAge">—</div>
-                </div>
-                <div class="senior-modal-field">
-                    <label class="senior-modal-label">Eligibility Interval</label>
-                    <div class="senior-modal-value" id="modalInterval">—</div>
                 </div>
                 <div class="senior-modal-field">
                     <label class="senior-modal-label">Benefit Amount</label>
@@ -1339,27 +1519,20 @@
             </button>
         </div>
         <div class="senior-modal-body">
-            <div id="processClaimSummary" class="claim-process-summary">
-                <div class="claim-process-row"><span class="claim-process-label">Senior ID</span><span id="processModalSeniorId" class="claim-process-value claim-process-id">—</span></div>
+            <p style="margin:0 0 16px;color:#334155;font-size:14px;font-weight:600;text-align:left;">
+                Are you sure you want to proceed and process this in-between birthday cash gift?
+            </p>
+            <div class="claim-process-summary">
+                <div class="claim-process-row"><span class="claim-process-label">Control Number</span><span id="processModalSeniorId" class="claim-process-value claim-process-id">—</span></div>
                 <div class="claim-process-row"><span class="claim-process-label">Name</span><span id="processModalName" class="claim-process-value">—</span></div>
-                <div class="claim-process-row"><span class="claim-process-label">Age</span><span id="processModalAge" class="claim-process-value">—</span></div>
-                <div class="claim-process-row"><span class="claim-process-label">Amount</span><span id="processModalAmount" class="claim-process-value claim-process-amount">—</span></div>
             </div>
             <div id="processClaimSuccess" class="claim-process-success">Claim processed successfully. Reloading the eligibility list...</div>
             <div id="processClaimError" class="claim-process-error" role="alert"></div>
-            <div class="claim-process-remarks">
-                <label for="processModalRemarks">Remarks (Optional)</label>
-                <input id="processModalRemarks" type="text" placeholder="e.g. Approved and processed">
-            </div>
-            <label class="claim-process-confirmation" for="processModalConfirm">
-                <input id="processModalConfirm" type="checkbox">
-                <span>I am sure I want to process this claim.</span>
-            </label>
         </div>
         <div class="senior-modal-footer">
-            <button type="button" onclick="closeProcessClaimModal()" class="btn btn-outline" style="height:38px;padding:0 22px;">Cancel</button>
+            <button type="button" id="processModalNo" onclick="closeProcessClaimModal()" class="btn btn-outline" style="height:38px;padding:0 22px;">No</button>
             <button type="button" id="processModalSubmit" onclick="submitProcessClaim()" class="btn btn-primary" style="height:38px;padding:0 22px;">
-                <i data-lucide="gift" style="width:16px;height:16px;"></i> Process Claim
+                <i data-lucide="gift" style="width:16px;height:16px;"></i> Yes, Process
             </button>
         </div>
     </div>
@@ -2119,7 +2292,6 @@
     function openSeniorDetails(data) {
         currentModalSeniorData = data;
 
-        document.getElementById('modalSeniorId').innerHTML = `<span class="ref-badge">${data.senior_id}</span>`;
         document.getElementById('modalControlNumber').innerHTML = `<span class="ref-badge" style="background:#F1F5F9; color:#334155; border-color:#CBD5E1;">${data.control_number}</span>`;
 
         const statusColors = {
@@ -2138,7 +2310,6 @@
         document.getElementById('modalFullName').textContent = data.name || '—';
         document.getElementById('modalBarangay').textContent = data.barangay || '—';
         document.getElementById('modalAge').textContent = data.age ? `${data.age} yrs old` : '—';
-        document.getElementById('modalInterval').innerHTML = `<span class="interval-badge">${data.interval || '—'}</span>`;
         document.getElementById('modalAmount').innerHTML = `<span style="color:#059669; font-weight:800; font-size:1.05rem;">${data.amount || '—'}</span>`;
 
         // Show/hide Process Claim button based on eligibility
@@ -2210,15 +2381,10 @@
         processClaimData = { seniorId, displaySeniorId, displayName, displayAge, displayInterval, displayAmountNum };
         document.getElementById('processModalSeniorId').textContent = displaySeniorId;
         document.getElementById('processModalName').textContent = displayName;
-        document.getElementById('processModalAge').textContent = `${displayAge} yrs old`;
-        document.getElementById('processModalAmount').textContent = '₱' + Number(displayAmountNum).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        document.getElementById('processModalRemarks').value = '';
-        document.getElementById('processModalConfirm').checked = false;
         document.getElementById('processClaimError').style.display = 'none';
         document.getElementById('processClaimSuccess').style.display = 'none';
-        document.getElementById('processClaimSummary').style.display = 'block';
-        document.querySelector('#processClaimModal .claim-process-remarks').style.display = 'block';
         document.getElementById('processModalSubmit').style.display = 'inline-flex';
+        document.getElementById('processModalNo').style.display = 'inline-flex';
         showProcessClaimModal();
     }
 
@@ -2250,15 +2416,8 @@
         if (!processClaimData) return;
         const modal = document.getElementById('processClaimModal');
         const submit = document.getElementById('processModalSubmit');
-        const remarks = document.getElementById('processModalRemarks').value;
+        const noBtn = document.getElementById('processModalNo');
         const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-        const confirmation = document.getElementById('processModalConfirm');
-        if (!confirmation.checked) {
-            const error = document.getElementById('processClaimError');
-            error.textContent = 'Please confirm that you are sure before processing this claim.';
-            error.style.display = 'block';
-            return;
-        }
         modal.classList.add('is-loading');
         submit.disabled = true;
         submit.innerHTML = '<i data-lucide="loader-circle" style="width:16px;height:16px;"></i> Processing...';
@@ -2268,18 +2427,18 @@
             const response = await fetch(`/admin/senior/in-between/process-claim/${processClaimData.seniorId}`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfMeta ? csrfMeta.content : '', 'Accept': 'application/json'},
-                body: JSON.stringify({ confirmation: true, remarks })
+                body: JSON.stringify({ confirmation: true, remarks: '' })
             });
             const result = await response.json();
             if (!response.ok || !result.success) throw new Error(result.message || 'Failed to process claim.');
-            document.getElementById('processClaimSummary').style.display = 'none';
-            document.querySelector('#processClaimModal .claim-process-remarks').style.display = 'none';
+            if (noBtn) noBtn.style.display = 'none';
+            submit.style.display = 'none';
             document.getElementById('processClaimSuccess').style.display = 'block';
             setTimeout(() => window.location.reload(), 1400);
         } catch (error) {
             modal.classList.remove('is-loading');
             submit.disabled = false;
-            submit.innerHTML = '<i data-lucide="gift" style="width:16px;height:16px;"></i> Process Claim';
+            submit.innerHTML = '<i data-lucide="gift" style="width:16px;height:16px;"></i> Yes, Process';
             document.getElementById('processClaimError').textContent = error.message || 'Error occurred while processing claim.';
             document.getElementById('processClaimError').style.display = 'block';
             lucide.createIcons();
