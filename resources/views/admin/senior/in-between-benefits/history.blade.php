@@ -561,6 +561,97 @@
             pointer-events:none;
         }
 
+        /* Modal Overlay & Panel (Bulk Actions) */
+        .modal-overlay{
+            position:fixed;
+            inset:0;
+            background:rgba(15,23,42,0.6);
+            backdrop-filter:blur(3px);
+            display:none;
+            align-items:center;
+            justify-content:center;
+            z-index:9999;
+            padding:16px;
+        }
+        .modal-overlay.active{
+            display:flex;
+        }
+        .modal-panel{
+            background:#fff;
+            border-radius:12px;
+            width:100%;
+            max-width:400px;
+            box-shadow:0 20px 60px rgba(0,0,0,0.25);
+            overflow:hidden;
+        }
+        .modal-panel-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:16px 20px;
+            border-bottom:1px solid #E2E8F0;
+            background:#F8FAFC;
+        }
+        .modal-panel-header h5{
+            margin:0;
+            font-size:15px;
+            font-weight:700;
+            color:#1E293B;
+            display:flex;
+            align-items:center;
+            gap:8px;
+        }
+        .modal-close{
+            background:none;
+            border:none;
+            color:#64748B;
+            cursor:pointer;
+            padding:4px;
+            border-radius:6px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        .modal-close:hover{
+            background:#E2E8F0;
+            color:#1E293B;
+        }
+        .modal-panel-body{
+            padding:16px 20px;
+        }
+        .modal-actions-list{
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+        }
+        .modal-btn{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            padding:12px 16px;
+            border:1px solid #E2E8F0;
+            border-radius:8px;
+            background:#fff;
+            cursor:pointer;
+            font-size:14px;
+            font-weight:600;
+            color:#1E293B;
+            transition:all 0.15s ease;
+        }
+        .modal-btn:hover{
+            background:#F8FAFC;
+            border-color:#CBD5E1;
+        }
+        .modal-btn-indigo{
+            background:#EEF2FF;
+            border-color:#C7D2FE;
+            color:#3730A3;
+        }
+        .modal-btn-indigo:hover{
+            background:#E0E7FF;
+            border-color:#A5B4FC;
+        }
+
         /* ── Masterlist Style Modal ── */
         .senior-modal-backdrop {
             position: fixed;
@@ -917,6 +1008,9 @@
                         </span>
                     </div>
                     <div id="bulkHeaderActions" style="display:none; align-items:center; gap:8px;">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="showBulkActionPopup()">
+                            <i data-lucide="list-checks"></i> Bulk Actions
+                        </button>
                         <button type="button" class="btn btn-outline" style="height:34px; padding:0 12px; font-size:12px;" onclick="clearSelections()">
                             <i data-lucide="x" style="width:14px;height:14px;"></i> Clear Selection
                         </button>
@@ -930,13 +1024,14 @@
                                 <th class="col-check" style="width:4%; text-align:center;">
                                     <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" title="Select All" style="cursor:pointer; width:16px; height:16px; accent-color:var(--primary);">
                                 </th>
-                                <th class="col-control" style="width:14%;">Control Number</th>
-                                <th class="col-senior" style="width:16%;">Senior Citizen</th>
-                                <th class="col-barangay" style="width:12%;">Barangay</th>
-                                <th class="col-age" style="width:5%; text-align:center;">Age</th>
-                                <th class="col-amount" style="width:10%; text-align:right;">Amount</th>
-                                <th class="col-status" style="width:9%; text-align:center;">Status</th>
+                                <th class="col-control" style="width:12%;">Control Number</th>
+                                <th class="col-senior" style="width:14%;">Senior Citizen</th>
+                                <th class="col-barangay" style="width:10%;">Barangay</th>
+                                <th class="col-age" style="width:4%; text-align:center;">Age</th>
+                                <th class="col-amount" style="width:8%; text-align:right;">Amount</th>
+                                <th class="col-status" style="width:8%; text-align:center;">Status</th>
                                 <th class="col-date" style="width:8%; text-align:center;">Date Applied</th>
+                                <th class="col-eligible" style="width:10%; text-align:center;">Next Eligible</th>
                                 <th class="col-action" style="width:8%; text-align:center;">Action</th>
                             </tr>
                         </thead>
@@ -973,6 +1068,13 @@
                                     <td class="col-date" data-label="Date Applied" style="text-align:center; color:#475569; white-space:nowrap;">
                                         {{ $benefit->application_date ? $benefit->application_date->format('M d, Y') : '-' }}
                                     </td>
+                                    <td class="col-eligible" data-label="Next Eligible" style="text-align:center; color:#475569; white-space:nowrap;">
+                                        @if($benefit->payout_date)
+                                            {{ $benefit->payout_date->addYears(6)->format('M d, Y') }}
+                                        @else
+                                            <span style="color:#94A3B8; font-style:italic;">Pending payout</span>
+                                        @endif
+                                    </td>
                                     <td class="col-action" data-label="Action" style="text-align:center;">
                                         <button type="button" class="btn-icon btn-view-details" title="View Transaction Details"
                                             data-reference="{{ $benefit->reference_number }}"
@@ -995,7 +1097,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" style="padding:56px 20px; text-align:center;">
+                                    <td colspan="10" style="padding:56px 20px; text-align:center;">
                                         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;">
                                             <div style="width:60px; height:60px; border-radius:50%; background:#F1F5F9; display:flex; align-items:center; justify-content:center; color:#94A3B8;">
                                                 <i data-lucide="receipt-text" style="width:28px; height:28px;"></i>
@@ -1095,10 +1197,6 @@
                     <div class="senior-modal-value" id="modalAge">—</div>
                 </div>
                 <div class="senior-modal-field">
-                    <label class="senior-modal-label">Eligibility Interval</label>
-                    <div class="senior-modal-value" id="modalInterval">—</div>
-                </div>
-                <div class="senior-modal-field">
                     <label class="senior-modal-label">Benefit Amount</label>
                     <div class="senior-modal-value" id="modalAmount">—</div>
                 </div>
@@ -1132,9 +1230,42 @@
     </div>
 </div>
 
+<!-- Bulk Action Modal -->
+<div id="bulkActionModal" class="senior-modal-backdrop">
+    <div class="senior-modal-dialog" style="max-width: 480px;">
+        <div class="senior-modal-header">
+            <h5 class="senior-modal-title">
+                <i data-lucide="list-checks" style="width:20px;height:20px;"></i> Bulk Actions
+            </h5>
+            <button onclick="closeBulkModal()" class="senior-modal-close" aria-label="Close modal">
+                <i data-lucide="x" style="width:20px;height:20px;"></i>
+            </button>
+        </div>
+        <div class="senior-modal-body">
+            <div class="senior-modal-grid">
+                <div class="senior-modal-field senior-modal-col-full">
+                    <label class="senior-modal-label">Selected Records</label>
+                    <div class="senior-modal-value" id="bulkModalSummary">0 selected</div>
+                </div>
+            </div>
+            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                <button type="button" id="bulkBtnExport" class="btn btn-primary" onclick="exportPdf(event)" style="width: 100%; height: 42px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <i data-lucide="file-output" style="width:18px;height:18px;"></i> Export Selected (PDF)
+                </button>
+            </div>
+        </div>
+        <div class="senior-modal-footer">
+            <button type="button" onclick="closeBulkModal()" class="btn btn-outline" style="height:38px; padding:0 22px;">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
+        restoreSelections();
         
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('.btn-view-details');
@@ -1168,10 +1299,30 @@
         });
     });
 
+    window.selectAllMatching = false;
+    window.totalRecords = {{ $totalAllRecords ?? $benefits->total() ?? 0 }};
+
     function toggleSelectAll() {
         const selectAll = document.getElementById('selectAll');
         const checkboxes = document.querySelectorAll('.record-checkbox');
-        checkboxes.forEach(cb => { cb.checked = selectAll.checked; });
+        
+        window.selectAllMatching = selectAll.checked;
+        
+        checkboxes.forEach(cb => { 
+            cb.checked = selectAll.checked; 
+        });
+        
+        // Save selections to localStorage
+        if (selectAll.checked) {
+            // Save that all records are selected
+            localStorage.setItem('historySelectAll', 'true');
+            localStorage.setItem('historyTotalRecords', window.totalRecords);
+        } else {
+            localStorage.removeItem('historySelectAll');
+            localStorage.removeItem('historyTotalRecords');
+            localStorage.removeItem('selectedHistoryIds');
+        }
+        
         updateSelectedCount();
     }
 
@@ -1185,7 +1336,14 @@
         const actions = document.getElementById('bulkHeaderActions');
         const selectAll = document.getElementById('selectAll');
         
-        if (countSpan) countSpan.textContent = count;
+        // If select all matching is enabled, use total records count
+        if (window.selectAllMatching || localStorage.getItem('historySelectAll') === 'true') {
+            const totalCount = parseInt(localStorage.getItem('historyTotalRecords')) || window.totalRecords;
+            if (countSpan) countSpan.textContent = totalCount;
+        } else {
+            if (countSpan) countSpan.textContent = count;
+        }
+        
         if (badge) badge.style.display = count > 0 ? 'inline-block' : 'none';
         if (actions) actions.style.display = count > 0 ? 'flex' : 'none';
         
@@ -1201,8 +1359,376 @@
             selectAll.checked = false;
             selectAll.indeterminate = false;
         }
+        window.selectAllMatching = false;
+        localStorage.removeItem('historySelectAll');
+        localStorage.removeItem('historyTotalRecords');
+        localStorage.removeItem('selectedHistoryIds');
         document.querySelectorAll('.record-checkbox').forEach(cb => cb.checked = false);
         updateSelectedCount();
+    }
+
+    function restoreSelections() {
+        const selectAll = localStorage.getItem('historySelectAll');
+        if (selectAll === 'true') {
+            window.selectAllMatching = true;
+            const selectAllCheckbox = document.getElementById('selectAll');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = true;
+            }
+            // Check all current page checkboxes
+            document.querySelectorAll('.record-checkbox').forEach(cb => {
+                cb.checked = true;
+            });
+        }
+        updateSelectedCount();
+    }
+
+    function closeBenefitModal() {
+        const modal = document.getElementById('benefitDetailsModal');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 200);
+        }
+    }
+
+    function showBulkActionPopup() {
+        const checkboxes = document.querySelectorAll('.record-checkbox:checked');
+        const ids = Array.from(checkboxes).map(cb => cb.value);
+        
+        if (ids.length === 0) {
+            Swal.fire('No Selection', 'Please select at least one record.', 'warning');
+            return;
+        }
+
+        const summary = document.getElementById('bulkModalSummary');
+        if (summary) {
+            summary.textContent = `${ids.length} record(s) selected`;
+        }
+
+        const modal = document.getElementById('bulkActionModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            modal.style.opacity = '1';
+        }
+        lucide.createIcons();
+    }
+
+    function closeBulkModal() {
+        const modal = document.getElementById('bulkActionModal');
+        if (modal) {
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 200);
+        }
+    }
+
+    async function exportPdf(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        closeBulkModal();
+
+        const checkboxes = document.querySelectorAll('.record-checkbox:checked');
+        const ids = Array.from(checkboxes).map(cb => cb.value);
+        
+        if (ids.length === 0) {
+            Swal.fire('No Selection', 'Please select at least one record to export.', 'warning');
+            return;
+        }
+
+        try {
+            const table = document.querySelector('.archive-table');
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+            const selectedRows = rows.filter(row => {
+                const checkbox = row.querySelector('.record-checkbox:checked');
+                return checkbox !== null;
+            });
+
+            const printContent = `
+                <html>
+                <head>
+                    <title>In-Between Benefits History Export</title>
+                    <style>
+                        @page {
+                            margin: 6mm 8mm 8mm 8mm;
+                            size: landscape;
+                        }
+                        body {
+                            font-family: Arial, Helvetica, sans-serif;
+                            font-size: 11.5px;
+                            line-height: 1.3;
+                            color: #0f172a;
+                            margin: 0;
+                            padding: 0;
+                        }
+                        .header-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            border: none;
+                            margin-bottom: 4px;
+                            table-layout: fixed;
+                        }
+                        .header-table td {
+                            border: none;
+                            padding: 2px 4px;
+                            vertical-align: middle;
+                        }
+                        .logo-cell {
+                            width: 60px;
+                            text-align: center;
+                            vertical-align: middle;
+                            padding: 0 10px;
+                        }
+                        .logo-cell:first-child {
+                            padding-left: 30px;
+                        }
+                        .logo-cell:last-child {
+                            padding-right: 30px;
+                        }
+                        .gov {
+                            text-align: center;
+                            vertical-align: middle;
+                            line-height: 1.3;
+                            color: #0f172a;
+                            padding: 0 6px;
+                        }
+                        .gov .gov-line {
+                            font-size: 10px;
+                            font-weight: 500;
+                            color: #374151;
+                        }
+                        .gov h2 {
+                            margin: 3px 0 0;
+                            font-family: Arial, Helvetica, sans-serif;
+                            font-size: 14px;
+                            font-weight: bold;
+                            color: #1A237E;
+                            letter-spacing: 0.4px;
+                        }
+                        .line {
+                            border-top: 2px solid #1A237E;
+                            margin: 2px 0 1px;
+                        }
+                        .line2 {
+                            border-top: 1px solid #1A237E;
+                            margin-bottom: 4px;
+                        }
+                        .report-title {
+                            text-align: center;
+                            margin: 2px 0 4px;
+                        }
+                        .report-title h3 {
+                            font-size: 14px;
+                            margin: 0;
+                            color: #1A237E;
+                            text-transform: uppercase;
+                            font-weight: bold;
+                            letter-spacing: 0.5px;
+                        }
+                        .data-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-bottom: 0;
+                            font-size: 11.5px;
+                            table-layout: fixed;
+                        }
+                        .data-table thead {
+                            display: table-header-group;
+                        }
+                        .data-table tr {
+                            page-break-inside: avoid;
+                        }
+                        .data-table th {
+                            background: #1A237E;
+                            color: #ffffff;
+                            padding: 7px 4.5px;
+                            text-align: left;
+                            font-weight: bold;
+                            font-size: 11.5px;
+                            text-transform: uppercase;
+                            border: 1px solid #1A237E;
+                            overflow: hidden;
+                            word-wrap: break-word;
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+                        .data-table td {
+                            padding: 7px 4.5px;
+                            border: 1px solid #94a3b8;
+                            vertical-align: middle;
+                            overflow: hidden;
+                            word-wrap: break-word;
+                            font-size: 11.5px;
+                            color: #0f172a;
+                        }
+                        .data-table tbody tr:nth-child(even) {
+                            background: #f8fafc;
+                        }
+                        .footer {
+                            margin-top: 15px;
+                            border-top: 1px solid #E2E8F0;
+                            padding-top: 8px;
+                            font-size: 9.5px;
+                            color: #64748B;
+                            text-align: center;
+                        }
+                        .signature-section {
+                            margin-top: 30px;
+                            display: flex;
+                            justify-content: space-between;
+                            page-break-inside: avoid;
+                        }
+                        .signature-block {
+                            text-align: center;
+                            width: 30%;
+                        }
+                        .signature-line {
+                            border-top: 1px solid #0f172a;
+                            margin-top: 60px;
+                            padding-top: 8px;
+                            font-weight: 600;
+                            color: #0f172a;
+                        }
+                        .col-check { display: none; }
+                        .badge { display: none; }
+                        @media print {
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <table class="header-table">
+                        <tr>
+                            <td class="logo-cell">
+                                <img src="/images/silang.png" style="width: 72px; height: 72px; object-fit: contain; display: block; margin: 0 auto;" alt="Silang Seal" onerror="this.style.display='none'">
+                            </td>
+                            <td class="gov">
+                                <div class="gov-line">Republic of the Philippines • Province of Cavite • Municipality of Silang</div>
+                                <h2>MUNICIPAL SOCIAL WELFARE AND DEVELOPMENT OFFICE</h2>
+                                <div style="font-size: 10px; color: #475569; margin-top: 2px;">In-Between Birthday Cash Gift - Benefit History</div>
+                            </td>
+                            <td class="logo-cell">
+                                <img src="/images/dswd.png" style="width: 72px; height: 72px; object-fit: contain; display: block; margin: 0 auto;" alt="DSWD Logo" onerror="this.style.display='none'">
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="line"></div>
+                    <div class="line2"></div>
+
+                    <div class="report-title">
+                        <h3>In-Between Birthday Cash Gift Benefit History</h3>
+                    </div>
+                    
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 12%;">Control Number</th>
+                                <th style="width: 20%;">Name</th>
+                                <th style="width: 10%;">Barangay</th>
+                                <th style="width: 4%;">Age</th>
+                                <th style="width: 8%;">Amount</th>
+                                <th style="width: 8%;">Status</th>
+                                <th style="width: 8%;">Date Applied</th>
+                                <th style="width: 10%;">Next Eligible</th>
+                                <th style="width: 10%;">Signature</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${selectedRows.map(row => {
+                                const cells = row.querySelectorAll('td');
+                                return `<tr>
+                                    ${Array.from(cells).slice(1, 9).map(cell => `<td>${cell.textContent.trim()}</td>`).join('')}
+                                    <td style="border-bottom: 1px solid #94a3b8; height: 40px;"></td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <div class="footer">
+                        This document is generated by the MSWDO Silang Senior Citizen Management System and is intended for official use only.
+                    </div>
+                    
+                    <div class="signature-section">
+                        <div class="signature-block">
+                            <div class="signature-line">
+                                OSCA Officer
+                            </div>
+                        </div>
+                        <div class="signature-block">
+                            <div class="signature-line">
+                                MSWDO Head
+                            </div>
+                        </div>
+                        <div class="signature-block">
+                            <div class="signature-line">
+                                Municipal Mayor
+                            </div>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            
+            printWindow.onload = function() {
+                printWindow.print();
+                
+                // After PDF is generated, mark records as exported
+                fetch('/admin/senior/in-between/mark-exported', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ ids: ids })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Export Complete',
+                            text: `PDF exported and ${ids.length} record(s) moved to payout history.`,
+                            confirmButtonColor: '#1A237E',
+                            timer: 3000,
+                            timerProgressBar: true
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Export Complete',
+                            text: 'PDF exported but records could not be moved.',
+                            confirmButtonColor: '#1A237E'
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error('Mark Exported Error:', err);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Export Complete',
+                        text: 'PDF exported but records could not be moved.',
+                        confirmButtonColor: '#1A237E'
+                    });
+                });
+            };
+        } catch (err) {
+            console.error('Export Error:', err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Export Failed',
+                text: 'An error occurred while preparing the export. Please try again.',
+                confirmButtonColor: '#1A237E'
+            });
+        }
     }
 
     function openBenefitDetails(data) {
@@ -1226,7 +1752,6 @@
         document.getElementById('modalFullName').textContent = data.name || '—';
         document.getElementById('modalBarangay').textContent = data.barangay || '—';
         document.getElementById('modalAge').textContent = data.age ? `${data.age} yrs old` : '—';
-        document.getElementById('modalInterval').innerHTML = `<span class="interval-badge">${data.interval || '—'}</span>`;
         document.getElementById('modalAmount').innerHTML = `<span style="color:#059669; font-weight:800; font-size:1.05rem;">${data.amount || '—'}</span>`;
         document.getElementById('modalAppDate').textContent = data.application_date || '—';
         document.getElementById('modalPayoutDate').textContent = data.payout_date || '—';

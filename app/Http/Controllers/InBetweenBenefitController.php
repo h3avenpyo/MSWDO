@@ -77,6 +77,8 @@ class InBetweenBenefitController extends Controller
 
     public function eligibilityList(Request $request)
     {
+        $sixYearsAgo = Carbon::now()->subYears(6);
+        
         $query = SeniorCitizenRecord::where('status', 'active')
             ->whereNotNull('birth_date')
             ->where(function ($q) {
@@ -84,6 +86,12 @@ class InBetweenBenefitController extends Controller
                     ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 86 AND 89")
                     ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 91 AND 94")
                     ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 96 AND 99");
+            })
+            ->whereDoesntHave('inBetweenBenefits', function ($q) use ($sixYearsAgo) {
+                $q->claimed()->where('payout_date', '>=', $sixYearsAgo);
+            })
+            ->whereDoesntHave('inBetweenBenefits', function ($q) {
+                $q->pending();
             });
 
         // Search filters
@@ -111,13 +119,14 @@ class InBetweenBenefitController extends Controller
         if ($request->filled('status')) {
             $status = $request->status;
             if ($status === 'eligible') {
+                $sixYearsAgo = Carbon::now()->subYears(6);
                 $query->where(function ($q) {
                     $q->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 81 AND 84")
                         ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 86 AND 89")
                         ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 91 AND 94")
                         ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 96 AND 99");
-                })->whereDoesntHave('inBetweenBenefits', function ($q) {
-                    $q->claimed();
+                })->whereDoesntHave('inBetweenBenefits', function ($q) use ($sixYearsAgo) {
+                    $q->claimed()->where('payout_date', '>=', $sixYearsAgo);
                 })->whereDoesntHave('inBetweenBenefits', function ($q) {
                     $q->pending();
                 });
@@ -247,7 +256,8 @@ class InBetweenBenefitController extends Controller
                 'birthday_year' => Carbon::parse($senior->birth_date)->year + $senior->age,
                 'amount' => $this->config->benefit_amount,
                 'application_date' => now(),
-                'status' => 'approved',
+                'payout_date' => now(),
+                'status' => 'released',
                 'reference_number' => InBetweenBenefitHistory::generateNextReferenceNumber(),
                 'processed_by' => $adminId,
                 'approved_by' => $adminId,
@@ -262,8 +272,8 @@ class InBetweenBenefitController extends Controller
             }
 
             // Add audit trail
-            $benefit->addAuditTrail('CREATED', 'Benefit claim created and approved', $adminId);
-            $benefit->addAuditTrail('APPROVED', 'Benefit approved by ' . $adminName, $adminId);
+            $benefit->addAuditTrail('CREATED', 'Benefit claim created and released', $adminId);
+            $benefit->addAuditTrail('RELEASED', 'Benefit released by ' . $adminName, $adminId);
 
             DB::commit();
 
@@ -395,7 +405,8 @@ class InBetweenBenefitController extends Controller
                         'birthday_year' => Carbon::parse($senior->birth_date)->year + $senior->age,
                         'amount' => $this->config->benefit_amount,
                         'application_date' => now(),
-                        'status' => 'approved',
+                        'payout_date' => now(),
+                        'status' => 'released',
                         'reference_number' => InBetweenBenefitHistory::generateNextReferenceNumber(),
                         'processed_by' => $adminId,
                         'approved_by' => $adminId,
@@ -408,8 +419,8 @@ class InBetweenBenefitController extends Controller
                         $benefit->save();
                     }
 
-                $benefit->addAuditTrail('CREATED', 'Benefit claim created and approved via bulk processing', $adminId);
-                $benefit->addAuditTrail('APPROVED', 'Benefit approved by ' . $adminName, $adminId);
+                $benefit->addAuditTrail('CREATED', 'Benefit claim created and released via bulk processing', $adminId);
+                $benefit->addAuditTrail('RELEASED', 'Benefit released by ' . $adminName, $adminId);
 
                 DB::commit();
                 $processedCount++;
@@ -439,7 +450,8 @@ class InBetweenBenefitController extends Controller
 
     public function benefitHistory(Request $request)
     {
-        $query = InBetweenBenefitHistory::with(['senior', 'processedBy', 'approvedBy']);
+        $query = InBetweenBenefitHistory::with(['senior', 'processedBy', 'approvedBy'])
+            ->where('is_exported', false); // Only show non-exported records
 
         // Filters
         if ($request->filled('search')) {
@@ -490,7 +502,24 @@ class InBetweenBenefitController extends Controller
             'totalAmount',
             'approvedCount',
             'releasedCount'
-        ));
+        ))->with('totalAllRecords', $totalRecords);
+    }
+
+    public function markExported(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:in_between_benefit_history,id'],
+        ]);
+
+        $updated = InBetweenBenefitHistory::whereIn('id', $validated['ids'])
+            ->where('status', 'released')
+            ->update(['is_exported' => true]);
+
+        return response()->json([
+            'success' => true,
+            'updated_count' => $updated,
+        ]);
     }
 
     public function seniorBenefitCard($seniorId)
@@ -765,5 +794,28 @@ class InBetweenBenefitController extends Controller
             'report_type' => 'annual_benefits',
             'data' => $benefits,
         ]);
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        
+        if (empty($ids)) {
+            return response()->json(['success' => false, 'message' => 'No records selected'], 400);
+        }
+
+        try {
+            $deleted = InBetweenBenefitHistory::whereIn('id', $ids)->delete();
+            
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully deleted {$deleted} record(s)"
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting records: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

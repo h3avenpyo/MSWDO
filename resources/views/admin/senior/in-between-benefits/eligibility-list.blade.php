@@ -869,7 +869,7 @@
                     <p>Eligible senior citizens for milestone interval cash gifts (ages 81–84, 86–89, 91–94, 96–99)</p>
                 </div>
                 <div class="history-header-actions">
-                    <a href="/admin/senior/in-between/history" class="btn btn-outline">
+                    <a href="/admin/senior/in-between/history" class="btn btn-primary">
                         <i data-lucide="history"></i> Benefit History
                     </a>
                 </div>
@@ -986,14 +986,6 @@
                     </div>
                 </form>
             </div>
-
-            <!-- Select All Across Pages Alert -->
-            @if($seniors->total() > $seniors->count())
-                <div id="selectAllPagesNotice" class="select-all-pages-notice" style="display:none; margin-bottom:16px; padding:12px 18px; background:#EEF2FF; border:1px solid #C7D2FE; border-radius:var(--radius-md); font-size:13px; color:#3730A3; justify-content:space-between; align-items:center;">
-                    <span id="selectAllPagesText">All {{ $seniors->total() }} eligible seniors are selected across all pages.</span>
-                    <button type="button" class="btn btn-clear btn-sm" onclick="clearSelections()" style="height:28px;padding:0 10px;font-size:11.5px;">Cancel</button>
-                </div>
-            @endif
 
             <!-- Table Card -->
             <div class="table-card">
@@ -1226,10 +1218,6 @@
                     <div class="senior-modal-value" id="modalAge">—</div>
                 </div>
                 <div class="senior-modal-field">
-                    <label class="senior-modal-label">Eligibility Interval</label>
-                    <div class="senior-modal-value" id="modalInterval">—</div>
-                </div>
-                <div class="senior-modal-field">
                     <label class="senior-modal-label">Benefit Amount</label>
                     <div class="senior-modal-value" id="modalAmount">—</div>
                 </div>
@@ -1337,13 +1325,8 @@
 
         if (selectAll.checked) {
             window.selectAllMatching = true;
-            if (notice && hasMorePages) {
-                notice.style.display = 'flex';
-                document.getElementById('selectAllPagesText').textContent = `All ${total} eligible seniors in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.`;
-            }
         } else {
             window.selectAllMatching = false;
-            if (notice) notice.style.display = 'none';
         }
 
         updateBulkActions();

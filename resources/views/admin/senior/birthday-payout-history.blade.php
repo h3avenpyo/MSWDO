@@ -59,6 +59,8 @@
         .badge-generated{background:var(--info-bg);color:var(--info);}
         .badge-cancelled{background:var(--danger-bg);color:var(--danger);}
         .badge-reset{background:#FEF3C7;color:#D97706;}
+        .ref-badge{background:var(--info-bg);color:var(--info);padding:.25rem .6rem;border-radius:6px;font-size:.75rem;font-weight:600;display:inline-block;}
+        .hidden-table{display:none !important;}
 
         /* ── Empty State ── */
         .empty-row{background:transparent !important;border:none !important;box-shadow:none !important;padding:0 !important;margin:0 !important;}
@@ -163,6 +165,7 @@
             .app .main{height:100vh !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;}
             .app .main-scroll{flex:1 !important;min-height:0 !important;overflow-y:auto !important;overflow-x:hidden !important;display:flex !important;flex-direction:column !important;}
             .archive-panel-wrap{padding:1rem !important;margin-bottom:0 !important;flex:1 !important;min-height:0 !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;}
+            .archive-panel-wrap.hidden-table{display:none !important;}
             .archive-table-wrap{flex:1 !important;min-height:0 !important;border:1px solid var(--border) !important;overflow:auto !important;border-radius:8px !important;}
             .empty-icon-wrap{width:80px;height:80px;margin-bottom:20px;background:#EEF2FF;color:#1A237E;}
             .empty-icon-wrap svg{width:40px !important;height:40px !important;}
@@ -276,91 +279,198 @@
                 </div>
             </form>
 
-            {{-- History Table --}}
-            <div class="archive-table-wrap">
-                <table class="archive-table">
-                    <thead>
-                        <tr>
-                            <th>Date &amp; Time</th>
-                            <th>Action</th>
-                            <th>Senior</th>
-                            <th>Amount</th>
-                            <th>Details</th>
-                            <th>Performed By</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($history as $record)
-                            <tr>
-                                <td data-label="Date & Time">{{ $record->created_at->format('M d, Y g:i A') }}</td>
-                                <td data-label="Action">
-                                    <span class="badge-span badge-{{ $record->action }}">
-                                        {{ ucfirst(str_replace('_', ' ', $record->action)) }}
-                                    </span>
-                                </td>
-                                <td data-label="Senior">
-                                    @if($record->senior)
-                                        <div>
-                                            <strong>{{ $record->senior->full_name }}</strong>
-                                            <div style="font-size:0.72rem;margin-top:2px;color:var(--text-muted);">{{ $record->senior->control_number ?? '-' }}</div>
-                                        </div>
-                                    @else
-                                        <span style="font-size:0.8rem;color:var(--text-muted);">System-wide action</span>
-                                    @endif
-                                </td>
-                                <td data-label="Amount">PHP {{ number_format($record->payout->amount ?? 0, 2) }}</td>
-                                <td data-label="Details"><div style="min-width:0;text-align:left">{{ $record->details ?? '-' }}</div></td>
-                                <td data-label="Performed By">
-                                    @if($record->performedBy)
-                                        {{ $record->performedBy->name ?? 'Admin' }}
-                                    @else
-                                        <span style="font-size:0.8rem;color:var(--text-muted);">System</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr class="empty-row">
-                                <td colspan="6" class="empty-cell">
-                                    <div class="empty-state-content">
-                                        <div class="empty-icon-wrap">
-                                            <i data-lucide="history"></i>
-                                        </div>
-                                        <div class="empty-title">No payout history found</div>
-                                        <div class="empty-subtitle">Payout history records will appear here</div>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            {{-- Toggle Buttons --}}
+            <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+                <button type="button" id="showBirthdayBtn" class="btn primary" onclick="showTable('birthday')">
+                    <i data-lucide="cake" style="width: 16px; height: 16px;"></i>
+                    Birthday Payout History
+                </button>
+                <button type="button" id="showInBetweenBtn" class="btn" onclick="showTable('in-between')">
+                    <i data-lucide="gift" style="width: 16px; height: 16px;"></i>
+                    In-Between Payout History
+                </button>
             </div>
 
-            <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
-
-            <div class="sc-pagination">
-                <div class="sc-pagination-info">
-                    @if($history->total() === 0)
-                        Showing 0 of 0 Records
-                    @else
-                        Showing {{ $history->firstItem() }}–{{ $history->lastItem() }} of {{ $history->total() }} Records
-                    @endif
+            {{-- History Table --}}
+            <div class="archive-panel-wrap hidden-table" id="birthdayTableSection">
+                <div class="archive-table-wrap">
+                    <table class="archive-table">
+                        <thead>
+                            <tr>
+                                <th>Date &amp; Time</th>
+                                <th>Action</th>
+                                <th>Senior</th>
+                                <th>Amount</th>
+                                <th>Details</th>
+                                <th>Performed By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($history as $record)
+                                <tr>
+                                    <td data-label="Date & Time">{{ $record->created_at->format('M d, Y g:i A') }}</td>
+                                    <td data-label="Action">
+                                        <span class="badge-span badge-{{ $record->action }}">
+                                            {{ ucfirst(str_replace('_', ' ', $record->action)) }}
+                                        </span>
+                                    </td>
+                                    <td data-label="Senior">
+                                        @if($record->senior)
+                                            <div>
+                                                <strong>{{ $record->senior->full_name }}</strong>
+                                                <div style="font-size:0.72rem;margin-top:2px;color:var(--text-muted);">{{ $record->senior->control_number ?? '-' }}</div>
+                                            </div>
+                                        @else
+                                            <span style="font-size:0.8rem;color:var(--text-muted);">System-wide action</span>
+                                        @endif
+                                    </td>
+                                    <td data-label="Amount">PHP {{ number_format($record->payout->amount ?? 0, 2) }}</td>
+                                    <td data-label="Details"><div style="min-width:0;text-align:left">{{ $record->details ?? '-' }}</div></td>
+                                    <td data-label="Performed By">
+                                        @if($record->performedBy)
+                                            {{ $record->performedBy->name ?? 'Admin' }}
+                                        @else
+                                            <span style="font-size:0.8rem;color:var(--text-muted);">System</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr class="empty-row">
+                                    <td colspan="6" class="empty-cell">
+                                        <div class="empty-state-content">
+                                            <div class="empty-icon-wrap">
+                                                <i data-lucide="history"></i>
+                                            </div>
+                                            <div class="empty-title">No birthday payout history found</div>
+                                            <div class="empty-subtitle">Birthday payout records will appear here</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
-                <div class="sc-pagination-controls">
-                    @if($history->hasPages())
-                        @if($history->onFirstPage())
-                            <span class="sc-page-btn" disabled>Previous</span>
-                        @else
-                            <a href="{{ $history->previousPageUrl() }}" class="sc-page-btn">Previous</a>
-                        @endif
 
-                        <span class="sc-page-btn active">{{ $history->currentPage() }}</span>
+                <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
 
-                        @if($history->hasMorePages())
-                            <a href="{{ $history->nextPageUrl() }}" class="sc-page-btn">Next</a>
+                <div class="sc-pagination">
+                    <div class="sc-pagination-info">
+                        @if($history->total() === 0)
+                            Showing 0 of 0 Records
                         @else
-                            <span class="sc-page-btn" disabled>Next</span>
+                            Showing {{ $history->firstItem() }}–{{ $history->lastItem() }} of {{ $history->total() }} Records
                         @endif
-                    @endif
+                    </div>
+                    <div class="sc-pagination-controls">
+                        @if($history->hasPages())
+                            @if($history->onFirstPage())
+                                <span class="sc-page-btn" disabled>Previous</span>
+                            @else
+                                <a href="{{ $history->previousPageUrl() }}" class="sc-page-btn">Previous</a>
+                            @endif
+
+                            <span class="sc-page-btn active">{{ $history->currentPage() }}</span>
+
+                            @if($history->hasMorePages())
+                                <a href="{{ $history->nextPageUrl() }}" class="sc-page-btn">Next</a>
+                            @else
+                                <span class="sc-page-btn" disabled>Next</span>
+                            @endif
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <div class="archive-panel-wrap hidden-table" id="inBetweenTableSection">
+                <div class="archive-table-wrap">
+                    <table class="archive-table">
+                        <thead>
+                            <tr>
+                                <th>Date &amp; Time</th>
+                                <th>Control Number</th>
+                                <th>Senior</th>
+                                <th>Amount</th>
+                                <th>Next Eligible</th>
+                                <th>Processed By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($inBetweenHistory as $record)
+                                <tr>
+                                    <td data-label="Date & Time">{{ $record->created_at ? $record->created_at->format('M d, Y g:i A') : '-' }}</td>
+                                    <td data-label="Control Number">
+                                        <span class="ref-badge">{{ $record->senior->control_number ?? '-' }}</span>
+                                    </td>
+                                    <td data-label="Senior">
+                                        @if($record->senior)
+                                            <div>
+                                                <strong>{{ $record->full_name }}</strong>
+                                                <div style="font-size:0.72rem;margin-top:2px;color:var(--text-muted);">{{ $record->senior->control_number ?? '-' }}</div>
+                                            </div>
+                                        @else
+                                            <span style="font-size:0.8rem;color:var(--text-muted);">N/A</span>
+                                        @endif
+                                    </td>
+                                    <td data-label="Amount">₱{{ number_format($record->amount, 2) }}</td>
+                                    <td data-label="Next Eligible">
+                                        @if($record->payout_date)
+                                            {{ $record->payout_date->addYears(6)->format('M d, Y') }}
+                                        @else
+                                            <span style="color:#94A3B8; font-style:italic;">Pending payout</span>
+                                        @endif
+                                    </td>
+                                    <td data-label="Processed By">
+                                        @if($record->processedBy)
+                                            {{ $record->processedBy->name ?? 'Admin' }}
+                                        @else
+                                            <span style="font-size:0.8rem;color:var(--text-muted);">System</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr class="empty-row">
+                                    <td colspan="6" class="empty-cell">
+                                        <div class="empty-state-content">
+                                            <div class="empty-icon-wrap">
+                                                <i data-lucide="gift"></i>
+                                            </div>
+                                            <div class="empty-title">No in-between payout history found</div>
+                                            <div class="empty-subtitle">In-between benefit payout records will appear here</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
+
+                <div class="sc-pagination">
+                    <div class="sc-pagination-info">
+                        @if($inBetweenHistory->total() === 0)
+                            Showing 0 of 0 Records
+                        @else
+                            Showing {{ $inBetweenHistory->firstItem() }}–{{ $inBetweenHistory->lastItem() }} of {{ $inBetweenHistory->total() }} Records
+                        @endif
+                    </div>
+                    <div class="sc-pagination-controls">
+                        @if($inBetweenHistory->hasPages())
+                            @if($inBetweenHistory->onFirstPage())
+                                <span class="sc-page-btn" disabled>Previous</span>
+                            @else
+                                <a href="{{ $inBetweenHistory->previousPageUrl() }}" class="sc-page-btn">Previous</a>
+                            @endif
+
+                            <span class="sc-page-btn active">{{ $inBetweenHistory->currentPage() }}</span>
+
+                            @if($inBetweenHistory->hasMorePages())
+                                <a href="{{ $inBetweenHistory->nextPageUrl() }}" class="sc-page-btn">Next</a>
+                            @else
+                                <span class="sc-page-btn" disabled>Next</span>
+                            @endif
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -369,6 +479,30 @@
 
 <script>
     lucide.createIcons();
+
+    function showTable(type) {
+        const birthdaySection = document.getElementById('birthdayTableSection');
+        const inBetweenSection = document.getElementById('inBetweenTableSection');
+        const birthdayBtn = document.getElementById('showBirthdayBtn');
+        const inBetweenBtn = document.getElementById('showInBetweenBtn');
+
+        if (type === 'birthday') {
+            birthdaySection.classList.remove('hidden-table');
+            inBetweenSection.classList.add('hidden-table');
+            birthdayBtn.classList.add('primary');
+            inBetweenBtn.classList.remove('primary');
+        } else {
+            birthdaySection.classList.add('hidden-table');
+            inBetweenSection.classList.remove('hidden-table');
+            birthdayBtn.classList.remove('primary');
+            inBetweenBtn.classList.add('primary');
+        }
+    }
+
+    // Initialize with birthday table shown after DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        showTable('birthday');
+    });
 </script>
 
 <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">@csrf</form>

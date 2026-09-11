@@ -24,6 +24,7 @@ return new class extends Migration
             $table->date('application_date');
             $table->date('payout_date')->nullable();
             $table->enum('status', ['pending', 'approved', 'released', 'rejected', 'cancelled'])->default('pending');
+            $table->boolean('is_exported')->default(false);
             $table->string('reference_number', 50)->unique();
             $table->foreignId('processed_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();

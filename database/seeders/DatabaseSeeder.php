@@ -20,5 +20,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call(FeaHeavenUserSeeder::class);
+        $this->call(InBetweenEligibleSeeder::class);
     }
 }

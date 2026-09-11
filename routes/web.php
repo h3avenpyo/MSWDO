@@ -193,8 +193,10 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::post('/process-claim/{id}', [InBetweenBenefitController::class, 'processClaim'])->name('process-claim');
         Route::post('/bulk-process-claims', [InBetweenBenefitController::class, 'bulkProcessClaims'])->name('bulk-process-claims');
         Route::get('/history', [InBetweenBenefitController::class, 'benefitHistory'])->name('history');
+        Route::post('/mark-exported', [InBetweenBenefitController::class, 'markExported'])->name('mark-exported');
         Route::get('/senior-card/{id}', [InBetweenBenefitController::class, 'seniorBenefitCard'])->name('senior-card');
         Route::get('/reports', [InBetweenBenefitController::class, 'reports'])->name('reports');
+        Route::post('/bulk-delete', [InBetweenBenefitController::class, 'bulkDelete'])->name('bulk-delete');
     });
     
     Route::get('/admin/multi-database', [MultiDatabaseDemoController::class, 'index'])->name('admin.multi-database.index');

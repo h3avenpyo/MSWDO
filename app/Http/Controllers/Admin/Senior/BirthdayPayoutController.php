@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Senior;
 use App\Http\Controllers\Controller;
 use App\Models\Senior\BirthdayPayoutHistory;
 use App\Models\Senior\SeniorActivityLog;
+use App\Models\InBetweenBenefitHistory;
 use Illuminate\Http\Request;
 
 class BirthdayPayoutController extends Controller
@@ -18,7 +19,8 @@ class BirthdayPayoutController extends Controller
             return redirect()->route('admin.login.form');
         }
 
-        $query = BirthdayPayoutHistory::query()
+        // Get birthday payout history
+        $birthdayQuery = BirthdayPayoutHistory::query()
             ->with(['payout', 'senior', 'performedBy'])
             ->where('action', 'released')
             ->orderBy('created_at', 'desc');
@@ -26,7 +28,7 @@ class BirthdayPayoutController extends Controller
         // Apply barangay filter
         $barangay = $request->get('barangay', '');
         if ($barangay) {
-            $query->whereHas('senior', function($q) use ($barangay) {
+            $birthdayQuery->whereHas('senior', function($q) use ($barangay) {
                 $q->where('barangay', $barangay);
             });
         }
@@ -35,8 +37,30 @@ class BirthdayPayoutController extends Controller
         $dateFrom = $request->get('date_from', '');
         $dateTo = $request->get('date_to', '');
         if ($dateFrom && $dateTo) {
-            $query->whereBetween('created_at', [$dateFrom, $dateTo]);
+            $birthdayQuery->whereBetween('created_at', [$dateFrom, $dateTo]);
         }
+
+        $history = $birthdayQuery->paginate(15);
+
+        // Get In-Between Benefits history
+        $inBetweenQuery = InBetweenBenefitHistory::with(['senior', 'processedBy', 'approvedBy'])
+            ->where('status', 'released')
+            ->where('is_exported', true) // Only show exported records
+            ->orderBy('payout_date', 'desc');
+
+        // Apply barangay filter for in-between
+        if ($barangay) {
+            $inBetweenQuery->whereHas('senior', function($q) use ($barangay) {
+                $q->where('barangay', $barangay);
+            });
+        }
+
+        // Apply date filters for in-between
+        if ($dateFrom && $dateTo) {
+            $inBetweenQuery->whereBetween('payout_date', [$dateFrom, $dateTo]);
+        }
+
+        $inBetweenHistory = $inBetweenQuery->paginate(15);
 
         $barangays = [
             'Acacia', 'Adlas', 'Anahaw I', 'Anahaw II', 'Balite I', 'Balite II', 'Balubad', 'Banaba', 'Batas',
@@ -49,12 +73,11 @@ class BirthdayPayoutController extends Controller
             'Tartaria', 'Tibig', 'Toledo', 'Tubuan I', 'Tubuan II', 'Tubuan III', 'Ulat', 'Yakal'
         ];
 
-        $history = $query->paginate(15);
-
         $actions = ['released'];
 
         return view('admin.senior.birthday-payout-history', compact(
             'history',
+            'inBetweenHistory',
             'actions',
             'barangays',
             'dateFrom',
