@@ -11,9 +11,6 @@
                     <div>
                         <div class="d-flex align-items-center gap-2">
                             <h5 class="modal-title fw-bold mb-0 text-white" id="smsMessagingModalLabel">Send SMS Notification</h5>
-                            <span class="badge rounded-pill px-2 py-0.5 text-2xs fw-semibold d-none" id="smsGatewayStatusPill">
-                                <i class="fas fa-signal me-1"></i> Gateway Ready
-                            </span>
                         </div>
                         <span class="text-white-50 small" style="font-size: 0.78rem;">Financial Assistance Step 2 Notification System</span>
                     </div>

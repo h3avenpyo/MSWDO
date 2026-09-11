@@ -68,7 +68,7 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
             'beneficiary_city' => ['required', 'string', 'max:100'],
             'beneficiary_province' => ['required', 'string', 'max:100'],
             'beneficiary_region' => ['required', 'string', 'max:100'],
-            'beneficiary_contact_number' => ['required', 'string', 'max:50'],
+            'beneficiary_contact_number' => ['required', 'string', 'regex:/^[0-9]{11}$/'],
             'beneficiary_birthday' => ['required', 'date'],
             'beneficiary_age' => ['required', 'integer', 'min:0', 'max:150'],
             'beneficiary_sex' => ['required', 'in:Male,Female'],
@@ -90,7 +90,7 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
             'rep_city' => ['nullable', 'string', 'max:100'],
             'rep_province' => ['nullable', 'string', 'max:100'],
             'rep_region' => ['nullable', 'string', 'max:100'],
-            'rep_contact_number' => ['nullable', 'required_if:has_representative,1,true', 'string', 'max:50'],
+            'rep_contact_number' => ['nullable', 'required_if:has_representative,1,true', 'string', 'regex:/^[0-9]{11}$/'],
             'rep_birthday' => ['nullable', 'required_if:has_representative,1,true', 'date'],
             'rep_age' => ['nullable', 'required_if:has_representative,1,true', 'integer', 'min:0', 'max:150'],
             'rep_sex' => ['nullable', 'required_if:has_representative,1,true', 'in:Male,Female'],
@@ -114,6 +114,19 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
             'submitted_to' => ['nullable', 'string', 'max:255'],
             'medical_conditions' => ['nullable', 'array'],
             'medical_condition_other' => ['nullable', 'string', 'max:255'],
+        ];
+    }
+
+    /**
+     * Get custom validation messages for contact number and required fields.
+     */
+    public function messages(): array
+    {
+        return [
+            'beneficiary_contact_number.required' => 'Numero ng telepono (Contact number) is required.',
+            'beneficiary_contact_number.regex' => 'Contact number must be exactly 11 digits (0–9) without letters, spaces, or symbols (e.g., 09XXXXXXXXX).',
+            'rep_contact_number.required_if' => 'Representative contact number is required when representative is enabled.',
+            'rep_contact_number.regex' => 'Representative contact number must be exactly 11 digits (0–9) without letters, spaces, or symbols (e.g., 09XXXXXXXXX).',
         ];
     }
 }

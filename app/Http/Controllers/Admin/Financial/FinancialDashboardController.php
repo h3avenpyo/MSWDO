@@ -393,13 +393,38 @@ class FinancialDashboardController extends Controller
                 }
             }
 
-            // Filter by Date
-            if ($request->filled('date')) {
-                $filterDate = Carbon::parse($request->date);
-                $query->where(function ($q) use ($filterDate) {
-                    $q->whereDate('created_at', $filterDate)
-                      ->orWhereDate('date_processed', $filterDate);
-                });
+            // Filter by Month & Year (e.g. 'YYYY-MM') or fallback Exact Date
+            if ($request->filled('month')) {
+                $monthInput = trim($request->month);
+                $parts = explode('-', $monthInput);
+                if (count($parts) === 2 && is_numeric($parts[0]) && is_numeric($parts[1])) {
+                    $year = (int) $parts[0];
+                    $monthNum = (int) $parts[1];
+                    $query->where(function ($q) use ($year, $monthNum) {
+                        $q->where(function ($sq) use ($year, $monthNum) {
+                            $sq->whereNotNull('date_processed')
+                               ->whereYear('date_processed', $year)
+                               ->whereMonth('date_processed', $monthNum);
+                        })->orWhere(function ($sq) use ($year, $monthNum) {
+                            $sq->whereNull('date_processed')
+                               ->whereYear('created_at', $year)
+                               ->whereMonth('created_at', $monthNum);
+                        });
+                    });
+                }
+            } elseif ($request->filled('date')) {
+                try {
+                    $filterDate = Carbon::parse($request->date)->toDateString();
+                    $query->where(function ($q) use ($filterDate) {
+                        $q->where(function ($sq) use ($filterDate) {
+                            $sq->whereNotNull('date_processed')->whereDate('date_processed', $filterDate);
+                        })->orWhere(function ($sq) use ($filterDate) {
+                            $sq->whereNull('date_processed')->whereDate('created_at', $filterDate);
+                        });
+                    });
+                } catch (\Exception $e) {
+                    // Ignore invalid date string
+                }
             }
 
             // Sorting
@@ -578,6 +603,236 @@ class FinancialDashboardController extends Controller
             'genderBreakdown',
             'medicalConcernsSummary',
             'reasonsAssistance'
+        ));
+    }
+
+    /**
+     * Dedicated Step 2 Statistics & Analytics Page.
+     * Computes real-time metrics, barangay distributions, gender breakdown,
+     * and ranked sector financial assistance statistics.
+     */
+    public function financialStep2Statistics(Request $request)
+    {
+        $totalBeneficiaries = BeneficiaryIntake::count();
+        $totalAmount = (float) BeneficiaryIntake::sum('recommended_amount');
+        $totalClaimed = BeneficiaryIntake::where('claim_status', 'Claimed')->count();
+        $totalClaimedAmount = (float) BeneficiaryIntake::where('claim_status', 'Claimed')->sum('recommended_amount');
+        $totalUnclaimed = BeneficiaryIntake::where('is_payroll_generated', true)
+            ->where(function ($q) {
+                $q->where('claim_status', '!=', 'Claimed')->orWhereNull('claim_status');
+            })->count();
+        $totalInPayroll = BeneficiaryIntake::where('is_payroll_generated', true)->count();
+        $totalPayrollBatches = FinancialPayrollRecord::count();
+
+        // 1. Number of beneficiaries who received financial assistance per Barangay
+        $barangayRaw = BeneficiaryIntake::select(
+            'beneficiary_barangay',
+            DB::raw('count(*) as total_beneficiaries'),
+            DB::raw('SUM(CASE WHEN recommended_amount > 0 THEN recommended_amount ELSE 0 END) as total_amount'),
+            DB::raw('SUM(CASE WHEN claim_status = "Claimed" THEN 1 ELSE 0 END) as claimed_count')
+        )
+        ->whereNotNull('beneficiary_barangay')
+        ->where('beneficiary_barangay', '!=', '')
+        ->groupBy('beneficiary_barangay')
+        ->orderByDesc('total_beneficiaries')
+        ->get();
+
+        $barangayStats = [];
+        $topBarangay = null;
+        $topBarangayCount = 0;
+        foreach ($barangayRaw as $b) {
+            $bCount = (int) $b->total_beneficiaries;
+            $barangayStats[$b->beneficiary_barangay] = [
+                'name' => $b->beneficiary_barangay,
+                'beneficiaries' => $bCount,
+                'amount' => (float) $b->total_amount,
+                'formatted_amount' => '₱' . number_format((float) $b->total_amount, 2),
+                'claimed' => (int) $b->claimed_count,
+                'percentage' => $totalBeneficiaries > 0 ? round(($bCount / $totalBeneficiaries) * 100, 1) : 0,
+            ];
+            if (!$topBarangay) {
+                $topBarangay = $b->beneficiary_barangay;
+                $topBarangayCount = $bCount;
+            }
+        }
+
+        // 2. Male vs. Female beneficiaries
+        $maleCount = BeneficiaryIntake::where('beneficiary_sex', 'Male')->count();
+        $femaleCount = BeneficiaryIntake::where('beneficiary_sex', 'Female')->count();
+        $otherGenderCount = BeneficiaryIntake::whereNotIn('beneficiary_sex', ['Male', 'Female'])
+            ->whereNotNull('beneficiary_sex')
+            ->where('beneficiary_sex', '!=', '')
+            ->count();
+
+        $genderBreakdown = [
+            'Male' => $maleCount,
+            'Female' => $femaleCount,
+        ];
+        if ($otherGenderCount > 0) {
+            $genderBreakdown['Other / Unspecified'] = $otherGenderCount;
+        }
+
+        $malePercentage = $totalBeneficiaries > 0 ? round(($maleCount / $totalBeneficiaries) * 100, 1) : 0;
+        $femalePercentage = $totalBeneficiaries > 0 ? round(($femaleCount / $totalBeneficiaries) * 100, 1) : 0;
+
+        // 3. Financial assistance by sector (arranged from highest to lowest)
+        $intakes = BeneficiaryIntake::select('beneficiary_category', 'beneficiary_categories', 'recommended_amount')->cursor();
+
+        $sectorCounts = [];
+        $sectorAmounts = [];
+
+        foreach ($intakes as $intake) {
+            $amount = (float) ($intake->recommended_amount ?? 0);
+            $cats = [];
+
+            if (!empty(trim($intake->beneficiary_category ?? ''))) {
+                $cats[] = trim($intake->beneficiary_category);
+            }
+            if (is_array($intake->beneficiary_categories)) {
+                foreach ($intake->beneficiary_categories as $c) {
+                    $trimmed = trim($c);
+                    if (!empty($trimmed) && !in_array($trimmed, $cats)) {
+                        $cats[] = $trimmed;
+                    }
+                }
+            }
+            if (empty($cats)) {
+                $cats[] = 'Indigent Resident';
+            }
+
+            foreach ($cats as $cat) {
+                if (!isset($sectorCounts[$cat])) {
+                    $sectorCounts[$cat] = 0;
+                    $sectorAmounts[$cat] = 0.0;
+                }
+                $sectorCounts[$cat]++;
+                $sectorAmounts[$cat] += $amount;
+            }
+        }
+
+        // Arrange sectors strictly from highest to lowest by beneficiary count
+        arsort($sectorCounts);
+
+        $sectorRanked = [];
+        $topSector = null;
+        $topSectorCount = 0;
+        foreach ($sectorCounts as $sec => $cnt) {
+            $sectorRanked[] = [
+                'sector' => $sec,
+                'beneficiaries' => $cnt,
+                'amount' => $sectorAmounts[$sec] ?? 0.0,
+                'formatted_amount' => '₱' . number_format($sectorAmounts[$sec] ?? 0.0, 2),
+                'percentage' => $totalBeneficiaries > 0 ? round(($cnt / $totalBeneficiaries) * 100, 1) : 0,
+            ];
+            if (!$topSector) {
+                $topSector = $sec;
+                $topSectorCount = $cnt;
+            }
+        }
+
+        // 4. Most common medical concerns & assistance reasons (arranged from highest to lowest)
+        $medicalCounts = [];
+        $medicalAmounts = [];
+
+        $medicalIntakes = BeneficiaryIntake::select(
+            'medical_conditions',
+            'medical_condition_other',
+            'assistance_purpose',
+            'purpose',
+            'purpose_other',
+            'recommended_amount'
+        )->cursor();
+
+        foreach ($medicalIntakes as $intake) {
+            $amount = (float) ($intake->recommended_amount ?? 0);
+            $concerns = [];
+
+            // Conditions array from checkboxes
+            if (is_array($intake->medical_conditions)) {
+                foreach ($intake->medical_conditions as $c) {
+                    $trimmed = trim($c);
+                    if (!empty($trimmed) && strtolower($trimmed) !== 'other' && !in_array($trimmed, $concerns)) {
+                        $concerns[] = $trimmed;
+                    }
+                }
+            }
+
+            // Other medical condition specified
+            if (!empty(trim($intake->medical_condition_other ?? ''))) {
+                $otherCond = trim($intake->medical_condition_other);
+                if (!in_array($otherCond, $concerns)) {
+                    $concerns[] = $otherCond;
+                }
+            }
+
+            // Fallback or complement with assistance_purpose / purpose if conditions array is empty
+            if (empty($concerns)) {
+                if (!empty(trim($intake->assistance_purpose ?? '')) && !in_array(trim($intake->assistance_purpose), ['Others', 'Other Medical Conditions'])) {
+                    $concerns[] = trim($intake->assistance_purpose);
+                } elseif (!empty(trim($intake->purpose_other ?? ''))) {
+                    $concerns[] = trim($intake->purpose_other);
+                } elseif (!empty(trim($intake->purpose ?? ''))) {
+                    $concerns[] = trim($intake->purpose);
+                }
+            }
+
+            if (empty($concerns)) {
+                $concerns[] = 'General Medical Assistance';
+            }
+
+            foreach ($concerns as $concern) {
+                if (!isset($medicalCounts[$concern])) {
+                    $medicalCounts[$concern] = 0;
+                    $medicalAmounts[$concern] = 0.0;
+                }
+                $medicalCounts[$concern]++;
+                $medicalAmounts[$concern] += $amount;
+            }
+        }
+
+        // Arrange medical concerns strictly from highest to lowest by beneficiary count
+        arsort($medicalCounts);
+
+        $medicalRanked = [];
+        $topMedicalConcern = null;
+        $topMedicalConcernCount = 0;
+        foreach ($medicalCounts as $concern => $cnt) {
+            $medicalRanked[] = [
+                'concern' => $concern,
+                'beneficiaries' => $cnt,
+                'amount' => $medicalAmounts[$concern] ?? 0.0,
+                'formatted_amount' => '₱' . number_format($medicalAmounts[$concern] ?? 0.0, 2),
+                'percentage' => $totalBeneficiaries > 0 ? round(($cnt / $totalBeneficiaries) * 100, 1) : 0,
+            ];
+            if (!$topMedicalConcern) {
+                $topMedicalConcern = $concern;
+                $topMedicalConcernCount = $cnt;
+            }
+        }
+
+        return view('admin.financial.financialstep2-statistics', compact(
+            'totalBeneficiaries',
+            'totalAmount',
+            'totalClaimed',
+            'totalClaimedAmount',
+            'totalUnclaimed',
+            'totalInPayroll',
+            'totalPayrollBatches',
+            'barangayStats',
+            'topBarangay',
+            'topBarangayCount',
+            'genderBreakdown',
+            'maleCount',
+            'femaleCount',
+            'otherGenderCount',
+            'malePercentage',
+            'femalePercentage',
+            'sectorRanked',
+            'topSector',
+            'topSectorCount',
+            'medicalRanked',
+            'topMedicalConcern',
+            'topMedicalConcernCount'
         ));
     }
 
@@ -1433,6 +1688,15 @@ class FinancialDashboardController extends Controller
         // Filter matching dates based on search or barangay
         $datesQuery = FinancialPayrollRecord::query();
 
+        // Month and Year filtering on directory
+        if ($request->filled('month')) {
+            $parts = explode('-', trim($request->month));
+            if (count($parts) === 2 && is_numeric($parts[0]) && is_numeric($parts[1])) {
+                $datesQuery->whereYear('payroll_date', (int) $parts[0])
+                           ->whereMonth('payroll_date', (int) $parts[1]);
+            }
+        }
+
         // Date range filtering on directory
         if ($request->filled('date_from')) {
             $datesQuery->whereDate('payroll_date', '>=', $request->date_from);
@@ -1496,7 +1760,7 @@ class FinancialDashboardController extends Controller
                 break;
         }
 
-        $paginatedDateGroups = $datesQuery->paginate(10)->withQueryString();
+        $paginatedDateGroups = $datesQuery->paginate(15)->withQueryString();
 
         $paginatedDateGroups->getCollection()->transform(function ($item) {
             $dateKey = $item->payroll_date ? Carbon::parse($item->payroll_date)->format('Y-m-d') : 'Unknown';

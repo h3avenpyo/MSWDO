@@ -359,6 +359,7 @@
    LAPTOP SPECIFIC RESPONSIVE OVERRIDES (1366x768 - 1440x900)
    ============================================================ */
 @media (max-width: 1440px) {
+
     /* Compact Header Banner */
     .step-wizard-card {
         padding: 0.95rem 1.25rem;
@@ -492,7 +493,7 @@
         gap: 0.75rem;
     }
 
-    .filter-card .row > div {
+    .filter-card .row>div {
         margin-bottom: 0.5rem;
     }
 

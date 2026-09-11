@@ -194,37 +194,37 @@
                 'X-Requested-With': 'XMLHttpRequest',
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && Array.isArray(data.messages)) {
-                smsState.history = data.messages;
-                if (countBadge) countBadge.textContent = data.total || 0;
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && Array.isArray(data.messages)) {
+                    smsState.history = data.messages;
+                    if (countBadge) countBadge.textContent = data.total || 0;
 
-                if (data.messages.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">No messages sent yet.</td></tr>';
-                    return;
-                }
+                    if (data.messages.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">No messages sent yet.</td></tr>';
+                        return;
+                    }
 
-                let html = '';
-                data.messages.forEach(msg => {
-                    const statusBadge = msg.status === 'Sent'
-                        ? '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5 text-2xs">Sent</span>'
-                        : '<span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-0.5 text-2xs">Failed</span>';
+                    let html = '';
+                    data.messages.forEach(msg => {
+                        const statusBadge = msg.status === 'Sent'
+                            ? '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5 text-2xs">Sent</span>'
+                            : '<span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-0.5 text-2xs">Failed</span>';
 
-                    html += `<tr>
+                        html += `<tr>
                         <td class="text-nowrap fw-semibold">${msg.date_short || msg.date}</td>
                         <td class="text-truncate" style="max-width: 250px;" title="${msg.message.replace(/"/g, '&quot;')}">${msg.message}</td>
                         <td><span class="badge bg-light text-dark border text-2xs">${msg.type}</span></td>
                         <td class="text-center">${statusBadge}</td>
                     </tr>`;
-                });
-                tbody.innerHTML = html;
-            }
-        })
-        .catch(err => {
-            console.error('Failed to load history:', err);
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger py-2">Failed to load message history.</td></tr>';
-        });
+                    });
+                    tbody.innerHTML = html;
+                }
+            })
+            .catch(err => {
+                console.error('Failed to load history:', err);
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger py-2">Failed to load message history.</td></tr>';
+            });
     }
 
     /**
@@ -325,20 +325,24 @@
         smsState.activeTemplate = data.defaultTemplate || 'Unclaimed Assistance';
 
         // Populate hidden form inputs
-        document.getElementById('smsIntakeId').value = smsState.intakeId;
-        document.getElementById('smsRecipientNumber').value = smsState.convertedContactNumber || smsState.contactNumber;
-        document.getElementById('smsClaimingDateHidden').value = smsState.claimingDateRaw;
+        const intakeInput = document.getElementById('smsIntakeId');
+        if (intakeInput) intakeInput.value = smsState.intakeId;
+        const recipientInput = document.getElementById('smsRecipientNumber');
+        if (recipientInput) recipientInput.value = smsState.convertedContactNumber || smsState.contactNumber;
+        const claimingInput = document.getElementById('smsClaimingDateHidden');
+        if (claimingInput) claimingInput.value = smsState.claimingDateRaw;
 
         // Populate Beneficiary Info
-        document.getElementById('smsModalBeneficiaryName').textContent = smsState.beneficiaryName;
+        const benNameEl = document.getElementById('smsModalBeneficiaryName');
+        if (benNameEl) benNameEl.textContent = smsState.beneficiaryName;
 
         const repContainer = document.getElementById('smsModalRepContainer');
         const repNameEl = document.getElementById('smsModalRepName');
         if (smsState.isSeparateRep) {
-            repContainer.classList.remove('d-none');
-            repNameEl.textContent = smsState.representativeName;
+            if (repContainer) repContainer.classList.remove('d-none');
+            if (repNameEl) repNameEl.textContent = smsState.representativeName;
         } else {
-            repContainer.classList.add('d-none');
+            if (repContainer) repContainer.classList.add('d-none');
         }
 
         // Contact Number & Missing/Invalid Contact Alerts
@@ -349,27 +353,31 @@
         if (inlineContactGroup) inlineContactGroup.classList.add('d-none');
 
         // Purpose and Amount
-        document.getElementById('smsModalPurpose').textContent = smsState.purpose;
-        document.getElementById('smsModalAmount').textContent = smsState.amount;
+        const purposeEl = document.getElementById('smsModalPurpose');
+        if (purposeEl) purposeEl.textContent = smsState.purpose;
+        const amountEl = document.getElementById('smsModalAmount');
+        if (amountEl) amountEl.textContent = smsState.amount;
 
         // Claiming Date
         const claimingDateEl = document.getElementById('smsModalClaimingDate');
-        if (smsState.claimingDateFormatted) {
-            claimingDateEl.textContent = smsState.claimingDateFormatted;
-            claimingDateEl.className = 'fw-bold text-dark';
-        } else {
-            claimingDateEl.textContent = 'No claiming date assigned';
-            claimingDateEl.className = 'fw-bold text-danger';
+        if (claimingDateEl) {
+            if (smsState.claimingDateFormatted) {
+                claimingDateEl.textContent = smsState.claimingDateFormatted;
+                claimingDateEl.className = 'fw-bold text-dark';
+            } else {
+                claimingDateEl.textContent = 'No claiming date assigned';
+                claimingDateEl.className = 'fw-bold text-danger';
+            }
         }
 
         // Previous Notification Alert (Duplicate check)
         const duplicateAlert = document.getElementById('smsDuplicateAlert');
         const lastSentText = document.getElementById('smsLastSentText');
         if (smsState.lastMessageDate) {
-            duplicateAlert.classList.remove('d-none');
-            lastSentText.textContent = `Last message sent: ${smsState.lastMessageDate}`;
+            if (duplicateAlert) duplicateAlert.classList.remove('d-none');
+            if (lastSentText) lastSentText.textContent = `Last message sent: ${smsState.lastMessageDate}`;
         } else {
-            duplicateAlert.classList.add('d-none');
+            if (duplicateAlert) duplicateAlert.classList.add('d-none');
         }
 
         // Set Template Buttons state
@@ -382,8 +390,11 @@
         });
 
         // Populate Textarea with default template
+        if (!messageBodyEl) messageBodyEl = document.getElementById('smsMessageBody');
         const defaultText = generateTemplate(smsState.activeTemplate);
-        messageBodyEl.value = defaultText;
+        if (messageBodyEl) {
+            messageBodyEl.value = defaultText;
+        }
         updateCharCounter();
 
         // Close inline date picker if open
@@ -400,58 +411,20 @@
         // Load History
         loadHistory(smsState.intakeId);
 
-        // Check Gateway Status
-        checkGatewayStatus();
-
         // Validate
         validateForm();
 
         // Show Modal
-        if (!bsModal) {
-            bsModal = new bootstrap.Modal(modalEl);
+        if (!modalEl) {
+            modalEl = document.getElementById('smsMessagingModal');
         }
-        bsModal.show();
+        if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            bsModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            bsModal.show();
+        }
     }
 
-    /**
-     * Check and display SMS gateway & device status in the modal header.
-     */
-    function checkGatewayStatus() {
-        const pill = document.getElementById('smsGatewayStatusPill');
-        if (!pill) return;
 
-        fetch('/admin/financial/financialstep2/messages/gateway-status', {
-            headers: {
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-            }
-        })
-        .then(res => res.json())
-        .then(res => {
-            const data = res.data || {};
-            pill.classList.remove('d-none');
-
-            if (data.status === 'online') {
-                pill.className = 'badge bg-success bg-opacity-75 text-white rounded-pill px-2 py-0.5 text-2xs fw-semibold';
-                pill.innerHTML = '<i class="fas fa-signal me-1"></i> Gateway Online';
-                pill.title = data.message || 'SMS Gateway is connected and online';
-            } else if (data.status === 'offline') {
-                pill.className = 'badge bg-warning text-dark rounded-pill px-2 py-0.5 text-2xs fw-semibold';
-                pill.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i> Device Offline';
-                pill.title = data.message || 'Device is offline in TextBee app';
-            } else if (data.status === 'no_devices') {
-                pill.className = 'badge bg-danger text-white rounded-pill px-2 py-0.5 text-2xs fw-semibold';
-                pill.innerHTML = '<i class="fas fa-mobile-screen-button me-1"></i> No Device';
-                pill.title = data.message || 'No Android device registered in TextBee';
-            } else {
-                pill.className = 'badge bg-secondary text-white rounded-pill px-2 py-0.5 text-2xs fw-normal';
-                pill.innerHTML = '<i class="fas fa-tower-broadcast me-1"></i> Gateway Active';
-            }
-        })
-        .catch(err => {
-            console.warn('Gateway status check skipped:', err);
-        });
-    }
 
     /**
      * Submit SMS message with pre-send SweetAlert confirmation dialog.
@@ -551,82 +524,82 @@
             },
             body: JSON.stringify(payload)
         })
-        .then(response => response.json().then(data => ({ status: response.status, body: data })))
-        .then(({ status, body }) => {
-            // Reset loading state
-            sendSpinnerEl.classList.add('d-none');
-            sendIconEl.classList.remove('d-none');
-            sendBtnTextEl.textContent = 'Send Message';
-            sendBtnEl.disabled = false;
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(({ status, body }) => {
+                // Reset loading state
+                sendSpinnerEl.classList.add('d-none');
+                sendIconEl.classList.remove('d-none');
+                sendBtnTextEl.textContent = 'Send Message';
+                sendBtnEl.disabled = false;
 
-            if (status === 200 && body.success) {
-                // Success
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Message Sent!',
-                        text: 'Message sent successfully.',
-                        timer: 2500,
-                        showConfirmButton: false,
-                    });
+                if (status === 200 && body.success) {
+                    // Success
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Message Sent!',
+                            text: 'Message sent successfully.',
+                            timer: 2500,
+                            showConfirmButton: false,
+                        });
+                    } else {
+                        alert('Message sent successfully.');
+                    }
+
+                    // Update UI badges on the table row
+                    updateRowAfterSend(smsState.intakeId, body.data.last_sent_date);
+
+                    // Update local modal state
+                    smsState.lastMessageDate = body.data.last_sent_date;
+                    const duplicateAlert = document.getElementById('smsDuplicateAlert');
+                    const lastSentText = document.getElementById('smsLastSentText');
+                    if (duplicateAlert && lastSentText) {
+                        duplicateAlert.classList.remove('d-none');
+                        lastSentText.textContent = `Last message sent: ${smsState.lastMessageDate}`;
+                    }
+
+                    // Refresh history in modal
+                    loadHistory(smsState.intakeId);
+
+                    // Hide modal after short delay
+                    setTimeout(() => {
+                        if (bsModal) bsModal.hide();
+                    }, 1200);
+
                 } else {
-                    alert('Message sent successfully.');
+                    // Failed
+                    const errorMsg = body.message || 'Failed to send message.';
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Failed to send message.',
+                            text: errorMsg,
+                            confirmButtonColor: '#1A237E'
+                        });
+                    } else {
+                        alert('Failed to send message: ' + errorMsg);
+                    }
+                    loadHistory(smsState.intakeId);
                 }
+            })
+            .catch(err => {
+                console.error('SMS Send Error:', err);
+                sendSpinnerEl.classList.add('d-none');
+                sendIconEl.classList.remove('d-none');
+                sendBtnTextEl.textContent = 'Send Message';
+                sendBtnEl.disabled = false;
 
-                // Update UI badges on the table row
-                updateRowAfterSend(smsState.intakeId, body.data.last_sent_date);
-
-                // Update local modal state
-                smsState.lastMessageDate = body.data.last_sent_date;
-                const duplicateAlert = document.getElementById('smsDuplicateAlert');
-                const lastSentText = document.getElementById('smsLastSentText');
-                if (duplicateAlert && lastSentText) {
-                    duplicateAlert.classList.remove('d-none');
-                    lastSentText.textContent = `Last message sent: ${smsState.lastMessageDate}`;
-                }
-
-                // Refresh history in modal
-                loadHistory(smsState.intakeId);
-
-                // Hide modal after short delay
-                setTimeout(() => {
-                    if (bsModal) bsModal.hide();
-                }, 1200);
-
-            } else {
-                // Failed
-                const errorMsg = body.message || 'Failed to send message.';
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         icon: 'error',
                         title: 'Failed to send message.',
-                        text: errorMsg,
+                        text: 'A network error occurred while connecting to the server. Please try again.',
                         confirmButtonColor: '#1A237E'
                     });
                 } else {
-                    alert('Failed to send message: ' + errorMsg);
+                    alert('Failed to send message. Please check your network connection.');
                 }
-                loadHistory(smsState.intakeId);
-            }
-        })
-        .catch(err => {
-            console.error('SMS Send Error:', err);
-            sendSpinnerEl.classList.add('d-none');
-            sendIconEl.classList.remove('d-none');
-            sendBtnTextEl.textContent = 'Send Message';
-            sendBtnEl.disabled = false;
-
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Failed to send message.',
-                    text: 'A network error occurred while connecting to the server. Please try again.',
-                    confirmButtonColor: '#1A237E'
-                });
-            } else {
-                alert('Failed to send message. Please check your network connection.');
-            }
-        });
+            });
     }
 
     /**
@@ -686,18 +659,18 @@
             },
             body: JSON.stringify({ claiming_date: newRawDate })
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                // Update table row attribute
-                const btns = document.querySelectorAll(`[data-intake-id="${smsState.intakeId}"]`);
-                btns.forEach(btn => {
-                    btn.setAttribute('data-claiming-date', newFormattedDate);
-                    btn.setAttribute('data-raw-claiming-date', newRawDate);
-                });
-            }
-        })
-        .catch(err => console.error('Error updating claiming date:', err));
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Update table row attribute
+                    const btns = document.querySelectorAll(`[data-intake-id="${smsState.intakeId}"]`);
+                    btns.forEach(btn => {
+                        btn.setAttribute('data-claiming-date', newFormattedDate);
+                        btn.setAttribute('data-raw-claiming-date', newRawDate);
+                    });
+                }
+            })
+            .catch(err => console.error('Error updating claiming date:', err));
 
         validateForm();
     }

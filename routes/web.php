@@ -138,6 +138,7 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::get('/admin/financial/financialstep2/liquidation', [FinancialDashboardController::class, 'financialStep2Liquidation'])->name('admin.financial.financialstep2.liquidation');
         Route::get('/admin/financial/financialstep2/liquidation/report/month/{yearMonth}', [FinancialDashboardController::class, 'financialStep2LiquidationReportMonthly'])->name('admin.financial.financialstep2.liquidation.report.month');
         Route::get('/admin/financial/financialstep2/liquidation/report/{id}', [FinancialDashboardController::class, 'financialStep2LiquidationReport'])->name('admin.financial.financialstep2.liquidation.report');
+        Route::get('/admin/financial/financialstep2/statistics', [FinancialDashboardController::class, 'financialStep2Statistics'])->name('admin.financial.financialstep2.statistics');
 
         // Financial Step 2 SMS Messaging Routes
         Route::post('/admin/financial/financialstep2/messages/send', [FinancialSmsController::class, 'send'])->name('admin.financial.financialstep2.messages.send');

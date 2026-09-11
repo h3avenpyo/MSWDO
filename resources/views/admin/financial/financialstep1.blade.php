@@ -23,14 +23,15 @@ $userName = session('admin_user_name') ?? 'Officer';
 </div>
 @endif
 
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <div>
         <h4 class="fw-bold mb-1" style="color: #1A237E;">General Intake Form &amp; Assessment (Step 1)</h4>
         <p class="text-muted small mb-0">Collect beneficiary identifying information, documentary requirements, and social worker assessment.</p>
     </div>
     <div class="d-flex gap-2 align-items-center">
-        <a href="{{ route('admin.beneficiary-intake.create') }}" class="btn btn-brand btn-sm rounded-pill px-3 shadow-xs">
-            <i class="fas fa-plus me-1"></i> New Client Intake
+        <a href="{{ route('admin.beneficiary-intake.create') }}" class="btn btn-primary-action shadow-sm" id="btnNewClientIntake">
+            <i class="fas fa-plus"></i>
+            <span>New Client Intake</span>
         </a>
     </div>
 </div>
@@ -70,9 +71,13 @@ $userName = session('admin_user_name') ?? 'Officer';
                     </h3>
                     <p class="card-subtitle-clean">General Intake Sheets and Assessment Records processed today (Step 1)</p>
                 </div>
-                <a href="{{ route('admin.beneficiary-intake.create') }}" class="btn btn-brand btn-sm rounded-pill px-3">
-                    <i class="fas fa-plus me-1"></i> New Client Intake
-                </a>
+                <div class="d-flex align-items-center gap-2">
+                    @if(request()->filled('search'))
+                        <span class="badge bg-light text-secondary border px-2.5 py-1.5 rounded-pill small fw-semibold">
+                            <i class="fas fa-search me-1 text-primary"></i> {{ method_exists($recentIntakes, 'total') ? $recentIntakes->total() : count($recentIntakes) }} Matched
+                        </span>
+                    @endif
+                </div>
             </div>
             <div class="p-3">
                 <div class="table-responsive">

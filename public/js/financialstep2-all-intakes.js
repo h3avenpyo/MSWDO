@@ -162,9 +162,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Automatic filter submission on change for dropdowns and date input
+    // Automatic filter submission on change for dropdowns, month, and date input
     if (filterForm) {
-        const autoSubmitElements = filterForm.querySelectorAll('select[name="barangay"], select[name="category"], select[name="status"], input[name="date"], select[name="sort"]');
+        const autoSubmitElements = filterForm.querySelectorAll('select[name="barangay"], select[name="category"], select[name="status"], input[name="date"], input[name="month"], select[name="sort"]');
         autoSubmitElements.forEach(el => {
             el.addEventListener('change', function () {
                 filterForm.submit();

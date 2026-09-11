@@ -38,7 +38,7 @@
     <!-- Search & Filter Card -->
     <div class="filter-card">
         <form action="{{ route('admin.beneficiary-intake.index') }}" method="GET" class="row g-3 align-items-end">
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-3">
                 <label class="form-label fw-bold text-secondary small">Search Name or Control No.</label>
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
@@ -46,7 +46,7 @@
                         placeholder="Type name or control no..." value="{{ request('search') }}">
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6 col-lg-3">
                 <label class="form-label fw-bold text-secondary small">Filter by Barangay</label>
                 <select name="barangay" class="form-select" onchange="this.form.submit()">
                     <option value="All">All Barangays</option>
@@ -55,7 +55,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4 col-lg-2">
                 <label class="form-label fw-bold text-secondary small">Filter by Category</label>
                 <select name="category" class="form-select" onchange="this.form.submit()">
                     <option value="All">All Categories</option>
@@ -64,14 +64,53 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-2 d-flex gap-2">
+            <div class="col-md-4 col-lg-2">
+                <label class="form-label fw-bold text-secondary small"><i class="fas fa-calendar-alt me-1 text-muted"></i> Filter by Month</label>
+                <input type="month" name="month" class="form-control" value="{{ request('month') }}" onchange="this.form.submit()" title="Filter by Month & Year">
+            </div>
+            <div class="col-md-4 col-lg-2 d-flex gap-2">
                 <button type="submit" class="btn btn-secondary w-100 fw-bold rounded-3">Filter</button>
-                @if(request()->hasAny(['search', 'barangay', 'category']))
+                @if(request()->hasAny(['search', 'barangay', 'category', 'month']))
                 <a href="{{ route('admin.beneficiary-intake.index') }}" class="btn btn-outline-secondary rounded-3"
                     title="Reset Filters"><i class="fas fa-redo"></i></a>
                 @endif
             </div>
         </form>
+
+        @if(request()->hasAny(['search', 'barangay', 'category', 'month']))
+        <div class="d-flex align-items-center gap-2 flex-wrap mt-3 pt-2 border-top">
+            <span class="text-muted small fw-semibold me-1"><i class="fas fa-sliders-h me-1"></i> Active Filters:</span>
+            @if(request('search'))
+            <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill small">
+                Search: <strong>{{ request('search') }}</strong>
+            </span>
+            @endif
+            @if(request('barangay') && request('barangay') !== 'All')
+            <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill small">
+                Barangay: <strong>{{ request('barangay') }}</strong>
+            </span>
+            @endif
+            @if(request('category') && request('category') !== 'All')
+            <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill small">
+                Category: <strong>{{ request('category') }}</strong>
+            </span>
+            @endif
+            @if(request('month'))
+            @php
+                $monthLabel = request('month');
+                try {
+                    $monthLabel = \Carbon\Carbon::createFromFormat('Y-m', request('month'))->format('F Y');
+                } catch (\Exception $e) {}
+            @endphp
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 rounded-pill small">
+                <i class="fas fa-calendar-alt me-1"></i> Month: <strong>{{ $monthLabel }}</strong>
+            </span>
+            @endif
+            <a href="{{ route('admin.beneficiary-intake.index') }}" class="text-danger small fw-semibold text-decoration-none ms-auto">
+                <i class="fas fa-times-circle me-1"></i> Clear All Filters
+            </a>
+        </div>
+        @endif
     </div>
 
     <!-- Table Card -->
@@ -195,6 +234,9 @@
                     @endif
                     @if(request()->filled('barangay') && request('barangay') !== 'All')
                     <input type="hidden" name="barangay" value="{{ request('barangay') }}">
+                    @endif
+                    @if(request()->filled('month'))
+                    <input type="hidden" name="month" value="{{ request('month') }}">
                     @endif
 
                     <div class="row g-3 mb-3">

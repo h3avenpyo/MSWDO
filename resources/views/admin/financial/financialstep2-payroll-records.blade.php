@@ -606,6 +606,10 @@
                 class="btn btn-outline-secondary btn-sm rounded-pill px-3">
                 <i class="fas fa-receipt me-1"></i> Liquidation
             </a>
+            <a href="{{ route('admin.financial.financialstep2.statistics') }}"
+                class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="fas fa-chart-pie me-1"></i> Statistics
+            </a>
         </div>
     </div>
 
@@ -622,17 +626,10 @@
                     placeholder="Beneficiary, Rep, Control #, Payroll #..." value="{{ request('search') }}"
                     autocomplete="off">
             </div>
-            <div class="col-md-2 col-lg-2">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar me-1"></i> Date
-                    From</label>
-                <input type="date" name="date_from" class="form-control form-control-sm rounded-3"
-                    value="{{ request('date_from') }}">
-            </div>
-            <div class="col-md-2 col-lg-2">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> Date
-                    To</label>
-                <input type="date" name="date_to" class="form-control form-control-sm rounded-3"
-                    value="{{ request('date_to') }}">
+            <div class="col-md-3 col-lg-3">
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> Month &amp; Year</label>
+                <input type="month" name="month" class="form-control form-control-sm rounded-3"
+                    value="{{ request('month') }}" title="Filter by Month and Year">
             </div>
             <div class="col-md-2 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i>
@@ -644,7 +641,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-2 col-lg-2">
+            <div class="col-md-3 col-lg-3">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-sort me-1"></i> Sort By</label>
                 <select name="sort" class="form-select form-select-sm rounded-3">
                     <option value="date_desc" {{ request('sort')=='date_desc' || !request('sort') ? 'selected' : '' }}>
@@ -664,7 +661,7 @@
                     title="Apply Filters">
                     <i class="fas fa-filter"></i>
                 </button>
-                @if(request()->hasAny(['search', 'barangay', 'date_from', 'date_to', 'sort']))
+                @if(request()->hasAny(['search', 'barangay', 'month', 'date_from', 'date_to', 'sort']))
                 <a href="{{ route('admin.financial.financialstep2.payroll-records') }}"
                     class="btn btn-sm btn-outline-secondary rounded-3 px-2" title="Reset Filters">
                     <i class="fas fa-rotate-left"></i>
@@ -673,7 +670,7 @@
             </div>
         </form>
 
-        @if(request()->hasAny(['search', 'barangay', 'date_from', 'date_to', 'sort']))
+        @if(request()->hasAny(['search', 'barangay', 'month', 'date_from', 'date_to', 'sort']))
         <!-- Active Filter Badges -->
         <div class="d-flex align-items-center gap-2 flex-wrap mt-2 pt-2 border-top">
             <span class="text-muted small fw-semibold me-1"><i class="fas fa-sliders-h me-1"></i> Active Filters:</span>
@@ -681,6 +678,21 @@
             <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
                 Keyword: "{{ request('search') }}"
                 <a href="{{ route('admin.financial.financialstep2.payroll-records', request()->except('search')) }}"
+                    class="text-muted ms-1 text-decoration-none">&times;</a>
+            </span>
+            @endif
+            @if(request('month'))
+            @php
+                $formattedMonth = null;
+                try {
+                    $formattedMonth = \Carbon\Carbon::createFromFormat('Y-m', request('month'))->format('F Y');
+                } catch (\Exception $e) {
+                    $formattedMonth = request('month');
+                }
+            @endphp
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 text-xs fw-semibold">
+                Month: {{ $formattedMonth }}
+                <a href="{{ route('admin.financial.financialstep2.payroll-records', request()->except('month')) }}"
                     class="text-muted ms-1 text-decoration-none">&times;</a>
             </span>
             @endif
@@ -822,7 +834,7 @@
         <div class="text-muted small">
             Showing page <strong>{{ $paginatedDateGroups->currentPage() }}</strong> of <strong>{{
                 $paginatedDateGroups->lastPage() }}</strong> (Total: {{ $paginatedDateGroups->total() }} {{
-            Str::plural('date', $paginatedDateGroups->total()) }})
+            Str::plural('date', $paginatedDateGroups->total()) }} &bull; 15 dates per page)
         </div>
         <div>
             {{ $paginatedDateGroups->links('pagination::bootstrap-5') }}

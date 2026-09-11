@@ -21,6 +21,17 @@
     <!-- External Module Stylesheet -->
     <link href="{{ asset('css/financialstep1.css') }}" rel="stylesheet">
     @yield('page-styles')
+
+    <!-- Anti-flicker pre-render script for collapsed sidebar -->
+    <script>
+        (function() {
+            try {
+                if (localStorage.getItem('mswdo_financial_sidebar_collapsed') === 'true' && window.innerWidth >= 1024) {
+                    document.documentElement.classList.add('sidebar-collapsed');
+                }
+            } catch (e) {}
+        })();
+    </script>
 </head>
 <body>
     <!-- Reusable Sidebar Component -->

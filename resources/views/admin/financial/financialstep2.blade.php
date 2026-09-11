@@ -91,12 +91,12 @@ $userName = session('admin_user_name') ?? 'Officer';
 
 <!-- Search, Filter & Sorting Controls -->
 <div class="filter-card animate-fade-in mb-4">
-    <form action="{{ route('admin.financial.financialstep2') }}" method="GET" class="row g-2 align-items-end">
+    <form id="step2FilterForm" action="{{ route('admin.financial.financialstep2') }}" method="GET" class="row g-2 align-items-end">
         <div class="col-md-3 col-lg-3">
             <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search
                 Beneficiary / Control No.</label>
-            <input type="text" name="search" class="form-control form-control-sm rounded-3"
-                placeholder="Control No, Client, Rep, Barangay..." value="{{ request('search') }}">
+            <input type="text" id="step2SearchInput" name="search" class="form-control form-control-sm rounded-3"
+                placeholder="Control No, Client, Rep, Barangay..." value="{{ request('search') }}" autocomplete="off">
         </div>
         <div class="col-md-2 col-lg-2">
             <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i>
@@ -150,10 +150,10 @@ $userName = session('admin_user_name') ?? 'Officer';
             </select>
         </div>
         <div class="col-md-1 col-lg-1 filter-actions-group">
-            <button type="submit" class="btn btn-sm btn-primary btn-brand-primary rounded-3 w-100 fw-semibold"
+            <!-- <button type="submit" class="btn btn-sm btn-primary btn-brand-primary rounded-3 w-100 fw-semibold"
                 title="Apply Filter">
                 <i class="fas fa-filter"></i>
-            </button>
+            </button> -->
             @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort', 'date']))
             <a href="{{ route('admin.financial.financialstep2') }}" class="btn btn-sm btn-outline-secondary rounded-3"
                 title="Reset Filters">
@@ -161,6 +161,40 @@ $userName = session('admin_user_name') ?? 'Officer';
             </a>
             @endif
         </div>
+
+        @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort']))
+        <div class="d-flex align-items-center gap-2 flex-wrap mt-2 pt-2 border-top col-12">
+            <span class="text-muted small fw-semibold me-1"><i class="fas fa-sliders-h me-1"></i> Active Filters:</span>
+            @if(request('search'))
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Search: "{{ request('search') }}"
+            </span>
+            @endif
+            @if(request('barangay') && request('barangay') !== 'All')
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Barangay: {{ request('barangay') }}
+            </span>
+            @endif
+            @if(request('category') && request('category') !== 'All')
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Category: {{ request('category') }}
+            </span>
+            @endif
+            @if(request('status') && request('status') !== 'All')
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Status: {{ ucwords(str_replace('_', ' ', request('status'))) }}
+            </span>
+            @endif
+            @if(request('sort') && request('sort') !== 'date_desc')
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Sort: {{ ucwords(str_replace('_', ' ', request('sort'))) }}
+            </span>
+            @endif
+            <a href="{{ route('admin.financial.financialstep2') }}" class="btn btn-link btn-sm text-danger p-0 ms-auto text-decoration-none fw-semibold text-xs">
+                <i class="fas fa-times-circle me-1"></i>Clear all filters
+            </a>
+        </div>
+        @endif
     </form>
 </div>
 
@@ -185,9 +219,9 @@ $userName = session('admin_user_name') ?? 'Officer';
                                 <th class="col-control-no">Control No.</th>
                                 <th class="col-beneficiary">Client / Beneficiary Information</th>
                                 <th class="col-address">Address &amp; Contact</th>
-                                <th class="col-date-officer">Intake Date &amp; Officer</th>
-                                <th class="col-category-purpose">Category / Medical Purpose</th>
-                                <th class="col-amount">Assessed Grant</th>
+                                <th class="col-date-officer">Intake Date</th>
+                                <th class="col-category-purpose">Med. Purpose</th>
+                                <th class="col-amount">Aid</th>
                                 <th class="col-status">Status</th>
                                 <th class="col-actions text-end">Actions</th>
                             </tr>
@@ -275,23 +309,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                                         @endif
                                 </td>
                                 <td class="text-end">
-                                    <div class="d-flex align-items-center justify-content-end gap-1.5">
-                                        <button type="button"
-                                            class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1 fw-medium btn-message-beneficiary"
-                                            data-intake-id="{{ $intake->id }}"
-                                            data-beneficiary-name="{{ $intake->beneficiary_full_name }}"
-                                            data-representative-name="{{ $intake->representative_full_name }}"
-                                            data-is-separate-rep="{{ $intake->has_representative ? '1' : '0' }}"
-                                            data-contact-number="{{ $intake->has_representative && $intake->rep_contact_number ? $intake->rep_contact_number : $intake->beneficiary_contact_number }}"
-                                            data-purpose="{{ $intake->display_assistance_purpose }}"
-                                            data-amount-formatted="₱{{ number_format((float) ($intake->recommended_amount ?? 0), 2) }}"
-                                            data-claiming-date="{{ $intake->formatted_claiming_date ?? '' }}"
-                                            data-raw-claiming-date="{{ $intake->effective_claiming_date ? $intake->effective_claiming_date->format('Y-m-d') : '' }}"
-                                            data-last-message-date="{{ $intake->last_message_sent_at_formatted ?? '' }}"
-                                            data-default-template="{{ $intake->step2_status === 'Unclaimed' ? 'Unclaimed Assistance' : 'Follow-up' }}"
-                                            title="Send SMS to Beneficiary">
-                                            <i class="fas fa-comment-sms me-1"></i> Message
-                                        </button>
+                                    <div class="d-flex align-items-center justify-content-end">
                                         <button type="button"
                                             class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-medium btn-view-intake"
                                             title="Quick Preview Record" data-intake="{{ json_encode($intake) }}">
@@ -482,10 +500,8 @@ $userName = session('admin_user_name') ?? 'Officer';
     </div>
 </div>
 
-@include('admin.financial.partials.sms-modal')
 @endsection
 
 @section('page-scripts')
 <script src="{{ asset('js/financialstep2.js') }}"></script>
-<script src="{{ asset('js/financialstep2-sms.js') }}"></script>
 @endsection

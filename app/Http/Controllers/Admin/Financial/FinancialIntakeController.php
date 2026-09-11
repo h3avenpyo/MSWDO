@@ -48,6 +48,27 @@ class FinancialIntakeController extends Controller
             });
         }
 
+        // Filter by Month & Year (e.g. 'YYYY-MM')
+        if ($request->filled('month')) {
+            $monthInput = trim($request->month);
+            $parts = explode('-', $monthInput);
+            if (count($parts) === 2 && is_numeric($parts[0]) && is_numeric($parts[1])) {
+                $year = (int) $parts[0];
+                $monthNum = (int) $parts[1];
+                $query->where(function ($q) use ($year, $monthNum) {
+                    $q->where(function ($sq) use ($year, $monthNum) {
+                        $sq->whereNotNull('date_processed')
+                           ->whereYear('date_processed', $year)
+                           ->whereMonth('date_processed', $monthNum);
+                    })->orWhere(function ($sq) use ($year, $monthNum) {
+                        $sq->whereNull('date_processed')
+                           ->whereYear('created_at', $year)
+                           ->whereMonth('created_at', $monthNum);
+                    });
+                });
+            }
+        }
+
         $intakes = $query->latest()->paginate(15)->withQueryString();
 
         $barangays = [

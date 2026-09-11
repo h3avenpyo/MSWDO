@@ -171,6 +171,37 @@ function viewIntakeDetails(intake) {
 window.viewIntakeDetails = viewIntakeDetails;
 
 document.addEventListener('DOMContentLoaded', function () {
+    const filterForm = document.getElementById('step2FilterForm');
+    const searchInput = document.getElementById('step2SearchInput');
+
+    // Automatic Search Debounce
+    if (filterForm && searchInput) {
+        let timeout = null;
+        searchInput.addEventListener('input', function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                filterForm.submit();
+            }, 600);
+        });
+
+        // Focus search input at the end of value if user was actively searching
+        if (searchInput.value.trim().length > 0 && document.activeElement !== searchInput) {
+            const val = searchInput.value;
+            searchInput.focus();
+            searchInput.setSelectionRange(val.length, val.length);
+        }
+    }
+
+    // Automatic filter submission on change for dropdowns
+    if (filterForm) {
+        const autoSubmitElements = filterForm.querySelectorAll('select[name="barangay"], select[name="category"], select[name="status"], select[name="sort"]');
+        autoSubmitElements.forEach(el => {
+            el.addEventListener('change', function () {
+                filterForm.submit();
+            });
+        });
+    }
+
     // Delegated click listener for viewing intake preview
     document.addEventListener('click', function (e) {
         const viewBtn = e.target.closest('.btn-view-intake');

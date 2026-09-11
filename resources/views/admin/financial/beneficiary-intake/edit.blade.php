@@ -221,8 +221,30 @@
                 <!-- Demographics -->
                 <div class="row g-3">
                     <div class="col-md-3">
-                        <label class="form-label">Numero ng Telepono (Mobile No.) <span class="required-star">*</span></label>
-                        <input type="text" name="beneficiary_contact_number" class="form-control" value="{{ old('beneficiary_contact_number', $intake->beneficiary_contact_number) }}" required>
+                        <label class="form-label" for="beneficiary_contact_number">Numero ng Telepono (Mobile No.) <span class="required-star">*</span></label>
+                        <input type="text"
+                            name="beneficiary_contact_number"
+                            id="beneficiary_contact_number"
+                            class="form-control contact-number-input @error('beneficiary_contact_number') is-invalid @enderror"
+                            value="{{ old('beneficiary_contact_number', $intake->beneficiary_contact_number) }}"
+                            placeholder="09XXXXXXXXX"
+                            inputmode="numeric"
+                            pattern="[0-9]{11}"
+                            minlength="11"
+                            maxlength="11"
+                            autocomplete="tel"
+                            required>
+                        <div class="d-flex justify-content-between align-items-center mt-1">
+                            <span class="text-muted small contact-digit-counter" id="beneficiary_contact_number_counter" style="font-size: 0.76rem;">0/11 digits</span>
+                            <span class="text-muted small" style="font-size: 0.74rem;">(Strictly 11 digits)</span>
+                        </div>
+                        <div class="invalid-feedback d-block contact-error-message" id="beneficiary_contact_number_error" style="{{ $errors->has('beneficiary_contact_number') ? '' : 'display: none !important;' }}">
+                            @error('beneficiary_contact_number')
+                                {{ $message }}
+                            @else
+                                Contact number must be exactly 11 digits (0–9) without letters, spaces, or symbols.
+                            @enderror
+                        </div>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Kapanganakan (MM/DD/YYYY) <span class="required-star">*</span></label>
@@ -345,8 +367,29 @@
 
                     <div class="row g-3">
                         <div class="col-md-3">
-                            <label class="form-label">Numero ng Telepono <span class="required-star rep-star">*</span></label>
-                            <input type="text" name="rep_contact_number" class="form-control rep-field" value="{{ old('rep_contact_number', $intake->rep_contact_number) }}" placeholder="09XXXXXXXXX">
+                            <label class="form-label" for="rep_contact_number">Numero ng Telepono <span class="required-star rep-star">*</span></label>
+                            <input type="text"
+                                name="rep_contact_number"
+                                id="rep_contact_number"
+                                class="form-control rep-field contact-number-input @error('rep_contact_number') is-invalid @enderror"
+                                value="{{ old('rep_contact_number', $intake->rep_contact_number) }}"
+                                placeholder="09XXXXXXXXX"
+                                inputmode="numeric"
+                                pattern="[0-9]{11}"
+                                minlength="11"
+                                maxlength="11"
+                                autocomplete="tel">
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <span class="text-muted small contact-digit-counter" id="rep_contact_number_counter" style="font-size: 0.76rem;">0/11 digits</span>
+                                <span class="text-muted small" style="font-size: 0.74rem;">(Strictly 11 digits)</span>
+                            </div>
+                            <div class="invalid-feedback d-block contact-error-message" id="rep_contact_number_error" style="{{ $errors->has('rep_contact_number') ? '' : 'display: none !important;' }}">
+                                @error('rep_contact_number')
+                                    {{ $message }}
+                                @else
+                                    Representative contact number must be exactly 11 digits (0–9).
+                                @enderror
+                            </div>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Kapanganakan (MM/DD/YYYY) <span class="required-star rep-star">*</span></label>

@@ -18,17 +18,7 @@
             </h4>
             <p class="text-muted small mb-0">Masterlist of all General Intake records submitted from Step 1.</p>
         </div>
-        <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('admin.financial.financialstep2.payroll') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">
-                <i class="fas fa-file-invoice-dollar me-1"></i> Payroll Generation
-            </a>
-            <a href="{{ route('admin.financial.financialstep2.payroll-records') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">
-                <i class="fas fa-archive me-1"></i> Payroll Records
-            </a>
-            <a href="{{ route('admin.financial.financialstep2') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                <i class="fas fa-arrow-left me-1"></i> Back to Step 2 Masterlist
-            </a>
-        </div>
+        
     </div>
 
     @if(session('success'))
@@ -104,9 +94,9 @@
     <!-- Search, Filter & Sorting Controls -->
     <div class="filter-card animate-fade-in mb-4">
         <form id="allIntakesFilterForm" action="{{ route('admin.financial.financialstep2.all-intakes') }}" method="GET" class="row g-2 align-items-end">
-            <div class="col-md-3 col-lg-3">
+            <div class="col-md-3 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search Intake / Beneficiary</label>
-                <input type="text" id="searchInput" name="search" class="form-control form-control-sm rounded-3" placeholder="Type name, control no, brgy..." value="{{ request('search') }}" autocomplete="off">
+                <input type="text" id="searchInput" name="search" class="form-control form-control-sm rounded-3" placeholder="Name, control no, brgy..." value="{{ request('search') }}" autocomplete="off">
             </div>
             <div class="col-md-2 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i> Barangay</label>
@@ -136,9 +126,9 @@
                     <option value="amount_assigned" {{ request('status') == 'amount_assigned' || request('status') == 'ready_payout' ? 'selected' : '' }}>Amount Assigned</option>
                 </select>
             </div>
-            <div class="col-md-1 col-lg-1">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> Date</label>
-                <input type="date" name="date" class="form-control form-control-sm rounded-3" value="{{ request('date') }}">
+            <div class="col-md-2 col-lg-2">
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> Month &amp; Year</label>
+                <input type="month" name="month" class="form-control form-control-sm rounded-3" value="{{ request('month') }}" title="Filter by Month & Year">
             </div>
             <div class="col-md-1 col-lg-1">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-sort me-1"></i> Sort</label>
@@ -152,8 +142,8 @@
                 </select>
             </div>
             <div class="col-md-1 col-lg-1 d-flex gap-1">
-                @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'date', 'sort']))
-                <a href="{{ route('admin.financial.financialstep2.all-intakes') }}" class="btn btn-sm btn-outline-secondary rounded-3 w-100 fw-semibold" title="Reset Filters">
+                @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'month', 'date', 'sort']))
+                <a href="{{ route('admin.financial.financialstep2.all-intakes') }}" class="btn btn-sm btn-outline-danger rounded-3 w-100 fw-semibold" title="Reset all filters">
                     <i class="fas fa-redo"></i>
                 </a>
                 @else
@@ -163,6 +153,52 @@
                 @endif
             </div>
         </form>
+
+        @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'month', 'date', 'sort']))
+        <div class="d-flex align-items-center gap-2 flex-wrap mt-2 pt-2 border-top">
+            <span class="text-muted small fw-semibold me-1"><i class="fas fa-sliders-h me-1"></i> Active Filters:</span>
+            @if(request('search'))
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Search: "{{ request('search') }}"
+            </span>
+            @endif
+            @if(request('barangay') && request('barangay') !== 'All')
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Barangay: {{ request('barangay') }}
+            </span>
+            @endif
+            @if(request('category') && request('category') !== 'All')
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Category: {{ request('category') }}
+            </span>
+            @endif
+            @if(request('status') && request('status') !== 'All')
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Status: {{ ucwords(str_replace('_', ' ', request('status'))) }}
+            </span>
+            @endif
+            @if(request('month'))
+            @php
+                $formattedMonth = null;
+                try {
+                    $formattedMonth = \Carbon\Carbon::createFromFormat('Y-m', request('month'))->format('F Y');
+                } catch (\Exception $e) {
+                    $formattedMonth = request('month');
+                }
+            @endphp
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 text-xs fw-semibold">
+                <i class="fas fa-calendar-alt me-1"></i> Month: {{ $formattedMonth }}
+            </span>
+            @elseif(request('date'))
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Date: {{ \Carbon\Carbon::parse(request('date'))->format('M d, Y') }}
+            </span>
+            @endif
+            <a href="{{ route('admin.financial.financialstep2.all-intakes') }}" class="btn btn-link btn-sm text-danger p-0 ms-auto text-decoration-none fw-semibold text-xs">
+                <i class="fas fa-times-circle me-1"></i>Clear all filters
+            </a>
+        </div>
+        @endif
     </div>
 
     <!-- Content Workspace: All Intakes Table Directory -->
@@ -252,23 +288,7 @@
                                         @endif
                                     </td>
                                     <td class="text-end">
-                                        <div class="d-flex align-items-center justify-content-end gap-1.5">
-                                            <button type="button"
-                                                class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1 fw-medium btn-message-beneficiary"
-                                                data-intake-id="{{ $intake->id }}"
-                                                data-beneficiary-name="{{ $intake->beneficiary_full_name }}"
-                                                data-representative-name="{{ $intake->representative_full_name }}"
-                                                data-is-separate-rep="{{ $intake->has_representative ? '1' : '0' }}"
-                                                data-contact-number="{{ $intake->has_representative && $intake->rep_contact_number ? $intake->rep_contact_number : $intake->beneficiary_contact_number }}"
-                                                data-purpose="{{ $intake->display_assistance_purpose }}"
-                                                data-amount-formatted="₱{{ number_format((float) ($intake->recommended_amount ?? 0), 2) }}"
-                                                data-claiming-date="{{ $intake->formatted_claiming_date ?? '' }}"
-                                                data-raw-claiming-date="{{ $intake->effective_claiming_date ? $intake->effective_claiming_date->format('Y-m-d') : '' }}"
-                                                data-last-message-date="{{ $intake->last_message_sent_at_formatted ?? '' }}"
-                                                data-default-template="{{ $intake->step2_status === 'Unclaimed' ? 'Unclaimed Assistance' : 'Follow-up' }}"
-                                                title="Send SMS to Beneficiary">
-                                                <i class="fas fa-comment-sms me-1"></i> Message
-                                            </button>
+                                        <div class="d-flex align-items-center justify-content-end">
                                             <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-medium btn-view-intake" title="Quick Preview Record" data-intake='@json($intake)'>
                                                 <i class="fas fa-eye me-1"></i> View
                                             </button>
@@ -282,7 +302,7 @@
                                             <i class="fas fa-folder-open fa-3x mb-3 text-muted opacity-50 d-block"></i>
                                             <h4 class="fw-bold mb-1 empty-state-title">No General Intake records found</h4>
                                             <p class="text-muted mb-0 empty-state-desc">
-                                                @if(request()->hasAny(['search', 'barangay', 'category', 'date']))
+                                                @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'month', 'date']))
                                                     No records matched your search filters. Try resetting the filter criteria.
                                                 @else
                                                     All General Intakes submitted from Step 1 will appear in this centralized Step 2 view.
@@ -296,16 +316,22 @@
                         </table>
                     </div>
 
-                    @if(method_exists($intakes, 'hasPages') && $intakes->hasPages())
+                    <!-- Pagination Footer -->
                     <div class="pt-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <div class="text-muted small">
-                            Showing <strong>{{ $intakes->firstItem() }}</strong> to <strong>{{ $intakes->lastItem() }}</strong> of <strong>{{ $intakes->total() }}</strong> intakes
+                            @if($intakes->total() > 0)
+                                Showing <strong>{{ $intakes->firstItem() }}</strong> to <strong>{{ $intakes->lastItem() }}</strong> of <strong>{{ $intakes->total() }}</strong> records
+                                <span class="badge bg-light text-secondary border rounded-pill ms-1 px-2 py-0.5 text-2xs">15 records / page</span>
+                            @else
+                                <!-- Showing <strong>0</strong> records -->
+                            @endif
                         </div>
+                        @if(method_exists($intakes, 'hasPages') && $intakes->hasPages())
                         <div>
-                            {{ $intakes->links() }}
+                            {{ $intakes->links('pagination::bootstrap-5') }}
                         </div>
+                        @endif
                     </div>
-                    @endif
                 </div>
             </div>
         </div>
@@ -446,10 +472,8 @@
     </div>
 </div>
 
-@include('admin.financial.partials.sms-modal')
 @endsection
 
 @section('page-scripts')
 <script src="{{ asset('js/financialstep2-all-intakes.js') }}"></script>
-<script src="{{ asset('js/financialstep2-sms.js') }}"></script>
-@endsection
+    @endsection
