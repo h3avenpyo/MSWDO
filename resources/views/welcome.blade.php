@@ -1155,16 +1155,6 @@
         </div>
     </section>
     <!-- ===================================== -->
-    <!-- GOOGLE MAP -->
-    <!-- ===================================== -->
-    <section class="py-8 sm:py-12 lg:py-16 bg-offwhite">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <iframe src="https://www.google.com/maps?q=Silang%20Municipal%20Hall&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                class="w-full h-[350px] sm:h-[400px] lg:h-[450px] rounded-2xl shadow-lg" loading="lazy">
-            </iframe>
-        </div>
-    </section>
-    <!-- ===================================== -->
     <!-- FOOTER -->
     <!-- ===================================== -->
     <footer class="bg-primary text-white">
