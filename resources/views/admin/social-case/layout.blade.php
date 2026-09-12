@@ -2556,6 +2556,7 @@
             text: 'Do you really want to log out?',
             icon: 'warning',
             showCancelButton: true,
+            reverseButtons: true,
             confirmButtonColor: '#1A237E',
             cancelButtonColor: '#EF4444',
             confirmButtonText: 'Yes, log out',
