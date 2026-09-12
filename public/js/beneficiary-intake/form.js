@@ -142,31 +142,44 @@ function triggerDuplicateCheck() {
 
 function performDuplicateCheck() {
     const benFirstName = document.querySelector('input[name="beneficiary_first_name"]')?.value || '';
+    const benMiddleName = document.querySelector('input[name="beneficiary_middle_name"]')?.value || '';
     const benLastName = document.querySelector('input[name="beneficiary_last_name"]')?.value || '';
+    const benExtName = document.querySelector('select[name="beneficiary_extension_name"]')?.value || '';
     const benBirthday = document.querySelector('input[name="beneficiary_birthday"]')?.value || '';
 
     const hasRep = document.getElementById('has_representative')?.checked || false;
     const repFirstName = document.querySelector('input[name="rep_first_name"]')?.value || '';
+    const repMiddleName = document.querySelector('input[name="rep_middle_name"]')?.value || '';
     const repLastName = document.querySelector('input[name="rep_last_name"]')?.value || '';
+    const repExtName = document.querySelector('select[name="rep_extension_name"]')?.value || '';
     const repBirthday = document.querySelector('input[name="rep_birthday"]')?.value || '';
 
     const dateProcessed = document.querySelector('input[name="date_processed"]')?.value || '';
     const excludeId = document.getElementById('exclude_id')?.value || null;
     const csrfToken = document.querySelector('input[name="_token"]')?.value || '';
 
-    // If inputs are cleared or insufficient, instantly hide validity card
-    if ((benFirstName.trim().length < 2 || benLastName.trim().length < 2) && (!hasRep || repFirstName.trim().length < 2 || repLastName.trim().length < 2)) {
+    // To check duplicate eligibility, the client's identifying criteria must be sufficiently entered:
+    // Beneficiary first name (>= 2 chars) and last name (>= 2 chars).
+    // Or if representative self-assignment is being checked, rep first and last name must be >= 2 chars.
+    const hasValidBenNames = benFirstName.trim().length >= 2 && benLastName.trim().length >= 2;
+    const isCheckingSelfRep = hasRep && repFirstName.trim().length >= 2 && repLastName.trim().length >= 2;
+
+    if (!hasValidBenNames && !isCheckingSelfRep) {
         hideDuplicateCard();
         return;
     }
 
     const payload = {
         beneficiary_first_name: benFirstName,
+        beneficiary_middle_name: benMiddleName,
         beneficiary_last_name: benLastName,
+        beneficiary_extension_name: benExtName,
         beneficiary_birthday: benBirthday,
         has_representative: hasRep ? 1 : 0,
         rep_first_name: repFirstName,
+        rep_middle_name: repMiddleName,
         rep_last_name: repLastName,
+        rep_extension_name: repExtName,
         rep_birthday: repBirthday,
         date_processed: dateProcessed,
         exclude_id: excludeId
@@ -386,27 +399,38 @@ document.addEventListener('DOMContentLoaded', function () {
     // Attach listeners for real-time instant pop-up / removal
     const inputsToCheck = [
         'beneficiary_first_name',
+        'beneficiary_middle_name',
         'beneficiary_last_name',
+        'beneficiary_extension_name',
         'beneficiary_birthday',
         'rep_first_name',
+        'rep_middle_name',
         'rep_last_name',
+        'rep_extension_name',
         'rep_birthday',
         'date_processed'
     ];
 
     inputsToCheck.forEach(name => {
-        const el = document.querySelector(`input[name="${name}"]`);
-        if (el) {
+        const elements = document.querySelectorAll(`[name="${name}"]`);
+        elements.forEach(el => {
             el.addEventListener('input', triggerDuplicateCheck);
             el.addEventListener('change', triggerDuplicateCheck);
             el.addEventListener('blur', triggerDuplicateCheck);
-        }
+        });
     });
 
     const formEl = document.getElementById('intakeForm') || document.getElementById('editIntakeForm');
     if (formEl) {
         formEl.addEventListener('submit', function (e) {
             e.preventDefault();
+
+            // Ensure hasActiveDuplicate reflects current card visibility
+            const cardEl = document.getElementById('duplicateAlertCard');
+            if (!cardEl || cardEl.classList.contains('d-none')) {
+                hasActiveDuplicate = false;
+                activeDuplicateDetails = null;
+            }
 
             // Strict 11-digit Contact Number Verification before submit
             const benContact = document.getElementById('beneficiary_contact_number');

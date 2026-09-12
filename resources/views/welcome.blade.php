@@ -485,64 +485,338 @@
         </div>
     </section>
     <!-- ===================================== -->
-    <!-- LATEST ANNOUNCEMENTS -->
+    <!-- PROGRAMS IN ACTION (AUTOMATIC CAROUSEL) -->
     <!-- ===================================== -->
-    {{-- <section id="programs" class="py-24 bg-offwhite">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center">
-                <h2 class="text-4xl font-bold">
-                    Latest Announcements
+    <section id="programs" class="py-10 sm:py-14 md:py-18 bg-white border-t border-gray-100">
+        <style>
+            /* Scoped Responsive Styles for Automatic Carousel */
+            .programs-carousel {
+                position: relative;
+                width: 100%;
+                border-radius: 1rem;
+                overflow: hidden;
+                background-color: #030712;
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+                user-select: none;
+                -webkit-user-select: none;
+            }
+
+            /* Mobile Portrait (< 480px) */
+            @media (max-width: 479px) {
+                .programs-carousel {
+                    height: 230px;
+                    border-radius: 0.875rem;
+                }
+                .programs-carousel-caption {
+                    padding: 0.75rem 1rem;
+                    padding-right: 5.5rem; /* Prevents text from colliding with dots */
+                }
+                .programs-carousel-title {
+                    font-size: 0.8125rem;
+                    line-height: 1.3;
+                }
+                .programs-carousel-dots {
+                    bottom: 0.75rem;
+                    right: 0.75rem;
+                    gap: 0.25rem;
+                }
+                .programs-carousel-dot {
+                    height: 5px;
+                    width: 5px;
+                    border-radius: 9999px;
+                }
+                .programs-carousel-dot.active {
+                    width: 16px;
+                }
+            }
+
+            /* Mobile Landscape / Small Tablet (480px - 639px) */
+            @media (min-width: 480px) and (max-width: 639px) {
+                .programs-carousel {
+                    height: 290px;
+                    border-radius: 1rem;
+                }
+                .programs-carousel-caption {
+                    padding: 1rem 1.25rem;
+                    padding-right: 6.5rem;
+                }
+                .programs-carousel-title {
+                    font-size: 0.9375rem;
+                    line-height: 1.35;
+                }
+                .programs-carousel-dots {
+                    bottom: 1rem;
+                    right: 1rem;
+                    gap: 0.3125rem;
+                }
+                .programs-carousel-dot {
+                    height: 6px;
+                    width: 6px;
+                    border-radius: 9999px;
+                }
+                .programs-carousel-dot.active {
+                    width: 18px;
+                }
+            }
+
+            /* Tablet Portrait (640px - 767px) */
+            @media (min-width: 640px) and (max-width: 767px) {
+                .programs-carousel {
+                    height: 360px;
+                    border-radius: 1rem;
+                }
+                .programs-carousel-caption {
+                    padding: 1.25rem 1.5rem;
+                    padding-right: 7.5rem;
+                }
+                .programs-carousel-title {
+                    font-size: 1rem;
+                    line-height: 1.4;
+                }
+                .programs-carousel-dots {
+                    bottom: 1.25rem;
+                    right: 1.25rem;
+                    gap: 0.375rem;
+                }
+                .programs-carousel-dot {
+                    height: 7px;
+                    width: 7px;
+                    border-radius: 9999px;
+                }
+                .programs-carousel-dot.active {
+                    width: 20px;
+                }
+            }
+
+            /* Tablet Landscape / Laptop (768px - 1023px) */
+            @media (min-width: 768px) and (max-width: 1023px) {
+                .programs-carousel {
+                    height: 420px;
+                    border-radius: 1rem;
+                }
+                .programs-carousel-caption {
+                    padding: 1.5rem 1.75rem;
+                    padding-right: 8.5rem;
+                }
+                .programs-carousel-title {
+                    font-size: 1.125rem;
+                    line-height: 1.4;
+                }
+                .programs-carousel-dots {
+                    bottom: 1.25rem;
+                    right: 1.5rem;
+                    gap: 0.375rem;
+                }
+                .programs-carousel-dot {
+                    height: 8px;
+                    width: 8px;
+                    border-radius: 9999px;
+                }
+                .programs-carousel-dot.active {
+                    width: 24px;
+                }
+            }
+
+            /* Desktop (>= 1024px) */
+            @media (min-width: 1024px) {
+                .programs-carousel {
+                    height: 480px;
+                    border-radius: 1rem;
+                }
+                .programs-carousel-caption {
+                    padding: 1.5rem 2rem;
+                    padding-right: 9rem;
+                }
+                .programs-carousel-title {
+                    font-size: 1.125rem;
+                    line-height: 1.4;
+                }
+                .programs-carousel-dots {
+                    bottom: 1.5rem;
+                    right: 1.75rem;
+                    gap: 0.375rem;
+                }
+                .programs-carousel-dot {
+                    height: 8px;
+                    width: 8px;
+                    border-radius: 9999px;
+                }
+                .programs-carousel-dot.active {
+                    width: 24px;
+                }
+            }
+
+            /* Base Dot Styles */
+            .programs-carousel-dot {
+                background-color: rgba(255, 255, 255, 0.45);
+                border: none;
+                cursor: pointer;
+                padding: 0;
+                transition: width 0.3s ease, background-color 0.3s ease;
+            }
+            .programs-carousel-dot.active {
+                background-color: #ffffff;
+            }
+            .programs-carousel-dot:hover:not(.active) {
+                background-color: rgba(255, 255, 255, 0.75);
+            }
+        </style>
+
+        <div class="max-w-5xl mx-auto px-3 sm:px-6">
+            <div class="text-center mb-6 sm:mb-8">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">
+                    Programs &amp; Activities in Action
                 </h2>
-                <p class="text-secondary mt-4">
-                    Stay updated with MSWDO activities and schedules.
+                <p class="text-gray-600 mt-2 text-xs sm:text-sm md:text-base max-w-xl mx-auto px-2">
+                    Snapshots of MSWDO Silang social welfare services, client consultations, and assistance operations.
                 </p>
             </div>
-            <div class="grid lg:grid-cols-3 gap-8 mt-14">
-                <div class="rounded-2xl shadow-lg overflow-hidden">
-                    <div class="bg-primary h-3"></div>
-                    <div class="p-8">
-                        <span class="text-sm text-primary font-semibold">
-                            June 2026
-                        </span>
-                        <h3 class="text-2xl font-bold mt-3">
-                            Senior Citizen Pension Distribution
-                        </h3>
-                        <p class="text-secondary mt-4">
-                            The payout schedule for qualified senior citizens will begin this month.
-                        </p>
+
+            <!-- Automatic Carousel Container -->
+            <div id="simpleCarousel" class="programs-carousel">
+                <!-- Slides -->
+                @php
+                    $carouselImages = [
+                        ['file' => 'fa1.jpg', 'title' => 'Financial Assistance Intake & Verification'],
+                        ['file' => 'fa2.jpg', 'title' => 'Senior Citizen & Sectoral Assistance Desk'],
+                        ['file' => 'fa3.jpg', 'title' => 'Direct Cash Assistance Release'],
+                        ['file' => 'socialcase1.jpg', 'title' => 'Social Case Study Intake & Interview'],
+                        ['file' => 'socialcase2.jpg', 'title' => 'Personalized Welfare Consultation'],
+                        ['file' => 'socialcase3.jpg', 'title' => 'Community Intake & Evaluation Desk'],
+                        ['file' => 'socialcase4.jpg', 'title' => 'Social Case Report Documentation & Review'],
+                    ];
+                @endphp
+
+                @foreach ($carouselImages as $index => $item)
+                    <div class="carousel-slide absolute inset-0 w-full h-full"
+                        style="transition: opacity 0.8s ease-in-out; opacity: {{ $index === 0 ? '1' : '0' }}; z-index: {{ $index === 0 ? '10' : '1' }}; pointer-events: {{ $index === 0 ? 'auto' : 'none' }};"
+                        data-index="{{ $index }}">
+                        <img src="{{ asset('images/' . $item['file']) }}" alt="{{ $item['title'] }}" class="w-full h-full object-cover object-center" loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
+                        <!-- Clean gradient overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent pointer-events-none"></div>
+                        <!-- Caption positioned cleanly on bottom left -->
+                        <div class="programs-carousel-caption absolute bottom-0 inset-x-0 z-10 pointer-events-none">
+                            <p class="programs-carousel-title font-semibold text-white drop-shadow-md line-clamp-2">
+                                {{ $item['title'] }}
+                            </p>
+                        </div>
                     </div>
-                </div>
-                <div class="welcome-card rounded-2xl shadow-lg overflow-hidden">
-                    <div class="bg-warm-gold h-3"></div>
-                    <div class="p-8">
-                        <span class="text-sm text-warm-gold font-semibold">
-                            June 2026
-                        </span>
-                        <h3 class="text-2xl font-bold mt-3">
-                            Financial Assistance Applications
-                        </h3>
-                        <p class="text-secondary mt-4">
-                            Qualified residents may now submit their applications online.
-                        </p>
-                    </div>
-                </div>
-                <div class="welcome-card rounded-2xl shadow-lg overflow-hidden">
-                    <div class="bg-accent h-3"></div>
-                    <div class="p-8">
-                        <span class="text-sm text-accent font-semibold">
-                            June 2026
-                        </span>
-                        <h3 class="text-2xl font-bold mt-3">
-                            VAWC Awareness Seminar
-                        </h3>
-                        <p class="text-secondary mt-4">
-                            Join our advocacy program promoting safe families and communities.
-                        </p>
-                    </div>
+                @endforeach
+
+                <!-- Indicator Dots -->
+                <div class="programs-carousel-dots absolute z-20 flex items-center">
+                    @foreach ($carouselImages as $index => $item)
+                        <button type="button" class="programs-carousel-dot carousel-dot {{ $index === 0 ? 'active' : '' }}"
+                            data-index="{{ $index }}" aria-label="Go to slide {{ $index + 1 }}"></button>
+                    @endforeach
                 </div>
             </div>
         </div>
-    </section> --}}
+    </section>
+
+    <script>
+        (function () {
+            function startAutoCarousel() {
+                const carousel = document.getElementById('simpleCarousel');
+                if (!carousel) return;
+
+                const slides = carousel.querySelectorAll('.carousel-slide');
+                const dots = carousel.querySelectorAll('.carousel-dot');
+                const total = slides.length;
+                let current = 0;
+                let timer = null;
+
+                function showSlide(index) {
+                    if (index < 0) index = total - 1;
+                    if (index >= total) index = 0;
+                    current = index;
+
+                    slides.forEach((slide, i) => {
+                        if (i === current) {
+                            slide.style.opacity = '1';
+                            slide.style.zIndex = '10';
+                            slide.style.pointerEvents = 'auto';
+                        } else {
+                            slide.style.opacity = '0';
+                            slide.style.zIndex = '1';
+                            slide.style.pointerEvents = 'none';
+                        }
+                    });
+
+                    dots.forEach((dot, i) => {
+                        if (i === current) {
+                            dot.classList.add('active');
+                        } else {
+                            dot.classList.remove('active');
+                        }
+                    });
+                }
+
+                function nextSlide() {
+                    showSlide(current + 1);
+                }
+
+                function prevSlide() {
+                    showSlide(current - 1);
+                }
+
+                function runTimer() {
+                    if (timer) clearInterval(timer);
+                    timer = setInterval(nextSlide, 3000);
+                }
+
+                dots.forEach(function (dot, i) {
+                    dot.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        showSlide(i);
+                        runTimer();
+                    });
+                });
+
+                // Touch swipe for mobile/tablet devices
+                let startX = 0;
+                let startY = 0;
+                let isSwiping = false;
+
+                carousel.addEventListener('touchstart', function (e) {
+                    if (e.touches.length === 1) {
+                        startX = e.touches[0].clientX;
+                        startY = e.touches[0].clientY;
+                        isSwiping = true;
+                    }
+                }, { passive: true });
+
+                carousel.addEventListener('touchend', function (e) {
+                    if (!isSwiping || e.changedTouches.length === 0) return;
+                    isSwiping = false;
+                    const endX = e.changedTouches[0].clientX;
+                    const endY = e.changedTouches[0].clientY;
+                    const diffX = startX - endX;
+                    const diffY = startY - endY;
+
+                    // Ensure gesture is a clear horizontal swipe, not vertical page scrolling
+                    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 35) {
+                        if (diffX > 0) {
+                            nextSlide();
+                        } else {
+                            prevSlide();
+                        }
+                        runTimer();
+                    }
+                }, { passive: true });
+
+                // Start automatic rotation immediately
+                runTimer();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', startAutoCarousel);
+            } else {
+                startAutoCarousel();
+            }
+        })();
+    </script>
+
     <!-- ===================================== -->
     <!-- CALL TO ACTION -->
     <!-- ===================================== -->
@@ -576,390 +850,267 @@
     <!-- ===================================== -->
     <style>
         .contact-section {
-            padding: 4rem 1rem 5rem 1rem;
+            padding: 3.5rem 1rem 4rem 1rem;
             background-color: #F8FAFC;
-            /* Match site off-white */
             border-top: 1px solid #E2E8F0;
         }
 
         @media (min-width: 640px) {
             .contact-section {
-                padding: 5rem 1.5rem 6rem 1.5rem;
+                padding: 4rem 1.5rem 4.5rem 1.5rem;
             }
         }
 
         @media (min-width: 1024px) {
             .contact-section {
-                padding: 7rem 1.5rem;
+                padding: 4.5rem 2rem 5rem 2rem;
+            }
+        }
+
+        @media (min-width: 1440px) {
+            .contact-section {
+                padding: 5.5rem 2.5rem 6rem 2.5rem;
             }
         }
 
         .contact-container {
-            max-width: 76rem;
+            max-width: 80rem;
             margin: 0 auto;
+            width: 100%;
         }
 
         .contact-header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
         }
 
         @media (min-width: 640px) {
             .contact-header {
-                margin-bottom: 4rem;
+                margin-bottom: 2.5rem;
             }
         }
 
         @media (min-width: 1024px) {
             .contact-header {
-                margin-bottom: 5rem;
+                margin-bottom: 3rem;
             }
         }
 
         .contact-subtitle {
             color: #B45309;
-            /* Deep amber gold */
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.2em;
+            letter-spacing: 0.15em;
             font-size: 0.75rem;
             display: block;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
         }
 
         .contact-title {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 800;
             color: #1A237E;
-            /* Brand primary blue */
-            margin-bottom: 1.25rem;
-            letter-spacing: -0.03em;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.025em;
+        }
+
+        @media (min-width: 640px) {
+            .contact-title {
+                font-size: 2.25rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .contact-title {
+                font-size: 2.5rem;
+            }
         }
 
         .contact-description {
             color: #475569;
-            /* Slate secondary */
-            font-size: 1.0625rem;
-            max-width: 36rem;
+            font-size: 1rem;
+            max-width: 38rem;
             margin: 0 auto;
-            line-height: 1.7;
+            line-height: 1.6;
         }
 
+        /* Responsive Grid: Laptop-first proportional structure */
         .contact-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 2rem;
-            margin-bottom: 3rem;
+            gap: 1.5rem;
+            align-items: stretch;
         }
 
+        /* Laptops (1024px to 1365px): Dedicated 350px for Office Info, remaining flex for Hotlines */
         @media (min-width: 1024px) {
             .contact-grid {
-                grid-template-columns: 0.6fr 2fr;
-                gap: 3rem;
-                margin-bottom: 4rem;
+                grid-template-columns: 350px 1fr;
+                gap: 1.75rem;
             }
         }
 
+        /* Wide Laptops & Desktop (1366px+): 380px for Office Info */
+        @media (min-width: 1366px) {
+            .contact-grid {
+                grid-template-columns: 380px 1fr;
+                gap: 2rem;
+            }
+        }
+
+        /* Office Info Card */
         .contact-card {
             background: #FFFFFF;
-            border-radius: 0.75rem;
+            border-radius: 1rem;
             border: 1px solid #E2E8F0;
-            padding: 2rem;
+            padding: 1.75rem;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .contact-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
         }
 
         @media (min-width: 640px) {
             .contact-card {
-                padding: 2.5rem;
+                padding: 2rem;
             }
         }
 
         @media (min-width: 1024px) {
             .contact-card {
-                padding: 3rem;
+                padding: 2rem 2.25rem;
             }
         }
 
         .card-title {
-            font-size: 1.125rem;
+            font-size: 1.15rem;
             font-weight: 800;
             color: #1A237E;
-            /* Brand primary blue */
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
             letter-spacing: -0.01em;
-        }
-
-        @media (min-width: 640px) {
-            .card-title {
-                font-size: 1.25rem;
-                margin-bottom: 2rem;
-            }
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         @media (min-width: 1024px) {
             .card-title {
-                font-size: 1.375rem;
-                margin-bottom: 2.5rem;
+                font-size: 1.25rem;
+                margin-bottom: 1.5rem;
             }
         }
 
         .info-list {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1.25rem;
             flex: 1;
-        }
-
-        @media (min-width: 640px) {
-            .info-list {
-                gap: 2rem;
-            }
+            justify-content: space-between;
         }
 
         @media (min-width: 1024px) {
             .info-list {
-                gap: 2.5rem;
+                gap: 1.5rem;
             }
         }
 
         .info-item {
             display: flex;
-            align-items: start;
-            gap: 1rem;
+            align-items: flex-start;
+            gap: 0.875rem;
         }
 
-        @media (min-width: 640px) {
+        @media (min-width: 1024px) {
             .info-item {
-                gap: 1.25rem;
+                gap: 1rem;
             }
         }
 
         .info-icon {
-            width: 1.25rem;
-            height: 1.25rem;
+            width: 1.35rem;
+            height: 1.35rem;
             color: #1A237E;
-            /* Brand primary blue */
-            margin-top: 0.125rem;
+            margin-top: 0.15rem;
             flex-shrink: 0;
-        }
-
-        @media (min-width: 640px) {
-            .info-icon {
-                width: 1.5rem;
-                height: 1.5rem;
-            }
         }
 
         .info-content {
             flex: 1;
+            min-width: 0;
         }
 
         .info-label {
             font-weight: 700;
-            font-size: 0.75rem;
+            font-size: 0.725rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: #B45309;
-            /* Amber gold */
-            margin-bottom: 0.375rem;
+            margin-bottom: 0.2rem;
         }
 
         .info-text {
             color: #1F2937;
-            font-size: 0.9375rem;
-            line-height: 1.5;
+            font-size: 0.925rem;
+            line-height: 1.45;
+            word-break: break-word;
         }
 
         @media (min-width: 640px) {
             .info-text {
-                font-size: 1rem;
-            }
-        }
-
-        .contact-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            flex: 1;
-        }
-
-        @media (min-width: 640px) {
-            .contact-form {
-                gap: 2rem;
-            }
-        }
-
-        .form-row-2 {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-
-        @media (min-width: 640px) {
-            .form-row-2 {
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-            }
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .form-field-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #475569;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 0.75rem 0.875rem;
-            font-size: 0.875rem;
-            border: 1px solid #CBD5E1;
-            border-radius: 0.5rem;
-            outline: none;
-            background-color: #F8FAFC;
-            color: #1F2937;
-            transition: border-color 0.2s ease, background-color 0.2s ease;
-        }
-
-        @media (min-width: 640px) {
-            .form-input {
-                padding: 0.875rem 1rem;
                 font-size: 0.95rem;
             }
         }
 
-        .form-input:focus {
-            border-color: #1A237E;
-            background-color: #FFFFFF;
+        .info-link {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.15s ease;
         }
 
-        .form-textarea {
-            resize: none;
-            min-height: 6rem;
+        .info-link:hover {
+            color: #1A237E;
+            text-decoration: underline;
         }
 
-        @media (min-width: 640px) {
-            .form-textarea {
-                min-height: 8rem;
-            }
-        }
-
-        .submit-button {
-            background-color: #1A237E;
-            /* Brand primary blue */
-            color: #FFFFFF;
-            font-weight: 600;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 0.875rem 1.5rem;
-            border-radius: 0.5rem;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: background-color 0.2s ease;
-            margin-top: 0.75rem;
-        }
-
-        @media (min-width: 640px) {
-            .submit-button {
-                font-size: 0.95rem;
-                padding: 1rem 2rem;
-                gap: 0.75rem;
-                margin-top: 1rem;
-            }
-        }
-
-        .submit-button:hover {
-            background-color: #111827;
-        }
-
-        .submit-button:active {
-            transform: translateY(1px);
-        }
-
-        .button-icon {
-            width: 1rem;
-            height: 1rem;
-        }
-
-        @media (min-width: 640px) {
-            .button-icon {
-                width: 1.1rem;
-                height: 1.1rem;
-            }
-        }
-
-        /* Emergency Card - High Contrast Brand Navy & Gold */
+        /* Emergency Hotlines Card */
         .emergency-card {
             background-color: #1A237E;
-            /* Brand primary blue */
-            border-radius: 0.75rem;
-            padding: 2rem;
+            border-radius: 1rem;
+            padding: 1.75rem;
             color: #FFFFFF;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         @media (min-width: 640px) {
             .emergency-card {
-                padding: 2.5rem;
+                padding: 2rem;
             }
         }
 
         @media (min-width: 1024px) {
             .emergency-card {
-                padding: 3rem;
+                padding: 2rem 2.25rem;
             }
         }
 
         .emergency-header {
             display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-            padding-bottom: 1rem;
-        }
-
-        @media (min-width: 640px) {
-            .emergency-header {
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-                gap: 1rem;
-                margin-bottom: 2rem;
-                padding-bottom: 1.5rem;
-            }
-        }
-
-        .emergency-title-wrapper {
-            display: flex;
+            flex-direction: row;
             align-items: center;
-            gap: 0.75rem;
-        }
-
-        .emergency-badge {
-            border: 1px solid #FBC02D;
-            /* Brand warm gold */
-            color: #FBC02D;
-            font-weight: 700;
-            font-size: 0.75rem;
-            padding: 0.375rem 0.75rem;
-            border-radius: 0.25rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            align-self: start;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 0.875rem;
         }
 
         .emergency-title {
@@ -972,61 +1123,100 @@
 
         @media (min-width: 640px) {
             .emergency-title {
-                font-size: 1.5rem;
+                font-size: 1.35rem;
             }
         }
 
+        .emergency-badge {
+            border: 1px solid #FBC02D;
+            color: #FBC02D;
+            font-weight: 700;
+            font-size: 0.725rem;
+            padding: 0.25rem 0.65rem;
+            border-radius: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        /* Emergency Grid: Clean 2 columns on laptops, 3 columns on wide desktop */
         .emergency-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 1rem 2rem;
+            gap: 0.6rem;
+            flex: 1;
         }
 
         @media (min-width: 640px) {
             .emergency-grid {
                 grid-template-columns: 1fr 1fr;
-                gap: 1.25rem 2.5rem;
+                gap: 0.65rem 1.5rem;
             }
         }
 
+        /* Laptops (1024px to 1365px): Clean 2-column layout prevents crunched labels */
         @media (min-width: 1024px) {
             .emergency-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.7rem 2rem;
+            }
+        }
+
+        /* Wide Laptops & Desktop (1366px+): 3 columns have ample space */
+        @media (min-width: 1366px) {
+            .emergency-grid {
                 grid-template-columns: 1fr 1fr 1fr;
-                gap: 1.25rem 3rem;
+                gap: 0.7rem 1.75rem;
             }
         }
 
         .hotline-item {
-            font-size: 0.875rem;
-            line-height: 1.5;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.85rem;
+            line-height: 1.35;
+            padding: 0.4rem 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 2rem;
+            gap: 0.75rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.15s ease;
+        }
+
+        .hotline-item:hover {
+            background-color: rgba(255, 255, 255, 0.06);
         }
 
         @media (min-width: 640px) {
             .hotline-item {
-                font-size: 0.95rem;
-                padding-bottom: 0.75rem;
-                gap: 3rem;
+                font-size: 0.875rem;
+                padding: 0.45rem 0.5rem;
             }
         }
 
         .hotline-label {
             color: #E2E8F0;
             font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .hotline-value {
             color: #FBC02D;
-            /* Brand warm gold */
             font-weight: 700;
             font-family: monospace;
+            font-size: 0.875rem;
             white-space: nowrap;
+            flex-shrink: 0;
             margin-left: auto;
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        a.hotline-value:hover {
+            color: #FFFFFF;
+            text-decoration: underline;
         }
 
         @media (max-width: 1023px) {
@@ -1052,7 +1242,12 @@
             <div class="contact-grid">
                 <!-- Office Info Card -->
                 <div class="contact-card">
-                    <h3 class="card-title">Office Information</h3>
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" class="w-5 h-5 text-primary shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.333A2.25 2.25 0 0 0 18 8.083h-3.75V6.75a2.25 2.25 0 0 0-4.5 0v1.333H6a2.25 2.25 0 0 0-2.25 2.25V21" />
+                        </svg>
+                        Office Information
+                    </h3>
                     <div class="info-list">
                         <div class="info-item">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
@@ -1075,7 +1270,9 @@
                             </svg>
                             <div class="info-content">
                                 <h4 class="info-label">Phone</h4>
-                                <p class="info-text">(046) 414-0202</p>
+                                <p class="info-text">
+                                    <a href="tel:0464140202" class="info-link">(046) 414-0202</a>
+                                </p>
                             </div>
                         </div>
                         <div class="info-item">
@@ -1086,7 +1283,9 @@
                             </svg>
                             <div class="info-content">
                                 <h4 class="info-label">Email</h4>
-                                <p class="info-text">socialwelfaresilang@gmail.com</p>
+                                <p class="info-text">
+                                    <a href="mailto:socialwelfaresilang@gmail.com" class="info-link">socialwelfaresilang@gmail.com</a>
+                                </p>
                             </div>
                         </div>
                         <div class="info-item">
@@ -1111,48 +1310,74 @@
                         <span class="emergency-badge">Emergency 24/7</span>
                     </div>
                     <div id="emergencyGrid" class="emergency-grid">
-                        <div class="hotline-item"><span class="hotline-label">Silang Municipal Office:</span> <span
-                                class="hotline-value">(046) 414-0202</span></div>
-                        <div class="hotline-item"><span class="hotline-label">PDRRMO (Silang):</span> <span
-                                class="hotline-value">(046) 424-0203</span></div>
-                        <div class="hotline-item"><span class="hotline-label">PNP WCPD – Silang:</span> <span
-                                class="hotline-value">0998-397-0222</span></div>
-                        <div class="hotline-item"><span class="hotline-label">Silang PNP Mobile:</span> <span
-                                class="hotline-value">0998-598-5622</span></div>
-                        <div class="hotline-item hidden-mobile"><span class="hotline-label">DSWD AICS:</span> <span
-                                class="hotline-value">8962-2813</span></div>
-                        <div class="hotline-item hidden-mobile"><span class="hotline-label">DSWD Central Office:</span>
-                            <span class="hotline-value">8-931-8101</span>
+                        <div class="hotline-item">
+                            <span class="hotline-label">Silang Municipal Office:</span>
+                            <a href="tel:0464140202" class="hotline-value">(046) 414-0202</a>
                         </div>
-                        <div class="hotline-item hidden-mobile"><span class="hotline-label">DSWD Mobile:</span> <span
-                                class="hotline-value">0919-911-6200</span></div>
-                        <div class="hotline-item hidden-mobile"><span class="hotline-label">Makabata Helpline:</span>
-                            <span class="hotline-value">1383</span>
+                        <div class="hotline-item">
+                            <span class="hotline-label">PDRRMO (Silang):</span>
+                            <a href="tel:0464240203" class="hotline-value">(046) 424-0203</a>
                         </div>
-                        <div class="hotline-item hidden-mobile"><span class="hotline-label">Bantay Bata Hotline:</span>
-                            <span class="hotline-value">163</span>
+                        <div class="hotline-item">
+                            <span class="hotline-label">PNP WCPD – Silang:</span>
+                            <a href="tel:09983970222" class="hotline-value">0998-397-0222</a>
                         </div>
-                        <div class="hotline-item hidden-mobile"><span class="hotline-label">Emergency (All):</span>
-                            <span class="hotline-value">911</span>
+                        <div class="hotline-item">
+                            <span class="hotline-label">Silang PNP Mobile:</span>
+                            <a href="tel:09985985622" class="hotline-value">0998-598-5622</a>
                         </div>
-                        <div class="hotline-item hidden-mobile"><span class="hotline-label">NCMH Mental Health:</span>
-                            <span class="hotline-value">1553</span>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">DSWD AICS:</span>
+                            <a href="tel:89622813" class="hotline-value">8962-2813</a>
                         </div>
-                        <div class="hotline-item hidden-mobile"><span class="hotline-label">Complaints Hotline:</span>
-                            <span class="hotline-value">8888</span>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">DSWD Central Office:</span>
+                            <a href="tel:89318101" class="hotline-value">8-931-8101</a>
                         </div>
-                        <div class="hotline-item hidden-mobile"><span class="hotline-label">Anti-Trafficking
-                                Line:</span> <span class="hotline-value">1343</span></div>
-                        <div class="hotline-item hidden-mobile"><span class="hotline-label">PNP Women's Desk:</span>
-                            <span class="hotline-value">117</span>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">DSWD Mobile:</span>
+                            <a href="tel:09199116200" class="hotline-value">0919-911-6200</a>
                         </div>
-                        <div class="hotline-item hidden-mobile"><span class="hotline-label">Medical Assistance:</span>
-                            <span class="hotline-value">1555</span>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">Makabata Helpline:</span>
+                            <a href="tel:1383" class="hotline-value">1383</a>
                         </div>
-                        <div class="hotline-item hidden-mobile"><span class="hotline-label">DOH Hotline:</span> <span
-                                class="hotline-value">894-COVID</span></div>
-                        <div class="hotline-item hidden-mobile"><span class="hotline-label">DSWD Help:</span> <span
-                                class="hotline-value">0932-933-3251</span></div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">Bantay Bata Hotline:</span>
+                            <a href="tel:163" class="hotline-value">163</a>
+                        </div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">Emergency (All):</span>
+                            <a href="tel:911" class="hotline-value">911</a>
+                        </div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">NCMH Mental Health:</span>
+                            <a href="tel:1553" class="hotline-value">1553</a>
+                        </div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">Complaints Hotline:</span>
+                            <a href="tel:8888" class="hotline-value">8888</a>
+                        </div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">Anti-Trafficking Line:</span>
+                            <a href="tel:1343" class="hotline-value">1343</a>
+                        </div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">PNP Women's Desk:</span>
+                            <a href="tel:117" class="hotline-value">117</a>
+                        </div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">Medical Assistance:</span>
+                            <a href="tel:1555" class="hotline-value">1555</a>
+                        </div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">DOH Hotline:</span>
+                            <a href="tel:894COVID" class="hotline-value">894-COVID</a>
+                        </div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">DSWD Help:</span>
+                            <a href="tel:09329333251" class="hotline-value">0932-933-3251</a>
+                        </div>
                     </div>
                     <button id="showAllHotlines"
                         class="lg:hidden mt-4 text-warm-gold font-semibold text-sm hover:underline">

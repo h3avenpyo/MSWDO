@@ -310,10 +310,10 @@
 
 <div class="print-container">
     
-    <!-- 1. Header Area: Logos, Title, Time Start, Date -->
+    <!-- 1. Header Area: Logos at Top-Left -> Title Below Logos -> Time Start & Date Below Title -->
     <div class="gis-header-container">
-        <!-- Top Row: Logos, Title, Date -->
-        <div class="gis-header-row">
+        <!-- Row 1: Logos at Top-Left -->
+        <div class="gis-header-top-row">
             <div class="gis-logos">
                 @if($silangLogo)
                     <img src="{{ $silangLogo }}" class="gis-logo-img" alt="Silang Seal">
@@ -322,26 +322,30 @@
                     <img src="{{ $dswdLogo }}" class="gis-logo-img" alt="DSWD Logo">
                 @endif
             </div>
-            <div class="gis-title-box">
-                <h1 class="gis-title">GENERAL INTAKE SHEET</h1>
-            </div>
-            <div class="gis-date-box-wrapper">
-                <span class="gis-meta-label">Date:</span>
-                <table class="gis-date-table">
-                    <tr>
-                        <td class="gis-date-cell-m {{ $dateMonth === 'MM' ? 'gis-date-placeholder' : '' }}">{{ $dateMonth }}</td>
-                        <td class="gis-date-cell-d {{ $dateDay === 'DD' ? 'gis-date-placeholder' : '' }}">{{ $dateDay }}</td>
-                        <td class="gis-date-cell-y">{{ $dateYear }}</td>
-                    </tr>
-                </table>
-            </div>
         </div>
 
-        <!-- Middle Row: Time Start (positioned below title, ending before Date) -->
-        <div class="gis-time-start-row">
-            <div class="gis-time-start-group">
-                <span class="gis-meta-label">Time Start:</span>
-                <span class="gis-meta-box gis-box-time-start">{{ $intake->time_start ?? '' }}</span>
+        <!-- Row 2: Title below the two logos, centered -->
+        <div class="gis-title-row">
+            <h1 class="gis-title">GENERAL INTAKE SHEET</h1>
+        </div>
+
+        <!-- Row 3: Time Start & Date below Title, positioned on the right -->
+        <div class="gis-header-below-row">
+            <div class="gis-header-meta-group">
+                <div class="gis-time-start-group">
+                    <span class="gis-meta-label">Time Start:</span>
+                    <span class="gis-meta-box gis-box-time-start">{{ $intake->time_start ?? '' }}</span>
+                </div>
+                <div class="gis-date-box-wrapper">
+                    <span class="gis-meta-label">Date:</span>
+                    <table class="gis-date-table">
+                        <tr>
+                            <td class="gis-date-cell-m {{ $dateMonth === 'MM' ? 'gis-date-placeholder' : '' }}">{{ $dateMonth }}</td>
+                            <td class="gis-date-cell-d {{ $dateDay === 'DD' ? 'gis-date-placeholder' : '' }}">{{ $dateDay }}</td>
+                            <td class="gis-date-cell-y">{{ $dateYear }}</td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

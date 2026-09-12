@@ -61,35 +61,39 @@
     margin-bottom: 2px;
 }
 
-.gis-header-row {
+/* Row 1: Logos at Top-Left */
+.gis-header-top-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     width: 100%;
+    margin-bottom: 2px;
 }
 
 .gis-logos {
     display: flex;
     align-items: center;
     gap: 8px;
-    width: 22%;
 }
 
 .gis-logo-img {
-    height: 44px;
+    height: 40px;
     width: auto;
-    max-width: 48px;
+    max-width: 46px;
     object-fit: contain;
     display: block;
 }
 
-.gis-title-box {
+/* Row 2: Title below the two logos, centered */
+.gis-title-row {
+    width: 100%;
     text-align: center;
-    flex-grow: 1;
+    margin-top: 3px;
+    margin-bottom: 20px;
 }
 
 .gis-title {
-    font-size: 16pt;
+    font-size: 15pt;
     font-weight: 800;
     text-transform: uppercase;
     margin: 0;
@@ -97,13 +101,30 @@
     letter-spacing: 0.5px;
     color: #000000;
     font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.1;
+    text-align: center;
 }
 
-.gis-date-box-wrapper {
-    width: 25%;
+/* Row 3: Time Start & Date below Title, positioned on the right */
+.gis-header-below-row {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 3px;
+}
+
+.gis-header-meta-group {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+}
+
+.gis-date-box-wrapper {
+    display: flex;
+    align-items: center;
 }
 
 .gis-meta-label {
@@ -137,7 +158,8 @@
     box-sizing: border-box;
 }
 
-.gis-date-cell-m, .gis-date-cell-d {
+.gis-date-cell-m,
+.gis-date-cell-d {
     width: 28px;
     min-width: 28px;
 }
@@ -152,17 +174,7 @@
     font-weight: normal !important;
 }
 
-/* Row 2: Time Start (positioned below title, ending before Date) */
-.gis-time-start-row {
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
-    margin-top: 2px;
-    margin-bottom: 2px;
-    padding-right: 145px;
-    box-sizing: border-box;
-}
-
+/* Time Start Group */
 .gis-time-start-group {
     display: flex;
     align-items: center;
@@ -556,7 +568,7 @@
 
 .gis-oath-text {
     flex: 1;
-    font-size: 5.3pt;
+    font-size: 4.5pt;
     font-style: italic;
     line-height: 1.22;
     text-align: justify;
@@ -645,7 +657,8 @@
         margin: 8mm 8mm 8mm 8mm;
     }
 
-    html, body {
+    html,
+    body {
         background-color: #ffffff !important;
         color: #000000 !important;
         font-family: Arial, Helvetica, sans-serif !important;
@@ -656,11 +669,22 @@
         print-color-adjust: exact !important;
     }
 
-    .no-print, header, nav, .top-navbar, .sidebar, .sidebar-overlay, button, a, .btn {
+    .no-print,
+    header,
+    nav,
+    .top-navbar,
+    .sidebar,
+    .sidebar-overlay,
+    button,
+    a,
+    .btn {
         display: none !important;
     }
 
-    .main-content, .content-wrapper, .container-fluid, .p-4 {
+    .main-content,
+    .content-wrapper,
+    .container-fluid,
+    .p-4 {
         padding: 0 !important;
         margin: 0 !important;
         width: 100% !important;
@@ -700,7 +724,13 @@
         print-color-adjust: exact !important;
     }
 
-    .gis-dswd-table, .gis-family-table, .gis-sig-table, .gis-meta-box, .gis-oath-container, .gis-thumbmark-box, .gis-checkbox {
+    .gis-dswd-table,
+    .gis-family-table,
+    .gis-sig-table,
+    .gis-meta-box,
+    .gis-oath-container,
+    .gis-thumbmark-box,
+    .gis-checkbox {
         border-color: #000000 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;

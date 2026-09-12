@@ -1,5 +1,6 @@
 /**
  * Step 2 Liquidation Report Stylesheet (Screen & Print-Ready)
+ * Optimized for Official Legal Landscape (8.5 x 14 in) Printing & Screen Review
  */
 
 @page {
@@ -10,7 +11,7 @@
 :root {
     --color-brand: #1A237E;
     --color-brand-dark: #0D1642;
-    --font-main: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-main: 'Public Sans', Arial, Helvetica, sans-serif;
 }
 
 body {
@@ -41,7 +42,7 @@ body {
     min-height: 200mm;
     margin: 20px auto 40px auto;
     background: #FFFFFF;
-    padding: 14mm 16mm;
+    padding: 12mm 14mm;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     box-sizing: border-box;
 }
@@ -50,31 +51,32 @@ body {
 .report-header {
     text-align: center;
     position: relative;
-    padding-bottom: 12px;
+    padding: 2px 75px 10px 75px;
     border-bottom: 2px solid #111827;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
+    min-height: 65px;
 }
 
 .header-logo-left {
     position: absolute;
-    left: 10px;
+    left: 4px;
     top: 0;
-    width: 65px;
-    height: 65px;
+    width: 62px;
+    height: 62px;
     object-fit: contain;
 }
 
 .header-logo-right {
     position: absolute;
-    right: 10px;
+    right: 4px;
     top: 0;
-    width: 65px;
-    height: 65px;
+    width: 62px;
+    height: 62px;
     object-fit: contain;
 }
 
 .govt-titles {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 600;
     text-transform: uppercase;
     line-height: 1.35;
@@ -82,128 +84,119 @@ body {
 }
 
 .office-title {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 800;
     color: #111827;
     margin-top: 2px;
     letter-spacing: 0.02em;
+    text-transform: uppercase;
 }
 
 .document-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 900;
     color: var(--color-brand);
-    margin-top: 6px;
+    margin-top: 4px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
 .document-subtitle {
-    font-size: 10.5px;
+    font-size: 10px;
     color: #4B5563;
     margin-top: 2px;
     font-weight: 500;
 }
 
-/* Report Metadata Grid */
-.metadata-grid {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    border-radius: 6px;
-    padding: 8px 14px;
-    margin-bottom: 14px;
+/* Official Liquidation Details & Financial Accountability Summary Table */
+.report-particulars-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+    border: 1.5px solid #111827;
+    page-break-inside: avoid;
+}
+
+.particulars-col {
+    width: 50%;
+    vertical-align: top;
+    padding: 8px 12px;
+    border: 1px solid #111827;
+    background: #FFFFFF;
+}
+
+.particulars-col.particulars-financial {
+    background: #FDFDFD;
+}
+
+.particulars-title {
+    font-size: 9.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #111827;
+    border-bottom: 1.5px solid #111827;
+    padding-bottom: 3px;
+    margin-bottom: 5px;
+    letter-spacing: 0.04em;
+}
+
+.particulars-inner-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+}
+
+.particulars-inner-table td {
+    padding: 2.5px 0;
+    vertical-align: middle;
+}
+
+.p-lbl {
+    color: #4B5563;
+    font-weight: 600;
+    width: 44%;
+}
+
+.p-val {
+    color: #111827;
+    font-weight: 600;
+}
+
+.p-subnote {
+    font-size: 8.5px;
+    font-weight: normal;
+    color: #4B5563;
+}
+
+.fin-balance-row {
+    border-top: 1.5px solid #111827;
+}
+
+.fin-balance-row td {
+    padding-top: 4px !important;
     font-size: 10.5px;
 }
 
-.metadata-item {
-    display: flex;
-    flex-direction: column;
+/* Section Containers & Headings */
+.section-container {
+    margin-bottom: 14px;
 }
 
-.metadata-label {
-    font-size: 9.5px;
-    color: #6B7280;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-}
-
-.metadata-value {
-    font-weight: 700;
-    color: #111827;
-}
-
-/* Executive Financial Summary Box */
-.financial-summary-box {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    margin-bottom: 16px;
-}
-
-.summary-card {
-    border: 1px solid #D1D5DB;
-    border-radius: 6px;
-    padding: 8px 12px;
-    background: #FFFFFF;
-    text-align: center;
-}
-
-.summary-card.card-allocated {
-    background-color: #F8FAFC;
-    border-color: #CBD5E1;
-}
-
-.summary-card.card-claimed {
-    background-color: #ECFDF5;
-    border-color: #A7F3D0;
-}
-
-.summary-card.card-unclaimed {
-    background-color: #FEF3C7;
-    border-color: #FDE68A;
-}
-
-.summary-card.card-remaining {
-    background-color: #FFFBEB;
-    border-color: #F59E0B;
-}
-
-.summary-card.card-rate {
-    background-color: #EFF6FF;
-    border-color: #BFDBFE;
-}
-
-.summary-card-label {
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #4B5563;
-    letter-spacing: 0.03em;
-    margin-bottom: 3px;
-}
-
-.summary-card-value {
-    font-size: 14px;
+.section-heading {
+    font-size: 10px;
     font-weight: 800;
+    text-transform: uppercase;
     color: #111827;
+    margin-bottom: 4px;
+    letter-spacing: 0.03em;
 }
 
-.summary-card-sub {
-    font-size: 8.5px;
-    color: #6B7280;
-    margin-top: 2px;
-}
-
-/* Tabular Masterlist */
+/* Masterlist & Batches Tables */
 .liquidation-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
-    font-size: 10px;
+    margin-bottom: 14px;
+    font-size: 9.5px;
 }
 
 .liquidation-table th {
@@ -211,47 +204,70 @@ body {
     color: #111827;
     font-weight: 800;
     text-transform: uppercase;
-    border: 1px solid #9CA3AF;
-    padding: 6px 8px;
+    border: 1px solid #111827;
+    padding: 5px 6px;
     text-align: left;
     white-space: nowrap;
+    font-size: 9px;
+    letter-spacing: 0.02em;
 }
 
 .liquidation-table td {
-    border: 1px solid #D1D5DB;
-    padding: 6px 8px;
+    border: 1px solid #9CA3AF;
+    padding: 4px 6px;
     vertical-align: middle;
+    color: #111827;
 }
 
 .liquidation-table tbody tr:nth-child(even) {
     background-color: #FAFAFA;
 }
 
-.liquidation-table tfoot th {
-    background-color: #E5E7EB;
-    border: 1px solid #9CA3AF;
+.liquidation-tfoot-row th {
+    background-color: #E5E7EB !important;
+    border: 1.5px solid #111827 !important;
     font-weight: 800;
-    padding: 7px 8px;
+    padding: 6px 8px;
+    font-size: 9.5px;
 }
 
-.badge-status-claimed {
-    background-color: #D1FAE5;
+/* Status Indicators in Table */
+.status-claimed-text {
+    font-weight: 800;
     color: #065F46;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 4px;
-    display: inline-block;
     font-size: 9px;
+    letter-spacing: 0.03em;
 }
 
-.badge-status-unclaimed {
-    background-color: #FEF3C7;
-    color: #92400E;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 4px;
-    display: inline-block;
+.status-unclaimed-text {
+    font-weight: 800;
+    color: #991B1B;
     font-size: 9px;
+    letter-spacing: 0.03em;
+}
+
+.signature-line-cell {
+    border-bottom: 1px dotted #9CA3AF !important;
+    min-width: 90px;
+}
+
+/* Official Certification Statement Box */
+.liquidation-cert-box {
+    border: 1px solid #111827;
+    background: #F9FAFB;
+    padding: 6px 10px;
+    margin-top: 8px;
+    margin-bottom: 14px;
+    page-break-inside: avoid;
+}
+
+.cert-statement {
+    font-size: 9px;
+    font-style: italic;
+    color: #111827;
+    margin: 0;
+    line-height: 1.35;
+    text-align: justify;
 }
 
 /* Signatories Block */
@@ -259,7 +275,8 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    margin-top: 24px;
+    margin-top: 14px;
+    margin-bottom: 10px;
     page-break-inside: avoid;
 }
 
@@ -268,36 +285,61 @@ body {
 }
 
 .signatory-role {
-    font-size: 9.5px;
-    color: #4B5563;
-    font-weight: 600;
-    margin-bottom: 35px;
+    font-size: 9px;
+    color: #374151;
+    font-weight: 700;
     text-align: left;
+    margin-bottom: 2px;
+}
+
+.signatory-spacer {
+    height: 38px;
+}
+
+.signatory-line {
+    border-bottom: 1.5px solid #111827;
+    width: 90%;
+    margin: 0 auto 3px auto;
 }
 
 .signatory-name {
     font-weight: 800;
-    font-size: 11px;
+    font-size: 10.5px;
     color: #111827;
     text-transform: uppercase;
-    border-bottom: 1.5px solid #111827;
-    padding-bottom: 2px;
-    display: inline-block;
-    min-width: 180px;
+    letter-spacing: 0.02em;
 }
 
 .signatory-title {
-    font-size: 9.5px;
+    font-size: 8.5px;
     color: #4B5563;
-    margin-top: 3px;
+    margin-top: 2px;
+}
+
+/* Print Footer Note */
+.print-footer-note {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.5px;
+    color: #6B7280;
+    border-top: 1px solid #D1D5DB;
+    padding-top: 4px;
+    margin-top: 14px;
+    page-break-inside: avoid;
 }
 
 /* Print Rules */
 @media print {
+    @page {
+        size: legal landscape;
+        margin: 8mm 10mm;
+    }
+
     body {
         background: #FFFFFF !important;
         padding: 0 !important;
         margin: 0 !important;
+        font-family: var(--font-main) !important;
     }
 
     .no-print,
@@ -313,9 +355,50 @@ body {
         border: none !important;
     }
 
+    .report-header {
+        border-bottom: 2px solid #000000 !important;
+    }
+
+    .report-particulars-table,
+    .particulars-col,
+    .fin-balance-row {
+        border-color: #000000 !important;
+    }
+
     .liquidation-table th {
         background-color: #E5E7EB !important;
+        border-color: #000000 !important;
+        color: #000000 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+    }
+
+    .liquidation-table td {
+        border-color: #000000 !important;
+        color: #000000 !important;
+    }
+
+    .liquidation-tfoot-row th {
+        background-color: #E5E7EB !important;
+        border-color: #000000 !important;
+        color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .liquidation-cert-box {
+        border-color: #000000 !important;
+        background: #FFFFFF !important;
+    }
+
+    .signatory-line {
+        border-color: #000000 !important;
+    }
+
+    .signatories-wrapper,
+    .liquidation-cert-box,
+    .report-particulars-table,
+    .print-footer-note {
+        page-break-inside: avoid !important;
     }
 }
