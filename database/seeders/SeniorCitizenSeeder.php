@@ -74,7 +74,8 @@ class SeniorCitizenSeeder extends Seeder
 
         $recordNumberCounter = 1;
         $sequenceCounter = [];
-        $totalCreated = 0;
+        $records = [];
+        $now = now()->toDateTimeString();
 
         foreach ($barangays as $barangay) {
             if (!isset($sequenceCounter[$barangay])) {
@@ -83,7 +84,7 @@ class SeniorCitizenSeeder extends Seeder
 
             $barangayCode = $barangayCodes[$barangay];
 
-            for ($i = 0; $i < 50; $i++) {
+            for ($i = 0; $i < 100; $i++) {
                 $firstName = $firstNames[array_rand($firstNames)];
                 $middleName = $middleNames[array_rand($middleNames)];
                 $lastName = $lastNames[array_rand($lastNames)];
@@ -100,14 +101,15 @@ class SeniorCitizenSeeder extends Seeder
                 $sequenceCounter[$barangay]++;
 
                 $recordNumber = 'SR-' . str_pad($recordNumberCounter, 5, '0', STR_PAD_LEFT);
-                $recordNumberCounter++;
-
+                $seniorIdNumber = "SC-{$currentYear}-" . str_pad($recordNumberCounter, 6, '0', STR_PAD_LEFT);
+                $oscaId = 'OSCA-' . str_pad($recordNumberCounter, 5, '0', STR_PAD_LEFT);
                 $contactNumber = '09' . str_pad(rand(10, 99), 2, '0', STR_PAD_LEFT) . str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT);
 
-                SeniorCitizenRecord::create([
+                $records[] = [
                     'record_number' => $recordNumber,
-                    'year_applied' => $currentYear,
+                    'year_applied' => (string) $currentYear,
                     'control_number' => $controlNumber,
+                    'senior_id_number' => $seniorIdNumber,
                     'first_name' => $firstName,
                     'middle_name' => $middleName,
                     'last_name' => $lastName,
@@ -118,18 +120,25 @@ class SeniorCitizenSeeder extends Seeder
                     'contact_number' => $contactNumber,
                     'blood_type' => $bloodTypes[array_rand($bloodTypes)],
                     'civil_status' => $civilStatuses[array_rand($civilStatuses)],
-                    'osca_id' => 'OSCA-' . str_pad($recordNumberCounter, 4, '0', STR_PAD_LEFT),
+                    'osca_id' => $oscaId,
                     'created_by' => 1,
                     'status' => 'active',
                     'emergency_contact_name' => $firstName . ' ' . $lastName . ' Jr.',
                     'emergency_contact_number' => '09' . str_pad(rand(10, 99), 2, '0', STR_PAD_LEFT) . str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT),
                     'emergency_contact_relationship' => $relationships[array_rand($relationships)],
-                ]);
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
 
-                $totalCreated++;
+                $recordNumberCounter++;
             }
         }
 
-        $this->command->info("{$totalCreated} senior citizen records seeded (50 per barangay, " . count($barangays) . " barangays).");
+        foreach (array_chunk($records, 500) as $chunk) {
+            DB::table('senior_citizen_records')->insert($chunk);
+        }
+
+        $totalCreated = count($records);
+        $this->command->info("{$totalCreated} senior citizen records seeded (100 per barangay, " . count($barangays) . " barangays).");
     }
 }

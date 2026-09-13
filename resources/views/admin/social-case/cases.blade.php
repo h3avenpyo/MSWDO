@@ -104,13 +104,22 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     #dataTable tbody td[data-label="Action"] { min-width: 120px; white-space: nowrap; }
 
     /* Badge & Button styling */
-    .badge { display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; line-height: 1.2; }
+    .badge { display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 4px 12px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; line-height: 1.2; letter-spacing: 0.02em; }
+    .b-draft, .badge-draft { background: #F3F4F6 !important; color: #4B5563 !important; border: 1px solid #E5E7EB !important; }
+    .b-review, .badge-review { background: #FEF3C7 !important; color: #92400E !important; border: 1px solid #FDE68A !important; }
+    .b-approved, .badge-approved { background: #DEF7EC !important; color: #03543F !important; border: 1px solid #BCF0DA !important; }
+    .b-released, .badge-released { background: #DEF7EC !important; color: #03543F !important; border: 1px solid #BCF0DA !important; }
+    .b-printed, .badge-printed { background: #E0E7FF !important; color: #3730A3 !important; border: 1px solid #C7D2FE !important; }
+    .b-archived, .badge-archived { background: #FEE2E2 !important; color: #991B1B !important; border: 1px solid #FECACA !important; }
+    .b-rejected, .badge-rejected { background: #FEE2E2 !important; color: #991B1B !important; border: 1px solid #FECACA !important; }
+
     .actions { display: inline-flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
-    .actions button { width: 32px; height: 32px; min-width: 32px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; padding: 0 !important; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease; border: none; }
+    .actions button { width: 34px !important; height: 34px !important; min-width: 34px !important; max-height: 34px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; padding: 0 !important; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease; border: none; }
     .actions button:hover { transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.15); opacity: 0.95; }
     .actions button:active { transform: translateY(0); }
+    .actions button svg, .actions button i { width: 16px !important; height: 16px !important; }
 
-    .control-no { font-family: 'Courier New', monospace; font-size: 0.78rem; color: #374151; font-weight: 600; }
+    .control-no { font-family: 'Courier New', monospace; font-size: 0.8rem; color: #374151; font-weight: 600; }
     .muted { color: #9CA3AF; font-style: italic; }
 
     /* ── Pagination ── */
@@ -134,9 +143,10 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     /* ═══════════════════════════════════════════════════════════════
        MOBILE, TABLET & COLLAPSED SIDEBAR (< 1200px): CARD LAYOUT
+       Matches Senior Citizen Masterlist Mobile Card Treatment
     ═══════════════════════════════════════════════════════════════ */
     @media (max-width: 1199.98px) {
-        .cases-table-wrap { overflow: visible; border: none; background: transparent; }
+        .cases-table-wrap { overflow: visible !important; border: none !important; background: transparent !important; box-shadow: none !important; border-radius: 0 !important; width: 100% !important; max-width: 100% !important; }
 
         #dataTable, 
         #dataTable thead, 
@@ -145,73 +155,185 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         #dataTable tbody td { 
             display: block !important; 
             width: 100% !important; 
+            max-width: 100% !important;
+            box-sizing: border-box !important;
         }
         #dataTable { min-width: 0 !important; }
         #dataTable thead { display: none !important; }
+        #dataTable tbody { display: block !important; width: 100% !important; }
 
         #dataTable tbody tr:not(.empty-row) { 
+            display: flex !important;
+            flex-direction: column !important;
+            position: relative !important;
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
             background: #ffffff !important; 
-            border: 1px solid #E2E8F0 !important; 
+            border: 1px solid #D1D5DB !important; 
             border-radius: 12px !important; 
             margin-bottom: 12px !important; 
-            padding: 14px 18px !important; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important; 
+            padding: 14px 16px !important; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important; 
             transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        #dataTable tbody tr:not(.empty-row):last-child {
+            margin-bottom: 0 !important;
         }
         #dataTable tbody tr:not(.empty-row):hover { 
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
         }
 
         #dataTable tbody td { 
-            display: flex !important; 
-            justify-content: space-between !important; 
-            align-items: center !important; 
-            padding: 8px 0 !important; 
+            display: grid !important; 
+            grid-template-columns: 96px minmax(0, 1fr) !important; 
+            align-items: start !important; 
+            gap: 20px !important; 
+            padding: 9px 0 !important; 
+            border: none !important; 
             border-bottom: 1px solid #F1F5F9 !important; 
-            font-size: 0.875rem !important; 
-            gap: 12px !important; 
+            font-size: 0.82rem !important; 
+            overflow-wrap: anywhere !important; 
+            text-align: left !important; 
             white-space: normal !important; 
             word-break: break-word !important; 
             max-width: none !important; 
             overflow: visible !important; 
             min-width: 0 !important; 
         }
+        #dataTable tbody td:not(:last-child) { 
+            border-bottom: 1px solid #F1F5F9 !important; 
+        }
         #dataTable tbody td:last-child { 
             border-bottom: none !important; 
         }
         #dataTable tbody td::before { 
             content: attr(data-label) !important; 
-            font-weight: 700 !important; 
+            font-weight: 600 !important; 
             font-size: 0.72rem !important; 
             text-transform: uppercase !important; 
-            letter-spacing: 0.04em !important; 
+            letter-spacing: 0.03em !important; 
             color: #64748B !important; 
+            text-align: left !important;
+            line-height: 1.5 !important;
+            grid-column: 1 !important;
             flex-shrink: 0 !important; 
-            min-width: 100px !important; 
             display: block !important; 
         }
-        #dataTable tbody td[data-label="Action"] { 
-            justify-content: flex-end !important; 
-            padding-top: 12px !important; 
+
+        /* ── Client Name (Matches Senior Masterlist Full Name Header) ── */
+        #dataTable tbody td[data-label="Client"] { 
+            order: -3 !important; 
+            display: block !important; 
+            padding: 2px 110px 10px 0 !important; 
             border-bottom: none !important; 
+            font-size: 1.02rem !important; 
+            font-weight: 700 !important; 
+            line-height: 1.35 !important; 
+            color: #1A237E !important; 
+        }
+        #dataTable tbody td[data-label="Client"]::before { 
+            display: none !important; 
+        }
+
+        /* ── Status Badge (Top Right Corner, matches Senior Masterlist) ── */
+        #dataTable tbody td[data-label="Status"] { 
+            position: absolute !important; 
+            top: 14px !important; 
+            right: 14px !important; 
+            display: flex !important; 
+            align-items: center !important; 
+            gap: 8px !important; 
+            padding: 0 !important; 
+            border-bottom: none !important; 
+            background: transparent !important;
+            z-index: 2 !important;
+            width: auto !important;
+        }
+        #dataTable tbody td[data-label="Status"]::before { 
+            display: none !important; 
+        }
+
+        /* ── Control No. (Header divider line) ── */
+        #dataTable tbody td[data-label="Control No."],
+        #dataTable tbody td[data-label="Control No"] { 
+            order: -2 !important;
+            border-top: 1px solid #E2E8F0 !important;
+            padding-top: 12px !important; 
+            white-space: nowrap !important; 
+        }
+
+        /* ── Action Buttons (Bottom Right, matches Senior Masterlist) ── */
+        #dataTable tbody td[data-label="Action"] { 
+            order: 2 !important;
+            display: flex !important; 
+            justify-content: flex-end !important; 
+            align-items: center !important; 
+            padding: 12px 0 2px !important; 
+            border-bottom: none !important; 
+            margin-top: 2px !important;
+            width: 100% !important;
         }
         #dataTable tbody td[data-label="Action"]::before { 
             display: none !important; 
         }
 
+        /* ── Empty Row ── */
         #dataTable tbody tr.empty-row { 
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
             border: none !important; 
             box-shadow: none !important; 
             background: transparent !important; 
             padding: 0 !important; 
+            margin: 0 !important;
         }
         #dataTable tbody tr.empty-row td { 
-            border-bottom: none !important; 
-            justify-content: center !important; 
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            text-align: center !important;
+            padding: 2.5rem 1rem !important;
+            border: none !important; 
+            width: 100% !important;
         }
         #dataTable tbody tr.empty-row td::before { 
             display: none !important; 
+        }
+    }
+
+    /* ── Small Mobile (< 480px) ── */
+    @media (max-width: 479px) {
+        #dataTable tbody tr:not(.empty-row) {
+            padding: 12px 14px !important;
+        }
+        #dataTable tbody td {
+            font-size: 0.75rem !important;
+            grid-template-columns: 80px minmax(0, 1fr) !important;
+            gap: 12px !important;
+            padding: 7px 0 !important;
+        }
+        #dataTable tbody td::before {
+            font-size: 0.65rem !important;
+        }
+        #dataTable tbody td[data-label="Client"] {
+            font-size: 0.95rem !important;
+            padding-right: 90px !important;
+        }
+        #dataTable tbody td[data-label="Status"] {
+            top: 12px !important;
+            right: 12px !important;
+        }
+        .badge {
+            font-size: 0.7rem !important;
+            padding: 3px 8px !important;
+        }
+        .actions button {
+            width: 32px !important;
+            height: 32px !important;
+            min-width: 32px !important;
         }
     }
 
@@ -314,11 +436,44 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .filter-reset { flex: 0 0 auto; }
 
         .cases-table-wrap { flex: 1; min-height: 0; overflow: auto; border: 1px solid #E5E7EB; border-radius: 8px; }
-        #dataTable { min-width: 1000px; width: 100%; table-layout: auto; }
+        #dataTable { min-width: 1000px; width: 100%; table-layout: auto; display: table !important; }
+        #dataTable thead { display: table-header-group !important; }
         #dataTable thead th { padding: 12px 16px; font-size: 0.75rem; }
-        #dataTable tbody td { padding: 12px 16px; font-size: 0.875rem; }
+        #dataTable tbody { display: table-row-group !important; }
+        #dataTable tbody tr { display: table-row !important; }
+        #dataTable tbody td { display: table-cell !important; padding: 12px 16px; font-size: 0.875rem; border-bottom: 1px solid #CBD5E1 !important; }
         #dataTable tbody td::before { display: none !important; content: none !important; }
-        #dataTable tbody tr.empty-row td.empty-cell { white-space: normal !important; overflow: visible !important; max-width: none !important; }
+        #dataTable tbody tr.empty-row td.empty-cell { display: table-cell !important; white-space: normal !important; overflow: visible !important; max-width: none !important; }
+
+        #dataTable tbody td[data-label="Client"] {
+            order: unset !important;
+            display: table-cell !important;
+            padding: 12px 16px !important;
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            color: #0F172A !important;
+        }
+        #dataTable tbody td[data-label="Status"] {
+            position: static !important;
+            display: table-cell !important;
+            padding: 12px 16px !important;
+            background: transparent !important;
+            z-index: auto !important;
+            width: auto !important;
+        }
+        #dataTable tbody td[data-label="Control No."],
+        #dataTable tbody td[data-label="Control No"] {
+            order: unset !important;
+            border-top: none !important;
+            padding: 12px 16px !important;
+        }
+        #dataTable tbody td[data-label="Action"] {
+            order: unset !important;
+            display: table-cell !important;
+            padding: 12px 16px !important;
+            margin-top: 0 !important;
+            justify-content: unset !important;
+        }
 
         .sc-pagination { flex-direction: row; justify-content: space-between; margin-top: 12px; flex-shrink: 0; }
         .sc-pagination-controls { justify-content: flex-end; }

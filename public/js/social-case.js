@@ -264,25 +264,69 @@ function showCaseDetailsModal(caseId){
   modal.innerHTML = `
     <style>
       #caseDetailsModal *{box-sizing:border-box}
-      #caseDetailsModal .cs-modal-box{animation:csSlideUp .25s ease}
+      #caseDetailsModal .cs-modal-box{
+        animation:csSlideUp .25s ease;
+        border-radius:16px !important;
+        overflow:hidden !important;
+      }
+      #caseDetailsModal .cs-modal-header{
+        border-top-left-radius:16px !important;
+        border-top-right-radius:16px !important;
+      }
+      #caseDetailsModal .cs-modal-footer{
+        border-bottom-left-radius:16px !important;
+        border-bottom-right-radius:16px !important;
+      }
       @keyframes csSlideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
       @media(max-width:768px){
-        #caseDetailsModal .cs-modal-box{max-height:100vh!important;border-radius:0!important;height:100%!important;max-width:100%!important}
-        #caseDetailsModal .cs-modal-header{padding:12px 16px!important}
+        #caseDetailsModal{padding:12px!important}
+        #caseDetailsModal .cs-modal-box{
+          max-height:85vh!important;
+          border-radius:14px!important;
+          height:auto!important;
+          max-width:100%!important;
+          width:100%!important;
+          overflow:hidden!important;
+        }
+        #caseDetailsModal .cs-modal-header{
+          padding:12px 16px!important;
+          border-top-left-radius:14px!important;
+          border-top-right-radius:14px!important;
+        }
         #caseDetailsModal .cs-modal-header h5{font-size:.95rem!important}
         #caseDetailsModal .cs-modal-body{padding:16px!important}
         #caseDetailsModal .cs-grid{grid-template-columns:1fr!important;gap:12px!important}
-        #caseDetailsModal .cs-modal-footer{flex-direction:column!important;gap:10px!important;padding:14px 16px!important}
-        #caseDetailsModal .cs-footer-btns{width:100%!important;justify-content:stretch!important}
-        #caseDetailsModal .cs-footer-btns button{flex:1!important;justify-content:center!important}
+        #caseDetailsModal .cs-modal-footer{
+          flex-direction:row!important;
+          gap:10px!important;
+          padding:12px 16px!important;
+          border-bottom-left-radius:14px!important;
+          border-bottom-right-radius:14px!important;
+          justify-content:flex-end!important;
+        }
+        #caseDetailsModal .cs-footer-btns{width:auto!important;justify-content:flex-end!important}
+        #caseDetailsModal .cs-footer-btns button{flex:unset!important;justify-content:center!important}
       }
       @media(max-width:480px){
-        #caseDetailsModal .cs-modal-header{padding:10px 12px!important}
+        #caseDetailsModal{padding:8px!important}
+        #caseDetailsModal .cs-modal-box{
+          max-height:88vh!important;
+          border-radius:12px!important;
+        }
+        #caseDetailsModal .cs-modal-header{
+          padding:10px 14px!important;
+          border-top-left-radius:12px!important;
+          border-top-right-radius:12px!important;
+        }
         #caseDetailsModal .cs-modal-header h5{font-size:.85rem!important}
         #caseDetailsModal .cs-modal-body{padding:12px!important}
+        #caseDetailsModal .cs-modal-footer{
+          border-bottom-left-radius:12px!important;
+          border-bottom-right-radius:12px!important;
+        }
       }
     </style>
-    <div class="cs-modal-box" style="background:var(--background);border-radius:14px;width:100%;max-width:780px;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.15);overflow:hidden;">
+    <div class="cs-modal-box" style="background:var(--background);border-radius:16px;width:100%;max-width:780px;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.15);overflow:hidden;">
       <!-- Header -->
       <div class="cs-modal-header" style="background:#1A237E;color:white;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
         <h5 style="margin:0;font-size:1.05rem;font-weight:600;display:flex;align-items:center;gap:8px;">
@@ -349,9 +393,11 @@ function showCaseDetailsModal(caseId){
       <div class="cs-modal-footer" style="padding:16px 24px;border-top:1px solid var(--border);background:var(--surface);display:flex;justify-content:flex-end;gap:12px;flex-shrink:0;">
         <div class="cs-footer-btns" style="display:flex;gap:12px;justify-content:flex-end;">
           <button onclick="document.getElementById('caseDetailsModal').remove()" style="padding:8px 16px;background:var(--background);border:1px solid var(--border);border-radius:6px;font-weight:500;color:var(--text-primary);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='var(--background)'">Close</button>
+          ${(caseRec.status || '').toLowerCase() !== 'archived' && !window.location.pathname.includes('/archive') ? `
           <button onclick="window.location.href='/admin/social-case/detail/${caseRec.id}'" style="padding:8px 16px;background:var(--primary);border:none;border-radius:6px;font-weight:500;color:white;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.2s;" onmouseover="this.style.background='#3730A3'" onmouseout="this.style.background='var(--primary)'">
             <i data-lucide="edit" style="width:16px;height:16px;"></i> Full Details / Edit
           </button>
+          ` : ''}
         </div>
       </div>
     </div>

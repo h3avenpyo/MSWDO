@@ -427,6 +427,10 @@
     /* ═══════════════════════════════════════════════════════════════
        MOBILE & TABLET (< 1200px): CARD VIEW
     ═══════════════════════════════════════════════════════════════ */
+    .mobile-card-status {
+        display: none;
+    }
+
     @media (max-width: 1199.98px) {
         .online-requests-panel {
             background: transparent !important;
@@ -442,9 +446,7 @@
         
         #onlineRequestsTable,
         #onlineRequestsTable thead,
-        #onlineRequestsTable tbody,
-        #onlineRequestsTable tbody tr,
-        #onlineRequestsTable tbody td {
+        #onlineRequestsTable tbody {
             display: block !important;
             width: 100% !important;
         }
@@ -456,71 +458,185 @@
         }
         
         #onlineRequestsTable tbody tr:not(.empty-row) {
+            display: flex !important;
+            flex-direction: column !important;
+            position: relative !important;
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
             background: #ffffff !important;
-            border: 1px solid #E2E8F0 !important;
+            border: 1px solid #D1D5DB !important;
             border-radius: 12px !important;
             margin-bottom: 12px !important;
-            padding: 14px 18px !important;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            padding: 14px 16px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+            transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+        }
+        #onlineRequestsTable tbody tr:not(.empty-row):last-child {
+            margin-bottom: 0 !important;
         }
         #onlineRequestsTable tbody tr:not(.empty-row):hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
         }
         
         #onlineRequestsTable tbody td {
-            display: flex !important;
-            justify-content: space-between !important;
-            align-items: center !important;
-            padding: 8px 0 !important;
+            display: grid !important;
+            grid-template-columns: 110px minmax(0, 1fr) !important;
+            align-items: start !important;
+            gap: 16px !important;
+            padding: 9px 0 !important;
+            border: none !important;
             border-bottom: 1px solid #F1F5F9 !important;
-            font-size: 0.875rem !important;
-            gap: 12px !important;
-            white-space: normal !important;
-            word-break: break-word !important;
-            max-width: none !important;
-            overflow: visible !important;
+            font-size: 0.82rem !important;
+            overflow-wrap: anywhere !important;
+            text-align: left !important;
+            box-sizing: border-box !important;
+            width: 100% !important;
             min-width: 0 !important;
-            text-align: right;
+            max-width: 100% !important;
+            white-space: normal !important;
         }
         #onlineRequestsTable tbody td:last-child {
             border-bottom: none !important;
         }
         #onlineRequestsTable tbody td::before {
             content: attr(data-label) !important;
-            font-weight: 700 !important;
-            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+            font-size: 0.72rem !important;
             text-transform: uppercase !important;
-            letter-spacing: 0.04em !important;
+            letter-spacing: 0.03em !important;
             color: #64748B !important;
+            text-align: left !important;
+            line-height: 1.5 !important;
+            grid-column: 1 !important;
             flex-shrink: 0 !important;
-            min-width: 110px !important;
-            text-align: left;
             display: block !important;
         }
         #onlineRequestsTable tbody td .req-val-wrap {
-            text-align: right;
+            text-align: left !important;
+            min-width: 0 !important;
+            color: #1E293B !important;
         }
-        #onlineRequestsTable tbody td[data-label="Action"] {
-            justify-content: flex-end !important;
-            padding-top: 12px !important;
+
+        /* ── Client Name Header ── */
+        #onlineRequestsTable tbody td[data-label="Name"] {
+            order: -3 !important;
+            display: block !important;
+            padding: 2px 105px 10px 0 !important;
             border-bottom: none !important;
+            font-size: 1.02rem !important;
+            font-weight: 700 !important;
+            line-height: 1.35 !important;
+            color: #1A237E !important;
+        }
+        #onlineRequestsTable tbody td[data-label="Name"]::before {
+            display: none !important;
+        }
+        #onlineRequestsTable tbody td[data-label="Name"] .req-val-wrap > div:first-child {
+            font-size: 1.02rem !important;
+            font-weight: 700 !important;
+            color: #1A237E !important;
+            line-height: 1.35 !important;
+        }
+        #onlineRequestsTable tbody td[data-label="Name"] .req-val-wrap > div.text-xs {
+            font-size: 0.78rem !important;
+            color: #64748B !important;
+            font-weight: 400 !important;
+            margin-top: 2px !important;
+        }
+
+        /* ── Top-Right Status Badge Pill ── */
+        .mobile-card-status {
+            position: absolute !important;
+            top: 14px !important;
+            right: 14px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            padding: 4px 10px !important;
+            border-radius: 999px !important;
+            font-size: 0.72rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.03em !important;
+            text-transform: uppercase !important;
+            line-height: 1 !important;
+            z-index: 2 !important;
+        }
+        .mobile-card-status.status-pending {
+            background: #FEF3C7 !important;
+            color: #92400E !important;
+            border: 1px solid #FDE68A !important;
+        }
+        .mobile-card-status.status-accepted {
+            background: #DCFCE7 !important;
+            color: #15803D !important;
+            border: 1px solid #BBF7D0 !important;
+        }
+        .mobile-card-status.status-rejected {
+            background: #FEE2E2 !important;
+            color: #DC2626 !important;
+            border: 1px solid #FECACA !important;
+        }
+
+        /* ── Contact (Divider below Header) ── */
+        #onlineRequestsTable tbody td[data-label="Contact"] {
+            order: -2 !important;
+            border-top: 1px solid #E2E8F0 !important;
+            padding-top: 12px !important;
+            white-space: nowrap !important;
+        }
+
+        /* ── Action Buttons (Bottom Right) ── */
+        #onlineRequestsTable tbody td[data-label="Action"] {
+            order: 2 !important;
+            display: flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+            padding: 12px 0 2px !important;
+            border-bottom: none !important;
+            margin-top: 2px !important;
+            width: 100% !important;
         }
         #onlineRequestsTable tbody td[data-label="Action"]::before {
             display: none !important;
         }
-        
+        #onlineRequestsTable tbody td[data-label="Action"] .req-val-wrap {
+            display: flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+            gap: 6px !important;
+            width: 100% !important;
+        }
+        #onlineRequestsTable tbody td[data-label="Action"] .btn {
+            width: 36px !important;
+            height: 36px !important;
+            min-width: 36px !important;
+            padding: 0 !important;
+            border-radius: 8px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        /* ── Empty Row ── */
         #onlineRequestsTable tbody tr.empty-row {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
             border: none !important;
             box-shadow: none !important;
             background: transparent !important;
             padding: 0 !important;
+            margin: 0 !important;
         }
-        #onlineRequestsTable tbody tr.empty-row td {
-            border-bottom: none !important;
+        #onlineRequestsTable tbody tr.empty-row td.empty-cell {
+            display: flex !important;
             justify-content: center !important;
+            align-items: center !important;
             text-align: center !important;
+            padding: 2.5rem 1rem !important;
+            border: none !important;
+            width: 100% !important;
         }
         #onlineRequestsTable tbody tr.empty-row td::before {
             display: none !important;
@@ -530,28 +646,48 @@
     /* Small Screens (< 768px) */
     @media (max-width: 767.98px) {
         .sc-pagination {
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 8px !important;
         }
         .sc-pagination-controls {
-            justify-content: flex-end;
-            padding-right: 20px;
+            justify-content: flex-end !important;
+            padding-right: 20px !important;
+        }
+        .sc-pagination-info {
+            text-align: center !important;
         }
     }
 
     /* Extra Small Devices (< 480px) */
     @media (max-width: 479px) {
-        #onlineRequestsTable tbody td::before {
-            min-width: 85px !important;
-            font-size: 0.7rem !important;
-        }
-        #onlineRequestsTable tbody td {
-            font-size: 0.813rem !important;
-            padding: 6px 0 !important;
-        }
         #onlineRequestsTable tbody tr:not(.empty-row) {
             padding: 12px 14px !important;
+        }
+        #onlineRequestsTable tbody td {
+            font-size: 0.78rem !important;
+            grid-template-columns: 90px minmax(0, 1fr) !important;
+            gap: 12px !important;
+            padding: 7px 0 !important;
+        }
+        #onlineRequestsTable tbody td::before {
+            font-size: 0.68rem !important;
+        }
+        #onlineRequestsTable tbody td[data-label="Name"] {
+            font-size: 0.95rem !important;
+            padding-right: 85px !important;
+        }
+        .mobile-card-status {
+            top: 12px !important;
+            right: 12px !important;
+            font-size: 0.68rem !important;
+            padding: 3px 8px !important;
+        }
+        #onlineRequestsTable tbody td[data-label="Action"] .btn {
+            width: 32px !important;
+            height: 32px !important;
+            min-width: 32px !important;
+            padding: 0 !important;
         }
     }
 
@@ -577,6 +713,84 @@
             flex: 1;
             min-height: 0;
             overflow-y: auto;
+            border: 2px solid #CBD5E1 !important;
+            border-radius: 8px !important;
+        }
+        #onlineRequestsTable {
+            min-width: 1000px !important;
+            width: 100% !important;
+            table-layout: auto !important;
+            display: table !important;
+        }
+        #onlineRequestsTable thead {
+            display: table-header-group !important;
+        }
+        #onlineRequestsTable thead th {
+            padding: 12px 14px !important;
+            font-size: 0.75rem !important;
+        }
+        #onlineRequestsTable tbody {
+            display: table-row-group !important;
+        }
+        #onlineRequestsTable tbody tr {
+            display: table-row !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        #onlineRequestsTable tbody tr:hover {
+            background: #F8FAFC !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        #onlineRequestsTable tbody td {
+            display: table-cell !important;
+            padding: 12px 14px !important;
+            font-size: 0.875rem !important;
+            border-bottom: 1px solid #CBD5E1 !important;
+            text-align: left !important;
+            width: auto !important;
+            max-width: none !important;
+        }
+        #onlineRequestsTable tbody td::before {
+            display: none !important;
+            content: none !important;
+        }
+        #onlineRequestsTable tbody tr.empty-row td.empty-cell {
+            display: table-cell !important;
+            white-space: normal !important;
+            overflow: visible !important;
+            max-width: none !important;
+        }
+        #onlineRequestsTable tbody td[data-label="Name"] {
+            order: unset !important;
+            display: table-cell !important;
+            padding: 12px 14px !important;
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            color: #0F172A !important;
+        }
+        #onlineRequestsTable tbody td[data-label="Name"] .req-val-wrap > div:first-child {
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            color: #0F172A !important;
+        }
+        #onlineRequestsTable tbody td[data-label="Contact"] {
+            order: unset !important;
+            border-top: none !important;
+            padding: 12px 14px !important;
+        }
+        #onlineRequestsTable tbody td[data-label="Action"] {
+            order: unset !important;
+            display: table-cell !important;
+            padding: 12px 14px !important;
+            margin-top: 0 !important;
+            justify-content: unset !important;
+        }
+        .mobile-card-status {
+            display: none !important;
         }
     }
 
@@ -586,6 +800,9 @@
         grid-template-columns: 1fr 1fr;
         gap: 12px;
     }
+    .swal2-popup {
+        border-radius: 16px !important;
+    }
     @media (max-width: 575.98px) {
         .modal-grid-2 {
             grid-template-columns: 1fr !important;
@@ -594,6 +811,7 @@
         .swal2-popup {
             padding: 14px 10px !important;
             width: 95vw !important;
+            border-radius: 14px !important;
         }
     }
 
@@ -789,6 +1007,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                     @forelse($onlineRequests as $request)
                     <tr data-name="{{ $request->first_name }} {{ $request->last_name }}">
                         <td data-label="Name">
+                            <span class="mobile-card-status status-pending">Pending</span>
                             <div class="req-val-wrap">
                                 <div style="font-weight: 600; color: #0F172A;">
                                     {{ $request->first_name }} {{ $request->last_name }}

@@ -104,12 +104,14 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .archive-table tbody td[data-label="Action"], .archive-table tbody td[data-label="Actions"] { min-width: 120px; white-space: nowrap; }
 
     /* Badge & Button styling */
-    .badge { display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; line-height: 1.2; }
-    .b-archived { background: #F3F4F6; color: #4B5563; }
+    .badge { display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 4px 12px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; line-height: 1.2; letter-spacing: 0.02em; }
+    .b-archived, .badge-archived { background: #FEE2E2 !important; color: #991B1B !important; border: 1px solid #FECACA !important; }
+
     .actions { display: inline-flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
-    .actions button { width: 32px; height: 32px; min-width: 32px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; padding: 0 !important; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease; border: none; }
+    .actions button { width: 34px !important; height: 34px !important; min-width: 34px !important; max-height: 34px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; padding: 0 !important; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease; border: none; }
     .actions button:hover { transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.15); opacity: 0.95; }
     .actions button:active { transform: translateY(0); }
+    .actions button svg, .actions button i { width: 16px !important; height: 16px !important; }
 
     /* ── Pagination ── */
     .sc-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-shrink: 0; padding: 0; flex-wrap: wrap; border: none; }
@@ -132,9 +134,10 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     /* ═══════════════════════════════════════════════════════════════
        MOBILE, TABLET & COLLAPSED SIDEBAR (< 1200px): CARD LAYOUT
+       Matches Senior Citizen Masterlist Mobile Card Treatment
     ═══════════════════════════════════════════════════════════════ */
     @media (max-width: 1199.98px) {
-        .archive-table-wrap { overflow: visible; border: none; background: transparent; }
+        .archive-table-wrap { overflow: visible !important; border: none !important; background: transparent !important; box-shadow: none !important; border-radius: 0 !important; width: 100% !important; max-width: 100% !important; }
 
         .archive-table, 
         .archive-table thead, 
@@ -143,73 +146,188 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .archive-table tbody td { 
             display: block !important; 
             width: 100% !important; 
+            max-width: 100% !important;
+            box-sizing: border-box !important;
         }
         .archive-table { min-width: 0 !important; }
         .archive-table thead { display: none !important; }
+        .archive-table tbody { display: block !important; width: 100% !important; }
 
         .archive-table tbody tr:not(.empty-row) { 
+            display: flex !important;
+            flex-direction: column !important;
+            position: relative !important;
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
             background: #ffffff !important; 
-            border: 1px solid #E2E8F0 !important; 
+            border: 1px solid #D1D5DB !important; 
             border-radius: 12px !important; 
             margin-bottom: 12px !important; 
-            padding: 14px 18px !important; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important; 
+            padding: 14px 16px !important; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important; 
             transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .archive-table tbody tr:not(.empty-row):last-child {
+            margin-bottom: 0 !important;
         }
         .archive-table tbody tr:not(.empty-row):hover { 
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
         }
 
         .archive-table tbody td { 
-            display: flex !important; 
-            justify-content: space-between !important; 
-            align-items: center !important; 
-            padding: 8px 0 !important; 
+            display: grid !important; 
+            grid-template-columns: 96px minmax(0, 1fr) !important; 
+            align-items: start !important; 
+            gap: 20px !important; 
+            padding: 9px 0 !important; 
+            border: none !important; 
             border-bottom: 1px solid #F1F5F9 !important; 
-            font-size: 0.875rem !important; 
-            gap: 12px !important; 
+            font-size: 0.82rem !important; 
+            overflow-wrap: anywhere !important; 
+            text-align: left !important; 
             white-space: normal !important; 
             word-break: break-word !important; 
             max-width: none !important; 
             overflow: visible !important; 
             min-width: 0 !important; 
         }
+        .archive-table tbody td:not(:last-child) { 
+            border-bottom: 1px solid #F1F5F9 !important; 
+        }
         .archive-table tbody td:last-child { 
             border-bottom: none !important; 
         }
         .archive-table tbody td::before { 
             content: attr(data-label) !important; 
-            font-weight: 700 !important; 
+            font-weight: 600 !important; 
             font-size: 0.72rem !important; 
             text-transform: uppercase !important; 
-            letter-spacing: 0.04em !important; 
+            letter-spacing: 0.03em !important; 
             color: #64748B !important; 
+            text-align: left !important;
+            line-height: 1.5 !important;
+            grid-column: 1 !important;
             flex-shrink: 0 !important; 
-            min-width: 100px !important; 
             display: block !important; 
         }
-        .archive-table tbody td[data-label="Action"], .archive-table tbody td[data-label="Actions"] { 
-            justify-content: flex-end !important; 
-            padding-top: 12px !important; 
+
+        /* ── Client Name (Matches Senior Masterlist Full Name Header) ── */
+        .archive-table tbody td[data-label="Client"] { 
+            order: -3 !important; 
+            display: block !important; 
+            padding: 2px 110px 10px 0 !important; 
             border-bottom: none !important; 
+            font-size: 1.02rem !important; 
+            font-weight: 700 !important; 
+            line-height: 1.35 !important; 
+            color: #1A237E !important; 
         }
-        .archive-table tbody td[data-label="Action"]::before, .archive-table tbody td[data-label="Actions"]::before { 
+        .archive-table tbody td[data-label="Client"]::before { 
             display: none !important; 
         }
 
+        /* ── Status Badge (Top Right Corner, matches Senior Masterlist) ── */
+        .archive-table tbody td[data-label="Status"] { 
+            position: absolute !important; 
+            top: 14px !important; 
+            right: 14px !important; 
+            display: flex !important; 
+            align-items: center !important; 
+            gap: 8px !important; 
+            padding: 0 !important; 
+            border-bottom: none !important; 
+            background: transparent !important; 
+            z-index: 2 !important; 
+            width: auto !important; 
+        }
+        .archive-table tbody td[data-label="Status"]::before { 
+            display: none !important; 
+        }
+
+        /* ── Control No. (Header divider line) ── */
+        .archive-table tbody td[data-label="Control No"],
+        .archive-table tbody td[data-label="Control No."] { 
+            order: -2 !important; 
+            border-top: 1px solid #E2E8F0 !important; 
+            padding-top: 12px !important; 
+            white-space: nowrap !important; 
+        }
+
+        /* ── Action Buttons (Bottom Right, matches Senior Masterlist) ── */
+        .archive-table tbody td[data-label="Action"], 
+        .archive-table tbody td[data-label="Actions"] { 
+            order: 2 !important; 
+            display: flex !important; 
+            justify-content: flex-end !important; 
+            align-items: center !important; 
+            padding: 12px 0 2px !important; 
+            border-bottom: none !important; 
+            margin-top: 2px !important; 
+            width: 100% !important; 
+        }
+        .archive-table tbody td[data-label="Action"]::before, 
+        .archive-table tbody td[data-label="Actions"]::before { 
+            display: none !important; 
+        }
+
+        /* ── Empty Row ── */
         .archive-table tbody tr.empty-row { 
+            display: flex !important; 
+            justify-content: center !important; 
+            align-items: center !important; 
             border: none !important; 
             box-shadow: none !important; 
             background: transparent !important; 
             padding: 0 !important; 
+            margin: 0 !important; 
         }
         .archive-table tbody tr.empty-row td { 
-            border-bottom: none !important; 
+            display: flex !important; 
             justify-content: center !important; 
+            align-items: center !important; 
+            text-align: center !important; 
+            padding: 2.5rem 1rem !important; 
+            border: none !important; 
+            width: 100% !important; 
         }
         .archive-table tbody tr.empty-row td::before { 
             display: none !important; 
+        }
+    }
+
+    /* ── Small Mobile (< 480px) ── */
+    @media (max-width: 479px) {
+        .archive-table tbody tr:not(.empty-row) {
+            padding: 12px 14px !important;
+        }
+        .archive-table tbody td {
+            font-size: 0.75rem !important;
+            grid-template-columns: 80px minmax(0, 1fr) !important;
+            gap: 12px !important;
+            padding: 7px 0 !important;
+        }
+        .archive-table tbody td::before {
+            font-size: 0.65rem !important;
+            min-width: 0 !important;
+        }
+        .archive-table tbody td[data-label="Client"] {
+            font-size: 0.95rem !important;
+            padding-right: 90px !important;
+        }
+        .archive-table tbody td[data-label="Status"] {
+            top: 12px !important;
+            right: 12px !important;
+        }
+        .badge {
+            font-size: 0.7rem !important;
+            padding: 3px 8px !important;
+        }
+        .actions button {
+            width: 32px !important;
+            height: 32px !important;
+            min-width: 32px !important;
         }
     }
 
@@ -288,11 +406,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .sc-pagination-controls { justify-content: flex-end !important; padding-right: 20px !important; }
         .sc-pagination-info { text-align: center !important; padding-left: 0 !important; }
     }
-    @media (max-width: 479px) {
-        .archive-table tbody td::before { min-width: 75px; font-size: 0.68rem; }
-        .archive-table tbody td { font-size: 0.813rem !important; }
-    }
-
     /* Collapsed Sidebar (768px - 1199.98px) */
     @media (min-width: 768px) and (max-width: 1199.98px) {
         .archive-filter-bar { gap: 10px; padding: 0; margin-bottom: 12px; flex-wrap: wrap; }
@@ -317,11 +430,45 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .filter-reset { flex: 0 0 auto; }
 
         .archive-table-wrap { flex: 1; min-height: 0; overflow: auto; border: 1px solid #E5E7EB; border-radius: 8px; }
-        .archive-table { min-width: 900px; width: 100%; table-layout: auto; }
+        .archive-table { min-width: 900px; width: 100%; table-layout: auto; display: table !important; }
+        .archive-table thead { display: table-header-group !important; }
         .archive-table thead th { padding: 12px 16px; font-size: 0.75rem; }
-        .archive-table tbody td { padding: 12px 16px; font-size: 0.875rem; }
+        .archive-table tbody { display: table-row-group !important; }
+        .archive-table tbody tr { display: table-row !important; }
+        .archive-table tbody td { display: table-cell !important; padding: 12px 16px; font-size: 0.875rem; border-bottom: 1px solid #CBD5E1 !important; }
         .archive-table tbody td::before { display: none !important; content: none !important; }
-        .archive-table tbody tr.empty-row td.empty-cell { white-space: normal !important; overflow: visible !important; max-width: none !important; }
+        .archive-table tbody tr.empty-row td.empty-cell { display: table-cell !important; white-space: normal !important; overflow: visible !important; max-width: none !important; }
+
+        .archive-table tbody td[data-label="Client"] {
+            order: unset !important;
+            display: table-cell !important;
+            padding: 12px 16px !important;
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            color: #0F172A !important;
+        }
+        .archive-table tbody td[data-label="Status"] {
+            position: static !important;
+            display: table-cell !important;
+            padding: 12px 16px !important;
+            background: transparent !important;
+            z-index: auto !important;
+            width: auto !important;
+        }
+        .archive-table tbody td[data-label="Control No"],
+        .archive-table tbody td[data-label="Control No."] {
+            order: unset !important;
+            border-top: none !important;
+            padding: 12px 16px !important;
+        }
+        .archive-table tbody td[data-label="Action"],
+        .archive-table tbody td[data-label="Actions"] {
+            order: unset !important;
+            display: table-cell !important;
+            padding: 12px 16px !important;
+            margin-top: 0 !important;
+            justify-content: unset !important;
+        }
 
         .sc-pagination { flex-direction: row; justify-content: space-between; margin-top: 12px; flex-shrink: 0; }
         .sc-pagination-controls { justify-content: flex-end; }
