@@ -18,6 +18,8 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
         $repBday = $this->normalizeDate($this->rep_birthday);
 
         $this->merge([
+            'client_type' => $this->client_type ?: 'New',
+            'control_number' => $this->control_number ?: ('MSWDO-' . date('Y') . '-' . str_pad(\App\Models\SocialCase\BeneficiaryIntake::count() + 1, 5, '0', STR_PAD_LEFT)),
             'has_representative' => $this->boolean('has_representative'),
             'is_client_beneficiary' => $this->boolean('is_client_beneficiary'),
             'beneficiary_birthday' => $benBday,
