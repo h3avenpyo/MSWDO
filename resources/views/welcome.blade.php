@@ -20,7 +20,7 @@
     <!-- ========================= -->
     <!-- NAVBAR -->
     <!-- ========================= -->
-    <header class="fixed top-0 z-50 w-full bg-primary bg-opacity-95 backdrop-blur shadow-lg">
+    <header class="navbar-header fixed top-0 z-50 w-full backdrop-blur shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
@@ -82,7 +82,7 @@
                 <a href="#programs" class="py-2 px-3 rounded-lg hover:bg-white/10 transition">Programs</a>
                 <a href="#contact" class="py-2 px-3 rounded-lg hover:bg-white/10 transition">Contact</a>
                 <a href="/admin"
-                    class="navbar-login-btn bg-warm-gold text-[#1F2937] px-5 py-2.5 rounded-full font-semibold hover:bg-[#f4c243] transition text-center mt-2">Login</a>
+                    class="navbar-login-btn text-center mt-2">Login</a>
 
             </div>
         </div>
