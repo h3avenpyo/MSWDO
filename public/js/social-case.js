@@ -21,7 +21,7 @@ window.BARANGAYS = BARANGAYS;
 const AGENCIES = [
   {key:"PCSO", name:"Philippine Charity Sweepstakes Office", addressee:"The Officer-in-Charge\nPCSO Provincial/District Office"},
   {key:"DSWD", name:"Department of Social Welfare and Development", addressee:"The Regional Director\nDSWD Field Office"},
-  {key:"OP", name:"Office of the President (AKAP)", addressee:"The Head, AKAP Program\nOffice of the President"},
+  {key:"OP", name:"Office of the President", addressee:"Office of the President"},
   {key:"DOH", name:"Department of Health", addressee:"The Regional Director\nDepartment of Health"},
   {key:"MSWDO", name:"MSWDO File Copy", addressee:"FILE COPY"}
 ];
@@ -78,6 +78,26 @@ function countEffectiveOverlap(inputParts, clientParts){
     }
   }
   return overlap;
+}
+
+/* Extract given name parts (excluding surname and single-character initials) */
+function extractGivenParts(parts, lastName){
+  return (parts || []).filter(p => p !== lastName && p.length > 1);
+}
+
+/* Check if two sets of name parts share a real given-name match or overlap */
+function hasGivenNameMatch(inputParts, clientParts, lastName){
+  const inputGiven = extractGivenParts(inputParts, lastName);
+  const clientGiven = extractGivenParts(clientParts, lastName);
+  for(const ig of inputGiven){
+    for(const cg of clientGiven){
+      if(ig === cg) return true;
+      if(ig.length >= 4 && cg.length >= 4){
+        if(ig.startsWith(cg) || cg.startsWith(ig)) return true;
+      }
+    }
+  }
+  return false;
 }
 
 /* ── Backend-fresh document data (date + age) ──────────────────────── */
@@ -589,10 +609,8 @@ function checkEligibility(clientName){
     const cParsed = parseClientName(c.client.name);
     // Exact normalized full-name match
     if(cParsed.normalized === parsed.normalized) return true;
-    // Effective overlap (including concatenated parts like "GeraldLouis" = "gerald" + "louis")
-    if(countEffectiveOverlap(inputParts, cParsed.parts) >= 2) return true;
-    // Input is a subset of an existing name (partial entry)
-    if(inputParts.length >= 2 && inputParts.every(p => cParsed.parts.includes(p))) return true;
+    // Must have same last name AND genuine given name match
+    if(cParsed.lastName === parsed.lastName && hasGivenNameMatch(parsed.parts, cParsed.parts, parsed.lastName)) return true;
     return false;
   });
   
@@ -1787,14 +1805,12 @@ function renderSearchResults(query){
     normalizeClientName(c.client.name) === qParsed.normalized
   );
   
-  // Find partial matches: last name match + at least one other overlapping part
+  // Find partial matches: last name match + at least one genuine given-name match
   const partialMatches = cases.filter(c => {
     const cParsed = parseClientName(c.client.name);
     if(normalizeClientName(c.client.name) === qParsed.normalized) return false;
-    // Same last name + effective overlap >= 2 (including concatenated parts)
-    if(cParsed.lastName === qParsed.lastName && countEffectiveOverlap(qParsed.parts, cParsed.parts) >= 2) return true;
-    // Input is a subset of the client name
-    if(qParsed.parts.length >= 2 && qParsed.parts.every(p => cParsed.parts.includes(p))) return true;
+    // Must have same last name AND real given-name overlap
+    if(cParsed.lastName === qParsed.lastName && hasGivenNameMatch(qParsed.parts, cParsed.parts, qParsed.lastName)) return true;
     return false;
   }).slice(0,5);
   
@@ -2393,202 +2409,334 @@ function caseToIntake(c){
 function updateClientAge(){
   const bd = draftIntake.client.birthdate;
   const ageInput = document.getElementById('clientAgeInput');
+  const monthInput = document.getElementById('clientMonthInput');
   if (bd && bd.trim()) {
     const b = new Date(bd + 'T00:00:00');
     if (!isNaN(b.getTime())) {
       const today = new Date();
       let age = today.getFullYear() - b.getFullYear();
-      const m = today.getMonth() - b.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < b.getDate())) age--;
+      const monthDiff = today.getMonth() - b.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < b.getDate())) age--;
       draftIntake.client.age = age;
+      const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      draftIntake.client.month = months[b.getMonth()];
     }
   } else {
     draftIntake.client.age = '';
+    draftIntake.client.month = '';
   }
-  if (ageInput) ageInput.value = draftIntake.client.age;
+  if (ageInput) ageInput.value = draftIntake.client.age !== '' ? draftIntake.client.age : '';
+  if (monthInput) monthInput.value = draftIntake.client.month || '';
 }
 
 function renderIntakeForm(){
   const container = document.getElementById('intakeFormContent');
   if(!container) return;
 
-  // Allow the page to scroll instead of just the container
   container.style.overflow = 'visible';
   container.style.height = 'auto';
 
-  // Also check and modify parent container if it exists
   if (container.parentElement) {
     container.parentElement.style.overflow = 'visible';
     container.parentElement.style.height = 'auto';
   }
 
   const d = draftIntake;
+  if (!d.signers.preparedByName || !d.signers.preparedByName.trim()) d.signers.preparedByName = CURRENT_USER_NAME;
   d.signers.preparedByTitle = "MSWDO Staff";
+  if (!d.signers.notedByName || !d.signers.notedByName.trim()) d.signers.notedByName = ADMIN_NAME || CURRENT_USER_NAME;
   d.signers.notedByTitle = "MSWDO Head";
+
   container.innerHTML = `
-  <div style="width:100%;overflow:visible;padding-bottom:20px;box-sizing:border-box">
-  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
-    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Report details</h3>
-    <div class="field-row" style="display:flex;gap:10px">
-      <div class="field field-control-no" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Control no. <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.controlNo)}" oninput="draftIntake.controlNo=this.value" placeholder="e.g. MSWD-O-2026-09-0001" style="padding:6px 8px;font-size:13px;width:100%"></div>
-      <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Report date <span style="color:#DC2626;font-weight:700">*</span></label><input type="date" value="${d.interview.reportDate}" oninput="draftIntake.interview.reportDate=this.value" style="padding:6px 8px;font-size:13px;width:100%"></div>
+  <div class="form-card">
+    <div class="flex items-center justify-between mb-6 pb-4 border-b" style="border-color:var(--border);">
+      <div>
+        <h2 class="text-xl font-bold mb-1" style="color:var(--text-primary)">Social Case Study Intake</h2>
+        <p class="text-sm m-0" style="color:var(--text-secondary)">Fill in the details below to encode a new social case study record.</p>
+      </div>
+      <div class="hidden sm:flex items-center gap-2">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold" style="background:#EEF2FF;color:var(--primary);border:1px solid #C7D2FE;">
+          <i data-lucide="file-text" style="width:14px;height:14px;margin-right:6px;"></i> Step 2: Case Encoding
+        </span>
+      </div>
     </div>
-  </div>
 
-  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
-    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">I. Identifying information</h3>
-      <div class="field" style="margin:0 0 8px 0"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Name <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value" required maxlength="255" placeholder="e.g. Juan A. Santos" style="padding:6px 8px;font-size:13px;width:100%"></div>
-      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
-        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Age <span style="color:#DC2626;font-weight:700">*</span></label><input type="number" id="clientAgeInput" value="${escapeHtml(String(d.client.age))}" min="0" max="150" placeholder="Auto-computed from birthdate" readonly style="background:#F3F4F6;cursor:not-allowed;padding:6px 8px;font-size:13px;width:100%"></div>
-        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Sex <span style="color:#DC2626;font-weight:700">*</span></label>
-          <select oninput="draftIntake.client.sex=this.value" required style="padding:6px 8px;font-size:13px;width:100%">
-            ${["","Male","Female"].map(o=>`<option ${d.client.sex===o?'selected':''}>${o}</option>`).join("")}
+    <!-- Report Details & Control Info -->
+    <div class="mb-8">
+      <h3 class="text-md font-bold mb-4" style="color:var(--primary);border-bottom:2px solid var(--primary);padding-bottom:8px;">
+        <i data-lucide="clipboard-list" style="width:18px;height:18px;display:inline-block;margin-right:8px;vertical-align:text-bottom;"></i>
+        Report Details & Control Information
+      </h3>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div>
+          <label class="form-label">Control No. <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <input type="text" class="form-input font-mono font-medium" value="${escapeHtml(d.controlNo)}" oninput="draftIntake.controlNo=this.value" placeholder="e.g. MSWD-O-2026-09-0001" required>
+        </div>
+        <div>
+          <label class="form-label">Report Date <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <input type="date" class="form-input" value="${d.interview.reportDate}" oninput="draftIntake.interview.reportDate=this.value" required>
+        </div>
+        <div>
+          <label class="form-label">Purpose / Type of Assistance <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <select class="form-input" oninput="draftIntake.purpose=this.value" required>
+            <option value="">Select Purpose</option>
+            ${PURPOSES.map(p=>`<option value="${escapeHtml(p)}" ${d.purpose===p?'selected':''}>${escapeHtml(p)}</option>`).join("")}
           </select>
         </div>
       </div>
-      <div class="field" style="margin:0 0 8px 0"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Address (Barangay) <span style="color:#DC2626;font-weight:700">*</span></label>
-        <select oninput="draftIntake.client.address=this.value" required style="padding:6px 8px;font-size:13px;width:100%">
-          <option value="">Select Barangay</option>
-          ${BARANGAYS.map(b=>`<option ${d.client.address===b?'selected':''}>${b}</option>`).join("")}
-        </select>
-      </div>
-      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
-        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Birthdate <span style="color:#DC2626;font-weight:700">*</span></label><input type="date" value="${d.client.birthdate}" oninput="draftIntake.client.birthdate=this.value; updateClientAge()" style="padding:6px 8px;font-size:13px;width:100%"></div>
-        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Birthplace <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.birthplace)}" oninput="draftIntake.client.birthplace=this.value" placeholder="e.g. Cavite City" style="padding:6px 8px;font-size:13px;width:100%"></div>
-      </div>
-      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
-        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Religion <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.religion)}" oninput="draftIntake.client.religion=this.value" placeholder="e.g. Roman Catholic" style="padding:6px 8px;font-size:13px;width:100%"></div>
-        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Educational attainment <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.education)}" oninput="draftIntake.client.education=this.value" placeholder="e.g. College Graduate" style="padding:6px 8px;font-size:13px;width:100%"></div>
-      </div>
-      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
-        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Civil status <span style="color:#DC2626;font-weight:700">*</span></label>
-          <select oninput="draftIntake.client.civilStatus=this.value" style="padding:6px 8px;font-size:13px;width:100%">
-            ${["","Single","Married","Widowed","Separated"].map(o=>`<option ${d.client.civilStatus===o?'selected':''}>${o}</option>`).join("")}
+    </div>
+
+    <!-- I. Identifying Information -->
+    <div class="mb-8">
+      <h3 class="text-md font-bold mb-4" style="color:var(--primary);border-bottom:2px solid var(--primary);padding-bottom:8px;">
+        <i data-lucide="user" style="width:18px;height:18px;display:inline-block;margin-right:8px;vertical-align:text-bottom;"></i>
+        I. Identifying Information
+      </h3>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div class="lg:col-span-2">
+          <label class="form-label">Full Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <input type="text" class="form-input" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value" placeholder="Enter client's full name" required maxlength="255">
+        </div>
+        <div>
+          <label class="form-label">Sex <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <select class="form-input" oninput="draftIntake.client.sex=this.value" required>
+            <option value="">Select Sex</option>
+            <option value="Male" ${d.client.sex==='Male'?'selected':''}>Male</option>
+            <option value="Female" ${d.client.sex==='Female'?'selected':''}>Female</option>
           </select>
         </div>
-        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Occupation <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.occupation)}" oninput="draftIntake.client.occupation=this.value" placeholder="e.g. Teacher" style="padding:6px 8px;font-size:13px;width:100%"></div>
-      </div>
-      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
-        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Income <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.client.income)}" oninput="this.value=formatNumberWithCommas(this.value); draftIntake.client.income=this.value" placeholder="e.g. 15,000 or N/A" style="padding:6px 8px;font-size:13px;width:100%"></div>
-        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Contact no. <span style="color:#DC2626;font-weight:700">*</span></label><input type="tel" value="${escapeHtml(d.client.contact)}" oninput="draftIntake.client.contact=this.value" pattern="09[0-9]{9}" maxlength="11" placeholder="e.g. 09171234567" title="Must be a valid PH mobile number (09xxxxxxxxx)" style="padding:6px 8px;font-size:13px;width:100%"></div>
-      </div>
-  </div>
-
-  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
-    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">II. Family composition</h3>
-    ${d.household.map((m,i)=>`
-      <div class="family-member-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:5px;align-items:end;padding-bottom:5px;border-bottom:1px solid var(--surface-sunken)">
-        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Name <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value" placeholder="e.g. Maria Santos" style="padding:4px 6px;font-size:12px;width:100%"></div>
-        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Relationship <span style="color:#DC2626;font-weight:700">*</span></label><select oninput="draftIntake.household[${i}].relationship=this.value" style="padding:4px 6px;font-size:12px;width:100%"><option value="">Select</option>${RELATIONSHIPS.map(o=>`<option ${m.relationship===o?'selected':''}>${o}</option>`).join("")}</select></div>
-        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Age <span style="color:#DC2626;font-weight:700">*</span></label><input type="number" value="${escapeHtml(String(m.age))}" oninput="draftIntake.household[${i}].age=this.value" min="0" max="150" placeholder="e.g. 25" style="padding:4px 6px;font-size:12px;width:100%"></div>
-        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Education <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value" placeholder="e.g. High School" style="padding:4px 6px;font-size:12px;width:100%"></div>
-        <div class="field" style="margin:0"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Occupation <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="e.g. Driver" style="padding:4px 6px;font-size:12px;width:100%"></div>
-        <div class="field" style="margin:0;display:flex;gap:3px">
-          <div style="flex:1"><label style="font-size:12px;margin-bottom:4px;font-weight:600;color:#111827">Income <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(m.income)}" oninput="this.value=formatNumberWithCommas(this.value); draftIntake.household[${i}].income=this.value" placeholder="e.g. 10,000" style="padding:4px 6px;font-size:12px;width:100%"></div>
-          ${i>0?`<button class="btn ghost btn-sm" style="align-self:flex-end;padding:3px 6px" onclick="draftIntake.household.splice(${i},1); renderIntakeForm();"><i data-lucide="x" style="width:12px;height:12px"></i></button>`:""}
+        <div>
+          <label class="form-label">Birth Date <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <input type="date" id="clientBirthdateInput" class="form-input" value="${d.client.birthdate}" onchange="draftIntake.client.birthdate=this.value; updateClientAge()" required>
         </div>
-      </div>`).join("")}
-    <button class="btn ghost btn-sm" onclick="draftIntake.household.push({name:'',relationship:'',age:'',education:'',occupation:'',income:''}); renderIntakeForm();" style="padding:6px 12px;font-size:12px"><i data-lucide="plus" style="width:14px;height:14px"></i> Add family member</button>
-  </div>
-
-  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
-    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Narrative sections</h3>
-    <div class="field" style="margin:0"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">III. Problem presented <span style="color:#DC2626;font-weight:700">*</span></label><textarea oninput="draftIntake.interview.problemPresented=this.value" style="padding:6px 8px;font-size:13px;min-height:80px;width:100%">${escapeHtml(d.interview.problemPresented)}</textarea></div>
-  </div>
-
-  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
-    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Signatories</h3>
-      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
-        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Prepared by (name) <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.signers.preparedByName)}" oninput="draftIntake.signers.preparedByName=this.value" required maxlength="255" placeholder="Enter prepared by name" style="padding:6px 8px;font-size:13px;width:100%"></div>
-        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Prepared by (title)</label><input type="text" value="MSWDO Staff" readonly style="background:#F3F4F6;cursor:not-allowed;padding:6px 8px;font-size:13px;width:100%"></div>
+        <div>
+          <label class="form-label">Month</label>
+          <input type="text" id="clientMonthInput" class="form-input" placeholder="Auto-calculated" value="${d.client.month || ''}" readonly>
+        </div>
+        <div>
+          <label class="form-label">Age</label>
+          <input type="number" id="clientAgeInput" class="form-input" placeholder="Auto-calculated" value="${escapeHtml(String(d.client.age || ''))}" readonly>
+        </div>
+        <div>
+          <label class="form-label">Address (Barangay) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <select class="form-input" oninput="draftIntake.client.address=this.value" required>
+            <option value="">Select Barangay</option>
+            ${BARANGAYS.map(b=>`<option value="${escapeHtml(b)}" ${d.client.address===b?'selected':''}>${escapeHtml(b)}</option>`).join("")}
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Birthplace <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <input type="text" class="form-input" value="${escapeHtml(d.client.birthplace || '')}" oninput="draftIntake.client.birthplace=this.value" placeholder="e.g. Silang, Cavite" required>
+        </div>
+        <div>
+          <label class="form-label">Civil Status <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <select class="form-input" oninput="draftIntake.client.civilStatus=this.value" required>
+            <option value="">Select Civil Status</option>
+            ${["Single","Married","Widowed","Separated"].map(o=>`<option value="${o}" ${d.client.civilStatus===o?'selected':''}>${o}</option>`).join("")}
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Religion <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <input type="text" class="form-input" value="${escapeHtml(d.client.religion || '')}" oninput="draftIntake.client.religion=this.value" placeholder="e.g. Roman Catholic" required>
+        </div>
+        <div>
+          <label class="form-label">Educational Attainment <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <input type="text" class="form-input" value="${escapeHtml(d.client.education || '')}" oninput="draftIntake.client.education=this.value" placeholder="e.g. College Graduate" required>
+        </div>
+        <div>
+          <label class="form-label">Occupation <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <input type="text" class="form-input" value="${escapeHtml(d.client.occupation || '')}" oninput="draftIntake.client.occupation=this.value" placeholder="e.g. Teacher, Vendor, None" required>
+        </div>
+        <div>
+          <label class="form-label">Monthly Income <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <input type="text" class="form-input" value="${escapeHtml(d.client.income || '')}" oninput="this.value=formatNumberWithCommas(this.value); draftIntake.client.income=this.value" placeholder="e.g. 15,000 or N/A" required>
+        </div>
+        <div>
+          <label class="form-label">Contact Number <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <input type="tel" class="form-input" value="${escapeHtml(d.client.contact || '')}" oninput="draftIntake.client.contact=this.value" maxlength="11" placeholder="e.g. 09171234567" required>
+        </div>
       </div>
-      <div class="field-row" style="display:flex;gap:10px;margin-bottom:8px">
-        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Noted by (name) <span style="color:#DC2626;font-weight:700">*</span></label><input type="text" value="${escapeHtml(d.signers.notedByName)}" oninput="draftIntake.signers.notedByName=this.value" required maxlength="255" placeholder="Enter noted by name" style="padding:6px 8px;font-size:13px;width:100%"></div>
-        <div class="field" style="margin:0;flex:1"><label style="font-size:13px;margin-bottom:6px;font-weight:600;color:#111827">Noted by (title)</label><input type="text" value="MSWDO Head" readonly style="background:#F3F4F6;cursor:not-allowed;padding:6px 8px;font-size:13px;width:100%"></div>
+    </div>
+
+    <!-- II. Family Composition -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-4" style="border-bottom:2px solid var(--primary);padding-bottom:8px;">
+        <h3 class="text-md font-bold m-0" style="color:var(--primary)">
+          <i data-lucide="users" style="width:18px;height:18px;display:inline-block;margin-right:8px;vertical-align:text-bottom;"></i>
+          II. Family Composition
+        </h3>
+        <span class="text-xs text-gray-500 font-medium">Add household or immediate family members</span>
       </div>
-  </div>
 
-  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
-    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Agencies & Purpose</h3>
-    <div class="field" style="margin:0 0 6px 0"><label style="font-size:14px;margin-bottom:8px;font-weight:600;color:#111827">Purpose <span style="color:#DC2626;font-weight:700">*</span></label>
-      <select oninput="draftIntake.purpose=this.value" style="padding:5px 7px;font-size:12px;width:100%">
-        ${PURPOSES.map(p=>`<option ${d.purpose===p?'selected':''}>${p}</option>`).join("")}
-      </select>
-    </div>
-    <div class="field" style="margin:0"><label style="font-size:14px;margin-bottom:16px;display:block;text-align:left;font-weight:600;color:#111827">Agencies (select all that apply) <span style="color:#DC2626;font-weight:700">*</span></label>
-      <div class="agencies-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
-        ${AGENCIES.map(a=>`<label class="pill-check ${d.agencies.includes(a.key)?'on':''}" style="font-size:13px;padding:12px 16px;font-weight:500;min-height:52px;display:flex;align-items:center;gap:8px;text-align:center;white-space:normal;line-height:1.4;word-wrap:break-word;overflow-wrap:break-word;cursor:pointer;border:1px solid #D1D5DB;border-radius:8px;background:#F9FAFB;transition:all 0.2s ease !important">
-          <input type="checkbox" ${d.agencies.includes(a.key)?'checked':''} onchange="toggleAgency('${a.key}')" style="flex-shrink:0;margin:0;width:18px;height:18px;pointer-events:none"> <span style="flex:1;text-align:center">${a.name}</span>
-        </label>`).join("")}
+      <div class="family-table-container">
+        <table class="family-table">
+          <thead>
+            <tr>
+              <th style="width:24%;">Full Name <span style="color:#DC2626">*</span></th>
+              <th style="width:16%;">Relationship <span style="color:#DC2626">*</span></th>
+              <th style="width:10%;">Age <span style="color:#DC2626">*</span></th>
+              <th style="width:18%;">Education <span style="color:#DC2626">*</span></th>
+              <th style="width:16%;">Occupation <span style="color:#DC2626">*</span></th>
+              <th style="width:16%;">Monthly Income <span style="color:#DC2626">*</span></th>
+              <th style="width:50px;text-align:center;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${d.household.map((m, i) => `
+              <tr>
+                <td>
+                  <span class="family-mobile-label" style="display:none">Full Name</span>
+                  <input type="text" class="form-input" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value" placeholder="e.g. Maria Santos" required>
+                </td>
+                <td>
+                  <span class="family-mobile-label" style="display:none">Relationship</span>
+                  <select class="form-input" oninput="draftIntake.household[${i}].relationship=this.value" required>
+                    <option value="">Select</option>
+                    ${RELATIONSHIPS.map(o=>`<option value="${o}" ${m.relationship===o?'selected':''}>${o}</option>`).join("")}
+                  </select>
+                </td>
+                <td>
+                  <span class="family-mobile-label" style="display:none">Age</span>
+                  <input type="number" class="form-input" min="0" max="150" value="${escapeHtml(String(m.age))}" oninput="draftIntake.household[${i}].age=this.value" placeholder="Age" required>
+                </td>
+                <td>
+                  <span class="family-mobile-label" style="display:none">Education</span>
+                  <input type="text" class="form-input" value="${escapeHtml(m.education)}" oninput="draftIntake.household[${i}].education=this.value" placeholder="e.g. High School" required>
+                </td>
+                <td>
+                  <span class="family-mobile-label" style="display:none">Occupation</span>
+                  <input type="text" class="form-input" value="${escapeHtml(m.occupation)}" oninput="draftIntake.household[${i}].occupation=this.value" placeholder="e.g. Driver" required>
+                </td>
+                <td>
+                  <span class="family-mobile-label" style="display:none">Monthly Income</span>
+                  <input type="text" class="form-input" value="${escapeHtml(m.income)}" oninput="this.value=formatNumberWithCommas(this.value); draftIntake.household[${i}].income=this.value" placeholder="e.g. 10,000" required>
+                </td>
+                <td style="text-align:center;">
+                  ${i > 0 ? `
+                    <button type="button" class="btn-icon-danger mx-auto" onclick="draftIntake.household.splice(${i},1); renderIntakeForm(); lucide.createIcons();" title="Remove Member">
+                      <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
+                    </button>
+                  ` : `
+                    <span class="text-xs text-gray-300">—</span>
+                  `}
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4 flex items-center justify-between">
+        <button type="button" class="btn btn-sm" style="width:auto;max-width:max-content;padding:5px 12px;height:34px;font-size:12.5px;white-space:nowrap;" onclick="draftIntake.household.push({name:'',relationship:'',age:'',education:'',occupation:'',income:''}); renderIntakeForm(); lucide.createIcons();">
+          <i data-lucide="plus" style="width:14px;height:14px"></i> Add Family Member
+        </button>
+        <span class="text-xs text-gray-400 font-medium">Total Family Members: ${d.household.length}</span>
       </div>
     </div>
-    <style>
-      .agencies-grid .pill-check.on {
-        background: #1A237E !important;
-        border-color: #1A237E !important;
-        color: white !important;
-      }
-      .agencies-grid .pill-check.on:hover {
-        background: #121858 !important;
-        border-color: #121858 !important;
-      }
-      .agencies-grid .pill-check:hover {
-        border-color: #1A237E !important;
-        background: #F1F5F9 !important;
-      }
-      @media (max-width: 768px) {
-        .agencies-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-  </div>
 
-  <div class="panel" style="padding:10px 14px;margin-bottom:8px;width:100%;box-sizing:border-box">
-    <h3 style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827">Requirements</h3>
-    <div class="requirements-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
-      ${d.requirements.map((r,i)=>`
-        <label class="pill-check ${r.submitted?'on':''}" style="font-size:13px;padding:12px 16px;font-weight:500;min-height:52px;display:flex;align-items:center;gap:8px;text-align:left;white-space:normal;line-height:1.4;word-wrap:break-word;overflow-wrap:break-word;cursor:pointer;border:1px solid #D1D5DB;border-radius:8px;background:#F9FAFB;transition:all 0.2s ease !important">
-          <input type="checkbox" ${r.submitted?'checked':''} onchange="toggleRequirement(${i})" style="flex-shrink:0;margin:0;width:18px;height:18px;pointer-events:none"> <span style="flex:1">${escapeHtml(r.name)}</span>
-        </label>
-      `).join("")}
+    <!-- III. Narrative Sections -->
+    <div class="mb-8">
+      <h3 class="text-md font-bold mb-4" style="color:var(--primary);border-bottom:2px solid var(--primary);padding-bottom:8px;">
+        <i data-lucide="file-text" style="width:18px;height:18px;display:inline-block;margin-right:8px;vertical-align:text-bottom;"></i>
+        III. Problem Presented & Case Narrative
+      </h3>
+      <div>
+        <label class="form-label">Problem Presented <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+        <textarea class="form-input" style="min-height:110px;" oninput="draftIntake.interview.problemPresented=this.value" placeholder="Describe the immediate problem presented, background circumstances, and assistance requested..." required>${escapeHtml(d.interview.problemPresented)}</textarea>
+      </div>
     </div>
-    <style>
-      .requirements-grid .pill-check.on {
-        background: #1A237E !important;
-        border-color: #1A237E !important;
-        color: white !important;
-      }
-      .requirements-grid .pill-check.on:hover {
-        background: #121858 !important;
-        border-color: #121858 !important;
-      }
-      .requirements-grid .pill-check:hover {
-        border-color: #1A237E !important;
-        background: #F1F5F9 !important;
-      }
-      @media (max-width: 768px) {
-        .requirements-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-  </div>
 
-  <div class="intake-actions" style="display:flex;gap:12px;margin-top:20px;margin-bottom:20px;justify-content:flex-end">
-    <button class="btn primary" onclick="reviewIntake()"><i data-lucide="eye" style="width:16px;height:16px"></i> Review & Save</button>
-    <button class="btn" style="background-color: #dc3545; color: white; border: 1px solid #dc3545;" onclick="window.location.href='/admin/social-case/submitted'"><i data-lucide="x" style="width:16px;height:16px"></i> Cancel</button>
-  </div>
+    <!-- IV. Agencies & Assistance Referrals -->
+    <div class="mb-8">
+      <h3 class="text-md font-bold mb-4" style="color:var(--primary);border-bottom:2px solid var(--primary);padding-bottom:8px;">
+        <i data-lucide="building-2" style="width:18px;height:18px;display:inline-block;margin-right:8px;vertical-align:text-bottom;"></i>
+        IV. Agencies & Assistance Referrals
+      </h3>
+      <label class="form-label mb-2">Agencies (Select all that apply) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-2">
+        ${AGENCIES.map(a => {
+          const checked = d.agencies.includes(a.key);
+          const isOP = a.key === 'OP';
+          return `
+            <div class="agency-card ${checked ? 'selected' : ''}" onclick="toggleAgency('${a.key}')">
+              <div class="agency-checkbox-box">
+                ${checked ? '<i data-lucide="check" style="width:15px;height:15px;stroke-width:3"></i>' : ''}
+              </div>
+              <div style="flex:1;min-width:0">
+                <div class="agency-abbr font-bold text-sm leading-tight" style="color:${checked?'#fff':'var(--text-primary)'}">${escapeHtml(isOP ? 'Office of the President' : a.key)}</div>
+                ${!isOP ? `<div class="agency-name text-xs leading-tight mt-0.5" style="color:${checked?'rgba(255,255,255,0.85)':'var(--text-secondary)'}">${escapeHtml(a.name)}</div>` : ''}
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </div>
+
+    <!-- V. Verified Requirements -->
+    <div class="mb-8">
+      <h3 class="text-md font-bold mb-4" style="color:var(--primary);border-bottom:2px solid var(--primary);padding-bottom:8px;">
+        <i data-lucide="clipboard-check" style="width:18px;height:18px;display:inline-block;margin-right:8px;vertical-align:text-bottom;"></i>
+        V. Verified Requirements
+      </h3>
+      <label class="form-label mb-2">Submitted Supporting Documents</label>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+        ${d.requirements.map((r, i) => {
+          const submitted = r.submitted;
+          return `
+            <div class="req-card ${submitted ? 'selected' : ''}" onclick="toggleRequirement(${i})">
+              <div class="req-checkbox-box">
+                ${submitted ? '<i data-lucide="check" style="width:15px;height:15px;stroke-width:3"></i>' : ''}
+              </div>
+              <span class="req-name text-sm font-medium" style="color:${submitted?'#fff':'var(--text-primary)'}">${escapeHtml(r.name)}</span>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </div>
+
+    <!-- VI. Signatories -->
+    <div class="mb-8">
+      <h3 class="text-md font-bold mb-4" style="color:var(--primary);border-bottom:2px solid var(--primary);padding-bottom:8px;">
+        <i data-lucide="pen-tool" style="width:18px;height:18px;display:inline-block;margin-right:8px;vertical-align:text-bottom;"></i>
+        VI. Signatories
+      </h3>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div>
+          <label class="form-label">Prepared By (Name) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <input type="text" class="form-input" value="${escapeHtml(d.signers.preparedByName)}" oninput="draftIntake.signers.preparedByName=this.value" required maxlength="255" placeholder="Enter social worker name">
+        </div>
+        <div>
+          <label class="form-label">Prepared By (Title)</label>
+          <input type="text" class="form-input" value="MSWDO Staff" readonly>
+        </div>
+        <div>
+          <label class="form-label">Noted By (Name) <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
+          <input type="text" class="form-input" value="${escapeHtml(d.signers.notedByName)}" oninput="draftIntake.signers.notedByName=this.value" required maxlength="255" placeholder="Enter department head name">
+        </div>
+        <div>
+          <label class="form-label">Noted By (Title)</label>
+          <input type="text" class="form-input" value="MSWDO Head" readonly>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="flex justify-end gap-3 pt-6 border-t mt-8" style="border-color:var(--border);">
+      <a href="/admin/social-case/submitted" class="btn" style="border:1px solid #E5E7EB;color:#374151;">
+        <i data-lucide="x" style="width:16px;height:16px"></i>
+        Cancel
+      </a>
+      <button type="button" class="btn primary" onclick="reviewIntake()">
+        <i data-lucide="eye" style="width:16px;height:16px"></i>
+        Review & Submit Case
+      </button>
+    </div>
   </div>
   `;
-  
-  // Add real-time input validation after form renders
+
   updateClientAge();
 
   setTimeout(() => {
     const contactInput = document.querySelector('input[oninput*="draftIntake.client.contact"]');
-    
-    // Contact number validation - PH format (09xxxxxxxxx)
     if (contactInput) {
       contactInput.addEventListener('input', function(e) {
         let value = this.value.replace(/[^0-9]/g, '');
@@ -2598,8 +2746,7 @@ function renderIntakeForm(){
         }
       });
     }
-    
-    // Household age validation
+
     const householdAgeInputs = document.querySelectorAll('input[oninput*="draftIntake.household"][type="number"]');
     householdAgeInputs.forEach(input => {
       input.addEventListener('input', function(e) {
@@ -2610,6 +2757,8 @@ function renderIntakeForm(){
         }
       });
     });
+
+    lucide.createIcons();
   }, 0);
 }
 
@@ -2631,12 +2780,24 @@ function validateIntake() {
   const errors = [];
   
   // Required fields
-  if (!d.client.name || !d.client.name.trim()) errors.push('Please enter the <strong>client name</strong>');
-  if (!d.client.sex) errors.push('Please select the <strong>client sex</strong>');
-  if (!d.client.address) errors.push('Please enter the <strong>client barangay</strong>');
-  if (!d.signers.preparedByName || !d.signers.preparedByName.trim()) errors.push('Please enter the <strong>prepared by name</strong>');
-  if (!d.signers.notedByName || !d.signers.notedByName.trim()) errors.push('Please enter the <strong>noted by name</strong>');
-  if (!d.purpose) errors.push('Please select the <strong>purpose</strong>');
+  if (!d.controlNo || !d.controlNo.trim()) errors.push('Please enter the <strong>Control Number</strong>');
+  if (!d.interview.reportDate) errors.push('Please select the <strong>Report Date</strong>');
+  if (!d.purpose) errors.push('Please select the <strong>Purpose / Assistance Type</strong>');
+  if (!d.client.name || !d.client.name.trim()) errors.push('Please enter the <strong>Client Full Name</strong>');
+  if (!d.client.sex) errors.push('Please select the <strong>Client Sex</strong>');
+  if (!d.client.birthdate) errors.push('Please select the <strong>Client Birth Date</strong>');
+  if (!d.client.address) errors.push('Please select the <strong>Client Barangay (Address)</strong>');
+  if (!d.client.birthplace || !d.client.birthplace.trim()) errors.push('Please enter the <strong>Client Birthplace</strong>');
+  if (!d.client.civilStatus) errors.push('Please select the <strong>Civil Status</strong>');
+  if (!d.client.religion || !d.client.religion.trim()) errors.push('Please enter the <strong>Religion</strong>');
+  if (!d.client.education || !d.client.education.trim()) errors.push('Please enter the <strong>Educational Attainment</strong>');
+  if (!d.client.occupation || !d.client.occupation.trim()) errors.push('Please enter the <strong>Occupation</strong>');
+  if (!d.client.income || !d.client.income.trim()) errors.push('Please enter the <strong>Monthly Income</strong>');
+  if (!d.client.contact || !d.client.contact.trim()) errors.push('Please enter the <strong>Contact Number</strong>');
+  if (!d.interview.problemPresented || !d.interview.problemPresented.trim()) errors.push('Please enter the <strong>Problem Presented</strong>');
+  if (!d.agencies || d.agencies.length === 0) errors.push('Please select at least <strong>one Agency</strong>');
+  if (!d.signers.preparedByName || !d.signers.preparedByName.trim()) errors.push('Please enter the <strong>Prepared By Name</strong>');
+  if (!d.signers.notedByName || !d.signers.notedByName.trim()) errors.push('Please enter the <strong>Noted By Name</strong>');
 
   // Must have at least 1 named household member
   const namedMembers = d.household.filter(m => m.name && m.name.trim());
@@ -2657,9 +2818,11 @@ function validateIntake() {
   
   // Household age validation
   d.household.forEach((m, i) => {
-    if (m.age !== '' && m.age !== undefined) {
-      const a = parseInt(m.age);
-      if (isNaN(a) || a < 0 || a > 150) errors.push(`Family member ${i + 1} <strong>age</strong> must be between 0 and 150`);
+    if (m.name && m.name.trim()) {
+      if (m.age !== '' && m.age !== undefined) {
+        const a = parseInt(m.age);
+        if (isNaN(a) || a < 0 || a > 150) errors.push(`Family member ${i + 1} <strong>age</strong> must be between 0 and 150`);
+      }
     }
   });
   
@@ -2670,25 +2833,44 @@ function reviewIntake() {
   const errs = validateIntake();
   if (errs.length) {
     Swal.fire({
-      title: 'Validation Error',
-      html: 'Please fix the following:<br><br>' + errs.join('<br>'),
-      icon: 'error',
+      icon: 'warning',
+      iconColor: '#F59E0B',
+      title: '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;"><span style="font-size:1.2rem;font-weight:700;color:#1E293B;">Required Information Missing</span><span style="font-size:0.85rem;font-weight:400;color:#64748B;">Please complete the required fields below to proceed</span></div>',
+      html: `
+        <div class="swal-error-scroll" style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:10px 14px;max-height:250px;overflow-y:auto;text-align:left;margin-top:8px;">
+          ${errs.map((err, idx) => `
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 4px;${idx < errs.length - 1 ? 'border-bottom:1px solid #EDF2F7;' : ''}font-size:13px;color:#334155;line-height:1.4;">
+              <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#FEF2F2;color:#DC2626;flex-shrink:0;">
+                <i data-lucide="alert-circle" style="width:13px;height:13px;stroke-width:2.5;"></i>
+              </span>
+              <span style="flex:1;">${err}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div style="margin-top:12px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:#94A3B8;">
+          <i data-lucide="info" style="width:14px;height:14px;color:#64748B;"></i>
+          <span>Fields with (<span style="color:#DC2626;font-weight:700;">*</span>) are mandatory</span>
+        </div>
+      `,
       confirmButtonColor: '#1A237E',
-      confirmButtonText: 'OK',
-      background: '#ffffff',
-      customClass: { popup: 'rounded-4 shadow-lg' }
+      confirmButtonText: 'Got it, I\'ll complete them',
+      customClass: {
+        popup: 'swal-custom-popup'
+      },
+      didOpen: () => {
+        if (window.lucide) lucide.createIcons();
+      }
     });
     return;
   }
   showIntakeSummaryModal();
 }
 
-/* ---------------- Intake Summary Modal ---------------- */
+/* ---------------- Intake Summary Modal (Senior Citizen Registration Style) ---------------- */
 function showIntakeSummaryModal(){
   const d = draftIntake;
   if(!d) return;
 
-  // Remove any existing modal
   const existing = document.getElementById('intakeSummaryModal');
   if(existing) existing.remove();
 
@@ -2696,236 +2878,223 @@ function showIntakeSummaryModal(){
   const fmtDateLocal = iso => {
     if(!iso) return '<span style="color:#9CA3AF;font-style:italic">—</span>';
     try {
-      const d = new Date(iso + 'T00:00:00');
-      if(isNaN(d.getTime())) return '<span style="color:#9CA3AF;font-style:italic">—</span>';
-      return d.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+      const dt = new Date(iso + 'T00:00:00');
+      if(isNaN(dt.getTime())) return '<span style="color:#9CA3AF;font-style:italic">—</span>';
+      return dt.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
     } catch(e) { return '<span style="color:#9CA3AF;font-style:italic">—</span>'; }
   };
 
-  const submittedReqs = d.requirements.filter(r => r.submitted).map(r => escapeHtml(r.name));
-  const missingReqs  = d.requirements.filter(r => !r.submitted).map(r => escapeHtml(r.name));
   const selectedAgencies = AGENCIES.filter(a => d.agencies.includes(a.key));
-
-  const householdLabels = ['Name','Relationship','Age','Education','Occupation','Income'];
-  const householdValues = m => [m.name, m.relationship, m.age, m.education, m.occupation, m.income];
-  const householdRows = d.household.map((m, i) => {
-    const td = 'padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6;word-break:break-word;overflow-wrap:anywhere';
-    return `
-    <tr>
-      ${householdValues(m).map((v, j) => `<td data-label="${householdLabels[j]}" style="${td}">${val(v)}</td>`).join('')}
-    </tr>`;
-  });
-
-  const sectionTitle = (label, icon='') => `
-    <div class="section-title" style="display:flex;align-items:center;gap:8px;margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid #E5E7EB">
-      ${icon ? `<div style="width:28px;height:28px;background:#EEF2FF;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <i data-lucide="${icon}" style="width:14px;height:14px;color:#4338CA"></i>
-      </div>` : ''}
-      <h3 style="font-size:13px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.05em;margin:0">${label}</h3>
-    </div>`;
-
-  const infoRow = (label, value) => `
-    <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
-      <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.04em">${label}</span>
-      <span style="font-size:14px;color:#111827;font-weight:500;word-break:break-word;overflow-wrap:anywhere">${value}</span>
-    </div>`;
 
   const modal = document.createElement('div');
   modal.id = 'intakeSummaryModal';
-  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.55);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;animation:fadeIn 0.2s ease';
+  modal.className = 'custom-modal-backdrop active';
   modal.innerHTML = `
-    <style>
-      #intakeSummaryModal * { box-sizing: border-box; }
-      @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-      @keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-      #intakeSummaryModal .modal-box { animation: slideUp 0.25s ease; }
-      @media (max-width:768px) {
-        #intakeSummaryModal .family-table thead { display:none; }
-        #intakeSummaryModal .family-table,
-        #intakeSummaryModal .family-table tbody,
-        #intakeSummaryModal .family-table tr,
-        #intakeSummaryModal .family-table td { display:block; width:100%; }
-        #intakeSummaryModal .family-table tr {
-          padding:10px 14px; border-bottom:1px solid #E5E7EB;
-          background:#F9FAFB;
-        }
-        #intakeSummaryModal .family-table tr:last-child { border-bottom:none; }
-        #intakeSummaryModal .family-table td {
-          padding:6px 0 !important; border-bottom:none !important;
-          display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
-        }
-        #intakeSummaryModal .family-table td::before {
-          content:attr(data-label);
-          flex:0 0 auto;
-          font-size:11px; font-weight:700; color:#6B7280;
-          text-transform:uppercase; letter-spacing:0.04em;
-          padding-top:1px; text-align:left;
-        }
-        #intakeSummaryModal .family-table td.family-empty::before { content:none; }
-        #intakeSummaryModal .family-table td.family-empty { display:block; text-align:center; padding:16px !important; }
-        #intakeSummaryModal .family-table td > * { text-align:right; word-break:break-word; }
-      }
-      .field-error input, .field-error select, .field-error textarea {
-        border-color: #DC2626 !important;
-        box-shadow: 0 0 0 1px #DC2626;
-      }
-      @media (max-width:768px) {
-        #intakeSummaryModal { padding:0 !important; align-items:stretch !important; }
-        #intakeSummaryModal .modal-box { max-width:100% !important; max-height:100vh !important; border-radius:0 !important; height:100% !important; width:100% !important; }
-        #intakeSummaryModal .modal-box, #intakeSummaryModal .modal-body, #intakeSummaryModal .modal-body * { word-break:break-word; overflow-wrap:anywhere; }
-        #intakeSummaryModal .modal-header { padding:14px 16px !important; }
-        #intakeSummaryModal .modal-body { padding:16px !important; }
-        #intakeSummaryModal .modal-footer { padding:14px 16px !important; flex-direction:column !important; }
-        #intakeSummaryModal .modal-footer .footer-actions { width:100%; }
-        #intakeSummaryModal .modal-footer .footer-actions .btn-edit,
-        #intakeSummaryModal .modal-footer .footer-actions .btn-save { flex:1; justify-content:center; }
-        #intakeSummaryModal .info-grid { grid-template-columns:1fr 1fr !important; gap:12px !important; }
-        #intakeSummaryModal .signatories-grid { grid-template-columns:1fr !important; gap:12px !important; }
-        #intakeSummaryModal .agencies-grid { grid-template-columns:1fr !important; gap:12px !important; }
-        #intakeSummaryModal .reqs-grid { grid-template-columns:1fr 1fr !important; gap:8px !important; }
-        #intakeSummaryModal .control-banner { flex-direction:column !important; align-items:flex-start !important; gap:6px !important; padding:12px 14px !important; }
-        #intakeSummaryModal .control-banner > div { width:100%; word-break:break-word; overflow-wrap:anywhere; }
-        #intakeSummaryModal .modal-title { font-size:15px !important; }
-        #intakeSummaryModal .modal-subtitle { font-size:11px !important; }
-        #intakeSummaryModal .footer-info { display:none !important; }
-        #intakeSummaryModal .section-title h3 { font-size:12px !important; }
-      }
-      @media (max-width:480px) {
-        #intakeSummaryModal .info-grid { grid-template-columns:1fr !important; }
-        #intakeSummaryModal .reqs-grid { grid-template-columns:1fr !important; }
-        #intakeSummaryModal .modal-header { gap:8px; }
-        #intakeSummaryModal .modal-header .modal-title-block { min-width:0; }
-        #intakeSummaryModal .modal-footer .footer-actions { flex-direction:column; }
-      }
-    </style>
-    <div class="modal-box" style="background:#FFFFFF;border-radius:14px;width:100%;max-width:780px;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.15);overflow:hidden">
-
-      <!-- Modal Header -->
-      <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#1A237E;color:#FFFFFF;flex-shrink:0">
-        <div style="display:flex;align-items:center;gap:12px;min-width:0">
-          <div style="width:34px;height:34px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <i data-lucide="file-check" style="width:18px;height:18px;color:#ffffff"></i>
-          </div>
-          <div class="modal-title-block" style="min-width:0">
-            <div class="modal-title" style="font-size:16px;font-weight:600;color:#FFFFFF;word-break:break-word">Review Case Summary</div>
-            <div class="modal-subtitle" style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:1px;word-break:break-word">Please verify all information before saving</div>
-          </div>
-        </div>
-        <button onclick="closeIntakeSummaryModal()" aria-label="Close modal" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.15);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-size:18px;color:#FFFFFF;line-height:1;flex-shrink:0" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
-          &times;
-        </button>
+    <div class="custom-modal-dialog">
+      <div class="custom-modal-header">
+        <h3 class="custom-modal-title">
+          <i data-lucide="file-check" style="width:18px;height:18px;"></i>
+          Confirm Case Study Record
+        </h3>
+        <button type="button" class="custom-modal-close" onclick="closeIntakeSummaryModal()">&times;</button>
       </div>
-
-      <!-- Modal Body -->
-      <div class="modal-body" style="overflow-y:auto;padding:20px;flex:1;-webkit-overflow-scrolling:touch">
-
-        <!-- Control No + Date Banner -->
-        <div class="control-banner" style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:8px">
-          <div style="font-size:13px;color:#1A237E">
-            <span style="font-weight:600;text-transform:uppercase;letter-spacing:0.04em">Control No.&nbsp;</span>
-            <span style="font-family:monospace;font-size:15px;font-weight:700">${val(d.controlNo)}</span>
+      <div class="custom-modal-body">
+        <!-- Identification & Report Info -->
+        <div class="custom-modal-section">
+          <div class="custom-modal-section-title">
+            <i data-lucide="clipboard-list" style="width:16px;height:16px;"></i>
+            Report Details & Control Information
           </div>
-          <div style="font-size:13px;color:#1A237E">
-            <span style="font-weight:600">Report Date:&nbsp;</span>
-            <span>${fmtDateLocal(d.interview.reportDate)}</span>
+          <div class="custom-modal-grid">
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Control Number</label>
+              <div class="custom-modal-value font-mono font-bold" style="color:var(--primary)">${val(d.controlNo)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Report Date</label>
+              <div class="custom-modal-value">${fmtDateLocal(d.interview.reportDate)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Purpose / Assistance</label>
+              <div class="custom-modal-value">${val(d.purpose)}</div>
+            </div>
           </div>
         </div>
 
-        <!-- Client Info -->
-        ${sectionTitle('I. Client Information', 'user')}
-        <div class="info-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px">
-          ${infoRow('Full Name', val(d.client.name))}
-          ${infoRow('Age', val(d.client.age))}
-          ${infoRow('Sex', val(d.client.sex))}
-          ${infoRow('Civil Status', val(d.client.civilStatus))}
-          ${infoRow('Barangay (Address)', val(d.client.address))}
-          ${infoRow('Birthdate', fmtDateLocal(d.client.birthdate))}
-          ${infoRow('Birthplace', val(d.client.birthplace))}
-          ${infoRow('Religion', val(d.client.religion))}
-          ${infoRow('Education', val(d.client.education))}
-          ${infoRow('Occupation', val(d.client.occupation))}
-          ${infoRow('Income', val(d.client.income))}
-          ${infoRow('Contact No.', val(d.client.contact))}
+        <!-- Personal Information Section -->
+        <div class="custom-modal-section">
+          <div class="custom-modal-section-title">
+            <i data-lucide="user" style="width:16px;height:16px;"></i>
+            Personal Information
+          </div>
+          <div class="custom-modal-grid">
+            <div class="custom-modal-field custom-modal-col-span2">
+              <label class="custom-modal-label">Full Name</label>
+              <div class="custom-modal-value font-bold">${val(d.client.name)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Sex</label>
+              <div class="custom-modal-value">${val(d.client.sex)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Birth Date</label>
+              <div class="custom-modal-value">${fmtDateLocal(d.client.birthdate)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Month</label>
+              <div class="custom-modal-value">${val(d.client.month)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Age</label>
+              <div class="custom-modal-value">${val(d.client.age)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Barangay (Address)</label>
+              <div class="custom-modal-value">${val(d.client.address)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Birthplace</label>
+              <div class="custom-modal-value">${val(d.client.birthplace)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Civil Status</label>
+              <div class="custom-modal-value">${val(d.client.civilStatus)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Religion</label>
+              <div class="custom-modal-value">${val(d.client.religion)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Educational Attainment</label>
+              <div class="custom-modal-value">${val(d.client.education)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Occupation</label>
+              <div class="custom-modal-value">${val(d.client.occupation)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Monthly Income</label>
+              <div class="custom-modal-value">${val(d.client.income)}</div>
+            </div>
+            <div class="custom-modal-field custom-modal-col-span2">
+              <label class="custom-modal-label">Contact Number</label>
+              <div class="custom-modal-value">${val(d.client.contact)}</div>
+            </div>
+          </div>
         </div>
 
-        <!-- Family Composition -->
-        ${sectionTitle('II. Family Composition', 'users')}
-        <div style="border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
-          <table class="family-table" style="width:100%;border-collapse:collapse">
-            <thead>
-              <tr style="background:#F9FAFB">
-                ${householdLabels.map(h =>
-                  `<th style="padding:9px 12px;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.04em;text-align:left;border-bottom:1px solid #E5E7EB">${h}</th>`
-                ).join('')}
-              </tr>
-            </thead>
-            <tbody>
-              ${householdRows.length ? householdRows.join('') : `<tr><td colspan="6" class="family-empty" style="padding:16px;text-align:center;color:#9CA3AF;font-size:13px">No family members added</td></tr>`}
-            </tbody>
-          </table>
+        <!-- Family Composition Section -->
+        <div class="custom-modal-section">
+          <div class="custom-modal-section-title">
+            <i data-lucide="users" style="width:16px;height:16px;"></i>
+            Family Composition (${d.household.length})
+          </div>
+          <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface);">
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead>
+                <tr style="background:#F9FAFB;border-bottom:1px solid var(--border);text-align:left;">
+                  <th style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Name</th>
+                  <th style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Relationship</th>
+                  <th style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Age</th>
+                  <th style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Education</th>
+                  <th style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Occupation</th>
+                  <th style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Income</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${d.household.map(m => `
+                  <tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:8px 10px;font-weight:600;">${val(m.name)}</td>
+                    <td style="padding:8px 10px;">${val(m.relationship)}</td>
+                    <td style="padding:8px 10px;">${val(m.age)}</td>
+                    <td style="padding:8px 10px;">${val(m.education)}</td>
+                    <td style="padding:8px 10px;">${val(m.occupation)}</td>
+                    <td style="padding:8px 10px;">${val(m.income)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <!-- Narrative Sections -->
-        ${sectionTitle('Narrative Sections', 'align-left')}
-        ${[
-          ['III. Problem Presented', d.interview.problemPresented]
-        ].map(([label, content]) => `
-          <div style="margin-bottom:14px">
-            <div style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:5px">${label}</div>
-            <div style="font-size:14px;color:#${content ? '111827' : '9CA3AF'};background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:10px 12px;white-space:pre-wrap;min-height:40px;font-style:${content ? 'normal' : 'italic'}">${content ? escapeHtml(content) : 'Not provided'}</div>
-          </div>`).join('')}
-
-        <!-- Signatories -->
-        ${sectionTitle('Signatories', 'pen-line')}
-        <div class="signatories-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-          ${infoRow('Prepared By (Name)', val(d.signers.preparedByName))}
-          ${infoRow('Prepared By (Title)', val(d.signers.preparedByTitle))}
-          ${infoRow('Noted By (Name)', val(d.signers.notedByName))}
-          ${infoRow('Noted By (Title)', val(d.signers.notedByTitle))}
+        <!-- Problem Presented Section -->
+        <div class="custom-modal-section">
+          <div class="custom-modal-section-title">
+            <i data-lucide="file-text" style="width:16px;height:16px;"></i>
+            Problem Presented
+          </div>
+          <div class="custom-modal-grid">
+            <div class="custom-modal-field custom-modal-col-full">
+              <div class="custom-modal-value" style="white-space:pre-wrap;min-height:50px;line-height:1.5;">${val(d.interview.problemPresented)}</div>
+            </div>
+          </div>
         </div>
 
-        <!-- Agencies & Purpose -->
-        ${sectionTitle('Agencies & Purpose', 'building-2')}
-        <div class="agencies-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
-          ${infoRow('Purpose / Type of Assistance', val(d.purpose))}
-          ${infoRow('Agencies Selected', selectedAgencies.length ? selectedAgencies.map(a => `<span style="display:inline-block;background:#EEF2FF;color:#1A237E;font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;margin:1px">${escapeHtml(a.name)}</span>`).join(' ') : '<span style="color:#9CA3AF;font-style:italic">None selected</span>')}
-        </div>
-
-        <!-- Requirements -->
-        ${sectionTitle('Requirements', 'clipboard-list')}
-        <div class="reqs-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px">
-          ${d.requirements.map(r => `
-            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;border:1px solid ${r.submitted ? '#BBF7D0' : '#FEE2E2'};background:${r.submitted ? '#F0FDF4' : '#FFF5F5'}">
-              <div style="width:18px;height:18px;border-radius:50%;background:${r.submitted ? '#16A34A' : '#EF4444'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                <span style="color:#fff;font-size:11px;font-weight:700">${r.submitted ? '✓' : '✗'}</span>
+        <!-- Agencies & Requirements Section -->
+        <div class="custom-modal-section">
+          <div class="custom-modal-section-title">
+            <i data-lucide="building-2" style="width:16px;height:16px;"></i>
+            Agencies & Requirements
+          </div>
+          <div class="custom-modal-grid">
+            <div class="custom-modal-field custom-modal-col-full">
+              <label class="custom-modal-label">Assistance Agencies</label>
+              <div class="custom-modal-value" style="flex-wrap:wrap;gap:6px;padding:8px 10px;">
+                ${selectedAgencies.length ? selectedAgencies.map(a => `<span style="display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;background:#EEF2FF;color:var(--primary);font-size:12px;font-weight:600;border:1px solid #C7D2FE;">${a.key === 'OP' ? 'Office of the President' : `${escapeHtml(a.key)} - ${escapeHtml(a.name)}`}</span>`).join('') : '<span style="color:#9CA3AF;font-style:italic">None selected</span>'}
               </div>
-              <span style="font-size:12px;color:${r.submitted ? '#166534' : '#991B1B'};font-weight:500">${escapeHtml(r.name)}</span>
-            </div>`).join('')}
+            </div>
+            <div class="custom-modal-field custom-modal-col-full">
+              <label class="custom-modal-label">Verified Requirements</label>
+              <div class="custom-modal-value" style="flex-direction:column;align-items:flex-start;gap:6px;padding:8px 10px;">
+                ${d.requirements.map(r => `
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;">
+                    <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:${r.submitted ? '#16A34A' : '#EF4444'};color:#fff;font-size:10px;font-weight:bold;">${r.submitted ? '✓' : '✕'}</span>
+                    <span style="color:${r.submitted ? 'var(--text-primary)' : 'var(--text-muted)'}">${escapeHtml(r.name)}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Signatories Section -->
+        <div class="custom-modal-section">
+          <div class="custom-modal-section-title">
+            <i data-lucide="pen-tool" style="width:16px;height:16px;"></i>
+            Signatories
+          </div>
+          <div class="custom-modal-grid">
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Prepared By (Name)</label>
+              <div class="custom-modal-value">${val(d.signers.preparedByName)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Prepared By (Title)</label>
+              <div class="custom-modal-value">${val(d.signers.preparedByTitle)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Noted By (Name)</label>
+              <div class="custom-modal-value">${val(d.signers.notedByName)}</div>
+            </div>
+            <div class="custom-modal-field">
+              <label class="custom-modal-label">Noted By (Title)</label>
+              <div class="custom-modal-value">${val(d.signers.notedByTitle)}</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Modal Footer -->
-      <div class="modal-footer" style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid #E5E7EB;background:#FAFAFA;flex-shrink:0;gap:12px;flex-wrap:wrap">
-        <div class="footer-info" style="font-size:12px;color:#6B7280">
-          <i data-lucide="info" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;color:#9CA3AF"></i>
-          Review all fields before saving. This action cannot be undone easily.
-        </div>
-        <div class="footer-actions" style="display:flex;gap:10px">
-          <button class="btn-edit" onclick="closeIntakeSummaryModal()" style="display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border:1.5px solid #D1D5DB;background:#FFFFFF;color:#374151;font-size:13.5px;font-weight:600;border-radius:8px;cursor:pointer;transition:all 0.15s;font-family:inherit" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='#FFFFFF'">
-            <i data-lucide="pencil" style="width:15px;height:15px"></i> Edit
-          </button>
-          <button class="btn-save" onclick="closeIntakeSummaryModal(); saveNewCase();" style="display:inline-flex;align-items:center;gap:8px;padding:9px 22px;border:none;background:#1A237E;color:#FFFFFF;font-size:13.5px;font-weight:600;border-radius:8px;cursor:pointer;transition:all 0.15s;font-family:inherit" onmouseover="this.style.background='#121858'" onmouseout="this.style.background='#1A237E'">
-            <i data-lucide="save" style="width:15px;height:15px"></i> Save Case
-          </button>
-        </div>
+      <div class="custom-modal-footer">
+        <button type="button" class="btn" onclick="closeIntakeSummaryModal()">Go Back</button>
+        <button type="button" class="btn primary" onclick="closeIntakeSummaryModal(); saveNewCase();">
+          <i data-lucide="check-circle" style="width:16px;height:16px"></i> Confirm & Save Case
+        </button>
       </div>
     </div>
   `;
 
   document.body.appendChild(modal);
-  // Close on backdrop click
   modal.addEventListener('click', e => { if(e.target === modal) closeIntakeSummaryModal(); });
-  // Re-run lucide for newly injected icons
   lucide.createIcons();
 }
 
@@ -4073,12 +4242,12 @@ function renderCaseDetail(){
     <div class="template-tabs">
       ${c.agencies && c.agencies.length > 0 
         ? AGENCIES.filter(a => c.agencies.includes(a.key)).map(a => 
-            `<button class="template-tab ${a.key === selectedAgency ? 'active' : ''}" onclick="selectTemplateTab('${a.key}', this)">${a.key === 'OP' ? 'Office of the President (AKAP)' : a.key}</button>`
+            `<button class="template-tab ${a.key === selectedAgency ? 'active' : ''}" onclick="selectTemplateTab('${a.key}', this)">${a.key === 'OP' ? 'Office of the President' : a.key}</button>`
           ).join('')
         : `
           <button class="template-tab active" onclick="selectTemplateTab('PCSO', this)">PCSO</button>
           <button class="template-tab" onclick="selectTemplateTab('DSWD', this)">DSWD</button>
-          <button class="template-tab" onclick="selectTemplateTab('OP', this)">Office of the President (AKAP)</button>
+          <button class="template-tab" onclick="selectTemplateTab('OP', this)">Office of the President</button>
           <button class="template-tab" onclick="selectTemplateTab('DOH', this)">DOH</button>
         `
       }

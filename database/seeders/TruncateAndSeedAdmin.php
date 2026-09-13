@@ -14,46 +14,33 @@ class TruncateAndSeedAdmin extends Seeder
      */
     public function run(): void
     {
-        // Disable foreign key checks temporarily
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
 
-        // Truncate social case study related tables in correct order (respecting dependencies)
-        $tables = [
-            'social_case_report_release_logs',
-            'social_case_reports',
-            'online_request_attachments',
-            'online_requests',
-            'eligibility_audit_logs',
-            'case_rejections',
-            'assistance_records',
-            'beneficiary_intakes',
-            'family_members',
-            'case_interviews',
-            'social_case_studies',
-            'clients',
-            'password_reset_requests',
-            'users',
-        ];
-
-        foreach ($tables as $table) {
-            if (DB::getSchemaBuilder()->hasTable($table)) {
-                DB::table($table)->truncate();
+        $tables = DB::select('SHOW TABLES');
+        foreach ($tables as $tableObj) {
+            $tableName = ((array)$tableObj)[key((array)$tableObj)];
+            if ($tableName !== 'migrations') {
+                DB::table($tableName)->truncate();
+                $this->command->info("Truncated table: {$tableName}");
             }
         }
 
-        // Re-enable foreign key checks
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
 
-        // Seed the administrator account
+        // Seed the single administrator account
         User::create([
-            'name' => 'Fred Calos',
-            'email' => 'fred.calos@mswdo.test',
-            'password' => Hash::make('Password1!'),
+            'name' => 'Administrator',
+            'email' => 'admin@mswdo.test',
+            'password' => Hash::make('password'),
             'role' => 'admin',
             'status' => 'active',
+            'position' => 'MSWDO Administrator',
+            'signature_position' => 'mswdo_officer',
         ]);
 
-        $this->command->info('Social case study tables truncated successfully.');
-        $this->command->info('Administrator account created: Fred Calos (fred.calos@mswdo.test) with password: Password1!');
+        $this->command->info('Database truncated successfully.');
+        $this->command->info('Administrator account created:');
+        $this->command->info('  Email: admin@mswdo.test');
+        $this->command->info('  Password: password');
     }
 }

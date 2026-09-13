@@ -703,8 +703,8 @@
             }
             , {
                 key: "OP"
-                , name: "Office of the President (AKAP)"
-                , addressee: "The Head, AKAP Program\nOffice of the President"
+                , name: "Office of the President"
+                , addressee: "Office of the President"
             }
             , {
                 key: "MSWDO"

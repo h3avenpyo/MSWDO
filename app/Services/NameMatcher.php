@@ -21,10 +21,33 @@ class NameMatcher
     }
 
     /**
-     * Parse a full name into components
+     * Parse a full name into components.
+     * Supports both "First [Middle] Last" and "Last, First [Middle]" formats.
      */
     public static function parseFullName(string $fullName): array
     {
+        $fullName = trim($fullName);
+
+        if (str_contains($fullName, ',')) {
+            $commaParts = explode(',', $fullName, 2);
+            $lastName = self::normalizeName($commaParts[0]);
+            $firstMiddleNormalized = self::normalizeName($commaParts[1]);
+            $firstMiddleParts = array_values(array_filter(explode(' ', $firstMiddleNormalized)));
+
+            $firstName = $firstMiddleParts[0] ?? '';
+            $middleName = count($firstMiddleParts) > 1 ? implode(' ', array_slice($firstMiddleParts, 1)) : '';
+            $normalized = trim($firstMiddleNormalized . ' ' . $lastName);
+            $parts = array_values(array_filter(explode(' ', $normalized)));
+
+            return [
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'middle_name' => $middleName,
+                'normalized' => $normalized,
+                'parts' => $parts,
+            ];
+        }
+
         $normalized = self::normalizeName($fullName);
         $parts = array_values(array_filter(explode(' ', $normalized)));
 
@@ -44,6 +67,46 @@ class NameMatcher
     }
 
     /**
+     * Extract given name parts (excluding the surname and single-character initials).
+     */
+    public static function extractGivenParts(array $parts, string $lastName): array
+    {
+        return array_values(array_filter($parts, function ($part) use ($lastName) {
+            if ($part === $lastName) {
+                return false;
+            }
+            if (mb_strlen($part) <= 1) {
+                return false;
+            }
+            return true;
+        }));
+    }
+
+    /**
+     * Check if there is a real given-name match or overlap between two sets of given parts.
+     */
+    public static function hasGivenNameMatch(array $inputGiven, array $clientGiven): bool
+    {
+        foreach ($inputGiven as $ig) {
+            foreach ($clientGiven as $cg) {
+                if ($ig === $cg) {
+                    return true;
+                }
+                if (strlen($ig) >= 4 && strlen($cg) >= 4) {
+                    if (str_starts_with($ig, $cg) || str_starts_with($cg, $ig)) {
+                        return true;
+                    }
+                }
+                if (strlen($ig) >= 5 && strlen($cg) >= 5 && levenshtein($ig, $cg) <= 1) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Find candidate clients matching a given name
      * Returns array with 'exact' and 'partial' matches
      */
@@ -58,75 +121,61 @@ class NameMatcher
             return $results;
         }
 
-        // Level 1 — Strong match: normalized first + last name
-        $results['exact'] = Client::whereRaw('LOWER(first_name) = ?', [$firstName])
-            ->whereRaw('LOWER(last_name) = ?', [$lastName])
-            ->get();
+        $allByLastName = Client::whereRaw('LOWER(last_name) = ?', [$lastName])->get();
+        if ($allByLastName->isEmpty()) {
+            return $results;
+        }
+
+        $inputNormalized = $parsed['normalized'];
+        $inputGivenParts = self::extractGivenParts($parsed['parts'], $lastName);
+
+        // Level 1 — Exact match
+        $results['exact'] = $allByLastName->filter(function ($client) use ($inputNormalized, $firstName, $lastName, $inputGivenParts) {
+            $clientNormFull = self::normalizeName(
+                trim(sprintf('%s %s %s', $client->first_name, $client->middle_name, $client->last_name))
+            );
+            if ($clientNormFull === $inputNormalized) {
+                return true;
+            }
+
+            $clientNormFirst = self::normalizeName((string) $client->first_name);
+            $clientNormLast = self::normalizeName((string) $client->last_name);
+            if ($clientNormFirst === $firstName && $clientNormLast === $lastName) {
+                return true;
+            }
+
+            $clientParts = array_values(array_filter(explode(' ', $clientNormFull)));
+            $clientGivenParts = self::extractGivenParts($clientParts, $clientNormLast);
+            if (!empty($inputGivenParts) && $clientGivenParts === $inputGivenParts) {
+                return true;
+            }
+
+            return false;
+        })->values();
 
         if ($results['exact']->isNotEmpty()) {
             return $results;
         }
 
-        // Level 2 — Partial: same last name + overlapping name components
-        if (mb_strlen($lastName) >= 3) {
-            $byLastName = Client::whereRaw('LOWER(last_name) = ?', [$lastName])->get();
-
-            $results['partial'] = $byLastName->filter(function ($client) use ($parsed) {
-                $clientNorm = self::normalizeName(
+        // Level 2 — Partial match: Same last name AND at least one matching/overlapping given name part
+        // Single-character initials or common surnames NEVER produce a match on their own
+        if (mb_strlen($lastName) >= 3 && !empty($inputGivenParts)) {
+            $results['partial'] = $allByLastName->filter(function ($client) use ($inputGivenParts, $lastName) {
+                $clientNormFull = self::normalizeName(
                     trim(sprintf('%s %s %s', $client->first_name, $client->middle_name, $client->last_name))
                 );
-                $clientParts = array_values(array_filter(explode(' ', $clientNorm)));
+                $clientParts = array_values(array_filter(explode(' ', $clientNormFull)));
+                $clientGivenParts = self::extractGivenParts($clientParts, $lastName);
 
-                return self::countEffectiveOverlap($parsed['parts'], $clientParts) >= 2;
-            });
+                if (empty($clientGivenParts)) {
+                    return false;
+                }
+
+                return self::hasGivenNameMatch($inputGivenParts, $clientGivenParts);
+            })->values();
         }
 
         return $results;
-    }
-
-    /**
-     * Count effective overlap between name parts
-     * Includes concatenated parts (e.g., "geraldlouis" = "gerald" + "louis")
-     */
-    private static function countEffectiveOverlap(array $inputParts, array $clientParts): int
-    {
-        $overlap = 0;
-        $usedClient = [];
-
-        foreach ($inputParts as $ip) {
-            // 1. Direct match
-            $matched = false;
-            foreach ($clientParts as $j => $cp) {
-                if ($ip === $cp && ! in_array($j, $usedClient, true)) {
-                    $overlap++;
-                    $usedClient[] = $j;
-                    $matched = true;
-                    break;
-                }
-            }
-            if ($matched) continue;
-
-            // 2. Concatenated consecutive client parts
-            $n = count($clientParts);
-            for ($start = 0; $start < $n; $start++) {
-                if (in_array($start, $usedClient, true)) continue;
-                $concat = '';
-                $usedInRun = [];
-                for ($j = $start; $j < $n; $j++) {
-                    $concat .= $clientParts[$j];
-                    $usedInRun[] = $j;
-                    if ($concat === $ip) {
-                        $overlap += count($usedInRun);
-                        $usedClient = array_merge($usedClient, $usedInRun);
-                        $matched = true;
-                        break 2;
-                    }
-                    if (strlen($concat) > strlen($ip)) break;
-                }
-            }
-        }
-
-        return $overlap;
     }
 
     /**

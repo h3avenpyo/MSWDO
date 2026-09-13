@@ -430,12 +430,7 @@ class SocialCaseController extends Controller
         $candidates = NameMatcher::findCandidateClients($parsed);
 
         $client    = $candidates['exact']->first();
-        $matchType = $client ? 'exact' : null;
-
-        if (!$client && $candidates['partial']->isNotEmpty()) {
-            $client    = $candidates['partial']->first();
-            $matchType = 'partial';
-        }
+        $matchType = $client ? 'exact' : ($candidates['partial']->isNotEmpty() ? 'partial' : null);
 
         $result = [
             'eligible'            => true,
@@ -460,8 +455,10 @@ class SocialCaseController extends Controller
                 'release_date'    => $checkResult['blockingRecord']->release_date?->toDateString(),
             ] : null;
 
+            // Only truly active in-progress cases block a new case (Draft, Review, Approved)
+            // Released, Printed, and Archived cases are completed / closed
             $activeCase = $client->socialCaseStudies()
-                ->where('status', '!=', 'Archived')
+                ->whereNotIn('status', ['Printed', 'Released', 'Archived'])
                 ->orderByDesc('created_at')
                 ->first();
 
@@ -473,19 +470,19 @@ class SocialCaseController extends Controller
                     'eligibility_status'=> $activeCase->eligibility_status,
                 ];
             }
+        }
 
-            // Return additional partial matches for verification (skip the primary match)
-            if ($matchType === 'partial' && $candidates['partial']->count() > 1) {
-                $result['possible_matches'] = $candidates['partial']
-                    ->reject(fn($c) => $c->id === $client->id)
-                    ->take(5)
-                    ->map(fn($c) => [
-                        'id'   => $c->id,
-                        'name' => trim(sprintf('%s %s %s', $c->first_name, $c->middle_name, $c->last_name)),
-                    ])
-                    ->values()
-                    ->toArray();
-            }
+        // Return candidate partial matches as possible duplicates for verification
+        if ($candidates['partial']->isNotEmpty()) {
+            $result['possible_matches'] = $candidates['partial']
+                ->when($client, fn($col) => $col->reject(fn($c) => $c->id === $client->id))
+                ->take(5)
+                ->map(fn($c) => [
+                    'id'   => $c->id,
+                    'name' => trim(sprintf('%s %s %s', $c->first_name, $c->middle_name, $c->last_name)),
+                ])
+                ->values()
+                ->toArray();
         }
 
         EligibilityAuditLog::create([
@@ -534,13 +531,12 @@ class SocialCaseController extends Controller
             }
         }
 
-        // Use the same normalized matching as checkEligibility
-        $parsed    = NameMatcher::parseFullName($name);
+        // Use exact normalized matching to locate existing client
+        $parsed     = NameMatcher::parseFullName($name);
         $candidates = NameMatcher::findCandidateClients($parsed);
-        $client    = $candidates['exact']->first()
-                  ?? $candidates['partial']->first();
+        $client     = $candidates['exact']->first();
 
-        // If no existing client found, create one (same as findOrCreateClient)
+        // If no existing exact client found, create one
         if (!$client) {
             $client = Client::create([
                 'first_name'  => $parsed['first_name'],
@@ -559,7 +555,7 @@ class SocialCaseController extends Controller
         }
 
         $activeCase = $client->socialCaseStudies()
-            ->where('status', '!=', 'Archived')
+            ->whereNotIn('status', ['Printed', 'Released', 'Archived'])
             ->orderByDesc('created_at')
             ->first();
 
@@ -717,7 +713,7 @@ class SocialCaseController extends Controller
             }
 
             $hasActive = $client->socialCaseStudies()
-                ->where('status', '!=', 'Archived')
+                ->whereNotIn('status', ['Printed', 'Released', 'Archived'])
                 ->where('eligibility_status', '!=', 'ineligible')
                 ->exists();
 
