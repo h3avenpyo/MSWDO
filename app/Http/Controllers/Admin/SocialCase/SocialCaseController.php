@@ -198,8 +198,8 @@ class SocialCaseController extends Controller
             ->get();
 
         $cases->each(function ($case) {
-            $case->client_name = $case->client ? $case->client->full_name : '';
-            $case->client_barangay = $case->client ? $case->client->barangay : '';
+            $case->client_name = $case->intake_full_name ?: ($case->client ? $case->client->full_name : '');
+            $case->client_barangay = $case->intake_barangay ?: ($case->client ? $case->client->barangay : '');
         });
 
         return response()->json($cases);
@@ -212,8 +212,8 @@ class SocialCaseController extends Controller
             ->get();
 
         $cases->each(function ($case) {
-            $case->client_name = $case->client ? $case->client->full_name : '';
-            $case->client_barangay = $case->client ? $case->client->barangay : '';
+            $case->client_name = $case->intake_full_name ?: ($case->client ? $case->client->full_name : '');
+            $case->client_barangay = $case->intake_barangay ?: ($case->client ? $case->client->barangay : '');
             $case->eligible_at = $case->eligible_at ? $case->eligible_at->format('Y-m-d H:i:s') : null;
             $case->rejected_at = $case->rejected_at ? $case->rejected_at->format('Y-m-d H:i:s') : null;
         });
@@ -258,6 +258,8 @@ class SocialCaseController extends Controller
         if (!$case) {
             return response()->json(['error' => 'Case not found'], 404);
         }
+        $case->client_name = $case->intake_full_name ?: ($case->client ? $case->client->full_name : '');
+        $case->client_barangay = $case->intake_barangay ?: ($case->client ? $case->client->barangay : '');
         return response()->json($case);
     }
 
@@ -277,8 +279,9 @@ class SocialCaseController extends Controller
         $today  = now()->startOfDay();
 
         $documentAge = null;
-        if ($client && $client->birthdate) {
-            $birthdate = \Carbon\Carbon::parse($client->birthdate);
+        $birthdate = $case->intake_birthdate ?: ($client?->birthdate);
+        if ($birthdate) {
+            $birthdate = \Carbon\Carbon::parse($birthdate);
             $documentAge = (int) $birthdate->diffInYears($today, false);
             // diffInYears with false can return negative for future dates;
             // clamp to 0 as a safety net.
@@ -293,7 +296,7 @@ class SocialCaseController extends Controller
         return response()->json([
             'document_date'     => $today->toDateString(),
             'client_age'        => $documentAge,
-            'client_birthdate'  => $client?->birthdate?->toDateString(),
+            'client_birthdate'  => $birthdate ? \Carbon\Carbon::parse($birthdate)->toDateString() : null,
             'document_ref_number' => $documentRefNumber,
         ]);
     }
@@ -449,10 +452,11 @@ class SocialCaseController extends Controller
 
             $result['eligible']             = $checkResult['eligible'];
             $result['eligible_again_date']  = $checkResult['eligibleAgainDate']?->toDateString();
-            $result['last_assistance_date'] = $checkResult['lastAssistanceDate']?->toDateString();
-            $result['blocking'] = $checkResult['blockingRecord'] ? [
-                'assistance_type' => $checkResult['blockingRecord']->assistance_type,
-                'release_date'    => $checkResult['blockingRecord']->release_date?->toDateString(),
+            $result['last_assistance_date'] = $checkResult['blockingEventDate'];
+            $result['blocking'] = $checkResult['blockingCase'] ? [
+                'case_number' => $checkResult['blockingCase']->case_number,
+                'status'      => $checkResult['blockingCase']->status,
+                'release_date'=> $checkResult['blockingCase']->latest_event_date?->toDateString(),
             ] : null;
 
             // Only truly active in-progress cases block a new case (Draft, Review, Approved)
@@ -596,19 +600,22 @@ class SocialCaseController extends Controller
                 $documentRefNumber = 1;
             }
 
-            $case = SocialCaseStudy::create([
-                'client_id'          => $client->id,
-                'officer_id'         => $encoderId ?? session('admin_user_id'),
-                'case_number'        => $this->generateCaseNumber(),
-                'date_processed'     => now()->toDateString(),
-                'encoded_by'         => null,
-                'status'             => 'Draft',
-                'eligibility_status' => 'eligible',
-                'eligible_by'        => session('admin_user_id'),
-                'eligible_at'        => now(),
-                'workflow_step'       => 'requirements_verification',
-                'document_ref_number' => $documentRefNumber,
-            ]);
+            $case = SocialCaseStudy::create(array_merge(
+                $this->snapshotFromClient($client),
+                [
+                    'main_client_id'     => $client->id,
+                    'officer_id'         => $encoderId ?? session('admin_user_id'),
+                    'case_number'        => $this->generateCaseNumber(),
+                    'date_processed'     => now()->toDateString(),
+                    'encoded_by'         => null,
+                    'status'             => 'Draft',
+                    'eligibility_status' => 'eligible',
+                    'eligible_by'        => session('admin_user_id'),
+                    'eligible_at'        => now(),
+                    'workflow_step'       => 'requirements_verification',
+                    'document_ref_number' => $documentRefNumber,
+                ]
+            ));
 
             return $case;
         });
@@ -644,6 +651,7 @@ class SocialCaseController extends Controller
             'status'                          => 'required|string|max:50',
             'client'                          => 'required|array',
             'client.name'                     => 'required|string|max:255',
+            'client.suffix'                   => 'nullable|string|max:50',
             'client.age'                      => 'nullable|integer|min:0|max:150',
             'client.sex'                      => 'nullable|in:Male,Female',
             'client.address'                  => 'nullable|string|max:500',
@@ -703,8 +711,13 @@ class SocialCaseController extends Controller
             $checkResult = $checker->check($client);
 
             if (! $checkResult['eligible']) {
+                $blocking = $checkResult['blockingCase'];
                 return response()->json([
-                    'error'   => 'This client already has a Social Case Study request within the last 6 months. '
+                    'error'   => 'This client already has a Social Case Study within the last 6 months. '
+                                . ($blocking
+                                    ? 'Blocking case: ' . $blocking->case_number
+                                        . ' (last event: ' . ($blocking->latest_event_date?->toDateString() ?? '') . '). '
+                                    : '')
                                 . ($checkResult['eligibleAgainDate']
                                     ? ' Eligible again on: ' . $checkResult['eligibleAgainDate']->toDateString()
                                     : ''),
@@ -758,30 +771,36 @@ class SocialCaseController extends Controller
 
             $case = $caseId
                 ? SocialCaseStudy::find($caseId)
-                : SocialCaseStudy::create([
-                    'client_id'          => $clientId,
-                    'officer_id'         => $encodedById,
-                    'case_number'        => $this->generateCaseNumber(),
-                    'date_processed'     => now()->toDateString(),
-                    'workflow_step'       => 'requirements_verification',
-                    'document_ref_number' => $documentRefNumber,
-                ]);
+                : SocialCaseStudy::create(array_merge(
+                    $this->snapshotFromIntakeArray($data['client']),
+                    [
+                        'main_client_id'     => $clientId,
+                        'officer_id'         => $encodedById,
+                        'case_number'        => $this->generateCaseNumber(),
+                        'date_processed'     => now()->toDateString(),
+                        'workflow_step'       => 'requirements_verification',
+                        'document_ref_number' => $documentRefNumber,
+                    ]
+                ));
             
             \Log::info('Case created with document_ref_number:', ['document_ref_number' => $case->document_ref_number]);
 
-            $updatePayload = [
-                'client_id'            => $clientId,
-                'date_processed'       => now()->toDateString(),
-                'interview_date'       => $data['interview']['report_date'] ?? null,
-                'purpose'              => $data['purpose'],
-                'submitted_to'         => implode(', ', $agencies),
-                'encoded_by'           => $encodedById,
-                'status'               => $data['status'],
-                'eligibility_status'   => $caseId ? ($case->eligibility_status ?: 'eligible') : 'eligible',
-                'summary'              => $data['interview']['problem_presented'] ?? null,
-                'requirements_complete' => !empty($data['requirements']),
-                'signers'              => $data['signers'] ?? [],
-            ];
+            $updatePayload = array_merge(
+                $this->snapshotFromIntakeArray($data['client']),
+                [
+                    'main_client_id'        => $clientId,
+                    'date_processed'        => now()->toDateString(),
+                    'interview_date'        => $data['interview']['report_date'] ?? null,
+                    'purpose'               => $data['purpose'],
+                    'submitted_to'          => implode(', ', $agencies),
+                    'encoded_by'            => $encodedById,
+                    'status'                => $data['status'],
+                    'eligibility_status'    => $caseId ? ($case->eligibility_status ?: 'eligible') : 'eligible',
+                    'summary'               => $data['interview']['problem_presented'] ?? null,
+                    'requirements_complete' => !empty($data['requirements']),
+                    'signers'               => $data['signers'] ?? [],
+                ]
+            );
             // Only set document_ref_number for brand-new cases; never overwrite an existing one with null
             if ($documentRefNumber !== null) {
                 $updatePayload['document_ref_number'] = $documentRefNumber;
@@ -808,15 +827,18 @@ class SocialCaseController extends Controller
             $household = $data['household'] ?? [];
             foreach ($household as $member) {
                 if (empty($member['name'])) continue;
-                \App\Models\SocialCase\FamilyMember::create([
-                    'social_case_study_id' => $case->id,
-                    'full_name'            => $member['name'] ?? '',
-                    'relationship'         => $member['relationship'] ?? '',
-                    'age'                  => is_numeric($member['age'] ?? null) ? (int) $member['age'] : null,
-                    'education'            => $member['education'] ?? null,
-                    'occupation'           => $member['occupation'] ?? null,
-                    'monthly_income'       => $member['income'] ?? null,
-                ]);
+                \App\Models\SocialCase\FamilyMember::create(array_merge(
+                    $this->parsePersonFields((string) $member['name']),
+                    [
+                        'social_case_study_id' => $case->id,
+                        'full_name'            => $member['name'] ?? '',
+                        'relationship'         => $member['relationship'] ?? '',
+                        'age'                  => is_numeric($member['age'] ?? null) ? (int) $member['age'] : null,
+                        'education'            => $member['education'] ?? null,
+                        'occupation'           => $member['occupation'] ?? null,
+                        'monthly_income'       => $member['income'] ?? null,
+                    ]
+                ));
             }
 
             if (!empty($data['online_request_id'])) {
@@ -844,26 +866,29 @@ class SocialCaseController extends Controller
 
     private function findOrCreateClient(array $clientData): int
     {
-        $fullName = trim($clientData['name'] ?? '');
-        $parsed   = NameMatcher::parseFullName($fullName);
+        $parsed = NameMatcher::parseFullName(trim($clientData['name'] ?? ''));
         $firstName  = $parsed['first_name'];
         $lastName   = $parsed['last_name'];
         $middleName = $parsed['middle_name'];
+        $suffix     = trim($clientData['suffix'] ?? '');
 
-        $client = Client::whereRaw('LOWER(first_name) = ?', [$firstName])
+        $candidates = Client::whereRaw('LOWER(first_name) = ?', [$firstName])
             ->whereRaw('LOWER(last_name) = ?', [$lastName])
-            ->first();
+            ->get();
+
+        $client = $this->selectBestCandidate($candidates, $clientData, $middleName, $suffix);
 
         if (!$client) {
             $client = Client::create([
                 'first_name'     => $firstName,
-                'middle_name'    => $middleName,
+                'middle_name'    => $middleName ?: null,
                 'last_name'      => $lastName,
+                'suffix'         => $suffix !== '' ? $suffix : null,
                 'birthdate'      => $clientData['birthdate'] ?? null,
                 'gender'         => $clientData['sex'] ?? null,
                 'age'            => is_numeric($clientData['age'] ?? null) ? (int) $clientData['age'] : null,
-                'address'        => $clientData['address'] ?? null,
-                'barangay'       => $clientData['address'] ?? null,
+                'address'        => $clientData['barangay'] ?? $clientData['address'] ?? null,
+                'barangay'       => $clientData['barangay'] ?? $clientData['address'] ?? null,
                 'contact_number' => $clientData['contact'] ?? null,
                 'birthplace'     => $clientData['birthplace'] ?? null,
                 'religion'       => $clientData['religion'] ?? null,
@@ -874,12 +899,14 @@ class SocialCaseController extends Controller
             ]);
         } else {
             $updates = [];
+            if ($suffix !== '') $updates['suffix'] = $suffix;
             if (!empty($clientData['birthdate'])) $updates['birthdate'] = $clientData['birthdate'];
             if (!empty($clientData['sex'])) $updates['gender'] = $clientData['sex'];
             if (isset($clientData['age']) && is_numeric($clientData['age'])) $updates['age'] = (int) $clientData['age'];
-            if (!empty($clientData['address'])) {
-                $updates['address'] = $clientData['address'];
-                $updates['barangay'] = $clientData['address'];
+            $barangay = $clientData['barangay'] ?? $clientData['address'] ?? null;
+            if (!empty($barangay)) {
+                $updates['address']  = $barangay;
+                $updates['barangay'] = $barangay;
             }
             if (!empty($clientData['contact'])) $updates['contact_number'] = $clientData['contact'];
             if (!empty($clientData['birthplace'])) $updates['birthplace'] = $clientData['birthplace'];
@@ -894,12 +921,137 @@ class SocialCaseController extends Controller
         return $client->id;
     }
 
+    /**
+     * Pick the strongest identity match from identical first+last name candidates
+     * using middle name, suffix, birthdate, and barangay when available. Falls back
+     * to the first candidate when nothing else distinguishes them.
+     */
+    private function selectBestCandidate(iterable $candidates, array $clientData, string $middleName, string $suffix): ?Client
+    {
+        $best = null;
+        $bestScore = -1;
+
+        foreach ($candidates as $candidate) {
+            $score = 0;
+
+            if ($middleName !== '' && !empty($candidate->middle_name)
+                && NameMatcher::normalizeName($candidate->middle_name) === $middleName) {
+                $score += 1;
+            }
+
+            if ($suffix !== '' && !empty($candidate->suffix)
+                && NameMatcher::normalizeName($candidate->suffix) === $suffix) {
+                $score += 2;
+            }
+
+            $inputBirthdate = $clientData['birthdate'] ?? null;
+            if ($inputBirthdate && !empty($candidate->birthdate)
+                && \Carbon\Carbon::parse($inputBirthdate)->toDateString() === \Carbon\Carbon::parse($candidate->birthdate)->toDateString()) {
+                $score += 2;
+            }
+
+            $inputBarangay = $clientData['barangay'] ?? $clientData['address'] ?? null;
+            if ($inputBarangay && !empty($candidate->barangay)
+                && NameMatcher::normalizeName($candidate->barangay) === NameMatcher::normalizeName((string) $inputBarangay)) {
+                $score += 1;
+            }
+
+            if ($score > $bestScore) {
+                $bestScore = $score;
+                $best = $candidate;
+            }
+        }
+
+        return $best;
+    }
+
+    /**
+     * Snapshot the EXACT intake data submitted so the case stays faithful to the
+     * original record even when the person master data changes later.
+     */
+    private function snapshotFromIntakeArray(array $c): array
+    {
+        $parsed = NameMatcher::parseFullName(trim($c['name'] ?? ''));
+
+        return [
+            'intake_first_name'      => $parsed['first_name'] ?: null,
+            'intake_middle_name'     => $parsed['middle_name'] ?: null,
+            'intake_last_name'       => $parsed['last_name'] ?: null,
+            'intake_suffix'          => !empty($c['suffix']) ? trim($c['suffix']) : null,
+            'intake_full_name'       => trim($c['name'] ?? '') ?: null,
+            'intake_birthdate'       => $c['birthdate'] ?? null,
+            'intake_age'             => is_numeric($c['age'] ?? null) ? (int) $c['age'] : null,
+            'intake_gender'          => $c['sex'] ?? null,
+            'intake_civil_status'    => $c['civil_status'] ?? null,
+            'intake_religion'        => $c['religion'] ?? null,
+            'intake_birthplace'      => $c['birthplace'] ?? null,
+            'intake_education'       => $c['education'] ?? null,
+            'intake_occupation'      => $c['occupation'] ?? null,
+            'intake_income'          => $c['income'] ?? null,
+            'intake_address'         => $c['address'] ?? null,
+            'intake_barangay'        => $c['barangay'] ?? $c['address'] ?? null,
+            'intake_contact_number'  => $c['contact'] ?? null,
+        ];
+    }
+
+    /**
+     * Snapshot from a client master record (used when only parsed name parts exist).
+     */
+    private function snapshotFromClient(Client $client): array
+    {
+        $fullName = trim($client->full_name);
+
+        return [
+            'intake_first_name'      => $client->first_name,
+            'intake_middle_name'     => $client->middle_name,
+            'intake_last_name'       => $client->last_name,
+            'intake_suffix'          => $client->suffix,
+            'intake_full_name'       => $fullName ?: null,
+            'intake_birthdate'       => $client->birthdate?->toDateString(),
+            'intake_age'             => $client->age,
+            'intake_gender'          => $client->gender,
+            'intake_civil_status'    => $client->civil_status,
+            'intake_religion'        => $client->religion,
+            'intake_birthplace'      => $client->birthplace,
+            'intake_education'       => $client->education,
+            'intake_occupation'      => $client->occupation,
+            'intake_income'          => $client->income,
+            'intake_address'         => $client->address,
+            'intake_barangay'        => $client->barangay,
+            'intake_contact_number'  => $client->contact_number,
+        ];
+    }
+
+    /**
+     * Parse a household member name and best-effort link it to a person record.
+     * A linked relative is never the main client of the case.
+     */
+    private function parsePersonFields(string $fullName): array
+    {
+        $parsed = NameMatcher::parseFullName($fullName);
+        $person = NameMatcher::findMatchingClient($fullName);
+
+        return [
+            'person_id'   => $person?->id,
+            'first_name'  => $parsed['first_name'] ?: null,
+            'middle_name' => $parsed['middle_name'] ?: null,
+            'last_name'   => $parsed['last_name'] ?: null,
+            'suffix'      => null,
+        ];
+    }
+
     private static function generateCaseNumber(): string
     {
         $now = now();
         $prefix = 'MSWD-O-' . $now->format('Y-m') . '-';
+
+        // Only consider properly formatted sequence numbers (MSWD-O-YYYY-MM-NNNN) so
+        // manually-created or test case numbers never corrupt the next sequence value.
         $last = SocialCaseStudy::where('case_number', 'LIKE', $prefix . '%')
-            ->orderByDesc('case_number')->value('case_number');
+            ->whereRaw('case_number REGEXP ?', ['^' . $prefix . '[0-9]{4}$'])
+            ->orderByDesc('case_number')
+            ->value('case_number');
+
         $seq = 1;
         if ($last && preg_match('/-(\d{4})$/', $last, $m)) {
             $seq = (int) $m[1] + 1;

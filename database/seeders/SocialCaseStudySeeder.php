@@ -98,7 +98,7 @@ class SocialCaseStudySeeder extends Seeder
             $caseCounter++;
 
             $socialCase = SocialCaseStudy::create([
-                'client_id' => $client->id,
+                'main_client_id' => $client->id,
                 'officer_id' => $encoder->id,
                 'case_number' => $caseNumber,
                 'date_processed' => $dateProcessed->toDateString(),

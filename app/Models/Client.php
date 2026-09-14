@@ -15,6 +15,7 @@ class Client extends Model
         'first_name',
         'middle_name',
         'last_name',
+        'suffix',
         'birthdate',
         'gender',
         'age',
@@ -35,7 +36,7 @@ class Client extends Model
 
     public function socialCaseStudies(): HasMany
     {
-        return $this->hasMany(\App\Models\SocialCase\SocialCaseStudy::class);
+        return $this->hasMany(\App\Models\SocialCase\SocialCaseStudy::class, 'main_client_id');
     }
 
     public function assistanceRecords(): HasMany
@@ -70,12 +71,13 @@ class Client extends Model
         $firstName = mb_convert_case($this->first_name, MB_CASE_TITLE, 'UTF-8');
         $middleName = mb_convert_case($this->middle_name, MB_CASE_TITLE, 'UTF-8');
         $lastName = mb_convert_case($this->last_name, MB_CASE_TITLE, 'UTF-8');
+        $suffix = trim((string) $this->suffix);
 
         if (!empty($middleName)) {
             $middleName = rtrim($middleName, '.') . '.';
         }
 
-        return trim(sprintf('%s %s %s', $firstName, $middleName, $lastName));
+        return trim(sprintf('%s %s %s %s', $firstName, $middleName, $lastName, $suffix));
     }
 
     public function getNameAttribute(): string

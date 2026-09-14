@@ -771,7 +771,7 @@ function blankIntake(name){
     createdAt: today,
     updatedAt: today,
     controlNo: generateControlNo(today),
-    client: {name: name||"", age:"", sex:"", address:"", birthdate:"", birthplace:"", religion:"", education:"", civilStatus:"", occupation:"", income:"", contact:""},
+    client: {name: name||"", suffix:"", age:"", sex:"", address:"", birthdate:"", birthplace:"", religion:"", education:"", civilStatus:"", occupation:"", income:"", contact:""},
     household: [{name:"", relationship:"", age:"", education:"", occupation:"", income:""}],
     interview: {reportDate: today, problemPresented:"", homeCondition:"", socioEconomic:"", evaluation:"", recommendation:""},
     signers: {preparedByName: CURRENT_USER_NAME, preparedByTitle:"MSWDO Staff", notedByName: ADMIN_NAME || CURRENT_USER_NAME, notedByTitle:"MSWDO Head", notedByLicense:""},
@@ -2230,8 +2230,8 @@ function renderCheckerEligibilityResult(data){
 
   if(!data.eligible){
     const reason = data.blocking
-      ? `Received ${escapeHtml(data.blocking.assistance_type)} assistance on ${fmtDate(data.blocking.release_date)}.`
-      : 'An approved / released assistance was provided within the last 6 months.';
+      ? `This client already has a Social Case Study <strong>${escapeHtml(data.blocking.case_number || '—')}</strong> (${escapeHtml(data.blocking.status || '')}) with a last event on <strong>${fmtDate(data.blocking.release_date)}</strong>. The 6-month restriction applies to the person who was the main client of the case.`
+      : 'A Social Case Study within the last 6 months blocks new assistance.';
     status.innerHTML = `
       <div class="eligibility-card" style="border-color:#DC2626;background:#FEF2F2">
         <div class="status-icon" style="color:#DC2626"><i data-lucide="x-circle" style="width:24px;height:24px"></i></div>
@@ -2402,18 +2402,19 @@ function caseToIntake(c){
     updatedAt: c.updatedAt || today,
     controlNo: c.controlNo || c.caseNumber || generateControlNo(today),
     client: {
-      name: client.name || client.fullName || client.full_name || '',
-      age: client.age || '',
-      sex: client.sex || client.gender || '',
-      address: client.address || client.barangay || '',
-      birthdate: client.birthdate ? String(client.birthdate).slice(0, 10) : '',
-      birthplace: client.birthplace || '',
-      religion: client.religion || '',
-      education: client.education || '',
-      civilStatus: client.civilStatus || client.civil_status || '',
-      occupation: client.occupation || '',
-      income: client.income || '',
-      contact: client.contact || client.contactNumber || client.contact_number || ''
+      name: c.intakeFullName || c.intake_full_name || client.name || client.fullName || client.full_name || '',
+      suffix: c.intakeSuffix || c.intake_suffix || client.suffix || '',
+      age: c.intakeAge || client.age || '',
+      sex: c.intakeGender || client.sex || client.gender || '',
+      address: c.intakeBarangay || c.intake_address || client.barangay || client.address || '',
+      birthdate: (c.intakeBirthdate || client.birthdate) ? String(c.intakeBirthdate || client.birthdate).slice(0, 10) : '',
+      birthplace: c.intakeBirthplace || client.birthplace || '',
+      religion: c.intakeReligion || client.religion || '',
+      education: c.intakeEducation || client.education || '',
+      civilStatus: c.intakeCivilStatus || client.civilStatus || client.civil_status || '',
+      occupation: c.intakeOccupation || client.occupation || '',
+      income: c.intakeIncome || client.income || '',
+      contact: c.intakeContactNumber || c.intake_contact_number || client.contact || client.contactNumber || client.contact_number || ''
     },
     household: (() => {
       const rows = (c.familyMembers || c.household || []).filter(m => m && (m.fullName || m.full_name || m.name)).map(m => ({
@@ -2542,6 +2543,10 @@ function renderIntakeForm(){
         <div class="lg:col-span-2">
           <label class="form-label">Full Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
           <input type="text" class="form-input" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value" placeholder="Enter client's full name" required maxlength="255">
+        </div>
+        <div>
+          <label class="form-label">Suffix</label>
+          <input type="text" class="form-input" value="${escapeHtml(d.client.suffix || '')}" oninput="draftIntake.client.suffix=this.value" placeholder="e.g. Jr., Sr., III" maxlength="50">
         </div>
         <div>
           <label class="form-label">Sex <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
@@ -2976,7 +2981,7 @@ function showIntakeSummaryModal(){
           <div class="custom-modal-grid">
             <div class="custom-modal-field custom-modal-col-span2">
               <label class="custom-modal-label">Full Name</label>
-              <div class="custom-modal-value font-bold">${val(d.client.name)}</div>
+              <div class="custom-modal-value font-bold">${val(d.client.name)}${d.client.suffix ? ' ' + escapeHtml(d.client.suffix) : ''}</div>
             </div>
             <div class="custom-modal-field">
               <label class="custom-modal-label">Sex</label>
@@ -3674,7 +3679,7 @@ async function reprintCase(caseId){
       clientName: caseRec.client?.name,
       controlNo: caseRec.controlNo,
       reprintDate: docData?.document_date || todayISO(),
-      clientAge: docData?.client_age ?? null,
+      clientAge: docData?.client_age || null,
     });
     await loadCaseDetail(caseId);
     Swal.fire({

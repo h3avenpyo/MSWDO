@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class SocialCaseStudy extends Model
 {
     protected $fillable = [
-        'client_id',
+        'main_client_id',
         'officer_id',
         'case_number',
         'date_processed',
@@ -40,6 +40,23 @@ class SocialCaseStudy extends Model
         'released_to',
         'signers',
         'document_ref_number',
+        'intake_first_name',
+        'intake_middle_name',
+        'intake_last_name',
+        'intake_suffix',
+        'intake_full_name',
+        'intake_birthdate',
+        'intake_age',
+        'intake_gender',
+        'intake_civil_status',
+        'intake_religion',
+        'intake_birthplace',
+        'intake_education',
+        'intake_occupation',
+        'intake_income',
+        'intake_address',
+        'intake_barangay',
+        'intake_contact_number',
     ];
 
     protected $casts = [
@@ -56,9 +73,11 @@ class SocialCaseStudy extends Model
         'assistance_amount' => 'decimal:2',
         'signers' => 'array',
         'document_ref_number' => 'integer',
+        'intake_birthdate' => 'date',
+        'intake_age' => 'integer',
     ];
 
-    protected $appends = ['control_no', 'released_date'];
+    protected $appends = ['control_no', 'released_date', 'latest_event_date'];
 
     public function getControlNoAttribute(): ?string
     {
@@ -70,9 +89,45 @@ class SocialCaseStudy extends Model
         return $this->released_at ? $this->released_at->format('Y-m-d') : null;
     }
 
+    /**
+     * The most recent event date of a case — used as the anchor for the 6-month
+     * eligibility window. Whichever of date_processed / released_at /
+     * assistance_date / created_at is latest.
+     */
+    public function getLatestEventDateAttribute(): ?\Illuminate\Support\Carbon
+    {
+        $candidates = array_filter([
+            $this->date_processed,
+            $this->released_at?->toDate() ?? $this->released_at,
+            $this->assistance_date,
+            $this->created_at?->toDate() ?? $this->created_at,
+        ]);
+
+        if (empty($candidates)) {
+            return null;
+        }
+
+        return collect($candidates)
+            ->map(fn ($d) => \Illuminate\Support\Carbon::parse($d))
+            ->max();
+    }
+
+    /**
+     * The authoritative main client of the case.
+     */
+    public function mainClient(): BelongsTo
+    {
+        return $this->belongsTo(Client::class, 'main_client_id');
+    }
+
+    /**
+     * Legacy alias for the main client relationship so existing views and the
+     * front-end (c.client.*) keep working while the codebase migrates fully to
+     * main_client_id. Binds to the same column.
+     */
     public function client(): BelongsTo
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(Client::class, 'main_client_id');
     }
 
     public function officer(): BelongsTo
