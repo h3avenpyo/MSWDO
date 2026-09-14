@@ -47,7 +47,7 @@
 
         /* ── Archive-style panel & table (matches archive page) ── */
         .archive-panel-wrap{width:100%;padding:1rem;margin-bottom:1rem;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
-        .archive-table-wrap{border:2px solid #CBD5E1;border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;max-height: 500px; overflow-y: auto;}
+        .archive-table-wrap{border:2px solid #CBD5E1;border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;min-height: 480px; max-height: calc(100vh - 280px); overflow-y: auto;}
         .archive-table{width:100%;border-collapse:collapse;font-size:14px;}
         .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:#1E293B;text-align:left;border-bottom:2px solid #94A3B8;background:#E2E8F0;white-space:nowrap;position: sticky; top: 0; z-index: 10;}
         .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid #CBD5E1;vertical-align:middle;white-space:normal;word-break:break-word;}
@@ -164,17 +164,21 @@
         @media (min-width:1200px){
             html,body{overflow:hidden !important;}
             .app{height:100vh !important;overflow:hidden !important;}
-            .app .main{height:100vh !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;}
+            .app .main{height:100vh !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;box-sizing:border-box !important;}
             .app .main-scroll{flex:1 !important;min-height:0 !important;overflow-y:auto !important;overflow-x:hidden !important;display:flex !important;flex-direction:column !important;}
-            .archive-panel-wrap{padding:1rem !important;margin-bottom:0 !important;flex:1 !important;min-height:0 !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;}
+            #birthdayTableSection:not(.hidden-table),
+            #inBetweenTableSection:not(.hidden-table){flex:1 !important;min-height:0 !important;display:flex !important;flex-direction:column !important;overflow:hidden !important;}
+            .archive-panel-wrap{padding:0.75rem !important;margin-bottom:0 !important;flex:1 !important;min-height:0 !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;}
             .archive-panel-wrap.hidden-table{display:none !important;}
-            .archive-table-wrap{flex:1 !important;min-height:0 !important;border:1px solid var(--border) !important;overflow:auto !important;border-radius:8px !important;}
+            .archive-table-wrap{flex:1 !important;min-height:0 !important;max-height:none !important;height:100% !important;border:1px solid var(--border) !important;overflow:auto !important;border-radius:8px !important;}
+            .sc-pagination{margin-top:10px !important;flex-shrink:0 !important;}
             .empty-icon-wrap{width:80px;height:80px;margin-bottom:20px;background:#EEF2FF;color:#1A237E;}
             .empty-icon-wrap svg{width:40px !important;height:40px !important;}
             .empty-title{font-size:1.35rem !important;font-weight:700 !important;color:#111827 !important;margin-bottom:8px !important;}
             .empty-subtitle{font-size:0.95rem !important;color:#6B7280 !important;max-width:400px;line-height:1.5;}
         }
         @media (min-width:768px) and (max-width:1199px){
+            .archive-table-wrap{min-height:480px !important;max-height:calc(100vh - 280px) !important;}
             .archive-table tbody tr.empty-row{display:table-row !important;background:transparent !important;border:none !important;box-shadow:none !important;margin:0 !important;}
             .archive-table tbody tr.empty-row td.empty-cell{display:table-cell !important;padding:2.5rem 1.5rem !important;border:none !important;text-align:center !important;}
             .archive-table tbody tr.empty-row td.empty-cell::before{display:none !important;}
@@ -372,7 +376,7 @@
                 </div>
             </div>
 
-            <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
+            <div style="border-top: 2px solid #94A3B8; margin: 10px 0 0 0; flex-shrink: 0;"></div>
 
             <div class="sc-pagination">
                 <div class="sc-pagination-info">
@@ -465,7 +469,7 @@
                 </div>
             </div>
 
-            <div style="border-top: 2px solid #94A3B8; margin: 20px 0;"></div>
+            <div style="border-top: 2px solid #94A3B8; margin: 10px 0 0 0; flex-shrink: 0;"></div>
 
             <div class="sc-pagination">
                 <div class="sc-pagination-info">
