@@ -307,7 +307,7 @@
 
                 <!-- Submit Button -->
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <button type="submit" class="flex-1 bg-primary text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition shadow-lg">
+                    <button type="submit" id="submitBtn" class="flex-1 bg-primary text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition shadow-lg">
                         <div class="flex flex-col items-center">
                             <span>Submit Request</span>
                             <span class="text-xs font-normal text-white/70 mt-1">Isumite ang Kahilingan</span>
@@ -447,31 +447,49 @@
         // Form submission
         document.getElementById('serviceRequestForm').addEventListener('submit', function(e) {
             e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `
+                    <div class="flex items-center justify-center gap-2">
+                        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                        <span>Submitting Request...</span>
+                    </div>
+                `;
+            }
             
             const formData = new FormData(this);
-            const serviceType = document.getElementById('serviceType').value;
             
-            // Determine submission URL based on service type
-            let submitUrl = '/service-request';
-            if (serviceType === 'social_case_study') {
-                submitUrl = '/admin/social-case/online-requests';
-            }
+            // Delete pre-existing documents[] entry to prevent duplicate uploads
+            formData.delete('documents[]');
             
             // Add selected files
             for (let i = 0; i < selectedFiles.length; i++) {
                 formData.append('documents[]', selectedFiles[i]);
             }
 
-            fetch(submitUrl, {
+            fetch('/service-request', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
                 },
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+            .then(async response => {
+                let data = null;
+                try {
+                    data = await response.json();
+                } catch (jsonErr) {
+                    data = null;
+                }
+
+                if (response.ok && data && data.success) {
                     Swal.fire({
                         title: 'Request Submitted',
                         text: 'Your service request has been submitted successfully. An MSWDO officer will review your request.',
@@ -482,9 +500,10 @@
                         window.location.href = '/';
                     });
                 } else {
+                    const message = (data && data.message) ? data.message : 'There was an error submitting your request. Please try again.';
                     Swal.fire({
                         title: 'Error',
-                        text: data.message || 'There was an error submitting your request. Please try again.',
+                        text: message,
                         icon: 'error',
                         confirmButtonColor: '#DC2626',
                         confirmButtonText: 'OK'
@@ -500,6 +519,12 @@
                     confirmButtonColor: '#DC2626',
                     confirmButtonText: 'OK'
                 });
+            })
+            .finally(() => {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                }
             });
         });
     </script>

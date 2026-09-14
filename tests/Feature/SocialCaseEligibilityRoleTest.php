@@ -7,6 +7,7 @@ use App\Models\SocialCase\EligibilityAuditLog;
 use App\Models\SocialCase\FamilyMember;
 use App\Models\SocialCase\SocialCaseStudy;
 use App\Models\User;
+use App\Services\NameMatcher;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
@@ -234,6 +235,172 @@ class SocialCaseEligibilityRoleTest extends TestCase
             ->assertStatus(422);
 
         $this->assertSame(1, $client->socialCaseStudies()->count());
+    }
+
+    /**
+     * Seed a realistic client ("Gerald Louis F. <Surname>") with a unique surname
+     * so reorder assertions stay isolated from any pre-existing rows.
+     */
+    private function seedGeraldSumayloClient(): array
+    {
+        $surname = 'Sumaylo' . substr(strtoupper(md5(uniqid())), 0, 4);
+        $client = Client::create(['first_name' => 'Gerald', 'middle_name' => 'Louis F', 'last_name' => $surname]);
+        $this->register([$client->id]);
+
+        return [$client, $surname];
+    }
+
+    public function test_eligibility_detects_reordered_spaced_and_mis_cased_names(): void
+    {
+        [$client, $surname] = $this->seedGeraldSumayloClient();
+
+        // Reordered name (surname first, no comma) — the reported case
+        $reordered = NameMatcher::findCandidateClients(NameMatcher::parseFullName("{$surname} Gerald Louis"));
+        $this->assertTrue($reordered['exact']->contains('id', $client->id));
+
+        // Swallowed spacing between given name parts
+        $misSpaced = NameMatcher::findCandidateClients(NameMatcher::parseFullName("GeraldLouis {$surname}"));
+        $this->assertTrue($misSpaced['exact']->contains('id', $client->id));
+
+        // Random casing and extra whitespace
+        $misCased = NameMatcher::findCandidateClients(NameMatcher::parseFullName(' gErAlD   LoUiS ' . strtolower($surname)));
+        $this->assertTrue($misCased['exact']->contains('id', $client->id));
+
+        // Standard order still matches exactly
+        $standard = NameMatcher::findCandidateClients(NameMatcher::parseFullName("Gerald Louis {$surname}"));
+        $this->assertTrue($standard['exact']->contains('id', $client->id));
+
+        // A given-name-only overlap (middle name typed as the first name) is a
+        // possible duplicate, never an exact match
+        $partial = NameMatcher::findCandidateClients(NameMatcher::parseFullName("Louis {$surname}"));
+        $this->assertTrue($partial['exact']->isEmpty());
+        $this->assertTrue($partial['partial']->contains('id', $client->id));
+
+        // Unrelated name does not match
+        $none = NameMatcher::findCandidateClients(NameMatcher::parseFullName('Juan Dela Cruz'));
+        $this->assertTrue($none['exact']->isEmpty());
+        $this->assertTrue($none['partial']->isEmpty());
+    }
+
+    public function test_eligibility_check_detects_reordered_name_and_blocks_existing_case(): void
+    {
+        $checker = $this->makeUser('eligibility_checker');
+        [$client, $surname] = $this->seedGeraldSumayloClient();
+
+        $case = SocialCaseStudy::create([
+            'main_client_id' => $client->id,
+            'officer_id' => $checker->id,
+            'case_number' => 'TEST-REORDER-' . uniqid(),
+            'status' => 'Released',
+            'released_at' => now()->subDay(),
+            'created_at' => now()->subDay(),
+        ]);
+        $this->register([], [$case->id]);
+        $name = "{$surname} Gerald Louis";
+        $this->register([], [], [$name]);
+
+        $this->sessionAs($checker)->postJson(route('admin.social-case.api.eligibility.check'), [
+            'client_name' => $name,
+        ])->assertOk()
+            ->assertJsonPath('client_found', true)
+            ->assertJsonPath('match_type', 'exact')
+            ->assertJsonPath('eligible', false)
+            ->assertJsonPath('blocking.case_number', $case->case_number);
+    }
+
+    public function test_submit_eligibility_with_reordered_name_does_not_create_duplicate_client(): void
+    {
+        $checker = $this->makeUser('eligibility_checker');
+        [$client, $surname] = $this->seedGeraldSumayloClient();
+
+        $case = SocialCaseStudy::create([
+            'main_client_id' => $client->id,
+            'officer_id' => $checker->id,
+            'case_number' => 'TEST-REORD-SUB-' . uniqid(),
+            'status' => 'Released',
+            'released_at' => now()->subDay(),
+            'created_at' => now()->subDay(),
+        ]);
+        $this->register([], [$case->id]);
+
+        // Reordered name resolves to the existing client, which is blocked, so the
+        // submit is rejected instead of creating a duplicate client record.
+        $this->sessionAs($checker)->postJson(route('admin.social-case.api.eligibility.submit'), [
+            'client_name' => "{$surname} Gerald Louis",
+        ])->assertStatus(422);
+
+        $this->assertSame(1, Client::whereRaw('LOWER(last_name) = ?', [strtolower($surname)])->count());
+        $this->assertSame(1, $client->socialCaseStudies()->count());
+    }
+
+    public function test_store_case_with_reordered_name_links_to_existing_client(): void
+    {
+        $worker = $this->makeUser('social_worker');
+        [$client, $surname] = $this->seedGeraldSumayloClient();
+
+        $resp = $this->sessionAs($worker)->postJson(route('admin.social-case.api.store'), $this->minimalStorePayload("{$surname} Gerald Louis"));
+        $resp->assertStatus(201);
+
+        $caseId = $resp->json('id');
+        $case = SocialCaseStudy::find($caseId);
+        $this->assertSame($client->id, $case->main_client_id);
+        $this->register([], [$caseId]);
+        $this->assertSame(1, Client::whereRaw('LOWER(last_name) = ?', [strtolower($surname)])->count());
+    }
+
+    public function test_surname_first_name_is_stored_in_correct_columns(): void
+    {
+        [$client, $surname] = $this->seedGeraldSumayloClient();
+
+        // "Sumaylo Gerald Louis F." (surname first, trailing middle initial) must
+        // parse into the same components as the standard "Gerald Louis F. Sumaylo"
+        // so stored client columns are never corrupted.
+        $parsed = NameMatcher::parseFullName("{$surname} Gerald Louis F.");
+        $this->assertSame('gerald', $parsed['first_name']);
+        $this->assertSame('louis f', $parsed['middle_name']);
+        $this->assertSame(strtolower($surname), $parsed['last_name']);
+
+        // And the reordered name (with trailing initial) still resolves to the client.
+        $reordered = NameMatcher::findCandidateClients(NameMatcher::parseFullName("{$surname} Gerald Louis F."));
+        $this->assertTrue($reordered['exact']->contains('id', $client->id));
+    }
+
+    public function test_submit_eligibility_stores_surname_first_name_in_correct_columns(): void
+    {
+        $checker = $this->makeUser('eligibility_checker');
+        $name = 'Sumaylo Gerald Louis F.';
+        $this->register([], [], [$name, 'Gerald Louis F. Sumaylo']);
+
+        $resp = $this->sessionAs($checker)->postJson(route('admin.social-case.api.eligibility.submit'), [
+            'client_name' => $name,
+        ]);
+        $resp->assertStatus(201);
+
+        // The brand-new client is created with correct first/middle/last columns.
+        $client = Client::whereRaw('LOWER(last_name) = ?', ['sumaylo'])->first();
+        $this->assertNotNull($client);
+        $this->assertSame('gerald', $client->first_name);
+        $this->assertSame('louis f', $client->middle_name);
+        $this->assertSame('sumaylo', $client->last_name);
+        $this->register([$client->id]);
+
+        $caseId = $resp->json('case.id');
+        $case = SocialCaseStudy::find($caseId);
+        $this->assertSame($client->id, $case->main_client_id);
+        $this->assertEquals('gerald', $case->intake_first_name);
+        $this->assertEquals('louis f', $case->intake_middle_name);
+        $this->assertEquals('sumaylo', $case->intake_last_name);
+        $this->register([], [$caseId]);
+
+        // A later standard-order check must find the same client and stay blocked
+        // by the just-created handoff case.
+        $checkResp = $this->sessionAs($checker)->postJson(route('admin.social-case.api.eligibility.check'), [
+            'client_name' => 'Gerald Louis F. Sumaylo',
+        ]);
+        $checkResp->assertOk()
+            ->assertJsonPath('client_found', true)
+            ->assertJsonPath('eligible', false)
+            ->assertJsonPath('client.id', $client->id);
     }
 
     public function test_family_member_relative_is_not_blocked_by_another_persons_case(): void

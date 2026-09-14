@@ -876,6 +876,15 @@ class SocialCaseController extends Controller
             ->whereRaw('LOWER(last_name) = ?', [$lastName])
             ->get();
 
+        // Also consider order-insensitive exact matches so a reordered name
+        // ("Sumaylo Gerald Louis" typed as the full name) links to the existing
+        // client instead of silently creating a duplicate record.
+        foreach (NameMatcher::findCandidateClients($parsed)['exact'] as $reorderMatch) {
+            if (!$candidates->contains('id', $reorderMatch->id)) {
+                $candidates->push($reorderMatch);
+            }
+        }
+
         $client = $this->selectBestCandidate($candidates, $clientData, $middleName, $suffix);
 
         if (!$client) {

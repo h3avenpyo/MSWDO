@@ -58,16 +58,28 @@ class OnlineRequestController extends Controller
             $clientMap[$normalizedName] = $client;
         }
 
-        $onlineRequests->getCollection()->transform(function ($req) use ($sixMonthsAgo, $clientMap) {
+        // Also pre-load social case studies for direct matching
+        $allCaseStudies = \App\Models\SocialCase\SocialCaseStudy::all();
+        $caseStudyMap = [];
+        foreach ($allCaseStudies as $caseStudy) {
+            $fullName = trim($caseStudy->intake_full_name ?? ($caseStudy->intake_first_name . ' ' . $caseStudy->intake_last_name));
+            $normalizedName = NameMatcher::normalizeName($fullName);
+            $caseStudyMap[$normalizedName] = $caseStudy;
+        }
+
+        $onlineRequests->getCollection()->transform(function ($req) use ($sixMonthsAgo, $clientMap, $caseStudyMap) {
             $fullName = trim($req->first_name . ' ' . $req->last_name);
             $normalizedName = NameMatcher::normalizeName($fullName);
 
             // Check for existing client using the normalized name map
             $client = $clientMap[$normalizedName] ?? NameMatcher::findMatchingClient($fullName);
             $req->warning_existing = false;
-
             $req->warning_recent = false;
+
             if ($client) {
+                // Set warning_existing to true if any matching client exists
+                $req->warning_existing = true;
+
                 $hasRecentCase = $client->socialCaseStudies()
                     ->where(function ($q) use ($sixMonthsAgo) {
                         $q->where('created_at', '>=', $sixMonthsAgo)
@@ -88,13 +100,34 @@ class OnlineRequestController extends Controller
                 if ($hasRecentCase || $hasRecentAssistance) {
                     $req->warning_recent = true;
                 }
+            } else {
+                // If no client found, check against social case studies directly
+                $caseStudy = $caseStudyMap[$normalizedName] ?? null;
+
+                if ($caseStudy) {
+                    $req->warning_existing = true;
+
+                    // Check if the case study is recent (within 6 months)
+                    $isRecent = $caseStudy->created_at >= $sixMonthsAgo ||
+                               ($caseStudy->date_processed && $caseStudy->date_processed >= $sixMonthsAgo) ||
+                               ($caseStudy->assistance_date && $caseStudy->assistance_date >= $sixMonthsAgo) ||
+                               ($caseStudy->released_at && $caseStudy->released_at >= $sixMonthsAgo);
+
+                    if ($isRecent) {
+                        $req->warning_recent = true;
+                    }
+                }
             }
 
-            if (!$req->warning_recent) {
-                $req->warning_recent = OnlineRequest::where('id', '!=', $req->id)
-                    ->whereRaw('LOWER(CONCAT(first_name, " ", last_name)) = ?', [$normalizedName])
-                    ->where('created_at', '>=', $sixMonthsAgo)
-                    ->exists();
+            // Check for duplicate online requests within 6 months
+            $hasDuplicateOnlineRequest = OnlineRequest::where('id', '!=', $req->id)
+                ->whereRaw('LOWER(CONCAT(first_name, " ", last_name)) = ?', [$normalizedName])
+                ->where('created_at', '>=', $sixMonthsAgo)
+                ->exists();
+
+            if ($hasDuplicateOnlineRequest) {
+                $req->warning_recent = true;
+                $req->warning_existing = true;
             }
 
             return $req;
@@ -124,12 +157,16 @@ class OnlineRequestController extends Controller
         // Check for existing client & recent record (same logic as index())
         $sixMonthsAgo = now()->subMonths(6);
         $fullName     = trim($request->first_name . ' ' . $request->last_name);
+        $normalizedName = NameMatcher::normalizeName($fullName);
         $client       = NameMatcher::findMatchingClient($fullName);
 
         $warningExisting = false;
         $warningRecent   = false;
 
         if ($client) {
+            // Set warningExisting to true if any matching client exists
+            $warningExisting = true;
+
             $hasRecentCase = $client->socialCaseStudies()
                 ->where(function ($q) use ($sixMonthsAgo) {
                     $q->where('created_at', '>=', $sixMonthsAgo)
@@ -149,19 +186,38 @@ class OnlineRequestController extends Controller
             // Only warn if they have recent assistance (case or assistance record), not just a recent client account
             if ($hasRecentCase || $hasRecentAssistance) {
                 $warningRecent = true;
+            }
+        } else {
+            // If no client found, check against social case studies directly
+            $caseStudy = \App\Models\SocialCase\SocialCaseStudy::whereRaw(
+                'LOWER(TRIM(COALESCE(intake_full_name, CONCAT(intake_first_name, " ", intake_last_name)))) = ?',
+                [$normalizedName]
+            )->first();
+
+            if ($caseStudy) {
                 $warningExisting = true;
+
+                // Check if the case study is recent (within 6 months)
+                $isRecent = $caseStudy->created_at >= $sixMonthsAgo ||
+                           ($caseStudy->date_processed && $caseStudy->date_processed >= $sixMonthsAgo) ||
+                           ($caseStudy->assistance_date && $caseStudy->assistance_date >= $sixMonthsAgo) ||
+                           ($caseStudy->released_at && $caseStudy->released_at >= $sixMonthsAgo);
+
+                if ($isRecent) {
+                    $warningRecent = true;
+                }
             }
         }
 
-        if (!$warningRecent) {
-            $normalizedName = NameMatcher::normalizeName($fullName);
-            $warningRecent  = OnlineRequest::where('id', '!=', $request->id)
-                ->whereRaw('LOWER(CONCAT(first_name, " ", last_name)) = ?', [$normalizedName])
-                ->where('created_at', '>=', $sixMonthsAgo)
-                ->exists();
-            if ($warningRecent) {
-                $warningExisting = true;
-            }
+        // Check for duplicate online requests within 6 months
+        $hasDuplicateOnlineRequest = OnlineRequest::where('id', '!=', $request->id)
+            ->whereRaw('LOWER(CONCAT(first_name, " ", last_name)) = ?', [$normalizedName])
+            ->where('created_at', '>=', $sixMonthsAgo)
+            ->exists();
+
+        if ($hasDuplicateOnlineRequest) {
+            $warningRecent = true;
+            $warningExisting = true;
         }
 
         $attachmentsHtml = '';
