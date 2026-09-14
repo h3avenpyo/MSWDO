@@ -299,6 +299,10 @@ class FinancialStep2IntakeTest extends TestCase
         $response->assertSee($uniqueCtrl);
         $response->assertSee('AllIntakesFirst AllIntakesLast');
         $response->assertSee('Step 2: All General Intakes');
+        $response->assertSee('btn-view-intake');
+        $response->assertDontSee('btn-message-beneficiary');
+        $response->assertDontSee('financialstep2-sms.js');
+        $response->assertDontSee('smsModal');
     }
 
     public function test_unauthorized_step1_user_cannot_access_step2_all_intakes(): void
@@ -345,6 +349,64 @@ class FinancialStep2IntakeTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee($uniqueCtrl);
         $response->assertSee('SpecificSearchPerson TargetLast');
+    }
+
+    public function test_step2_all_intakes_monthly_filtering_and_pagination(): void
+    {
+        $currentMonthCtrl = 'MSWDO-MTH-CURR-' . rand(10000, 99999);
+        $pastMonthCtrl = 'MSWDO-MTH-PAST-' . rand(10000, 99999);
+
+        // Intake processed in 2026-09
+        BeneficiaryIntake::create([
+            'control_number' => $currentMonthCtrl,
+            'client_type' => 'New',
+            'date_processed' => '2026-09-10',
+            'created_at' => '2026-09-10 08:00:00',
+            'beneficiary_first_name' => 'CurrentMonthUser',
+            'beneficiary_last_name' => 'MonthFilterTest',
+            'beneficiary_birthday' => '1992-04-12',
+            'beneficiary_sex' => 'Female',
+            'beneficiary_barangay' => 'Biluso',
+            'beneficiary_category' => 'Solo Parents',
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Education',
+            'submitted_to' => 'MSWDO Silang Main Office',
+        ]);
+
+        // Intake processed in 2025-05
+        $pastIntake = BeneficiaryIntake::create([
+            'control_number' => $pastMonthCtrl,
+            'client_type' => 'New',
+            'date_processed' => '2025-05-15',
+            'beneficiary_first_name' => 'PastMonthUser',
+            'beneficiary_last_name' => 'MonthFilterTest',
+            'beneficiary_birthday' => '1990-01-01',
+            'beneficiary_sex' => 'Male',
+            'beneficiary_barangay' => 'Biluso',
+            'beneficiary_category' => 'PWD',
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Medical',
+            'submitted_to' => 'MSWDO Silang Main Office',
+        ]);
+        $pastIntake->timestamps = false;
+        $pastIntake->created_at = '2025-05-15 08:00:00';
+        $pastIntake->save();
+
+        $response = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->admin->id,
+            'admin_user_name' => $this->admin->name,
+            'admin_user_role' => 'admin',
+        ])->get(route('admin.financial.financialstep2.all-intakes', [
+            'month' => '2026-09',
+        ]));
+
+        $response->assertStatus(200);
+        $response->assertSee($currentMonthCtrl);
+        $response->assertSee('CurrentMonthUser');
+        $response->assertDontSee($pastMonthCtrl);
+        $response->assertSee('15 records / page');
+        $response->assertSee('Month &amp; Year', false);
     }
 
     public function test_financial_dashboard_calculates_dynamic_intake_metrics(): void
@@ -542,5 +604,203 @@ class FinancialStep2IntakeTest extends TestCase
         $bypassResponse->assertDontSee($yesterdayCtrl);
         $bypassResponse->assertDontSee($tomorrowCtrl);
     }
+
+    public function test_financial_step2_statistics_calculates_medical_concerns(): void
+    {
+        $uniqueNum = rand(100000, 999999);
+        BeneficiaryIntake::create([
+            'control_number' => 'MED-TEST-1-' . $uniqueNum,
+            'date_processed' => Carbon::today()->format('Y-m-d'),
+            'beneficiary_name' => 'Medical Patient One',
+            'beneficiary_birthday' => '1985-05-15',
+            'beneficiary_sex' => 'Female',
+            'beneficiary_street_address' => 'Purok 2',
+            'beneficiary_barangay' => 'Biga I',
+            'beneficiary_city' => 'Silang',
+            'has_representative' => false,
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Medical',
+            'medical_conditions' => ['Dialysis', 'Hypertension'],
+            'recommended_amount' => 5000,
+            'submitted_to' => 'MSWDO Silang Main Office',
+        ]);
+
+        BeneficiaryIntake::create([
+            'control_number' => 'MED-TEST-2-' . $uniqueNum,
+            'date_processed' => Carbon::today()->format('Y-m-d'),
+            'beneficiary_name' => 'Medical Patient Two',
+            'beneficiary_birthday' => '1975-08-20',
+            'beneficiary_sex' => 'Male',
+            'beneficiary_street_address' => 'Purok 3',
+            'beneficiary_barangay' => 'Biga I',
+            'beneficiary_city' => 'Silang',
+            'has_representative' => false,
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Medical',
+            'medical_conditions' => ['Dialysis'],
+            'recommended_amount' => 4000,
+            'submitted_to' => 'MSWDO Silang Main Office',
+        ]);
+
+        $response = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+            'financial_step2_auth_time' => time(),
+        ])->get(route('admin.financial.financialstep2.statistics'));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('medicalRanked');
+        $response->assertViewHas('topMedicalConcern');
+        $response->assertViewHas('topMedicalConcernCount');
+
+        $medicalRanked = $response->viewData('medicalRanked');
+        $this->assertIsArray($medicalRanked);
+
+        // Find Dialysis in results
+        $dialysis = collect($medicalRanked)->firstWhere('concern', 'Dialysis');
+        $this->assertNotNull($dialysis);
+        $this->assertGreaterThanOrEqual(2, $dialysis['beneficiaries']);
+        $this->assertGreaterThanOrEqual(9000, $dialysis['amount']);
+
+        $response->assertSee('medicalBarChart');
+        $response->assertSee('Most Common Medical Concerns');
+    }
+
+    public function test_contact_number_must_be_strictly_11_digits(): void
+    {
+        $uniqueCtrl = 'MSWDO-' . date('Y') . '-' . rand(10000, 99999);
+
+        // Test with invalid contact numbers: less than 11 digits, more than 11 digits, non-numeric
+        $invalidNumbers = [
+            '0912345678',       // 10 digits
+            '091234567890',     // 12 digits
+            '0912abc3456',     // contains letters
+            '0912-345-678',     // contains dashes
+            '0912 345 678',     // contains spaces
+            '+63912345678',     // contains plus sign
+        ];
+
+        foreach ($invalidNumbers as $invalidNumber) {
+            $response = $this->withSession([
+                'admin_logged_in' => true,
+                'admin_user_id' => $this->admin->id,
+                'admin_user_name' => $this->admin->name,
+                'admin_user_role' => 'admin',
+            ])->from(route('admin.beneficiary-intake.create'))->post(route('admin.beneficiary-intake.store'), [
+                'control_number' => $uniqueCtrl,
+                'client_type' => 'New',
+                'beneficiary_first_name' => 'InvalidContact',
+                'beneficiary_last_name' => 'Tester',
+                'beneficiary_birthday' => '1995-06-15',
+                'beneficiary_sex' => 'Male',
+                'beneficiary_civil_status' => 'Single',
+                'beneficiary_contact_number' => $invalidNumber,
+                'beneficiary_street_address' => 'Purok 1',
+                'beneficiary_barangay' => 'Biluso',
+                'beneficiary_city' => 'Silang',
+                'beneficiary_province' => 'Cavite',
+                'beneficiary_category' => 'PWD',
+                'has_representative' => false,
+                'service_provided' => 'Financial Assistance',
+                'purpose' => 'Hospital Bill',
+                'submitted_to' => 'MSWDO Silang Main Office',
+            ]);
+
+            $response->assertSessionHasErrors(['beneficiary_contact_number']);
+        }
+
+        // Test with valid exactly 11 digits
+        $validCtrl = 'MSWDO-' . date('Y') . '-' . rand(10000, 99999);
+        $validResponse = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->admin->id,
+            'admin_user_name' => $this->admin->name,
+            'admin_user_role' => 'admin',
+        ])->post(route('admin.beneficiary-intake.store'), [
+            'control_number' => $validCtrl,
+            'client_type' => 'New',
+            'beneficiary_first_name' => 'ValidContact',
+            'beneficiary_last_name' => 'Tester',
+            'beneficiary_birthday' => '1995-06-15',
+            'beneficiary_sex' => 'Male',
+            'beneficiary_civil_status' => 'Single',
+            'beneficiary_contact_number' => '09123456789',
+            'beneficiary_street_address' => 'Purok 1',
+            'beneficiary_barangay' => 'Biluso',
+            'beneficiary_city' => 'Silang',
+            'beneficiary_province' => 'Cavite',
+            'beneficiary_category' => 'PWD',
+            'has_representative' => false,
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Hospital Bill',
+            'submitted_to' => 'MSWDO Silang Main Office',
+        ]);
+
+        $validResponse->assertSessionHasNoErrors();
+        $validResponse->assertRedirect();
+        $this->assertDatabaseHas('beneficiary_intakes', [
+            'control_number' => $validCtrl,
+            'beneficiary_contact_number' => '09123456789',
+        ]);
+    }
+
+    public function test_beneficiary_intakes_masterlist_monthly_filtering(): void
+    {
+        $septCtrl = 'MSWDO-SEPT-' . rand(10000, 99999);
+        $augCtrl = 'MSWDO-AUG-' . rand(10000, 99999);
+
+        // September intake
+        BeneficiaryIntake::create([
+            'control_number' => $septCtrl,
+            'client_type' => 'New',
+            'date_processed' => '2026-09-05',
+            'beneficiary_first_name' => 'SeptClient',
+            'beneficiary_last_name' => 'Tester',
+            'beneficiary_birthday' => '1990-01-01',
+            'beneficiary_sex' => 'Female',
+            'beneficiary_barangay' => 'Biluso',
+            'beneficiary_category' => 'Solo Parents',
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Medicine',
+            'submitted_to' => 'MSWDO Silang Main Office',
+        ]);
+
+        // August intake
+        BeneficiaryIntake::create([
+            'control_number' => $augCtrl,
+            'client_type' => 'New',
+            'date_processed' => '2026-08-20',
+            'beneficiary_first_name' => 'AugClient',
+            'beneficiary_last_name' => 'Tester',
+            'beneficiary_birthday' => '1991-02-02',
+            'beneficiary_sex' => 'Male',
+            'beneficiary_barangay' => 'Biga I',
+            'beneficiary_category' => 'PWD',
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Hospital Bill',
+            'submitted_to' => 'MSWDO Silang Main Office',
+        ]);
+
+        // Filter for September 2026
+        $response = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->admin->id,
+            'admin_user_name' => $this->admin->name,
+            'admin_user_role' => 'admin',
+        ])->get(route('admin.beneficiary-intake.index', [
+            'month' => '2026-09',
+        ]));
+
+        $response->assertStatus(200);
+        $response->assertSee($septCtrl);
+        $response->assertSee('SeptClient');
+        $response->assertDontSee($augCtrl);
+        $response->assertSee('Month:');
+        $response->assertSee('September 2026');
+    }
 }
+
 

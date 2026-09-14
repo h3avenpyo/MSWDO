@@ -195,12 +195,25 @@ class FinancialDashboardController extends Controller
             // Filter by Status
             if ($request->filled('status') && $request->status !== 'All') {
                 $status = $request->status;
-                if ($status === 'ready_payout') {
-                    $query->whereNotNull('recommended_amount')->where('recommended_amount', '>', 0);
-                } elseif ($status === 'for_assessment') {
+                if ($status === 'unprocessed') {
+                    $query->where(function ($q) {
+                        $q->where('is_payroll_generated', false)
+                          ->orWhereNull('is_payroll_generated');
+                    })->whereNull('payroll_record_id');
+                } elseif ($status === 'pending_amount' || $status === 'for_assessment') {
                     $query->where(function ($q) {
                         $q->whereNull('recommended_amount')->orWhere('recommended_amount', '<=', 0);
                     });
+                } elseif ($status === 'unclaimed') {
+                    $query->where('is_payroll_generated', true)
+                          ->where(function ($q) {
+                              $q->where('claim_status', '!=', 'Claimed')
+                                ->orWhereNull('claim_status');
+                          });
+                } elseif ($status === 'claimed') {
+                    $query->where('claim_status', 'Claimed');
+                } elseif ($status === 'amount_assigned' || $status === 'ready_payout') {
+                    $query->whereNotNull('recommended_amount')->where('recommended_amount', '>', 0);
                 }
             }
 
@@ -234,33 +247,47 @@ class FinancialDashboardController extends Controller
                     break;
             }
 
-            $todayQueueCount = BeneficiaryIntake::where(function ($q) use ($today) {
+            $todayQueueBase = BeneficiaryIntake::where(function ($q) use ($today) {
                 $q->whereDate('date_processed', $today)
                   ->orWhere(function ($sq) use ($today) {
                       $sq->whereNull('date_processed')->whereDate('created_at', $today);
                   });
+            });
+
+            $todayQueueCount = (clone $todayQueueBase)->count();
+            $totalQueueCount = BeneficiaryIntake::count();
+
+            $pendingAmountCount = (clone $todayQueueBase)->where(function ($q) {
+                $q->whereNull('recommended_amount')->orWhere('recommended_amount', '<=', 0);
             })->count();
 
-            $totalQueueCount = $todayQueueCount;
+            $unprocessedCount = (clone $todayQueueBase)->where(function ($q) {
+                $q->where('is_payroll_generated', false)
+                  ->orWhereNull('is_payroll_generated');
+            })->whereNull('payroll_record_id')->count();
+            $unprocessedIntakesCount = $unprocessedCount;
 
-            $pendingPayoutCount = BeneficiaryIntake::where(function ($q) use ($today) {
-                $q->whereDate('date_processed', $today)
-                  ->orWhere(function ($sq) use ($today) {
-                      $sq->whereNull('date_processed')->whereDate('created_at', $today);
-                  });
-            })->whereNotNull('recommended_amount')->where('recommended_amount', '>', 0)->count();
+            $unclaimedCount = (clone $todayQueueBase)->where('is_payroll_generated', true)
+                ->where(function ($q) {
+                    $q->where('claim_status', '!=', 'Claimed')
+                      ->orWhereNull('claim_status');
+                })->count();
 
-            $totalRecommendedAmount = BeneficiaryIntake::where(function ($q) use ($today) {
-                $q->whereDate('date_processed', $today)
-                  ->orWhere(function ($sq) use ($today) {
-                      $sq->whereNull('date_processed')->whereDate('created_at', $today);
-                  });
-            })->sum('recommended_amount') ?? 0;
+            $claimedCount = (clone $todayQueueBase)->where('claim_status', 'Claimed')->count();
+
+            $pendingPayoutCount = (clone $todayQueueBase)->whereNotNull('recommended_amount')->where('recommended_amount', '>', 0)->count();
+
+            $totalRecommendedAmount = (clone $todayQueueBase)->sum('recommended_amount') ?? 0;
 
             $intakes = $query->paginate(15)->withQueryString();
         } else {
             $totalQueueCount = 0;
             $todayQueueCount = 0;
+            $pendingAmountCount = 0;
+            $unprocessedCount = 0;
+            $unprocessedIntakesCount = 0;
+            $unclaimedCount = 0;
+            $claimedCount = 0;
             $pendingPayoutCount = 0;
             $totalRecommendedAmount = 0;
             $intakes = collect();
@@ -270,7 +297,7 @@ class FinancialDashboardController extends Controller
             'Barangay I (Poblacion)', 'Barangay II (Poblacion)', 'Barangay III (Poblacion)',
             'Barangay IV (Poblacion)', 'Barangay V (Poblacion)', 'Acacia', 'Anabu',
             'Balite I', 'Balite II', 'Biga I', 'Biga II', 'Biluso', 'Bucal', 'Buho',
-            'Caballero', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
+            'Cabangaan', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
             'Lalaan II', 'Litlit', 'Lucsuhin', 'Lumil', 'Maguyam', 'Malabag', 'Malaking Tatyao',
             'Mataas na Burol', 'Munting Ilog', 'Narra I', 'Narra II', 'Narra III',
             'Paligawan', 'Pasong Langka', 'Pooc I', 'Pooc II', 'Pulong Bunga', 'Pulong Saging',
@@ -296,6 +323,11 @@ class FinancialDashboardController extends Controller
             'intakes',
             'totalQueueCount',
             'todayQueueCount',
+            'pendingAmountCount',
+            'unprocessedCount',
+            'unprocessedIntakesCount',
+            'unclaimedCount',
+            'claimedCount',
             'pendingPayoutCount',
             'totalRecommendedAmount',
             'barangays',
@@ -341,13 +373,58 @@ class FinancialDashboardController extends Controller
                 });
             }
 
-            // Filter by Date
-            if ($request->filled('date')) {
-                $filterDate = Carbon::parse($request->date);
-                $query->where(function ($q) use ($filterDate) {
-                    $q->whereDate('created_at', $filterDate)
-                      ->orWhereDate('date_processed', $filterDate);
-                });
+            // Filter by Status
+            if ($request->filled('status') && $request->status !== 'All') {
+                $status = $request->status;
+                if ($status === 'pending_amount' || $status === 'for_assessment') {
+                    $query->where(function ($q) {
+                        $q->whereNull('recommended_amount')->orWhere('recommended_amount', '<=', 0);
+                    });
+                } elseif ($status === 'unclaimed') {
+                    $query->where('is_payroll_generated', true)
+                          ->where(function ($q) {
+                              $q->where('claim_status', '!=', 'Claimed')
+                                ->orWhereNull('claim_status');
+                          });
+                } elseif ($status === 'claimed') {
+                    $query->where('claim_status', 'Claimed');
+                } elseif ($status === 'amount_assigned' || $status === 'ready_payout') {
+                    $query->whereNotNull('recommended_amount')->where('recommended_amount', '>', 0);
+                }
+            }
+
+            // Filter by Month & Year (e.g. 'YYYY-MM') or fallback Exact Date
+            if ($request->filled('month')) {
+                $monthInput = trim($request->month);
+                $parts = explode('-', $monthInput);
+                if (count($parts) === 2 && is_numeric($parts[0]) && is_numeric($parts[1])) {
+                    $year = (int) $parts[0];
+                    $monthNum = (int) $parts[1];
+                    $query->where(function ($q) use ($year, $monthNum) {
+                        $q->where(function ($sq) use ($year, $monthNum) {
+                            $sq->whereNotNull('date_processed')
+                               ->whereYear('date_processed', $year)
+                               ->whereMonth('date_processed', $monthNum);
+                        })->orWhere(function ($sq) use ($year, $monthNum) {
+                            $sq->whereNull('date_processed')
+                               ->whereYear('created_at', $year)
+                               ->whereMonth('created_at', $monthNum);
+                        });
+                    });
+                }
+            } elseif ($request->filled('date')) {
+                try {
+                    $filterDate = Carbon::parse($request->date)->toDateString();
+                    $query->where(function ($q) use ($filterDate) {
+                        $q->where(function ($sq) use ($filterDate) {
+                            $sq->whereNotNull('date_processed')->whereDate('date_processed', $filterDate);
+                        })->orWhere(function ($sq) use ($filterDate) {
+                            $sq->whereNull('date_processed')->whereDate('created_at', $filterDate);
+                        });
+                    });
+                } catch (\Exception $e) {
+                    // Ignore invalid date string
+                }
             }
 
             // Sorting
@@ -380,6 +457,18 @@ class FinancialDashboardController extends Controller
                   ->orWhereDate('date_processed', $today);
             })->count();
 
+            $pendingAmountCount = BeneficiaryIntake::where(function ($q) {
+                $q->whereNull('recommended_amount')->orWhere('recommended_amount', '<=', 0);
+            })->count();
+
+            $unclaimedCount = BeneficiaryIntake::where('is_payroll_generated', true)
+                ->where(function ($q) {
+                    $q->where('claim_status', '!=', 'Claimed')
+                      ->orWhereNull('claim_status');
+                })->count();
+
+            $claimedCount = BeneficiaryIntake::where('claim_status', 'Claimed')->count();
+
             $indigentCount = BeneficiaryIntake::where(function ($q) {
                 $q->where('beneficiary_category', 'Indigent Resident')
                   ->orWhereJsonContains('beneficiary_categories', 'Indigent Resident');
@@ -394,6 +483,9 @@ class FinancialDashboardController extends Controller
         } else {
             $totalIntakesCount = 0;
             $todayIntakesCount = 0;
+            $pendingAmountCount = 0;
+            $unclaimedCount = 0;
+            $claimedCount = 0;
             $indigentCount = 0;
             $specialSectorsCount = 0;
             $intakes = collect();
@@ -403,7 +495,7 @@ class FinancialDashboardController extends Controller
             'Barangay I (Poblacion)', 'Barangay II (Poblacion)', 'Barangay III (Poblacion)',
             'Barangay IV (Poblacion)', 'Barangay V (Poblacion)', 'Acacia', 'Anabu',
             'Balite I', 'Balite II', 'Biga I', 'Biga II', 'Biluso', 'Bucal', 'Buho',
-            'Caballero', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
+            'Cabangaan', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
             'Lalaan II', 'Litlit', 'Lucsuhin', 'Lumil', 'Maguyam', 'Malabag', 'Malaking Tatyao',
             'Mataas na Burol', 'Munting Ilog', 'Narra I', 'Narra II', 'Narra III',
             'Paligawan', 'Pasong Langka', 'Pooc I', 'Pooc II', 'Pulong Bunga', 'Pulong Saging',
@@ -429,6 +521,9 @@ class FinancialDashboardController extends Controller
             'intakes',
             'totalIntakesCount',
             'todayIntakesCount',
+            'pendingAmountCount',
+            'unclaimedCount',
+            'claimedCount',
             'indigentCount',
             'specialSectorsCount',
             'barangays',
@@ -512,6 +607,236 @@ class FinancialDashboardController extends Controller
     }
 
     /**
+     * Dedicated Step 2 Statistics & Analytics Page.
+     * Computes real-time metrics, barangay distributions, gender breakdown,
+     * and ranked sector financial assistance statistics.
+     */
+    public function financialStep2Statistics(Request $request)
+    {
+        $totalBeneficiaries = BeneficiaryIntake::count();
+        $totalAmount = (float) BeneficiaryIntake::sum('recommended_amount');
+        $totalClaimed = BeneficiaryIntake::where('claim_status', 'Claimed')->count();
+        $totalClaimedAmount = (float) BeneficiaryIntake::where('claim_status', 'Claimed')->sum('recommended_amount');
+        $totalUnclaimed = BeneficiaryIntake::where('is_payroll_generated', true)
+            ->where(function ($q) {
+                $q->where('claim_status', '!=', 'Claimed')->orWhereNull('claim_status');
+            })->count();
+        $totalInPayroll = BeneficiaryIntake::where('is_payroll_generated', true)->count();
+        $totalPayrollBatches = FinancialPayrollRecord::count();
+
+        // 1. Number of beneficiaries who received financial assistance per Barangay
+        $barangayRaw = BeneficiaryIntake::select(
+            'beneficiary_barangay',
+            DB::raw('count(*) as total_beneficiaries'),
+            DB::raw('SUM(CASE WHEN recommended_amount > 0 THEN recommended_amount ELSE 0 END) as total_amount'),
+            DB::raw('SUM(CASE WHEN claim_status = "Claimed" THEN 1 ELSE 0 END) as claimed_count')
+        )
+        ->whereNotNull('beneficiary_barangay')
+        ->where('beneficiary_barangay', '!=', '')
+        ->groupBy('beneficiary_barangay')
+        ->orderByDesc('total_beneficiaries')
+        ->get();
+
+        $barangayStats = [];
+        $topBarangay = null;
+        $topBarangayCount = 0;
+        foreach ($barangayRaw as $b) {
+            $bCount = (int) $b->total_beneficiaries;
+            $barangayStats[$b->beneficiary_barangay] = [
+                'name' => $b->beneficiary_barangay,
+                'beneficiaries' => $bCount,
+                'amount' => (float) $b->total_amount,
+                'formatted_amount' => '₱' . number_format((float) $b->total_amount, 2),
+                'claimed' => (int) $b->claimed_count,
+                'percentage' => $totalBeneficiaries > 0 ? round(($bCount / $totalBeneficiaries) * 100, 1) : 0,
+            ];
+            if (!$topBarangay) {
+                $topBarangay = $b->beneficiary_barangay;
+                $topBarangayCount = $bCount;
+            }
+        }
+
+        // 2. Male vs. Female beneficiaries
+        $maleCount = BeneficiaryIntake::where('beneficiary_sex', 'Male')->count();
+        $femaleCount = BeneficiaryIntake::where('beneficiary_sex', 'Female')->count();
+        $otherGenderCount = BeneficiaryIntake::whereNotIn('beneficiary_sex', ['Male', 'Female'])
+            ->whereNotNull('beneficiary_sex')
+            ->where('beneficiary_sex', '!=', '')
+            ->count();
+
+        $genderBreakdown = [
+            'Male' => $maleCount,
+            'Female' => $femaleCount,
+        ];
+        if ($otherGenderCount > 0) {
+            $genderBreakdown['Other / Unspecified'] = $otherGenderCount;
+        }
+
+        $malePercentage = $totalBeneficiaries > 0 ? round(($maleCount / $totalBeneficiaries) * 100, 1) : 0;
+        $femalePercentage = $totalBeneficiaries > 0 ? round(($femaleCount / $totalBeneficiaries) * 100, 1) : 0;
+
+        // 3. Financial assistance by sector (arranged from highest to lowest)
+        $intakes = BeneficiaryIntake::select('beneficiary_category', 'beneficiary_categories', 'recommended_amount')->cursor();
+
+        $sectorCounts = [];
+        $sectorAmounts = [];
+
+        foreach ($intakes as $intake) {
+            $amount = (float) ($intake->recommended_amount ?? 0);
+            $cats = [];
+
+            if (!empty(trim($intake->beneficiary_category ?? ''))) {
+                $cats[] = trim($intake->beneficiary_category);
+            }
+            if (is_array($intake->beneficiary_categories)) {
+                foreach ($intake->beneficiary_categories as $c) {
+                    $trimmed = trim($c);
+                    if (!empty($trimmed) && !in_array($trimmed, $cats)) {
+                        $cats[] = $trimmed;
+                    }
+                }
+            }
+            if (empty($cats)) {
+                $cats[] = 'Indigent Resident';
+            }
+
+            foreach ($cats as $cat) {
+                if (!isset($sectorCounts[$cat])) {
+                    $sectorCounts[$cat] = 0;
+                    $sectorAmounts[$cat] = 0.0;
+                }
+                $sectorCounts[$cat]++;
+                $sectorAmounts[$cat] += $amount;
+            }
+        }
+
+        // Arrange sectors strictly from highest to lowest by beneficiary count
+        arsort($sectorCounts);
+
+        $sectorRanked = [];
+        $topSector = null;
+        $topSectorCount = 0;
+        foreach ($sectorCounts as $sec => $cnt) {
+            $sectorRanked[] = [
+                'sector' => $sec,
+                'beneficiaries' => $cnt,
+                'amount' => $sectorAmounts[$sec] ?? 0.0,
+                'formatted_amount' => '₱' . number_format($sectorAmounts[$sec] ?? 0.0, 2),
+                'percentage' => $totalBeneficiaries > 0 ? round(($cnt / $totalBeneficiaries) * 100, 1) : 0,
+            ];
+            if (!$topSector) {
+                $topSector = $sec;
+                $topSectorCount = $cnt;
+            }
+        }
+
+        // 4. Most common medical concerns & assistance reasons (arranged from highest to lowest)
+        $medicalCounts = [];
+        $medicalAmounts = [];
+
+        $medicalIntakes = BeneficiaryIntake::select(
+            'medical_conditions',
+            'medical_condition_other',
+            'assistance_purpose',
+            'purpose',
+            'purpose_other',
+            'recommended_amount'
+        )->cursor();
+
+        foreach ($medicalIntakes as $intake) {
+            $amount = (float) ($intake->recommended_amount ?? 0);
+            $concerns = [];
+
+            // Conditions array from checkboxes
+            if (is_array($intake->medical_conditions)) {
+                foreach ($intake->medical_conditions as $c) {
+                    $trimmed = trim($c);
+                    if (!empty($trimmed) && strtolower($trimmed) !== 'other' && !in_array($trimmed, $concerns)) {
+                        $concerns[] = $trimmed;
+                    }
+                }
+            }
+
+            // Other medical condition specified
+            if (!empty(trim($intake->medical_condition_other ?? ''))) {
+                $otherCond = trim($intake->medical_condition_other);
+                if (!in_array($otherCond, $concerns)) {
+                    $concerns[] = $otherCond;
+                }
+            }
+
+            // Fallback or complement with assistance_purpose / purpose if conditions array is empty
+            if (empty($concerns)) {
+                if (!empty(trim($intake->assistance_purpose ?? '')) && !in_array(trim($intake->assistance_purpose), ['Others', 'Other Medical Conditions'])) {
+                    $concerns[] = trim($intake->assistance_purpose);
+                } elseif (!empty(trim($intake->purpose_other ?? ''))) {
+                    $concerns[] = trim($intake->purpose_other);
+                } elseif (!empty(trim($intake->purpose ?? ''))) {
+                    $concerns[] = trim($intake->purpose);
+                }
+            }
+
+            if (empty($concerns)) {
+                $concerns[] = 'General Medical Assistance';
+            }
+
+            foreach ($concerns as $concern) {
+                if (!isset($medicalCounts[$concern])) {
+                    $medicalCounts[$concern] = 0;
+                    $medicalAmounts[$concern] = 0.0;
+                }
+                $medicalCounts[$concern]++;
+                $medicalAmounts[$concern] += $amount;
+            }
+        }
+
+        // Arrange medical concerns strictly from highest to lowest by beneficiary count
+        arsort($medicalCounts);
+
+        $medicalRanked = [];
+        $topMedicalConcern = null;
+        $topMedicalConcernCount = 0;
+        foreach ($medicalCounts as $concern => $cnt) {
+            $medicalRanked[] = [
+                'concern' => $concern,
+                'beneficiaries' => $cnt,
+                'amount' => $medicalAmounts[$concern] ?? 0.0,
+                'formatted_amount' => '₱' . number_format($medicalAmounts[$concern] ?? 0.0, 2),
+                'percentage' => $totalBeneficiaries > 0 ? round(($cnt / $totalBeneficiaries) * 100, 1) : 0,
+            ];
+            if (!$topMedicalConcern) {
+                $topMedicalConcern = $concern;
+                $topMedicalConcernCount = $cnt;
+            }
+        }
+
+        return view('admin.financial.financialstep2-statistics', compact(
+            'totalBeneficiaries',
+            'totalAmount',
+            'totalClaimed',
+            'totalClaimedAmount',
+            'totalUnclaimed',
+            'totalInPayroll',
+            'totalPayrollBatches',
+            'barangayStats',
+            'topBarangay',
+            'topBarangayCount',
+            'genderBreakdown',
+            'maleCount',
+            'femaleCount',
+            'otherGenderCount',
+            'malePercentage',
+            'femalePercentage',
+            'sectorRanked',
+            'topSector',
+            'topSectorCount',
+            'medicalRanked',
+            'topMedicalConcern',
+            'topMedicalConcernCount'
+        ));
+    }
+
+    /**
      * Dedicated Payroll Generation page for Step 2 users to encode financial assistance amounts
      * and verify/generate printable payroll for all intakes recorded for the current day.
      */
@@ -569,7 +894,7 @@ class FinancialDashboardController extends Controller
             if ($request->filled('status') && $request->status !== 'All') {
                 if ($request->status === 'encoded') {
                     $query->whereNotNull('recommended_amount')->where('recommended_amount', '>', 0);
-                } elseif ($request->status === 'pending') {
+                } elseif ($request->status === 'pending' || $request->status === 'pending_amount') {
                     $query->where(function ($q) {
                         $q->whereNull('recommended_amount')->orWhere('recommended_amount', '<=', 0);
                     });
@@ -639,7 +964,7 @@ class FinancialDashboardController extends Controller
             'Barangay I (Poblacion)', 'Barangay II (Poblacion)', 'Barangay III (Poblacion)',
             'Barangay IV (Poblacion)', 'Barangay V (Poblacion)', 'Acacia', 'Anabu',
             'Balite I', 'Balite II', 'Biga I', 'Biga II', 'Biluso', 'Bucal', 'Buho',
-            'Caballero', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
+            'Cabangaan', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
             'Lalaan II', 'Litlit', 'Lucsuhin', 'Lumil', 'Maguyam', 'Malabag', 'Malaking Tatyao',
             'Mataas na Burol', 'Munting Ilog', 'Narra I', 'Narra II', 'Narra III',
             'Paligawan', 'Pasong Langka', 'Pooc I', 'Pooc II', 'Pulong Bunga', 'Pulong Saging',
@@ -878,6 +1203,7 @@ class FinancialDashboardController extends Controller
                 'amount' => (float) ($intake->recommended_amount ?? 0),
                 'formatted_amount' => '₱' . number_format((float) ($intake->recommended_amount ?? 0), 2),
                 'is_separate_rep' => $hasSepRep,
+                'claim_status' => 'Unclaimed',
                 'service_provided' => $intake->service_provided,
                 'purpose' => $intake->purpose,
             ];
@@ -906,6 +1232,9 @@ class FinancialDashboardController extends Controller
                     'payroll_generated_at' => Carbon::now(),
                     'payroll_date' => $targetDate->format('Y-m-d'),
                     'payroll_record_id' => $payrollRecord->id,
+                    'claim_status' => 'Unclaimed',
+                    'claimed_at' => null,
+                    'claimed_by' => null,
                 ]);
         });
 
@@ -1149,7 +1478,7 @@ class FinancialDashboardController extends Controller
             'Barangay I (Poblacion)', 'Barangay II (Poblacion)', 'Barangay III (Poblacion)',
             'Barangay IV (Poblacion)', 'Barangay V (Poblacion)', 'Acacia', 'Anabu',
             'Balite I', 'Balite II', 'Biga I', 'Biga II', 'Biluso', 'Bucal', 'Buho',
-            'Caballero', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
+            'Cabangaan', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
             'Lalaan II', 'Litlit', 'Lucsuhin', 'Lumil', 'Maguyam', 'Malabag', 'Malaking Tatyao',
             'Mataas na Burol', 'Munting Ilog', 'Narra I', 'Narra II', 'Narra III',
             'Paligawan', 'Pasong Langka', 'Pooc I', 'Pooc II', 'Pulong Bunga', 'Pulong Saging',
@@ -1176,9 +1505,13 @@ class FinancialDashboardController extends Controller
             $payrollRecords = collect();
             $grandTotalBeneficiaries = 0;
             $grandTotalAmount = 0.0;
+            $grandTotalClaimedCount = 0;
+            $grandTotalUnclaimedCount = 0;
+            $grandTotalClaimedAmount = 0.0;
+            $grandTotalUnclaimedAmount = 0.0;
 
             foreach ($rawRecords as $record) {
-                $intakesQuery = BeneficiaryIntake::with(['client', 'encoderUser', 'payrollRecord'])
+                $intakesQuery = BeneficiaryIntake::with(['client', 'encoderUser', 'payrollRecord', 'latestMessage'])
                     ->where('is_payroll_generated', true)
                     ->where(function ($q) use ($record) {
                         $q->where('payroll_record_id', $record->id)
@@ -1202,6 +1535,18 @@ class FinancialDashboardController extends Controller
 
                 if ($request->filled('barangay') && $request->barangay !== 'All') {
                     $intakesQuery->where('beneficiary_barangay', $request->barangay);
+                }
+
+                $claimStatusInput = $request->claim_status ?? ($request->status === 'claimed' ? 'Claimed' : ($request->status === 'unclaimed' ? 'Unclaimed' : null));
+                if (!empty($claimStatusInput) && in_array($claimStatusInput, ['Claimed', 'Unclaimed'])) {
+                    if ($claimStatusInput === 'Claimed') {
+                        $intakesQuery->where('claim_status', 'Claimed');
+                    } else {
+                        $intakesQuery->where(function ($q) {
+                            $q->where('claim_status', 'Unclaimed')
+                              ->orWhereNull('claim_status');
+                        });
+                    }
                 }
 
                 // Apply Sorting to Beneficiaries
@@ -1230,7 +1575,7 @@ class FinancialDashboardController extends Controller
 
                 $intakes = $intakesQuery->get();
 
-                if (($request->filled('search') || ($request->filled('barangay') && $request->barangay !== 'All')) && $intakes->isEmpty()) {
+                if (($request->filled('search') || ($request->filled('barangay') && $request->barangay !== 'All') || $request->filled('claim_status')) && $intakes->isEmpty()) {
                     continue;
                 }
 
@@ -1247,7 +1592,13 @@ class FinancialDashboardController extends Controller
                         $isSeparateRep = false;
                     }
 
+                    $claimStatus = ($intake->claim_status === 'Claimed') ? 'Claimed' : 'Unclaimed';
+                    $claimingDate = $intake->effective_claiming_date;
+                    $formattedClaimingDate = $claimingDate ? $claimingDate->format('F d, Y') : ($record->payroll_date ? $record->payroll_date->format('F d, Y') : null);
+                    $lastMessageSentDate = $intake->last_message_sent_at_formatted;
+
                     return (object) [
+                        'id' => $intake->id,
                         'item_no' => $index + 1,
                         'control_number' => $intake->control_number,
                         'representative_name' => $representativeName,
@@ -1259,25 +1610,49 @@ class FinancialDashboardController extends Controller
                         'is_separate_rep' => $isSeparateRep,
                         'payroll_date' => $record->payroll_date ? $record->payroll_date->format('F d, Y') : 'N/A',
                         'payroll_number' => $record->payroll_number ?? 'N/A',
+                        'claim_status' => $claimStatus,
+                        'claimed_at' => $intake->claimed_at ? $intake->claimed_at->format('M d, Y h:i A') : null,
+                        'claimed_by' => $intake->claimed_by,
+                        'claiming_date' => $formattedClaimingDate,
+                        'raw_claiming_date' => $claimingDate ? $claimingDate->format('Y-m-d') : ($record->payroll_date ? $record->payroll_date->format('Y-m-d') : null),
+                        'purpose' => $intake->display_assistance_purpose,
+                        'assistance_type' => $intake->recommended_assistance_type ?? 'Financial Assistance',
+                        'last_message_date' => $lastMessageSentDate,
                         'raw_intake' => $intake,
                     ];
                 });
 
                 $recBeneficiaries = $payrollRows->count();
-                $recAmount = $payrollRows->sum('amount');
+                $recAmount = (float) $payrollRows->sum('amount');
+                $recClaimed = $payrollRows->where('claim_status', 'Claimed')->count();
+                $recUnclaimed = $payrollRows->where('claim_status', '!=', 'Claimed')->count();
+                $recClaimedAmount = (float) $payrollRows->where('claim_status', 'Claimed')->sum('amount');
+                $recUnclaimedAmount = (float) $payrollRows->where('claim_status', '!=', 'Claimed')->sum('amount');
 
                 $record->payrollRows = $payrollRows;
                 $record->recordBeneficiariesCount = $recBeneficiaries;
                 $record->recordTotalAmount = $recAmount;
                 $record->formattedRecordAmount = '₱' . number_format($recAmount, 2);
+                $record->claimedCount = $recClaimed;
+                $record->unclaimedCount = $recUnclaimed;
+                $record->recordClaimedAmount = $recClaimedAmount;
+                $record->recordUnclaimedAmount = $recUnclaimedAmount;
+                $record->formattedRecordClaimedAmount = '₱' . number_format($recClaimedAmount, 2);
+                $record->formattedRecordUnclaimedAmount = '₱' . number_format($recUnclaimedAmount, 2);
 
                 $grandTotalBeneficiaries += $recBeneficiaries;
                 $grandTotalAmount += $recAmount;
+                $grandTotalClaimedCount += $recClaimed;
+                $grandTotalUnclaimedCount += $recUnclaimed;
+                $grandTotalClaimedAmount += $recClaimedAmount;
+                $grandTotalUnclaimedAmount += $recUnclaimedAmount;
 
                 $payrollRecords->push($record);
             }
 
             $formattedGrandTotalAmount = '₱' . number_format($grandTotalAmount, 2);
+            $formattedGrandTotalClaimedAmount = '₱' . number_format($grandTotalClaimedAmount, 2);
+            $formattedGrandTotalUnclaimedAmount = '₱' . number_format($grandTotalUnclaimedAmount, 2);
             $paginatedDateGroups = null;
             $totalDatesCount = 1;
             $totalRecordsCount = $payrollRecords->count();
@@ -1293,6 +1668,12 @@ class FinancialDashboardController extends Controller
                 'grandTotalBeneficiaries',
                 'grandTotalAmount',
                 'formattedGrandTotalAmount',
+                'grandTotalClaimedCount',
+                'grandTotalUnclaimedCount',
+                'grandTotalClaimedAmount',
+                'grandTotalUnclaimedAmount',
+                'formattedGrandTotalClaimedAmount',
+                'formattedGrandTotalUnclaimedAmount',
                 'barangays'
             ));
         }
@@ -1306,6 +1687,15 @@ class FinancialDashboardController extends Controller
 
         // Filter matching dates based on search or barangay
         $datesQuery = FinancialPayrollRecord::query();
+
+        // Month and Year filtering on directory
+        if ($request->filled('month')) {
+            $parts = explode('-', trim($request->month));
+            if (count($parts) === 2 && is_numeric($parts[0]) && is_numeric($parts[1])) {
+                $datesQuery->whereYear('payroll_date', (int) $parts[0])
+                           ->whereMonth('payroll_date', (int) $parts[1]);
+            }
+        }
 
         // Date range filtering on directory
         if ($request->filled('date_from')) {
@@ -1370,7 +1760,7 @@ class FinancialDashboardController extends Controller
                 break;
         }
 
-        $paginatedDateGroups = $datesQuery->paginate(10)->withQueryString();
+        $paginatedDateGroups = $datesQuery->paginate(15)->withQueryString();
 
         $paginatedDateGroups->getCollection()->transform(function ($item) {
             $dateKey = $item->payroll_date ? Carbon::parse($item->payroll_date)->format('Y-m-d') : 'Unknown';
@@ -1378,6 +1768,7 @@ class FinancialDashboardController extends Controller
             $totAmount = (float) ($item->total_amount ?? 0);
 
             return (object) [
+                'payroll_date' => $dateKey,
                 'date_str' => $dateKey,
                 'parsed_date' => $parsedDate,
                 'formatted_date' => $parsedDate ? $parsedDate->format('F d, Y') : 'Unknown Date',
@@ -1402,6 +1793,584 @@ class FinancialDashboardController extends Controller
             'grandTotalAmount',
             'formattedGrandTotalAmount',
             'barangays'
+        ));
+    }
+
+    /**
+     * Update claim status of an intake in payroll.
+     */
+    public function updateIntakeClaimStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:Claimed,Unclaimed',
+        ]);
+
+        $intake = BeneficiaryIntake::findOrFail($id);
+
+        $newStatus = $request->status;
+        $officerName = session('financial_step2_authorized_user') ?? session('admin_user_name') ?? 'Step 2 Staff';
+
+        if ($newStatus === 'Claimed') {
+            $intake->claim_status = 'Claimed';
+            $intake->claimed_at = Carbon::now();
+            $intake->claimed_by = $officerName;
+        } else {
+            $intake->claim_status = 'Unclaimed';
+            $intake->claimed_at = null;
+            $intake->claimed_by = null;
+        }
+
+        $intake->save();
+
+        $beneficiaryName = $intake->beneficiary_full_name ?? 'Beneficiary';
+        $msg = $newStatus === 'Claimed'
+            ? "Assistance for {$beneficiaryName} has been marked as Claimed."
+            : "Assistance for {$beneficiaryName} has been reverted to Unclaimed.";
+
+        $intakeAmount = (float) ($intake->recommended_amount ?? 0);
+        $payrollDate = $intake->payroll_date ? $intake->payroll_date->format('Y-m-d') : ($intake->date_processed ? $intake->date_processed->format('Y-m-d') : null);
+
+        $dateUnclaimedAmount = null;
+        $dateClaimedAmount = null;
+        $dateUnclaimedCount = null;
+        $dateClaimedCount = null;
+
+        if ($payrollDate) {
+            $dateBaseQuery = BeneficiaryIntake::where('is_payroll_generated', true)
+                ->where(function ($q) use ($payrollDate) {
+                    $q->whereDate('payroll_date', $payrollDate)
+                      ->orWhere(function ($sq) use ($payrollDate) {
+                          $sq->whereNull('payroll_date')->whereDate('date_processed', $payrollDate);
+                      });
+                });
+
+            $dateUnclaimedAmount = (float) (clone $dateBaseQuery)->where(function ($q) {
+                $q->where('claim_status', '!=', 'Claimed')
+                  ->orWhereNull('claim_status');
+            })->sum('recommended_amount');
+
+            $dateClaimedAmount = (float) (clone $dateBaseQuery)->where('claim_status', 'Claimed')->sum('recommended_amount');
+
+            $dateUnclaimedCount = (int) (clone $dateBaseQuery)->where(function ($q) {
+                $q->where('claim_status', '!=', 'Claimed')
+                  ->orWhereNull('claim_status');
+            })->count();
+
+            $dateClaimedCount = (int) (clone $dateBaseQuery)->where('claim_status', 'Claimed')->count();
+        }
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $msg,
+                'intake_id' => $intake->id,
+                'claim_status' => $intake->claim_status,
+                'claimed_at' => $intake->claimed_at ? $intake->claimed_at->format('M d, Y h:i A') : null,
+                'claimed_by' => $intake->claimed_by,
+                'recommended_amount' => $intakeAmount,
+                'formatted_amount' => '₱' . number_format($intakeAmount, 2),
+                'date_unclaimed_amount' => $dateUnclaimedAmount,
+                'formatted_date_unclaimed_amount' => $dateUnclaimedAmount !== null ? '₱' . number_format($dateUnclaimedAmount, 2) : null,
+                'date_claimed_amount' => $dateClaimedAmount,
+                'formatted_date_claimed_amount' => $dateClaimedAmount !== null ? '₱' . number_format($dateClaimedAmount, 2) : null,
+                'date_unclaimed_count' => $dateUnclaimedCount,
+                'date_claimed_count' => $dateClaimedCount,
+            ]);
+        }
+
+        return redirect()->back()->with('success', $msg);
+    }
+
+    /**
+     * Step 2: Monthly Payroll Liquidation & Financial Monitoring.
+     * Displays financial liquidation summarized PER MONTH with Total Allocated, Total Claimed, Total Unclaimed, and Remaining Balance.
+     */
+    public function financialStep2Liquidation(Request $request)
+    {
+        $today = Carbon::today();
+
+        // 1. Ensure any unlinked generated intakes are linked to a FinancialPayrollRecord
+        $unlinkedIntakes = BeneficiaryIntake::where('is_payroll_generated', true)
+            ->whereNull('payroll_record_id')
+            ->get();
+
+        if ($unlinkedIntakes->isNotEmpty()) {
+            $groupedByDate = $unlinkedIntakes->groupBy(function ($intake) {
+                return $intake->payroll_date 
+                    ? $intake->payroll_date->format('Y-m-d') 
+                    : ($intake->date_processed ? $intake->date_processed->format('Y-m-d') : $intake->created_at->format('Y-m-d'));
+            });
+
+            foreach ($groupedByDate as $pDate => $dateIntakes) {
+                $payrollRecord = FinancialPayrollRecord::whereDate('payroll_date', $pDate)->first();
+                if (!$payrollRecord) {
+                    $payrollRecord = FinancialPayrollRecord::create([
+                        'payroll_number' => 'PAYROLL-' . str_replace('-', '', $pDate) . '-001-' . strtoupper(substr(uniqid(), -4)),
+                        'payroll_date' => $pDate,
+                        'batch_number' => 1,
+                        'disbursing_officer' => session('financial_step2_authorized_user') ?? session('admin_user_name') ?? 'MSWDO Disbursing Officer',
+                        'total_beneficiaries' => $dateIntakes->count(),
+                        'total_amount' => $dateIntakes->sum('recommended_amount'),
+                        'status' => 'Completed',
+                    ]);
+                }
+                BeneficiaryIntake::whereIn('id', $dateIntakes->pluck('id'))->update([
+                    'payroll_record_id' => $payrollRecord->id,
+                    'payroll_date' => $pDate,
+                ]);
+            }
+        }
+
+        // Available distinct months for filter dropdown
+        $availableMonths = FinancialPayrollRecord::selectRaw('DATE_FORMAT(payroll_date, "%Y-%m") as month_key, DATE_FORMAT(payroll_date, "%M %Y") as month_label')
+            ->whereNotNull('payroll_date')
+            ->groupBy('month_key', 'month_label')
+            ->orderBy('month_key', 'desc')
+            ->get()
+            ->pluck('month_label', 'month_key');
+
+        $query = FinancialPayrollRecord::with(['beneficiaryIntakes' => function ($q) {
+            $q->orderBy('id', 'asc');
+        }])->orderBy('payroll_date', 'desc')->orderBy('created_at', 'desc');
+
+        // Filter by Month (e.g. '2026-09')
+        if ($request->filled('month') && $request->month !== 'All') {
+            $parts = explode('-', $request->month);
+            if (count($parts) === 2) {
+                $query->whereYear('payroll_date', $parts[0])->whereMonth('payroll_date', $parts[1]);
+            }
+        }
+
+        // Search by payroll number, disbursing officer, or beneficiary/rep/control no inside payroll
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('payroll_number', 'like', "%{$search}%")
+                  ->orWhere('disbursing_officer', 'like', "%{$search}%")
+                  ->orWhereHas('beneficiaryIntakes', function ($bq) use ($search) {
+                      $bq->where('control_number', 'like', "%{$search}%")
+                         ->orWhere('beneficiary_first_name', 'like', "%{$search}%")
+                         ->orWhere('beneficiary_last_name', 'like', "%{$search}%")
+                         ->orWhere('beneficiary_middle_name', 'like', "%{$search}%")
+                         ->orWhere('rep_first_name', 'like', "%{$search}%")
+                         ->orWhere('rep_last_name', 'like', "%{$search}%")
+                         ->orWhere('beneficiary_barangay', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $allPayrolls = $query->get();
+
+        // Group payroll records by Year-Month (e.g., '2026-09')
+        $groupedPayrolls = $allPayrolls->groupBy(function ($item) {
+            return $item->payroll_date ? $item->payroll_date->format('Y-m') : Carbon::parse($item->created_at)->format('Y-m');
+        });
+
+        $monthlyRecords = collect();
+        $globalTotalAllocated = 0.0;
+        $globalTotalClaimed = 0.0;
+        $globalTotalUnclaimed = 0.0;
+        $globalTotalBeneficiaries = 0;
+        $globalClaimedCount = 0;
+        $globalUnclaimedCount = 0;
+
+        foreach ($groupedPayrolls as $yearMonth => $payrollsInMonth) {
+            try {
+                $monthCarbon = Carbon::createFromFormat('Y-m', $yearMonth);
+                $monthLabel = $monthCarbon->format('F Y');
+            } catch (\Exception $e) {
+                $monthLabel = $yearMonth;
+            }
+
+            $monthTotalAllocated = 0.0;
+            $monthTotalClaimed = 0.0;
+            $monthTotalUnclaimed = 0.0;
+            $monthTotalBeneficiaries = 0;
+            $monthClaimedCount = 0;
+            $monthUnclaimedCount = 0;
+
+            // Process each payroll in this month
+            foreach ($payrollsInMonth as $payroll) {
+                $intakes = $payroll->beneficiaryIntakes;
+                $pBeneficiaries = $intakes->count();
+
+                $pAllocated = (float) $intakes->sum('recommended_amount');
+                if ($pAllocated <= 0 && $payroll->total_amount > 0) {
+                    $pAllocated = (float) $payroll->total_amount;
+                }
+
+                $pClaimedIntakes = $intakes->where('claim_status', 'Claimed');
+                $pUnclaimedIntakes = $intakes->where('claim_status', '!=', 'Claimed');
+
+                $pClaimedCount = $pClaimedIntakes->count();
+                $pUnclaimedCount = $pUnclaimedIntakes->count();
+
+                $pClaimedAmount = (float) $pClaimedIntakes->sum('recommended_amount');
+                $pUnclaimedAmount = (float) $pUnclaimedIntakes->sum('recommended_amount');
+                $pRemainingBalance = $pUnclaimedAmount;
+
+                $pLiquidationRate = $pAllocated > 0 ? round(($pClaimedAmount / $pAllocated) * 100, 1) : 0;
+                if ($pLiquidationRate >= 100 && $pBeneficiaries > 0) {
+                    $pStatus = 'Fully Liquidated';
+                    $pStatusClass = 'success';
+                } elseif ($pClaimedAmount > 0) {
+                    $pStatus = 'Partially Liquidated';
+                    $pStatusClass = 'warning';
+                } else {
+                    $pStatus = 'Unreleased';
+                    $pStatusClass = 'secondary';
+                }
+
+                $payroll->totalAllocated = $pAllocated;
+                $payroll->totalClaimed = $pClaimedAmount;
+                $payroll->totalUnclaimed = $pUnclaimedAmount;
+                $payroll->remainingBalance = $pRemainingBalance;
+                $payroll->claimedCount = $pClaimedCount;
+                $payroll->unclaimedCount = $pUnclaimedCount;
+                $payroll->totalBeneficiariesCount = $pBeneficiaries;
+                $payroll->liquidationRate = $pLiquidationRate;
+                $payroll->liquidationStatus = $pStatus;
+                $payroll->liquidationStatusClass = $pStatusClass;
+
+                $payroll->formattedAllocated = '₱' . number_format($pAllocated, 2);
+                $payroll->formattedClaimed = '₱' . number_format($pClaimedAmount, 2);
+                $payroll->formattedUnclaimed = '₱' . number_format($pUnclaimedAmount, 2);
+                $payroll->formattedRemaining = '₱' . number_format($pRemainingBalance, 2);
+
+                // Accumulate month totals
+                $monthTotalAllocated += $pAllocated;
+                $monthTotalClaimed += $pClaimedAmount;
+                $monthTotalUnclaimed += $pUnclaimedAmount;
+                $monthTotalBeneficiaries += $pBeneficiaries;
+                $monthClaimedCount += $pClaimedCount;
+                $monthUnclaimedCount += $pUnclaimedCount;
+            }
+
+            $monthRemainingBalance = $monthTotalUnclaimed;
+            $monthLiquidationRate = $monthTotalAllocated > 0 ? round(($monthTotalClaimed / $monthTotalAllocated) * 100, 1) : 0;
+
+            if ($monthLiquidationRate >= 100 && $monthTotalBeneficiaries > 0) {
+                $monthStatus = 'Fully Liquidated';
+                $monthStatusClass = 'success';
+            } elseif ($monthTotalClaimed > 0) {
+                $monthStatus = 'Partially Liquidated';
+                $monthStatusClass = 'warning';
+            } else {
+                $monthStatus = 'Unreleased';
+                $monthStatusClass = 'secondary';
+            }
+
+            // Filter by Status if requested
+            if ($request->filled('status') && $request->status !== 'All') {
+                if ($request->status === 'fully_liquidated' && $monthStatus !== 'Fully Liquidated') {
+                    continue;
+                }
+                if ($request->status === 'partially_liquidated' && $monthStatus !== 'Partially Liquidated') {
+                    continue;
+                }
+                if ($request->status === 'unreleased' && $monthStatus !== 'Unreleased') {
+                    continue;
+                }
+            }
+
+            // Month object
+            $monthObj = (object) [
+                'month_key' => $yearMonth,
+                'month_label' => $monthLabel,
+                'payrolls_count' => $payrollsInMonth->count(),
+                'payrolls' => $payrollsInMonth,
+                'totalAllocated' => $monthTotalAllocated,
+                'totalClaimed' => $monthTotalClaimed,
+                'totalUnclaimed' => $monthTotalUnclaimed,
+                'remainingBalance' => $monthRemainingBalance,
+                'totalBeneficiariesCount' => $monthTotalBeneficiaries,
+                'claimedCount' => $monthClaimedCount,
+                'unclaimedCount' => $monthUnclaimedCount,
+                'liquidationRate' => $monthLiquidationRate,
+                'liquidationStatus' => $monthStatus,
+                'liquidationStatusClass' => $monthStatusClass,
+                'formattedAllocated' => '₱' . number_format($monthTotalAllocated, 2),
+                'formattedClaimed' => '₱' . number_format($monthTotalClaimed, 2),
+                'formattedUnclaimed' => '₱' . number_format($monthTotalUnclaimed, 2),
+                'formattedRemaining' => '₱' . number_format($monthRemainingBalance, 2),
+            ];
+
+            // Accumulate globals
+            $globalTotalAllocated += $monthTotalAllocated;
+            $globalTotalClaimed += $monthTotalClaimed;
+            $globalTotalUnclaimed += $monthTotalUnclaimed;
+            $globalTotalBeneficiaries += $monthTotalBeneficiaries;
+            $globalClaimedCount += $monthClaimedCount;
+            $globalUnclaimedCount += $monthUnclaimedCount;
+
+            $monthlyRecords->push($monthObj);
+        }
+
+        $globalRemainingBalance = $globalTotalUnclaimed;
+        $globalLiquidationRate = $globalTotalAllocated > 0 ? round(($globalTotalClaimed / $globalTotalAllocated) * 100, 1) : 0;
+
+        $formattedGlobalAllocated = '₱' . number_format($globalTotalAllocated, 2);
+        $formattedGlobalClaimed = '₱' . number_format($globalTotalClaimed, 2);
+        $formattedGlobalUnclaimed = '₱' . number_format($globalTotalUnclaimed, 2);
+        $formattedGlobalRemaining = '₱' . number_format($globalRemainingBalance, 2);
+
+        $totalMonthsCount = $monthlyRecords->count();
+
+        return view('admin.financial.financialstep2-liquidation', compact(
+            'monthlyRecords',
+            'availableMonths',
+            'globalTotalAllocated',
+            'globalTotalClaimed',
+            'globalTotalUnclaimed',
+            'globalRemainingBalance',
+            'globalTotalBeneficiaries',
+            'globalClaimedCount',
+            'globalUnclaimedCount',
+            'globalLiquidationRate',
+            'formattedGlobalAllocated',
+            'formattedGlobalClaimed',
+            'formattedGlobalUnclaimed',
+            'formattedGlobalRemaining',
+            'totalMonthsCount'
+        ));
+    }
+
+    /**
+     * Generate official print-ready Liquidation Report for a specific month.
+     */
+    public function financialStep2LiquidationReportMonthly(Request $request, $yearMonth)
+    {
+        $parts = explode('-', $yearMonth);
+        if (count($parts) !== 2) {
+            return redirect()->route('admin.financial.financialstep2.liquidation')
+                ->with('error', 'Invalid month format specified.');
+        }
+
+        $year = (int) $parts[0];
+        $month = (int) $parts[1];
+
+        try {
+            $monthCarbon = Carbon::createFromDate($year, $month, 1);
+            $monthLabel = $monthCarbon->format('F Y');
+        } catch (\Exception $e) {
+            $monthLabel = $yearMonth;
+        }
+
+        $payrolls = FinancialPayrollRecord::with(['beneficiaryIntakes' => function ($q) {
+            $q->orderBy('payroll_date', 'asc')->orderBy('id', 'asc');
+        }])
+        ->whereYear('payroll_date', $year)
+        ->whereMonth('payroll_date', $month)
+        ->orderBy('payroll_date', 'asc')
+        ->orderBy('batch_number', 'asc')
+        ->get();
+
+        $allIntakes = collect();
+        $officers = [];
+
+        $totalAllocated = 0.0;
+        $totalClaimed = 0.0;
+        $totalUnclaimed = 0.0;
+        $claimedCount = 0;
+        $unclaimedCount = 0;
+
+        $payrollBatches = [];
+
+        foreach ($payrolls as $pIndex => $payroll) {
+            if (!empty($payroll->disbursing_officer) && !in_array($payroll->disbursing_officer, $officers)) {
+                $officers[] = $payroll->disbursing_officer;
+            }
+
+            $intakes = $payroll->beneficiaryIntakes;
+            $pBeneficiaries = $intakes->count();
+
+            $pAllocated = (float) $intakes->sum('recommended_amount');
+            if ($pAllocated <= 0 && $payroll->total_amount > 0) {
+                $pAllocated = (float) $payroll->total_amount;
+            }
+
+            $pClaimedIntakes = $intakes->where('claim_status', 'Claimed');
+            $pUnclaimedIntakes = $intakes->where('claim_status', '!=', 'Claimed');
+
+            $pClaimedCount = $pClaimedIntakes->count();
+            $pUnclaimedCount = $pUnclaimedIntakes->count();
+
+            $pClaimedAmount = (float) $pClaimedIntakes->sum('recommended_amount');
+            $pUnclaimedAmount = (float) $pUnclaimedIntakes->sum('recommended_amount');
+            $pRemainingBalance = $pUnclaimedAmount;
+
+            $pRate = $pAllocated > 0 ? round(($pClaimedAmount / $pAllocated) * 100, 1) : 0;
+            $pStatus = ($pRate >= 100 && $pBeneficiaries > 0) ? 'Fully Liquidated' : ($pClaimedAmount > 0 ? 'Partially Liquidated' : 'Unreleased');
+
+            $payrollBatches[] = (object) [
+                'batch_no' => $pIndex + 1,
+                'payroll_number' => $payroll->payroll_number,
+                'payroll_date' => $payroll->payroll_date ? $payroll->payroll_date->format('M d, Y') : 'N/A',
+                'disbursing_officer' => $payroll->disbursing_officer ?: 'MSWDO Disbursing Officer',
+                'total_beneficiaries' => $pBeneficiaries,
+                'allocated' => $pAllocated,
+                'claimed' => $pClaimedAmount,
+                'unclaimed' => $pUnclaimedAmount,
+                'remaining' => $pRemainingBalance,
+                'liquidation_rate' => $pRate,
+                'status' => $pStatus,
+            ];
+
+            $totalAllocated += $pAllocated;
+            $totalClaimed += $pClaimedAmount;
+            $totalUnclaimed += $pUnclaimedAmount;
+            $claimedCount += $pClaimedCount;
+            $unclaimedCount += $pUnclaimedCount;
+
+            foreach ($intakes as $intake) {
+                $allIntakes->push($intake);
+            }
+        }
+
+        $totalBeneficiaries = $allIntakes->count();
+        $remainingBalance = $totalUnclaimed;
+        $liquidationRate = $totalAllocated > 0 ? round(($totalClaimed / $totalAllocated) * 100, 1) : 0;
+
+        if ($liquidationRate >= 100 && $totalBeneficiaries > 0) {
+            $liquidationStatus = 'Fully Liquidated';
+        } elseif ($totalClaimed > 0) {
+            $liquidationStatus = 'Partially Liquidated';
+        } else {
+            $liquidationStatus = 'Unreleased';
+        }
+
+        // Map beneficiaries
+        $beneficiaries = $allIntakes->map(function ($intake, $index) {
+            $beneficiaryName = $intake->beneficiary_full_name ?? 'N/A';
+            $repName = ($intake->has_representative && !empty(trim($intake->representative_full_name ?? '')) && $intake->representative_full_name !== 'N/A')
+                ? $intake->representative_full_name
+                : $beneficiaryName;
+
+            return (object) [
+                'item_no' => $index + 1,
+                'control_number' => $intake->control_number,
+                'payroll_date' => $intake->payroll_date ? $intake->payroll_date->format('M d, Y') : ($intake->date_processed ? $intake->date_processed->format('M d, Y') : '--'),
+                'representative_name' => $repName,
+                'beneficiary_name' => $beneficiaryName,
+                'barangay' => $intake->beneficiary_barangay ?: 'Silang, Cavite',
+                'contact_number' => $intake->beneficiary_contact_number ?: ($intake->rep_contact_number ?: 'N/A'),
+                'amount' => (float) ($intake->recommended_amount ?? 0),
+                'formatted_amount' => '₱' . number_format((float) ($intake->recommended_amount ?? 0), 2),
+                'claim_status' => ($intake->claim_status === 'Claimed') ? 'Claimed' : 'Unclaimed',
+                'claimed_at' => $intake->claimed_at ? $intake->claimed_at->format('M d, Y h:i A') : '--',
+                'claimed_by' => $intake->claimed_by ?: '--',
+            ];
+        });
+
+        $disbursingOfficer = !empty($officers) ? implode(', ', $officers) : 'MSWDO Disbursing Officer';
+        $reportDate = Carbon::now()->format('F d, Y');
+        $isMonthlyReport = true;
+        $payrollsCount = count($payrollBatches);
+
+        return view('admin.financial.financialstep2-liquidation-report', compact(
+            'isMonthlyReport',
+            'monthLabel',
+            'yearMonth',
+            'payrollBatches',
+            'payrollsCount',
+            'beneficiaries',
+            'totalBeneficiaries',
+            'totalAllocated',
+            'totalClaimed',
+            'totalUnclaimed',
+            'remainingBalance',
+            'claimedCount',
+            'unclaimedCount',
+            'liquidationRate',
+            'liquidationStatus',
+            'disbursingOfficer',
+            'reportDate'
+        ));
+    }
+
+    /**
+     * Generate official print-ready Liquidation Report for a specific payroll record.
+     */
+    public function financialStep2LiquidationReport(Request $request, $id)
+    {
+        $payroll = FinancialPayrollRecord::with(['beneficiaryIntakes' => function ($q) {
+            $q->orderBy('id', 'asc');
+        }])->findOrFail($id);
+
+        $intakes = $payroll->beneficiaryIntakes;
+        $totalBeneficiaries = $intakes->count();
+
+        $totalAllocated = (float) $intakes->sum('recommended_amount');
+        if ($totalAllocated <= 0 && $payroll->total_amount > 0) {
+            $totalAllocated = (float) $payroll->total_amount;
+        }
+
+        $claimedIntakes = $intakes->where('claim_status', 'Claimed');
+        $unclaimedIntakes = $intakes->where('claim_status', '!=', 'Claimed');
+
+        $claimedCount = $claimedIntakes->count();
+        $unclaimedCount = $unclaimedIntakes->count();
+
+        $totalClaimed = (float) $claimedIntakes->sum('recommended_amount');
+        $totalUnclaimed = (float) $unclaimedIntakes->sum('recommended_amount');
+        $remainingBalance = $totalUnclaimed;
+
+        $liquidationRate = $totalAllocated > 0 ? round(($totalClaimed / $totalAllocated) * 100, 1) : 0;
+
+        if ($liquidationRate >= 100 && $totalBeneficiaries > 0) {
+            $liquidationStatus = 'Fully Liquidated';
+        } elseif ($totalClaimed > 0) {
+            $liquidationStatus = 'Partially Liquidated';
+        } else {
+            $liquidationStatus = 'Unreleased';
+        }
+
+        // Map beneficiary list for reporting
+        $beneficiaries = $intakes->map(function ($intake, $index) {
+            $beneficiaryName = $intake->beneficiary_full_name ?? 'N/A';
+            $repName = ($intake->has_representative && !empty(trim($intake->representative_full_name ?? '')) && $intake->representative_full_name !== 'N/A')
+                ? $intake->representative_full_name
+                : $beneficiaryName;
+
+            return (object) [
+                'item_no' => $index + 1,
+                'control_number' => $intake->control_number,
+                'payroll_date' => $intake->payroll_date ? $intake->payroll_date->format('M d, Y') : ($intake->date_processed ? $intake->date_processed->format('M d, Y') : '--'),
+                'representative_name' => $repName,
+                'beneficiary_name' => $beneficiaryName,
+                'barangay' => $intake->beneficiary_barangay ?: 'Silang, Cavite',
+                'contact_number' => $intake->beneficiary_contact_number ?: ($intake->rep_contact_number ?: 'N/A'),
+                'amount' => (float) ($intake->recommended_amount ?? 0),
+                'formatted_amount' => '₱' . number_format((float) ($intake->recommended_amount ?? 0), 2),
+                'claim_status' => ($intake->claim_status === 'Claimed') ? 'Claimed' : 'Unclaimed',
+                'claimed_at' => $intake->claimed_at ? $intake->claimed_at->format('M d, Y h:i A') : '--',
+                'claimed_by' => $intake->claimed_by ?: '--',
+            ];
+        });
+
+        $disbursingOfficer = $payroll->disbursing_officer ?: 'MSWDO Disbursing Officer';
+        $reportDate = Carbon::now()->format('F d, Y');
+        $payrollDate = $payroll->payroll_date ? $payroll->payroll_date->format('F d, Y') : 'N/A';
+        $isMonthlyReport = false;
+        $monthLabel = $payroll->payroll_date ? $payroll->payroll_date->format('F Y') : 'N/A';
+
+        return view('admin.financial.financialstep2-liquidation-report', compact(
+            'payroll',
+            'isMonthlyReport',
+            'monthLabel',
+            'beneficiaries',
+            'totalBeneficiaries',
+            'totalAllocated',
+            'totalClaimed',
+            'totalUnclaimed',
+            'remainingBalance',
+            'claimedCount',
+            'unclaimedCount',
+            'liquidationRate',
+            'liquidationStatus',
+            'disbursingOfficer',
+            'reportDate',
+            'payrollDate'
         ));
     }
 }

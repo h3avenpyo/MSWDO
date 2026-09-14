@@ -62,6 +62,10 @@
                 class="btn btn-outline-secondary btn-sm rounded-pill px-3">
                 <i class="fas fa-list-check me-1"></i> Step 2 Masterlist
             </a>
+            <a href="{{ route('admin.financial.financialstep2.liquidation') }}"
+                class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="fas fa-receipt me-1"></i> Liquidation
+            </a>
         </div>
     </div>
 
@@ -80,20 +84,15 @@
                 </p>
             </div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                <span class="badge bg-light text-dark rounded-pill px-3 py-2 fw-semibold">
-                    <i class="fas fa-file-invoice me-1 text-primary"></i> {{ $payrollRecords->count() }} Separate {{
-                    Str::plural('Record', $payrollRecords->count()) }}
-                </span>
-                <span class="badge bg-light text-dark rounded-pill px-3 py-2 fw-semibold">
-                    <i class="fas fa-users me-1 text-primary"></i> {{ $grandTotalBeneficiaries }} {{
-                    Str::plural('Beneficiary', $grandTotalBeneficiaries) }}
-                </span>
-                <span class="badge bg-success text-white rounded-pill px-3 py-2 fw-bold">
-                    <i class="fas fa-coins me-1"></i> {{ $formattedGrandTotalAmount }}
-                </span>
+                <button type="button"
+                    class="btn btn-warning btn-sm rounded-pill px-3.5 fw-bold text-dark shadow-xs btn-open-monthly-unclaimed"
+                    data-month="{{ $selectedDate ? $selectedDate->format('Y-m') : (request('date') ? substr(request('date'), 0, 7) : date('Y-m')) }}"
+                    title="Message unclaimed beneficiaries for this month">
+                    <i class="fas fa-bullhorn me-1"></i> Message Unclaimed
+                </button>
                 @if($payrollRecords->isNotEmpty())
                 <a href="{{ route('admin.financial.financialstep2.payroll.print', ['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')]) }}"
-                    target="_blank" class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs">
+                    target="_blank" class="btn btn-light btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs">
                     <i class="fas fa-print me-1"></i> Print Date Payroll Sheet
                 </a>
                 @endif
@@ -101,88 +100,198 @@
         </div>
     </div>
 
+    <!-- Quick Summary Metric Cards for this Date -->
+    <div class="row g-3 mb-4">
+        <!-- Total Unclaimed Financial Assistance (Primary Focus) -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-metric-card stat-unclaimed-card d-flex align-items-center gap-3">
+                <div class="p-3 rounded-circle bg-warning-subtle text-warning">
+                    <i class="fas fa-clock fs-4"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="text-muted small fw-semibold text-uppercase">Total Unclaimed Assistance</div>
+                    <h4 class="fw-bold mb-0 text-warning-emphasis" id="stat-unclaimed-amount"
+                        data-raw-amount="{{ $grandTotalUnclaimedAmount ?? 0 }}">{{ $formattedGrandTotalUnclaimedAmount
+                        ?? '₱0.00' }}</h4>
+                    <div class="text-muted text-2xs mt-0.5" id="stat-unclaimed-subtitle">
+                        <span id="stat-unclaimed-count">{{ $grandTotalUnclaimedCount ?? 0 }}</span> {{
+                        Str::plural('beneficiary', $grandTotalUnclaimedCount ?? 0) }} pending release
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Total Claimed Financial Assistance -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-metric-card d-flex align-items-center gap-3 border-success-subtle">
+                <div class="p-3 rounded-circle bg-success-subtle text-success">
+                    <i class="fas fa-check-circle fs-4"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="text-muted small fw-semibold text-uppercase">Total Claimed Assistance</div>
+                    <h4 class="fw-bold mb-0 text-success" id="stat-claimed-amount"
+                        data-raw-amount="{{ $grandTotalClaimedAmount ?? 0 }}">{{ $formattedGrandTotalClaimedAmount ??
+                        '₱0.00' }}</h4>
+                    <div class="text-muted text-2xs mt-0.5" id="stat-claimed-subtitle">
+                        <span id="stat-claimed-count">{{ $grandTotalClaimedCount ?? 0 }}</span> {{
+                        Str::plural('beneficiary', $grandTotalClaimedCount ?? 0) }} released
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Total Date Payroll Amount -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-metric-card d-flex align-items-center gap-3">
+                <div class="p-3 rounded-circle bg-primary-subtle text-primary">
+                    <i class="fas fa-coins fs-4"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="text-muted small fw-semibold text-uppercase">Total Date Payroll</div>
+                    <h4 class="fw-bold mb-0 text-dark" id="stat-total-amount"
+                        data-raw-amount="{{ $grandTotalAmount ?? 0 }}">{{ $formattedGrandTotalAmount ?? '₱0.00' }}</h4>
+                    <div class="text-muted text-2xs mt-0.5">
+                        {{ $payrollRecords->count() }} separate {{ Str::plural('payroll record',
+                        $payrollRecords->count()) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Total Beneficiaries for Date -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-metric-card d-flex align-items-center gap-3">
+                <div class="p-3 rounded-circle bg-info-subtle text-info">
+                    <i class="fas fa-users fs-4"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="text-muted small fw-semibold text-uppercase">Total Beneficiaries</div>
+                    <h4 class="fw-bold mb-0 text-dark" id="stat-total-beneficiaries">{{
+                        number_format($grandTotalBeneficiaries ?? 0) }}</h4>
+                    <div class="text-muted text-2xs mt-0.5">
+                        Generated on this date
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Search & Filter within Date -->
     <div class="filter-card mb-4">
-        <form id="datePayrollFilterForm" action="{{ route('admin.financial.financialstep2.payroll-records') }}" method="GET" class="row g-2 align-items-end">
-            <input type="hidden" name="date" value="{{ $selectedDate ? $selectedDate->format('Y-m-d') : request('date') }}">
-            <div class="col-md-4 col-lg-4">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search Beneficiary, Rep, Control No.</label>
-                <input type="text" id="recordsSearchInput" name="search" class="form-control form-control-sm rounded-3" placeholder="Control No, Beneficiary, Rep..." value="{{ request('search') }}" autocomplete="off">
+        <form id="datePayrollFilterForm" action="{{ route('admin.financial.financialstep2.payroll-records') }}"
+            method="GET" class="row g-2 align-items-end">
+            <input type="hidden" name="date"
+                value="{{ $selectedDate ? $selectedDate->format('Y-m-d') : request('date') }}">
+            <div class="col-md-3 col-lg-3">
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search
+                    Beneficiary, Rep, Control No.</label>
+                <input type="text" id="recordsSearchInput" name="search" class="form-control form-control-sm rounded-3"
+                    placeholder="Control No, Beneficiary, Rep..." value="{{ request('search') }}" autocomplete="off">
             </div>
             <div class="col-md-2 col-lg-2">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i> Barangay</label>
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i>
+                    Barangay</label>
                 <select name="barangay" class="form-select form-select-sm rounded-3">
                     <option value="All">All Barangays</option>
                     @foreach($barangays as $brgy)
-                    <option value="{{ $brgy }}" {{ request('barangay') == $brgy ? 'selected' : '' }}>{{ $brgy }}</option>
+                    <option value="{{ $brgy }}" {{ request('barangay')==$brgy ? 'selected' : '' }}>{{ $brgy }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-3 col-lg-3">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-file-invoice me-1"></i> Payroll Record / Batch</label>
+            <div class="col-md-2 col-lg-2">
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-file-invoice me-1"></i> Payroll
+                    Record / Batch</label>
                 <select name="payroll_id" class="form-select form-select-sm rounded-3">
-                    <option value="">All Records on this Date ({{ isset($allDatePayrolls) ? $allDatePayrolls->count() : $payrollRecords->count() }})</option>
+                    <option value="">All Records ({{ isset($allDatePayrolls) ? $allDatePayrolls->count() :
+                        $payrollRecords->count() }})</option>
                     @if(isset($allDatePayrolls))
-                        @foreach($allDatePayrolls as $pBatch)
-                        <option value="{{ $pBatch->id }}" {{ request('payroll_id') == $pBatch->id ? 'selected' : '' }}>
-                            {{ $pBatch->payroll_number }} ({{ $pBatch->total_beneficiaries }} beneficiaries)
-                        </option>
-                        @endforeach
+                    @foreach($allDatePayrolls as $pBatch)
+                    <option value="{{ $pBatch->id }}" {{ request('payroll_id')==$pBatch->id ? 'selected' : '' }}>
+                        {{ $pBatch->payroll_number }} ({{ $pBatch->total_beneficiaries }})
+                    </option>
+                    @endforeach
                     @endif
+                </select>
+            </div>
+            <div class="col-md-2 col-lg-2">
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-tag me-1"></i> Claim
+                    Status</label>
+                <select name="claim_status" class="form-select form-select-sm rounded-3">
+                    <option value="">All Statuses</option>
+                    <option value="Unclaimed" {{ request('claim_status')=='Unclaimed' ? 'selected' : '' }}>Unclaimed
+                    </option>
+                    <option value="Claimed" {{ request('claim_status')=='Claimed' ? 'selected' : '' }}>Claimed</option>
                 </select>
             </div>
             <div class="col-md-2 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-sort me-1"></i> Sort By</label>
                 <select name="sort" class="form-select form-select-sm rounded-3">
-                    <option value="control_asc" {{ request('sort') == 'control_asc' || !request('sort') ? 'selected' : '' }}>Control No. (Asc)</option>
-                    <option value="control_desc" {{ request('sort') == 'control_desc' ? 'selected' : '' }}>Control No. (Desc)</option>
-                    <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Beneficiary (A-Z)</option>
-                    <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>Beneficiary (Z-A)</option>
-                    <option value="amount_desc" {{ request('sort') == 'amount_desc' ? 'selected' : '' }}>Amount (Highest)</option>
-                    <option value="amount_asc" {{ request('sort') == 'amount_asc' ? 'selected' : '' }}>Amount (Lowest)</option>
+                    <option value="control_asc" {{ request('sort')=='control_asc' || !request('sort') ? 'selected' : ''
+                        }}>Control No. (Asc)</option>
+                    <option value="control_desc" {{ request('sort')=='control_desc' ? 'selected' : '' }}>Control No.
+                        (Desc)</option>
+                    <option value="name_asc" {{ request('sort')=='name_asc' ? 'selected' : '' }}>Beneficiary (A-Z)
+                    </option>
+                    <option value="name_desc" {{ request('sort')=='name_desc' ? 'selected' : '' }}>Beneficiary (Z-A)
+                    </option>
+                    <option value="amount_desc" {{ request('sort')=='amount_desc' ? 'selected' : '' }}>Amount (Highest)
+                    </option>
+                    <option value="amount_asc" {{ request('sort')=='amount_asc' ? 'selected' : '' }}>Amount (Lowest)
+                    </option>
                 </select>
             </div>
             <div class="col-md-1 col-lg-1 d-flex gap-1">
-                <button type="submit" class="btn btn-sm btn-primary rounded-3 w-100 fw-semibold btn-brand-primary" title="Apply Filters">
+                <button type="submit" class="btn btn-sm btn-primary rounded-3 w-100 fw-semibold btn-brand-primary"
+                    title="Apply Filters">
                     <i class="fas fa-filter"></i>
                 </button>
-                @if(request()->hasAny(['search', 'barangay', 'payroll_id', 'sort']))
-                <a href="{{ route('admin.financial.financialstep2.payroll-records', ['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')]) }}" class="btn btn-sm btn-outline-secondary rounded-3 px-2" title="Reset Filters for this Date">
+                @if(request()->hasAny(['search', 'barangay', 'payroll_id', 'claim_status', 'sort']))
+                <a href="{{ route('admin.financial.financialstep2.payroll-records', ['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')]) }}"
+                    class="btn btn-sm btn-outline-secondary rounded-3 px-2" title="Reset Filters for this Date">
                     <i class="fas fa-rotate-left"></i>
                 </a>
                 @endif
             </div>
         </form>
 
-        @if(request()->hasAny(['search', 'barangay', 'payroll_id', 'sort']))
+        @if(request()->hasAny(['search', 'barangay', 'payroll_id', 'claim_status', 'sort']))
         <!-- Active Filter Badges for Date View -->
         <div class="d-flex align-items-center gap-2 flex-wrap mt-2 pt-2 border-top">
             <span class="text-muted small fw-semibold me-1"><i class="fas fa-sliders-h me-1"></i> Active Filters:</span>
             @if(request('search'))
             <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
                 Keyword: "{{ request('search') }}"
-                <a href="{{ route('admin.financial.financialstep2.payroll-records', array_merge(['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')], request()->except(['search', 'date']))) }}" class="text-muted ms-1 text-decoration-none">&times;</a>
+                <a href="{{ route('admin.financial.financialstep2.payroll-records', array_merge(['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')], request()->except(['search', 'date']))) }}"
+                    class="text-muted ms-1 text-decoration-none">&times;</a>
             </span>
             @endif
             @if(request('barangay') && request('barangay') !== 'All')
             <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
                 Barangay: {{ request('barangay') }}
-                <a href="{{ route('admin.financial.financialstep2.payroll-records', array_merge(['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')], request()->except(['barangay', 'date']))) }}" class="text-muted ms-1 text-decoration-none">&times;</a>
+                <a href="{{ route('admin.financial.financialstep2.payroll-records', array_merge(['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')], request()->except(['barangay', 'date']))) }}"
+                    class="text-muted ms-1 text-decoration-none">&times;</a>
             </span>
             @endif
             @if(request('payroll_id'))
             <span class="badge bg-light text-primary border border-primary-subtle rounded-pill px-2.5 py-1 text-xs">
                 Filtered to 1 Batch
-                <a href="{{ route('admin.financial.financialstep2.payroll-records', array_merge(['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')], request()->except(['payroll_id', 'date']))) }}" class="text-muted ms-1 text-decoration-none">&times;</a>
+                <a href="{{ route('admin.financial.financialstep2.payroll-records', array_merge(['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')], request()->except(['payroll_id', 'date']))) }}"
+                    class="text-muted ms-1 text-decoration-none">&times;</a>
+            </span>
+            @endif
+            @if(request('claim_status'))
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Status: {{ request('claim_status') }}
+                <a href="{{ route('admin.financial.financialstep2.payroll-records', array_merge(['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')], request()->except(['claim_status', 'date']))) }}"
+                    class="text-muted ms-1 text-decoration-none">&times;</a>
             </span>
             @endif
             @if(request('sort') && request('sort') !== 'control_asc')
             <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
                 Sort: {{ ucfirst(str_replace('_', ' ', request('sort'))) }}
-                <a href="{{ route('admin.financial.financialstep2.payroll-records', array_merge(['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')], request()->except(['sort', 'date']))) }}" class="text-muted ms-1 text-decoration-none">&times;</a>
+                <a href="{{ route('admin.financial.financialstep2.payroll-records', array_merge(['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')], request()->except(['sort', 'date']))) }}"
+                    class="text-muted ms-1 text-decoration-none">&times;</a>
             </span>
             @endif
-            <a href="{{ route('admin.financial.financialstep2.payroll-records', ['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')]) }}" class="text-danger small text-decoration-none ms-1">
+            <a href="{{ route('admin.financial.financialstep2.payroll-records', ['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')]) }}"
+                class="text-danger small text-decoration-none ms-1">
                 Reset filters
             </a>
         </div>
@@ -196,7 +305,9 @@
             Showing <strong>{{ $payrollRecords->count() }}</strong> separate {{ Str::plural('payroll record',
             $payrollRecords->count()) }}
             (Total: <strong>{{ $grandTotalBeneficiaries }}</strong> {{ Str::plural('beneficiary',
-            $grandTotalBeneficiaries) }} &bull; <strong class="text-success">{{ $formattedGrandTotalAmount }}</strong>)
+            $grandTotalBeneficiaries) }} &bull; Total: <strong class="text-dark">{{ $formattedGrandTotalAmount
+                }}</strong> &bull; Unclaimed: <strong class="text-warning-emphasis fw-bold" id="bar-unclaimed-amount">{{
+                $formattedGrandTotalUnclaimedAmount ?? '₱0.00' }}</strong>)
             @if(request('payroll_id'))
             <span class="badge bg-light text-muted border ms-2">Filtered to 1 specific record</span>
             <a href="{{ route('admin.financial.financialstep2.payroll-records', ['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')]) }}"
@@ -204,10 +315,12 @@
             @endif
         </div>
         <div class="d-flex align-items-center gap-1">
-            <button type="button" id="btnExpandAll" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold text-xs btn-expand-all">
+            <button type="button" id="btnExpandAll"
+                class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold text-xs btn-expand-all">
                 <i class="fas fa-angles-down me-1"></i> Expand All
             </button>
-            <button type="button" id="btnCollapseAll" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold text-xs btn-collapse-all">
+            <button type="button" id="btnCollapseAll"
+                class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold text-xs btn-collapse-all">
                 <i class="fas fa-angles-up me-1"></i> Collapse All
             </button>
         </div>
@@ -243,15 +356,28 @@
                     <div class="text-muted small mt-1">
                         Showing <strong>{{ $record->recordBeneficiariesCount }}</strong> {{ Str::plural('beneficiary',
                         $record->recordBeneficiariesCount) }}
-                        | Total Assistance: <strong class="text-success">{{ $record->formattedRecordAmount }}</strong>
-                        | Disbursing Officer: <span class="text-dark fw-medium">{{ $record->disbursing_officer ?: 'MSWDO Disbursing Officer' }}</span>
+                        | Total: <strong class="text-dark">{{ $record->formattedRecordAmount }}</strong>
+                        | Unclaimed: <strong class="text-warning-emphasis" id="batch-unclaimed-amount-{{ $record->id }}"
+                            data-raw-amount="{{ $record->recordUnclaimedAmount ?? 0 }}">{{
+                            $record->formattedRecordUnclaimedAmount ?? '₱0.00' }}</strong>
+                        | Claimed: <span
+                            class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5 text-xs fw-semibold"
+                            id="batch-claimed-count-{{ $record->id }}"><i class="fas fa-check-circle me-1"></i>{{
+                            $record->claimedCount }}</span>
+                        | Unclaimed: <span
+                            class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5 text-xs fw-semibold"
+                            id="batch-unclaimed-count-{{ $record->id }}"><i class="fas fa-clock me-1"></i>{{
+                            $record->unclaimedCount }}</span>
+                        | Disbursing Officer: <span class="text-dark fw-medium">{{ $record->disbursing_officer ?: 'MSWDO
+                            Disbursing Officer' }}</span>
                     </div>
                 </div>
             </div>
             <div class="d-flex gap-2 align-items-center">
                 @if($record->recordBeneficiariesCount > 0)
                 <a href="{{ route('admin.financial.financialstep2.payroll.print', ['payroll_id' => $record->id, 'barangay' => request('barangay')]) }}"
-                    target="_blank" class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold shadow-xs btn-brand-primary">
+                    target="_blank"
+                    class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold shadow-xs btn-brand-primary">
                     <i class="fas fa-print me-1"></i> Print Payroll
                 </a>
                 @endif
@@ -277,12 +403,13 @@
                             <th>Barangay</th>
                             <th>Contact Number</th>
                             <th class="text-end">Amount of Financial Assistance</th>
-                            <th class="text-center">Payroll Date</th>
+                            <th class="text-center">Claim Status</th>
+                            <th class="text-center th-col-action">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($record->payrollRows as $row)
-                        <tr>
+                        <tr id="row-intake-{{ $row->id }}" data-amount="{{ $row->amount }}">
                             <td class="text-center text-muted fw-bold">{{ $row->item_no }}</td>
                             <td>
                                 <span class="badge-control-no">
@@ -292,9 +419,11 @@
                             <td>
                                 <div class="fw-semibold text-dark">{{ $row->representative_name }}</div>
                                 @if(!$row->is_separate_rep)
-                                <span class="badge bg-light text-muted border text-xs text-rep-type">(Beneficiary as Rep)</span>
+                                <span class="badge bg-light text-muted border text-xs text-rep-type">(Beneficiary as
+                                    Rep)</span>
                                 @else
-                                <span class="badge bg-info-subtle text-info border border-info-subtle text-xs text-rep-type">(Representative)</span>
+                                <span
+                                    class="badge bg-info-subtle text-info border border-info-subtle text-xs text-rep-type">(Representative)</span>
                                 @endif
                             </td>
                             <td>
@@ -313,13 +442,88 @@
                                     {{ $row->formatted_amount }}
                                 </span>
                             </td>
-                            <td class="text-center">
-                                <div class="text-dark small fw-semibold">{{ $row->payroll_date }}</div>
+                            <td class="text-center" id="claim-status-col-{{ $row->id }}">
+                                @if($row->claim_status === 'Claimed')
+                                <span
+                                    class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 text-xs fw-semibold claim-status-badge">
+                                    <i class="fas fa-check-circle me-1"></i> Claimed
+                                </span>
+                                @if($row->claimed_at)
+                                <div class="text-muted text-2xs mt-0.5">{{ $row->claimed_at }}</div>
+                                @endif
+                                @else
+                                <span
+                                    class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1 text-xs fw-semibold claim-status-badge">
+                                    <i class="fas fa-clock me-1"></i> Unclaimed
+                                </span>
+                                @endif
+                            </td>
+                            <td class="text-center align-middle" id="claim-action-col-{{ $row->id }}">
+                                <div class="table-action-wrapper">
+                                    <div class="table-action-group">
+                                        @if($row->claim_status === 'Claimed')
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-secondary rounded-pill btn-mark-claim"
+                                            data-intake-id="{{ $row->id }}" data-beneficiary-name="{{ $row->beneficiary_name }}"
+                                            data-status="Unclaimed" data-record-id="{{ $record->id }}"
+                                            data-amount="{{ $row->amount }}" title="Click to revert status to Unclaimed">
+                                            <i class="fas fa-rotate-left"></i> Undo
+                                        </button>
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-primary rounded-pill btn-message-beneficiary"
+                                            data-intake-id="{{ $row->id }}"
+                                            data-beneficiary-name="{{ $row->beneficiary_name }}"
+                                            data-representative-name="{{ $row->representative_name }}"
+                                            data-is-separate-rep="{{ $row->is_separate_rep ? '1' : '0' }}"
+                                            data-contact-number="{{ $row->contact_number }}"
+                                            data-purpose="{{ $row->purpose ?? 'Financial Assistance' }}"
+                                            data-amount-formatted="{{ $row->formatted_amount }}"
+                                            data-claiming-date="{{ $row->claiming_date ?? '' }}"
+                                            data-raw-claiming-date="{{ $row->raw_claiming_date ?? '' }}"
+                                            data-last-message-date="{{ $row->last_message_date ?? '' }}"
+                                            data-default-template="Follow-up"
+                                            title="Send SMS message to beneficiary">
+                                            <i class="fas fa-comment-sms"></i> Message
+                                        </button>
+                                        @else
+                                        <button type="button"
+                                            class="btn btn-sm btn-primary rounded-pill btn-send-sms fw-semibold"
+                                            data-intake-id="{{ $row->id }}"
+                                            data-beneficiary-name="{{ $row->beneficiary_name }}"
+                                            data-representative-name="{{ $row->representative_name }}"
+                                            data-is-separate-rep="{{ $row->is_separate_rep ? '1' : '0' }}"
+                                            data-contact-number="{{ $row->contact_number }}"
+                                            data-purpose="{{ $row->purpose ?? 'Financial Assistance' }}"
+                                            data-amount-formatted="{{ $row->formatted_amount }}"
+                                            data-claiming-date="{{ $row->claiming_date ?? '' }}"
+                                            data-raw-claiming-date="{{ $row->raw_claiming_date ?? '' }}"
+                                            data-last-message-date="{{ $row->last_message_date ?? '' }}"
+                                            data-default-template="Unclaimed Assistance"
+                                            title="Send unclaimed notification via SMS">
+                                            <i class="fas fa-paper-plane"></i> Send Message
+                                        </button>
+                                        <button type="button"
+                                            class="btn btn-sm btn-success rounded-pill btn-mark-claim"
+                                            data-intake-id="{{ $row->id }}" data-beneficiary-name="{{ $row->beneficiary_name }}"
+                                            data-status="Claimed" data-record-id="{{ $record->id }}"
+                                            data-amount="{{ $row->amount }}" title="Mark financial assistance as Claimed">
+                                            <i class="fas fa-check"></i> Claimed
+                                        </button>
+                                        @endif
+                                    </div>
+                                    @if($row->last_message_date)
+                                    <div class="last-sent-badge text-muted text-2xs" id="last-sent-badge-{{ $row->id }}">
+                                        <i class="fas fa-paper-plane text-primary me-1"></i> Last sent: {{ $row->last_message_date }}
+                                    </div>
+                                    @else
+                                    <div class="last-sent-badge text-muted text-2xs d-none" id="last-sent-badge-{{ $row->id }}"></div>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center py-4 text-muted">
+                            <td colspan="9" class="text-center py-4 text-muted">
                                 No beneficiaries found for this payroll record matching the filter criteria.
                             </td>
                         </tr>
@@ -335,7 +539,15 @@
                                     {{ $record->formattedRecordAmount }}
                                 </span>
                             </th>
-                            <th></th>
+                            <th colspan="2" class="text-center text-muted small fw-normal">
+                                <span class="text-success fw-bold" id="tfoot-claimed-{{ $record->id }}">{{
+                                    $record->claimedCount }}</span> Claimed /
+                                <span class="text-warning fw-bold" id="tfoot-unclaimed-{{ $record->id }}">{{
+                                    $record->unclaimedCount }}</span> Unclaimed
+                                (<span class="text-warning-emphasis fw-bold"
+                                    id="tfoot-unclaimed-amount-{{ $record->id }}">{{
+                                    $record->formattedRecordUnclaimedAmount ?? '₱0.00' }}</span> pending)
+                            </th>
                         </tr>
                     </tfoot>
                     @endif
@@ -385,7 +597,13 @@
             <p class="text-muted small mb-0">Official payroll records organized by date. Click View on any date to
                 inspect all payroll batches and complete beneficiary lists.</p>
         </div>
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button type="button"
+                class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs btn-open-monthly-unclaimed"
+                data-month="{{ date('Y-m') }}"
+                title="Message unclaimed beneficiaries for a selected month">
+                <i class="fas fa-bullhorn me-1"></i> Message Unclaimed
+            </button>
             <a href="{{ route('admin.financial.financialstep2.payroll') }}"
                 class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold shadow-xs btn-brand-primary">
                 <i class="fas fa-edit me-1"></i> Payroll Generation
@@ -394,138 +612,130 @@
                 class="btn btn-outline-secondary btn-sm rounded-pill px-3">
                 <i class="fas fa-list-check me-1"></i> Step 2 Masterlist
             </a>
+            <a href="{{ route('admin.financial.financialstep2.liquidation') }}"
+                class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="fas fa-receipt me-1"></i> Liquidation
+            </a>
+            <a href="{{ route('admin.financial.financialstep2.statistics') }}"
+                class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="fas fa-chart-pie me-1"></i> Statistics
+            </a>
         </div>
     </div>
 
-    <!-- Quick Summary Metric Cards (Instant High-Volume Overview) -->
-    <div class="row g-3 mb-4">
-        <div class="col-sm-6 col-lg-3">
-            <div class="stat-metric-card d-flex align-items-center gap-3">
-                <div class="p-3 rounded-circle bg-primary-subtle text-primary">
-                    <i class="fas fa-calendar-alt fs-4"></i>
-                </div>
-                <div>
-                    <div class="text-muted small fw-semibold text-uppercase">Dates Recorded</div>
-                    <h4 class="fw-bold mb-0 text-dark">{{ number_format($totalDatesCount ?? 0) }}</h4>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-lg-3">
-            <div class="stat-metric-card d-flex align-items-center gap-3">
-                <div class="p-3 rounded-circle bg-info-subtle text-info">
-                    <i class="fas fa-file-invoice fs-4"></i>
-                </div>
-                <div>
-                    <div class="text-muted small fw-semibold text-uppercase">Separate Payrolls</div>
-                    <h4 class="fw-bold mb-0 text-dark">{{ number_format($totalRecordsCount ?? 0) }}</h4>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-lg-3">
-            <div class="stat-metric-card d-flex align-items-center gap-3">
-                <div class="p-3 rounded-circle bg-warning-subtle text-warning">
-                    <i class="fas fa-users fs-4"></i>
-                </div>
-                <div>
-                    <div class="text-muted small fw-semibold text-uppercase">Total Beneficiaries</div>
-                    <h4 class="fw-bold mb-0 text-dark">{{ number_format($grandTotalBeneficiaries ?? 0) }}</h4>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-lg-3">
-            <div class="stat-metric-card d-flex align-items-center gap-3">
-                <div class="p-3 rounded-circle bg-success-subtle text-success">
-                    <i class="fas fa-coins fs-4"></i>
-                </div>
-                <div>
-                    <div class="text-muted small fw-semibold text-uppercase">Total Assistance</div>
-                    <h4 class="fw-bold mb-0 text-success">{{ $formattedGrandTotalAmount ?? '₱0.00' }}</h4>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Filter & Search Controls -->
     <div class="filter-card mb-4">
-        <form id="payrollRecordsFilterForm" action="{{ route('admin.financial.financialstep2.payroll-records') }}" method="GET" class="row g-2 align-items-end">
+        <form id="payrollRecordsFilterForm" action="{{ route('admin.financial.financialstep2.payroll-records') }}"
+            method="GET" class="row g-2 align-items-end">
             <div class="col-md-3 col-lg-3">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search Across Records</label>
-                <input type="text" id="recordsSearchInput" name="search" class="form-control form-control-sm rounded-3" placeholder="Beneficiary, Rep, Control #, Payroll #..." value="{{ request('search') }}" autocomplete="off">
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search Across
+                    Records</label>
+                <input type="text" id="recordsSearchInput" name="search" class="form-control form-control-sm rounded-3"
+                    placeholder="Beneficiary, Rep, Control #, Payroll #..." value="{{ request('search') }}"
+                    autocomplete="off">
+            </div>
+            <div class="col-md-3 col-lg-3">
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> Month &amp; Year</label>
+                <input type="month" name="month" class="form-control form-control-sm rounded-3"
+                    value="{{ request('month') }}" title="Filter by Month and Year">
             </div>
             <div class="col-md-2 col-lg-2">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar me-1"></i> Date From</label>
-                <input type="date" name="date_from" class="form-control form-control-sm rounded-3" value="{{ request('date_from') }}">
-            </div>
-            <div class="col-md-2 col-lg-2">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> Date To</label>
-                <input type="date" name="date_to" class="form-control form-control-sm rounded-3" value="{{ request('date_to') }}">
-            </div>
-            <div class="col-md-2 col-lg-2">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i> Barangay</label>
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i>
+                    Barangay</label>
                 <select name="barangay" class="form-select form-select-sm rounded-3">
                     <option value="All">All Barangays</option>
                     @foreach($barangays as $brgy)
-                    <option value="{{ $brgy }}" {{ request('barangay') == $brgy ? 'selected' : '' }}>{{ $brgy }}</option>
+                    <option value="{{ $brgy }}" {{ request('barangay')==$brgy ? 'selected' : '' }}>{{ $brgy }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-2 col-lg-2">
+            <div class="col-md-3 col-lg-3">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-sort me-1"></i> Sort By</label>
                 <select name="sort" class="form-select form-select-sm rounded-3">
-                    <option value="date_desc" {{ request('sort') == 'date_desc' || !request('sort') ? 'selected' : '' }}>Date (Newest First)</option>
-                    <option value="date_asc" {{ request('sort') == 'date_asc' ? 'selected' : '' }}>Date (Oldest First)</option>
-                    <option value="beneficiaries_desc" {{ request('sort') == 'beneficiaries_desc' ? 'selected' : '' }}>Most Beneficiaries</option>
-                    <option value="amount_desc" {{ request('sort') == 'amount_desc' ? 'selected' : '' }}>Highest Total Amount</option>
-                    <option value="records_desc" {{ request('sort') == 'records_desc' ? 'selected' : '' }}>Most Separate Payrolls</option>
+                    <option value="date_desc" {{ request('sort')=='date_desc' || !request('sort') ? 'selected' : '' }}>
+                        Date (Newest First)</option>
+                    <option value="date_asc" {{ request('sort')=='date_asc' ? 'selected' : '' }}>Date (Oldest First)
+                    </option>
+                    <option value="beneficiaries_desc" {{ request('sort')=='beneficiaries_desc' ? 'selected' : '' }}>
+                        Most Beneficiaries</option>
+                    <option value="amount_desc" {{ request('sort')=='amount_desc' ? 'selected' : '' }}>Highest Total
+                        Amount</option>
+                    <option value="records_desc" {{ request('sort')=='records_desc' ? 'selected' : '' }}>Most Separate
+                        Payrolls</option>
                 </select>
             </div>
             <div class="col-md-1 col-lg-1 d-flex gap-1">
-                <button type="submit" class="btn btn-sm btn-primary rounded-3 w-100 fw-semibold btn-brand-primary" title="Apply Filters">
+                <button type="submit" class="btn btn-sm btn-primary rounded-3 w-100 fw-semibold btn-brand-primary"
+                    title="Apply Filters">
                     <i class="fas fa-filter"></i>
                 </button>
-                @if(request()->hasAny(['search', 'barangay', 'date_from', 'date_to', 'sort']))
-                <a href="{{ route('admin.financial.financialstep2.payroll-records') }}" class="btn btn-sm btn-outline-secondary rounded-3 px-2" title="Reset Filters">
+                @if(request()->hasAny(['search', 'barangay', 'month', 'date_from', 'date_to', 'sort']))
+                <a href="{{ route('admin.financial.financialstep2.payroll-records') }}"
+                    class="btn btn-sm btn-outline-secondary rounded-3 px-2" title="Reset Filters">
                     <i class="fas fa-rotate-left"></i>
                 </a>
                 @endif
             </div>
         </form>
 
-        @if(request()->hasAny(['search', 'barangay', 'date_from', 'date_to', 'sort']))
+        @if(request()->hasAny(['search', 'barangay', 'month', 'date_from', 'date_to', 'sort']))
         <!-- Active Filter Badges -->
         <div class="d-flex align-items-center gap-2 flex-wrap mt-2 pt-2 border-top">
             <span class="text-muted small fw-semibold me-1"><i class="fas fa-sliders-h me-1"></i> Active Filters:</span>
             @if(request('search'))
             <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
                 Keyword: "{{ request('search') }}"
-                <a href="{{ route('admin.financial.financialstep2.payroll-records', request()->except('search')) }}" class="text-muted ms-1 text-decoration-none">&times;</a>
+                <a href="{{ route('admin.financial.financialstep2.payroll-records', request()->except('search')) }}"
+                    class="text-muted ms-1 text-decoration-none">&times;</a>
+            </span>
+            @endif
+            @if(request('month'))
+            @php
+                $formattedMonth = null;
+                try {
+                    $formattedMonth = \Carbon\Carbon::createFromFormat('Y-m', request('month'))->format('F Y');
+                } catch (\Exception $e) {
+                    $formattedMonth = request('month');
+                }
+            @endphp
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 text-xs fw-semibold">
+                Month: {{ $formattedMonth }}
+                <a href="{{ route('admin.financial.financialstep2.payroll-records', request()->except('month')) }}"
+                    class="text-muted ms-1 text-decoration-none">&times;</a>
             </span>
             @endif
             @if(request('date_from'))
             <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
                 From: {{ Carbon\Carbon::parse(request('date_from'))->format('M d, Y') }}
-                <a href="{{ route('admin.financial.financialstep2.payroll-records', request()->except('date_from')) }}" class="text-muted ms-1 text-decoration-none">&times;</a>
+                <a href="{{ route('admin.financial.financialstep2.payroll-records', request()->except('date_from')) }}"
+                    class="text-muted ms-1 text-decoration-none">&times;</a>
             </span>
             @endif
             @if(request('date_to'))
             <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
                 To: {{ Carbon\Carbon::parse(request('date_to'))->format('M d, Y') }}
-                <a href="{{ route('admin.financial.financialstep2.payroll-records', request()->except('date_to')) }}" class="text-muted ms-1 text-decoration-none">&times;</a>
+                <a href="{{ route('admin.financial.financialstep2.payroll-records', request()->except('date_to')) }}"
+                    class="text-muted ms-1 text-decoration-none">&times;</a>
             </span>
             @endif
             @if(request('barangay') && request('barangay') !== 'All')
             <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
                 Barangay: {{ request('barangay') }}
-                <a href="{{ route('admin.financial.financialstep2.payroll-records', request()->except('barangay')) }}" class="text-muted ms-1 text-decoration-none">&times;</a>
+                <a href="{{ route('admin.financial.financialstep2.payroll-records', request()->except('barangay')) }}"
+                    class="text-muted ms-1 text-decoration-none">&times;</a>
             </span>
             @endif
             @if(request('sort') && request('sort') !== 'date_desc')
             <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
                 Sort: {{ ucfirst(str_replace('_', ' ', request('sort'))) }}
-                <a href="{{ route('admin.financial.financialstep2.payroll-records', request()->except('sort')) }}" class="text-muted ms-1 text-decoration-none">&times;</a>
+                <a href="{{ route('admin.financial.financialstep2.payroll-records', request()->except('sort')) }}"
+                    class="text-muted ms-1 text-decoration-none">&times;</a>
             </span>
             @endif
-            <a href="{{ route('admin.financial.financialstep2.payroll-records') }}" class="text-danger small text-decoration-none ms-1">
+            <a href="{{ route('admin.financial.financialstep2.payroll-records') }}"
+                class="text-danger small text-decoration-none ms-1">
                 Clear all
             </a>
         </div>
@@ -586,11 +796,12 @@
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('admin.financial.financialstep2.payroll.print', ['date' => $group->payroll_date]) }}"
+                {{-- <a
+                    href="{{ route('admin.financial.financialstep2.payroll.print', ['date' => $group->payroll_date ?? $group->date_str]) }}"
                     target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold">
                     <i class="fas fa-print me-1"></i> Print All
-                </a>
-                <a href="{{ route('admin.financial.financialstep2.payroll-records.date', ['date' => $group->payroll_date]) }}"
+                </a> --}}
+                <a href="{{ route('admin.financial.financialstep2.payroll-records.date', ['date' => $group->payroll_date ?? $group->date_str]) }}"
                     class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold shadow-xs btn-brand-primary">
                     <i class="fas fa-folder-open me-1"></i> View Date Payrolls
                 </a>
@@ -633,7 +844,7 @@
         <div class="text-muted small">
             Showing page <strong>{{ $paginatedDateGroups->currentPage() }}</strong> of <strong>{{
                 $paginatedDateGroups->lastPage() }}</strong> (Total: {{ $paginatedDateGroups->total() }} {{
-            Str::plural('date', $paginatedDateGroups->total()) }})
+            Str::plural('date', $paginatedDateGroups->total()) }} &bull; 15 dates per page)
         </div>
         <div>
             {{ $paginatedDateGroups->links('pagination::bootstrap-5') }}
@@ -644,8 +855,16 @@
     @endif
 
 </div>
+
+<!-- SMS Messaging Modal Component -->
+@include('admin.financial.partials.sms-modal')
+
+<!-- Monthly Unclaimed Assistance Modal Component -->
+@include('admin.financial.partials.monthly-unclaimed-modal')
 @endsection
 
 @section('page-scripts')
 <script src="{{ asset('js/financialstep2-payroll-records.js') }}"></script>
+<script src="{{ asset('js/financialstep2-sms.js') }}"></script>
+<script src="{{ asset('js/financialstep2-monthly-unclaimed.js') }}"></script>
 @endsection

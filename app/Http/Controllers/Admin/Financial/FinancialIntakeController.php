@@ -48,13 +48,34 @@ class FinancialIntakeController extends Controller
             });
         }
 
+        // Filter by Month & Year (e.g. 'YYYY-MM')
+        if ($request->filled('month')) {
+            $monthInput = trim($request->month);
+            $parts = explode('-', $monthInput);
+            if (count($parts) === 2 && is_numeric($parts[0]) && is_numeric($parts[1])) {
+                $year = (int) $parts[0];
+                $monthNum = (int) $parts[1];
+                $query->where(function ($q) use ($year, $monthNum) {
+                    $q->where(function ($sq) use ($year, $monthNum) {
+                        $sq->whereNotNull('date_processed')
+                           ->whereYear('date_processed', $year)
+                           ->whereMonth('date_processed', $monthNum);
+                    })->orWhere(function ($sq) use ($year, $monthNum) {
+                        $sq->whereNull('date_processed')
+                           ->whereYear('created_at', $year)
+                           ->whereMonth('created_at', $monthNum);
+                    });
+                });
+            }
+        }
+
         $intakes = $query->latest()->paginate(15)->withQueryString();
 
         $barangays = [
             'Barangay I (Poblacion)', 'Barangay II (Poblacion)', 'Barangay III (Poblacion)',
             'Barangay IV (Poblacion)', 'Barangay V (Poblacion)', 'Acacia', 'Anabu',
             'Balite I', 'Balite II', 'Biga I', 'Biga II', 'Biluso', 'Bucal', 'Buho',
-            'Caballero', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
+            'Cabangaan', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
             'Lalaan II', 'Litlit', 'Lucsuhin', 'Lumil', 'Maguyam', 'Malabag', 'Malaking Tatyao',
             'Mataas na Burol', 'Munting Ilog', 'Narra I', 'Narra II', 'Narra III',
             'Paligawan', 'Pasong Langka', 'Pooc I', 'Pooc II', 'Pulong Bunga', 'Pulong Saging',
@@ -96,7 +117,7 @@ class FinancialIntakeController extends Controller
             'Barangay I (Poblacion)', 'Barangay II (Poblacion)', 'Barangay III (Poblacion)',
             'Barangay IV (Poblacion)', 'Barangay V (Poblacion)', 'Acacia', 'Anabu',
             'Balite I', 'Balite II', 'Biga I', 'Biga II', 'Biluso', 'Bucal', 'Buho',
-            'Caballero', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
+            'Cabangaan', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
             'Lalaan II', 'Litlit', 'Lucsuhin', 'Lumil', 'Maguyam', 'Malabag', 'Malaking Tatyao',
             'Mataas na Burol', 'Munting Ilog', 'Narra I', 'Narra II', 'Narra III',
             'Paligawan', 'Pasong Langka', 'Pooc I', 'Pooc II', 'Pulong Bunga', 'Pulong Saging',
@@ -248,7 +269,7 @@ class FinancialIntakeController extends Controller
             'Barangay I (Poblacion)', 'Barangay II (Poblacion)', 'Barangay III (Poblacion)',
             'Barangay IV (Poblacion)', 'Barangay V (Poblacion)', 'Acacia', 'Anabu',
             'Balite I', 'Balite II', 'Biga I', 'Biga II', 'Biluso', 'Bucal', 'Buho',
-            'Caballero', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
+            'Cabangaan', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
             'Lalaan II', 'Litlit', 'Lucsuhin', 'Lumil', 'Maguyam', 'Malabag', 'Malaking Tatyao',
             'Mataas na Burol', 'Munting Ilog', 'Narra I', 'Narra II', 'Narra III',
             'Paligawan', 'Pasong Langka', 'Pooc I', 'Pooc II', 'Pulong Bunga', 'Pulong Saging',

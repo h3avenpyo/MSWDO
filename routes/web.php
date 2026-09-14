@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\SocialCase\SocialCaseController;
 use App\Http\Controllers\Admin\SocialCase\SocialCaseIntakeController;
 use App\Http\Controllers\Admin\Financial\FinancialDashboardController;
 use App\Http\Controllers\Admin\Financial\FinancialIntakeController;
+use App\Http\Controllers\Admin\Financial\FinancialSmsController;
 use App\Http\Controllers\Admin\Senior\SeniorController;
 use App\Http\Controllers\Admin\Senior\BirthdayController;
 use App\Http\Controllers\Admin\Senior\BirthdayPayoutController;
@@ -18,10 +19,16 @@ use App\Http\Controllers\InBetweenBenefitController;
 use App\Http\Controllers\Admin\Auth\PasswordResetManagementController;
 use App\Http\Controllers\Admin\OnlineRequestController;
 use App\Http\Controllers\ServiceRequestController;
+use App\Http\Controllers\FinancialAssistanceController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Financial Assistance Public Intake Routes
+Route::get('/financial-assistance', [FinancialAssistanceController::class, 'create'])->name('financial-assistance.create');
+Route::post('/financial-assistance', [FinancialAssistanceController::class, 'store'])->name('financial-assistance.store');
+Route::post('/financial-assistance/check-duplicate', [FinancialAssistanceController::class, 'checkDuplicate'])->name('financial-assistance.check-duplicate');
 
 Route::get('/service-request', [ServiceRequestController::class, 'create'])->name('service-request.create');
 Route::post('/service-request', [ServiceRequestController::class, 'store'])->name('service-request.store');
@@ -138,6 +145,19 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::get('/admin/financial/financialstep2/payroll/print', [FinancialDashboardController::class, 'printPayroll'])->name('admin.financial.financialstep2.payroll.print');
         Route::get('/admin/financial/financialstep2/payroll-records', [FinancialDashboardController::class, 'financialStep2PayrollRecords'])->name('admin.financial.financialstep2.payroll-records');
         Route::get('/admin/financial/financialstep2/payroll-records/date/{date}', [FinancialDashboardController::class, 'financialStep2PayrollRecords'])->name('admin.financial.financialstep2.payroll-records.date');
+        Route::post('/admin/financial/financialstep2/payroll/intake/{id}/claim-status', [FinancialDashboardController::class, 'updateIntakeClaimStatus'])->name('admin.financial.financialstep2.payroll.intake.claim-status');
+        Route::get('/admin/financial/financialstep2/liquidation', [FinancialDashboardController::class, 'financialStep2Liquidation'])->name('admin.financial.financialstep2.liquidation');
+        Route::get('/admin/financial/financialstep2/liquidation/report/month/{yearMonth}', [FinancialDashboardController::class, 'financialStep2LiquidationReportMonthly'])->name('admin.financial.financialstep2.liquidation.report.month');
+        Route::get('/admin/financial/financialstep2/liquidation/report/{id}', [FinancialDashboardController::class, 'financialStep2LiquidationReport'])->name('admin.financial.financialstep2.liquidation.report');
+        Route::get('/admin/financial/financialstep2/statistics', [FinancialDashboardController::class, 'financialStep2Statistics'])->name('admin.financial.financialstep2.statistics');
+
+        // Financial Step 2 SMS Messaging Routes
+        Route::post('/admin/financial/financialstep2/messages/send', [FinancialSmsController::class, 'send'])->name('admin.financial.financialstep2.messages.send');
+        Route::get('/admin/financial/financialstep2/messages/history/{intakeId}', [FinancialSmsController::class, 'history'])->name('admin.financial.financialstep2.messages.history');
+        Route::post('/admin/financial/financialstep2/intakes/{id}/claiming-date', [FinancialSmsController::class, 'updateClaimingDate'])->name('admin.financial.financialstep2.intakes.claiming-date');
+        Route::get('/admin/financial/financialstep2/messages/unclaimed-by-month', [FinancialSmsController::class, 'getUnclaimedByMonth'])->name('admin.financial.financialstep2.messages.unclaimed-by-month');
+        Route::post('/admin/financial/financialstep2/messages/send-bulk-unclaimed', [FinancialSmsController::class, 'sendBulkUnclaimed'])->name('admin.financial.financialstep2.messages.send-bulk-unclaimed');
+        Route::get('/admin/financial/financialstep2/messages/gateway-status', [FinancialSmsController::class, 'gatewayStatus'])->name('admin.financial.financialstep2.messages.gateway-status');
     });
 });
 

@@ -60,6 +60,12 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                 </p>
             </div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button type="button"
+                    class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs btn-open-monthly-unclaimed"
+                    data-month="{{ isset($targetDate) ? $targetDate->format('Y-m') : date('Y-m') }}"
+                    title="Message unclaimed beneficiaries for a selected month">
+                    <i class="fas fa-bullhorn me-1"></i> Message Unclaimed
+                </button>
                 <a href="{{ route('admin.financial.financialstep2.payroll-records', ['date' => isset($targetDate) ? $targetDate->format('Y-m-d') : date('Y-m-d')]) }}"
                     class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
                     <i class="fas fa-archive me-1"></i> View Payroll Records
@@ -92,65 +98,7 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
     </div>
     @endif
 
-    <!-- Stat Cards Grid (Policy 2.0 Unified Palette) -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="payroll-stat-card">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="detail-field-label">Unprocessed Intakes</div>
-                        <h3 class="h4 fw-bold text-dark mb-0 mt-1" id="statTotalIntakes">{{ number_format($totalTodayCount
-                            ?? 0) }}</h3>
-                    </div>
-                    <div class="p-3 rounded-circle stat-icon-brand">
-                        <i class="fas fa-users fa-lg"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="payroll-stat-card">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="detail-field-label">Amounts Encoded</div>
-                        <h3 class="h4 fw-bold mb-0 mt-1 stat-val-success" id="statEncodedCount">{{
-                            number_format($encodedCount ?? 0) }}</h3>
-                    </div>
-                    <div class="p-3 rounded-circle stat-icon-success">
-                        <i class="fas fa-check-circle fa-lg"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="payroll-stat-card">
-                <div class="detail-field-label">Pending Amount</div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h3 class="h4 fw-bold mb-0 mt-1 {{ ($pendingCount ?? 0) > 0 ? 'stat-val-warning' : 'stat-val-muted' }}"
-                            id="statPendingCount">{{ number_format($pendingCount ?? 0) }}</h3>
-                    </div>
-                    <div class="p-3 rounded-circle stat-icon-warning">
-                        <i class="fas fa-hourglass-half fa-lg"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="payroll-stat-card">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="detail-field-label">Payroll Fund Total</div>
-                        <h3 class="h4 fw-bold mb-0 mt-1 stat-val-brand" id="statTotalPayrollAmount">
-                            &#8369;{{ number_format($totalPayrollAmount ?? 0, 2) }}</h3>
-                    </div>
-                    <div class="p-3 rounded-circle stat-icon-brand">
-                        <i class="fas fa-coins fa-lg"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Payroll Verification & Readiness Banner (Clean neutral background) -->
     <div id="readinessBanner"
@@ -167,7 +115,7 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                     @elseif($allAmountsEncoded)
                     All Intakes Verified &amp; Encoded! Ready for Payroll Generation
                     @else
-                    {{ $pendingCount }} of {{ $totalTodayCount }} Intakes Pending Financial Assistance Amount
+                    {{ $pendingCount }} of {{ $totalTodayCount }} Intakes with Pending Amount
                     @endif
                 </h5>
                 <p class="mb-0 text-muted small" id="readinessSubtitle">
@@ -238,7 +186,7 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                 <select name="status" class="form-select form-select-sm rounded-3">
                     <option value="All">All</option>
                     <option value="encoded" {{ request('status')=='encoded' ? 'selected' : '' }}>Encoded</option>
-                    <option value="pending" {{ request('status')=='pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="pending" {{ request('status')=='pending' || request('status')=='pending_amount' ? 'selected' : '' }}>Pending Amount</option>
                 </select>
             </div>
             <div class="col-md-1 col-lg-1">
@@ -291,10 +239,6 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                     </p>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <a href="{{ route('admin.financial.financialstep2.payroll.print', ['date' => isset($targetDate) ? $targetDate->format('Y-m-d') : date('Y-m-d')]) }}"
-                        target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-semibold">
-                        <i class="fas fa-print me-1"></i> Print Payroll
-                    </a>
                     <button type="submit" class="btn btn-primary btn-brand-primary btn-sm rounded-pill px-3 fw-semibold">
                         <i class="fas fa-save me-1"></i> Save All Encoded Amounts
                     </button>
@@ -424,7 +368,7 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                                         </span>
                                         @else
                                         <span class="status-pill-pending">
-                                            <i class="fas fa-exclamation-circle"></i> Required
+                                            <i class="fas fa-clock"></i> Pending Amount
                                         </span>
                                         @endif
                                     </div>
@@ -621,8 +565,14 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
         </div>
     </div>
 </div>
+
+<!-- SMS Messaging Modals -->
+@include('admin.financial.partials.sms-modal')
+@include('admin.financial.partials.monthly-unclaimed-modal')
 @endsection
 
 @section('page-scripts')
 <script src="{{ asset('js/financialstep2-payroll.js') }}"></script>
+<script src="{{ asset('js/financialstep2-sms.js') }}"></script>
+<script src="{{ asset('js/financialstep2-monthly-unclaimed.js') }}"></script>
 @endsection

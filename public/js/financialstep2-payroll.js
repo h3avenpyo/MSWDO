@@ -119,7 +119,7 @@ function saveSingleAmount(intakeId) {
                 if (rowEl) rowEl.classList.remove('table-warning-subtle');
             } else {
                 if (statusBadgeEl) {
-                    statusBadgeEl.innerHTML = '<span class="status-pill-pending"><i class="fas fa-exclamation-circle"></i> Required</span>';
+                    statusBadgeEl.innerHTML = '<span class="status-pill-pending"><i class="fas fa-clock"></i> Pending Amount</span>';
                 }
                 if (rowEl) rowEl.classList.add('table-warning-subtle');
             }
@@ -181,18 +181,6 @@ function updateDashboardMetrics(data) {
     pendingIntakesCount = data.pending_count;
     isAllEncoded = data.all_amounts_encoded;
 
-    const elTotal = document.getElementById('statTotalIntakes');
-    if (elTotal) elTotal.textContent = data.total_today_count;
-
-    const elEncoded = document.getElementById('statEncodedCount');
-    if (elEncoded) elEncoded.textContent = data.encoded_count;
-
-    const elPending = document.getElementById('statPendingCount');
-    if (elPending) elPending.textContent = data.pending_count;
-
-    const elTotalAmt = document.getElementById('statTotalPayrollAmount');
-    if (elTotalAmt) elTotalAmt.textContent = data.formatted_total_payroll_amount;
-    
     const footerEnc = document.getElementById('footerEncodedCount');
     if (footerEnc) footerEnc.textContent = data.encoded_count;
 
@@ -234,7 +222,7 @@ function updateDashboardMetrics(data) {
         } else {
             readinessBanner.className = 'payroll-readiness-banner d-flex justify-content-between align-items-center flex-wrap gap-3';
             if (readinessIcon) readinessIcon.className = 'fas fa-exclamation-triangle text-warning';
-            if (readinessTitle) readinessTitle.textContent = pendingIntakesCount + " of " + totalIntakesCount + " Intakes Pending Financial Assistance Amount";
+            if (readinessTitle) readinessTitle.textContent = pendingIntakesCount + " of " + totalIntakesCount + " Intakes with Pending Amount";
             if (readinessSubtitle) readinessSubtitle.textContent = "Please encode the financial assistance amount for all remaining intakes below. Once verified, the Generate Payroll button will be enabled.";
             if (btnGenerate) btnGenerate.disabled = true;
         }
@@ -461,6 +449,10 @@ function viewIntakeDetails(intake) {
         } else {
             modalAmt.textContent = 'To be assessed';
         }
+    }
+
+    if (typeof window.initStep2SmsModal === 'function') {
+        window.initStep2SmsModal(intake);
     }
 
     const modalEl = document.getElementById('intakeQuickViewModal');

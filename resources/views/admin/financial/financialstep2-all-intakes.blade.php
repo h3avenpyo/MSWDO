@@ -27,17 +27,7 @@
             </h4>
             <p class="text-muted small mb-0">Masterlist of all General Intake records submitted from Step 1.</p>
         </div>
-        <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('admin.financial.financialstep2.payroll') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">
-                <i class="fas fa-file-invoice-dollar me-1"></i> Payroll Generation
-            </a>
-            <a href="{{ route('admin.financial.financialstep2.payroll-records') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">
-                <i class="fas fa-archive me-1"></i> Payroll Records
-            </a>
-            <a href="{{ route('admin.financial.financialstep2') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                <i class="fas fa-arrow-left me-1"></i> Back to Step 2 Masterlist
-            </a>
-        </div>
+        
     </div>
 
     @if(session('success'))
@@ -54,12 +44,68 @@
     </div>
     @endif
 
+    <!-- Stat Cards Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-xs rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted small fw-bold mb-1 text-uppercase">Total Intakes</p>
+                        <h4 class="fw-bold mb-0 text-dark">{{ number_format($totalIntakesCount ?? 0) }}</h4>
+                    </div>
+                    <div class="rounded-circle bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="fas fa-users fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-xs rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted small fw-bold mb-1 text-uppercase">Pending Amount</p>
+                        <h4 class="fw-bold mb-0 text-warning">{{ number_format($pendingAmountCount ?? 0) }}</h4>
+                    </div>
+                    <div class="rounded-circle bg-warning-subtle text-warning p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="fas fa-clock fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-xs rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted small fw-bold mb-1 text-uppercase">Unclaimed</p>
+                        <h4 class="fw-bold mb-0 text-info">{{ number_format($unclaimedCount ?? 0) }}</h4>
+                    </div>
+                    <div class="rounded-circle bg-info-subtle text-info p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="fas fa-file-invoice-dollar fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-xs rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted small fw-bold mb-1 text-uppercase">Claimed</p>
+                        <h4 class="fw-bold mb-0 text-success">{{ number_format($claimedCount ?? 0) }}</h4>
+                    </div>
+                    <div class="rounded-circle bg-success-subtle text-success p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="fas fa-check-circle fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Search, Filter & Sorting Controls -->
     <div class="filter-card animate-fade-in mb-4">
         <form id="allIntakesFilterForm" action="{{ route('admin.financial.financialstep2.all-intakes') }}" method="GET" class="row g-2 align-items-end">
-            <div class="col-md-3 col-lg-3">
+            <div class="col-md-3 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search Intake / Beneficiary</label>
-                <input type="text" id="searchInput" name="search" class="form-control form-control-sm rounded-3" placeholder="Type name, control no, brgy..." value="{{ request('search') }}" autocomplete="off">
+                <input type="text" id="searchInput" name="search" class="form-control form-control-sm rounded-3" placeholder="Name, control no, brgy..." value="{{ request('search') }}" autocomplete="off">
             </div>
             <div class="col-md-2 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i> Barangay</label>
@@ -80,32 +126,88 @@
                 </select>
             </div>
             <div class="col-md-2 col-lg-2">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> Date Filter</label>
-                <input type="date" name="date" class="form-control form-control-sm rounded-3" value="{{ request('date') }}">
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-info-circle me-1"></i> Status</label>
+                <select name="status" class="form-select form-select-sm rounded-3">
+                    <option value="All">All Statuses</option>
+                    <option value="pending_amount" {{ request('status') == 'pending_amount' || request('status') == 'for_assessment' ? 'selected' : '' }}>Pending Amount</option>
+                    <option value="unclaimed" {{ request('status') == 'unclaimed' ? 'selected' : '' }}>Unclaimed</option>
+                    <option value="claimed" {{ request('status') == 'claimed' ? 'selected' : '' }}>Claimed</option>
+                    <option value="amount_assigned" {{ request('status') == 'amount_assigned' || request('status') == 'ready_payout' ? 'selected' : '' }}>Amount Assigned</option>
+                </select>
             </div>
             <div class="col-md-2 col-lg-2">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-sort me-1"></i> Sort By</label>
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> Month &amp; Year</label>
+                <input type="month" name="month" class="form-control form-control-sm rounded-3" value="{{ request('month') }}" title="Filter by Month & Year">
+            </div>
+            <div class="col-md-1 col-lg-1">
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-sort me-1"></i> Sort</label>
                 <select name="sort" class="form-select form-select-sm rounded-3">
-                    <option value="date_desc" {{ request('sort') == 'date_desc' ? 'selected' : '' }}>Date (Newest First)</option>
-                    <option value="date_asc" {{ request('sort') == 'date_asc' ? 'selected' : '' }}>Date (Oldest First)</option>
-                    <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Client Name (A-Z)</option>
-                    <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>Client Name (Z-A)</option>
-                    <option value="control_asc" {{ request('sort') == 'control_asc' ? 'selected' : '' }}>Control No. (Asc)</option>
-                    <option value="control_desc" {{ request('sort') == 'control_desc' ? 'selected' : '' }}>Control No. (Desc)</option>
+                    <option value="date_desc" {{ request('sort') == 'date_desc' || !request('sort') ? 'selected' : '' }}>Date &darr;</option>
+                    <option value="date_asc" {{ request('sort') == 'date_asc' ? 'selected' : '' }}>Date &uarr;</option>
+                    <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Name A-Z</option>
+                    <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>Name Z-A</option>
+                    <option value="control_asc" {{ request('sort') == 'control_asc' ? 'selected' : '' }}>Ctrl # &uarr;</option>
+                    <option value="control_desc" {{ request('sort') == 'control_desc' ? 'selected' : '' }}>Ctrl # &darr;</option>
                 </select>
             </div>
             <div class="col-md-1 col-lg-1 d-flex gap-1">
-                @if(request()->hasAny(['search', 'barangay', 'category', 'date', 'sort']))
-                <a href="{{ route('admin.financial.financialstep2.all-intakes') }}" class="btn btn-sm btn-outline-secondary rounded-3 w-100 fw-semibold" title="Reset Filters">
-                    <i class="fas fa-redo me-1"></i> Reset
+                @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'month', 'date', 'sort']))
+                <a href="{{ route('admin.financial.financialstep2.all-intakes') }}" class="btn btn-sm btn-outline-danger rounded-3 w-100 fw-semibold" title="Reset all filters">
+                    <i class="fas fa-redo"></i>
                 </a>
                 @else
-                <button type="button" class="btn btn-sm btn-light border rounded-3 w-100 text-muted" disabled title="Filters will apply automatically">
-                    <i class="fas fa-bolt"></i> Auto
+                <button type="button" class="btn btn-sm btn-light border rounded-3 w-100 text-muted" disabled title="Filters apply automatically">
+                    <i class="fas fa-bolt"></i>
                 </button>
                 @endif
             </div>
         </form>
+
+        @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'month', 'date', 'sort']))
+        <div class="d-flex align-items-center gap-2 flex-wrap mt-2 pt-2 border-top">
+            <span class="text-muted small fw-semibold me-1"><i class="fas fa-sliders-h me-1"></i> Active Filters:</span>
+            @if(request('search'))
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Search: "{{ request('search') }}"
+            </span>
+            @endif
+            @if(request('barangay') && request('barangay') !== 'All')
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Barangay: {{ request('barangay') }}
+            </span>
+            @endif
+            @if(request('category') && request('category') !== 'All')
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Category: {{ request('category') }}
+            </span>
+            @endif
+            @if(request('status') && request('status') !== 'All')
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Status: {{ ucwords(str_replace('_', ' ', request('status'))) }}
+            </span>
+            @endif
+            @if(request('month'))
+            @php
+                $formattedMonth = null;
+                try {
+                    $formattedMonth = \Carbon\Carbon::createFromFormat('Y-m', request('month'))->format('F Y');
+                } catch (\Exception $e) {
+                    $formattedMonth = request('month');
+                }
+            @endphp
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 text-xs fw-semibold">
+                <i class="fas fa-calendar-alt me-1"></i> Month: {{ $formattedMonth }}
+            </span>
+            @elseif(request('date'))
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Date: {{ \Carbon\Carbon::parse(request('date'))->format('M d, Y') }}
+            </span>
+            @endif
+            <a href="{{ route('admin.financial.financialstep2.all-intakes') }}" class="btn btn-link btn-sm text-danger p-0 ms-auto text-decoration-none fw-semibold text-xs">
+                <i class="fas fa-times-circle me-1"></i>Clear all filters
+            </a>
+        </div>
+        @endif
     </div>
 
     <!-- Content Workspace: All Intakes Table Directory -->
@@ -117,13 +219,14 @@
                         <table class="table-clean w-100">
                             <thead>
                                 <tr>
-                                    <th>Control No.</th>
-                                    <th>Client / Beneficiary Information</th>
-                                    <th>Address &amp; Contact</th>
-                                    <th>Intake Date &amp; Officer</th>
-                                    <th>Category / Medical Purpose</th>
-                                    <th>Assessed Grant</th>
-                                    <th class="text-end">Actions</th>
+                                    <th class="col-control-no">Control No.</th>
+                                    <th class="col-beneficiary">Client / Beneficiary Information</th>
+                                    <th class="col-address">Address &amp; Contact</th>
+                                    <th class="col-date-officer">Intake Date &amp; Officer</th>
+                                    <th class="col-category-purpose">Category / Medical Purpose</th>
+                                    <th class="col-amount">Assessed Grant</th>
+                                    <th class="col-status">Status</th>
+                                    <th class="col-actions text-end">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -166,26 +269,49 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @if($intake->recommended_amount)
+                                        @if($intake->recommended_amount && $intake->recommended_amount > 0)
                                             <span class="badge-amount">&#8369;{{ number_format($intake->recommended_amount, 2) }}</span>
                                         @else
-                                            <span class="text-muted small">For Assessment</span>
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-0.5 fw-medium small">
+                                                <i class="fas fa-clock me-1"></i>Pending Amount
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if(!$intake->recommended_amount || $intake->recommended_amount <= 0)
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1 fw-bold">
+                                                <i class="fas fa-clock me-1"></i>Pending Amount
+                                            </span>
+                                        @elseif($intake->claim_status === 'Claimed')
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 fw-bold">
+                                                <i class="fas fa-check-circle me-1"></i>Claimed
+                                            </span>
+                                        @elseif($intake->is_payroll_generated)
+                                            <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2.5 py-1 fw-bold">
+                                                <i class="fas fa-file-invoice me-1"></i>Unclaimed
+                                            </span>
+                                        @else
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 fw-bold">
+                                                <i class="fas fa-check-circle me-1"></i>Amount Assigned
+                                            </span>
                                         @endif
                                     </td>
                                     <td class="text-end">
-                                        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium btn-view-intake" title="Quick Preview Record" data-intake='@json($intake)'>
-                                            <i class="fas fa-eye me-1"></i> View
-                                        </button>
+                                        <div class="d-flex align-items-center justify-content-end">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-medium btn-view-intake" title="Quick Preview Record" data-intake='@json($intake)'>
+                                                <i class="fas fa-eye me-1"></i> View
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="7" class="p-5 text-center">
+                                    <td colspan="8" class="p-5 text-center">
                                         <div class="empty-state-box text-center py-4">
                                             <i class="fas fa-folder-open fa-3x mb-3 text-muted opacity-50 d-block"></i>
                                             <h4 class="fw-bold mb-1 empty-state-title">No General Intake records found</h4>
                                             <p class="text-muted mb-0 empty-state-desc">
-                                                @if(request()->hasAny(['search', 'barangay', 'category', 'date']))
+                                                @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'month', 'date']))
                                                     No records matched your search filters. Try resetting the filter criteria.
                                                 @else
                                                     All General Intakes submitted from Step 1 will appear in this centralized Step 2 view.
@@ -199,16 +325,22 @@
                         </table>
                     </div>
 
-                    @if(method_exists($intakes, 'hasPages') && $intakes->hasPages())
+                    <!-- Pagination Footer -->
                     <div class="pt-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <div class="text-muted small">
-                            Showing <strong>{{ $intakes->firstItem() }}</strong> to <strong>{{ $intakes->lastItem() }}</strong> of <strong>{{ $intakes->total() }}</strong> intakes
+                            @if($intakes->total() > 0)
+                                Showing <strong>{{ $intakes->firstItem() }}</strong> to <strong>{{ $intakes->lastItem() }}</strong> of <strong>{{ $intakes->total() }}</strong> records
+                                <span class="badge bg-light text-secondary border rounded-pill ms-1 px-2 py-0.5 text-2xs">15 records / page</span>
+                            @else
+                                <!-- Showing <strong>0</strong> records -->
+                            @endif
                         </div>
+                        @if(method_exists($intakes, 'hasPages') && $intakes->hasPages())
                         <div>
-                            {{ $intakes->links() }}
+                            {{ $intakes->links('pagination::bootstrap-5') }}
                         </div>
+                        @endif
                     </div>
-                    @endif
                 </div>
             </div>
         </div>
@@ -353,4 +485,4 @@
 
 @section('page-scripts')
 <script src="{{ asset('js/financialstep2-all-intakes.js') }}"></script>
-@endsection
+    @endsection

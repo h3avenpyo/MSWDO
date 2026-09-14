@@ -120,10 +120,12 @@ function viewIntakeDetails(intake) {
 
     const recAmountEl = document.getElementById('modalRecommendedAmount');
     if (recAmountEl) {
-        if (intake.recommended_amount) {
+        if (intake.recommended_amount && parseFloat(intake.recommended_amount) > 0) {
             recAmountEl.textContent = '₱' + parseFloat(intake.recommended_amount).toLocaleString('en-US', { minimumFractionDigits: 2 });
+            recAmountEl.className = 'detail-field-value text-success fs-5 fw-bold';
         } else {
-            recAmountEl.textContent = 'To be assessed';
+            recAmountEl.textContent = 'Pending Amount';
+            recAmountEl.className = 'detail-field-value text-warning fs-5 fw-bold';
         }
     }
 
@@ -160,9 +162,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Automatic filter submission on change for dropdowns and date input
+    // Automatic filter submission on change for dropdowns, month, and date input
     if (filterForm) {
-        const autoSubmitElements = filterForm.querySelectorAll('select[name="barangay"], select[name="category"], input[name="date"], select[name="sort"]');
+        const autoSubmitElements = filterForm.querySelectorAll('select[name="barangay"], select[name="category"], select[name="status"], input[name="date"], input[name="month"], select[name="sort"]');
         autoSubmitElements.forEach(el => {
             el.addEventListener('change', function () {
                 filterForm.submit();

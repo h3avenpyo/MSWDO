@@ -14,6 +14,7 @@
         /* ══════════════════════════════════════════════
            MSWDO iServe Silang — Login Portal
            Mobile-first, CSS Grid + Flexbox, Poppins
+           Modern Red Gradient Theme
            ══════════════════════════════════════════════ */
 
         /* ---------- Reset & base ---------- */
@@ -33,8 +34,8 @@
             align-items: center;
             justify-content: center;
             padding: 2rem 1rem;
-            /* Subtle light blue gradient page background */
-            background: linear-gradient(160deg, #F0F7FF 0%, #E3EEFA 55%, #DCE9F7 100%);
+            /* Clean white page background */
+            background: #FFFFFF;
             /* Entrance animation */
             animation: pageFade .5s ease both;
             position: relative;
@@ -56,25 +57,25 @@
             position: fixed;
             z-index: 0;
             border-radius: 50%;
-            filter: blur(90px);
+            filter: blur(100px);
             opacity: .45;
             pointer-events: none;
         }
 
         .bg-blur--one {
-            width: 420px;
-            height: 420px;
-            top: -80px;
-            left: -80px;
-            background: radial-gradient(circle, #BFDBFE 0%, transparent 70%);
+            width: 460px;
+            height: 460px;
+            top: -100px;
+            left: -100px;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.12) 0%, transparent 70%);
         }
 
         .bg-blur--two {
-            width: 480px;
-            height: 480px;
-            bottom: -120px;
-            right: -80px;
-            background: radial-gradient(circle, #93C5FD 0%, transparent 70%);
+            width: 540px;
+            height: 540px;
+            bottom: -140px;
+            right: -100px;
+            background: radial-gradient(circle, rgba(244, 63, 94, 0.10) 0%, transparent 70%);
         }
 
         /* ---------- Layout shell ---------- */
@@ -92,7 +93,8 @@
         .auth-card {
             background: #FFFFFF;
             border-radius: 24px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, .12);
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, .08), 0 4px 12px rgba(0, 0, 0, .03);
             overflow: hidden;
             width: 100%;
             display: grid;
@@ -114,7 +116,7 @@
         }
 
         /* ══════════════════════════════════════════════
-           LEFT — Brand panel (blue gradient)
+           LEFT — Brand panel (red gradient)
            ══════════════════════════════════════════════ */
         .brand-panel {
             position: relative;
@@ -124,16 +126,16 @@
             display: flex;
             flex-direction: column;
             gap: 1.1rem;
-            background: linear-gradient(155deg, #1E3A8A 0%, #1D4ED8 100%);
+            background: linear-gradient(155deg, #7F1D1D 0%, #991B1B 45%, #B91C1C 75%, #DC2626 100%);
         }
 
-        /* Quiet radial washes — no outlines, no rings */
+        /* Quiet radial washes — soft luminous accents */
         .brand-panel::before,
         .brand-panel::after {
             content: '';
             position: absolute;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 255, 255, .10) 0%, transparent 60%);
+            background: radial-gradient(circle, rgba(255, 255, 255, .12) 0%, transparent 65%);
             pointer-events: none;
         }
 
@@ -158,7 +160,7 @@
             position: relative;
             z-index: 1;
             padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, .14);
+            border-bottom: 1px solid rgba(255, 255, 255, .16);
         }
 
         /* Official-style seal */
@@ -168,9 +170,9 @@
             flex-shrink: 0;
             border-radius: 50%;
             padding: 6px;
-            background: rgba(255, 255, 255, .10);
+            background: rgba(255, 255, 255, .12);
             border: 1px solid rgba(255, 255, 255, .38);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, .18);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, .22);
         }
 
         .brand-logo {
@@ -202,7 +204,7 @@
             font-weight: 500;
             letter-spacing: .1em;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, .55);
+            color: rgba(255, 255, 255, .65);
         }
 
         .brand-hero {
@@ -226,7 +228,7 @@
             margin: 0 0 .7rem;
             font-size: .875rem;
             font-weight: 600;
-            color: #A7F3D0;
+            color: #FDE68A;
         }
 
         .brand-desc {
@@ -234,7 +236,7 @@
             font-size: .8438rem;
             font-weight: 400;
             line-height: 1.7;
-            color: rgba(255, 255, 255, .82);
+            color: rgba(255, 255, 255, .88);
             max-width: 31rem;
         }
 
@@ -244,7 +246,7 @@
             z-index: 1;
             margin-top: .25rem;
             padding-top: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, .14);
+            border-top: 1px solid rgba(255, 255, 255, .16);
         }
 
         .module-list-label {
@@ -254,7 +256,7 @@
             font-weight: 600;
             letter-spacing: .16em;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, .65);
+            color: rgba(255, 255, 255, .72);
             margin-bottom: .25rem;
         }
 
@@ -294,7 +296,7 @@
             font-size: .6563rem;
             font-weight: 600;
             letter-spacing: .06em;
-            color: #6EE7B7;
+            color: #FDE68A;
             min-width: 1.3rem;
             flex-shrink: 0;
         }
@@ -341,11 +343,11 @@
         }
 
         .back-link:hover {
-            color: #1D4ED8;
+            color: #B91C1C;
         }
 
         .back-link:focus-visible {
-            outline: 3px solid #93C5FD;
+            outline: 3px solid #FECACA;
             outline-offset: 2px;
         }
 
@@ -376,7 +378,8 @@
         .mode-toggle {
             display: flex;
             gap: .25rem;
-            background: #EFF6FF;
+            background: #FEF2F2;
+            border: 1px solid #FEE2E2;
             border-radius: 14px;
             padding: .3rem;
             margin-bottom: 1rem;
@@ -398,12 +401,12 @@
 
         .mode-btn.active {
             background: #FFFFFF;
-            color: #1D4ED8;
-            box-shadow: 0 2px 6px rgba(30, 58, 138, .12);
+            color: #991B1B;
+            box-shadow: 0 2px 8px rgba(153, 27, 27, .15);
         }
 
         .mode-btn:focus-visible {
-            outline: 3px solid #93C5FD;
+            outline: 3px solid #FECACA;
             outline-offset: 2px;
         }
 
@@ -454,11 +457,11 @@
             color: #94A3B8;
         }
 
-        /* Blue glow on focus */
+        /* Red glow on focus */
         .form-input:focus {
-            border-color: #1D4ED8;
+            border-color: #B91C1C;
             background: #FFFFFF;
-            box-shadow: 0 0 0 4px rgba(29, 78, 216, .12);
+            box-shadow: 0 0 0 4px rgba(185, 28, 28, .12);
         }
 
         .form-input:focus-visible {
@@ -466,7 +469,7 @@
         }
 
         .form-input:focus~.input-icon {
-            color: #1D4ED8;
+            color: #B91C1C;
         }
 
         /* Password reveal button */
@@ -489,12 +492,12 @@
         }
 
         .password-toggle:hover {
-            color: #1D4ED8;
-            background: #EFF6FF;
+            color: #B91C1C;
+            background: #FEF2F2;
         }
 
         .password-toggle:focus-visible {
-            outline: 3px solid #93C5FD;
+            outline: 3px solid #FECACA;
             outline-offset: 1px;
         }
 
@@ -523,11 +526,11 @@
         }
 
         .forgot-password:hover {
-            color: #1D4ED8;
+            color: #B91C1C;
         }
 
         .forgot-password:focus-visible {
-            outline: 3px solid #93C5FD;
+            outline: 3px solid #FECACA;
             outline-offset: 2px;
             border-radius: 4px;
         }
@@ -544,15 +547,15 @@
             letter-spacing: .03em;
             text-transform: uppercase;
             color: #FFFFFF;
-            background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 100%);
-            box-shadow: 0 10px 20px rgba(29, 78, 216, .25);
+            background: linear-gradient(135deg, #881337 0%, #991B1B 45%, #DC2626 100%);
+            box-shadow: 0 10px 22px rgba(185, 28, 28, .28);
             cursor: pointer;
             transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
         }
 
         .submit-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 16px 28px rgba(29, 78, 216, .32);
+            box-shadow: 0 16px 30px rgba(185, 28, 28, .36);
             filter: brightness(1.06);
         }
 
@@ -567,7 +570,7 @@
         }
 
         .submit-button:focus-visible {
-            outline: 3px solid #93C5FD;
+            outline: 3px solid #FECACA;
             outline-offset: 2px;
         }
 
@@ -587,11 +590,11 @@
         }
 
         .support-link:hover {
-            color: #1D4ED8;
+            color: #B91C1C;
         }
 
         .support-link:focus-visible {
-            outline: 3px solid #93C5FD;
+            outline: 3px solid #FECACA;
             outline-offset: 2px;
         }
 
@@ -619,9 +622,9 @@
             display: flex;
             align-items: flex-start;
             gap: .55rem;
-            background: #EFF6FF;
-            border: 1px solid #BFDBFE;
-            color: #1E3A8A;
+            background: #FEF2F2;
+            border: 1px solid #FECDD3;
+            color: #991B1B;
             border-radius: 12px;
             padding: .8rem 1rem;
             margin-bottom: 1.25rem;
@@ -634,6 +637,7 @@
             height: 1.15rem;
             flex-shrink: 0;
             margin-top: .1rem;
+            color: #B91C1C;
         }
 
         .resend-hint {
@@ -647,7 +651,7 @@
             background: none;
             border: none;
             padding: 0;
-            color: #1D4ED8;
+            color: #B91C1C;
             font-weight: 600;
             font-family: 'Poppins', sans-serif;
             cursor: pointer;
@@ -745,7 +749,7 @@
                         <img src="{{ asset('images/'.$logo) }}" class="brand-logo" alt="MSWDO Logo">
                         @else
                         <div class="brand-logo"
-                            style="display:flex;align-items:center;justify-content:center;color:#1E3A8A;font-weight:700;font-size:1.4rem;">
+                            style="display:flex;align-items:center;justify-content:center;color:#991B1B;font-weight:700;font-size:1.4rem;">
                             M</div>
                         @endif
                     </div>
@@ -996,7 +1000,7 @@
                               '<p style="margin:0;font-size:13px;color:#94A3B8">Sign in below with your account to continue.</p>' +
                               '</div>',
                         icon: 'info',
-                        confirmButtonColor: '#1D4ED8',
+                        confirmButtonColor: '#991B1B',
                         confirmButtonText: 'Get Started',
                         background: '#ffffff',
                         customClass: { popup: 'rounded-4 shadow-lg' },

@@ -168,4 +168,25 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // Ensure charts resize accurately for print preview
+    window.addEventListener('beforeprint', function () {
+        if (window.Chart && window.Chart.instances) {
+            Object.values(window.Chart.instances).forEach(chart => {
+                if (chart && typeof chart.resize === 'function') {
+                    chart.resize();
+                }
+            });
+        }
+    });
+
+    window.addEventListener('afterprint', function () {
+        if (window.Chart && window.Chart.instances) {
+            Object.values(window.Chart.instances).forEach(chart => {
+                if (chart && typeof chart.resize === 'function') {
+                    chart.resize();
+                }
+            });
+        }
+    });
 });
