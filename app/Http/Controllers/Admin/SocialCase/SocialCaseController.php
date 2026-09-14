@@ -1147,4 +1147,191 @@ class SocialCaseController extends Controller
 
         return response()->json(['message' => 'Activities cleared']);
     }
+
+    /**
+     * Get real-time notifications for clients forwarded from Client Eligibility
+     * and accepted/forwarded Online Requests.
+     */
+    public function getNotifications(Request $request)
+    {
+        $userRole = (string) session('admin_user_role');
+        $userId   = session('admin_user_id');
+
+        $lastReadAt = session('social_case_notifications_read_at');
+        $lastReadTime = $lastReadAt ? \Carbon\Carbon::parse($lastReadAt) : null;
+
+        $notifications = [];
+
+        // 1. Walk-in clients forwarded from Client Eligibility
+        $walkinQuery = SocialCaseStudy::with('client', 'eligibleByUser', 'officer')
+            ->where('eligibility_status', 'eligible')
+            ->whereNotNull('eligible_by')
+            ->whereNull('encoded_by')
+            ->whereNotIn('status', ['Printed', 'Released', 'Archived']);
+
+        if ($userRole === 'social_worker') {
+            $walkinQuery->where(function ($q) use ($userId) {
+                $q->where('officer_id', $userId)
+                  ->orWhereNull('officer_id');
+            });
+        }
+
+        $walkinCases = $walkinQuery->orderByDesc('eligible_at')->limit(20)->get();
+
+        foreach ($walkinCases as $case) {
+            $timestamp = $case->eligible_at ?: $case->created_at;
+            $carbonTime = $timestamp ? \Carbon\Carbon::parse($timestamp) : now();
+            $isUnread = $lastReadTime ? $carbonTime->gt($lastReadTime) : true;
+            $clientName = $case->client ? $case->client->full_name : trim(($case->first_name ?? '') . ' ' . ($case->last_name ?? ''));
+            if (!$clientName) {
+                $clientName = 'Unnamed Client';
+            }
+
+            $assignedOfficer = $case->officer ? $case->officer->name : null;
+            $forwardedBy = $case->eligibleByUser ? $case->eligibleByUser->name : 'Eligibility Checker';
+
+            $notifications[] = [
+                'id'             => 'walkin_' . $case->id,
+                'source_id'      => $case->id,
+                'type'           => 'client_eligibility',
+                'title'          => 'Client Eligibility Forwarded',
+                'subtitle'       => 'Walk-in client verified and forwarded for encoding',
+                'client_name'    => $clientName,
+                'control_no'     => $case->case_number ?: ('REF-' . str_pad($case->id, 5, '0', STR_PAD_LEFT)),
+                'forwarded_by'   => $forwardedBy,
+                'assigned_to'    => $assignedOfficer,
+                'badge_text'     => 'Walk-in Eligibility',
+                'badge_class'    => 'badge-walkin',
+                'created_at'     => $carbonTime->toIso8601String(),
+                'formatted_date' => $carbonTime->format('M d, Y g:i A'),
+                'time_ago'       => $carbonTime->diffForHumans(),
+                'is_unread'      => $isUnread,
+                'url'            => ($userRole === 'eligibility_checker') ? route('admin.social-case.new') : route('admin.social-case.submitted'),
+                'timestamp_raw'  => $carbonTime->timestamp,
+            ];
+        }
+
+        // 2. Online requests accepted/forwarded from Pending Online Requests (for encoders and admin)
+        if ($userRole !== 'eligibility_checker') {
+            $onlineQuery = OnlineRequest::with('attachments')
+                ->where('status', 'approved')
+                ->where(function ($q) {
+                    $q->whereNull('case_id')
+                      ->orWhereHas('case', function ($cq) {
+                          $cq->whereNotIn('status', ['Printed', 'Released', 'Archived']);
+                      });
+                });
+
+            $onlineRequests = $onlineQuery->orderByDesc('updated_at')->limit(20)->get();
+
+            foreach ($onlineRequests as $req) {
+                $carbonTime = $req->updated_at ?: $req->created_at;
+                $isUnread = $lastReadTime ? $carbonTime->gt($lastReadTime) : true;
+                $clientName = trim($req->first_name . ' ' . $req->last_name);
+                if (!$clientName) {
+                    $clientName = 'Online Applicant';
+                }
+
+                $refNo = 'REQ-' . str_pad($req->id, 5, '0', STR_PAD_LEFT);
+                $serviceType = ucfirst(str_replace('_', ' ', $req->service_type ?? 'Social Case'));
+                $assistanceType = ucfirst(str_replace('_', ' ', $req->assistance_type ?? 'Assistance'));
+
+                $notifications[] = [
+                    'id'             => 'online_' . $req->id,
+                    'source_id'      => $req->id,
+                    'type'           => 'online_request',
+                    'title'          => 'Online Request Accepted',
+                    'subtitle'       => "{$serviceType} • {$assistanceType}",
+                    'client_name'    => $clientName,
+                    'control_no'     => $refNo,
+                    'forwarded_by'   => 'Online Portal / Eligibility Review',
+                    'assigned_to'    => null,
+                    'badge_text'     => 'Online Request',
+                    'badge_class'    => 'badge-online',
+                    'created_at'     => $carbonTime->toIso8601String(),
+                    'formatted_date' => $carbonTime->format('M d, Y g:i A'),
+                    'time_ago'       => $carbonTime->diffForHumans(),
+                    'is_unread'      => $isUnread,
+                    'url'            => route('admin.social-case.submitted'),
+                    'timestamp_raw'  => $carbonTime->timestamp,
+                ];
+            }
+        }
+
+        // 3. Newly submitted online requests from public portal (for eligibility checker and admin)
+        if ($userRole === 'eligibility_checker' || $userRole === 'admin') {
+            $pendingQuery = OnlineRequest::with('attachments')
+                ->where('status', 'pending')
+                ->whereNull('case_id')
+                ->orderByDesc('created_at')
+                ->limit(20)
+                ->get();
+
+            foreach ($pendingQuery as $req) {
+                $carbonTime = $req->created_at ?: now();
+                $isUnread = $lastReadTime ? $carbonTime->gt($lastReadTime) : true;
+                $clientName = trim($req->first_name . ' ' . $req->last_name);
+                if (!$clientName) {
+                    $clientName = 'Online Applicant';
+                }
+
+                $refNo = 'REQ-' . str_pad($req->id, 5, '0', STR_PAD_LEFT);
+                $serviceType = ucfirst(str_replace('_', ' ', $req->service_type ?? 'Social Case'));
+                $assistanceType = ucfirst(str_replace('_', ' ', $req->assistance_type ?? 'Assistance'));
+                $brgyText = $req->barangay ? " • Brgy. {$req->barangay}" : '';
+
+                $notifications[] = [
+                    'id'             => 'pending_online_' . $req->id,
+                    'source_id'      => $req->id,
+                    'type'           => 'pending_online_request',
+                    'title'          => 'New Online Request Submitted',
+                    'subtitle'       => "{$serviceType} • {$assistanceType}{$brgyText}",
+                    'client_name'    => $clientName,
+                    'control_no'     => $refNo,
+                    'forwarded_by'   => 'Public Service Portal',
+                    'assigned_to'    => null,
+                    'badge_text'     => 'New Online Request',
+                    'badge_class'    => 'badge-pending-online',
+                    'created_at'     => $carbonTime->toIso8601String(),
+                    'formatted_date' => $carbonTime->format('M d, Y g:i A'),
+                    'time_ago'       => $carbonTime->diffForHumans(),
+                    'is_unread'      => $isUnread,
+                    'url'            => route('admin.social-case.online-requests'),
+                    'timestamp_raw'  => $carbonTime->timestamp,
+                ];
+            }
+        }
+
+        // Sort combined notifications by newest timestamp
+        usort($notifications, function ($a, $b) {
+            return $b['timestamp_raw'] <=> $a['timestamp_raw'];
+        });
+
+        // Limit to 30 most recent notifications
+        $notifications = array_slice($notifications, 0, 30);
+
+        $unreadCount = count(array_filter($notifications, fn($n) => $n['is_unread']));
+
+        return response()->json([
+            'success'       => true,
+            'unread_count'  => $unreadCount,
+            'total_count'   => count($notifications),
+            'notifications' => $notifications,
+            'last_read_at'  => $lastReadAt,
+        ]);
+    }
+
+    /**
+     * Mark all notifications as read for current session.
+     */
+    public function markNotificationsRead(Request $request)
+    {
+        session(['social_case_notifications_read_at' => now()->toIso8601String()]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Notifications marked as read',
+            'read_at' => session('social_case_notifications_read_at'),
+        ]);
+    }
 }
