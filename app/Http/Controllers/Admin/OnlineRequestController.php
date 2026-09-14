@@ -232,19 +232,68 @@ class OnlineRequestController extends Controller
             $attachmentsHtml = '<div style="margin-top: 12px;"><p style="margin: 0; font-size: 14px; color: #6B7280;">No files attached</p></div>';
         }
 
+        $requestForLabels = [
+            'myself' => 'Myself (Ako)',
+            'child' => 'My Child (Anak ko)',
+            'parent' => 'My Parent (Magulang ko)',
+            'family' => 'Family Member (Ibang miyembro ng pamilya)',
+            'assisting' => 'Assisting Someone (Tinutulungan)',
+        ];
+
+        $attachmentsList = [];
+        if ($request->attachments && $request->attachments->count() > 0) {
+            foreach ($request->attachments as $attachment) {
+                $ext = strtolower(pathinfo($attachment->file_name, PATHINFO_EXTENSION));
+                $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                $isPdf = ($ext === 'pdf');
+                $isDoc = in_array($ext, ['doc', 'docx']);
+
+                $attachmentsList[] = [
+                    'id' => $attachment->id,
+                    'file_name' => $attachment->file_name,
+                    'file_size' => $this->formatFileSize($attachment->file_size),
+                    'file_url' => asset('storage/' . $attachment->file_path),
+                    'file_type' => $attachment->file_type,
+                    'extension' => strtoupper($ext ?: 'FILE'),
+                    'is_image' => $isImage,
+                    'is_pdf' => $isPdf,
+                    'is_doc' => $isDoc,
+                ];
+            }
+        }
+
+        $age = null;
+        if ($request->dob) {
+            try {
+                $age = \Carbon\Carbon::parse($request->dob)->age;
+            } catch (\Exception $e) {
+                $age = null;
+            }
+        }
+
         return response()->json([
             'id'               => $request->id,
+            'reference_no'     => 'REQ-' . str_pad($request->id, 5, '0', STR_PAD_LEFT),
             'first_name'       => $request->first_name,
             'last_name'        => $request->last_name,
+            'full_name'        => $request->first_name . ' ' . $request->last_name,
+            'dob'              => $request->dob ? \Carbon\Carbon::parse($request->dob)->format('M d, Y') : null,
+            'age'              => $age,
+            'request_for'      => $requestForLabels[$request->request_for] ?? ($request->request_for ? ucfirst($request->request_for) : 'Myself'),
             'email'            => $request->email,
             'contact_number'   => $request->contact_number,
+            'address'          => $request->address ?: 'No street address provided',
+            'barangay'         => $request->barangay,
             'service_type'     => ucfirst(str_replace('_', ' ', $request->service_type)),
             'assistance_type'  => ucfirst(str_replace('_', ' ', $request->assistance_type)),
-            'barangay'         => $request->barangay,
             'status'           => ucfirst($request->status),
+            'raw_status'       => strtolower($request->status),
             'created_at'       => $request->created_at->format('M d, Y g:i A'),
-            'situation'        => $request->situation ?? 'N/A',
-            'notes'            => $request->notes ?? 'N/A',
+            'created_at_human' => $request->created_at->diffForHumans(),
+            'situation'        => $request->situation ?? 'No details provided',
+            'notes'            => $request->notes ?? '',
+            'attachments'      => $attachmentsList,
+            'attachments_count'=> count($attachmentsList),
             'attachments_html' => $attachmentsHtml,
             'warning_existing' => $warningExisting,
             'warning_recent'   => $warningRecent,

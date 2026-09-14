@@ -105,4 +105,85 @@ class ServiceRequestSubmissionTest extends TestCase
                 'success' => false,
             ]);
     }
+
+    public function test_can_fetch_redesigned_online_request_modal_details(): void
+    {
+        $user = \App\Models\User::create([
+            'name' => 'Checker Test',
+            'email' => 'checker.' . uniqid() . '@example.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('Password123!'),
+            'role' => 'eligibility_checker',
+            'phone' => '09170000000',
+            'status' => 'active',
+        ]);
+
+        $request = OnlineRequest::create([
+            'request_for' => 'myself',
+            'first_name' => 'Jose',
+            'last_name' => 'Rizal',
+            'dob' => '1990-06-19',
+            'barangay' => 'ACACIA',
+            'contact_number' => '09123456789',
+            'email' => 'jose.rizal@example.com',
+            'address' => 'Calamba St, Acacia',
+            'service_type' => 'social_case_study',
+            'assistance_type' => 'medical',
+            'situation' => 'Needs medical case study for surgery assistance.',
+            'status' => 'pending',
+        ]);
+
+        $attachment = OnlineRequestAttachment::create([
+            'online_request_id' => $request->id,
+            'file_name' => 'Hospital_Bill.pdf',
+            'file_path' => 'online-request-attachments/test_bill.pdf',
+            'file_type' => 'application/pdf',
+            'file_size' => 204800,
+        ]);
+
+        $response = $this->withSession([
+            'admin_user_id' => $user->id,
+            'admin_user_name' => $user->name,
+            'admin_user_role' => 'eligibility_checker',
+        ])->getJson("/admin/social-case/online-requests/{$request->id}");
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'id',
+                'reference_no',
+                'first_name',
+                'last_name',
+                'full_name',
+                'dob',
+                'age',
+                'request_for',
+                'email',
+                'contact_number',
+                'address',
+                'barangay',
+                'service_type',
+                'assistance_type',
+                'status',
+                'raw_status',
+                'created_at',
+                'created_at_human',
+                'situation',
+                'attachments',
+                'attachments_count',
+                'warning_existing',
+                'warning_recent',
+            ]);
+
+        $data = $response->json();
+        $this->assertEquals('Jose Rizal', $data['full_name']);
+        $this->assertEquals('Myself (Ako)', $data['request_for']);
+        $this->assertEquals('Calamba St, Acacia', $data['address']);
+        $this->assertCount(1, $data['attachments']);
+        $this->assertEquals('Hospital_Bill.pdf', $data['attachments'][0]['file_name']);
+        $this->assertTrue($data['attachments'][0]['is_pdf']);
+
+        // Clean up
+        $attachment->delete();
+        $request->delete();
+        $user->delete();
+    }
 }

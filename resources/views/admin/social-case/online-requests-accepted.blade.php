@@ -738,24 +738,375 @@
         }
     }
 
-    /* Responsive Modal Styles */
-    .modal-grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+    /* ── REDESIGNED ONLINE REQUEST VIEW MODAL STYLES ── */
+    .or-modal-popup.swal2-popup {
+        width: 780px !important;
+        max-width: 95vw !important;
+        border-radius: 20px !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.06) !important;
+        font-family: inherit !important;
+        border: none !important;
+    }
+    .or-modal-popup .swal2-html-container {
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: left !important;
+        max-height: 84vh !important;
+        overflow-y: auto !important;
+    }
+    .or-modal-popup .swal2-close {
+        color: #FFFFFF !important;
+        top: 16px !important;
+        right: 18px !important;
+        font-size: 24px !important;
+        width: 32px !important;
+        height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 8px !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        transition: all 0.2s ease !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    .or-modal-popup .swal2-close:hover {
+        background: rgba(255, 255, 255, 0.3) !important;
+        color: #FFFFFF !important;
+    }
+    .or-modal-popup .swal2-actions {
+        margin: 0 !important;
+        padding: 16px 24px !important;
+        background: #F8FAFC !important;
+        border-top: 1px solid #E2E8F0 !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+        gap: 10px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .or-modal-popup .swal2-actions button {
+        margin: 0 !important;
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+        font-size: 13.5px !important;
+        padding: 10px 20px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        font-family: inherit !important;
+    }
+    .or-modal-popup .swal2-actions .swal2-confirm {
+        display: inline-flex !important;
+    }
+    .or-modal-popup .swal2-deny,
+    .or-modal-popup .swal2-cancel,
+    .or-modal-popup .swal2-actions .swal2-deny,
+    .or-modal-popup .swal2-actions .swal2-cancel,
+    .or-modal-popup button.swal2-deny,
+    .or-modal-popup button.swal2-cancel,
+    .or-modal-popup .swal2-actions button[style*="display: none"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .or-btn-close {
+        background: #FFFFFF !important;
+        color: #475569 !important;
+        border: 1px solid #CBD5E1 !important;
+    }
+    .or-btn-close:hover {
+        background: #F1F5F9 !important;
+        color: #0F172A !important;
+        border-color: #94A3B8 !important;
+    }
+
+    /* Modal Top Header */
+    .or-modal-header {
+        background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
+        color: #FFFFFF;
+        padding: 22px 26px;
+        position: relative;
+    }
+    .or-modal-header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         gap: 12px;
+        margin-bottom: 8px;
+        padding-right: 36px;
     }
-    .swal2-popup {
-        border-radius: 16px !important;
+    .or-modal-ref-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(4px);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #E0E7FF;
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    @media (max-width: 575.98px) {
-        .modal-grid-2 {
+    .or-modal-title {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 800;
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        letter-spacing: -0.01em;
+    }
+    .or-modal-subtitle {
+        margin: 5px 0 0 0;
+        font-size: 12.5px;
+        color: #C7D2FE;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Modal Body Container */
+    .or-modal-body {
+        padding: 22px 24px;
+        background: #F8FAFC;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    /* Alert Banners */
+    .or-alert-banner {
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+    .or-alert-banner.warning {
+        background: #FEF3C7;
+        border: 1px solid #FCD34D;
+        color: #92400E;
+    }
+    .or-alert-banner.info {
+        background: #EFF6FF;
+        border: 1px solid #BFDBFE;
+        color: #1E40AF;
+    }
+
+    /* Content Cards */
+    .or-card {
+        background: #FFFFFF;
+        border-radius: 14px;
+        border: 1px solid #E2E8F0;
+        padding: 16px 18px;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+    .or-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #F1F5F9;
+    }
+    .or-card-title {
+        margin: 0;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #1A237E;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+    .or-card-tag {
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 20px;
+        background: #EEF2FF;
+        color: #3730A3;
+        border: 1px solid #C7D2FE;
+    }
+
+    /* Grid Elements */
+    .or-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px 16px;
+    }
+
+    .or-field-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 3px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .or-field-val {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #0F172A;
+        word-break: break-word;
+    }
+    .or-field-val a {
+        color: #1A237E;
+        text-decoration: none;
+        transition: color 0.15s;
+    }
+    .or-field-val a:hover {
+        color: #2563EB;
+        text-decoration: underline;
+    }
+
+    /* Situation Block */
+    .or-situation-box {
+        background: #F8FAFC;
+        border-left: 4px solid #1A237E;
+        border-radius: 0 10px 10px 0;
+        padding: 14px 16px;
+        font-size: 13.5px;
+        line-height: 1.6;
+        color: #1E293B;
+        white-space: pre-wrap;
+    }
+
+    /* Attachments Grid */
+    .or-attachments-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 10px;
+        margin-top: 4px;
+    }
+    .or-attachment-card {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.2s ease;
+        text-decoration: none !important;
+        color: inherit !important;
+    }
+    .or-attachment-card:hover {
+        background: #FFFFFF;
+        border-color: #1A237E;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(26, 35, 126, 0.08);
+    }
+    .or-attachment-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .or-attachment-icon.pdf {
+        background: #FEE2E2;
+        color: #DC2626;
+    }
+    .or-attachment-icon.img {
+        background: #E0E7FF;
+        color: #4338CA;
+    }
+    .or-attachment-icon.doc {
+        background: #DBEAFE;
+        color: #1D4ED8;
+    }
+    .or-attachment-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .or-attachment-name {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #0F172A;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .or-attachment-meta {
+        font-size: 11px;
+        color: #64748B;
+        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Status Pills */
+    .or-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+    .or-status-badge.pending {
+        background: #FEF3C7;
+        color: #92400E;
+        border: 1px solid #FCD34D;
+    }
+    .or-status-badge.approved {
+        background: #DCFCE7;
+        color: #15803D;
+        border: 1px solid #86EFAC;
+    }
+    .or-status-badge.rejected {
+        background: #FEE2E2;
+        color: #DC2626;
+        border: 1px solid #FCA5A5;
+    }
+
+    @media (max-width: 640px) {
+        .or-grid-2 {
             grid-template-columns: 1fr !important;
-            gap: 8px !important;
+            gap: 12px !important;
         }
-        .swal2-popup {
-            padding: 14px 10px !important;
-            width: 95vw !important;
-            border-radius: 14px !important;
+        .or-attachments-grid {
+            grid-template-columns: 1fr !important;
+        }
+        .or-modal-header {
+            padding: 16px 18px !important;
+        }
+        .or-modal-body {
+            padding: 16px !important;
+            gap: 14px !important;
+        }
+        .or-modal-popup .swal2-actions {
+            flex-direction: column !important;
+            padding: 14px 16px !important;
+        }
+        .or-modal-popup .swal2-actions button {
+            width: 100% !important;
         }
     }
 
@@ -1130,88 +1481,242 @@ document.addEventListener('DOMContentLoaded', function () {
     updateClearButtonVisibility();
 });
 
+function escapeHtml(str) {
+    if (!str && str !== 0) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 function viewOnlineRequest(id) {
-    // Fetch the online request details and show in a modal
     fetch(`/admin/social-case/online-requests/${id}`)
         .then(response => response.json())
         .then(data => {
-            Swal.fire({
-                title: '<div style="display: flex; align-items: center; gap: 10px;"><i data-lucide="file-text" style="width: 24px; height: 24px; color: #1A237E;"></i><span>Online Request Details</span></div>',
-                html: `
-                    <div style="text-align: left; padding: 10px;">
-                        <div style="background: #F8FAFC; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-                            <h4 style="margin: 0 0 12px 0; color: #1A237E; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Personal Information</h4>
-                            <div class="modal-grid-2">
-                                <div>
-                                    <span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Full Name</span>
-                                    <span style="font-size: 14px; color: #1F2937; font-weight: 500;">${data.first_name} ${data.last_name}</span>
-                                </div>
-                                <div>
-                                    <span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Email</span>
-                                    <span style="font-size: 14px; color: #1F2937;">${data.email}</span>
-                                </div>
-                                <div>
-                                    <span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Contact Number</span>
-                                    <span style="font-size: 14px; color: #1F2937;">${data.contact_number}</span>
-                                </div>
-                                <div>
-                                    <span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Barangay</span>
-                                    <span style="font-size: 14px; color: #1F2937;">${data.barangay}</span>
-                                </div>
+            const statusLower = (data.raw_status || data.status || 'approved').toLowerCase();
+            let statusClass = 'approved';
+            let statusIcon = 'check-circle';
+
+            // Warning Banner
+            let warningBannerHtml = '';
+            if (data.warning_recent) {
+                warningBannerHtml = `
+                    <div class="or-alert-banner warning">
+                        <i data-lucide="alert-triangle" style="width: 22px; height: 22px; color: #D97706; flex-shrink: 0; margin-top: 2px;"></i>
+                        <div>
+                            <div style="font-weight: 700; color: #92400E; margin-bottom: 2px;">Recent Assistance Record (6-Month Rule)</div>
+                            <div style="color: #78350F; font-size: 12.5px; line-height: 1.5;">
+                                <strong>${escapeHtml(data.first_name)} ${escapeHtml(data.last_name)}</strong> has a case study or assistance record within the 6-month period.
                             </div>
-                        </div>
-                        
-                        <div style="background: #F8FAFC; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-                            <h4 style="margin: 0 0 12px 0; color: #1A237E; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Service Information</h4>
-                            <div class="modal-grid-2">
-                                <div>
-                                    <span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Service Type</span>
-                                    <span style="font-size: 14px; color: #1F2937;">${data.service_type}</span>
-                                </div>
-                                <div>
-                                    <span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Assistance Type</span>
-                                    <span style="font-size: 14px; color: #1F2937;">${data.assistance_type}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div style="background: #F8FAFC; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-                            <h4 style="margin: 0 0 12px 0; color: #1A237E; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Request Details</h4>
-                            <div class="modal-grid-2">
-                                <div>
-                                    <span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Status</span>
-                                    <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; background: #DCFCE7; color: #15803D;">${data.status}</span>
-                                </div>
-                                <div>
-                                    <span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Date Submitted</span>
-                                    <span style="font-size: 14px; color: #1F2937;">${data.created_at}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div style="background: #F8FAFC; border-radius: 8px; padding: 16px;">
-                            <h4 style="margin: 0 0 12px 0; color: #1A237E; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Additional Information</h4>
-                            <div style="margin-bottom: 12px;">
-                                <span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Situation</span>
-                                <p style="margin: 0; font-size: 14px; color: #1F2937; line-height: 1.5;">${data.situation}</p>
-                            </div>
-                            <div style="margin-bottom: 12px;">
-                                <span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Notes</span>
-                                <p style="margin: 0; font-size: 14px; color: #1F2937; line-height: 1.5;">${data.notes}</p>
-                            </div>
-                            ${data.attachments_html}
                         </div>
                     </div>
-                `,
-                icon: false,
+                `;
+            }
+
+            // Attachments
+            let attachmentsContent = '';
+            if (data.attachments && data.attachments.length > 0) {
+                const cards = data.attachments.map(att => {
+                    const iconClass = att.is_pdf ? 'pdf' : (att.is_image ? 'img' : 'doc');
+                    const iconLucide = att.is_pdf ? 'file-text' : (att.is_image ? 'image' : 'file');
+                    return `
+                        <a href="${att.file_url}" target="_blank" rel="noopener noreferrer" class="or-attachment-card" title="Click to open ${escapeHtml(att.file_name)}">
+                            <div class="or-attachment-icon ${iconClass}">
+                                <i data-lucide="${iconLucide}" style="width:18px;height:18px;"></i>
+                            </div>
+                            <div class="or-attachment-info">
+                                <div class="or-attachment-name" title="${escapeHtml(att.file_name)}">${escapeHtml(att.file_name)}</div>
+                                <div class="or-attachment-meta">
+                                    <span>${escapeHtml(att.file_size)}</span>
+                                    <span>•</span>
+                                    <span style="color:#1A237E;font-weight:600;display:inline-flex;align-items:center;gap:3px;">
+                                        Open <i data-lucide="external-link" style="width:10px;height:10px;"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                }).join('');
+                attachmentsContent = `<div class="or-attachments-grid">${cards}</div>`;
+            } else if (data.attachments_html && data.attachments_html.indexOf('<li') !== -1) {
+                attachmentsContent = data.attachments_html;
+            } else {
+                attachmentsContent = `
+                    <div style="padding: 16px; text-align: center; color: #64748B; background: #F8FAFC; border-radius: 10px; border: 1px dashed #CBD5E1; font-size: 13px;">
+                        <i data-lucide="file-x" style="width: 22px; height: 22px; margin: 0 auto 6px; display: block; color: #94A3B8;"></i>
+                        No supporting documents uploaded for this request
+                    </div>
+                `;
+            }
+
+            // Notes Block
+            let notesBlock = '';
+            if (data.notes && data.notes.trim() !== '' && data.notes.trim() !== 'N/A') {
+                notesBlock = `
+                    <div class="or-card" style="border-color:#CBD5E1;background:#F8FAFC;">
+                        <div class="or-card-header" style="border-bottom-color:#E2E8F0;">
+                            <h4 class="or-card-title" style="color:#475569;">
+                                <i data-lucide="clipboard-list" style="width:15px;height:15px;"></i>
+                                <span>Administrative Remarks / Notes</span>
+                            </h4>
+                        </div>
+                        <p style="margin:0;font-size:13.5px;color:#334155;line-height:1.5;">${escapeHtml(data.notes)}</p>
+                    </div>
+                `;
+            }
+
+            const modalHtml = `
+                <div class="or-modal-header">
+                    <div class="or-modal-header-top">
+                        <div class="or-modal-ref-pill">
+                            <i data-lucide="hash" style="width:12px;height:12px;"></i>
+                            <span>${escapeHtml(data.reference_no || ('REQ-' + data.id))}</span>
+                        </div>
+                        <span class="or-status-badge ${statusClass}">
+                            <i data-lucide="${statusIcon}" style="width:13px;height:13px;"></i>
+                            <span>${escapeHtml(data.status)}</span>
+                        </span>
+                    </div>
+                    <h3 class="or-modal-title">
+                        <i data-lucide="file-text" style="width:22px;height:22px;color:#93C5FD;"></i>
+                        <span>Online Service Request Details</span>
+                    </h3>
+                    <div class="or-modal-subtitle">
+                        <i data-lucide="clock" style="width:13px;height:13px;"></i>
+                        <span>Submitted on ${escapeHtml(data.created_at)} ${data.created_at_human ? '(' + escapeHtml(data.created_at_human) + ')' : ''}</span>
+                    </div>
+                </div>
+
+                <div class="or-modal-body">
+                    ${warningBannerHtml}
+
+                    <!-- 1. Beneficiary Information -->
+                    <div class="or-card">
+                        <div class="or-card-header">
+                            <h4 class="or-card-title">
+                                <i data-lucide="user" style="width:15px;height:15px;"></i>
+                                <span>Beneficiary & Applicant Information</span>
+                            </h4>
+                            <span class="or-card-tag">${escapeHtml(data.request_for || 'Self')}</span>
+                        </div>
+                        <div class="or-grid-2">
+                            <div>
+                                <div class="or-field-label"><i data-lucide="user-check" style="width:12px;height:12px;"></i> Full Name</div>
+                                <div class="or-field-val" style="font-size:15px;color:#1A237E;font-weight:700;">
+                                    ${escapeHtml(data.first_name)} ${escapeHtml(data.last_name)}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="or-field-label"><i data-lucide="calendar" style="width:12px;height:12px;"></i> Date of Birth & Age</div>
+                                <div class="or-field-val">
+                                    ${data.dob ? `${escapeHtml(data.dob)}` : '<span style="color:#94A3B8;font-weight:normal;">Not provided</span>'}
+                                    ${data.age !== null && data.age !== undefined ? `<span style="color:#64748B;font-weight:normal;"> (${data.age} yrs old)</span>` : ''}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="or-field-label"><i data-lucide="phone" style="width:12px;height:12px;"></i> Contact Number</div>
+                                <div class="or-field-val">
+                                    <a href="tel:${escapeHtml(data.contact_number)}">${escapeHtml(data.contact_number || 'N/A')}</a>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="or-field-label"><i data-lucide="mail" style="width:12px;height:12px;"></i> Email Address</div>
+                                <div class="or-field-val">
+                                    <a href="mailto:${escapeHtml(data.email)}">${escapeHtml(data.email || 'N/A')}</a>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="or-field-label"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> Barangay</div>
+                                <div class="or-field-val" style="color:#0F172A;">${escapeHtml(data.barangay || 'N/A')}</div>
+                            </div>
+                            <div>
+                                <div class="or-field-label"><i data-lucide="home" style="width:12px;height:12px;"></i> Street / Home Address</div>
+                                <div class="or-field-val" style="font-weight:500;">
+                                    ${escapeHtml(data.address || 'No specific street address provided')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Requested Service Information -->
+                    <div class="or-card">
+                        <div class="or-card-header">
+                            <h4 class="or-card-title">
+                                <i data-lucide="layers" style="width:15px;height:15px;"></i>
+                                <span>Requested Service & Assistance Program</span>
+                            </h4>
+                        </div>
+                        <div class="or-grid-2">
+                            <div>
+                                <div class="or-field-label"><i data-lucide="briefcase" style="width:12px;height:12px;"></i> Program Category</div>
+                                <div class="or-field-val">
+                                    <span style="display:inline-block;background:#EEF2FF;color:#1E3A8A;padding:4px 10px;border-radius:6px;font-size:12.5px;font-weight:700;border:1px solid #C7D2FE;">
+                                        ${escapeHtml(data.service_type)}
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="or-field-label"><i data-lucide="heart-handshake" style="width:12px;height:12px;"></i> Assistance Type</div>
+                                <div class="or-field-val">
+                                    <span style="display:inline-block;background:#F0FDF4;color:#166534;padding:4px 10px;border-radius:6px;font-size:12.5px;font-weight:700;border:1px solid #BBF7D0;">
+                                        ${escapeHtml(data.assistance_type)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Situation Statement -->
+                    <div class="or-card">
+                        <div class="or-card-header">
+                            <h4 class="or-card-title">
+                                <i data-lucide="message-square" style="width:15px;height:15px;"></i>
+                                <span>Statement of Need / Situation Description</span>
+                            </h4>
+                        </div>
+                        <div class="or-situation-box">${escapeHtml(data.situation)}</div>
+                    </div>
+
+                    <!-- 4. Uploaded Requirements -->
+                    <div class="or-card">
+                        <div class="or-card-header">
+                            <h4 class="or-card-title">
+                                <i data-lucide="paperclip" style="width:15px;height:15px;"></i>
+                                <span>Uploaded Requirements (${data.attachments_count !== undefined ? data.attachments_count : (data.attachments ? data.attachments.length : 0)})</span>
+                            </h4>
+                        </div>
+                        ${attachmentsContent}
+                    </div>
+
+                    ${notesBlock}
+                </div>
+            `;
+
+            Swal.fire({
+                html: modalHtml,
+                showCloseButton: true,
+                showConfirmButton: true,
+                showDenyButton: false,
+                showCancelButton: false,
                 confirmButtonText: 'Close',
-                confirmButtonColor: '#1A237E',
-                width: '600px',
-                didOpen: () => {
-                    if (typeof lucide !== 'undefined') {
-                        lucide.createIcons();
+                customClass: {
+                    popup: 'or-modal-popup',
+                    actions: 'or-modal-actions',
+                    confirmButton: 'or-btn-close'
+                },
+                buttonsStyling: false,
+                didOpen: (modal) => {
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                    const popupEl = modal || Swal.getPopup();
+                    if (popupEl) {
+                        const denyBtn = popupEl.querySelector('.swal2-deny');
+                        const cancelBtn = popupEl.querySelector('.swal2-cancel');
+                        if (denyBtn) denyBtn.style.setProperty('display', 'none', 'important');
+                        if (cancelBtn) cancelBtn.style.setProperty('display', 'none', 'important');
                     }
-                }
+                },
             });
         })
         .catch(error => {
