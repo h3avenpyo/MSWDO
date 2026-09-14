@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('in_between_benefit_history', function (Blueprint $table) {
-            $table->boolean('is_exported')->default(false)->after('status');
+            if (!Schema::hasColumn('in_between_benefit_history', 'is_exported')) {
+                $table->boolean('is_exported')->default(false)->after('status');
+            }
         });
     }
 
@@ -22,7 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('in_between_benefit_history', function (Blueprint $table) {
-            $table->dropColumn('is_exported');
+            if (Schema::hasColumn('in_between_benefit_history', 'is_exported')) {
+                $table->dropColumn('is_exported');
+            }
         });
     }
 };
