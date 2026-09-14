@@ -299,8 +299,8 @@
                                         <div class="emergency-section">
                                             <div class="emergency-title">In Case of Emergency</div>
                                             <div class="details">
-                                                <div class="field"><span class="label">Name:</span><span class="value" id="cardEmergencyName_{{ $card['senior']->id }}">{{ $card['senior']->emergency_contact_name ?? '________________________' }}</span></div>
-                                                <div class="field"><span class="label">Contact:</span><span class="value" id="cardEmergencyContact_{{ $card['senior']->id }}">{{ $card['senior']->emergency_contact_number ?? '________________________' }}</span></div>
+                                                <div class="field"><span class="label">Name:</span><span class="value" id="cardEmergencyName_{{ $card['senior']->id }}">{{ !empty(trim($card['senior']->emergency_contact_name ?? '')) ? $card['senior']->emergency_contact_name : '________________________' }}</span></div>
+                                                <div class="field"><span class="label">Contact:</span><span class="value" id="cardEmergencyContact_{{ $card['senior']->id }}">{{ !empty(trim($card['senior']->emergency_contact_number ?? '')) ? $card['senior']->emergency_contact_number : '________________________' }}</span></div>
                                                 <div class="field"><span class="label">Address:</span><span class="value">________________________</span></div>
                                             </div>
                                         </div>

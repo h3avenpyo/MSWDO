@@ -76,6 +76,7 @@ class SeniorCitizenSeeder extends Seeder
         $sequenceCounter = [];
         $records = [];
         $now = now()->toDateTimeString();
+        $adminUserId = \App\Models\User::first()?->id ?? 1;
 
         foreach ($barangays as $barangay) {
             if (!isset($sequenceCounter[$barangay])) {
@@ -116,12 +117,13 @@ class SeniorCitizenSeeder extends Seeder
                     'address' => ($i + 1) . ' Street, ' . $barangay . ', Silang, Cavite',
                     'barangay' => $barangay,
                     'birth_date' => $birthDate,
+                    'date_issued' => $now,
                     'sex' => $sex,
                     'contact_number' => $contactNumber,
                     'blood_type' => $bloodTypes[array_rand($bloodTypes)],
                     'civil_status' => $civilStatuses[array_rand($civilStatuses)],
                     'osca_id' => $oscaId,
-                    'created_by' => 1,
+                    'created_by' => $adminUserId,
                     'status' => 'active',
                     'emergency_contact_name' => $firstName . ' ' . $lastName . ' Jr.',
                     'emergency_contact_number' => '09' . str_pad(rand(10, 99), 2, '0', STR_PAD_LEFT) . str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT),

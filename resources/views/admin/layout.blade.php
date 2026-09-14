@@ -408,6 +408,7 @@
             padding: 10px 24px !important;
         }
         .swal2-cancel {
+            background-color: #EF4444 !important;
             border-radius: 8px !important;
             font-weight: 600 !important;
             padding: 10px 24px !important;
@@ -545,11 +546,12 @@
         event.preventDefault();
         Swal.fire({
             title: 'Are you sure?',
-            text: 'Do you really want to log out of the admin panel?',
+            text: 'Do you really want to log out?',
             icon: 'warning',
             showCancelButton: true,
+            reverseButtons: true,
             confirmButtonColor: '#1A237E',
-            cancelButtonColor: '#DC2626',
+            cancelButtonColor: '#EF4444',
             confirmButtonText: 'Yes, log out',
             cancelButtonText: 'Cancel',
             background: '#ffffff',

@@ -1291,6 +1291,14 @@
                     </div>
                 </div>
 
+                @if($seniors->total() > $seniors->count())
+                <div id="selectAllPagesNotice" style="display:none;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;padding:10px 16px;border-radius:8px;margin:12px 16px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
+                    <i data-lucide="info" style="width:16px;height:16px;color:#4F46E5;flex-shrink:0;"></i>
+                    <span id="selectAllPagesText">All <strong>{{ $seniors->total() }}</strong> senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'this list' }} are selected across all pages.</span>
+                    <button type="button" onclick="clearSelections()" style="margin-left:auto;background:transparent;border:none;color:#4338CA;text-decoration:underline;cursor:pointer;font-weight:600;font-size:12.5px;">Clear selection</button>
+                </div>
+                @endif
+
                 <div class="archive-table-wrap">
                     <table class="archive-table">
                         <thead>
@@ -1316,7 +1324,7 @@
                                             data-name="{{ $senior->full_name }}" 
                                             data-eligible="{{ $senior->is_eligible ? '1' : '0' }}" 
                                             data-has-claimed="{{ $senior->has_claimed ? '1' : '0' }}"
-                                            onchange="updateBulkActions()"
+                                            onchange="handleSeniorCheckboxChange(this)"
                                             style="cursor:pointer; width:16px; height:16px; accent-color:var(--primary);">
                                     </td>
                                     <td class="col-control" data-label="Control Number">
@@ -1569,12 +1577,33 @@
             if (cb.dataset.hasClaimed === '1') claimedCount++;
         });
 
-        // If select-all-matching, use server-side totals
+        // If select-all-matching, use server-side totals for current filtered view
         if (window.selectAllMatching) {
             totalSelected = {{ $seniors->total() ?? 0 }};
-            eligibleCount = {{ $totalEligible ?? $seniors->total() }};
-            claimedCount = {{ $totalClaimed ?? 0 }};
-            eligibleCount = Math.max(0, eligibleCount - claimedCount);
+            @if(request('status') === 'claimed')
+                eligibleCount = 0;
+                claimedCount = totalSelected;
+            @elseif(request('status') === 'pending')
+                eligibleCount = 0;
+                claimedCount = 0;
+            @else
+                eligibleCount = Math.min(totalSelected, {{ $totalEligible ?? $seniors->total() }});
+                claimedCount = 0;
+            @endif
+        } else {
+            if (ids.length > totalSelected) {
+                totalSelected = ids.length;
+                @if(request('status') === 'claimed')
+                    eligibleCount = 0;
+                    claimedCount = totalSelected;
+                @elseif(request('status') === 'pending')
+                    eligibleCount = 0;
+                    claimedCount = 0;
+                @else
+                    eligibleCount = totalSelected;
+                    claimedCount = 0;
+                @endif
+            }
         }
 
         // Update summary text
@@ -1618,11 +1647,13 @@
     }
 
     function clearFilters() {
+        sessionStorage.removeItem('inBetweenSelectAllMatching');
+        localStorage.removeItem('selectedInBetweenSeniorIds');
         document.getElementById('filterForm').reset();
         window.location.href = '{{ route('admin.senior.in-between.eligibility-list') }}';
     }
 
-    // Toggle Select All on current page
+    // Toggle Select All on current page / all pages
     function toggleSelectAll() {
         const selectAll = document.getElementById('selectAll');
         const checkboxes = document.querySelectorAll('.senior-checkbox');
@@ -1637,10 +1668,33 @@
 
         if (selectAll.checked) {
             window.selectAllMatching = true;
+            sessionStorage.setItem('inBetweenSelectAllMatching', 'true');
+            if (notice && hasMorePages) {
+                notice.style.display = 'flex';
+                const text = document.getElementById('selectAllPagesText');
+                if (text) {
+                    text.innerHTML = `All <strong>${total}</strong> senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'this list' }} are selected across all pages.`;
+                }
+            }
         } else {
             window.selectAllMatching = false;
+            sessionStorage.removeItem('inBetweenSelectAllMatching');
+            localStorage.removeItem('selectedInBetweenSeniorIds');
+            if (notice) notice.style.display = 'none';
         }
 
+        updateBulkActions();
+    }
+
+    function handleSeniorCheckboxChange(cb) {
+        if (!cb.checked && window.selectAllMatching) {
+            window.selectAllMatching = false;
+            sessionStorage.removeItem('inBetweenSelectAllMatching');
+            const notice = document.getElementById('selectAllPagesNotice');
+            if (notice) notice.style.display = 'none';
+            const selectAll = document.getElementById('selectAll');
+            if (selectAll) selectAll.checked = false;
+        }
         updateBulkActions();
     }
 
@@ -1658,6 +1712,17 @@
         const pageTotal         = document.querySelectorAll('.senior-checkbox').length;
         const totalMatching     = {{ $seniors->total() ?? 0 }};
 
+        if (window.selectAllMatching) {
+            if (countSpan) countSpan.textContent = totalMatching;
+            if (bulkHeader) bulkHeader.style.display = 'inline-flex';
+            if (bulkBtn) {
+                bulkBtn.style.display = 'inline-flex';
+                bulkBtn.disabled = false;
+            }
+            if (clearSelectBtn) clearSelectBtn.style.display = 'inline-flex';
+            return;
+        }
+
         // Merge current page selections into localStorage
         const savedIds          = localStorage.getItem('selectedInBetweenSeniorIds');
         let allSelectedIds      = savedIds ? JSON.parse(savedIds) : [];
@@ -1667,14 +1732,13 @@
         allSelectedIds = [...allSelectedIds, ...currentPageIds];
         localStorage.setItem('selectedInBetweenSeniorIds', JSON.stringify(allSelectedIds));
 
-        const selectionCount = window.selectAllMatching ? totalMatching : allSelectedIds.length;
+        const selectionCount = allSelectedIds.length;
 
         if (countSpan) countSpan.textContent = selectionCount;
 
-        if (checkedBoxes.length < pageTotal) {
-            window.selectAllMatching = false;
-            const notice = document.getElementById('selectAllPagesNotice');
-            if (notice) notice.style.display = 'none';
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll && pageTotal > 0) {
+            selectAll.checked = (checkedBoxes.length === pageTotal);
         }
 
         if (selectionCount >= 1) {
@@ -1695,6 +1759,35 @@
     }
 
     function restoreSelections() {
+        const currentQuery = '{{ http_build_query(request()->except('page')) }}';
+        const savedQuery = sessionStorage.getItem('inBetweenFilterQuery');
+        if (savedQuery !== currentQuery) {
+            sessionStorage.removeItem('inBetweenSelectAllMatching');
+            sessionStorage.setItem('inBetweenFilterQuery', currentQuery);
+        }
+
+        const isSelectAllMatching = sessionStorage.getItem('inBetweenSelectAllMatching') === 'true';
+
+        if (isSelectAllMatching) {
+            window.selectAllMatching = true;
+            const checkboxes = document.querySelectorAll('.senior-checkbox');
+            checkboxes.forEach(cb => { cb.checked = true; });
+            const selectAll = document.getElementById('selectAll');
+            if (selectAll) selectAll.checked = true;
+            const notice = document.getElementById('selectAllPagesNotice');
+            const total = {{ $seniors->total() ?? 0 }};
+            const currentCount = {{ $seniors->count() ?? 0 }};
+            if (notice && total > currentCount) {
+                notice.style.display = 'flex';
+                const text = document.getElementById('selectAllPagesText');
+                if (text) {
+                    text.innerHTML = `All <strong>${total}</strong> senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'this list' }} are selected across all pages.`;
+                }
+            }
+            syncActionButtons();
+            return;
+        }
+
         const savedIds = localStorage.getItem('selectedInBetweenSeniorIds');
         if (savedIds) {
             const ids = JSON.parse(savedIds);
@@ -1713,6 +1806,7 @@
     }
 
     function clearSelections() {
+        sessionStorage.removeItem('inBetweenSelectAllMatching');
         localStorage.removeItem('selectedInBetweenSeniorIds');
         const checkboxes = document.querySelectorAll('.senior-checkbox');
         checkboxes.forEach(cb => cb.checked = false);

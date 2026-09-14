@@ -32,6 +32,7 @@
         padding: 10px 24px !important;
     }
     .swal2-cancel {
+        background-color: #EF4444 !important;
         border-radius: 8px !important;
         font-weight: 600 !important;
         padding: 10px 24px !important;

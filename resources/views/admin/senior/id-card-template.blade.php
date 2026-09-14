@@ -283,8 +283,8 @@
                                 <div class="emergency-section">
                                     <div class="emergency-title">In Case of Emergency</div>
                                     <div class="details">
-                                        <div class="field"><span class="label">Name:</span><span class="value" id="cardEmergencyName">{{ $senior->emergency_contact_name ?? '________________________' }}</span></div>
-                                        <div class="field"><span class="label">Contact:</span><span class="value" id="cardEmergencyContact">{{ $senior->emergency_contact_number ?? '________________________' }}</span></div>
+                                        <div class="field"><span class="label">Name:</span><span class="value" id="cardEmergencyName">{{ !empty(trim($senior->emergency_contact_name ?? '')) ? $senior->emergency_contact_name : '________________________' }}</span></div>
+                                        <div class="field"><span class="label">Contact:</span><span class="value" id="cardEmergencyContact">{{ !empty(trim($senior->emergency_contact_number ?? '')) ? $senior->emergency_contact_number : '________________________' }}</span></div>
                                         <div class="field"><span class="label">Address:</span><span class="value">________________________</span></div>
                                     </div>
                                 </div>

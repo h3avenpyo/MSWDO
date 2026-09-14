@@ -86,12 +86,6 @@ class InBetweenBenefitController extends Controller
                     ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 86 AND 89")
                     ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 91 AND 94")
                     ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 96 AND 99");
-            })
-            ->whereDoesntHave('inBetweenBenefits', function ($q) use ($sixYearsAgo) {
-                $q->claimed()->where('payout_date', '>=', $sixYearsAgo);
-            })
-            ->whereDoesntHave('inBetweenBenefits', function ($q) {
-                $q->pending();
             });
 
         // Search filters
@@ -112,13 +106,7 @@ class InBetweenBenefitController extends Controller
         if ($request->filled('status')) {
             $status = $request->status;
             if ($status === 'eligible') {
-                $sixYearsAgo = Carbon::now()->subYears(6);
-                $query->where(function ($q) {
-                    $q->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 81 AND 84")
-                        ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 86 AND 89")
-                        ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 91 AND 94")
-                        ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 96 AND 99");
-                })->whereDoesntHave('inBetweenBenefits', function ($q) use ($sixYearsAgo) {
+                $query->whereDoesntHave('inBetweenBenefits', function ($q) use ($sixYearsAgo) {
                     $q->claimed()->where('payout_date', '>=', $sixYearsAgo);
                 })->whereDoesntHave('inBetweenBenefits', function ($q) {
                     $q->pending();
@@ -132,6 +120,13 @@ class InBetweenBenefitController extends Controller
                     $q->pending();
                 });
             }
+        } else {
+            // Default view: only show seniors who have not claimed in the past 6 years and have no pending claims
+            $query->whereDoesntHave('inBetweenBenefits', function ($q) use ($sixYearsAgo) {
+                $q->claimed()->where('payout_date', '>=', $sixYearsAgo);
+            })->whereDoesntHave('inBetweenBenefits', function ($q) {
+                $q->pending();
+            });
         }
 
         // Prioritize in-between interval seniors at the top, followed by newest registrations
@@ -157,9 +152,10 @@ class InBetweenBenefitController extends Controller
             return $senior;
         });
 
-        // Summary Metric Aggregates
+        // Summary Metric Aggregates (respect active filters)
         $benefitAmount = (float)($this->config->benefit_amount ?? 1000.00);
-        $totalEligible = SeniorCitizenRecord::where('status', 'active')
+
+        $eligibleQuery = SeniorCitizenRecord::where('status', 'active')
             ->whereNotNull('birth_date')
             ->where(function ($q) {
                 $q->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 81 AND 84")
@@ -167,11 +163,44 @@ class InBetweenBenefitController extends Controller
                     ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 91 AND 94")
                     ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 96 AND 99");
             })
-            ->count();
+            ->whereDoesntHave('inBetweenBenefits', function ($q) use ($sixYearsAgo) {
+                $q->claimed()->where('payout_date', '>=', $sixYearsAgo);
+            })
+            ->whereDoesntHave('inBetweenBenefits', function ($q) {
+                $q->pending();
+            });
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $eligibleQuery->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('control_number', 'like', "%{$search}%")
+                    ->orWhere('senior_id_number', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('barangay')) {
+            $eligibleQuery->where('barangay', $request->barangay);
+        }
+
+        $totalEligible = $eligibleQuery->count();
         $totalEstimatedBudget = $totalEligible * $benefitAmount;
-        $totalClaimed = InBetweenBenefitHistory::whereIn('status', ['approved', 'released'])->count();
-        $totalPending = InBetweenBenefitHistory::where('status', 'pending')->count();
+
+        $claimedQuery = InBetweenBenefitHistory::whereIn('status', ['approved', 'released']);
+        $pendingQuery = InBetweenBenefitHistory::where('status', 'pending');
+
+        if ($request->filled('barangay')) {
+            $claimedQuery->whereHas('senior', function ($q) use ($request) {
+                $q->where('barangay', $request->barangay);
+            });
+            $pendingQuery->whereHas('senior', function ($q) use ($request) {
+                $q->where('barangay', $request->barangay);
+            });
+        }
+
+        $totalClaimed = $claimedQuery->count();
+        $totalPending = $pendingQuery->count();
 
         return view('admin.senior.in-between-benefits.eligibility-list', compact(
             'seniors',
@@ -381,14 +410,14 @@ class InBetweenBenefitController extends Controller
                 $query->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN ? AND ?", [$startAge, $endAge]);
             }
 
+            $sixYearsAgo = Carbon::now()->subYears(6);
             if ($request->filled('status')) {
                 $status = $request->status;
                 if ($status === 'eligible') {
-                    $query->where(function ($q) {
-                        $q->whereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 81 AND 84")
-                            ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 86 AND 89")
-                            ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 91 AND 94")
-                            ->orWhereRaw("TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 96 AND 99");
+                    $query->whereDoesntHave('inBetweenBenefits', function ($q) use ($sixYearsAgo) {
+                        $q->claimed()->where('payout_date', '>=', $sixYearsAgo);
+                    })->whereDoesntHave('inBetweenBenefits', function ($q) {
+                        $q->pending();
                     });
                 } elseif ($status === 'claimed') {
                     $query->whereHas('inBetweenBenefits', function ($q) {
@@ -399,6 +428,12 @@ class InBetweenBenefitController extends Controller
                         $q->pending();
                     });
                 }
+            } else {
+                $query->whereDoesntHave('inBetweenBenefits', function ($q) use ($sixYearsAgo) {
+                    $q->claimed()->where('payout_date', '>=', $sixYearsAgo);
+                })->whereDoesntHave('inBetweenBenefits', function ($q) {
+                    $q->pending();
+                });
             }
 
             $seniors = $query->get();

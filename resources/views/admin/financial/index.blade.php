@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financial Assistance Module</title>
     @vite(['resources/css/admin-compat.css'])
+    <link href="{{ asset('css/responsive.css') }}" rel="stylesheet">
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -33,8 +34,9 @@
             text: 'Do you really want to log out?',
             icon: 'warning',
             showCancelButton: true,
+            reverseButtons: true,
             confirmButtonColor: '#1A237E',
-            cancelButtonColor: '#d33',
+            cancelButtonColor: '#EF4444',
             confirmButtonText: 'Yes, log out',
             cancelButtonText: 'Cancel',
             background: '#ffffff',
