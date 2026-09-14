@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Online Service Request - MSWDO Silang</title>
-    <meta name="description" content="Submit an online service request to MSWDO Silang">
+    <title>Online Social Case Study Application - MSWDO Silang</title>
+    <meta name="description" content="Opisyal na Online Application Form para sa Social Case Study Report (SCSR) sa MSWDO Silang">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800" rel="stylesheet" />
@@ -36,7 +36,7 @@
                         }
                         @endphp
                         @if ($logo)
-                        <img src="{{ asset('images/' . $logo) }}" class="rounded-full h-full w-full object-cover">
+                        <img src="{{ asset('images/' . $logo) }}" class="rounded-full h-full w-full object-cover" alt="MSWDO Logo">
                         @endif
                     </div>
                     <div>
@@ -48,16 +48,24 @@
                         </p>
                     </div>
                 </a>
-                <!-- Desktop Menu -->
-                <nav class="hidden lg:flex items-center gap-8 text-offwhite">
-                    <a href="/" class="hover:text-warm-gold transition">Home</a>
-                    <a href="/#services" class="hover:text-warm-gold transition">Services</a>
-                    <a href="/#about" class="hover:text-warm-gold transition">About</a>
-                    <a href="/#contact" class="hover:text-warm-gold transition">Contact</a>
-                    <a href="/admin" class="navbar-login-btn">
+                <!-- Navigation & Actions -->
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <!-- <nav class="hidden lg:flex items-center gap-6 text-offwhite text-sm font-medium mr-2">
+                        <a href="/" class="hover:text-warm-gold transition">Home</a>
+                        <a href="/#services" class="hover:text-warm-gold transition">Coverage &amp; Purpose</a>
+                        <a href="/#requirements" class="hover:text-warm-gold transition">Requirements</a>
+                        <a href="/#process" class="hover:text-warm-gold transition">How to Apply</a>
+                        <a href="/#about" class="hover:text-warm-gold transition">About</a>
+                        <a href="/#contact" class="hover:text-warm-gold transition">Contact</a>
+                    </nav> -->
+                    <a href="/" class="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-white/90 hover:text-white bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg transition">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        <span>Bumalik sa Home</span>
+                    </a>
+                    <a href="/admin" class="navbar-login-btn text-xs sm:text-sm">
                         Login
                     </a>
-                </nav>
+                </div>
             </div>
         </div>
     </header>
@@ -72,22 +80,29 @@
         
         <div class="relative z-10 max-w-4xl mx-auto">
             <!-- Header -->
-            <div class="text-center mb-10">
-                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-white shadow-lg">
-                    <i data-lucide="file-text" class="h-8 w-8"></i>
+            <div class="text-center mb-8">
+                <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-md">
+                    <i data-lucide="file-text" class="h-7 w-7"></i>
                 </div>
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-primary mb-3">Online Service Request</h1>
-                <p class="text-slate-600 text-base sm:text-lg">Fill out the form below to submit your service request to MSWDO Silang.</p>
+                <p class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-500 mb-1">
+                    Republika ng Pilipinas &bull; Bayan ng Silang, Cavite
+                </p>
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-primary mb-2">
+                    Online Social Case Study Application
+                </h1>
+                <p class="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto">
+                    Punan ang opisyal na form sa ibaba upang magsumite ng aplikasyon para sa Social Case Study Report (SCSR) sa MSWDO Silang.
+                </p>
             </div>
 
             <!-- Information Notice -->
-            <div class="mx-auto mb-8 rounded-xl border border-primary/30 bg-primary/5 p-5">
+            <div class="mx-auto mb-8 rounded-xl border border-blue-200 bg-blue-50/90 p-4 sm:p-5 shadow-sm">
                 <div class="flex items-start gap-3">
                     <i data-lucide="info" class="mt-0.5 h-5 w-5 shrink-0 text-primary"></i>
-                    <div class="text-sm leading-6 text-slate-700">
-                        <p class="font-semibold text-primary">Before submitting your request</p>
+                    <div class="text-xs sm:text-sm leading-relaxed text-slate-700">
+                        <p class="font-bold text-primary">Paalala Bago Magsumite ng Social Case Study Request:</p>
                         <p class="mt-1 text-slate-600">
-                            Please make sure that the information provided is correct and that your uploaded documents are clear and readable. An MSWDO representative may contact you for verification or additional requirements.
+                            Pakitiyak na wasto at kumpleto ang lahat ng impormasyon ng kliyente o pasyente. Siguraduhing malinaw at nababasa ang mga ilalakip na dokumento (tulad ng Valid ID, Barangay Certificate of Indigency, Medical Abstract/Billing, Reseta, o Death Certificate). Ang inyong kahilingan ay dadaan sa pagsusuri at panayam ng lisensyadong Social Worker ng MSWDO.
                         </p>
                     </div>
                 </div>
@@ -99,44 +114,45 @@
 
                 @csrf
 
-                <!-- Section 1: Who needs assistance -->
+                <!-- Section 1: Client / Beneficiary -->
                 <div class="mb-8 pb-8 border-b border-slate-200">
-                    <h2 class="text-xl font-bold text-primary mb-6">Who needs assistance? (Sino ang nangangailangan ng tulong?)</h2>
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#1A237E] block mb-1">Hakbang 1</span>
+                    <h2 class="text-lg sm:text-xl font-bold text-primary mb-4">Sino ang nangangailangan ng Social Case Study? (Client / Beneficiary)</h2>
                     
                     <div class="space-y-3">
                         <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition">
                             <input type="radio" name="request_for" value="myself" required class="w-5 h-5 text-primary focus:ring-primary">
                             <div>
-                                <span class="block font-semibold text-slate-900">Myself (Ako)</span>
-                                <span class="block text-sm text-slate-500">I am requesting assistance for myself.</span>
+                                <span class="block font-semibold text-slate-900 text-sm sm:text-base">Sarili ko (Myself)</span>
+                                <span class="block text-xs sm:text-sm text-slate-500">Ako ang mismong nangangailangan ng Social Case Study Report.</span>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition">
                             <input type="radio" name="request_for" value="child" class="w-5 h-5 text-primary focus:ring-primary">
                             <div>
-                                <span class="block font-semibold text-slate-900">My Child (Anak ko)</span>
-                                <span class="block text-sm text-slate-500">I am requesting assistance for my child.</span>
+                                <span class="block font-semibold text-slate-900 text-sm sm:text-base">Aking Anak (My Child)</span>
+                                <span class="block text-xs sm:text-sm text-slate-500">Ang kahilingan ng Social Case Study ay para sa aking anak.</span>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition">
                             <input type="radio" name="request_for" value="parent" class="w-5 h-5 text-primary focus:ring-primary">
                             <div>
-                                <span class="block font-semibold text-slate-900">My Parent (Magulang ko)</span>
-                                <span class="block text-sm text-slate-500">I am requesting assistance for my parent.</span>
+                                <span class="block font-semibold text-slate-900 text-sm sm:text-base">Aking Magulang (My Parent)</span>
+                                <span class="block text-xs sm:text-sm text-slate-500">Ang kahilingan ay para sa aking magulang (tatay o nanay).</span>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition">
                             <input type="radio" name="request_for" value="family" class="w-5 h-5 text-primary focus:ring-primary">
                             <div>
-                                <span class="block font-semibold text-slate-900">Another family member (Ibang miyembro ng pamilya)</span>
-                                <span class="block text-sm text-slate-500">The request is for our household/family.</span>
+                                <span class="block font-semibold text-slate-900 text-sm sm:text-base">Ibang Miyembro ng Pamilya (Family Member)</span>
+                                <span class="block text-xs sm:text-sm text-slate-500">Ang kahilingan ay para sa aming kasambahay o miyembro ng pamilya.</span>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition">
                             <input type="radio" name="request_for" value="assisting" class="w-5 h-5 text-primary focus:ring-primary">
                             <div>
-                                <span class="block font-semibold text-slate-900">Someone I am assisting (Tinutulungan kong tao)</span>
-                                <span class="block text-sm text-slate-500">I am submitting this request on behalf of another person.</span>
+                                <span class="block font-semibold text-slate-900 text-sm sm:text-base">Tinutulungang Kliyente / Kinatawan (Authorized Representative)</span>
+                                <span class="block text-xs sm:text-sm text-slate-500">Ako ay nag-aasikaso sa ngalan ng ibang tao o pasyente.</span>
                             </div>
                         </label>
                     </div>
@@ -144,28 +160,29 @@
 
                 <!-- Section 2: Beneficiary Information -->
                 <div class="mb-8 pb-8 border-b border-slate-200">
-                    <h2 class="text-xl font-bold text-primary mb-6">Beneficiary Information (Impormasyon ng Benepisyaryo)</h2>
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#1A237E] block mb-1">Hakbang 2</span>
+                    <h2 class="text-lg sm:text-xl font-bold text-primary mb-4">Impormasyon ng Benepisyaryo / Pasyente (Beneficiary Information)</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label for="firstName" class="block text-sm font-semibold text-slate-700 mb-2">First name (Unang Pangalan)</label>
-                            <input type="text" id="firstName" name="first_name" required placeholder="e.g. Juan" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
+                            <label for="firstName" class="block text-sm font-semibold text-slate-700 mb-2">Unang Pangalan (First Name) <span class="text-rose-600 font-bold">*</span></label>
+                            <input type="text" id="firstName" name="first_name" required placeholder="Halimbawa: Juan" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-sm">
                         </div>
                         <div>
-                            <label for="lastName" class="block text-sm font-semibold text-slate-700 mb-2">Last name (Apelyido)</label>
-                            <input type="text" id="lastName" name="last_name" required placeholder="e.g. Dela Cruz" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
+                            <label for="lastName" class="block text-sm font-semibold text-slate-700 mb-2">Apelyido (Last Name) <span class="text-rose-600 font-bold">*</span></label>
+                            <input type="text" id="lastName" name="last_name" required placeholder="Halimbawa: Dela Cruz" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-sm">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label for="dob" class="block text-sm font-semibold text-slate-700 mb-2">Date of birth (Petsa ng Kapanganakan)</label>
-                            <input type="date" id="dob" name="dob" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
+                            <label for="dob" class="block text-sm font-semibold text-slate-700 mb-2">Petsa ng Kapanganakan (Date of Birth) <span class="text-rose-600 font-bold">*</span></label>
+                            <input type="date" id="dob" name="dob" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-sm">
                         </div>
                         <div>
-                            <label for="barangay" class="block text-sm font-semibold text-slate-700 mb-2">Barangay (Barangay)</label>
-                            <select id="barangay" name="barangay" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
-                                <option value="">Select barangay</option>
+                            <label for="barangay" class="block text-sm font-semibold text-slate-700 mb-2">Barangay sa Silang (Barangay) <span class="text-rose-600 font-bold">*</span></label>
+                            <select id="barangay" name="barangay" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-sm">
+                                <option value="">Pumili ng barangay</option>
                                 <option value="ACACIA">Acacia</option>
                                 <option value="ADLAS">Adlas</option>
                                 <option value="ANAHAW 1">Anahaw I</option>
@@ -236,87 +253,123 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="contactNumber" class="block text-sm font-semibold text-slate-700 mb-2">Contact number (Numero ng Kontak)</label>
-                            <input type="text" id="contactNumber" name="contact_number" required placeholder="e.g. 09123456789" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
+                            <label for="contactNumber" class="block text-sm font-semibold text-slate-700 mb-2">Numero ng Kontak (Contact Number) <span class="text-rose-600 font-bold">*</span></label>
+                            <input type="text" id="contactNumber" name="contact_number" required placeholder="Halimbawa: 09123456789" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-sm">
                         </div>
                         <div>
-                            <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">Email address (Email)</label>
-                            <input type="email" id="email" name="email" required placeholder="e.g. juan@gmail.com" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
+                            <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">Email Address (Email) <span class="text-rose-600 font-bold">*</span></label>
+                            <input type="email" id="email" name="email" required placeholder="Halimbawa: juan@gmail.com" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-sm">
                         </div>
                     </div>
 
                     <div class="mt-4">
-                        <label for="address" class="block text-sm font-semibold text-slate-700 mb-2">Address (Address)</label>
-                        <input type="text" id="address" name="address" placeholder="e.g. Block 5 Lot 12, Phase 1, Barangay Poblacion" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
+                        <label for="address" class="block text-sm font-semibold text-slate-700 mb-2">Kumpletong Tirahan (Complete Address)</label>
+                        <input type="text" id="address" name="address" placeholder="Halimbawa: House No., Street, Subdivision, Barangay" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-sm">
                     </div>
                 </div>
 
-                <!-- Section 3: Service Details -->
+                <!-- Section 3: Social Case Study Details -->
                 <div class="mb-8 pb-8 border-b border-slate-200">
-                    <h2 class="text-xl font-bold text-primary mb-6">Service Request Details (Detalye ng Kahilingan ng Serbisyo)</h2>
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#1A237E] block mb-1">Hakbang 3</span>
+                    <h2 class="text-lg sm:text-xl font-bold text-primary mb-4">Mga Detalye ng Social Case Study (Case Study Details)</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <!-- Dedicated Service Type Display -->
                         <div>
-                            <label for="serviceType" class="block text-sm font-semibold text-slate-700 mb-2">Type of Service (Uri ng Serbisyo)</label>
-                            <select id="serviceType" name="service_type" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
-                                <option value="">Select service type</option>
-                                <option value="financial_assistance">Financial Assistance</option>
-                                <option value="social_case_study">Social Case Study</option>
-                            </select>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Uri ng Kahilingan (Service Type)</label>
+                            <div class="flex items-center gap-2.5 px-4 py-3 border border-slate-300 rounded-lg bg-slate-100 text-slate-800 font-semibold text-sm">
+                                <i data-lucide="file-check-2" class="w-5 h-5 text-primary shrink-0"></i>
+                                <span>Social Case Study Report (SCSR)</span>
+                            </div>
+                            <input type="hidden" id="serviceType" name="service_type" value="social_case_study">
+                            <p class="text-[11px] text-slate-500 mt-1">Nakatakda eksklusibo para sa Social Case Study application.</p>
                         </div>
+
+                        <!-- Assistance Type / Case Study Purpose -->
                         <div>
-                            <label for="assistanceType" class="block text-sm font-semibold text-slate-700 mb-2">Assistance Type (Uri ng Tulong)</label>
-                            <select id="assistanceType" name="assistance_type" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50">
-                                <option value="">Select assistance type</option>
-                                <option value="medical">Medical Assistance</option>
-                                <option value="educational">Educational Assistance</option>
-                                <option value="food">Food Assistance</option>
-                                <option value="transportation">Transportation Assistance</option>
-                                <option value="burial">Burial Assistance</option>
-                                <option value="livelihood">Livelihood Assistance</option>
-                                <option value="emergency">Emergency Assistance</option>
-                                <option value="others">Others</option>
+                            <label for="assistanceType" class="block text-sm font-semibold text-slate-700 mb-2">Layunin ng Case Study (Purpose / Category) <span class="text-rose-600 font-bold">*</span></label>
+                            <select id="assistanceType" name="assistance_type" required class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-sm">
+                                <option value="">Pumili ng layunin ng Social Case Study</option>
+                                <option value="medical">Tulong Medikal at Ospitalisasyon (Hospitalization &amp; Surgery)</option>
+                                <option value="burial">Tulong sa Burol at Libing (Burial &amp; Funeral Referral)</option>
+                                <option value="educational">Edukasyon at Pag-aaral (Educational Support Endorsement)</option>
+                                <option value="transportation">Pamasahe / Pagbiyahe (Transportation Referral)</option>
+                                <option value="food">Suporta sa Pagkain (Food Subsistence Endorsement)</option>
+                                <option value="emergency">Emerhensiya at Krisis (Emergency Crisis Assessment)</option>
+                                <option value="livelihood">Pangkabuhayan (Livelihood Assessment)</option>
+                                <option value="others">Iba Pang Layunin ng Case Study (Others)</option>
                             </select>
                         </div>
                     </div>
 
                     <div>
-                        <label for="situation" class="block text-sm font-semibold text-slate-700 mb-2">Situation Description (Paglalarawan ng Sitwasyon)</label>
-                        <textarea id="situation" name="situation" rows="4" required placeholder="e.g. I need financial assistance for my child's hospitalization due to dengue fever." class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 resize-vertical"></textarea>
+                        <label for="situation" class="block text-sm font-semibold text-slate-700 mb-2">Salaysay ng Sitwasyon at Pangangailangan (Situation &amp; Case Background) <span class="text-rose-600 font-bold">*</span></label>
+                        <textarea id="situation" name="situation" rows="4" required placeholder="Halimbawa: Humihiling po kami ng Social Case Study Report para sa Guarantee Letter (GL) sa Malasakit Center para sa hospital bill at gamot ng aking anak na naospital..." class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 resize-vertical text-sm"></textarea>
+                        <p class="text-[11px] text-slate-500 mt-1">Ilarawan nang maikli ang kasalukuyang kalagayan at kung saang ahensya o ospital isusumite ang Social Case Study Report.</p>
                     </div>
                 </div>
 
                 <!-- Section 4: Upload Documents -->
                 <div class="mb-8">
-                    <h2 class="text-xl font-bold text-primary mb-6">Upload Documents (Mag-upload ng Dokumento)</h2>
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#1A237E] block mb-1">Hakbang 4</span>
+                    <h2 class="text-lg sm:text-xl font-bold text-primary mb-2">Pag-upload ng mga Dokumento (Upload Supporting Documents)</h2>
+                    <p class="text-xs text-slate-600 mb-4">
+                        Mag-upload ng malinaw na kopya o litrato ng mga sumusunod na kinakailangang dokumento para sa pagsusuri ng inyong Social Case Study.
+                    </p>
+
+                    <!-- Documentary Guidance Checklist -->
+                    <div class="mb-4 p-4 bg-blue-50/70 border border-blue-200/80 rounded-xl text-xs leading-relaxed">
+                        <p class="font-bold text-primary mb-2 flex items-center gap-1.5">
+                            <i data-lucide="paperclip" class="w-4 h-4 text-primary"></i>
+                            Mga Karaniwang Kinakailangang Dokumento para sa Social Case Study Report:
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-700">
+                            <div class="flex items-start gap-1.5">
+                                <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5"></i>
+                                <span>Valid Government ID ng Kliyente o Pasyente</span>
+                            </div>
+                            <div class="flex items-start gap-1.5">
+                                <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5"></i>
+                                <span>Barangay Certificate of Indigency (para sa SCSR)</span>
+                            </div>
+                            <div class="flex items-start gap-1.5">
+                                <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5"></i>
+                                <span>Medical Abstract / Hospital Statement of Account</span>
+                            </div>
+                            <div class="flex items-start gap-1.5">
+                                <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5"></i>
+                                <span>Reseta ng Gamot, Laboratory Request, o Death Certificate</span>
+                            </div>
+                        </div>
+                    </div>
                     
-                    <div id="uploadArea" class="border-2 border-dashed border-primary rounded-lg p-8 text-center bg-slate-50 cursor-pointer transition-all duration-300 hover:bg-slate-100">
-                        <div class="mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto text-primary">
+                    <div id="uploadArea" class="border-2 border-dashed border-primary/50 rounded-xl p-6 sm:p-8 text-center bg-slate-50 cursor-pointer transition-all duration-300 hover:bg-slate-100 hover:border-primary">
+                        <div class="mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto text-primary">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                             </svg>
                         </div>
-                        <p class="text-primary font-semibold text-lg mb-2">Click to upload files</p>
-                        <p class="text-slate-600 text-sm">or drag and drop files here</p>
-                        <p class="text-slate-500 text-xs mt-3">Accepted formats: PDF, DOC, DOCX, JPG, JPEG, PNG</p>
-                        <p class="text-slate-500 text-xs">Maximum file size: 10MB per file</p>
+                        <p class="text-primary font-bold text-base mb-1">Pindutin upang mag-upload ng files</p>
+                        <p class="text-slate-600 text-xs sm:text-sm">o i-drag at i-drop ang mga dokumento rito</p>
+                        <p class="text-slate-500 text-[11px] mt-2">Tinatanggap na format: PDF, DOC, DOCX, JPG, JPEG, PNG</p>
+                        <p class="text-slate-500 text-[11px]">Pinakamalaking sukat: 10MB bawat file</p>
                     </div>
                     <input type="file" id="documents" name="documents[]" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="hidden">
                     <div id="fileList" class="mt-4"></div>
                 </div>
 
                 <!-- Submit Button -->
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button type="submit" id="submitBtn" class="flex-1 bg-primary text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition shadow-lg">
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
+                    <button type="submit" id="submitBtn" class="flex-1 bg-primary text-white px-8 py-3.5 sm:py-4 rounded-xl font-bold hover:bg-slate-800 transition shadow">
                         <div class="flex flex-col items-center">
-                            <span>Submit Request</span>
-                            <span class="text-xs font-normal text-white/70 mt-1">Isumite ang Kahilingan</span>
+                            <span class="text-sm sm:text-base">Isumite ang Social Case Study Application</span>
+                            <span class="text-xs font-normal text-white/70 mt-0.5">Submit Case Study Request</span>
                         </div>
                     </button>
-                    <a href="/" class="flex-1 text-center border-2 border-slate-300 text-slate-700 px-8 py-4 rounded-xl font-bold hover:border-primary hover:text-primary transition">
+                    <a href="/" class="flex-1 text-center border-2 border-slate-300 text-slate-700 px-8 py-3.5 sm:py-4 rounded-xl font-bold hover:border-primary hover:text-primary transition flex items-center justify-center">
                         <div class="flex flex-col items-center">
-                            <span>Cancel</span>
-                            <span class="text-xs font-normal text-slate-500 mt-1">Kanselahin</span>
+                            <span class="text-sm sm:text-base">Kanselahin (Cancel)</span>
+                            <span class="text-xs font-normal text-slate-500 mt-0.5">Bumalik sa Home</span>
                         </div>
                     </a>
                 </div>
@@ -325,10 +378,10 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-primary text-white py-8 sm:py-10 lg:py-20">
+    <footer class="bg-primary text-white py-8 sm:py-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 text-center">
-            <p class="text-offwhite text-[10px] sm:text-xs sm:text-sm">
-                © {{ date('Y') }} MSWDO Silang. All Rights Reserved.
+            <p class="text-offwhite text-xs sm:text-sm">
+                © {{ date('Y') }} MSWDO Silang &bull; Municipal Social Welfare &amp; Development Office. All Rights Reserved.
             </p>
         </div>
     </footer>
@@ -379,8 +432,8 @@
                 
                 if (!validTypes.includes(extension)) {
                     Swal.fire({
-                        title: 'Invalid File Type',
-                        text: `${file.name} is not a valid file type. Please upload PDF, DOC, DOCX, JPG, JPEG, or PNG files.`,
+                        title: 'Hindi Tinatanggap na Format',
+                        text: `Hindi suportado ang uri ng "${file.name}". Pakilakip lamang ang PDF, DOC, DOCX, JPG, JPEG, o PNG na dokumento.`,
                         icon: 'error',
                         confirmButtonColor: '#DC2626'
                     });
@@ -389,8 +442,8 @@
 
                 if (file.size > maxSize) {
                     Swal.fire({
-                        title: 'File Too Large',
-                        text: `${file.name} exceeds the 10MB limit.`,
+                        title: 'Masyadong Malaki ang File',
+                        text: `Ang "${file.name}" ay lagpas sa pinahihintulutang 10MB na sukat.`,
                         icon: 'error',
                         confirmButtonColor: '#DC2626'
                     });
@@ -458,7 +511,7 @@
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                         </svg>
-                        <span>Submitting Request...</span>
+                        <span>Isinusumite ang Social Case Study Application...</span>
                     </div>
                 `;
             }
@@ -491,33 +544,33 @@
 
                 if (response.ok && data && data.success) {
                     Swal.fire({
-                        title: 'Request Submitted',
-                        text: 'Your service request has been submitted successfully. An MSWDO officer will review your request.',
+                        title: 'Aplikasyon Naisumite!',
+                        text: 'Matagumpay na naisumite ang inyong aplikasyon para sa Social Case Study Report (SCSR). Susuriin ito ng MSWDO Social Worker para sa case evaluation.',
                         icon: 'success',
                         confirmButtonColor: '#1A237E',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'Bumalik sa Home'
                     }).then(() => {
                         window.location.href = '/';
                     });
                 } else {
-                    const message = (data && data.message) ? data.message : 'There was an error submitting your request. Please try again.';
+                    const message = (data && data.message) ? data.message : 'Nagkaroon ng problema sa pagsumite ng inyong aplikasyon. Pakisubukang muli.';
                     Swal.fire({
-                        title: 'Error',
+                        title: 'Hindi Naisumite',
                         text: message,
                         icon: 'error',
                         confirmButtonColor: '#DC2626',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'Subukang Muli'
                     });
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 Swal.fire({
-                    title: 'Error',
-                    text: 'There was an error submitting your request. Please try again.',
+                    title: 'Hindi Naisumite',
+                    text: 'Nagkaroon ng problema sa koneksyon o pagsumite ng form. Pakisubukang muli.',
                     icon: 'error',
                     confirmButtonColor: '#DC2626',
-                    confirmButtonText: 'OK'
+                    confirmButtonText: 'Subukang Muli'
                 });
             })
             .finally(() => {
