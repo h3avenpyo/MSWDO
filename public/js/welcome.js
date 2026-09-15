@@ -587,14 +587,23 @@ function initWelcomePage() {
     const menuButton = document.getElementById('menuButton');
     const mobileMenu = document.getElementById('mobileMenu');
     if (menuButton && mobileMenu) {
-        menuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+menuButton.addEventListener('click', () => {
+        const isOpen = mobileMenu.classList.contains('show');
+        mobileMenu.classList.toggle('show');
+        document.body.classList.toggle('mobile-menu-open', !isOpen);
+    });
+    mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.remove('show');
+            document.body.classList.remove('mobile-menu-open');
         });
-        mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-            });
-        });
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            mobileMenu.classList.remove('show');
+            document.body.classList.remove('mobile-menu-open');
+        }
+    });
     }
 
     // Scroll To Top Button

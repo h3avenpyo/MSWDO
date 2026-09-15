@@ -152,6 +152,48 @@
         .mobile-menu-icon{width:28px !important;height:28px !important;}
     }
 
+    /* ── Mobile menu as dropdown below the top bar (welcome-page style) ── */
+    @media (max-width: 767px){
+        .sidebar {
+            top: 80px !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: auto !important;
+            width: 100% !important;
+            max-width: none !important;
+            height: auto !important;
+            max-height: calc(100vh - 80px) !important;
+            overflow-y: auto !important;
+            z-index: 997 !important;
+            transform: translateY(-8px) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+            border-radius: 0 0 14px 14px !important;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22) !important;
+        }
+        .sidebar.show {
+            transform: translateY(0) !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        .sidebar-brand { display: none !important; }
+        .sidebar-menu { padding: .5rem !important; }
+        .sidebar-menu a {
+            justify-content: flex-start !important;
+            gap: .75rem !important;
+        }
+        .sidebar-overlay, .sidebar-overlay.active { display: none !important; pointer-events: none !important; }
+    }
+
+    /* Small phones: header is 72px tall, shift dropdown to match */
+    @media (max-width: 479px){
+        .sidebar {
+            top: 72px !important;
+            max-height: calc(100vh - 72px) !important;
+        }
+    }
+
     @media print {
         .sidebar, .mobile-header, .sidebar-overlay { display: none !important; }
     }
