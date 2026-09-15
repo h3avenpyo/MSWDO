@@ -25,26 +25,54 @@
     <header class="sticky top-0 z-50 w-full bg-[#1A237E] shadow-sm">
         <div class="max-w-5xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16 sm:h-18">
-                <!-- Logo & LGU Office Title -->
-                <a href="/" class="flex items-center gap-2.5 sm:gap-3 shrink-0 min-w-0">
-                    <div class="h-10 w-10 sm:h-12 sm:w-12 rounded-full p-0.5 shrink-0 bg-white/10">
-                        @php
-                            $logo = null;
-                            if (file_exists(public_path('images/mswdo-logo.png'))) {
-                                $logo = 'mswdo-logo.png';
-                            } else {
-                                $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
-                                if (!empty($files)) {
-                                    $logo = basename($files[0]);
-                                }
-                            }
-                        @endphp
+                @php
+                    $logo = null;
+                    if (file_exists(public_path('images/mswdo-logo.png'))) {
+                        $logo = 'mswdo-logo.png';
+                    } else {
+                        $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
+                        if (!empty($files)) {
+                            $logo = basename($files[0]);
+                        }
+                    }
+                @endphp
+                <!-- Mobile: hamburger + brand text (left) ... logo (right) -->
+                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 lg:hidden">
+                    <button id="menuButton"
+                        class="shrink-0 p-1.5 rounded-lg hover:bg-white/10 transition focus:outline-none"
+                        aria-label="Toggle navigation" style="color:#fff;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
+                    <div class="min-w-0">
+                        <h1 class="text-white font-bold text-sm tracking-tight leading-tight truncate">
+                            MSWDO SILANG
+                        </h1>
+                        <p class="text-slate-200 text-[11px] leading-tight truncate">
+                            Municipal Social Welfare &amp; Development Office
+                        </p>
+                    </div>
+                </div>
+                <div class="lg:hidden shrink-0">
+                    <div class="h-9 w-9 rounded-full p-0.5 shrink-0 bg-white/10">
+                        @if ($logo)
+                            <img src="{{ asset('images/' . $logo) }}" alt="MSWDO Logo" class="rounded-full h-full w-full object-cover">
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Desktop: logo & title (left) ... back nav (right) -->
+                <a href="/" class="hidden lg:flex items-center gap-3 shrink-0 min-w-0">
+                    <div class="h-12 w-12 rounded-full p-0.5 shrink-0 bg-white/10">
                         @if ($logo)
                             <img src="{{ asset('images/' . $logo) }}" alt="MSWDO Logo" class="rounded-full h-full w-full object-cover">
                         @endif
                     </div>
                     <div class="min-w-0">
-                        <h1 class="text-white font-bold text-sm sm:text-base tracking-tight leading-tight truncate">
+                        <h1 class="text-white font-bold text-base tracking-tight leading-tight truncate">
                             MSWDO SILANG
                         </h1>
                         <p class="text-slate-200 text-[11px] leading-tight truncate">
@@ -52,14 +80,25 @@
                         </p>
                     </div>
                 </a>
-                <!-- Back Navigation -->
-                <nav class="flex items-center text-xs sm:text-sm text-slate-100 shrink-0">
+                <!-- Desktop Back Navigation -->
+                <nav class="hidden lg:flex items-center text-sm text-slate-100 shrink-0">
                     <a href="/" class="hover:text-white transition flex items-center gap-1.5 font-medium px-2.5 py-1.5 rounded hover:bg-white/10">
                         <i data-lucide="arrow-left" class="w-4 h-4"></i>
-                        <span>Bumalik sa Home</span>
+                        <span>Back to Home</span>
                     </a>
                 </nav>
             </div>
+        </div>
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobileMenu">
+            <ul class="mobile-menu-list">
+                <li>
+                    <a href="/" class="active">
+                        <i data-lucide="home" style="width:20px;height:20px"></i>
+                        <span>Back to Home</span>
+                    </a>
+                </li>
+            </ul>
         </div>
     </header>
 
@@ -436,6 +475,46 @@
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
+
+        // =====================================
+        // MOBILE MENU TOGGLE (dropdown style) with hamburger ↔ X icon swap
+        // =====================================
+        (function () {
+            const menuButton = document.getElementById('menuButton');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const svg = menuButton ? menuButton.querySelector('svg') : null;
+            const hamburgerPath = 'M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5';
+            const closePath = 'M6 18L18 6M6 6l12 12';
+
+            function updateIcon() {
+                if (!svg) return;
+                const isOpen = mobileMenu.classList.contains('show');
+                svg.querySelector('path').setAttribute('d', isOpen ? closePath : hamburgerPath);
+            }
+
+            if (menuButton && mobileMenu) {
+                menuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('show');
+                    const isOpen = mobileMenu.classList.contains('show');
+                    document.body.classList.toggle('mobile-menu-open', isOpen);
+                    updateIcon();
+                });
+                mobileMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.remove('show');
+                        document.body.classList.remove('mobile-menu-open');
+                        updateIcon();
+                    });
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        mobileMenu.classList.remove('show');
+                        document.body.classList.remove('mobile-menu-open');
+                        updateIcon();
+                    }
+                });
+            }
+        })();
 
         // =====================================
         // CONTACT NUMBER COUNTER & VALIDATION

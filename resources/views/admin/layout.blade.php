@@ -574,6 +574,17 @@
             if (overlay) overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
+        updateMobileMenuIcon();
+    }
+
+    function updateMobileMenuIcon() {
+        var sidebar = document.getElementById('sidebar');
+        var btn = document.getElementById('mobileMenuBtn');
+        if (!sidebar || !btn) return;
+        var path = btn.querySelector('path');
+        if (!path) return;
+        var open = sidebar.classList.contains('show');
+        path.setAttribute('d', open ? 'M6 18L18 6M6 6l12 12' : 'M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5');
     }
 
     function confirmLogout(event) {
@@ -610,6 +621,7 @@
                     sb.classList.remove('show');
                     if (ov) ov.classList.remove('active');
                     document.body.style.overflow = '';
+                    updateMobileMenuIcon();
                 }
             }
         });
@@ -622,6 +634,7 @@
                     sb.classList.remove('show');
                     if (ov) ov.classList.remove('active');
                     document.body.style.overflow = '';
+                    updateMobileMenuIcon();
                 }
             }
         });
