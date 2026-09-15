@@ -20,7 +20,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     </button>
     <div class="mobile-header-brand">
         <div class="mobile-brand-text">
-            <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+            <h1 class="mobile-brand-title">iSERVE SILANG</h1>
             <p class="mobile-brand-subtitle">Submitted Cases</p>
         </div>
         <div class="mobile-logo">
@@ -342,7 +342,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <img src="{{ asset('images/dswd.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;" alt="DSWD">
+        <img src="{{ asset('images/IserveIcon.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;" alt="iSERVE">
         <span>Social Case Study</span>
     </div>
     <ul class="sidebar-menu">

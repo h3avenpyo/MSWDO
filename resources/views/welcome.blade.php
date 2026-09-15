@@ -21,71 +21,109 @@
     <!-- ========================= -->
     <!-- NAVBAR -->
     <!-- ========================= -->
-    <header class="navbar-header fixed top-0 z-50 w-full backdrop-blur shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-20">
-                <!-- Logo -->
-                <a href="#" class="flex items-center gap-3 sm:gap-4 shrink-0">
-                    <div class="h-11 w-11 sm:h-14 sm:w-14 rounded-full p-1 shrink-0">
-                        @php
-                        $logo = null;
-                        if (file_exists(public_path('images/mswdo-logo.png'))) {
+    <header class="fixed top-0 left-0 right-0 z-50 w-full shadow-lg" style="background: #1A237E;">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-between" style="height: 60px;">
+                @php
+                $logo = 'IserveIcon.png';
+                if (!file_exists(public_path('images/IserveIcon.png'))) {
+                    $logo = null;
+                    if (file_exists(public_path('images/mswdo-logo.png'))) {
                         $logo = 'mswdo-logo.png';
-                        } else {
+                    } else {
                         $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
-                        if (!empty($files)) {
-                        $logo = basename($files[0]);
-                        }
-                        }
-                        @endphp
-                        @if ($logo)
-                        <img src="{{ asset('images/' . $logo) }}" class="rounded-full h-full w-full object-cover">
+                        if (!empty($files))
+                            $logo = basename($files[0]);
+                    }
+                }
+                @endphp
+                <!-- Mobile: hamburger + text (left) ... logo (right) -->
+                <div class="flex items-center gap-3 lg:hidden min-w-0 flex-1">
+                    <button id="menuButton"
+                        class="shrink-0 p-2 rounded-lg hover:bg-white/10 transition focus:outline-none"
+                        style="color: #fff;" aria-label="Toggle navigation">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
+                    <div class="min-w-0">
+                        <h1 class="text-white font-bold text-sm leading-tight" style="white-space:nowrap;">iSERVE SILANG</h1>
+                        <p class="text-white/60 text-[10px] leading-tight" style="white-space:nowrap;">Municipal Social Welfare &amp; Development Office</p>
+                    </div>
+                </div>
+                <div class="lg:hidden shrink-0">
+                    @if($logo)
+                        <img src="{{ asset('images/' . $logo) }}" style="width:40px;height:40px;object-fit:contain;border-radius:50%;flex-shrink:0;" alt="Logo">
+                    @endif
+                </div>
+
+                <!-- Desktop: logo text (left) ... nav links (right) -->
+                <a href="#" class="hidden lg:flex items-center gap-3 shrink-0">
+                    <div class="h-14 w-14 rounded-full p-1 shrink-0">
+                        @if($logo)
+                            <img src="{{ asset('images/' . $logo) }}" class="rounded-full h-full w-full object-cover">
                         @endif
                     </div>
                     <div>
-                        <h1 class="text-white font-bold text-base sm:text-lg tracking-tight leading-tight">
-                            MSWDO SILANG
-                        </h1>
-                        <p class="text-offwhite text-[11px] sm:text-xs leading-tight">
-                            Municipal Social Welfare &amp; Development Office
-                        </p>
+                        <h1 class="text-white font-bold text-lg tracking-tight leading-tight">iSERVE SILANG</h1>
+                        <p class="text-white/60 text-xs leading-tight">Municipal Social Welfare &amp; Development Office</p>
                     </div>
                 </a>
-                <!-- Desktop Menu -->
-                <nav class="hidden lg:flex items-center gap-8 text-offwhite">
-                    <a href="#home" class="hover:text-warm-gold transition">Home</a>
-                    <a href="#services" class="hover:text-warm-gold transition">Services</a>
-                    <a href="#about" class="hover:text-warm-gold transition">About</a>
-                    <a href="#programs" class="hover:text-warm-gold transition">Programs</a>
-                    <a href="#contact" class="hover:text-warm-gold transition">Contact</a>
-                    <a href="/admin" class="navbar-login-btn">
-                        Login
-                    </a>
+                <nav class="hidden lg:flex items-center gap-8 text-white/75">
+                    <a href="#home" class="hover:text-[#FBC02D] transition">Home</a>
+                    <a href="#services" class="hover:text-[#FBC02D] transition">Services</a>
+                    <a href="#about" class="hover:text-[#FBC02D] transition">About</a>
+                    <a href="#programs" class="hover:text-[#FBC02D] transition">Programs</a>
+                    <a href="#contact" class="hover:text-[#FBC02D] transition">Contact</a>
+                    <a href="/admin" class="navbar-login-btn">Login</a>
                 </nav>
-                <button id="menuButton"
-                    class="lg:hidden text-white p-2 rounded-lg hover:bg-white/10 transition focus:outline-none"
-                    aria-label="Toggle navigation">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-7 h-7 sm:w-8 sm:h-8">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
-                    </svg>
-                </button>
             </div>
         </div>
         <!-- Mobile Menu -->
-        <div id="mobileMenu"
-            class="hidden bg-primary text-white lg:hidden border-t border-white/10 shadow-xl transition-all duration-300">
-            <div class="flex flex-col p-5 sm:p-6 gap-3 sm:gap-4 text-base font-medium">
-                <a href="#home" class="py-2 px-3 rounded-lg hover:bg-white/10 transition">Home</a>
-                <a href="#services" class="py-2 px-3 rounded-lg hover:bg-white/10 transition">Services</a>
-                <a href="#about" class="py-2 px-3 rounded-lg hover:bg-white/10 transition">About</a>
-                <a href="#programs" class="py-2 px-3 rounded-lg hover:bg-white/10 transition">Programs</a>
-                <a href="#contact" class="py-2 px-3 rounded-lg hover:bg-white/10 transition">Contact</a>
-                <a href="/admin"
-                    class="navbar-login-btn text-center mt-2">Login</a>
-
-            </div>
+        <div id="mobileMenu">
+            <ul class="mobile-menu-list">
+                <li>
+                    <a href="#home" class="active">
+                        <i data-lucide="home" style="width:20px;height:20px"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#services">
+                        <i data-lucide="briefcase" style="width:20px;height:20px"></i>
+                        <span>Services</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#about">
+                        <i data-lucide="info" style="width:20px;height:20px"></i>
+                        <span>About</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#programs">
+                        <i data-lucide="heart-handshake" style="width:20px;height:20px"></i>
+                        <span>Programs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#contact">
+                        <i data-lucide="phone" style="width:20px;height:20px"></i>
+                        <span>Contact</span>
+                    </a>
+                </li>
+                <li>
+                    <hr class="mobile-menu-divider">
+                </li>
+                <li>
+                    <a href="/admin">
+                        <i data-lucide="log-in" style="width:20px;height:20px"></i>
+                        <span>Login</span>
+                    </a>
+                </li>
+            </ul>
         </div>
     </header>
     <!-- ========================= -->

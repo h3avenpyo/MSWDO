@@ -152,6 +152,48 @@
         .mobile-menu-icon{width:28px !important;height:28px !important;}
     }
 
+    /* ── Mobile menu as dropdown below the top bar (welcome-page style) ── */
+    @media (max-width: 767px){
+        .sidebar {
+            top: 80px !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: auto !important;
+            width: 100% !important;
+            max-width: none !important;
+            height: auto !important;
+            max-height: calc(100vh - 80px) !important;
+            overflow-y: auto !important;
+            z-index: 997 !important;
+            transform: translateY(-8px) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+            border-radius: 0 0 14px 14px !important;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22) !important;
+        }
+        .sidebar.show {
+            transform: translateY(0) !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        .sidebar-brand { display: none !important; }
+        .sidebar-menu { padding: .5rem !important; }
+        .sidebar-menu a {
+            justify-content: flex-start !important;
+            gap: .75rem !important;
+        }
+        .sidebar-overlay, .sidebar-overlay.active { display: none !important; pointer-events: none !important; }
+    }
+
+    /* Small phones: header is 72px tall, shift dropdown to match */
+    @media (max-width: 479px){
+        .sidebar {
+            top: 72px !important;
+            max-height: calc(100vh - 72px) !important;
+        }
+    }
+
     @media print {
         .sidebar, .mobile-header, .sidebar-overlay { display: none !important; }
     }
@@ -160,7 +202,7 @@
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <img src="{{ asset('images/dswd.png') }}" style="width:56px;height:56px;object-fit:contain;" alt="DSWD">
+        <img src="{{ asset('images/IserveIcon.png') }}" style="width:56px;height:56px;object-fit:contain;" alt="iSERVE">
         <span>Senior Citizen</span>
     </div>
     <ul class="sidebar-menu">
@@ -186,12 +228,15 @@
 
 <!-- Mobile Header (visible only on mobile) -->
 @php
-    $logo = null;
-    if (file_exists(public_path('images/mswdo-logo.png'))) {
-        $logo = 'mswdo-logo.png';
-    } else {
-        $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
-        if (!empty($files)) $logo = basename($files[0]);
+    $logo = 'IserveIcon.png';
+    if (!file_exists(public_path('images/IserveIcon.png'))) {
+        $logo = null;
+        if (file_exists(public_path('images/mswdo-logo.png'))) {
+            $logo = 'mswdo-logo.png';
+        } else {
+            $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
+            if (!empty($files)) $logo = basename($files[0]);
+        }
     }
 @endphp
 <div class="mobile-header">
@@ -202,12 +247,12 @@
     </button>
     <div class="mobile-header-brand">
         <div class="mobile-brand-text">
-            <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+            <h1 class="mobile-brand-title">iSERVE SILANG</h1>
             <p class="mobile-brand-subtitle">{{ $mobileSubtitle ?? 'Senior Citizen' }}</p>
         </div>
         <div class="mobile-logo">
             @if($logo)
-                <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+                <img src="{{ asset('images/IserveIcon.png') }}" class="mobile-logo-img">
             @endif
         </div>
     </div>

@@ -560,3 +560,89 @@ a.hotline-value:hover {
         display: flex;
     }
 }
+
+/* ===================================== */
+/* MOBILE MENU (admin sidebar dropdown style) */
+/* ===================================== */
+#mobileMenu {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: 100%;
+    max-width: none;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    z-index: 999;
+    background: #1A237E;
+    transform: translateY(-8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform .25s ease, opacity .25s ease, visibility .25s ease;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+}
+
+#mobileMenu.show {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+#mobileMenu .mobile-menu-list {
+    list-style: none;
+    margin: 0;
+    padding: .5rem 0;
+}
+
+#mobileMenu .mobile-menu-list li {
+    margin-bottom: .2rem;
+}
+
+#mobileMenu .mobile-menu-list a {
+    color: rgba(255, 255, 255, .75);
+    padding: .75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    text-decoration: none;
+    font-size: .9rem;
+    border-left: 3px solid transparent;
+    transition: all .2s ease;
+}
+
+#mobileMenu .mobile-menu-list a:hover,
+#mobileMenu .mobile-menu-list a:active {
+    background: rgba(255, 255, 255, .1);
+    color: #FBC02D;
+}
+
+#mobileMenu .mobile-menu-list a.active {
+    background: rgba(255, 255, 255, .1);
+    color: #FBC02D;
+    border-left-color: #FBC02D;
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+#mobileMenu .mobile-menu-list a i {
+    width: 20px;
+    text-align: center;
+}
+
+#mobileMenu .mobile-menu-divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, .1);
+    margin: 6px 0;
+}
+
+body.mobile-menu-open {
+    overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+    #mobileMenu {
+        display: none !important;
+    }
+}

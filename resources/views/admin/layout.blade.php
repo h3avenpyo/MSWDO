@@ -381,6 +381,40 @@
             header [title^="Admin:"] { display: none !important; }
         }
 
+        /* ── Mobile menu as dropdown below the top bar (welcome-page style) ── */
+        @media (max-width: 767.98px) {
+            .sidebar {
+                top: 72px !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: auto !important;
+                width: 100% !important;
+                max-width: none !important;
+                height: auto !important;
+                max-height: calc(100vh - 72px) !important;
+                overflow-y: auto !important;
+                z-index: 997 !important;
+                transform: translateY(-8px) !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+                border-radius: 0 0 14px 14px !important;
+                box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22) !important;
+            }
+            .sidebar.show {
+                transform: translateY(0) !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+            .sidebar-brand { display: none !important; }
+            .sidebar-menu { padding: .5rem !important; }
+            .sidebar-menu a {
+                justify-content: flex-start !important;
+                gap: .75rem !important;
+            }
+            .sidebar-overlay, .sidebar-overlay.active { display: none !important; pointer-events: none !important; }
+        }
+
         /* Uniform SweetAlert & Custom Modal Styles */
         .swal2-popup {
             border-radius: 16px !important;
@@ -443,12 +477,15 @@
 <body>
 <div class="app">
     @php
-        $logo = null;
-        if (file_exists(public_path('images/mswdo-logo.png'))) {
-            $logo = 'mswdo-logo.png';
-        } else {
-            $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
-            if (!empty($files)) $logo = basename($files[0]);
+        $logo = 'IserveIcon.png';
+        if (!file_exists(public_path('images/IserveIcon.png'))) {
+            $logo = null;
+            if (file_exists(public_path('images/mswdo-logo.png'))) {
+                $logo = 'mswdo-logo.png';
+            } else {
+                $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
+                if (!empty($files)) $logo = basename($files[0]);
+            }
         }
     @endphp
 
@@ -461,7 +498,7 @@
         </button>
         <div class="mobile-header-brand">
             <div class="mobile-brand-text">
-                <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+                <h1 class="mobile-brand-title">iSERVE SILANG</h1>
                 <p class="mobile-brand-subtitle">@yield('page_title', 'Admin Portal')</p>
             </div>
             <div class="mobile-logo">
@@ -475,7 +512,7 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <img src="{{ asset('images/dswd.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;" alt="DSWD">
+            <img src="{{ asset('images/IserveIcon.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;" alt="iSERVE">
             <span>MSWDO Admin</span>
         </div>
         <ul class="sidebar-menu">
@@ -540,6 +577,17 @@
             if (overlay) overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
+        updateMobileMenuIcon();
+    }
+
+    function updateMobileMenuIcon() {
+        var sidebar = document.getElementById('sidebar');
+        var btn = document.getElementById('mobileMenuBtn');
+        if (!sidebar || !btn) return;
+        var path = btn.querySelector('path');
+        if (!path) return;
+        var open = sidebar.classList.contains('show');
+        path.setAttribute('d', open ? 'M6 18L18 6M6 6l12 12' : 'M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5');
     }
 
     function confirmLogout(event) {
@@ -576,6 +624,7 @@
                     sb.classList.remove('show');
                     if (ov) ov.classList.remove('active');
                     document.body.style.overflow = '';
+                    updateMobileMenuIcon();
                 }
             }
         });
@@ -588,6 +637,7 @@
                     sb.classList.remove('show');
                     if (ov) ov.classList.remove('active');
                     document.body.style.overflow = '';
+                    updateMobileMenuIcon();
                 }
             }
         });
