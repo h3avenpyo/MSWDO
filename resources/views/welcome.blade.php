@@ -162,7 +162,7 @@
                         Municipal Social Welfare &amp; Development Office
                     </span>
                     <span
-                        class="block text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-black text-[#1A237E] uppercase tracking-normal leading-none mt-0.5 sm:mt-1">
+                        class="block text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-black text-[#D32F2F] uppercase tracking-normal leading-none mt-0.5 sm:mt-1">
                         SILANG
                     </span>
                 </h1>
@@ -595,7 +595,7 @@
                     <span>Financial Assistance</span>
                 </a>
                 <a href="/service-request"
-                    class="border-2 border-warm-gold/90 bg-white/10 hover:bg-warm-gold hover:text-[#1F2937] text-white px-8 sm:px-10 py-4 rounded-xl font-bold hover:scale-105 transition shadow-lg inline-flex items-center justify-center text-base sm:text-lg gap-2.5 backdrop-blur">
+                    class="bg-warm-gold text-[#1F2937] px-8 sm:px-10 py-4 rounded-xl font-bold hover:scale-105 transition shadow-lg inline-flex items-center justify-center text-base sm:text-lg gap-2.5">
                     <i data-lucide="file-text" class="w-5 h-5"></i>
                     <span>Social Case Study</span>
                 </a>
