@@ -485,6 +485,14 @@
                                             title="Send SMS message to beneficiary">
                                             <i class="fas fa-comment-sms"></i> Message
                                         </button>
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-danger action-btn btn-archive-payroll-row"
+                                            data-id="{{ $row->id }}"
+                                            data-control="{{ $row->control_number }}"
+                                            data-name="{{ $row->beneficiary_name }}"
+                                            title="Archive Record">
+                                            <i class="fas fa-box-archive"></i>
+                                        </button>
                                         @else
                                         <button type="button"
                                             class="btn btn-sm btn-primary rounded-pill btn-send-sms fw-semibold"
@@ -508,6 +516,14 @@
                                             data-status="Claimed" data-record-id="{{ $record->id }}"
                                             data-amount="{{ $row->amount }}" title="Mark financial assistance as Claimed">
                                             <i class="fas fa-check"></i> Claimed
+                                        </button>
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-danger action-btn btn-archive-payroll-row"
+                                            data-id="{{ $row->id }}"
+                                            data-control="{{ $row->control_number }}"
+                                            data-name="{{ $row->beneficiary_name }}"
+                                            title="Archive Record">
+                                            <i class="fas fa-box-archive"></i>
                                         </button>
                                         @endif
                                     </div>
@@ -861,10 +877,57 @@
 
 <!-- Monthly Unclaimed Assistance Modal Component -->
 @include('admin.financial.partials.monthly-unclaimed-modal')
+
+<!-- Hidden Form for Step 2 Payroll Record Row Archive Action -->
+<form id="archiveStep2PayrollRowForm" method="POST" style="display: none;">
+    @csrf
+    <input type="hidden" name="reason" id="archiveStep2PayrollRowReason">
+</form>
 @endsection
 
 @section('page-scripts')
 <script src="{{ asset('js/financialstep2-payroll-records.js') }}"></script>
 <script src="{{ asset('js/financialstep2-sms.js') }}"></script>
 <script src="{{ asset('js/financialstep2-monthly-unclaimed.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-archive-payroll-row').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const controlNumber = this.getAttribute('data-control');
+            const name = this.getAttribute('data-name');
+
+            Swal.fire({
+                title: 'I-archive ang Financial Record?',
+                html: `Are you sure you want to archive the financial assistance record for <strong>${name}</strong> (<span class="text-primary font-monospace">${controlNumber}</span>)?<br><br><small class="text-muted">The record will be safely removed from active processing but will remain available in the Step 2 Archive.</small>`,
+                icon: 'warning',
+                input: 'text',
+                inputPlaceholder: 'Reason for archiving (optional)',
+                showCancelButton: true,
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: '<i class="fas fa-box-archive me-1"></i> I-archive Record',
+                cancelButtonText: 'Kanselahin',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Ina-archive ang Record...',
+                        text: 'Sandali lamang...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    const form = document.getElementById('archiveStep2PayrollRowForm');
+                    document.getElementById('archiveStep2PayrollRowReason').value = result.value || '';
+                    form.action = `/admin/financial/financialstep2/archive/${id}`;
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
 @endsection

@@ -258,7 +258,7 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                                 <th>Category &amp; Purpose</th>
                                 <th class="th-w-240">Financial Assistance Amount (&#8369;)</th>
                                 <th class="th-w-120">Status</th>
-                                <th class="text-end th-w-80">Action</th>
+                                <th class="text-end pe-4 th-w-80">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -372,13 +372,16 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                                         </span>
                                         @endif
                                     </div>
-                                </td>
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 btn-view-intake"
-                                        title="View Full Intake Profile"
-                                        data-intake="{{ json_encode($intake) }}">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-1">
+                                        <!-- View -->
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-primary action-btn btn-view-intake"
+                                            title="View Details"
+                                            data-intake="{{ json_encode($intake) }}">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             @empty

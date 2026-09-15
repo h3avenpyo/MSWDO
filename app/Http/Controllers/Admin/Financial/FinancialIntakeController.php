@@ -19,7 +19,7 @@ class FinancialIntakeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = BeneficiaryIntake::query();
+        $query = BeneficiaryIntake::query()->where('is_archived', false);
 
         // Search by name (beneficiary or representative) or control number
         if ($request->filled('search')) {

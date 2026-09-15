@@ -107,7 +107,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                                 <th>Category &amp; Barangay</th>
                                 <th>Assistance / Purpose Requested</th>
                                 <th>Intake Status</th>
-                                <th class="text-end">Actions</th>
+                                <th class="text-end pe-4">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -138,14 +138,27 @@ $userName = session('admin_user_name') ?? 'Officer';
                                         <i class="fas fa-check-circle me-1"></i>Intake Recorded
                                     </span>
                                 </td>
-                                <td class="text-end">
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('admin.beneficiary-intake.show', $intake) }}" class="btn btn-outline-primary" title="View Intake Details">
-                                            <i class="fas fa-eye me-1"></i> View
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-1">
+                                        <!-- View -->
+                                        <a href="{{ route('admin.beneficiary-intake.show', $intake) }}"
+                                            class="btn btn-sm btn-outline-primary action-btn" title="View Details">
+                                            <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('admin.beneficiary-intake.edit', $intake) }}" class="btn btn-outline-secondary" title="Edit Intake Form">
-                                            <i class="fas fa-edit me-1"></i> Edit
+                                        <!-- Edit -->
+                                        <a href="{{ route('admin.beneficiary-intake.edit', $intake) }}"
+                                            class="btn btn-sm btn-outline-secondary action-btn" title="Edit Record">
+                                            <i class="fas fa-edit"></i>
                                         </a>
+                                        <!-- Archive -->
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-danger action-btn btn-archive-step1"
+                                            data-id="{{ $intake->id }}"
+                                            data-control="{{ $intake->control_number }}"
+                                            data-name="{{ $intake->beneficiary_full_name }}"
+                                            title="Archive Record">
+                                            <i class="fas fa-box-archive"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -175,4 +188,54 @@ $userName = session('admin_user_name') ?? 'Officer';
         </div>
     </div>
 </div>
+
+<!-- Hidden Form for Step 1 Archive Action -->
+<form id="archiveStep1Form" method="POST" style="display: none;">
+    @csrf
+    <input type="hidden" name="reason" id="archiveStep1Reason">
+</form>
+@endsection
+
+@section('page-scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-archive-step1').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const controlNumber = this.getAttribute('data-control');
+            const name = this.getAttribute('data-name');
+
+            Swal.fire({
+                title: 'I-archive ang Intake Record?',
+                html: `Are you sure you want to archive this intake record for <strong>${name}</strong> (<span class="text-primary font-monospace">${controlNumber}</span>)?<br><br><small class="text-muted">The record will be safely removed from the active intake list but will remain available in the Archive.</small>`,
+                icon: 'warning',
+                input: 'text',
+                inputPlaceholder: 'Reason for archiving (optional)',
+                showCancelButton: true,
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: '<i class="fas fa-box-archive me-1"></i> I-archive Record',
+                cancelButtonText: 'Kanselahin',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Ina-archive ang Record...',
+                        text: 'Sandali lamang...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    const form = document.getElementById('archiveStep1Form');
+                    document.getElementById('archiveStep1Reason').value = result.value || '';
+                    form.action = `/admin/financial/step1/archive/${id}`;
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
 @endsection

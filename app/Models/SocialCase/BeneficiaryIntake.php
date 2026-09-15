@@ -79,6 +79,11 @@ class BeneficiaryIntake extends Model
         'claim_status',
         'claimed_at',
         'claimed_by',
+        'is_archived',
+        'archived_at',
+        'archived_by',
+        'archive_module',
+        'archive_reason',
     ];
 
     protected $casts = [
@@ -93,6 +98,8 @@ class BeneficiaryIntake extends Model
         'claiming_date' => 'date',
         'payroll_record_id' => 'integer',
         'claimed_at' => 'datetime',
+        'is_archived' => 'boolean',
+        'archived_at' => 'datetime',
         'medical_conditions' => 'array',
         'beneficiary_categories' => 'array',
         'family_composition' => 'array',
@@ -114,6 +121,11 @@ class BeneficiaryIntake extends Model
     public function encoderUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'encoder');
+    }
+
+    public function archivedByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'archived_by');
     }
 
     public function payrollRecord(): BelongsTo

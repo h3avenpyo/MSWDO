@@ -226,7 +226,7 @@
                                     <th class="col-category-purpose">Category / Medical Purpose</th>
                                     <th class="col-amount">Assessed Grant</th>
                                     <th class="col-status">Status</th>
-                                    <th class="col-actions text-end">Actions</th>
+                                    <th class="col-actions text-end pe-4">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -296,10 +296,23 @@
                                             </span>
                                         @endif
                                     </td>
-                                    <td class="text-end">
-                                        <div class="d-flex align-items-center justify-content-end">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-medium btn-view-intake" title="Quick Preview Record" data-intake='@json($intake)'>
-                                                <i class="fas fa-eye me-1"></i> View
+                                    <td class="text-end pe-4">
+                                        <div class="d-inline-flex gap-1">
+                                            <!-- View -->
+                                            <button type="button"
+                                                class="btn btn-sm btn-outline-primary action-btn btn-view-intake"
+                                                title="View Details"
+                                                data-intake='@json($intake)'>
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <!-- Archive -->
+                                            <button type="button"
+                                                class="btn btn-sm btn-outline-danger action-btn btn-archive-step2"
+                                                data-id="{{ $intake->id }}"
+                                                data-control="{{ $intake->control_number }}"
+                                                data-name="{{ $intake->beneficiary_full_name }}"
+                                                title="Archive Record">
+                                                <i class="fas fa-box-archive"></i>
                                             </button>
                                         </div>
                                     </td>
@@ -346,6 +359,12 @@
         </div>
     </div>
 </div>
+
+<!-- Hidden Form for Step 2 Archive Action -->
+<form id="archiveStep2Form" method="POST" style="display: none;">
+    @csrf
+    <input type="hidden" name="reason" id="archiveStep2Reason">
+</form>
 
 <!-- Step 1 General Intake Quick Preview Modal -->
 <div class="modal fade" id="intakeQuickViewModal" tabindex="-1" aria-labelledby="intakeQuickViewModalLabel" aria-hidden="true">
@@ -485,4 +504,45 @@
 
 @section('page-scripts')
 <script src="{{ asset('js/financialstep2-all-intakes.js') }}"></script>
-    @endsection
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-archive-step2').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const controlNumber = this.getAttribute('data-control');
+            const name = this.getAttribute('data-name');
+
+            Swal.fire({
+                title: 'I-archive ang Financial Record?',
+                html: `Are you sure you want to archive this financial assistance record for <strong>${name}</strong> (<span class="text-primary font-monospace">${controlNumber}</span>)?<br><br><small class="text-muted">The record will be safely removed from active processing and payroll generation, but will remain available in the Step 2 Archive.</small>`,
+                icon: 'warning',
+                input: 'text',
+                inputPlaceholder: 'Reason for archiving (optional)',
+                showCancelButton: true,
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: '<i class="fas fa-box-archive me-1"></i> I-archive Record',
+                cancelButtonText: 'Kanselahin',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Ina-archive ang Record...',
+                        text: 'Sandali lamang...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    const form = document.getElementById('archiveStep2Form');
+                    document.getElementById('archiveStep2Reason').value = result.value || '';
+                    form.action = `/admin/financial/financialstep2/archive/${id}`;
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
+@endsection

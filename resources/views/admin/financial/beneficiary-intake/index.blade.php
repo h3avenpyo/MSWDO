@@ -181,17 +181,15 @@
                                     class="btn btn-sm btn-outline-secondary action-btn" title="Edit Record">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <!-- Delete -->
-                                {{-- <form action="{{ route('admin.beneficiary-intake.destroy', $intake) }}"
-                                    method="POST" class="d-inline delete-intake-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button"
-                                        class="btn btn-sm btn-outline-danger action-btn btn-delete-intake"
-                                        title="Delete Record">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </form> --}}
+                                <!-- Archive -->
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-danger action-btn btn-archive-intake"
+                                    data-id="{{ $intake->id }}"
+                                    data-control="{{ $intake->control_number }}"
+                                    data-name="{{ $intake->beneficiary_full_name }}"
+                                    title="Archive Record">
+                                    <i class="fas fa-box-archive"></i>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -223,6 +221,12 @@
     </div>
 
 </div>
+
+<!-- Hidden Form for Step 1 Archive Action -->
+<form id="archiveStep1IndexForm" method="POST" style="display: none;">
+    @csrf
+    <input type="hidden" name="reason" id="archiveStep1IndexReason">
+</form>
 
 <!-- Transmittal Options Generator Modal -->
 <div class="modal fade" id="transmittalModal" tabindex="-1" aria-labelledby="transmittalModalLabel" aria-hidden="true">
@@ -286,4 +290,45 @@
 
 @section('page-scripts')
 <script src="{{ asset('js/beneficiary-intake/index.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-archive-intake').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const controlNumber = this.getAttribute('data-control');
+            const name = this.getAttribute('data-name');
+
+            Swal.fire({
+                title: 'I-archive ang Intake Record?',
+                html: `Are you sure you want to archive this intake record for <strong>${name}</strong> (<span class="text-primary font-monospace">${controlNumber}</span>)?<br><br><small class="text-muted">The record will be safely removed from the active intake list but will remain available in the Archive.</small>`,
+                icon: 'warning',
+                input: 'text',
+                inputPlaceholder: 'Reason for archiving (optional)',
+                showCancelButton: true,
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: '<i class="fas fa-box-archive me-1"></i> I-archive Record',
+                cancelButtonText: 'Kanselahin',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Ina-archive ang Record...',
+                        text: 'Sandali lamang...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    const form = document.getElementById('archiveStep1IndexForm');
+                    document.getElementById('archiveStep1IndexReason').value = result.value || '';
+                    form.action = `/admin/financial/step1/archive/${id}`;
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
 @endsection

@@ -44,12 +44,7 @@ $userName = session('admin_user_name') ?? 'Officer';
         </div>
     </div>
 
-    <div class="step-wizard-nav pt-2">
-        <a href="{{ route('admin.financial.financialstep1') }}" class="step-item-pill text-decoration-none active">
-            <div class="step-circle"><i class="fas fa-clipboard-check"></i></div>
-            <div class="step-label">Step 1: Intake &amp; Assessment</div>
-        </a>
-    </div>
+    
 </div>
 
 <!-- Dynamic Metric Stat Cards Grid -->
@@ -99,12 +94,12 @@ $userName = session('admin_user_name') ?? 'Officer';
             <div class="card-header-clean">
                 <div>
                     <h3 class="card-title-clean">Financial Assistance Modules</h3>
-                    <p class="card-subtitle-clean">Access intake assessment and client records directory</p>
+                    <p class="card-subtitle-clean">Access intake assessment, client records directory, and archive repository</p>
                 </div>
             </div>
             <div class="p-3">
                 <div class="row g-3">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <a href="{{ route('admin.financial.financialstep1') }}"
                             class="action-tile h-100 flex-column align-items-start justify-content-between p-4">
                             <div class="d-flex align-items-center justify-content-between w-100 mb-3">
@@ -120,7 +115,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                             </div>
                         </a>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <a href="/admin/beneficiary-intake"
                             class="action-tile h-100 flex-column align-items-start justify-content-between p-4">
                             <div class="d-flex align-items-center justify-content-between w-100 mb-3">
@@ -133,6 +128,22 @@ $userName = session('admin_user_name') ?? 'Officer';
                             </div>
                             <div class="mt-3 text-info fw-semibold small">
                                 View Directory <i class="fas fa-arrow-right ms-1"></i>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{{ route('admin.financial.step1.archive') }}"
+                            class="action-tile h-100 flex-column align-items-start justify-content-between p-4">
+                            <div class="d-flex align-items-center justify-content-between w-100 mb-3">
+                                <div class="stat-icon warning" style="background: rgba(220, 38, 38, 0.1); color: #DC2626;"><i class="fas fa-box-archive"></i></div>
+                                <span class="badge bg-danger text-white rounded-pill px-3 py-1">Archive</span>
+                            </div>
+                            <div>
+                                <div class="action-tile-title mb-1" style="font-size: var(--text-md);">Archived Records</div>
+                                <div class="action-tile-desc">Search, review, and restore completed or archived general intake sheets with preserved control numbers.</div>
+                            </div>
+                            <div class="mt-3 text-danger fw-semibold small">
+                                View Archive <i class="fas fa-arrow-right ms-1"></i>
                             </div>
                         </a>
                     </div>

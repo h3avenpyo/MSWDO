@@ -141,6 +141,11 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::post('/{id}/reject', [OnlineFinancialIntakeController::class, 'reject'])->name('reject');
     });
 
+    // Step 1: Archive Routes
+    Route::get('/admin/financial/step1/archive', [FinancialDashboardController::class, 'step1Archive'])->name('admin.financial.step1.archive');
+    Route::post('/admin/financial/step1/archive/{id}', [FinancialDashboardController::class, 'archiveStep1'])->name('admin.financial.step1.archive.post');
+    Route::post('/admin/financial/step1/restore/{id}', [FinancialDashboardController::class, 'restoreStep1'])->name('admin.financial.step1.restore');
+
     Route::post('/admin/financial/step2/authenticate', [FinancialDashboardController::class, 'authenticateStep2'])->name('admin.financial.step2.authenticate');
     Route::get('/admin/financial/financialstep1statistics', [FinancialDashboardController::class, 'statistics'])->name('admin.financial.financialstep1statistics');
 
@@ -159,6 +164,9 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::get('/admin/financial/financialstep2/liquidation', [FinancialDashboardController::class, 'financialStep2Liquidation'])->name('admin.financial.financialstep2.liquidation');
         Route::get('/admin/financial/financialstep2/liquidation/report/month/{yearMonth}', [FinancialDashboardController::class, 'financialStep2LiquidationReportMonthly'])->name('admin.financial.financialstep2.liquidation.report.month');
         Route::get('/admin/financial/financialstep2/liquidation/report/{id}', [FinancialDashboardController::class, 'financialStep2LiquidationReport'])->name('admin.financial.financialstep2.liquidation.report');
+        Route::get('/admin/financial/financialstep2/archive', [FinancialDashboardController::class, 'financialStep2Archive'])->name('admin.financial.financialstep2.archive');
+        Route::post('/admin/financial/financialstep2/archive/{id}', [FinancialDashboardController::class, 'archiveStep2'])->name('admin.financial.financialstep2.archive.post');
+        Route::post('/admin/financial/financialstep2/restore/{id}', [FinancialDashboardController::class, 'restoreStep2'])->name('admin.financial.financialstep2.restore');
         Route::get('/admin/financial/financialstep2/statistics', [FinancialDashboardController::class, 'financialStep2Statistics'])->name('admin.financial.financialstep2.statistics');
 
         // Financial Step 2 SMS Messaging Routes

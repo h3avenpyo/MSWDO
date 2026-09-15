@@ -56,6 +56,15 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('admin.financial.financialstep2.archive') }}"
+                class="{{ request()->routeIs('admin.financial.financialstep2.archive*') ? 'active' : '' }}"
+                data-tooltip="Archive"
+                title="Archive">
+                <i class="fas fa-box-archive"></i>
+                <span class="menu-label">Archive</span>
+            </a>
+        </li>
+        <li>
             <a href="{{ route('admin.financial.financialstep2.statistics') }}"
                 class="{{ request()->routeIs('admin.financial.financialstep2.statistics*') ? 'active' : '' }}"
                 data-tooltip="Statistics"
@@ -130,6 +139,15 @@
                 title="All Intakes">
                 <i class="fas fa-list"></i>
                 <span class="menu-label">All Intakes</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.financial.step1.archive') }}"
+                class="{{ (request()->is('admin/financial/step1/archive*') || request()->routeIs('admin.financial.step1.archive*')) ? 'active' : '' }}"
+                data-tooltip="Archive"
+                title="Archive">
+                <i class="fas fa-box-archive"></i>
+                <span class="menu-label">Archive</span>
             </a>
         </li>
         <li>

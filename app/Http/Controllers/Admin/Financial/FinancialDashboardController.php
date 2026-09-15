@@ -118,7 +118,8 @@ class FinancialDashboardController extends Controller
         $today = Carbon::today();
 
         if (class_exists(BeneficiaryIntake::class)) {
-            $query = BeneficiaryIntake::with(['client', 'encoderUser']);
+            $query = BeneficiaryIntake::with(['client', 'encoderUser'])
+                ->where('is_archived', false);
 
             // STRICT SERVER-SIDE FILTER: Only display intake records processed on the current day
             $query->whereDate('date_processed', $today);
@@ -136,7 +137,7 @@ class FinancialDashboardController extends Controller
                 });
             }
 
-            $todayIntakesCount = BeneficiaryIntake::whereDate('date_processed', $today)->count();
+            $todayIntakesCount = BeneficiaryIntake::where('is_archived', false)->whereDate('date_processed', $today)->count();
             $totalIntakes = $todayIntakesCount;
 
             $recentIntakes = $query->latest('id')->paginate(10)->withQueryString();
@@ -154,7 +155,8 @@ class FinancialDashboardController extends Controller
         $today = Carbon::today();
 
         if (class_exists(BeneficiaryIntake::class)) {
-            $query = BeneficiaryIntake::with(['client', 'encoderUser']);
+            $query = BeneficiaryIntake::with(['client', 'encoderUser'])
+                ->where('is_archived', false);
 
             // STRICT FILTER: Only display intake records processed today (or created today if date_processed is null)
             $query->where(function ($q) use ($today) {
@@ -247,7 +249,7 @@ class FinancialDashboardController extends Controller
                     break;
             }
 
-            $todayQueueBase = BeneficiaryIntake::where(function ($q) use ($today) {
+            $todayQueueBase = BeneficiaryIntake::where('is_archived', false)->where(function ($q) use ($today) {
                 $q->whereDate('date_processed', $today)
                   ->orWhere(function ($sq) use ($today) {
                       $sq->whereNull('date_processed')->whereDate('created_at', $today);
@@ -255,7 +257,7 @@ class FinancialDashboardController extends Controller
             });
 
             $todayQueueCount = (clone $todayQueueBase)->count();
-            $totalQueueCount = BeneficiaryIntake::count();
+            $totalQueueCount = BeneficiaryIntake::where('is_archived', false)->count();
 
             $pendingAmountCount = (clone $todayQueueBase)->where(function ($q) {
                 $q->whereNull('recommended_amount')->orWhere('recommended_amount', '<=', 0);
@@ -343,7 +345,8 @@ class FinancialDashboardController extends Controller
         $today = Carbon::today();
 
         if (class_exists(BeneficiaryIntake::class)) {
-            $query = BeneficiaryIntake::with(['client', 'encoderUser']);
+            $query = BeneficiaryIntake::with(['client', 'encoderUser'])
+                ->where('is_archived', false);
 
             // Search by control number, beneficiary name, representative name, or barangay
             if ($request->filled('search')) {
@@ -846,7 +849,8 @@ class FinancialDashboardController extends Controller
         $targetDate = $request->filled('date') ? Carbon::parse($request->date) : $today;
 
         if (class_exists(BeneficiaryIntake::class)) {
-            $query = BeneficiaryIntake::with(['client', 'encoderUser']);
+            $query = BeneficiaryIntake::with(['client', 'encoderUser'])
+                ->where('is_archived', false);
 
             // DUPLICATE PAYROLL PREVENTION: Only display ungenerated / new unprocessed intakes
             $query->where(function ($q) {
@@ -932,7 +936,7 @@ class FinancialDashboardController extends Controller
             }
 
             // Calculate overall ungenerated metrics for the target date
-            $targetIntakesBase = BeneficiaryIntake::where(function ($q) {
+            $targetIntakesBase = BeneficiaryIntake::where('is_archived', false)->where(function ($q) {
                 $q->where('is_payroll_generated', false)
                   ->orWhereNull('is_payroll_generated');
             })->whereNull('payroll_record_id')->where(function ($q) use ($targetDate) {
@@ -1026,7 +1030,7 @@ class FinancialDashboardController extends Controller
         $intake->save();
 
         $today = Carbon::today();
-        $todayIntakesBase = BeneficiaryIntake::where(function ($q) {
+        $todayIntakesBase = BeneficiaryIntake::where('is_archived', false)->where(function ($q) {
             $q->where('is_payroll_generated', false)
               ->orWhereNull('is_payroll_generated');
         })->whereNull('payroll_record_id')->where(function ($q) use ($today) {
@@ -1079,7 +1083,7 @@ class FinancialDashboardController extends Controller
             foreach ($request->amounts as $intakeId => $amount) {
                 if ($amount !== null && $amount !== '') {
                     $intake = BeneficiaryIntake::find($intakeId);
-                    if ($intake && !$intake->is_payroll_generated && !$intake->payroll_record_id) {
+                    if ($intake && !$intake->is_archived && !$intake->is_payroll_generated && !$intake->payroll_record_id) {
                         $intake->recommended_amount = (float) $amount;
                         $intake->save();
                         $updatedCount++;
@@ -1089,7 +1093,7 @@ class FinancialDashboardController extends Controller
         });
 
         $today = Carbon::today();
-        $todayIntakesBase = BeneficiaryIntake::where(function ($q) {
+        $todayIntakesBase = BeneficiaryIntake::where('is_archived', false)->where(function ($q) {
             $q->where('is_payroll_generated', false)
               ->orWhereNull('is_payroll_generated');
         })->whereNull('payroll_record_id')->where(function ($q) use ($today) {
@@ -1133,8 +1137,9 @@ class FinancialDashboardController extends Controller
         $today = Carbon::today();
         $targetDate = $request->filled('date') ? Carbon::parse($request->date) : $today;
 
-        // Query eligible intakes for target date that have NOT been generated
-        $intakes = BeneficiaryIntake::where(function ($q) {
+        // Query eligible intakes for target date that have NOT been generated and are NOT archived
+        $intakes = BeneficiaryIntake::where('is_archived', false)
+            ->where(function ($q) {
                 $q->where('is_payroll_generated', false)
                   ->orWhereNull('is_payroll_generated');
             })
@@ -2372,5 +2377,321 @@ class FinancialDashboardController extends Controller
             'reportDate',
             'payrollDate'
         ));
+    }
+
+    /**
+     * Dedicated Step 1 Archive Directory Page.
+     * Displays all safely archived Step 1 intake records with search, filters, and restore capabilities.
+     */
+    public function step1Archive(Request $request)
+    {
+        $query = BeneficiaryIntake::with(['client', 'encoderUser', 'archivedByUser'])
+            ->where('is_archived', true);
+
+        // Filter by Barangay
+        if ($request->filled('barangay') && $request->barangay !== 'All') {
+            $query->where('beneficiary_barangay', $request->barangay);
+        }
+
+        // Filter by Category
+        if ($request->filled('category') && $request->category !== 'All') {
+            $cat = $request->category;
+            $query->where(function ($q) use ($cat) {
+                $q->where('beneficiary_category', $cat)
+                  ->orWhereJsonContains('beneficiary_categories', $cat);
+            });
+        }
+
+        // Filter by Date or Date Range
+        if ($request->filled('date')) {
+            $query->whereDate('date_processed', $request->date);
+        } elseif ($request->filled('date_from') || $request->filled('date_to')) {
+            if ($request->filled('date_from')) {
+                $query->whereDate('date_processed', '>=', $request->date_from);
+            }
+            if ($request->filled('date_to')) {
+                $query->whereDate('date_processed', '<=', $request->date_to);
+            }
+        }
+
+        // Search by control number, beneficiary name, representative name, or barangay
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('control_number', 'like', "%{$search}%")
+                  ->orWhere('beneficiary_first_name', 'like', "%{$search}%")
+                  ->orWhere('beneficiary_last_name', 'like', "%{$search}%")
+                  ->orWhere('beneficiary_middle_name', 'like', "%{$search}%")
+                  ->orWhere('rep_first_name', 'like', "%{$search}%")
+                  ->orWhere('rep_last_name', 'like', "%{$search}%")
+                  ->orWhere('beneficiary_barangay', 'like', "%{$search}%");
+            });
+        }
+
+        $totalArchived = BeneficiaryIntake::where('is_archived', true)->count();
+        $archivedIntakes = $query->latest('archived_at')->paginate(15)->withQueryString();
+
+        $barangays = [
+            'Barangay I (Poblacion)', 'Barangay II (Poblacion)', 'Barangay III (Poblacion)',
+            'Barangay IV (Poblacion)', 'Barangay V (Poblacion)', 'Acacia', 'Anabu',
+            'Balite I', 'Balite II', 'Biga I', 'Biga II', 'Biluso', 'Bucal', 'Buho',
+            'Cabangaan', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
+            'Lalaan II', 'Litlit', 'Lucsuhin', 'Lumil', 'Maguyam', 'Malabag', 'Malaking Tatyao',
+            'Mataas na Burol', 'Munting Ilog', 'Narra I', 'Narra II', 'Narra III',
+            'Paligawan', 'Pasong Langka', 'Pooc I', 'Pooc II', 'Pulong Bunga', 'Pulong Saging',
+            'Puting Kahoy', 'Sabutan', 'San Miguel I', 'San Miguel II', 'San Vicente I',
+            'San Vicente II', 'Santol', 'Tartaria', 'Tibig', 'Toledo', 'Tubuan I', 'Tubuan II',
+            'Tubuan III', 'Ulat', 'Yakal'
+        ];
+
+        $categories = [
+            'Solo Parents', 'Indigenous People', 'PWD', '4PS DSWD Beneficiary', 'LGBTQIA+',
+            'Psychosocial/Mental/Learning Disability', 'Stateless Person/Asylum Seekers/Refugees',
+            'Senior Citizen', 'Indigent Resident', 'Others'
+        ];
+
+        return view('admin.financial.step1-archive', compact('archivedIntakes', 'totalArchived', 'barangays', 'categories'));
+    }
+
+    /**
+     * Archive an intake record from Step 1.
+     */
+    public function archiveStep1(Request $request, $id)
+    {
+        $intake = BeneficiaryIntake::findOrFail($id);
+
+        if ($intake->is_archived) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Ang intake record na ito ({$intake->control_number}) ay naka-archive na.",
+                ], 422);
+            }
+            return redirect()->back()->with('error', "Record {$intake->control_number} is already archived.");
+        }
+
+        $userId = auth()->id() ?? session('admin_user_id');
+
+        $intake->update([
+            'is_archived' => true,
+            'archived_at' => now(),
+            'archived_by' => $userId,
+            'archive_module' => 'step1',
+            'archive_reason' => $request->input('reason'),
+        ]);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Matagumpay na nai-archive ang intake record ({$intake->control_number})!",
+                'control_number' => $intake->control_number,
+            ]);
+        }
+
+        return redirect()->back()->with('success', "Intake record {$intake->control_number} has been safely archived.");
+    }
+
+    /**
+     * Restore an archived intake back to active Step 1 records.
+     */
+    public function restoreStep1(Request $request, $id)
+    {
+        $intake = BeneficiaryIntake::findOrFail($id);
+
+        if (!$intake->is_archived) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Ang intake record na ito ({$intake->control_number}) ay aktibo at hindi naka-archive.",
+                ], 422);
+            }
+            return redirect()->back()->with('error', "Record {$intake->control_number} is not archived.");
+        }
+
+        $intake->update([
+            'is_archived' => false,
+            'archived_at' => null,
+            'archived_by' => null,
+            'archive_module' => null,
+            'archive_reason' => null,
+        ]);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Matagumpay na naibalik sa aktibong Step 1 records ang intake record ({$intake->control_number}) nang buo!",
+                'control_number' => $intake->control_number,
+            ]);
+        }
+
+        return redirect()->back()->with('success', "Intake record {$intake->control_number} has been restored to active list.");
+    }
+
+    /**
+     * Dedicated Step 2 Archive Directory Page.
+     * Displays all archived financial assistance records with search, filters, and restore capabilities.
+     */
+    public function financialStep2Archive(Request $request)
+    {
+        $query = BeneficiaryIntake::with(['client', 'encoderUser', 'payrollRecord', 'archivedByUser'])
+            ->where('is_archived', true);
+
+        // Filter by Barangay
+        if ($request->filled('barangay') && $request->barangay !== 'All') {
+            $query->where('beneficiary_barangay', $request->barangay);
+        }
+
+        // Filter by Claim Status
+        if ($request->filled('claim_status') && $request->claim_status !== 'All') {
+            if ($request->claim_status === 'Claimed') {
+                $query->where('claim_status', 'Claimed');
+            } elseif ($request->claim_status === 'Unclaimed') {
+                $query->where(function ($q) {
+                    $q->where('claim_status', '!=', 'Claimed')
+                      ->orWhereNull('claim_status');
+                });
+            }
+        }
+
+        // Filter by Month & Year (e.g. 'YYYY-MM') or Date
+        if ($request->filled('month')) {
+            $monthInput = trim($request->month);
+            $parts = explode('-', $monthInput);
+            if (count($parts) === 2 && is_numeric($parts[0]) && is_numeric($parts[1])) {
+                $year = (int) $parts[0];
+                $monthNum = (int) $parts[1];
+                $query->where(function ($q) use ($year, $monthNum) {
+                    $q->where(function ($sq) use ($year, $monthNum) {
+                        $sq->whereNotNull('payroll_date')
+                           ->whereYear('payroll_date', $year)
+                           ->whereMonth('payroll_date', $monthNum);
+                    })->orWhere(function ($sq) use ($year, $monthNum) {
+                        $sq->whereNull('payroll_date')
+                           ->whereYear('date_processed', $year)
+                           ->whereMonth('date_processed', $monthNum);
+                    });
+                });
+            }
+        } elseif ($request->filled('date')) {
+            $query->whereDate('date_processed', $request->date);
+        }
+
+        // Search by control number, beneficiary name, representative name, or payroll number
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('control_number', 'like', "%{$search}%")
+                  ->orWhere('beneficiary_first_name', 'like', "%{$search}%")
+                  ->orWhere('beneficiary_last_name', 'like', "%{$search}%")
+                  ->orWhere('beneficiary_middle_name', 'like', "%{$search}%")
+                  ->orWhere('rep_first_name', 'like', "%{$search}%")
+                  ->orWhere('rep_last_name', 'like', "%{$search}%")
+                  ->orWhere('beneficiary_barangay', 'like', "%{$search}%")
+                  ->orWhereHas('payrollRecord', function ($pq) use ($search) {
+                      $pq->where('payroll_number', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $totalArchived = BeneficiaryIntake::where('is_archived', true)->count();
+        $totalArchivedAmount = BeneficiaryIntake::where('is_archived', true)->sum('recommended_amount') ?? 0;
+        $totalArchivedClaimed = BeneficiaryIntake::where('is_archived', true)->where('claim_status', 'Claimed')->count();
+
+        $archivedRecords = $query->latest('archived_at')->paginate(15)->withQueryString();
+
+        $barangays = [
+            'Barangay I (Poblacion)', 'Barangay II (Poblacion)', 'Barangay III (Poblacion)',
+            'Barangay IV (Poblacion)', 'Barangay V (Poblacion)', 'Acacia', 'Anabu',
+            'Balite I', 'Balite II', 'Biga I', 'Biga II', 'Biluso', 'Bucal', 'Buho',
+            'Cabangaan', 'Carmen', 'Hukay', 'Iba', 'Kalubkob', 'Kaong', 'Lalaan I',
+            'Lalaan II', 'Litlit', 'Lucsuhin', 'Lumil', 'Maguyam', 'Malabag', 'Malaking Tatyao',
+            'Mataas na Burol', 'Munting Ilog', 'Narra I', 'Narra II', 'Narra III',
+            'Paligawan', 'Pasong Langka', 'Pooc I', 'Pooc II', 'Pulong Bunga', 'Pulong Saging',
+            'Puting Kahoy', 'Sabutan', 'San Miguel I', 'San Miguel II', 'San Vicente I',
+            'San Vicente II', 'Santol', 'Tartaria', 'Tibig', 'Toledo', 'Tubuan I', 'Tubuan II',
+            'Tubuan III', 'Ulat', 'Yakal'
+        ];
+
+        return view('admin.financial.financialstep2-archive', compact(
+            'archivedRecords',
+            'totalArchived',
+            'totalArchivedAmount',
+            'totalArchivedClaimed',
+            'barangays'
+        ));
+    }
+
+    /**
+     * Archive a financial assistance record from Step 2.
+     */
+    public function archiveStep2(Request $request, $id)
+    {
+        $intake = BeneficiaryIntake::findOrFail($id);
+
+        if ($intake->is_archived) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Ang financial assistance record na ito ({$intake->control_number}) ay naka-archive na.",
+                ], 422);
+            }
+            return redirect()->back()->with('error', "Record {$intake->control_number} is already archived.");
+        }
+
+        $userId = auth()->id() ?? session('admin_user_id');
+
+        $intake->update([
+            'is_archived' => true,
+            'archived_at' => now(),
+            'archived_by' => $userId,
+            'archive_module' => 'step2',
+            'archive_reason' => $request->input('reason'),
+        ]);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Matagumpay na nai-archive ang financial assistance record ({$intake->control_number})!",
+                'control_number' => $intake->control_number,
+            ]);
+        }
+
+        return redirect()->back()->with('success', "Financial assistance record {$intake->control_number} has been safely archived.");
+    }
+
+    /**
+     * Restore an archived financial assistance record back to active Step 2 masterlist.
+     */
+    public function restoreStep2(Request $request, $id)
+    {
+        $intake = BeneficiaryIntake::findOrFail($id);
+
+        if (!$intake->is_archived) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Ang financial assistance record na ito ({$intake->control_number}) ay aktibo at hindi naka-archive.",
+                ], 422);
+            }
+            return redirect()->back()->with('error', "Record {$intake->control_number} is not archived.");
+        }
+
+        $intake->update([
+            'is_archived' => false,
+            'archived_at' => null,
+            'archived_by' => null,
+            'archive_module' => null,
+            'archive_reason' => null,
+        ]);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Matagumpay na naibalik sa aktibong Step 2 masterlist ang financial assistance record ({$intake->control_number})!",
+                'control_number' => $intake->control_number,
+            ]);
+        }
+
+        return redirect()->back()->with('success', "Financial assistance record {$intake->control_number} has been restored to active list.");
     }
 }
