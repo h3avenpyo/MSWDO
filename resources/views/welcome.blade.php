@@ -25,13 +25,16 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex items-center justify-between" style="height: 60px;">
                 @php
-                $logo = null;
-                if (file_exists(public_path('images/mswdo-logo.png'))) {
-                    $logo = 'mswdo-logo.png';
-                } else {
-                    $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
-                    if (!empty($files))
-                        $logo = basename($files[0]);
+                $logo = 'IserveIcon.png';
+                if (!file_exists(public_path('images/IserveIcon.png'))) {
+                    $logo = null;
+                    if (file_exists(public_path('images/mswdo-logo.png'))) {
+                        $logo = 'mswdo-logo.png';
+                    } else {
+                        $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
+                        if (!empty($files))
+                            $logo = basename($files[0]);
+                    }
                 }
                 @endphp
                 <!-- Mobile: hamburger + text (left) ... logo (right) -->
@@ -46,7 +49,7 @@
                         </svg>
                     </button>
                     <div class="min-w-0">
-                        <h1 class="text-white font-bold text-sm leading-tight" style="white-space:nowrap;">MSWDO SILANG</h1>
+                        <h1 class="text-white font-bold text-sm leading-tight" style="white-space:nowrap;">iSERVE SILANG</h1>
                         <p class="text-white/60 text-[10px] leading-tight" style="white-space:nowrap;">Municipal Social Welfare &amp; Development Office</p>
                     </div>
                 </div>
@@ -64,7 +67,7 @@
                         @endif
                     </div>
                     <div>
-                        <h1 class="text-white font-bold text-lg tracking-tight leading-tight">MSWDO SILANG</h1>
+                        <h1 class="text-white font-bold text-lg tracking-tight leading-tight">iSERVE SILANG</h1>
                         <p class="text-white/60 text-xs leading-tight">Municipal Social Welfare &amp; Development Office</p>
                     </div>
                 </a>

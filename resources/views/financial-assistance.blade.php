@@ -26,13 +26,16 @@
         <div class="max-w-5xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16 sm:h-18">
                 @php
-                    $logo = null;
-                    if (file_exists(public_path('images/mswdo-logo.png'))) {
-                        $logo = 'mswdo-logo.png';
-                    } else {
-                        $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
-                        if (!empty($files)) {
-                            $logo = basename($files[0]);
+                    $logo = 'IserveIcon.png';
+                    if (!file_exists(public_path('images/IserveIcon.png'))) {
+                        $logo = null;
+                        if (file_exists(public_path('images/mswdo-logo.png'))) {
+                            $logo = 'mswdo-logo.png';
+                        } else {
+                            $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
+                            if (!empty($files)) {
+                                $logo = basename($files[0]);
+                            }
                         }
                     }
                 @endphp
@@ -49,7 +52,7 @@
                     </button>
                     <div class="min-w-0">
                         <h1 class="text-white font-bold text-sm tracking-tight leading-tight truncate">
-                            MSWDO SILANG
+                            iSERVE SILANG
                         </h1>
                         <p class="text-slate-200 text-[11px] leading-tight truncate">
                             Municipal Social Welfare &amp; Development Office
@@ -73,7 +76,7 @@
                     </div>
                     <div class="min-w-0">
                         <h1 class="text-white font-bold text-base tracking-tight leading-tight truncate">
-                            MSWDO SILANG
+                            iSERVE SILANG
                         </h1>
                         <p class="text-slate-200 text-[11px] leading-tight truncate">
                             Municipal Social Welfare &amp; Development Office

@@ -1,6 +1,6 @@
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <img src="{{ asset('images/dswd.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;" alt="DSWD">
+        <img src="{{ asset('images/IserveIcon.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;" alt="iSERVE">
         <span>MSWDO Admin</span>
     </div>
     <ul class="sidebar-menu">

@@ -477,12 +477,15 @@
 <body>
 <div class="app">
     @php
-        $logo = null;
-        if (file_exists(public_path('images/mswdo-logo.png'))) {
-            $logo = 'mswdo-logo.png';
-        } else {
-            $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
-            if (!empty($files)) $logo = basename($files[0]);
+        $logo = 'IserveIcon.png';
+        if (!file_exists(public_path('images/IserveIcon.png'))) {
+            $logo = null;
+            if (file_exists(public_path('images/mswdo-logo.png'))) {
+                $logo = 'mswdo-logo.png';
+            } else {
+                $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
+                if (!empty($files)) $logo = basename($files[0]);
+            }
         }
     @endphp
 
@@ -495,7 +498,7 @@
         </button>
         <div class="mobile-header-brand">
             <div class="mobile-brand-text">
-                <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+                <h1 class="mobile-brand-title">iSERVE SILANG</h1>
                 <p class="mobile-brand-subtitle">@yield('page_title', 'Admin Portal')</p>
             </div>
             <div class="mobile-logo">
@@ -509,7 +512,7 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <img src="{{ asset('images/dswd.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;" alt="DSWD">
+            <img src="{{ asset('images/IserveIcon.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;" alt="iSERVE">
             <span>MSWDO Admin</span>
         </div>
         <ul class="sidebar-menu">

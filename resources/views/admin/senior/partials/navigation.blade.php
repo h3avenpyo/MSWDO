@@ -202,7 +202,7 @@
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <img src="{{ asset('images/dswd.png') }}" style="width:56px;height:56px;object-fit:contain;" alt="DSWD">
+        <img src="{{ asset('images/IserveIcon.png') }}" style="width:56px;height:56px;object-fit:contain;" alt="iSERVE">
         <span>Senior Citizen</span>
     </div>
     <ul class="sidebar-menu">
@@ -228,12 +228,15 @@
 
 <!-- Mobile Header (visible only on mobile) -->
 @php
-    $logo = null;
-    if (file_exists(public_path('images/mswdo-logo.png'))) {
-        $logo = 'mswdo-logo.png';
-    } else {
-        $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
-        if (!empty($files)) $logo = basename($files[0]);
+    $logo = 'IserveIcon.png';
+    if (!file_exists(public_path('images/IserveIcon.png'))) {
+        $logo = null;
+        if (file_exists(public_path('images/mswdo-logo.png'))) {
+            $logo = 'mswdo-logo.png';
+        } else {
+            $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
+            if (!empty($files)) $logo = basename($files[0]);
+        }
     }
 @endphp
 <div class="mobile-header">
@@ -244,12 +247,12 @@
     </button>
     <div class="mobile-header-brand">
         <div class="mobile-brand-text">
-            <h1 class="mobile-brand-title">MSWDO SILANG</h1>
+            <h1 class="mobile-brand-title">iSERVE SILANG</h1>
             <p class="mobile-brand-subtitle">{{ $mobileSubtitle ?? 'Senior Citizen' }}</p>
         </div>
         <div class="mobile-logo">
             @if($logo)
-                <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
+                <img src="{{ asset('images/IserveIcon.png') }}" class="mobile-logo-img">
             @endif
         </div>
     </div>
