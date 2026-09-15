@@ -73,6 +73,29 @@ function handleBrandClick() {
     }
 }
 
+/**
+ * Toggle sidebar dropdown submenu (e.g., Step 1 Intake collapsible menu)
+ */
+function toggleSidebarDropdown(el, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    const isCollapsed = document.body.classList.contains('sidebar-collapsed') ||
+        document.documentElement.classList.contains('sidebar-collapsed');
+
+    // If sidebar is collapsed on desktop, expand it first so user sees the submenu
+    if (isCollapsed && window.innerWidth >= 1024) {
+        toggleSidebarCollapse(false);
+    }
+
+    const parentLi = el.closest('.sidebar-dropdown');
+    if (parentLi) {
+        parentLi.classList.toggle('open');
+    }
+}
+
 function updateDateTime() {
     const now = new Date();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };

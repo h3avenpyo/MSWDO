@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\Auth\PasswordResetManagementController;
 use App\Http\Controllers\Admin\OnlineRequestController;
 use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\FinancialAssistanceController;
+use App\Http\Controllers\Admin\Financial\OnlineFinancialIntakeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -131,6 +132,15 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
 Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::get('/admin/financial/dashboard', [FinancialDashboardController::class, 'financialDashboard'])->name('admin.financial.dashboard');
     Route::get('/admin/financial/financialstep1', [FinancialDashboardController::class, 'financialStep1'])->name('admin.financial.financialstep1');
+    
+    // Step 1: Intake Online Applications Management Routes
+    Route::prefix('admin/financial/online-intakes')->name('admin.financial.online-intakes.')->group(function () {
+        Route::get('/', [OnlineFinancialIntakeController::class, 'index'])->name('index');
+        Route::get('/{id}', [OnlineFinancialIntakeController::class, 'show'])->name('show');
+        Route::post('/{id}/accept', [OnlineFinancialIntakeController::class, 'accept'])->name('accept');
+        Route::post('/{id}/reject', [OnlineFinancialIntakeController::class, 'reject'])->name('reject');
+    });
+
     Route::post('/admin/financial/step2/authenticate', [FinancialDashboardController::class, 'authenticateStep2'])->name('admin.financial.step2.authenticate');
     Route::get('/admin/financial/financialstep1statistics', [FinancialDashboardController::class, 'statistics'])->name('admin.financial.financialstep1statistics');
 

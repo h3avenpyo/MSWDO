@@ -132,7 +132,6 @@
         <div class="intake-document">
             <form id="financialIntakeForm" method="POST" action="{{ route('financial-assistance.store') }}" novalidate>
                 @csrf
-                <input type="hidden" name="control_number" id="control_number" value="{{ $controlNumber }}">
                 <input type="hidden" name="beneficiary_city" value="SILANG">
                 <input type="hidden" name="beneficiary_province" value="CAVITE">
                 <input type="hidden" name="beneficiary_region" value="REGION IV-A">

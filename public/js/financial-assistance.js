@@ -541,28 +541,28 @@ function initFinancialIntakeForm() {
                 .then((data) => {
                     if (data.success) {
                         Swal.fire({
-                            title: 'Intake Application Submitted!',
+                            title: 'Aplikasyon Naisumite!',
                             html: `
                                 <div class="text-left p-2">
-                                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-4 text-center">
-                                        <p class="text-xs uppercase tracking-wider text-emerald-700 font-bold mb-1">Official Control Number</p>
-                                        <p class="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight">${data.control_number}</p>
-                                        <p class="text-xs text-slate-500 mt-1">Please take a screenshot or write down this number.</p>
+                                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4 text-center">
+                                        <p class="text-xs uppercase tracking-wider text-amber-700 font-bold mb-1">Katayuan ng Aplikasyon</p>
+                                        <p class="text-xl sm:text-2xl font-extrabold text-amber-800 tracking-tight">For Review (Pending)</p>
+                                        <p class="text-xs font-semibold text-slate-600 mt-1">Reference No.: ${data.reference_number || ('#ONLINE-' + (data.data?.id || ''))}</p>
                                     </div>
                                     <div class="space-y-2 text-sm text-slate-700 border-t border-slate-100 pt-3">
-                                        <p><strong>Beneficiary:</strong> ${data.beneficiary_name || 'N/A'}</p>
+                                        <p><strong>Benepisyaryo:</strong> ${data.beneficiary_name || 'N/A'}</p>
                                         <p><strong>Barangay:</strong> ${data.data?.barangay || 'Silang, Cavite'}</p>
-                                        <p><strong>Purpose:</strong> ${data.data?.purpose || 'General Assistance'}</p>
-                                        <p><strong>Date Filed:</strong> ${data.data?.date_processed || 'Today'}</p>
+                                        <p><strong>Layunin:</strong> ${data.data?.purpose || 'General Assistance'}</p>
+                                        <p><strong>Petsa ng Pagsumite:</strong> ${data.data?.date_submitted || 'Ngayong Araw'}</p>
                                     </div>
-                                    <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 leading-relaxed">
-                                        <strong>Next Step:</strong> Your Step 1 Intake Sheet has been registered. Please present your Control Number and original requirements (Barangay Indigency, Valid ID, Medical Abstract/Certificate) to the MSWDO Silang staff during verification.
+                                    <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-slate-700 leading-relaxed">
+                                        <strong class="text-primary">Mahalagang Paalala:</strong> Ang inyong aplikasyon ay dadaan muna sa pagsusuri ng MSWDO Staff. Ang <strong>Opisyal na Control Number</strong> ay ipagkakaloob kapag opisyal nang tinanggap (accepted) ang inyong aplikasyon.
                                     </div>
                                 </div>
                             `,
                             icon: 'success',
                             confirmButtonColor: '#1A237E',
-                            confirmButtonText: 'Return to Home',
+                            confirmButtonText: 'Bumalik sa Home',
                             allowOutsideClick: false
                         }).then(() => {
                             window.location.href = '/';

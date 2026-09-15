@@ -82,14 +82,46 @@
                 <span class="menu-label">Financial Dashboard</span>
             </a>
         </li>
-        <li>
-            <a href="/admin/financial/financialstep1"
-                class="{{ request()->is('admin/financial/financialstep1') ? 'active' : '' }}"
-                data-tooltip="Step 1: Intake"
-                title="Step 1: Intake">
+        @php
+            $isStep1Active = request()->is('admin/financial/financialstep1*') || request()->is('admin/financial/online-intakes*') || request()->routeIs('admin.financial.online-intakes.*');
+            $pendingOnlineIntakesCount = 0;
+            if (class_exists(\App\Models\Financial\OnlineFinancialIntake::class)) {
+                $pendingOnlineIntakesCount = \App\Models\Financial\OnlineFinancialIntake::where('status', 'For Review')->count();
+            }
+        @endphp
+        <li class="sidebar-dropdown {{ $isStep1Active ? 'open active' : '' }}">
+            <a href="javascript:void(0)"
+                class="dropdown-toggle-btn {{ $isStep1Active ? 'active' : '' }}"
+                onclick="toggleSidebarDropdown(this, event)"
+                data-tooltip="Step 1 Intake"
+                title="Step 1 Intake">
                 <i class="fas fa-clipboard-list"></i>
-                <span class="menu-label">Step 1: Intake</span>
+                <span class="menu-label">Step 1 Intake</span>
+                <i class="fas fa-chevron-down submenu-arrow ms-auto"></i>
             </a>
+            <ul class="sidebar-submenu">
+                <li>
+                    <a href="/admin/financial/financialstep1"
+                        class="{{ request()->is('admin/financial/financialstep1') ? 'active' : '' }}"
+                        data-tooltip="Step 1 Intake"
+                        title="Step 1 Intake">
+                        <i class="fas fa-clipboard-check"></i>
+                        <span class="menu-label">Step 1 Intake</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.financial.online-intakes.index') }}"
+                        class="{{ (request()->is('admin/financial/online-intakes*') || request()->routeIs('admin.financial.online-intakes.*')) ? 'active' : '' }}"
+                        data-tooltip="Intake Online Applications"
+                        title="Intake Online Applications">
+                        <i class="fas fa-globe"></i>
+                        <span class="menu-label">Intake Online Applications</span>
+                        @if($pendingOnlineIntakesCount > 0)
+                            <span class="badge bg-warning text-dark rounded-pill ms-auto px-1.5 py-0.5" style="font-size: 10px; font-weight: 700;">{{ $pendingOnlineIntakesCount }}</span>
+                        @endif
+                    </a>
+                </li>
+            </ul>
         </li>
         <li>
             <a href="/admin/beneficiary-intake"

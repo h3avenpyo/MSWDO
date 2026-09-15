@@ -17,9 +17,11 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
         $benBday = $this->normalizeDate($this->beneficiary_birthday);
         $repBday = $this->normalizeDate($this->rep_birthday);
 
+        $isOnlineSubmission = $this->is('financial-assistance*') || $this->routeIs('financial-assistance.*');
+
         $this->merge([
             'client_type' => $this->client_type ?: 'New',
-            'control_number' => $this->control_number ?: ('MSWDO-' . date('Y') . '-' . str_pad(\App\Models\SocialCase\BeneficiaryIntake::count() + 1, 5, '0', STR_PAD_LEFT)),
+            'control_number' => $isOnlineSubmission ? null : ($this->control_number ?: ('MSWDO-' . date('Y') . '-' . str_pad(\App\Models\SocialCase\BeneficiaryIntake::count() + 1, 5, '0', STR_PAD_LEFT))),
             'has_representative' => $this->boolean('has_representative'),
             'is_client_beneficiary' => $this->boolean('is_client_beneficiary'),
             'beneficiary_birthday' => $benBday,
@@ -50,9 +52,13 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
 
     public function rules(): array
     {
+        $isOnlineSubmission = $this->is('financial-assistance*') || $this->routeIs('financial-assistance.*');
+
         return [
             'client_id' => ['nullable', 'integer', 'exists:clients,id'],
-            'control_number' => ['required', 'string', 'max:50', 'unique:beneficiary_intakes,control_number'],
+            'control_number' => $isOnlineSubmission 
+                ? ['nullable', 'string', 'max:50']
+                : ['required', 'string', 'max:50', 'unique:beneficiary_intakes,control_number'],
             'client_type' => ['required', 'in:New,Returning'],
             'date_processed' => ['nullable', 'date'],
             'time_start' => ['nullable', 'string', 'max:20'],

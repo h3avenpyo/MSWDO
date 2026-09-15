@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SocialCase\StoreBeneficiaryIntakeRequest;
+use App\Models\Financial\OnlineFinancialIntake;
 use App\Models\SocialCase\BeneficiaryIntake;
 use App\Services\Financial\FinancialDuplicateChecker;
 use Carbon\Carbon;
@@ -15,8 +16,6 @@ class FinancialAssistanceController extends Controller
      */
     public function create()
     {
-        $controlNumber = 'MSWDO-' . date('Y') . '-' . str_pad(BeneficiaryIntake::count() + 1, 5, '0', STR_PAD_LEFT);
-
         $barangays = [
             'Barangay I (Poblacion)', 'Barangay II (Poblacion)', 'Barangay III (Poblacion)',
             'Barangay IV (Poblacion)', 'Barangay V (Poblacion)', 'Acacia', 'Anabu',
@@ -70,7 +69,6 @@ class FinancialAssistanceController extends Controller
         ];
 
         return view('financial-assistance', compact(
-            'controlNumber',
             'barangays',
             'categories',
             'relationships',
@@ -91,6 +89,7 @@ class FinancialAssistanceController extends Controller
 
     /**
      * Store a client-submitted Financial Assistance intake application.
+     * Online applications are held in "For Review" status under OnlineFinancialIntake.
      */
     public function store(StoreBeneficiaryIntakeRequest $request, FinancialDuplicateChecker $duplicateChecker)
     {
@@ -151,39 +150,43 @@ class FinancialAssistanceController extends Controller
             }));
         }
 
-        // Ensure unique control number
-        if (BeneficiaryIntake::where('control_number', $data['control_number'])->exists()) {
-            $data['control_number'] = 'MSWDO-' . date('Y') . '-' . str_pad(BeneficiaryIntake::count() + 1, 5, '0', STR_PAD_LEFT);
-        }
-
+        // Online applications do NOT receive a Control Number while Pending Review
+        $data['control_number'] = null;
         $data['beneficiary_city'] = $data['beneficiary_city'] ?? 'Silang';
         $data['beneficiary_province'] = $data['beneficiary_province'] ?? 'Cavite';
         $data['beneficiary_region'] = $data['beneficiary_region'] ?? 'Region IV-A';
         $data['service_provided'] = 'Financial Assistance Intake';
         $data['purpose'] = $data['assistance_purpose'] ?? 'General Assistance Request';
         $data['submitted_to'] = 'MSWDO Silang Main Office';
+        $data['status'] = 'For Review';
+        $data['date_submitted'] = now();
 
-        $intake = BeneficiaryIntake::create($data);
+        // Save as Online Application in "For Review" status with NO Control Number
+        $onlineIntake = OnlineFinancialIntake::create($data);
+
+        $refNumber = 'ONLINE-' . str_pad($onlineIntake->id, 5, '0', STR_PAD_LEFT);
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
-                'control_number' => $intake->control_number,
-                'beneficiary_name' => $intake->beneficiary_full_name,
-                'message' => 'Your financial assistance intake application has been submitted successfully.',
+                'reference_number' => $refNumber,
+                'beneficiary_name' => $onlineIntake->beneficiary_full_name,
+                'status' => 'For Review',
+                'message' => 'Ang inyong online intake application ay matagumpay na naisumite at kasalukuyang "For Review" ng MSWDO staff. Ang opisyal na Control Number ay ibibigay kapag na-review at opisyal nang tinanggap ang inyong aplikasyon.',
                 'data' => [
-                    'id' => $intake->id,
-                    'control_number' => $intake->control_number,
-                    'beneficiary_name' => $intake->beneficiary_full_name,
-                    'date_processed' => Carbon::parse($intake->date_processed)->format('F d, Y'),
-                    'barangay' => $intake->beneficiary_barangay,
-                    'purpose' => $intake->display_assistance_purpose,
+                    'id' => $onlineIntake->id,
+                    'reference_number' => $refNumber,
+                    'beneficiary_name' => $onlineIntake->beneficiary_full_name,
+                    'date_submitted' => $onlineIntake->date_submitted ? $onlineIntake->date_submitted->format('F d, Y') : date('F d, Y'),
+                    'barangay' => $onlineIntake->beneficiary_barangay,
+                    'purpose' => $onlineIntake->assistance_purpose ?? 'General Assistance Request',
+                    'status' => 'For Review',
                 ]
             ]);
         }
 
         return redirect()->route('financial-assistance.create')
-            ->with('success', 'Your intake application has been submitted successfully. Control Number: ' . $intake->control_number)
-            ->with('intake_submitted', $intake);
+            ->with('success', 'Ang inyong online intake application ay matagumpay na naisumite at kasalukuyang "For Review" ng MSWDO staff. Reference No: ' . $refNumber . '. Ang opisyal na Control Number ay ibibigay kapag opisyal nang tinanggap ang inyong aplikasyon.')
+            ->with('intake_submitted', $onlineIntake);
     }
 }
