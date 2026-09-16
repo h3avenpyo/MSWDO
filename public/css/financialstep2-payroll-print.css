@@ -54,18 +54,30 @@ body {
 .payroll-header {
     position: relative;
     text-align: center;
-    padding-bottom: 12px;
+    padding: 2px 85px 12px 85px;
     margin-bottom: 16px;
     border-bottom: 2px solid #0F172A;
+    min-height: 72px;
 }
 
 .header-logo-left {
     position: absolute;
-    left: 10px;
+    left: 8px;
+    top: 2px;
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    display: block;
+}
+
+.header-logo-right {
+    position: absolute;
+    right: 8px;
     top: 2px;
     width: 68px;
-    height: 68px;
+    height: 64px;
     object-fit: contain;
+    display: block;
 }
 
 .govt-titles {
@@ -89,7 +101,7 @@ body {
 .document-title {
     font-size: 13pt;
     font-weight: 800;
-    color: #1A237E;
+    color: #DC2626;
     margin-top: 6px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -307,16 +319,34 @@ body {
     }
 
     .payroll-header {
-        padding-bottom: 8px;
-        margin-bottom: 12px;
+        position: relative !important;
+        text-align: center !important;
+        padding: 0 75px 8px 75px !important;
+        margin-bottom: 12px !important;
         border-bottom: 2px solid #000000 !important;
+        min-height: 62px !important;
     }
 
     .header-logo-left {
-        width: 58px;
-        height: 58px;
-        left: 0;
-        top: 0;
+        position: absolute !important;
+        width: 58px !important;
+        height: 58px !important;
+        left: 2px !important;
+        top: 0 !important;
+        object-fit: contain !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .header-logo-right {
+        position: absolute !important;
+        width: 64px !important;
+        height: 58px !important;
+        right: 2px !important;
+        top: 0 !important;
+        object-fit: contain !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 
     .govt-titles {
