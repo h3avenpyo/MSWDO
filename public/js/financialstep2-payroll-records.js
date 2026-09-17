@@ -62,6 +62,27 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Delegated click handler to open print payroll window smoothly without duplicate tabs
+    document.addEventListener('click', function (e) {
+        const printBtn = e.target.closest('.btn-print-payroll-action');
+        if (!printBtn) return;
+
+        const url = printBtn.getAttribute('href');
+        if (url && url !== '#') {
+            e.preventDefault();
+            // Open via named window to ensure script-closable context and reuse the print preview tab
+            const printWin = window.open(url, 'mswdo_payroll_print_window');
+            if (printWin) {
+                try {
+                    printWin.focus();
+                } catch (err) {}
+            } else {
+                // Fallback in case popup blocker intervened
+                window.location.href = url;
+            }
+        }
+    });
+
     // Automatic Search Debounce & Cursor Position Management
     const filterForm = document.getElementById('payrollRecordsFilterForm') || document.getElementById('datePayrollFilterForm');
     const searchInput = document.getElementById('recordsSearchInput');

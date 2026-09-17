@@ -91,8 +91,8 @@
                     <i class="fas fa-bullhorn me-1"></i> Message Unclaimed
                 </button>
                 @if($payrollRecords->isNotEmpty())
-                <a href="{{ route('admin.financial.financialstep2.payroll.print', ['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')]) }}"
-                    target="_blank" class="btn btn-light btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs">
+                <a href="{{ route('admin.financial.financialstep2.payroll.print', array_filter(['date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date'), 'from' => 'records'])) }}"
+                    target="_blank" rel="opener" class="btn btn-light btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs btn-print-payroll-action">
                     <i class="fas fa-print me-1"></i> Print Date Payroll Sheet
                 </a>
                 @endif
@@ -375,9 +375,10 @@
             </div>
             <div class="d-flex gap-2 align-items-center">
                 @if($record->recordBeneficiariesCount > 0)
-                <a href="{{ route('admin.financial.financialstep2.payroll.print', ['payroll_id' => $record->id, 'barangay' => request('barangay')]) }}"
+                <a href="{{ route('admin.financial.financialstep2.payroll.print', array_filter(['payroll_id' => $record->id, 'barangay' => request('barangay'), 'from' => 'records', 'date' => $selectedDate ? $selectedDate->format('Y-m-d') : request('date')])) }}"
                     target="_blank"
-                    class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold shadow-xs btn-brand-primary">
+                    rel="opener"
+                    class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold shadow-xs btn-brand-primary btn-print-payroll-action">
                     <i class="fas fa-print me-1"></i> Print Payroll
                 </a>
                 @endif
@@ -886,7 +887,7 @@
 @endsection
 
 @section('page-scripts')
-<script src="{{ asset('js/financialstep2-payroll-records.js') }}"></script>
+<script src="{{ asset('js/financialstep2-payroll-records.js') }}?v={{ file_exists(public_path('js/financialstep2-payroll-records.js')) ? filemtime(public_path('js/financialstep2-payroll-records.js')) : time() }}"></script>
 <script src="{{ asset('js/financialstep2-sms.js') }}"></script>
 <script src="{{ asset('js/financialstep2-monthly-unclaimed.js') }}"></script>
 <script>

@@ -38,4 +38,42 @@ document.addEventListener('DOMContentLoaded', function () {
             printPayroll();
         }
     });
+
+    // Back button navigation (Back to Payroll Records / Generator)
+    const backBtn = document.getElementById('btnBackPayroll');
+    if (backBtn) {
+        backBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            // 1. If opened from an existing opener tab (Payroll Records or Generator)
+            if (window.opener && !window.opener.closed) {
+                try {
+                    window.opener.focus();
+                } catch (err) {}
+                window.close();
+
+                // Fallback if browser restricted window.close()
+                setTimeout(function () {
+                    if (!window.closed) {
+                        window.location.href = backBtn.getAttribute('href');
+                    }
+                }, 250);
+                return;
+            }
+
+            // 2. Try closing this tab if it was opened as a separate window/tab
+            window.close();
+
+            // 3. If window is still open (e.g., opened directly or in same tab), return smoothly
+            setTimeout(function () {
+                if (!window.closed) {
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.location.href = backBtn.getAttribute('href');
+                    }
+                }
+            }, 250);
+        });
+    }
 });

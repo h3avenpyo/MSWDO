@@ -88,13 +88,26 @@
 
 <body>
 
+    @php
+        $isFromRecords = request('from') === 'records' || request()->filled('payroll_id') || request()->has('records') || !empty($selectedPayrollRecord);
+        if ($isFromRecords) {
+            $backUrl = isset($targetDate)
+                ? route('admin.financial.financialstep2.payroll-records.date', array_filter(['date' => $targetDate->format('Y-m-d'), 'barangay' => request('barangay')]))
+                : route('admin.financial.financialstep2.payroll-records');
+            $backLabel = 'Back to Payroll Records';
+        } else {
+            $backUrl = route('admin.financial.financialstep2.payroll', array_filter(['date' => request('date')]));
+            $backLabel = 'Back to Payroll Generator';
+        }
+    @endphp
+
     <!-- Web Top Action Bar (Hidden when printing) -->
     <div class="no-print no-print-bar">
         <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div class="d-flex align-items-center gap-3">
-                <a href="{{ route('admin.financial.financialstep2.payroll') }}"
+                <a href="{{ $backUrl }}" id="btnBackPayroll"
                     class="btn btn-outline-light btn-sm rounded-pill px-3">
-                    <i class="fas fa-arrow-left me-1"></i> Back to Payroll Generator
+                    <i class="fas fa-arrow-left me-1"></i> {{ $backLabel }}
                 </a>
 
             </div>
@@ -263,7 +276,47 @@
     </div>
 
     <!-- External Module Script -->
-    <script src="{{ asset('js/financialstep2-payroll-print.js') }}"></script>
+    <script src="{{ asset('js/financialstep2-payroll-print.js') }}?v={{ file_exists(public_path('js/financialstep2-payroll-print.js')) ? filemtime(public_path('js/financialstep2-payroll-print.js')) : time() }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const backBtn = document.getElementById('btnBackPayroll');
+            if (backBtn) {
+                backBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // 1. If opened from an existing opener tab (Payroll Records or Generator)
+                    if (window.opener && !window.opener.closed) {
+                        try {
+                            window.opener.focus();
+                        } catch (err) {}
+                        window.close();
+
+                        // Fallback if browser restricted window.close()
+                        setTimeout(function () {
+                            if (!window.closed) {
+                                window.location.href = backBtn.getAttribute('href');
+                            }
+                        }, 250);
+                        return;
+                    }
+
+                    // 2. Try closing this tab if it was opened as a separate window/tab
+                    window.close();
+
+                    // 3. If window is still open (e.g. opened directly or in same tab), return smoothly
+                    setTimeout(function () {
+                        if (!window.closed) {
+                            if (window.history.length > 1) {
+                                window.history.back();
+                            } else {
+                                window.location.href = backBtn.getAttribute('href');
+                            }
+                        }
+                    }, 250);
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
