@@ -213,9 +213,16 @@
             </table>
         </div>
 
-        @if($intakes->hasPages())
-        <div class="p-3 border-top d-flex justify-content-end">
-            {{ $intakes->links() }}
+        @if($intakes->total() > 0)
+        <div class="intake-pagination-wrapper d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+            <div class="text-muted small fw-medium text-center text-md-start">
+                Showing <span class="fw-semibold text-dark">{{ $intakes->firstItem() }}</span> to <span class="fw-semibold text-dark">{{ $intakes->lastItem() }}</span> of <span class="fw-semibold text-dark">{{ $intakes->total() }}</span> records
+            </div>
+            @if($intakes->hasPages())
+            <div class="d-flex justify-content-center">
+                {{ $intakes->links('vendor.pagination.mswdo-compact') }}
+            </div>
+            @endif
         </div>
         @endif
     </div>
@@ -238,7 +245,7 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('admin.beneficiary-intake.transmittal') }}" method="GET" target="_blank"
+            <form action="{{ route('admin.beneficiary-intake.transmittal') }}" method="GET" target="_blank" rel="opener"
                 id="transmittalForm">
                 <div class="modal-body py-4">
 
@@ -292,6 +299,27 @@
 <script src="{{ asset('js/beneficiary-intake/index.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Smooth Transmittal Report Generation & Window Management
+    const transmittalForm = document.getElementById('transmittalForm');
+    if (transmittalForm) {
+        transmittalForm.addEventListener('submit', function() {
+            // Open window explicitly via script so browsers allow window.close() upon return
+            const reportWindow = window.open('', 'mswdo_transmittal_window');
+            if (reportWindow) {
+                this.target = 'mswdo_transmittal_window';
+            }
+
+            // Close the modal cleanly so the Intake Directory page is immediately usable
+            const modalEl = document.getElementById('transmittalModal');
+            if (modalEl && typeof bootstrap !== 'undefined') {
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            }
+        });
+    }
+
     document.querySelectorAll('.btn-archive-intake').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
