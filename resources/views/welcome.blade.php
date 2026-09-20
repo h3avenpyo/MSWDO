@@ -23,7 +23,7 @@
     <!-- ========================= -->
     <header class="fixed top-0 left-0 right-0 z-50 w-full shadow-lg" style="background: #1A237E;">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="flex items-center justify-between" style="height: 60px;">
+            <div class="welcome-navbar flex items-center justify-between h-[60px] lg:h-20">
                 @php
                 $logo = 'IserveIcon.png';
                 if (!file_exists(public_path('images/IserveIcon.png'))) {
@@ -130,7 +130,7 @@
     <!-- HERO -->
     <!-- ========================= -->
     <section id="home"
-        class="relative overflow-hidden pt-24 sm:pt-28 lg:pt-24 xl:pt-32 pb-24 sm:pb-28 lg:pb-24 xl:pb-36 border-b border-slate-200/50 bg-[#F8FAFC]">
+        class="relative overflow-hidden pt-24 sm:pt-28 lg:pt-28 xl:pt-32 pb-24 sm:pb-28 lg:pb-24 xl:pb-36 border-b border-slate-200/50 bg-[#F8FAFC]">
         <!-- Hero Background Image -->
         <div class="absolute inset-0 z-0 pointer-events-none select-none">
             <img src="{{ asset('images/background.png') }}" class="w-full h-full object-cover object-center"

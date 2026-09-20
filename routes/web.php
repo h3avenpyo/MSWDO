@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\Senior\SeniorAnalyticsController;
 use App\Http\Controllers\InBetweenBenefitController;
 use App\Http\Controllers\Admin\Auth\PasswordResetManagementController;
 use App\Http\Controllers\Admin\OnlineRequestController;
+use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\FinancialAssistanceController;
 use App\Http\Controllers\Admin\Financial\OnlineFinancialIntakeController;
@@ -43,13 +44,16 @@ Route::post('/admin/clear-welcome', [AuthController::class, 'clearWelcome'])->na
 Route::get('/admin/check-account-status', [AuthController::class, 'checkAccountStatus'])->name('admin.check-account-status');
 
 // Forgot Password Routes
-Route::get('/admin/forgot-password', [AuthController::class, 'showForgotPassword'])->name('admin.forgot-password');
-Route::post('/admin/forgot-password', [AuthController::class, 'sendResetLink'])->name('admin.password.send-link');
-Route::get('/admin/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('admin.password.reset');
-Route::post('/admin/reset-password', [AuthController::class, 'resetPassword'])->name('admin.password.update');
+Route::get('/admin/forgot-password', [PasswordResetManagementController::class, 'showForgotPasswordForm'])->name('admin.forgot-password');
+Route::post('/admin/forgot-password/send-code', [PasswordResetManagementController::class, 'sendResetCode'])->name('admin.forgot-password.send-code');
+Route::post('/admin/forgot-password/verify-code', [PasswordResetManagementController::class, 'verifyResetCode'])->name('admin.forgot-password.verify-code');
+Route::post('/admin/forgot-password/reset', [PasswordResetManagementController::class, 'resetPassword'])->name('admin.forgot-password.reset');
 
 Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/dashboard/reports/data', [AdminReportController::class, 'getReportData'])->name('admin.dashboard.reports.data');
+    Route::get('/admin/dashboard/reports/pdf', [AdminReportController::class, 'exportPdf'])->name('admin.dashboard.reports.pdf');
+    Route::get('/admin/dashboard/reports/print', [AdminReportController::class, 'printView'])->name('admin.dashboard.reports.print');
 });
 
 // Social Case Module Routes

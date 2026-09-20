@@ -5,432 +5,1108 @@
 @section('content')
 @php
 $adminName = session('admin_user_name') ?? 'Admin User';
-$words = explode(' ', $adminName);
+$words = explode(' ', trim($adminName));
 $initials = count($words) >= 2
     ? strtoupper(substr($words[0],0,1).substr($words[1],0,1))
     : strtoupper(substr($adminName,0,2));
 @endphp
 
 <style>
-    /* ── Full-height layout ── */
-    html, body { overflow-x: hidden !important; overflow-y: auto !important; }
-    .main {
-        display: flex !important;
-        flex-direction: column !important;
-        padding-top: 14px !important;
-        overflow-x: hidden !important;
-        overflow-y: auto !important;
+    /* ── Dashboard Header Banner ── */
+    .dash-banner {
+        background: linear-gradient(135deg, #1A237E 0%, #1E3A8A 55%, #1e40af 100%);
+        border-radius: 18px;
+        padding: 1.75rem 2rem;
+        margin-bottom: 1.75rem;
+        box-shadow: 0 10px 25px -5px rgba(26, 35, 126, 0.25);
+        position: relative;
+        overflow: hidden;
+        color: #FFFFFF;
     }
-    @media (max-width: 767.98px) { .main { padding-top: 72px !important; } }
-
-    /* ── Modern Page Header ── */
-    .page-header {
-        background: #1E3A8A;
-        border-radius: 16px;
-        padding: 2rem 2.5rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
+    .dash-banner::before {
+        content: '';
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(251, 192, 45, 0.2) 0%, rgba(255,255,255,0) 70%);
+        pointer-events: none;
     }
-
-    /* ── Panel Header ── */
-    .panel-header { margin-bottom: 1rem; }
-    .panel-header h2 { font-size: 2rem; font-weight: 700; color: #1E3A8A; margin: 0; }
-    .panel-header p { font-size: 0.875rem; color: #64748B; margin: 0.25rem 0 0; }
-
-    /* ── Table wrap ── */
-    .password-reset-table-wrap {
-        background: #ffffff;
-        border-radius: 16px;
-        border: 1px solid #E5E7EB;
-        border-left: 4px solid #1E3A8A;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        padding: 2rem;
+    .dash-banner-title {
+        font-family: 'Public Sans', sans-serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin: 0;
+        letter-spacing: -0.02em;
     }
-
-    .form-control {
-        width: 100%;
-        background: #EFF6FF;
-        border: 1px solid #BFDBFE;
-        border-radius: 8px;
-        padding: 0.75rem 1rem;
-        font-size: 0.875rem;
-        color: #374151;
-        outline: none;
-        transition: border-color .2s, box-shadow .2s;
+    .dash-banner-sub {
+        font-size: 0.925rem;
+        color: rgba(255, 255, 255, 0.85);
+        margin-top: 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
     }
-    .form-control:focus {
-        border-color: #1E3A8A;
-        box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
-        background: #fff;
+    .dash-live-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(8px);
+        padding: 0.35rem 0.85rem;
+        border-radius: 9999px;
+        font-size: 0.825rem;
+        font-weight: 500;
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
-
-    /* ── Table Scroll Container ── */
-    .table-scroll-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scrollbar-color: #1E3A8A #EFF6FF;
-    }
-    .table-scroll-container::-webkit-scrollbar {
+    .dash-pulse-dot {
+        width: 8px;
         height: 8px;
+        border-radius: 50%;
+        background: #4ADE80;
+        box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.35);
+        animation: pulse-dot 2s infinite;
     }
-    .table-scroll-container::-webkit-scrollbar-track {
-        background: #EFF6FF;
-        border-radius: 4px;
-    }
-    .table-scroll-container::-webkit-scrollbar-thumb {
-        background: #1E3A8A;
-        border-radius: 4px;
-    }
-    .table-scroll-container::-webkit-scrollbar-thumb:hover {
-        background: #1E40AF;
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.6; transform: scale(0.85); }
     }
 
-    /* ── Table ── */
-    .gov-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.875rem;
-        margin-top: 1rem;
+    /* ── Top Status Counters ── */
+    .reset-kpi-strip {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 1.75rem;
     }
-    .gov-table th {
-        background: #EFF6FF;
-        color: #1E3A8A;
+    .reset-kpi-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        padding: 1.15rem 1.35rem;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .reset-kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px -2px rgba(15, 23, 42, 0.08);
+    }
+    .kpi-icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .kpi-icon-box svg { width: 24px; height: 24px; }
+    .card-kpi-indigo .kpi-icon-box { background: #EEF2FF; color: #4338CA; }
+    .card-kpi-amber .kpi-icon-box  { background: #FEF3C7; color: #D97706; }
+    .card-kpi-sky .kpi-icon-box    { background: #E0F2FE; color: #0284C7; }
+    .card-kpi-emerald .kpi-icon-box{ background: #ECFDF5; color: #059669; }
+
+    /* ── Content Shell ── */
+    .reset-shell {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 18px;
+        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    /* ── Toolbar Rail & Filters ── */
+    .toolbar-rail {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+    .filter-rail {
+        display: flex;
+        align-items: flex-end;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        flex: 1;
+    }
+    #showingCounter {
         font-size: 0.75rem;
+        color: #64748B;
+        font-weight: 500;
+        white-space: nowrap;
+        margin-bottom: 10px;
+    }
+    .filter-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+    .filter-item.filter-search {
+        min-width: 240px;
+        max-width: 320px;
+        flex: 1;
+    }
+    .filter-label {
+        font-size: 0.72rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        padding: 1rem 1.25rem;
-        border-bottom: 3px solid #1E3A8A;
-        text-align: left;
-        white-space: nowrap;
-        position: sticky;
-        top: 0;
-        z-index: 10;
+        color: #64748B;
+        line-height: 1;
     }
-    .gov-table th:first-child { border-radius: 8px 0 0 0; }
-    .gov-table th:last-child { border-radius: 0 8px 0 0; }
-    .gov-table td {
-        padding: 1rem 1.25rem;
-        vertical-align: middle;
-        border-bottom: 3px solid #E5E7EB;
-        color: #374151;
-        white-space: nowrap;
+    .filter-search-wrap {
+        display: flex;
+        align-items: stretch;
+        width: 100%;
+        height: 40px;
+        border-radius: 8px;
+        box-sizing: border-box;
     }
-    .gov-table tr:last-child td { border-bottom: none; }
-
-    /* ── Badges ── */
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 4px 12px;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 600;
+    .filter-search-wrap .form-control {
+        flex: 1;
+        width: 0;
+        min-width: 0;
+        height: 40px;
+        background: #F8FAFC;
+        border: 1px solid #CBD5E1;
+        border-right: none;
+        border-radius: 8px 0 0 8px;
+        padding: 0 14px;
+        font-size: 0.875rem;
+        color: #1E293B;
+        outline: none;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
     }
-    .status-pending { background: #FEF3C7; color: #92400E; }
-    .status-approved { background: #EFF6FF; color: #1E3A8A; }
-    .status-completed { background: #DCFCE7; color: #15803D; }
-    .status-rejected { background: #FEE2E2; color: #DC2626; }
-
-    /* ── Filter Styles ── */
-    .filter-item { display: flex; flex-direction: column; gap: 6px; }
-    .filter-label { font-size: 0.75rem; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; }
-    .filter-search-wrap { display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s; }
-    .filter-search-wrap:focus-within { box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12); border-radius: 8px; }
-    .filter-search-btn { height: 44px !important; padding: 0 20px; border: 1px solid #1E3A8A; border-radius: 0 8px 8px 0; background: #1E3A8A; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch; }
-    .filter-search-btn:hover { background: #1E40AF; }
-
-    .filter-dropdown { flex: 0 1 200px; min-width: 180px; position: relative; }
-    .filter-select-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; height: 44px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 0.875rem; cursor: pointer; background: #EFF6FF; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
-    .filter-select-btn:hover { border-color: #1E3A8A; background: #ffffff; }
-    .filter-select-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #374151; font-weight: 500; }
-    .filter-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #E5E7EB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 50; max-height: 260px; overflow-y: auto; padding: 4px; }
-    .status-opt { padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer; transition: background .15s; }
-    .status-opt:hover { background: #EFF6FF; }
-    .status-opt.selected { background: #EFF6FF; color: #1E3A8A; font-weight: 600; }
-    #statusBtn.active { border-color: #1E3A8A; background: #EFF6FF; }
-
-    .filter-search input::placeholder { color: #64748B; font-weight: 500; font-size: 0.875rem; }
-
-    .filter-reset-btn { display: none !important; }
-    .filter-reset-btn.visible { display: inline-flex !important; }
-
-    /* ── Buttons ── */
-    .btn {
+    .filter-search-wrap .form-control:focus {
+        background: #FFFFFF;
+        border-color: #1A237E;
+        box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.12);
+    }
+    .filter-search-btn {
+        height: 40px !important;
+        padding: 0 16px;
+        border: 1px solid #1E3A8A;
+        border-radius: 0 8px 8px 0;
+        background: #1E3A8A;
+        color: #FFFFFF;
+        cursor: pointer;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 0.5rem 1rem;
+        transition: background 0.15s ease;
+        flex-shrink: 0;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+    }
+    .filter-search-btn:hover {
+        background: #1E40AF;
+    }
+    .filter-search-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Status Dropdown */
+    .filter-dropdown {
+        position: relative;
+        min-width: 180px;
+        max-width: 220px;
+        flex: 0 1 200px;
+    }
+    .filter-select-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 0 14px;
+        height: 40px;
+        border: 1px solid #CBD5E1;
         border-radius: 8px;
         font-size: 0.875rem;
-        font-weight: 600;
         cursor: pointer;
-        transition: all 0.2s;
-        border: none;
-        text-decoration: none;
+        background: #F8FAFC;
+        transition: all 0.15s ease;
+        box-sizing: border-box;
+        width: 100%;
+        user-select: none;
     }
-    .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
-    .btn-success { background: #1E3A8A; color: white; }
-    .btn-success:hover { background: #1E40AF; }
-    .btn-danger { background: #DC2626; color: white; }
-    .btn-danger:hover { background: #B91C1C; }
-    .btn-secondary { background: #64748B; color: white; }
-    .btn-secondary:hover { background: #475569; }
+    .filter-select-btn:hover {
+        border-color: #1E3A8A;
+        background: #FFFFFF;
+    }
+    .filter-select-btn.active {
+        border-color: #1E3A8A;
+        background: #EFF6FF;
+    }
+    .filter-select-label {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #374151;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+    .filter-menu {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        background: #FFFFFF;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        z-index: 50;
+        max-height: 260px;
+        overflow-y: auto;
+        padding: 6px;
+    }
+    .status-opt {
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .status-opt:hover {
+        background: #EFF6FF;
+        color: #1E3A8A;
+    }
+    .status-opt.selected {
+        background: #EFF6FF;
+        color: #1E3A8A;
+        font-weight: 600;
+    }
 
-    /* ── Pagination ── */
-    .sc-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-shrink: 0; padding: 4px 0; flex-wrap: wrap; }
-    .sc-pagination-info { font-size: 0.813rem; color: #64748B; font-weight: 500; }
-    .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
-    .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
-    .sc-page-btn:hover:not(:disabled) { background: #EFF6FF; border-color: #1E3A8A; color: #1E3A8A; }
-    .sc-page-btn.active { background: #1E3A8A; color: #fff; border-color: #1E3A8A; font-weight: 700; }
-    .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    /* Clear Reset Button */
+    .clear-filters-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        height: 40px;
+        padding: 0 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #DC2626;
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+        box-sizing: border-box;
+    }
+    .clear-filters-btn:hover {
+        background: #FEE2E2;
+        border-color: #F87171;
+    }
 
-    /* ── Empty State ── */
-    .empty-row { background: transparent !important; border: none !important; box-shadow: none !important; }
-    .empty-cell { padding: 3rem 1rem !important; text-align: center !important; border: none !important; }
-    .empty-cell::before { display: none !important; content: none !important; }
-    .empty-state-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 2rem 1rem; margin-top: 50px; }
-    .empty-icon-wrap { width: 72px; height: 72px; border-radius: 50%; background: #EFF6FF; display: flex; align-items: center; justify-content: center; color: #1E3A8A; }
-    .empty-title { font-size: 1rem; font-weight: 600; color: #374151; margin: 0; }
-    .empty-subtitle { font-size: 0.85rem; color: #9CA3AF; margin: 0; }
+    /* ── Table Layout ── */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 14px;
+        border: 1px solid #EDF2F7;
+    }
+    .reset-tbl {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.875rem;
+    }
+    .reset-tbl th {
+        background: #F8FAFC;
+        color: #475569;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.85rem 1.15rem;
+        text-align: left;
+        border-bottom: 1px solid #E2E8F0;
+        white-space: nowrap;
+    }
+    .reset-tbl td {
+        padding: 0.95rem 1.15rem;
+        border-bottom: 1px solid #F1F5F9;
+        color: #1E293B;
+        vertical-align: middle;
+        white-space: nowrap;
+        background: #FFFFFF;
+    }
+    .reset-tbl tbody tr:last-child td { border-bottom: none; }
+    .reset-tbl tbody tr:hover td { background: #F8FAFC; }
 
-    /* ── Mobile: stacked card rows ── */
+    /* Officer Profile Cell */
+    .officer-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .officer-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: #EEF2FF;
+        color: #4338CA;
+        font-weight: 700;
+        font-size: 0.825rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: 1px solid #C7D2FE;
+    }
+
+    /* Status Pills */
+    .status-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        line-height: 1;
+    }
+    .tag-pending   { background: #FEF3C7; color: #B45309; }
+    .tag-approved  { background: #EFF6FF; color: #1D4ED8; }
+    .tag-completed { background: #ECFDF5; color: #047857; }
+    .tag-rejected  { background: #FEF2F2; color: #BE123C; }
+
+    /* Action Buttons */
+    .btn-approve {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.4rem 0.85rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #FFFFFF;
+        background: #059669;
+        border: none;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .btn-approve:hover { background: #047857; }
+
+    .btn-reject {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.4rem 0.85rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #DC2626;
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .btn-reject:hover { background: #FEE2E2; }
+
+    .btn-delete-record {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-size: 0.775rem;
+        font-weight: 600;
+        color: #64748B;
+        background: #F1F5F9;
+        border: 1px solid #E2E8F0;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .btn-delete-record:hover {
+        background: #FEF2F2;
+        color: #DC2626;
+        border-color: #FECACA;
+    }
+
+    /* ── Mobile Stacked Cards (< 768px) ── */
+    .mobile-requests-list { display: none; }
     @media (max-width: 767.98px) {
-        .password-reset-table-wrap { padding: 1rem; }
-        .gov-table { display: block; width: 100%; margin-top: 0.75rem; }
-        .gov-table thead { display: none; }
-        .gov-table tbody { display: block; }
-        .gov-table tbody tr {
-            display: block;
-            background: #ffffff;
-            border: 1px solid #E5E7EB;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            padding: 10px 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        .dash-banner {
+            padding: 1.15rem 1.25rem;
+            border-radius: 14px;
+            margin-bottom: 1rem;
         }
-        .gov-table tbody tr:last-child { margin-bottom: 0; }
-        .gov-table tbody td {
-            display: flex !important;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 0;
-            border: none;
-            border-bottom: 1px solid #E5E7EB;
-            white-space: normal;
-            word-break: break-word;
-            text-align: right;
+        .dash-banner-title {
+            font-size: 1.35rem;
         }
-        .gov-table tbody td:last-child { border-bottom: none; }
-        .gov-table tbody td::before {
-            content: attr(data-label);
-            font-weight: 600;
-            color: #64748B;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: .03em;
-            flex-shrink: 0;
-            min-width: 80px;
-            text-align: left;
+        .dash-banner-sub {
+            font-size: 0.8rem;
         }
-        .gov-table tbody td[data-label="Action"] {
+
+        .reset-kpi-strip {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.65rem;
+            margin-bottom: 1.25rem;
+        }
+        .reset-kpi-card {
+            padding: 0.85rem 0.95rem;
+            gap: 0.65rem;
+            border-radius: 14px;
+            min-width: 0;
+            overflow: hidden;
+        }
+        .kpi-icon-box {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+        }
+        .kpi-icon-box svg {
+            width: 18px;
+            height: 18px;
+        }
+        .reset-kpi-card .text-2xl {
+            font-size: 1.35rem;
+            line-height: 1.2;
+        }
+        .reset-kpi-card .text-xs {
+            font-size: 0.7rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .reset-kpi-card .text-\[11px\] {
+            font-size: 0.65rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .reset-shell {
+            padding: 1rem 0.85rem;
+            border-radius: 14px;
+            margin-bottom: 1.5rem;
+        }
+
+        .toolbar-rail {
             flex-direction: column;
-            align-items: flex-end;
-            justify-content: center;
-            border-bottom: none;
-            padding-top: 10px;
+            align-items: stretch;
+            gap: 0.35rem;
+            margin-bottom: 0.75rem;
         }
-        .gov-table tbody td[data-label="Action"]::before { display: none !important; }
-        .gov-table tbody td.empty-cell { display: flex !important; justify-content: center !important; align-items: center !important; text-align: center !important; padding: 2rem 1rem !important; }
-        .gov-table tbody td.empty-cell::before { display: none !important; }
-        .sc-pagination { flex-direction: column !important; align-items: center !important; gap: 8px !important; }
-        .sc-pagination-controls { justify-content: center !important; }
-        .sc-pagination-info { text-align: center !important; }
-        
+        .filter-rail {
+            flex-direction: column;
+            align-items: stretch;
+            width: 100%;
+            gap: 0.65rem;
+        }
+        .filter-item {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+        }
         .filter-item.filter-search {
             width: 100%;
+            max-width: 100%;
+            min-width: 0;
         }
-        .filter-item.filter-search .filter-search-wrap .form-control {
-            flex: 1 !important;
-            width: 0 !important;
-            min-width: 0 !important;
+        .filter-dropdown {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
         }
-        .filter-dropdown { min-width: 0; width: 100%; }
-        .filter-select-btn { width: 100%; }
+        .filter-search-wrap {
+            width: 100%;
+        }
+        .filter-search-wrap .form-control {
+            font-size: 16px !important;
+        }
+        .filter-select-btn {
+            width: 100%;
+        }
+        .filter-menu {
+            z-index: 100;
+            max-height: 260px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .clear-filters-btn {
+            width: 100%;
+            justify-content: center;
+            height: 40px;
+        }
+        #showingCounter {
+            width: 100%;
+            font-size: 0.75rem;
+            text-align: left;
+            margin-top: 0.2rem;
+            margin-bottom: 0.2rem;
+            align-self: flex-start;
+            color: #64748B;
+        }
+
+        .table-container { display: none; }
+        .mobile-requests-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            width: 100%;
+            min-width: 0;
+        }
+        .mobile-req-card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+            min-width: 0;
+            width: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        .mobile-req-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 0;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        .mobile-req-body {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            color: #64748B;
+            padding: 0.5rem 0;
+            border-top: 1px dashed #F1F5F9;
+            border-bottom: 1px dashed #F1F5F9;
+            min-width: 0;
+            width: 100%;
+        }
+        .mobile-req-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            width: 100%;
+            min-width: 0;
+        }
+        .mobile-req-actions .btn-reject,
+        .mobile-req-actions .btn-approve {
+            width: 100%;
+            justify-content: center;
+            padding: 0.55rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+        .mobile-req-actions .btn-delete-record {
+            grid-column: span 2;
+            width: 100%;
+            justify-content: center;
+            padding: 0.55rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        /* Pagination on Mobile */
+        .pagination-footer {
+            flex-direction: column;
+            align-items: center;
+            gap: 0.85rem;
+            text-align: center;
+        }
+        .pagination-info {
+            justify-content: center;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        .sc-pagination-controls {
+            justify-content: center;
+            width: 100%;
+        }
     }
 
-    /* ── Tablet ── */
-    @media (min-width: 768px) and (max-width: 1199.98px) {
-        .sc-pagination { flex-direction: row; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    @media (max-width: 420px) {
+        .dash-banner {
+            padding: 1rem;
+        }
+        .reset-kpi-strip {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+        .reset-shell {
+            padding: 0.85rem 0.65rem;
+        }
+        .mobile-req-card {
+            padding: 0.85rem;
+        }
     }
 
-    /* ── Desktop: full-height, no-scroll ── */
-    @media (min-width: 1200px) {
-        .main { height: 100vh !important; overflow: hidden !important; }
-        .password-reset-table-wrap { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
-        .sc-pagination { flex-direction: row; justify-content: space-between; margin-top: 12px; flex-shrink: 0; }
-        .sc-pagination-controls { justify-content: flex-end; }
-        .sc-pagination-info { text-align: left; }
-        
-        .filter-dropdown { flex: 0 1 200px; min-width: 180px; }
+    /* ── Pagination Styling ── */
+    .pagination-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid #EDF2F7;
     }
-    
-    .sc-pagination { flex-shrink: 0; }
+    .pagination-info {
+        font-size: 0.85rem;
+        color: #64748B;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+    }
+    .sc-pagination-controls {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .sc-page-btn {
+        height: 38px;
+        min-width: 38px;
+        padding: 0 14px;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
+        background: #FFFFFF;
+        color: #334155;
+        font-size: 0.825rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        text-decoration: none;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        transition: all 0.2s ease;
+        user-select: none;
+    }
+    .sc-page-btn svg {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+    }
+    .sc-page-btn:hover:not(:disabled):not(.active) {
+        background: #EEF2FF;
+        border-color: #A5B4FC;
+        color: #1A237E;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(26, 35, 126, 0.12);
+    }
+    .sc-page-btn.active {
+        background: #1A237E;
+        color: #FFFFFF;
+        border-color: #1A237E;
+        font-weight: 700;
+        box-shadow: 0 2px 6px rgba(26, 35, 126, 0.25);
+        cursor: default;
+    }
+    .sc-page-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        background: #F8FAFC;
+        border-color: #E2E8F0;
+        color: #94A3B8;
+        box-shadow: none;
+        transform: none;
+    }
+    @media (max-width: 639.98px) {
+        .pagination-footer {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 0.75rem;
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+        .pagination-info {
+            justify-content: center;
+            text-align: center;
+            font-size: 0.775rem;
+        }
+        .sc-pagination-controls {
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .sc-page-btn {
+            height: 36px;
+            min-width: 36px;
+            padding: 0 12px;
+            font-size: 0.775rem;
+        }
+    }
 </style>
 
-{{-- Page Header --}}
-<header class="page-header flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none">
+{{-- Page Header Banner --}}
+<header class="dash-banner flex flex-col md:flex-row md:items-center justify-between gap-4 select-none">
     <div>
-        <h1 class="font-['Public_Sans'] text-[28px] md:text-[32px] lg:text-[36px] font-bold text-white leading-none m-0">Password Reset Management</h1>
-        <p class="text-sm md:text-base text-white/90 mt-2 font-medium">MSWDO Silang — Review and approve password reset requests</p>
+        <div class="dash-banner-title">Password Reset Management</div>
+        <div class="dash-banner-sub">
+            <span>MSWDO Silang — Access Security &amp; Officer Account Recovery</span>
+            <span class="opacity-40">•</span>
+            @if(($stats['pending'] ?? 0) > 0)
+                <span class="inline-flex items-center gap-1.5 bg-amber-400/25 text-amber-200 border border-amber-300/30 text-xs font-bold px-3 py-1 rounded-full">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span>{{ $stats['pending'] }} Pending Authorization</span>
+                </span>
+            @else
+                <span class="dash-live-badge">
+                    <span class="dash-pulse-dot"></span>
+                    <span>All Requests Clear</span>
+                </span>
+            @endif
+        </div>
     </div>
-    <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-        <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-white/90" id="currentDateTime">Loading date...</div>
-        <div class="w-12 h-12 rounded-full bg-white/20 text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-white/30 select-none" title="Admin: {{ $adminName }}">
+    <div class="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto">
+        <div class="text-left md:text-right">
+            <div class="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-white/70">Philippine Standard Time</div>
+            <div class="text-xs md:text-sm font-semibold text-white tracking-wide" id="liveClock">Loading date...</div>
+        </div>
+        <div class="w-10 h-10 md:w-11 md:h-11 rounded-full bg-white/20 border-2 border-white/40 text-white font-bold text-sm flex items-center justify-center shadow-inner flex-shrink-0 cursor-default" title="Logged in as: {{ $adminName }}">
             {{ $initials }}
         </div>
     </div>
 </header>
 
-<div class="flex items-center justify-between flex-wrap gap-2 mb-3">
-    <div class="flex items-center gap-3 flex-wrap" style="align-items: flex-end !important;">
-        <div class="filter-item filter-search" style="display: flex; flex-direction: column; gap: 6px; flex: 0 0 auto;">
-            <label class="filter-label">Search</label>
-            <div class="filter-search-wrap">
-                <input type="text" class="form-control" placeholder="Search name or email..." style="width: 220px; height: 44px; border-right: none; border-radius: 8px 0 0 8px;" id="searchInput" value="{{ request()->get('search', '') }}" oninput="updateClearButtonVisibility()" onkeydown="if(event.key==='Enter'){event.preventDefault();handleSearch();}">
-                <button type="button" class="filter-search-btn" style="border: 1px solid #1E3A8A; background: #1E3A8A;" onclick="handleSearch()">
-                    <i data-lucide="search" style="width: 18px; height: 18px;"></i>
-                </button>
-            </div>
+{{-- Status KPI Cards --}}
+<section class="reset-kpi-strip">
+    <div class="reset-kpi-card card-kpi-indigo">
+        <div class="kpi-icon-box">
+            <i data-lucide="key"></i>
         </div>
-        <div class="filter-item filter-dropdown" id="statusDropdown" style="display: flex; flex-direction: column; gap: 6px; flex: 0 0 auto;">
-            <label class="filter-label">Filter by Status</label>
-            <div onclick="toggleStatusMenu()" class="filter-select-btn" id="statusBtn">
-                <span id="statusLabel" class="filter-select-label">{{ request()->get('status', 'All Status') }}</span>
-                <i data-lucide="chevron-down" style="width:16px;height:16px;color:#9CA3AF;flex-shrink:0"></i>
-            </div>
-            <div id="statusMenu" class="filter-menu" style="display:none"></div>
+        <div>
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Requests</div>
+            <div class="text-2xl font-bold text-slate-900 leading-tight">{{ number_format($stats['total'] ?? $requests->total()) }}</div>
+            <div class="text-[11px] text-slate-400">All Time Submissions</div>
         </div>
-        <button type="button" class="filter-reset-btn" onclick="clearFilters()" style="height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; cursor: pointer; align-items: center; justify-content: center; transition: all .15s; font-size: 0.875rem; font-weight: 500; gap: 6px; flex-shrink: 0;" onmouseover="this.style.borderColor='#B91C1C';this.style.color='#B91C1C';this.style.background='#FEF2F2';" onmouseout="this.style.borderColor='#DC2626';this.style.color='#DC2626';this.style.background='#fff';">
-            <i data-lucide="x" style="width: 16px; height: 16px;"></i>
-            Clear
-        </button>
     </div>
-</div>
 
-<div class="table-scroll-container">
-    <table class="gov-table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Requested</th>
-                <th>Expires</th>
-                <th>Processed By</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($requests as $request)
-                <tr class="data-row">
-                    <td data-label="Name" style="font-weight: 500;">
-                        @if($request->user)
-                            {{ $request->user->name }}
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td data-label="Email" style="font-weight: 500;">{{ $request->email }}</td>
-                    <td data-label="Status">
-                        @if($request->status === 'pending')
-                            <span class="status-badge status-pending">Pending</span>
-                        @elseif($request->status === 'approved')
-                            <span class="status-badge status-approved">Approved</span>
-                        @elseif($request->status === 'completed')
-                            <span class="status-badge status-completed">Completed</span>
-                        @elseif($request->status === 'rejected')
-                            <span class="status-badge status-rejected">Rejected</span>
-                        @endif
-                    </td>
-                    <td data-label="Requested">{{ $request->requested_at->format('M d, Y - g:i A') }}</td>
-                    <td data-label="Expires">
-                        @if($request->expires_at)
-                            {{ $request->expires_at->format('M d, Y - g:i A') }}
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td data-label="Processed By">
-                        @if($request->processedBy)
-                            {{ $request->processedBy->name }}
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td data-label="Action">
-                        @if($request->status === 'pending')
-                            <div style="display: flex; gap: 0.5rem;">
-                                <form method="POST" action="{{ route('admin.password-reset.approve', $request->id) }}" class="swal-form" data-swal-title="Approve Request" data-swal-text="Are you sure you want to approve the password reset request for {{ $request->user->name ?? $request->email }}?" data-swal-icon="question" data-swal-confirm="Yes, Approve" data-swal-color="#16A34A" style="display: inline;">
-                                    @csrf
-                                    <button type="submit" class="btn btn-sm btn-success">Approve</button>
-                                </form>
-                                <form method="POST" action="{{ route('admin.password-reset.reject', $request->id) }}" class="swal-form" data-swal-title="Reject Request" data-swal-text="Are you sure you want to reject the password reset request for {{ $request->user->name ?? $request->email }}?" data-swal-icon="warning" data-swal-confirm="Yes, Reject" data-swal-color="#DC2626" style="display: inline;">
-                                    @csrf
-                                    <button type="submit" class="btn btn-sm btn-danger">Reject</button>
-                                </form>
-                            </div>
-                        @elseif($request->status === 'approved')
-                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                                <span style="font-size: 0.75rem; color: #64748B;">Email sent to user</span>
-                                <form method="POST" action="{{ route('admin.password-reset.delete', $request->id) }}" class="swal-form" data-swal-title="Delete Record" data-swal-text="Are you sure you want to delete this password reset record for {{ $request->user->name ?? $request->email }}?" data-swal-icon="warning" data-swal-confirm="Yes, Delete" data-swal-color="#DC2626" style="display: inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-secondary">Delete</button>
-                                </form>
-                            </div>
-                        @else
-                            <form method="POST" action="{{ route('admin.password-reset.delete', $request->id) }}" class="swal-form" data-swal-title="Delete Record" data-swal-text="Are you sure you want to delete this password reset record for {{ $request->user->name ?? $request->email }}?" data-swal-icon="warning" data-swal-confirm="Yes, Delete" data-swal-color="#DC2626" style="display: inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-secondary">Delete</button>
-                            </form>
-                        @endif
-                    </td>
+    <div class="reset-kpi-card card-kpi-amber">
+        <div class="kpi-icon-box">
+            <i data-lucide="clock"></i>
+        </div>
+        <div>
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pending Review</div>
+            <div class="text-2xl font-bold text-amber-600 leading-tight">{{ number_format($stats['pending'] ?? 0) }}</div>
+            <div class="text-[11px] text-slate-400">Requires Admin Approval</div>
+        </div>
+    </div>
+
+    <div class="reset-kpi-card card-kpi-sky">
+        <div class="kpi-icon-box">
+            <i data-lucide="send"></i>
+        </div>
+        <div>
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Link Dispatched</div>
+            <div class="text-2xl font-bold text-slate-900 leading-tight">{{ number_format($stats['approved'] ?? 0) }}</div>
+            <div class="text-[11px] text-slate-400">Email Sent to Officer</div>
+        </div>
+    </div>
+
+    <div class="reset-kpi-card card-kpi-emerald">
+        <div class="kpi-icon-box">
+            <i data-lucide="shield-check"></i>
+        </div>
+        <div>
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Completed Resets</div>
+            <div class="text-2xl font-bold text-emerald-600 leading-tight">{{ number_format($stats['completed'] ?? 0) }}</div>
+            <div class="text-[11px] text-slate-400">Password Updated Successfully</div>
+        </div>
+    </div>
+</section>
+
+{{-- Alerts --}}
+@if(session('success'))
+    <div class="mb-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-3 shadow-sm">
+        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600 flex-shrink-0"></i>
+        <span>{{ session('success') }}</span>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="mb-4 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center gap-3 shadow-sm">
+        <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-600 flex-shrink-0"></i>
+        <span>{{ session('error') }}</span>
+    </div>
+@endif
+
+{{-- Main Table Shell --}}
+<div class="reset-shell">
+    {{-- Filter Rail --}}
+    <div class="toolbar-rail">
+        <div class="filter-rail">
+            <div class="filter-item filter-search">
+                <label class="filter-label">Search</label>
+                <div class="filter-search-wrap">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by name, email, or status..." value="{{ request()->get('search', '') }}" oninput="onSearchInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();handleSearch();}">
+                    <button type="button" class="filter-search-btn" onclick="handleSearch()" title="Search">
+                        <i data-lucide="search"></i>
+                    </button>
+                </div>
+            </div>
+
+            @php 
+                $curStatus = request()->get('status', 'All Status');
+                $statusLabels = [
+                    'All Status' => 'All Status',
+                    'pending' => 'Pending',
+                    'approved' => 'Approved',
+                    'completed' => 'Completed',
+                    'rejected' => 'Rejected',
+                ];
+                $curStatusLabel = $statusLabels[$curStatus] ?? $curStatus;
+            @endphp
+            <div class="filter-item filter-dropdown" id="statusDropdown">
+                <label class="filter-label">Filter by Status</label>
+                <div onclick="toggleStatusMenu(event)" class="filter-select-btn {{ ($curStatus && $curStatus !== 'All Status') ? 'active' : '' }}" id="statusBtn">
+                    <span id="statusLabel" class="filter-select-label">{{ $curStatusLabel }}</span>
+                    <i data-lucide="chevron-down" style="width:16px;height:16px;color:#64748B;flex-shrink:0;transition:transform 0.2s;"></i>
+                </div>
+                <div id="statusMenu" class="filter-menu" style="display:none">
+                    @foreach($statusLabels as $val => $lbl)
+                        <div class="status-opt {{ $curStatus === $val ? 'selected' : '' }}" data-value="{{ $val }}" onclick="selectStatus('{{ $val }}', '{{ $lbl }}')">
+                            <span>{{ $lbl }}</span>
+                            @if($curStatus === $val)
+                                <i data-lucide="check" style="width:14px;height:14px;color:#1E3A8A;"></i>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <button type="button" id="clearFiltersBtn" class="clear-filters-btn" onclick="clearFilters()" style="display:none;">
+                <i data-lucide="x" style="width:14px;height:14px;"></i>
+                <span>Reset</span>
+            </button>
+        </div>
+
+        <div class="text-xs text-slate-500 font-medium" id="showingCounter">
+            @if($requests->total() > 0)
+                Showing <span class="font-bold text-slate-800">{{ $requests->firstItem() ?? 0 }}–{{ $requests->lastItem() ?? 0 }}</span> of <span class="font-bold text-slate-800">{{ $requests->total() }}</span> records
+            @else
+                Showing <span class="font-bold text-slate-800">0</span> records
+            @endif
+        </div>
+    </div>
+
+    {{-- Desktop Table --}}
+    <div class="table-container">
+        <table class="reset-tbl">
+            <thead>
+                <tr>
+                    <th>Officer Details</th>
+                    <th>Email Address</th>
+                    <th>Request Status</th>
+                    <th>Submitted At</th>
+                    <th>Expires At</th>
+                    <th>Processed By</th>
+                    <th style="text-align:right;">Actions</th>
                 </tr>
-            @empty
-                <tr class="empty-row">
-                    <td colspan="7" class="empty-cell">
-                        <div class="empty-state-content">
-                            <div class="empty-icon-wrap">
-                                <svg xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                                </svg>
+            </thead>
+            <tbody id="resetTableBody">
+                @forelse($requests as $req)
+                @php
+                    $userName = $req->user ? $req->user->name : 'Unregistered Officer';
+                    $words = explode(' ', trim($userName));
+                    $init = count($words) >= 2 
+                        ? strtoupper(substr($words[0],0,1).substr($words[1],0,1))
+                        : strtoupper(substr($userName,0,2));
+
+                    $tagClass = 'tag-pending';
+                    if ($req->status === 'approved') $tagClass = 'tag-approved';
+                    elseif ($req->status === 'completed') $tagClass = 'tag-completed';
+                    elseif ($req->status === 'rejected') $tagClass = 'tag-rejected';
+                @endphp
+                <tr>
+                    <td>
+                        <div class="officer-cell">
+                            <div class="officer-avatar">{{ $init }}</div>
+                            <div>
+                                <div class="font-bold text-slate-900">{{ $userName }}</div>
+                                <div class="text-[11px] text-slate-400">{{ $req->user ? ucfirst(str_replace('_', ' ', $req->user->role ?? 'Staff')) : 'External Request' }}</div>
                             </div>
-                            <p class="empty-title">No password reset requests</p>
-                            <p class="empty-subtitle">Requests will appear here when users submit them.</p>
                         </div>
                     </td>
+                    <td>
+                        <div class="flex items-center gap-1.5 text-slate-600 text-sm">
+                            <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400"></i>
+                            <span>{{ $req->email }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-tag {{ $tagClass }}">
+                            <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                            <span>{{ ucfirst($req->status) }}</span>
+                        </span>
+                    </td>
+                    <td>
+                        <div class="text-sm text-slate-700 font-medium">{{ $req->requested_at ? $req->requested_at->format('M d, Y') : '-' }}</div>
+                        <div class="text-[11px] text-slate-400">{{ $req->requested_at ? $req->requested_at->format('h:i A') : '' }}</div>
+                    </td>
+                    <td>
+                        @if($req->expires_at)
+                            <div class="text-sm {{ $req->isExpired() ? 'text-rose-600 font-medium' : 'text-slate-700' }}">
+                                {{ $req->expires_at->format('M d, Y') }}
+                            </div>
+                            <div class="text-[11px] {{ $req->isExpired() ? 'text-rose-500 font-bold' : 'text-slate-400' }}">
+                                {{ $req->isExpired() ? 'Expired' : $req->expires_at->format('h:i A') }}
+                            </div>
+                        @else
+                            <span class="text-slate-400">-</span>
+                        @endif
+                    </td>
+                    <td>
+                        <span class="text-sm text-slate-600">{{ $req->processedBy ? $req->processedBy->name : 'Pending Action' }}</span>
+                    </td>
+                    <td style="text-align:right;">
+                        @if($req->status === 'pending')
+                            <div class="flex items-center justify-end gap-2">
+                                <button type="button" class="btn-approve" onclick="confirmApprove({{ $req->id }}, '{{ addslashes($userName) }}')">
+                                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                    <span>Approve</span>
+                                </button>
+                                <button type="button" class="btn-reject" onclick="confirmReject({{ $req->id }}, '{{ addslashes($userName) }}')">
+                                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                                    <span>Reject</span>
+                                </button>
+                            </div>
+                        @else
+                            <div class="flex items-center justify-end">
+                                <button type="button" class="btn-delete-record" onclick="confirmDelete({{ $req->id }}, '{{ addslashes($userName) }}')">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5 text-slate-400"></i>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        @endif
+                    </td>
                 </tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
-
-<!-- Laravel Pagination -->
-<div class="sc-pagination">
-    <div class="sc-pagination-info">
-        @if($requests->count() > 0)
-            Showing {{ $requests->firstItem() }}–{{ $requests->lastItem() }} of {{ $requests->total() }} Records
-        @else
-            Showing 0 of 0 Records
-        @endif
+                @empty
+                <tr>
+                    <td colspan="7" class="text-center py-12 text-slate-400">
+                        <i data-lucide="shield-check" class="w-10 h-10 mx-auto mb-2 text-slate-300"></i>
+                        <div class="font-semibold text-slate-600">No password reset requests found.</div>
+                        <div class="text-xs text-slate-400 mt-1">Pending password recovery submissions from staff will appear here.</div>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
-    <div class="sc-pagination-controls">
-        {{ $requests->appends(request()->only(['search', 'status', 'per_page']))->links('vendor.pagination.custom-simple') }}
+
+    {{-- Mobile Stacked Cards (< 768px) --}}
+    <div class="mobile-requests-list" id="mobileRequestsList">
+        @forelse($requests as $req)
+        @php
+            $userName = $req->user ? $req->user->name : 'Unregistered Officer';
+            $words = explode(' ', trim($userName));
+            $init = count($words) >= 2 
+                ? strtoupper(substr($words[0],0,1).substr($words[1],0,1))
+                : strtoupper(substr($userName,0,2));
+
+            $tagClass = 'tag-pending';
+            if ($req->status === 'approved') $tagClass = 'tag-approved';
+            elseif ($req->status === 'completed') $tagClass = 'tag-completed';
+            elseif ($req->status === 'rejected') $tagClass = 'tag-rejected';
+        @endphp
+        <div class="mobile-req-card">
+            <div class="mobile-req-head">
+                <div class="flex items-center gap-3 min-w-0 flex-1 mr-2">
+                    <div class="officer-avatar flex-shrink-0">{{ $init }}</div>
+                    <div class="min-w-0 flex-1">
+                        <div class="font-bold text-slate-900 text-sm truncate leading-snug">{{ $userName }}</div>
+                        <div class="text-xs text-slate-500 truncate mt-0.5">{{ $req->email }}</div>
+                    </div>
+                </div>
+                <span class="status-tag {{ $tagClass }} text-[11px] flex-shrink-0">{{ ucfirst($req->status) }}</span>
+            </div>
+
+            <div class="mobile-req-body">
+                <div class="flex justify-between items-center text-xs gap-2">
+                    <span class="text-slate-500 flex-shrink-0">Requested:</span>
+                    <span class="font-medium text-slate-700 text-right truncate">{{ $req->requested_at ? $req->requested_at->format('M d, Y h:i A') : '-' }}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs gap-2">
+                    <span class="text-slate-500 flex-shrink-0">Expires:</span>
+                    <span class="font-medium text-right truncate {{ $req->isExpired() ? 'text-rose-600 font-bold' : 'text-slate-700' }}">
+                        {{ $req->expires_at ? ($req->isExpired() ? 'Expired' : $req->expires_at->format('M d, Y h:i A')) : '-' }}
+                    </span>
+                </div>
+                <div class="flex justify-between items-center text-xs gap-2">
+                    <span class="text-slate-500 flex-shrink-0">Processed By:</span>
+                    <span class="text-slate-700 text-right truncate font-medium">{{ $req->processedBy ? $req->processedBy->name : 'Pending' }}</span>
+                </div>
+            </div>
+
+            <div class="mobile-req-actions">
+                @if($req->status === 'pending')
+                    <button type="button" class="btn-reject" onclick="confirmReject({{ $req->id }}, '{{ addslashes($userName) }}')">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                        <span>Reject</span>
+                    </button>
+                    <button type="button" class="btn-approve" onclick="confirmApprove({{ $req->id }}, '{{ addslashes($userName) }}')">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                        <span>Approve Reset</span>
+                    </button>
+                @else
+                    <button type="button" class="btn-delete-record" onclick="confirmDelete({{ $req->id }}, '{{ addslashes($userName) }}')">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        <span>Delete Record</span>
+                    </button>
+                @endif
+            </div>
+        </div>
+        @empty
+        <div class="text-center py-8 text-slate-400 text-sm">
+            No password reset requests found.
+        </div>
+        @endforelse
+    </div>
+
+    {{-- Pagination Footer --}}
+    <div class="pagination-footer" id="paginationFooter">
+        <div class="pagination-info">
+            @if($requests->total() > 0)
+                <span>Showing</span>
+                <span class="font-bold text-slate-800">{{ $requests->firstItem() ?? 0 }}–{{ $requests->lastItem() ?? 0 }}</span>
+                <span>of</span>
+                <span class="font-bold text-slate-800">{{ $requests->total() }}</span>
+                <span>records</span>
+                <span class="text-slate-300 mx-1.5">•</span>
+                <span>Page <strong class="text-slate-800">{{ $requests->currentPage() }}</strong> of <strong class="text-slate-800">{{ $requests->lastPage() }}</strong></span>
+            @else
+                <span>Showing</span>
+                <span class="font-bold text-slate-800">0</span>
+                <span>records</span>
+            @endif
+        </div>
+        <div>
+            {{ $requests->appends(request()->only(['search', 'status', 'per_page']))->links('vendor.pagination.custom-simple') }}
+        </div>
     </div>
 </div>
 @endsection
@@ -438,177 +1114,325 @@ $initials = count($words) >= 2
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize status dropdown and set current filter from URL
-    populateStatusDropdown();
-    const urlStatus = "{{ request()->get('status', 'All Status') }}";
-    if (urlStatus && urlStatus !== 'All Status') {
-        window.statusFilterState = urlStatus;
-        document.getElementById('statusLabel').textContent = urlStatus;
-        var btn = document.getElementById('statusBtn');
-        btn.classList.add('active');
-        btn.setAttribute('data-filter', urlStatus);
-        highlightStatusOpt();
-    }
-    updateClearButtonVisibility();
-
     if (typeof lucide !== 'undefined') lucide.createIcons();
-    // ── SweetAlert confirmations for all forms ──
-    document.querySelectorAll('.swal-form').forEach(function(form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const f = this;
-            Swal.fire({
-                title: f.dataset.swalTitle || 'Are you sure?',
-                text: f.dataset.swalText || 'This action cannot be undone.',
-                icon: f.dataset.swalIcon || 'warning',
-                showCancelButton: true,
-                confirmButtonColor: f.dataset.swalColor || '#1A237E',
-                cancelButtonColor: '#6B7280',
-                confirmButtonText: f.dataset.swalConfirm || 'Yes',
-                cancelButtonText: 'Cancel',
-                background: '#ffffff',
-                customClass: { popup: 'rounded-4 shadow-lg' }
-            }).then(function(result) {
-                if (result.isConfirmed) {
-                    f.submit();
-                }
-            });
-        });
-    });
+    updateLiveClock();
+    setInterval(updateLiveClock, 1000);
+    attachPaginationListeners();
+    updateClearButtonVisibility();
 });
 
-// ── Flash message SweetAlert popups ──
-@if(session('success'))
-    Swal.fire({
-        title: 'Success',
-        text: '{{ session('success') }}',
-        icon: 'success',
-        confirmButtonColor: '#16A34A',
-        confirmButtonText: 'OK',
-        background: '#ffffff',
-        customClass: { popup: 'rounded-4 shadow-lg' }
-    });
-@endif
+function updateLiveClock() {
+    const now = new Date();
+    const opts = { 
+        weekday: 'short', 
+        month: 'short', 
+        day: 'numeric', 
+        hour: 'numeric', 
+        minute: '2-digit', 
+        second: '2-digit', 
+        hour12: true 
+    };
+    const el = document.getElementById('liveClock');
+    if (el) el.textContent = now.toLocaleDateString('en-US', opts);
+}
 
-@if(session('error'))
-    Swal.fire({
-        title: 'Error',
-        text: '{{ session('error') }}',
-        icon: 'error',
-        confirmButtonColor: '#DC2626',
-        confirmButtonText: 'OK',
-        background: '#ffffff',
-        customClass: { popup: 'rounded-4 shadow-lg' }
-    });
-@endif
+let searchDebounceTimer = null;
+let currentSearchAbortController = null;
 
-// Search and filter functions
-function handleSearch() {
-    const searchValue = document.getElementById('searchInput').value.trim();
-    const statusValue = window.statusFilterState === 'All Status' ? '' : window.statusFilterState;
-    
+function onSearchInput() {
+    updateClearButtonVisibility();
+    const q = document.getElementById('searchInput').value.trim();
+
+    // 1. Instant client-side row filter on current visible rows (0ms feedback)
+    filterTableRows(q);
+
+    // 2. Debounced asynchronous server search (250ms) to query database across all records without full page reload
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(function() {
+        performLiveSearch(1);
+    }, 250);
+}
+
+function filterTableRows(query) {
+    const q = query.toLowerCase();
+    const rows = document.querySelectorAll('#resetTableBody tr, #mobileRequestsList .mobile-req-card');
+    rows.forEach(function(row) {
+        if (row.querySelector('td[colspan]')) return;
+        const text = row.textContent.toLowerCase();
+        row.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+}
+
+function performLiveSearch(page = 1) {
+    if (currentSearchAbortController) {
+        currentSearchAbortController.abort();
+    }
+    currentSearchAbortController = new AbortController();
+
+    const searchInput = document.getElementById('searchInput');
+    const query = searchInput ? searchInput.value.trim() : '';
     const url = new URL(window.location.href);
-    if (searchValue) {
-        url.searchParams.set('search', searchValue);
+
+    if (query) {
+        url.searchParams.set('search', query);
     } else {
         url.searchParams.delete('search');
     }
-    if (statusValue) {
-        url.searchParams.set('status', statusValue);
-    } else {
-        url.searchParams.delete('status');
+    if (page) {
+        url.searchParams.set('page', page);
     }
-    
-    window.location.href = url.toString();
-}
 
-// Status filter state
-window.statusFilterState = 'All Status';
+    // Update browser URL without reloading
+    window.history.replaceState({}, '', url.toString());
 
-function populateStatusDropdown() {
-    const statusMenu = document.getElementById('statusMenu');
-    if(statusMenu) {
-        const statuses = ['All Status', 'pending', 'approved', 'completed', 'rejected'];
-        statusMenu.innerHTML = '';
-        statuses.forEach(status => {
-            statusMenu.innerHTML += `<div class="status-opt" data-value="${status}" onclick="selectStatus(this)" style="padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;transition:background .15s">${status}</div>`;
-        });
-        highlightStatusOpt();
-    }
-}
+    const tableContainer = document.querySelector('.table-container');
+    const mobileContainer = document.getElementById('mobileRequestsList');
+    if (tableContainer) tableContainer.style.opacity = '0.65';
+    if (mobileContainer) mobileContainer.style.opacity = '0.65';
 
-function toggleStatusMenu() {
-    var menu = document.getElementById('statusMenu');
-    var arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
-    if(menu.style.display === 'none' || !menu.style.display) {
-        menu.style.display = 'block';
-        if(arrow) arrow.style.transform = 'rotate(180deg)';
-        highlightStatusOpt();
-    } else {
-        menu.style.display = 'none';
-        if(arrow) arrow.style.transform = '';
-    }
-    event.stopPropagation();
-}
+    fetch(url.toString(), {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        signal: currentSearchAbortController.signal
+    })
+    .then(response => response.text())
+    .then(html => {
+        if (tableContainer) tableContainer.style.opacity = '1';
+        if (mobileContainer) mobileContainer.style.opacity = '1';
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
 
-function selectStatus(el) {
-    var val = el.getAttribute('data-value');
-    window.statusFilterState = val;
-    document.getElementById('statusLabel').textContent = el.textContent;
-    document.getElementById('statusMenu').style.display = 'none';
-    var arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
-    if(arrow) arrow.style.transform = '';
-    highlightStatusOpt();
-    var btn = document.getElementById('statusBtn');
-    if(val && val !== 'All Status') {
-        btn.classList.add('active');
-        btn.setAttribute('data-filter', val);
-    } else {
-        btn.classList.remove('active');
-        btn.removeAttribute('data-filter');
-    }
-    handleSearch();
-    updateClearButtonVisibility();
-    event.stopPropagation();
-}
+        // Update Desktop Table Body
+        const newTableBody = doc.getElementById('resetTableBody');
+        const oldTableBody = document.getElementById('resetTableBody');
+        if (newTableBody && oldTableBody) {
+            oldTableBody.innerHTML = newTableBody.innerHTML;
+        }
 
-function highlightStatusOpt() {
-    var opts = document.querySelectorAll('.status-opt');
-    opts.forEach(function(o) {
-        if(o.getAttribute('data-value') === window.statusFilterState) o.classList.add('selected');
-        else o.classList.remove('selected');
+        // Update Mobile List
+        const newMobileList = doc.getElementById('mobileRequestsList');
+        const oldMobileList = document.getElementById('mobileRequestsList');
+        if (newMobileList && oldMobileList) {
+            oldMobileList.innerHTML = newMobileList.innerHTML;
+        }
+
+        // Update Showing Counter
+        const newCounter = doc.getElementById('showingCounter');
+        const oldCounter = document.getElementById('showingCounter');
+        if (newCounter && oldCounter) {
+            oldCounter.innerHTML = newCounter.innerHTML;
+        }
+
+        // Update Pagination Footer
+        const newPagination = doc.getElementById('paginationFooter');
+        const oldPagination = document.getElementById('paginationFooter');
+        if (newPagination && oldPagination) {
+            oldPagination.innerHTML = newPagination.innerHTML;
+            attachPaginationListeners();
+        }
+
+        // Re-initialize icons
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    })
+    .catch(err => {
+        if (tableContainer) tableContainer.style.opacity = '1';
+        if (mobileContainer) mobileContainer.style.opacity = '1';
+        if (err.name !== 'AbortError') {
+            console.error('Search request failed:', err);
+        }
     });
 }
 
-// Close menu when clicking outside
-document.addEventListener('click', function(e) {
-    var statusDD = document.getElementById('statusDropdown');
-    if(statusDD && !statusDD.contains(e.target)) {
-        var menu = document.getElementById('statusMenu');
-        var arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
-        if(menu) menu.style.display = 'none';
-        if(arrow) arrow.style.transform = '';
+function handleSearch() {
+    clearTimeout(searchDebounceTimer);
+    performLiveSearch(1);
+}
+
+function toggleStatusMenu(e) {
+    if (e) e.stopPropagation();
+    const menu = document.getElementById('statusMenu');
+    const arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
+    if (!menu) return;
+    const isHidden = (menu.style.display === 'none' || !menu.style.display);
+    menu.style.display = isHidden ? 'block' : 'none';
+    if (arrow) arrow.style.transform = isHidden ? 'rotate(180deg)' : '';
+}
+
+function selectStatus(status, label) {
+    clearTimeout(searchDebounceTimer);
+    const url = new URL(window.location.href);
+    if (status && status !== 'All Status') {
+        url.searchParams.set('status', status);
+    } else {
+        url.searchParams.delete('status');
     }
-}, true);
+    url.searchParams.set('page', '1');
+    window.history.replaceState({}, '', url.toString());
+
+    // Update label & button state
+    const labelEl = document.getElementById('statusLabel');
+    if (labelEl) labelEl.textContent = label || status;
+    const btn = document.getElementById('statusBtn');
+    if (btn) btn.classList.toggle('active', status !== 'All Status');
+
+    // Update options selection
+    const opts = document.querySelectorAll('#statusMenu .status-opt');
+    opts.forEach(opt => {
+        const val = opt.getAttribute('data-value');
+        opt.classList.toggle('selected', val === status);
+        const check = opt.querySelector('svg');
+        if (check) check.style.display = (val === status) ? '' : 'none';
+    });
+
+    // Close menu
+    const menu = document.getElementById('statusMenu');
+    if (menu) menu.style.display = 'none';
+    const arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
+    if (arrow) arrow.style.transform = '';
+
+    updateClearButtonVisibility();
+    performLiveSearch(1);
+}
+
+// Close status dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    const statusDD = document.getElementById('statusDropdown');
+    if (statusDD && !statusDD.contains(e.target)) {
+        const menu = document.getElementById('statusMenu');
+        const arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
+        if (menu) menu.style.display = 'none';
+        if (arrow) arrow.style.transform = '';
+    }
+});
+
+function updateClearButtonVisibility() {
+    const searchInput = document.getElementById('searchInput');
+    const hasSearch = searchInput && searchInput.value.trim().length > 0;
+    const url = new URL(window.location.href);
+    const hasStatus = url.searchParams.has('status') && url.searchParams.get('status') !== 'All Status';
+    const clearBtn = document.getElementById('clearFiltersBtn');
+    if (clearBtn) {
+        clearBtn.style.display = (hasSearch || hasStatus) ? 'inline-flex' : 'none';
+    }
+}
 
 function clearFilters() {
+    clearTimeout(searchDebounceTimer);
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.value = '';
+
     const url = new URL(window.location.href);
     url.searchParams.delete('search');
     url.searchParams.delete('status');
-    window.location.href = url.toString();
+    url.searchParams.set('page', '1');
+    window.history.replaceState({}, '', url.toString());
+
+    // Reset dropdown UI
+    const label = document.getElementById('statusLabel');
+    if (label) label.textContent = 'All Status';
+    const btn = document.getElementById('statusBtn');
+    if (btn) btn.classList.remove('active');
+
+    const opts = document.querySelectorAll('#statusMenu .status-opt');
+    opts.forEach(opt => {
+        const isAll = opt.getAttribute('data-value') === 'All Status';
+        opt.classList.toggle('selected', isAll);
+        const check = opt.querySelector('svg');
+        if (check) check.style.display = isAll ? '' : 'none';
+    });
+
+    const menu = document.getElementById('statusMenu');
+    if (menu) menu.style.display = 'none';
+    const arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
+    if (arrow) arrow.style.transform = '';
+
+    updateClearButtonVisibility();
+    performLiveSearch(1);
 }
 
-function updateClearButtonVisibility() {
-    var searchValue = document.getElementById('searchInput').value.trim();
-    var statusValue = window.statusFilterState !== 'All Status';
-    var clearBtn = document.querySelector('.filter-reset-btn');
-    if (clearBtn) {
-        if (searchValue || statusValue) {
-            clearBtn.classList.add('visible');
-        } else {
-            clearBtn.classList.remove('visible');
+function attachPaginationListeners() {
+    const footer = document.getElementById('paginationFooter');
+    if (!footer) return;
+    const links = footer.querySelectorAll('a.sc-page-btn');
+    links.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const href = link.getAttribute('href');
+            if (href) {
+                const parsedUrl = new URL(href, window.location.origin);
+                const page = parsedUrl.searchParams.get('page') || 1;
+                performLiveSearch(page);
+            }
+        });
+    });
+}
+
+function confirmApprove(id, name) {
+    Swal.fire({
+        title: 'Approve Password Reset?',
+        text: `Authorize password reset for ${name}? A secure reset link will be sent to their email.`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#059669',
+        cancelButtonColor: '#64748B',
+        confirmButtonText: 'Yes, Approve & Dispatch Link',
+        cancelButtonText: 'Cancel'
+    }).then((res) => {
+        if (res.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/password-reset/${id}/approve`;
+            const token = document.querySelector('meta[name="csrf-token"]').content;
+            form.innerHTML = `<input type="hidden" name="_token" value="${token}">`;
+            document.body.appendChild(form);
+            form.submit();
         }
-    }
+    });
+}
+
+function confirmReject(id, name) {
+    Swal.fire({
+        title: 'Reject Password Reset?',
+        text: `Are you sure you want to reject the reset request for ${name}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#DC2626',
+        cancelButtonColor: '#64748B',
+        confirmButtonText: 'Yes, Reject',
+        cancelButtonText: 'Cancel'
+    }).then((res) => {
+        if (res.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/password-reset/${id}/reject`;
+            const token = document.querySelector('meta[name="csrf-token"]').content;
+            form.innerHTML = `<input type="hidden" name="_token" value="${token}">`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+}
+
+function confirmDelete(id, name) {
+    Swal.fire({
+        title: 'Delete Request Record?',
+        text: `Delete the password reset log for ${name}? This action cannot be undone.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#DC2626',
+        cancelButtonColor: '#64748B',
+        confirmButtonText: 'Yes, Delete',
+        cancelButtonText: 'Cancel'
+    }).then((res) => {
+        if (res.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/password-reset/${id}`;
+            const token = document.querySelector('meta[name="csrf-token"]').content;
+            form.innerHTML = `<input type="hidden" name="_token" value="${token}"><input type="hidden" name="_method" value="DELETE">`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
 </script>
 @endpush

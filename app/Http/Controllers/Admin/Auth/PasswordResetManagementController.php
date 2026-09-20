@@ -23,8 +23,11 @@ class PasswordResetManagementController extends Controller
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('email', 'like', "%{$search}%")
+                  ->orWhere('status', 'like', "%{$search}%")
                   ->orWhereHas('user', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
+                      $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('role', 'like', "%{$search}%");
                   });
             });
         }
@@ -35,7 +38,15 @@ class PasswordResetManagementController extends Controller
 
         $requests = $query->paginate($perPage);
 
-        return view('admin.password-reset-management', compact('requests'));
+        $stats = [
+            'total' => PasswordResetRequest::count(),
+            'pending' => PasswordResetRequest::where('status', 'pending')->count(),
+            'approved' => PasswordResetRequest::where('status', 'approved')->count(),
+            'completed' => PasswordResetRequest::where('status', 'completed')->count(),
+            'rejected' => PasswordResetRequest::where('status', 'rejected')->count(),
+        ];
+
+        return view('admin.password-reset-management', compact('requests', 'stats'));
     }
 
     public function approve(Request $request, $id)

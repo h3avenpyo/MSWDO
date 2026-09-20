@@ -1,396 +1,544 @@
 @extends('admin.layout')
-@section('title', 'MSWDO – Add Officers')
-@section('page_title', 'Add Officers')
+@section('title', 'MSWDO – Add New Officer')
+@section('page_title', 'Add New Officer')
 
 @section('content')
 @php
 $adminName = session('admin_user_name') ?? 'Admin User';
-$words = explode(' ', $adminName);
+$words = explode(' ', trim($adminName));
 $initials = count($words) >= 2
     ? strtoupper(substr($words[0],0,1).substr($words[1],0,1))
     : strtoupper(substr($adminName,0,2));
 @endphp
 
 <style>
-    /* ── Modern Dashboard Base ── */
-    .dashboard-container {
-        background: #F8FAFC;
-        min-height: 100vh;
-        padding: 2rem;
-    }
-
-    /* ── Modern Page Header ── */
-    .page-header {
-        background: #1E3A8A;
-        border-radius: 16px;
-        padding: 2rem 2.5rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
-    }
-
-    /* ── Form Card ── */
-    .form-card {
-        background: #ffffff;
-        border-radius: 16px;
-        border: 1px solid #E5E7EB;
-        border-left: 4px solid #1E3A8A;
-        padding: 2rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        margin-bottom: 1.5rem;
-    }
-
-    .form-label {
-        display: block;
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #64748B;
-        margin-bottom: 0.5rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-
-    .form-control, .form-select {
-        width: 100%;
-        background: #EFF6FF;
-        border: 1px solid #BFDBFE;
-        border-radius: 8px;
-        padding: 0.75rem 1rem;
-        font-size: 0.875rem;
-        color: #374151;
-        outline: none;
-        transition: border-color .2s, box-shadow .2s;
-    }
-    .form-control:focus, .form-select:focus {
-        border-color: #1E3A8A;
-        box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
-        background: #ffffff;
-    }
-
-    /* ── Dropdown select ── */
-    .select-dropdown-wrap {
+    /* ── Dashboard Header Banner ── */
+    .dash-banner {
+        background: linear-gradient(135deg, #1A237E 0%, #1E3A8A 55%, #1e40af 100%);
+        border-radius: 18px;
+        padding: 1.75rem 2rem;
+        margin-bottom: 1.75rem;
+        box-shadow: 0 10px 25px -5px rgba(26, 35, 126, 0.25);
         position: relative;
+        overflow: hidden;
+        color: #FFFFFF;
     }
-    .select-dropdown-wrap .form-select {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        background: #EFF6FF;
-        border: 1px solid #BFDBFE;
-        border-radius: 8px;
-        padding: 0.75rem 2.5rem 0.75rem 1rem;
-        font-size: 0.875rem;
-        color: #374151;
-        cursor: pointer;
-        transition: all .2s ease;
-    }
-    .select-dropdown-wrap .form-select:hover {
-        border-color: #1E3A8A;
-        background: #ffffff;
-    }
-    .select-dropdown-wrap .form-select:focus {
-        border-color: #1E3A8A;
-        background: #ffffff;
-        box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
-        outline: none;
-    }
-    .select-dropdown-wrap::after {
+    .dash-banner::before {
         content: '';
         position: absolute;
-        right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 0;
-        height: 0;
-        border-left: 5px solid transparent;
-        border-right: 5px solid transparent;
-        border-top: 6px solid #64748B;
-        pointer-events: none;
-        transition: transform .2s ease, border-color .2s ease;
-    }
-    .select-dropdown-wrap:hover::after {
-        border-top-color: #1E3A8A;
-    }
-    .select-dropdown-wrap:focus-within::after {
-        transform: translateY(-50%) rotate(180deg);
-        border-top-color: #1E3A8A;
-    }
-
-    .select-hint {
-        font-size: 0.75rem;
-        color: #64748B;
-        margin-top: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-    }
-    .select-hint svg {
-        width: 14px;
-        height: 14px;
-        color: #1E3A8A;
-        flex-shrink: 0;
-    }
-
-    .btn-submit {
-        background: #1E3A8A;
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        padding: 0.75rem 1.5rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all .2s;
-    }
-    .btn-submit:hover {
-        background: #1E40AF;
-    }
-
-    .btn-cancel {
-        background: #ffffff;
-        color: #374151;
-        border: 1px solid #E5E7EB;
-        border-radius: 8px;
-        padding: 0.75rem 1.5rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all .2s;
-    }
-    .btn-cancel:hover {
-        background: #EFF6FF;
-        border-color: #1E3A8A;
-        color: #1E3A8A;
-    }
-
-    /* ── Password strength feedback ── */
-    .pw-checklist {
-        list-style: none;
-        margin: 0.5rem 0 0 0;
-        padding: 0;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.25rem 0.75rem;
-    }
-    .pw-checklist li {
-        font-size: 0.75rem;
-        color: #64748B;
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        transition: color .25s ease;
-    }
-    .pw-checklist li .circle-dot {
-        width: 6px;
-        height: 6px;
+        top: -60px;
+        right: -60px;
+        width: 220px;
+        height: 220px;
         border-radius: 50%;
-        background: #CBD5E1;
-        display: inline-block;
-        flex-shrink: 0;
+        background: radial-gradient(circle, rgba(251, 192, 45, 0.2) 0%, rgba(255,255,255,0) 70%);
+        pointer-events: none;
     }
-    .pw-checklist li.met {
-        color: #1E3A8A;
-        font-weight: 600;
+    .dash-banner-title {
+        font-family: 'Public Sans', sans-serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin: 0;
+        letter-spacing: -0.02em;
     }
-    .pw-checklist li.met .circle-dot {
-        background: #1E3A8A;
-    }
-    .pw-match-msg {
-        font-size: 0.75rem;
-        margin-top: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-        transition: all .25s ease;
-    }
-    .pw-match-msg.match { color: #1E3A8A; font-weight: 600; }
-    .pw-match-msg.no-match { color: #DC2626; }
-
-    /* ── Status Selection ── */
-    .status-selection {
-        display: flex;
-        gap: 1rem;
-    }
-    .status-option {
+    .dash-banner-sub {
+        font-size: 0.925rem;
+        color: rgba(255, 255, 255, 0.85);
+        margin-top: 0.35rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.75rem 1rem;
-        background: #EFF6FF;
-        border: 1px solid #BFDBFE;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all .2s ease;
+        flex-wrap: wrap;
     }
-    .status-option:hover {
-        border-color: #1E3A8A;
-        background: #ffffff;
-    }
-    .status-option.selected {
-        border-color: #1E3A8A;
-        background: #EFF6FF;
-        box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.1);
-    }
-    .status-option input[type="radio"] {
-        display: none;
-    }
-    .status-circle {
-        width: 18px;
-        height: 18px;
-        border: 2px solid #CBD5E1;
-        border-radius: 50%;
-        background: #fff;
-        flex-shrink: 0;
-        transition: all .2s ease;
-        position: relative;
-    }
-    .status-option:hover .status-circle {
-        border-color: #1E3A8A;
-    }
-    .status-option.selected .status-circle {
-        border-color: #1E3A8A;
-        background: #1E3A8A;
-    }
-    .status-option.selected .status-circle::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 6px;
-        height: 6px;
-        background: #fff;
-        border-radius: 50%;
-    }
-    .status-label {
-        font-size: 0.875rem;
-        color: #374151;
+    .dash-live-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(8px);
+        padding: 0.35rem 0.85rem;
+        border-radius: 9999px;
+        font-size: 0.825rem;
         font-weight: 500;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .dash-pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #4ADE80;
+        box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.35);
+        animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.6; transform: scale(0.85); }
     }
 
-    /* ── Alert Messages ── */
-    .alert-success {
-        background: #EFF6FF;
-        border: 1px solid #BFDBFE;
-        color: #1E3A8A;
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-        font-size: 0.875rem;
+    /* ── Form Container Card ── */
+    .form-shell {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 18px;
+        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+        padding: 2rem;
+        margin-bottom: 2rem;
     }
-    .alert-error {
-        background: #FEE2E2;
-        border: 1px solid #FCA5A5;
+
+    .form-section-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #0F172A;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #F1F5F9;
+    }
+    .form-section-title svg {
+        color: #1A237E;
+        width: 20px;
+        height: 20px;
+    }
+
+    .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+    .field-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .field-label .required {
         color: #DC2626;
+        margin-left: 2px;
+    }
+
+    .input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        width: 18px;
+        height: 18px;
+        color: #94A3B8;
+        pointer-events: none;
+    }
+    .form-input {
+        width: 100%;
+        background: #F8FAFC;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
+        padding: 0.75rem 1rem 0.75rem 2.65rem;
+        font-size: 0.9rem;
+        color: #1E293B;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+    .form-input:focus {
+        background: #FFFFFF;
+        border-color: #1A237E;
+        box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.12);
+    }
+    .form-select-custom {
+        width: 100%;
+        background: #F8FAFC url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") no-repeat right 0.75rem center/1.25rem 1.25rem;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
+        padding: 0.75rem 2.5rem 0.75rem 2.65rem;
+        font-size: 0.9rem;
+        color: #1E293B;
+        outline: none;
+        appearance: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .form-select-custom:focus {
+        background-color: #FFFFFF;
+        border-color: #1A237E;
+        box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.12);
+    }
+
+    .pw-toggle-btn {
+        position: absolute;
+        right: 0.75rem;
+        background: transparent;
+        border: none;
+        color: #94A3B8;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.15s ease;
+    }
+    .pw-toggle-btn:hover { color: #1A237E; }
+
+    /* ── Password Strength Checklist ── */
+    .pw-criteria {
+        background: #F8FAFC;
+        border: 1px solid #EDF2F7;
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        margin-top: 0.5rem;
+    }
+    .pw-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.4rem 1rem;
+    }
+    .pw-item {
+        font-size: 0.75rem;
+        color: #64748B;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        transition: color 0.2s ease;
+    }
+    .pw-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #CBD5E1;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+    }
+    .pw-item.met {
+        color: #059669;
+        font-weight: 600;
+    }
+    .pw-item.met .pw-dot {
+        background: #059669;
+        box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
+    }
+
+    /* Match feedback message */
+    .pw-match-indicator {
+        font-size: 0.75rem;
+        margin-top: 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-weight: 600;
+    }
+    .match-ok { color: #059669; }
+    .match-no { color: #DC2626; }
+
+    /* ── Radio Pill Selector for Account Status ── */
+    .status-pill-group {
+        display: flex;
+        gap: 0.75rem;
+    }
+    .status-pill-label {
+        flex: 1;
+        cursor: pointer;
+        position: relative;
+    }
+    .status-pill-label input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+    .status-pill-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
         padding: 0.75rem 1rem;
-        border-radius: 8px;
+        background: #F8FAFC;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
         font-size: 0.875rem;
+        font-weight: 600;
+        color: #475569;
+        transition: all 0.2s ease;
+    }
+    .status-pill-label input:checked + .status-pill-box.opt-active {
+        background: #ECFDF5;
+        border-color: #059669;
+        color: #059669;
+        box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+    }
+    .status-pill-label input:checked + .status-pill-box.opt-inactive {
+        background: #FEF2F2;
+        border-color: #DC2626;
+        color: #DC2626;
+        box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+    }
+
+
+
+    /* ── Action Rails ── */
+    .btn-action-primary {
+        background: #1A237E;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 10px;
+        padding: 0.85rem 1.75rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(26, 35, 126, 0.2);
+    }
+    .btn-action-primary:hover {
+        background: #121858;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(26, 35, 126, 0.3);
+    }
+    .btn-action-secondary {
+        background: #FFFFFF;
+        color: #475569;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
+        padding: 0.85rem 1.5rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .btn-action-secondary:hover {
+        background: #F1F5F9;
+        color: #0F172A;
+        border-color: #94A3B8;
+    }
+
+    @media (max-width: 767.98px) {
+        .dash-banner {
+            padding: 1.25rem 1.4rem;
+            border-radius: 14px;
+            margin-bottom: 1.25rem;
+        }
+        .dash-banner-title { font-size: 1.35rem; }
+        .form-shell { padding: 1.25rem; }
     }
 </style>
 
-{{-- Page Header --}}
-<header class="page-header flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none">
+{{-- Page Header Banner --}}
+<header class="dash-banner flex flex-col md:flex-row md:items-center justify-between gap-4 select-none">
     <div>
-        <h1 class="font-['Public_Sans'] text-[28px] md:text-[32px] lg:text-[36px] font-bold text-white leading-none m-0">Officers Directory</h1>
-        <p class="text-sm md:text-base text-white/90 mt-2 font-medium">MSWDO Silang — Manage Staff &amp; Officer Accounts</p>
+        <div class="dash-banner-title">Add New Officer</div>
+        <div class="dash-banner-sub">
+            <span>MSWDO Silang — Officer Enrollment</span>
+            <span class="opacity-40">•</span>
+            <span class="dash-live-badge">
+                <span class="dash-pulse-dot"></span>
+                <span>System Online</span>
+            </span>
+        </div>
     </div>
-    <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-        <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-white/90" id="currentDateTime">Loading date...</div>
-        <div class="w-12 h-12 rounded-full bg-white/20 text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-white/30 select-none" title="Admin: {{ $adminName }}">
+    <div class="flex items-center gap-3 self-start md:self-auto">
+        <div class="text-right hidden sm:block">
+            <div class="text-xs font-semibold uppercase tracking-wider text-white/70">Philippine Standard Time</div>
+            <div class="text-sm font-semibold text-white tracking-wide" id="liveClock">Loading date...</div>
+        </div>
+        <div class="w-11 h-11 rounded-full bg-white/20 border-2 border-white/40 text-white font-bold text-sm flex items-center justify-center shadow-inner cursor-default" title="Logged in as: {{ $adminName }}">
             {{ $initials }}
         </div>
     </div>
 </header>
 
-<!-- Form Card -->
-<div class="form-card">
-    <div class="mb-4">
-        <h2 class="text-xl font-bold text-[#1E3A8A] m-0">Create Officer Account</h2>
-        <p class="text-sm text-slate-500 mt-1">Register a new social worker or administrator to access the MSWDO platform.</p>
+{{-- Alerts --}}
+@if(session('success'))
+    <div class="mb-5 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-3 shadow-sm" id="successAlert">
+        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600 flex-shrink-0"></i>
+        <span>{{ session('success') }}</span>
     </div>
+@endif
 
-    @if(session('success'))
-        <div class="alert-success mb-4" id="successAlert">{{ session('success') }}</div>
-    @endif
-
-    @if($errors->any())
-        <div class="alert-error mb-4" id="errorAlert">
-            <ul class="list-disc pl-5 m-0">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+@if(isset($errors) && $errors->any())
+    <div class="mb-5 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm shadow-sm" id="errorAlert">
+        <div class="flex items-center gap-2 font-bold mb-1 text-rose-900">
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-600"></i>
+            <span>Please correct the following errors:</span>
         </div>
-    @endif
+        <ul class="list-disc pl-5 m-0 space-y-1 text-xs">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
-    <form method="POST" action="{{ route('admin.officers.store') }}" enctype="multipart/form-data">
+{{-- Main Form Card --}}
+<div class="form-shell">
+    <form method="POST" action="{{ route('admin.officers.store') }}" enctype="multipart/form-data" id="officerForm">
         @csrf
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="form-label">Full Name</label>
-                <input type="text" name="name" class="form-control" placeholder="Enter full name" value="{{ old('name') }}" required>
+
+        {{-- Section 1: Personal & Contact Information --}}
+        <div class="form-section-title">
+            <i data-lucide="user"></i>
+            <span>Personal &amp; Contact Details</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-7">
+            <div class="field-group">
+                <label class="field-label">Full Name <span class="required">*</span></label>
+                <div class="input-wrap">
+                    <i data-lucide="user-check" class="input-icon"></i>
+                    <input type="text" name="name" class="form-input" placeholder="e.g. Maria Santos Dela Cruz" value="{{ old('name') }}" required autocomplete="off">
+                </div>
             </div>
-            <div>
-                <label class="form-label">Email Address</label>
-                <input type="email" name="email" class="form-control" placeholder="Enter email address" value="{{ old('email') }}" required>
+
+            <div class="field-group">
+                <label class="field-label">Email Address (Login Username) <span class="required">*</span></label>
+                <div class="input-wrap">
+                    <i data-lucide="mail" class="input-icon"></i>
+                    <input type="email" name="email" class="form-input" placeholder="e.g. maria.delacruz@mswdo.gov.ph" value="{{ old('email') }}" required autocomplete="off">
+                </div>
             </div>
-            <div>
-                <label class="form-label">Role / Assignment</label>
-                <div class="select-dropdown-wrap">
-                    <select class="form-select" name="role" id="roleSelect" required>
-                        <option value="" disabled selected>Select Role / Assignment</option>
-                        <option value="Senior Citizen officer" {{ old('role') == 'Senior Citizen officer' ? 'selected' : '' }}>Senior Citizen Officer</option>
-                        <option value="financialstep1" {{ old('role') == 'financialstep1' ? 'selected' : '' }}>Financial Assistance Step 1</option>
-                        <option value="financialstep2" {{ old('role') == 'financialstep2' ? 'selected' : '' }}>Financial Assistance Step 2</option>
-                        <option value="eligibility_checker" {{ old('role') == 'eligibility_checker' ? 'selected' : '' }}>Social Case Worker (Checker)</option>
-                        <option value="social_worker" {{ old('role') == 'social_worker' ? 'selected' : '' }}>Social Case Worker (Encoder)</option>
-                        <option value="encoder" {{ old('role') == 'encoder' ? 'selected' : '' }}>Encoder</option>
-                        <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Staff</option>
-                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrator</option>
+
+            <div class="field-group">
+                <label class="field-label">Contact Number</label>
+                <div class="input-wrap">
+                    <i data-lucide="phone" class="input-icon"></i>
+                    <input type="text" name="phone" class="form-input" placeholder="e.g. 09171234567" value="{{ old('phone') }}" maxlength="20">
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label class="field-label">Initial Account Status</label>
+                <div class="status-pill-group">
+                    <label class="status-pill-label">
+                        <input type="radio" name="status" value="active" {{ old('status', 'active') === 'active' ? 'checked' : '' }}>
+                        <div class="status-pill-box opt-active">
+                            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                            <span>Active Account</span>
+                        </div>
+                    </label>
+                    <label class="status-pill-label">
+                        <input type="radio" name="status" value="inactive" {{ old('status') === 'inactive' ? 'checked' : '' }}>
+                        <div class="status-pill-box opt-inactive">
+                            <i data-lucide="pause-circle" class="w-4 h-4"></i>
+                            <span>Inactive / On Hold</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        {{-- Section 2: Role & System Privileges --}}
+        <div class="form-section-title">
+            <i data-lucide="shield-check"></i>
+            <span>Departmental Role &amp; Access Assignment</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-7">
+            <div class="field-group md:col-span-2">
+                <label class="field-label">System Role Assignment <span class="required">*</span></label>
+                <div class="input-wrap">
+                    <i data-lucide="briefcase" class="input-icon"></i>
+                    <select class="form-select-custom" name="role" id="roleSelect" required>
+                        <option value="" disabled selected>Select Role / Module Responsibility</option>
+                        <option value="Senior Citizen officer" {{ old('role') == 'Senior Citizen officer' ? 'selected' : '' }}>Senior Citizen Officer (OSCA Portal &amp; Payouts)</option>
+                        <option value="financialstep1" {{ old('role') == 'financialstep1' ? 'selected' : '' }}>Financial Assistance Step 1 (Intake &amp; Application)</option>
+                        <option value="financialstep2" {{ old('role') == 'financialstep2' ? 'selected' : '' }}>Financial Assistance Step 2 (Approval &amp; Voucher)</option>
+                        <option value="eligibility_checker" {{ old('role') == 'eligibility_checker' ? 'selected' : '' }}>Social Case Worker — Eligibility Checker</option>
+                        <option value="social_worker" {{ old('role') == 'social_worker' ? 'selected' : '' }}>Social Case Worker — Case Encoder</option>
+                        <option value="encoder" {{ old('role') == 'encoder' ? 'selected' : '' }}>General System Encoder</option>
+                        <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Departmental Staff</option>
+                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>System Administrator (Full Management)</option>
                     </select>
                 </div>
-                <p class="select-hint">
-                    <i data-lucide="info"></i>
-                    <span>Select a role from the dropdown</span>
-                </p>
+                <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
+                    <i data-lucide="info" class="w-3.5 h-3.5 text-indigo-600"></i>
+                    <span>This role determines the sidebar modules and data permissions available to the officer.</span>
+                </div>
             </div>
-            <div>
-                <label class="form-label">Contact Number</label>
-                <input type="text" name="phone" class="form-control" placeholder="e.g. 0917XXXXXXX" value="{{ old('phone') }}">
-            </div>
-            <div>
-                <label class="form-label">Password</label>
-                <input type="password" id="passwordInput" name="password" class="form-control" placeholder="Create password" required oninput="checkPassword()">
-                <div id="pwFeedback" class="mt-2" style="display:none;">
-                    <ul class="pw-checklist">
-                        <li id="reqLength"><span class="circle-dot"></span> At least 8 characters</li>
-                        <li id="reqUpper"><span class="circle-dot"></span> One uppercase letter</li>
-                        <li id="reqLower"><span class="circle-dot"></span> One lowercase letter</li>
-                        <li id="reqNumber"><span class="circle-dot"></span> One number</li>
-                        <li id="reqSpecial"><span class="circle-dot"></span> One special character</li>
+        </div>
+
+        {{-- Section 3: Credentials & Security --}}
+        <div class="form-section-title">
+            <i data-lucide="lock"></i>
+            <span>Security Credentials</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-7">
+            <div class="field-group">
+                <label class="field-label">Password <span class="required">*</span></label>
+                <div class="input-wrap">
+                    <i data-lucide="key-round" class="input-icon"></i>
+                    <input type="password" id="passwordInput" name="password" class="form-input pr-10" placeholder="Minimum 8 characters" required autocomplete="new-password">
+                    <button type="button" class="pw-toggle-btn" onclick="togglePasswordVisibility('passwordInput', this)" title="Toggle password visibility">
+                        <i data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                
+                {{-- Strength meter & criteria --}}
+                <div class="pw-criteria">
+                    <div class="text-[11px] font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Password Requirements:</div>
+                    <ul class="pw-list">
+                        <li class="pw-item" id="reqLen"><span class="pw-dot"></span> 8+ characters</li>
+                        <li class="pw-item" id="reqUp"><span class="pw-dot"></span> One uppercase</li>
+                        <li class="pw-item" id="reqLow"><span class="pw-dot"></span> One lowercase</li>
+                        <li class="pw-item" id="reqNum"><span class="pw-dot"></span> One number</li>
+                        <li class="pw-item" id="reqSpec"><span class="pw-dot"></span> One special character</li>
                     </ul>
                 </div>
             </div>
-            <div>
-                <label class="form-label">Confirm Password</label>
-                <input type="password" id="confirmPasswordInput" name="password_confirmation" class="form-control" placeholder="Confirm password" required oninput="checkPassword()">
-                <div id="pwMatchMsg" class="pw-match-msg" style="display:none;"></div>
+
+            <div class="field-group">
+                <label class="field-label">Confirm Password <span class="required">*</span></label>
+                <div class="input-wrap">
+                    <i data-lucide="shield-check" class="input-icon"></i>
+                    <input type="password" id="confirmPasswordInput" name="password_confirmation" class="form-input pr-10" placeholder="Re-type password" required autocomplete="new-password">
+                    <button type="button" class="pw-toggle-btn" onclick="togglePasswordVisibility('confirmPasswordInput', this)" title="Toggle password visibility">
+                        <i data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div id="matchMessage" class="pw-match-indicator" style="display:none;"></div>
             </div>
-            <div>
-                <label class="form-label">Signature Position</label>
-                <select class="form-select" name="signature_position">
-                    <option value="">None</option>
-                    <option value="osca_head" {{ old('signature_position') == 'osca_head' ? 'selected' : '' }}>OSCA Head</option>
-                    <option value="mswdo_officer" {{ old('signature_position') == 'mswdo_officer' ? 'selected' : '' }}>MSWDO Officer</option>
-                    <option value="mswdo_staff" {{ old('signature_position') == 'mswdo_staff' ? 'selected' : '' }}>MSWDO Staff</option>
-                </select>
-                <p class="select-hint">
-                    <i data-lucide="info"></i>
-                    <span>Select if this officer's signature should appear on ID cards</span>
-                </p>
+        </div>
+
+        {{-- Section 4: Signature & Authorization (Optional) --}}
+        <div class="form-section-title">
+            <i data-lucide="award"></i>
+            <span>Signature &amp; ID Card Authorization (Optional)</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+            <div class="field-group md:col-span-2">
+                <label class="field-label">Official Signature Position</label>
+                <div class="input-wrap">
+                    <i data-lucide="award" class="input-icon"></i>
+                    <select class="form-select-custom" name="signature_position">
+                        <option value="">None (Standard Staff)</option>
+                        <option value="osca_head" {{ old('signature_position') == 'osca_head' ? 'selected' : '' }}>OSCA Head / Signatory</option>
+                        <option value="mswdo_officer" {{ old('signature_position') == 'mswdo_officer' ? 'selected' : '' }}>MSWDO Department Officer</option>
+                        <option value="mswdo_staff" {{ old('signature_position') == 'mswdo_staff' ? 'selected' : '' }}>MSWDO Authorized Staff</option>
+                    </select>
+                </div>
+                <div class="text-[11px] text-slate-500 mt-1">
+                    Designate whether this officer's digital signature will be embedded in senior IDs and certifications.
+                </div>
             </div>
-            <div class="md:col-span-2 mt-2 flex justify-end gap-2">
-                <button type="button" class="btn-cancel" onclick="location.reload()">Cancel</button>
-                <button type="submit" class="btn-submit">Add Officer</button>
-            </div>
+        </div>
+
+        {{-- Form Actions Rail --}}
+        <div class="pt-5 border-t border-slate-100 flex items-center justify-end gap-3 flex-wrap">
+            <a href="{{ route('admin.officers-directory') }}" class="btn-action-secondary">
+                <i data-lucide="x" class="w-4 h-4"></i>
+                <span>Cancel</span>
+            </a>
+            <button type="submit" class="btn-action-primary">
+                <i data-lucide="user-plus" class="w-4 h-4"></i>
+                <span>Add Officer</span>
+            </button>
         </div>
     </form>
 </div>
@@ -398,128 +546,110 @@ $initials = count($words) >= 2
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Date/time
-        function updateDateTime() {
-            const now = new Date();
-            const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'2-digit', hour12:true };
-            const el = document.getElementById('currentDateTime');
-            if (el) el.textContent = now.toLocaleDateString('en-US', opts).replace(',', ' at');
-        }
-        updateDateTime();
-        setInterval(updateDateTime, 60000);
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 
-        if (typeof lucide !== 'undefined') lucide.createIcons();
+    // Live Clock with Philippine formatting
+    function updateLiveClock() {
+        const now = new Date();
+        const opts = { 
+            weekday: 'short', 
+            month: 'short', 
+            day: 'numeric', 
+            hour: 'numeric', 
+            minute: '2-digit', 
+            second: '2-digit', 
+            hour12: true 
+        };
+        const el = document.getElementById('liveClock');
+        if (el) el.textContent = now.toLocaleDateString('en-US', opts);
+    }
+    updateLiveClock();
+    setInterval(updateLiveClock, 1000);
 
-        // Status selection visual feedback
-        const statusOptions = document.querySelectorAll('.status-option');
-        statusOptions.forEach(option => {
-            const radio = option.querySelector('input[type="radio"]');
-            option.addEventListener('click', function(e) {
-                statusOptions.forEach(opt => opt.classList.remove('selected'));
-                option.classList.add('selected');
-            });
-            // Initialize selected state
-            if (radio.checked) {
-                option.classList.add('selected');
+    // Show popup if redirected with officerCreated
+    @if(session('officer_created') || ($officerCreated ?? false))
+        Swal.fire({
+            title: 'Officer Created Successfully!',
+            text: 'The new officer account is active and can now log in.',
+            icon: 'success',
+            confirmButtonColor: '#1A237E',
+            confirmButtonText: 'View Officers Directory',
+            showCancelButton: true,
+            cancelButtonText: 'Add Another',
+            cancelButtonColor: '#64748B'
+        }).then((res) => {
+            if (res.isConfirmed) {
+                window.location.href = "{{ route('admin.officers-directory') }}";
             }
         });
+    @endif
 
-        // Show success popup if officer was just created
-        @if($officerCreated ?? false)
-            Swal.fire({
-                title: 'Officer Added Successfully!',
-                icon: 'success',
-                confirmButtonColor: '#1A237E',
-                confirmButtonText: 'Continue',
-                background: '#ffffff',
-                customClass: {
-                    popup: 'rounded-4 shadow-lg'
-                },
-                timer: 3000,
-                timerProgressBar: true
-            });
-        @endif
+    // Password live criteria checking
+    const pwInput = document.getElementById('passwordInput');
+    const confirmInput = document.getElementById('confirmPasswordInput');
+    const matchMsg = document.getElementById('matchMessage');
 
-        const successAlert = document.getElementById('successAlert');
-        if (successAlert) {
-            setTimeout(function() {
-                successAlert.style.transition = 'opacity 0.5s ease';
-                successAlert.style.opacity = '0';
-                setTimeout(function() {
-                    successAlert.style.display = 'none';
-                }, 500);
-            }, 3000);
-        }
-
-        const errorAlert = document.getElementById('errorAlert');
-        if (errorAlert) {
-            setTimeout(function() {
-                errorAlert.style.transition = 'opacity 0.5s ease';
-                errorAlert.style.opacity = '0';
-                setTimeout(function() {
-                    errorAlert.style.display = 'none';
-                }, 500);
-            }, 3000);
-        }
-    });
+    const reqLen = document.getElementById('reqLen');
+    const reqUp  = document.getElementById('reqUp');
+    const reqLow = document.getElementById('reqLow');
+    const reqNum = document.getElementById('reqNum');
+    const reqSpec = document.getElementById('reqSpec');
 
     function checkPassword() {
-        const pw = document.getElementById('passwordInput').value;
-        const feedback = document.getElementById('pwFeedback');
+        const val = pwInput.value;
+        const confirmVal = confirmInput.value;
 
-        if (pw.length === 0) {
-            feedback.style.display = 'none';
-            return;
-        }
-        feedback.style.display = 'block';
+        // Length
+        if (val.length >= 8) reqLen.classList.add('met');
+        else reqLen.classList.remove('met');
 
-        const checks = {
-            length:  pw.length >= 8,
-            upper:   /[A-Z]/.test(pw),
-            lower:   /[a-z]/.test(pw),
-            number:  /[0-9]/.test(pw),
-            special: /[^A-Za-z0-9]/.test(pw)
-        };
+        // Upper
+        if (/[A-Z]/.test(val)) reqUp.classList.add('met');
+        else reqUp.classList.remove('met');
 
-        toggleReq('reqLength',  checks.length);
-        toggleReq('reqUpper',   checks.upper);
-        toggleReq('reqLower',   checks.lower);
-        toggleReq('reqNumber',  checks.number);
-        toggleReq('reqSpecial', checks.special);
+        // Lower
+        if (/[a-z]/.test(val)) reqLow.classList.add('met');
+        else reqLow.classList.remove('met');
 
-        if (document.getElementById('confirmPasswordInput').value.length > 0) {
-            checkPasswordMatch();
-        }
-    }
+        // Number
+        if (/[0-9]/.test(val)) reqNum.classList.add('met');
+        else reqNum.classList.remove('met');
 
-    function toggleReq(id, met) {
-        const el = document.getElementById(id);
-        if (met) {
-            el.classList.add('met');
+        // Special
+        if (/[^A-Za-z0-9]/.test(val)) reqSpec.classList.add('met');
+        else reqSpec.classList.remove('met');
+
+        // Confirmation Match
+        if (confirmVal.length > 0) {
+            matchMsg.style.display = 'flex';
+            if (val === confirmVal) {
+                matchMsg.className = 'pw-match-indicator match-ok';
+                matchMsg.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i> Passwords match';
+            } else {
+                matchMsg.className = 'pw-match-indicator match-no';
+                matchMsg.innerHTML = '<i data-lucide="x" class="w-3.5 h-3.5"></i> Passwords do not match';
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         } else {
-            el.classList.remove('met');
+            matchMsg.style.display = 'none';
         }
     }
 
-    function checkPasswordMatch() {
-        const pw = document.getElementById('passwordInput').value;
-        const cpw = document.getElementById('confirmPasswordInput').value;
-        const msg = document.getElementById('pwMatchMsg');
+    if (pwInput) pwInput.addEventListener('input', checkPassword);
+    if (confirmInput) confirmInput.addEventListener('input', checkPassword);
+});
 
-        if (cpw.length === 0) {
-            msg.style.display = 'none';
-            return;
-        }
-        msg.style.display = 'flex';
-
-        if (pw === cpw) {
-            msg.className = 'pw-match-msg match';
-            msg.innerHTML = '<span>✓ Passwords match</span>';
-        } else {
-            msg.className = 'pw-match-msg no-match';
-            msg.innerHTML = '<span>✕ Passwords do not match</span>';
-        }
-    }
+// Toggle password visibility
+function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const isPw = input.type === 'password';
+    input.type = isPw ? 'text' : 'password';
+    btn.innerHTML = isPw 
+        ? '<i data-lucide="eye-off" class="w-4 h-4"></i>' 
+        : '<i data-lucide="eye" class="w-4 h-4"></i>';
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
 </script>
 @endpush

@@ -27,34 +27,102 @@ class DashboardController extends Controller
         // Fetch monthly social case data for analytics
         $monthlySocialCases = $this->getMonthlySocialCases();
 
+        // Fetch reports summary & barangay distribution
+        $reportsSummary = $this->getReportsSummary();
+        $barangayStats = $this->getBarangayStats();
+
+        // High-level executive KPI indicators
+        $executiveSummary = [
+            'totalBeneficiaries' => ($serviceBreakdown['Social Case Study']['total'] ?? 0) + ($serviceBreakdown['Senior Citizen']['total'] ?? 0),
+            'activeCases' => ($serviceBreakdown['Social Case Study']['pending'] ?? 0) + ($serviceBreakdown['Financial Assistance']['pending'] ?? 0),
+            'financialReleased' => $reportsSummary['financialReleased'] ?? 0,
+            'casesThisMonth' => $reportsSummary['casesThisMonth'] ?? 0,
+            'closedThisMonth' => $reportsSummary['closedThisMonth'] ?? 0,
+        ];
+
         $data = [
             'staffPerformance' => [],
             'recentActivities' => [],
             'casesRequiringAttention' => [],
             'userOverview' => [
-                'totalAdmins' => 0,
-                'totalSocialWorkers' => 0,
-                'totalStaff' => 0,
-                'activeUsers' => 0,
-                'inactiveUsers' => 0,
+                'totalAdmins' => class_exists(User::class) ? User::where('role', 'admin')->count() : 0,
+                'totalSocialWorkers' => class_exists(User::class) ? User::where('role', 'social_worker')->count() : 0,
+                'totalStaff' => class_exists(User::class) ? User::where('role', 'staff')->count() : 0,
+                'activeUsers' => class_exists(User::class) ? User::where('status', 'active')->count() : 0,
+                'inactiveUsers' => class_exists(User::class) ? User::where('status', 'inactive')->count() : 0,
             ],
-            'reportsSummary' => [
-                'casesThisMonth' => 0,
-                'closedThisMonth' => 0,
-                'pendingCases' => 0,
-                'generatedReports' => 0,
-                'financialReleased' => 0,
-            ],
+            'reportsSummary' => $reportsSummary,
+            'executiveSummary' => $executiveSummary,
             'justLoggedIn' => $justLoggedIn,
             'serviceBreakdown' => $serviceBreakdown,
             'recentCases' => $recentCases,
             'monthlySocialCases' => $monthlySocialCases,
+            'barangayStats' => $barangayStats,
+            'caseDistribution' => [],
         ];
 
-        $data['caseDistribution'] = [];
-        $data['barangayStats'] = [];
-
         return view('admin.dashboard', $data);
+    }
+
+    private function getReportsSummary()
+    {
+        $casesThisMonth = 0;
+        $closedThisMonth = 0;
+        $pendingCases = 0;
+        $generatedReports = 0;
+        $financialReleased = 0;
+
+        if (class_exists(\App\Models\SocialCase\SocialCaseStudy::class)) {
+            $casesThisMonth = \App\Models\SocialCase\SocialCaseStudy::whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->count();
+            
+            $closedThisMonth = \App\Models\SocialCase\SocialCaseStudy::whereIn('status', ['resolved', 'closed', 'completed'])
+                ->whereMonth('updated_at', now()->month)
+                ->whereYear('updated_at', now()->year)
+                ->count();
+
+            $pendingCases = \App\Models\SocialCase\SocialCaseStudy::whereIn('status', ['pending', 'active', 'in_progress'])
+                ->count();
+
+            $generatedReports = \App\Models\SocialCase\SocialCaseStudy::whereNotNull('released_at')->count();
+        }
+
+        if (class_exists(\App\Models\SocialCase\BeneficiaryIntake::class)) {
+            $financialReleased += (float) (\App\Models\SocialCase\BeneficiaryIntake::whereNotNull('recommended_amount')->sum('recommended_amount') ?? 0);
+        }
+
+        if (class_exists(\App\Models\Senior\BirthdayPayout::class)) {
+            $financialReleased += (float) (\App\Models\Senior\BirthdayPayout::where('status', 'released')->sum('amount') ?? 0);
+        }
+
+        return [
+            'casesThisMonth' => $casesThisMonth,
+            'closedThisMonth' => $closedThisMonth,
+            'pendingCases' => $pendingCases,
+            'generatedReports' => $generatedReports,
+            'financialReleased' => $financialReleased,
+        ];
+    }
+
+    private function getBarangayStats()
+    {
+        if (!class_exists(\App\Models\Senior\SeniorCitizenRecord::class)) {
+            return ['labels' => [], 'data' => []];
+        }
+
+        $records = \App\Models\Senior\SeniorCitizenRecord::selectRaw('barangay, count(*) as count')
+            ->whereNotNull('barangay')
+            ->where('barangay', '!=', '')
+            ->groupBy('barangay')
+            ->orderByDesc('count')
+            ->take(6)
+            ->get();
+
+        return [
+            'labels' => $records->pluck('barangay')->toArray(),
+            'data' => $records->pluck('count')->toArray(),
+        ];
     }
 
     private function getServiceBreakdown()
@@ -64,16 +132,26 @@ class DashboardController extends Controller
         // Social Case Study
         if (class_exists(\App\Models\SocialCase\SocialCaseStudy::class)) {
             $totalClients = class_exists(\App\Models\Client::class) ? \App\Models\Client::count() : 0;
-            $casesThisMonth = \App\Models\SocialCase\SocialCaseStudy::whereMonth('created_at', now()->month)->count();
+            $casesThisMonth = \App\Models\SocialCase\SocialCaseStudy::whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)->count();
             $releasedToday = \App\Models\SocialCase\SocialCaseStudy::whereDate('released_at', today())->count();
             $totalReleased = \App\Models\SocialCase\SocialCaseStudy::whereNotNull('released_at')->count();
 
             $services['Social Case Study'] = [
-                'active' => $totalClients,        // Total Clients
-                'pending' => $casesThisMonth,    // Cases This Month
-                'overdue' => $releasedToday,     // Released Today
-                'completed' => $totalReleased,  // Total Released
-                'total' => $totalClients, // Total shows total clients
+                'active' => $totalClients,
+                'pending' => $casesThisMonth,
+                'overdue' => $releasedToday,
+                'completed' => $totalReleased,
+                'total' => $totalClients,
+                'icon' => 'folder-heart',
+                'color' => 'indigo',
+                'route' => route('admin.social-case.dashboard'),
+                'metrics' => [
+                    ['label' => 'Total Clients', 'val' => number_format($totalClients), 'badge' => 'neutral'],
+                    ['label' => 'Cases This Month', 'val' => number_format($casesThisMonth), 'badge' => 'info'],
+                    ['label' => 'Released Today', 'val' => number_format($releasedToday), 'badge' => 'success'],
+                    ['label' => 'Total Released', 'val' => number_format($totalReleased), 'badge' => 'success'],
+                ],
             ];
         }
 
@@ -91,11 +169,20 @@ class DashboardController extends Controller
             })->count();
 
             $services['Financial Assistance'] = [
-                'active' => $totalIntakes,         // Total Intakes
-                'pending' => $pendingAssessments, // Pending Assessments
-                'overdue' => $step1Approved,     // Step 1 Approved
-                'completed' => $readyForStep2,  // Ready for Step 2
-                'total' => $totalIntakes, // Total shows total intakes
+                'active' => $totalIntakes,
+                'pending' => $pendingAssessments,
+                'overdue' => $step1Approved,
+                'completed' => $readyForStep2,
+                'total' => $totalIntakes,
+                'icon' => 'banknote',
+                'color' => 'emerald',
+                'route' => url('/admin/financial/dashboard'),
+                'metrics' => [
+                    ['label' => 'Total Intakes', 'val' => number_format($totalIntakes), 'badge' => 'neutral'],
+                    ['label' => 'Pending Review', 'val' => number_format($pendingAssessments), 'badge' => 'warning'],
+                    ['label' => 'Step 1 Approved', 'val' => number_format($step1Approved), 'badge' => 'info'],
+                    ['label' => 'Ready Step 2', 'val' => number_format($readyForStep2), 'badge' => 'success'],
+                ],
             ];
         }
 
@@ -114,30 +201,59 @@ class DashboardController extends Controller
                 : 0;
 
             $services['Senior Citizen'] = [
-                'active' => $totalSeniors,    // Total Seniors
-                'pending' => $activeSeniors,  // Active Seniors
-                'overdue' => $archived,      // Archived
-                'completed' => $totalPayout, // Total Payout
-                'total' => $totalSeniors, // Total shows total seniors
+                'active' => $totalSeniors,
+                'pending' => $activeSeniors,
+                'overdue' => $archived,
+                'completed' => $totalPayout,
+                'total' => $totalSeniors,
+                'icon' => 'heart-handshake',
+                'color' => 'amber',
+                'route' => route('admin.senior'),
+                'metrics' => [
+                    ['label' => 'Total Seniors', 'val' => number_format($totalSeniors), 'badge' => 'neutral'],
+                    ['label' => 'Active Seniors', 'val' => number_format($activeSeniors), 'badge' => 'success'],
+                    ['label' => 'Archived', 'val' => number_format($archived), 'badge' => 'neutral'],
+                    ['label' => 'Total Payout', 'val' => '₱' . number_format($totalPayout, 2), 'badge' => 'amber'],
+                ],
             ];
         }
 
-        // VAWC (Violence Against Women and Children) - Placeholder for now
+        // VAWC (Violence Against Women and Children)
         $services['VAWC'] = [
             'active' => 0,
             'pending' => 0,
             'overdue' => 0,
             'completed' => 0,
             'total' => 0,
+            'icon' => 'shield-alert',
+            'color' => 'rose',
+            'status' => 'standby',
+            'route' => '#',
+            'metrics' => [
+                ['label' => 'Total Cases', 'val' => 0, 'badge' => 'neutral'],
+                ['label' => 'Active Cases', 'val' => 0, 'badge' => 'info'],
+                ['label' => 'Pending Action', 'val' => 0, 'badge' => 'warning'],
+                ['label' => 'Resolved', 'val' => 0, 'badge' => 'success'],
+            ],
         ];
 
-        // BCPC (Barangay Council for the Protection of Children) - Placeholder for now
+        // BCPC (Barangay Council for the Protection of Children)
         $services['BCPC'] = [
             'active' => 0,
             'pending' => 0,
             'overdue' => 0,
             'completed' => 0,
             'total' => 0,
+            'icon' => 'smile',
+            'color' => 'cyan',
+            'status' => 'standby',
+            'route' => '#',
+            'metrics' => [
+                ['label' => 'Total Cases', 'val' => 0, 'badge' => 'neutral'],
+                ['label' => 'Active Cases', 'val' => 0, 'badge' => 'info'],
+                ['label' => 'Overdue', 'val' => 0, 'badge' => 'danger'],
+                ['label' => 'Resolved', 'val' => 0, 'badge' => 'success'],
+            ],
         ];
 
         return $services;
@@ -161,11 +277,13 @@ class DashboardController extends Controller
                         $officerName = $case->social_worker_name;
                     }
                     return [
-                        'client' => $case->client ? $case->client->full_name ?? 'Unknown' : 'Unknown',
+                        'id' => $case->id,
+                        'client' => $case->client ? ($case->client->full_name ?? 'Unknown') : 'Unknown',
                         'service' => 'Social Case Study',
                         'officer' => $officerName,
-                        'status' => ucfirst($case->status),
-                        'updated' => $case->updated_at->format('M d, Y'),
+                        'status' => ucfirst($case->status ?? 'Pending'),
+                        'updated' => $case->updated_at ? $case->updated_at->format('M d, Y') : 'N/A',
+                        'url' => route('admin.social-case.cases'),
                     ];
                 });
             $recentCases = $recentCases->concat($socialCases);
@@ -178,10 +296,10 @@ class DashboardController extends Controller
                 ->take(5)
                 ->get()
                 ->map(function ($intake) {
-                    $status = 'Unknown';
+                    $status = 'Pending';
                     $officerName = 'Not assigned';
                     if ($intake->socialCaseStudy) {
-                        $status = ucfirst($intake->socialCaseStudy->status);
+                        $status = ucfirst($intake->socialCaseStudy->status ?? 'Pending');
                         if ($intake->socialCaseStudy->officer) {
                             $officerName = $intake->socialCaseStudy->officer->name ?? 'Not assigned';
                         } elseif ($intake->socialCaseStudy->social_worker_name) {
@@ -189,11 +307,13 @@ class DashboardController extends Controller
                         }
                     }
                     return [
+                        'id' => $intake->id,
                         'client' => $intake->client_name ?? 'Unknown',
                         'service' => 'Financial Assistance',
                         'officer' => $officerName,
                         'status' => $status,
-                        'updated' => $intake->updated_at->format('M d, Y'),
+                        'updated' => $intake->updated_at ? $intake->updated_at->format('M d, Y') : 'N/A',
+                        'url' => url('/admin/financial/dashboard'),
                     ];
                 });
             $recentCases = $recentCases->concat($financialCases);
@@ -211,19 +331,20 @@ class DashboardController extends Controller
                         $officerName = $senior->createdBy->name ?? 'Unknown';
                     }
                     return [
+                        'id' => $senior->id,
                         'client' => $senior->full_name ?? 'Unknown',
                         'service' => 'Senior Citizen',
                         'officer' => $officerName,
                         'status' => $senior->status instanceof \App\Enums\SeniorStatus
                             ? $senior->status->label()
-                            : ucfirst((string) $senior->status),
-                        'updated' => $senior->updated_at ? $senior->updated_at->format('F j, Y') : 'N/A',
+                            : ucfirst((string) ($senior->status ?? 'Active')),
+                        'updated' => $senior->updated_at ? $senior->updated_at->format('M d, Y') : 'N/A',
+                        'url' => route('admin.senior'),
                     ];
                 });
             $recentCases = $recentCases->concat($seniorCases);
         }
 
-        // Sort by updated date and take top 10
         return $recentCases->take(10);
     }
 

@@ -562,6 +562,19 @@ a.hotline-value:hover {
 }
 
 /* ===================================== */
+/* NAVBAR HEIGHT */
+/* ===================================== */
+.welcome-navbar {
+    height: 60px;
+}
+
+@media (min-width: 1024px) {
+    .welcome-navbar {
+        height: 80px;
+    }
+}
+
+/* ===================================== */
 /* MOBILE MENU (admin sidebar dropdown style) */
 /* ===================================== */
 #mobileMenu {
