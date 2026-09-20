@@ -24,15 +24,18 @@
     <!-- Header / Actions -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
-            <h4 class="fw-bold mb-1" style="color: #1A237E;">Edit Intake Sheet: {{ $intake->control_number }}</h4>
+            <h4 class="fw-bold mb-2" style="color: #1A237E;">Edit Intake Sheet: {{ $intake->control_number }}</h4>
             <p class="text-muted small mb-0">Update intake sheet details for {{ $intake->beneficiary_full_name }}.</p>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <a href="{{ route('admin.beneficiary-intake.index') }}"
+                    class="btn btn-outline-secondary btn-sm rounded-pill px-3 mt-3">
+                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                </a>
+            </div>
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('admin.beneficiary-intake.show', $intake) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
                 <i class="fas fa-eye me-1"></i> View Record
-            </a>
-            <a href="{{ route('admin.beneficiary-intake.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                <i class="fas fa-arrow-left me-1"></i> Back to List
             </a>
         </div>
     </div>

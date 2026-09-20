@@ -13,10 +13,18 @@
     <!-- Header Actions -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
-            <h4 class="fw-bold mb-1" style="color: #1A237E;">GENERAL INTAKE SHEET: {{ $intake->control_number }}</h4>
+            <h4 class="fw-bold mb-2" style="color: #1A237E;">GENERAL INTAKE SHEET: {{ $intake->control_number }}</h4>
             <p class="text-muted small mb-0">Processed on {{ $intake->date_processed ?
-                $intake->date_processed->format('F d, Y') : 'N/A' }} • Client Status: <strong>{{ $intake->client_type ??
+                $intake->date_processed->format('F d, Y') : 'N/A' }} • Client Status: <strong>{{
+                    $intake->client_type ??
                     'New' }}</strong></p>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <a href="{{ route('admin.beneficiary-intake.index') }}"
+                    class="btn btn-outline-secondary btn-sm rounded-pill px-3 mt-3">
+                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                </a>
+
+            </div>
         </div>
         <div class="d-flex gap-2">
             <button onclick="window.print()" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
@@ -25,10 +33,6 @@
             <a href="{{ route('admin.beneficiary-intake.edit', $intake) }}"
                 class="btn btn-primary btn-sm rounded-pill px-3" style="background: #1A237E; border: none;">
                 <i class="fas fa-edit me-1"></i> Edit Record
-            </a>
-            <a href="{{ route('admin.beneficiary-intake.index') }}"
-                class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                <i class="fas fa-arrow-left me-1"></i> Back to List
             </a>
         </div>
     </div>
@@ -283,43 +287,43 @@
 
 <!-- PRINTABLE CONTAINER FORMATTED EXACTLY LIKE PHYSICAL GENERAL INTAKE SHEET (GIS) HARDCOPY FORM -->
 @php
-    $silangLogo = '';
-    $dswdLogo = '';
-    if (file_exists(public_path('images/silang.png'))) {
-        $silangLogo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/silang.png')));
-    } elseif (file_exists(public_path('images/silangseal.png'))) {
-        $silangLogo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/silangseal.png')));
-    }
-    if (file_exists(public_path('images/dswd.png'))) {
-        $dswdLogo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/dswd.png')));
-    } elseif (file_exists(public_path('images/dswdlogo.png'))) {
-        $dswdLogo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/dswdlogo.png')));
-    }
+$silangLogo = '';
+$dswdLogo = '';
+if (file_exists(public_path('images/silang.png'))) {
+$silangLogo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/silang.png')));
+} elseif (file_exists(public_path('images/silangseal.png'))) {
+$silangLogo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/silangseal.png')));
+}
+if (file_exists(public_path('images/dswd.png'))) {
+$dswdLogo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/dswd.png')));
+} elseif (file_exists(public_path('images/dswdlogo.png'))) {
+$dswdLogo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/dswdlogo.png')));
+}
 
-    $dateProcessed = $intake->date_processed ?? now();
-    $dateMonth = $dateProcessed ? $dateProcessed->format('m') : 'MM';
-    $dateDay = $dateProcessed ? $dateProcessed->format('d') : 'DD';
-    $dateYear = $dateProcessed ? $dateProcessed->format('Y') : '2026';
+$dateProcessed = $intake->date_processed ?? now();
+$dateMonth = $dateProcessed ? $dateProcessed->format('m') : 'MM';
+$dateDay = $dateProcessed ? $dateProcessed->format('d') : 'DD';
+$dateYear = $dateProcessed ? $dateProcessed->format('Y') : '2026';
 
-    $cats = $intake->beneficiary_categories ?? [];
-    if (!empty($intake->beneficiary_category) && !in_array($intake->beneficiary_category, $cats)) {
-        $cats[] = $intake->beneficiary_category;
-    }
-    $otherCategory = $intake->beneficiary_category_other ?? '';
+$cats = $intake->beneficiary_categories ?? [];
+if (!empty($intake->beneficiary_category) && !in_array($intake->beneficiary_category, $cats)) {
+$cats[] = $intake->beneficiary_category;
+}
+$otherCategory = $intake->beneficiary_category_other ?? '';
 @endphp
 
 <div class="print-container">
-    
+
     <!-- 1. Header Area: Logos at Top-Left -> Title Below Logos -> Time Start & Date Below Title -->
     <div class="gis-header-container">
         <!-- Row 1: Logos at Top-Left -->
         <div class="gis-header-top-row">
             <div class="gis-logos">
                 @if($silangLogo)
-                    <img src="{{ $silangLogo }}" class="gis-logo-img" alt="Silang Seal">
+                <img src="{{ $silangLogo }}" class="gis-logo-img" alt="Silang Seal">
                 @endif
                 @if($dswdLogo)
-                    <img src="{{ $dswdLogo }}" class="gis-logo-img" alt="DSWD Logo">
+                <img src="{{ $dswdLogo }}" class="gis-logo-img" alt="DSWD Logo">
                 @endif
             </div>
         </div>
@@ -340,8 +344,10 @@
                     <span class="gis-meta-label">Date:</span>
                     <table class="gis-date-table">
                         <tr>
-                            <td class="gis-date-cell-m {{ $dateMonth === 'MM' ? 'gis-date-placeholder' : '' }}">{{ $dateMonth }}</td>
-                            <td class="gis-date-cell-d {{ $dateDay === 'DD' ? 'gis-date-placeholder' : '' }}">{{ $dateDay }}</td>
+                            <td class="gis-date-cell-m {{ $dateMonth === 'MM' ? 'gis-date-placeholder' : '' }}">{{
+                                $dateMonth }}</td>
+                            <td class="gis-date-cell-d {{ $dateDay === 'DD' ? 'gis-date-placeholder' : '' }}">{{
+                                $dateDay }}</td>
                             <td class="gis-date-cell-y">{{ $dateYear }}</td>
                         </tr>
                     </table>
@@ -370,14 +376,18 @@
     <div class="gis-banner gis-banner-black">
         IMPORMASYON NG BENEPISYARYO (Beneficiary's Identifying Information)
     </div>
-    
+
     <!-- Row 1: Names -->
     <table class="gis-line-table">
         <tr class="gis-val-row">
-            <td style="width: 28%;" class="gis-val-cell">{!! $intake->beneficiary_last_name ? e($intake->beneficiary_last_name) : '&nbsp;' !!}</td>
-            <td style="width: 36%;" class="gis-val-cell">{!! $intake->beneficiary_first_name ? e($intake->beneficiary_first_name) : '&nbsp;' !!}</td>
-            <td style="width: 26%;" class="gis-val-cell">{!! $intake->beneficiary_middle_name ? e($intake->beneficiary_middle_name) : '&nbsp;' !!}</td>
-            <td style="width: 10%;" class="gis-val-cell">{!! $intake->beneficiary_extension_name ? e($intake->beneficiary_extension_name) : '&nbsp;' !!}</td>
+            <td style="width: 28%;" class="gis-val-cell">{!! $intake->beneficiary_last_name ?
+                e($intake->beneficiary_last_name) : '&nbsp;' !!}</td>
+            <td style="width: 36%;" class="gis-val-cell">{!! $intake->beneficiary_first_name ?
+                e($intake->beneficiary_first_name) : '&nbsp;' !!}</td>
+            <td style="width: 26%;" class="gis-val-cell">{!! $intake->beneficiary_middle_name ?
+                e($intake->beneficiary_middle_name) : '&nbsp;' !!}</td>
+            <td style="width: 10%;" class="gis-val-cell">{!! $intake->beneficiary_extension_name ?
+                e($intake->beneficiary_extension_name) : '&nbsp;' !!}</td>
         </tr>
         <tr class="gis-lbl-row">
             <td class="gis-lbl-cell">Apelyido <span class="gis-sublbl">(Last Name)</span></td>
@@ -390,11 +400,16 @@
     <!-- Row 2: Address -->
     <table class="gis-line-table">
         <tr class="gis-val-row">
-            <td style="width: 26%;" class="gis-val-cell">{!! $intake->beneficiary_street_address ? e($intake->beneficiary_street_address) : '&nbsp;' !!}</td>
-            <td style="width: 22%;" class="gis-val-cell">{!! $intake->beneficiary_barangay ? e($intake->beneficiary_barangay) : '&nbsp;' !!}</td>
-            <td style="width: 22%;" class="gis-val-cell">{!! $intake->beneficiary_city ? e($intake->beneficiary_city) : 'SILANG' !!}</td>
-            <td style="width: 18%;" class="gis-val-cell">{!! $intake->beneficiary_province ? e($intake->beneficiary_province) : 'CAVITE' !!}</td>
-            <td style="width: 12%;" class="gis-val-cell">{!! $intake->beneficiary_region ? e($intake->beneficiary_region) : 'IV-A' !!}</td>
+            <td style="width: 26%;" class="gis-val-cell">{!! $intake->beneficiary_street_address ?
+                e($intake->beneficiary_street_address) : '&nbsp;' !!}</td>
+            <td style="width: 22%;" class="gis-val-cell">{!! $intake->beneficiary_barangay ?
+                e($intake->beneficiary_barangay) : '&nbsp;' !!}</td>
+            <td style="width: 22%;" class="gis-val-cell">{!! $intake->beneficiary_city ? e($intake->beneficiary_city) :
+                'SILANG' !!}</td>
+            <td style="width: 18%;" class="gis-val-cell">{!! $intake->beneficiary_province ?
+                e($intake->beneficiary_province) : 'CAVITE' !!}</td>
+            <td style="width: 12%;" class="gis-val-cell">{!! $intake->beneficiary_region ?
+                e($intake->beneficiary_region) : 'IV-A' !!}</td>
         </tr>
         <tr class="gis-lbl-row">
             <td class="gis-lbl-cell">House No./Street/Purok <span class="gis-sublbl">(Ex. 123 San)</span></td>
@@ -408,13 +423,20 @@
     <!-- Row 3: Demographics -->
     <table class="gis-line-table">
         <tr class="gis-val-row">
-            <td style="width: 19%;" class="gis-val-cell">{!! $intake->beneficiary_contact_number ? e($intake->beneficiary_contact_number) : '&nbsp;' !!}</td>
-            <td style="width: 13%;" class="gis-val-cell">{!! $intake->beneficiary_birthday ? e($intake->beneficiary_birthday->format('m/d/Y')) : '&nbsp;' !!}</td>
-            <td style="width: 7%;" class="gis-val-cell">{!! $intake->beneficiary_age !== null ? e($intake->beneficiary_age) : '&nbsp;' !!}</td>
-            <td style="width: 8%;" class="gis-val-cell">{!! $intake->beneficiary_sex ? e(strtoupper(substr($intake->beneficiary_sex, 0, 1))) : '&nbsp;' !!}</td>
-            <td style="width: 15%;" class="gis-val-cell">{!! $intake->beneficiary_civil_status ? e(strtoupper(substr($intake->beneficiary_civil_status, 0, 1))) : '&nbsp;' !!}</td>
-            <td style="width: 18%;" class="gis-val-cell">{!! $intake->beneficiary_occupation ? e($intake->beneficiary_occupation) : 'N/A' !!}</td>
-            <td style="width: 20%;" class="gis-val-cell">{!! $intake->beneficiary_monthly_salary ? e(number_format($intake->beneficiary_monthly_salary, 2)) : 'N/A' !!}</td>
+            <td style="width: 19%;" class="gis-val-cell">{!! $intake->beneficiary_contact_number ?
+                e($intake->beneficiary_contact_number) : '&nbsp;' !!}</td>
+            <td style="width: 13%;" class="gis-val-cell">{!! $intake->beneficiary_birthday ?
+                e($intake->beneficiary_birthday->format('m/d/Y')) : '&nbsp;' !!}</td>
+            <td style="width: 7%;" class="gis-val-cell">{!! $intake->beneficiary_age !== null ?
+                e($intake->beneficiary_age) : '&nbsp;' !!}</td>
+            <td style="width: 8%;" class="gis-val-cell">{!! $intake->beneficiary_sex ?
+                e(strtoupper(substr($intake->beneficiary_sex, 0, 1))) : '&nbsp;' !!}</td>
+            <td style="width: 15%;" class="gis-val-cell">{!! $intake->beneficiary_civil_status ?
+                e(strtoupper(substr($intake->beneficiary_civil_status, 0, 1))) : '&nbsp;' !!}</td>
+            <td style="width: 18%;" class="gis-val-cell">{!! $intake->beneficiary_occupation ?
+                e($intake->beneficiary_occupation) : 'N/A' !!}</td>
+            <td style="width: 20%;" class="gis-val-cell">{!! $intake->beneficiary_monthly_salary ?
+                e(number_format($intake->beneficiary_monthly_salary, 2)) : 'N/A' !!}</td>
         </tr>
         <tr class="gis-lbl-row">
             <td class="gis-lbl-cell">Numero ng Telepono <span class="gis-sublbl">(Mobile No.)</span></td>
@@ -431,14 +453,18 @@
     <div class="gis-banner gis-banner-black">
         IMPORMASYON NG KINATAWAN (Representative's Identifying Information)
     </div>
-    
+
     <!-- Row 1: Names -->
     <table class="gis-line-table">
         <tr class="gis-val-row">
-            <td style="width: 28%;" class="gis-val-cell">{!! $intake->rep_last_name ? e($intake->rep_last_name) : '&nbsp;' !!}</td>
-            <td style="width: 36%;" class="gis-val-cell">{!! $intake->rep_first_name ? e($intake->rep_first_name) : '&nbsp;' !!}</td>
-            <td style="width: 26%;" class="gis-val-cell">{!! $intake->rep_middle_name ? e($intake->rep_middle_name) : '&nbsp;' !!}</td>
-            <td style="width: 10%;" class="gis-val-cell">{!! $intake->rep_extension_name ? e($intake->rep_extension_name) : '&nbsp;' !!}</td>
+            <td style="width: 28%;" class="gis-val-cell">{!! $intake->rep_last_name ? e($intake->rep_last_name) :
+                '&nbsp;' !!}</td>
+            <td style="width: 36%;" class="gis-val-cell">{!! $intake->rep_first_name ? e($intake->rep_first_name) :
+                '&nbsp;' !!}</td>
+            <td style="width: 26%;" class="gis-val-cell">{!! $intake->rep_middle_name ? e($intake->rep_middle_name) :
+                '&nbsp;' !!}</td>
+            <td style="width: 10%;" class="gis-val-cell">{!! $intake->rep_extension_name ?
+                e($intake->rep_extension_name) : '&nbsp;' !!}</td>
         </tr>
         <tr class="gis-lbl-row">
             <td class="gis-lbl-cell">Apelyido <span class="gis-sublbl">(Last Name)</span></td>
@@ -451,11 +477,16 @@
     <!-- Row 2: Address -->
     <table class="gis-line-table">
         <tr class="gis-val-row">
-            <td style="width: 26%;" class="gis-val-cell">{!! $intake->rep_street_address ? e($intake->rep_street_address) : '&nbsp;' !!}</td>
-            <td style="width: 22%;" class="gis-val-cell">{!! $intake->rep_barangay ? e($intake->rep_barangay) : '&nbsp;' !!}</td>
-            <td style="width: 22%;" class="gis-val-cell">{!! $intake->has_representative ? e($intake->rep_city ?? 'SILANG') : '&nbsp;' !!}</td>
-            <td style="width: 18%;" class="gis-val-cell">{!! $intake->has_representative ? e($intake->rep_province ?? 'CAVITE') : '&nbsp;' !!}</td>
-            <td style="width: 12%;" class="gis-val-cell">{!! $intake->has_representative ? e($intake->rep_region ?? 'IV-A') : '&nbsp;' !!}</td>
+            <td style="width: 26%;" class="gis-val-cell">{!! $intake->rep_street_address ?
+                e($intake->rep_street_address) : '&nbsp;' !!}</td>
+            <td style="width: 22%;" class="gis-val-cell">{!! $intake->rep_barangay ? e($intake->rep_barangay) : '&nbsp;'
+                !!}</td>
+            <td style="width: 22%;" class="gis-val-cell">{!! $intake->has_representative ? e($intake->rep_city ??
+                'SILANG') : '&nbsp;' !!}</td>
+            <td style="width: 18%;" class="gis-val-cell">{!! $intake->has_representative ? e($intake->rep_province ??
+                'CAVITE') : '&nbsp;' !!}</td>
+            <td style="width: 12%;" class="gis-val-cell">{!! $intake->has_representative ? e($intake->rep_region ??
+                'IV-A') : '&nbsp;' !!}</td>
         </tr>
         <tr class="gis-lbl-row">
             <td class="gis-lbl-cell">House No./Street/Purok <span class="gis-sublbl">(Ex. 123 San)</span></td>
@@ -469,13 +500,20 @@
     <!-- Row 3: Demographics -->
     <table class="gis-line-table">
         <tr class="gis-val-row">
-            <td style="width: 19%;" class="gis-val-cell">{!! $intake->rep_contact_number ? e($intake->rep_contact_number) : '&nbsp;' !!}</td>
-            <td style="width: 13%;" class="gis-val-cell">{!! $intake->rep_birthday ? e($intake->rep_birthday->format('m/d/Y')) : '&nbsp;' !!}</td>
-            <td style="width: 7%;" class="gis-val-cell">{!! $intake->rep_age !== null ? e($intake->rep_age) : '&nbsp;' !!}</td>
-            <td style="width: 8%;" class="gis-val-cell">{!! $intake->rep_sex ? e(strtoupper(substr($intake->rep_sex, 0, 1))) : '&nbsp;' !!}</td>
-            <td style="width: 15%;" class="gis-val-cell">{!! $intake->rep_civil_status ? e(strtoupper(substr($intake->rep_civil_status, 0, 1))) : '&nbsp;' !!}</td>
-            <td style="width: 18%;" class="gis-val-cell">{!! $intake->rep_occupation ? e($intake->rep_occupation) : '&nbsp;' !!}</td>
-            <td style="width: 20%;" class="gis-val-cell">{!! $intake->rep_monthly_salary ? e(number_format($intake->rep_monthly_salary, 2) . '/monthly') : '&nbsp;' !!}</td>
+            <td style="width: 19%;" class="gis-val-cell">{!! $intake->rep_contact_number ?
+                e($intake->rep_contact_number) : '&nbsp;' !!}</td>
+            <td style="width: 13%;" class="gis-val-cell">{!! $intake->rep_birthday ?
+                e($intake->rep_birthday->format('m/d/Y')) : '&nbsp;' !!}</td>
+            <td style="width: 7%;" class="gis-val-cell">{!! $intake->rep_age !== null ? e($intake->rep_age) : '&nbsp;'
+                !!}</td>
+            <td style="width: 8%;" class="gis-val-cell">{!! $intake->rep_sex ? e(strtoupper(substr($intake->rep_sex, 0,
+                1))) : '&nbsp;' !!}</td>
+            <td style="width: 15%;" class="gis-val-cell">{!! $intake->rep_civil_status ?
+                e(strtoupper(substr($intake->rep_civil_status, 0, 1))) : '&nbsp;' !!}</td>
+            <td style="width: 18%;" class="gis-val-cell">{!! $intake->rep_occupation ? e($intake->rep_occupation) :
+                '&nbsp;' !!}</td>
+            <td style="width: 20%;" class="gis-val-cell">{!! $intake->rep_monthly_salary ?
+                e(number_format($intake->rep_monthly_salary, 2) . '/monthly') : '&nbsp;' !!}</td>
         </tr>
         <tr class="gis-lbl-row">
             <td class="gis-lbl-cell">Numero ng Telepono <span class="gis-sublbl">(Mobile No.)</span></td>
@@ -491,7 +529,8 @@
     <!-- Row 4: Relationship to Beneficiary & Time End -->
     <table class="gis-line-table" style="margin-top: 1px;">
         <tr class="gis-val-row">
-            <td style="width: 48%;" class="gis-val-cell">{!! $intake->rep_relationship ? e($intake->rep_relationship) : '&nbsp;' !!}</td>
+            <td style="width: 48%;" class="gis-val-cell">{!! $intake->rep_relationship ? e($intake->rep_relationship) :
+                '&nbsp;' !!}</td>
             <td style="width: 52%; border-bottom: none !important; text-align: right; vertical-align: middle;">
                 <div style="display: flex; align-items: center; justify-content: flex-end;">
                     <span class="gis-meta-label">Time End:</span>
@@ -500,7 +539,8 @@
             </td>
         </tr>
         <tr class="gis-lbl-row">
-            <td class="gis-lbl-cell" style="text-align: center;">Relasyon sa Benepisyaryo <span class="gis-sublbl">(Relationship to the Beneficiary)</span></td>
+            <td class="gis-lbl-cell" style="text-align: center;">Relasyon sa Benepisyaryo <span
+                    class="gis-sublbl">(Relationship to the Beneficiary)</span></td>
             <td style="border: none !important;"></td>
         </tr>
     </table>
@@ -509,7 +549,7 @@
     <div class="gis-banner gis-banner-maroon">
         Huwag susulatan ang DSWD lamang ang pwede gumamit (Do not write below this part for DSWD's use only)
     </div>
-    
+
     <table class="gis-dswd-table">
         <tr>
             <td class="gis-dswd-col-left">
@@ -536,15 +576,18 @@
                     <span class="gis-check-text">LGBTQIA+</span>
                 </div>
                 <div class="gis-check-item">
-                    <span class="gis-checkbox">{{ in_array('Psychosocial/Mental/Learning Disability', $cats) ? '✓' : '' }}</span>
+                    <span class="gis-checkbox">{{ in_array('Psychosocial/Mental/Learning Disability', $cats) ? '✓' : ''
+                        }}</span>
                     <span class="gis-check-text">Psychosocial/Mental/Learning Disability</span>
                 </div>
                 <div class="gis-check-item">
-                    <span class="gis-checkbox">{{ in_array('Stateless Person/Asylum Seekers/Refugees', $cats) ? '✓' : '' }}</span>
+                    <span class="gis-checkbox">{{ in_array('Stateless Person/Asylum Seekers/Refugees', $cats) ? '✓' : ''
+                        }}</span>
                     <span class="gis-check-text">Stateless Person/Asylum Seekers/Refugees</span>
                 </div>
                 <div class="gis-check-item" style="display: flex; align-items: flex-end;">
-                    <span class="gis-checkbox">{{ (in_array('Others', $cats) || in_array('Other', $cats) || !empty($otherCategory)) ? '✓' : '' }}</span>
+                    <span class="gis-checkbox">{{ (in_array('Others', $cats) || in_array('Other', $cats) ||
+                        !empty($otherCategory)) ? '✓' : '' }}</span>
                     <span class="gis-check-text" style="white-space: nowrap;">Others:</span>
                     <span class="gis-others-underline">{{ !empty($otherCategory) ? $otherCategory : 'N/A' }}</span>
                 </div>
@@ -560,12 +603,13 @@
     <div class="gis-banner gis-banner-dark">
         KOMPOSISYON NG PAMILYA (Family Composition)
     </div>
-    
+
     <table class="gis-family-table">
         <thead>
             <tr>
                 <th style="width: 32%;">Buong Pangalan<br><span class="gis-sublbl">(Complete Name)</span></th>
-                <th style="width: 25%;">Relasyon sa Benepisyaryo<br><span class="gis-sublbl">(Relationship to the Beneficiary)</span></th>
+                <th style="width: 25%;">Relasyon sa Benepisyaryo<br><span class="gis-sublbl">(Relationship to the
+                        Beneficiary)</span></th>
                 <th style="width: 8%;">Edad<br><span class="gis-sublbl">(Age)</span></th>
                 <th style="width: 17%;">Trabaho<br><span class="gis-sublbl">(Occupation)</span></th>
                 <th style="width: 18%;">Buwanang kita<br><span class="gis-sublbl">(Monthly Salary)</span></th>
@@ -573,21 +617,17 @@
         </thead>
         <tbody>
             @php
-                $family = $intake->family_composition ?? [];
-                $rowCount = max(count($family), 4);
+            $family = $intake->family_composition ?? [];
+            $rowCount = max(count($family), 4);
             @endphp
-            @for($i = 0; $i < $rowCount; $i++)
-                @php
-                    $mem = $family[$i] ?? null;
-                @endphp
-                <tr>
-                    <td style="text-align: left; padding-left: 6px;">{{ $mem['name'] ?? '' }}</td>
-                    <td>{{ $mem['relationship'] ?? '' }}</td>
-                    <td>{{ $mem['age'] ?? '' }}</td>
-                    <td>{{ $mem['occupation'] ?? '' }}</td>
-                    <td>{{ !empty($mem['salary']) ? number_format($mem['salary'], 2) : '' }}</td>
+            @for($i = 0; $i < $rowCount; $i++) @php $mem=$family[$i] ?? null; @endphp <tr>
+                <td style="text-align: left; padding-left: 6px;">{{ $mem['name'] ?? '' }}</td>
+                <td>{{ $mem['relationship'] ?? '' }}</td>
+                <td>{{ $mem['age'] ?? '' }}</td>
+                <td>{{ $mem['occupation'] ?? '' }}</td>
+                <td>{{ !empty($mem['salary']) ? number_format($mem['salary'], 2) : '' }}</td>
                 </tr>
-            @endfor
+                @endfor
         </tbody>
     </table>
 
@@ -599,11 +639,13 @@
             <span class="gis-rec-text">assistance for</span>
         </div>
         <div class="gis-rec-line" style="margin-top: 4px;">
-            <span class="gis-rec-underline gis-underline-med">{{ $intake->display_assistance_purpose !== 'N/A' ? $intake->display_assistance_purpose : '' }}</span>
+            <span class="gis-rec-underline gis-underline-med">{{ $intake->display_assistance_purpose !== 'N/A' ?
+                $intake->display_assistance_purpose : '' }}</span>
             <span class="gis-rec-text">in the amount of</span>
             <span class="gis-rec-underline gis-underline-blank"></span>
             <span class="gis-rec-text">Php</span>
-            <span class="gis-rec-underline gis-underline-amount">{{ $intake->recommended_amount ? number_format($intake->recommended_amount, 2) : '' }}</span>
+            <span class="gis-rec-underline gis-underline-amount">{{ $intake->recommended_amount ?
+                number_format($intake->recommended_amount, 2) : '' }}</span>
             <span class="gis-rec-text">.</span>
         </div>
     </div>
@@ -615,12 +657,18 @@
             <td class="gis-sig-col-left">
                 <div class="gis-oath-container">
                     <div class="gis-oath-text">
-                        "I declare under oath that I personally accomplished the GIS Form and all the information provided herewith is TRUE, CORRECT, VALID, and COMPLETE pursuant to existing laws, rules, and regulations of the Republic of the Philippines. I authorized the Agency Head/Authorized Representatives to verify and validate the contents stated herein. I also AGREE that any MISINTERPRETATION and information/acts to DEFRAUD the government, including attached documents, shall cause the filing of appropriate case/s against me."
+                        "I declare under oath that I personally accomplished the GIS Form and all the information
+                        provided herewith is TRUE, CORRECT, VALID, and COMPLETE pursuant to existing laws, rules, and
+                        regulations of the Republic of the Philippines. I authorized the Agency Head/Authorized
+                        Representatives to verify and validate the contents stated herein. I also AGREE that any
+                        MISINTERPRETATION and information/acts to DEFRAUD the government, including attached documents,
+                        shall cause the filing of appropriate case/s against me."
                     </div>
                     <div class="gis-thumbmark-box"></div>
                 </div>
                 <div class="gis-sig-signer">
-                    <div class="gis-sig-name">{{ $intake->has_representative ? $intake->representative_full_name : $intake->beneficiary_full_name }}</div>
+                    <div class="gis-sig-name">{{ $intake->has_representative ? $intake->representative_full_name :
+                        $intake->beneficiary_full_name }}</div>
                     <div class="gis-sig-line"></div>
                     <div class="gis-sig-title">Buong Pangalan at Pirma</div>
                     <div class="gis-sig-subtitle">(Signature over Printed Name)</div>

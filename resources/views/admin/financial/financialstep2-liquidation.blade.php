@@ -275,7 +275,8 @@
                 <div class="d-flex align-items-center gap-2">
                     <a href="{{ route('admin.financial.financialstep2.liquidation.report.month', $month->month_key) }}"
                         target="_blank"
-                        class="btn btn-sm btn-primary rounded-pill px-3.5 py-1.5 fw-bold btn-brand-primary shadow-xs"
+                        rel="opener"
+                        class="btn btn-sm btn-primary rounded-pill px-3.5 py-1.5 fw-bold btn-brand-primary shadow-xs btn-liquidation-report-action"
                         title="Generate Official Monthly Liquidation Report">
                         <i class="fas fa-print me-1"></i> Generate Monthly Liquidation Report
                     </a>
@@ -387,5 +388,5 @@
 @endsection
 
 @section('page-scripts')
-<script src="{{ asset('js/financialstep2-liquidation.js') }}"></script>
+<script src="{{ asset('js/financialstep2-liquidation.js') }}?v={{ file_exists(public_path('js/financialstep2-liquidation.js')) ? filemtime(public_path('js/financialstep2-liquidation.js')) : time() }}"></script>
 @endsection

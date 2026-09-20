@@ -33,9 +33,9 @@
     <div class="no-print-bar no-print">
         <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div class="d-flex align-items-center">
-                <a href="{{ route('admin.financial.financialstep2.liquidation') }}"
+                <a href="{{ route('admin.financial.financialstep2.liquidation') }}" id="btnBackLiquidation"
                     class="btn btn-outline-light btn-sm rounded-pill px-3">
-                    <i class="fas fa-arrow-left me-1"></i> Back to Liquidation Dashboard
+                    <i class="fas fa-arrow-left me-1"></i> Back to Liquidation
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2">
@@ -309,6 +309,46 @@
 
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const backBtn = document.getElementById('btnBackLiquidation');
+            if (backBtn) {
+                backBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // 1. If opened from an existing opener tab (Liquidation page)
+                    if (window.opener && !window.opener.closed) {
+                        try {
+                            window.opener.focus();
+                        } catch (err) {}
+                        window.close();
+
+                        // Fallback if browser restricted window.close()
+                        setTimeout(function () {
+                            if (!window.closed) {
+                                window.location.href = backBtn.getAttribute('href');
+                            }
+                        }, 250);
+                        return;
+                    }
+
+                    // 2. Try closing this tab if it was opened as a separate window/tab
+                    window.close();
+
+                    // 3. If window is still open (e.g. opened directly or in same tab), return smoothly
+                    setTimeout(function () {
+                        if (!window.closed) {
+                            if (window.history.length > 1) {
+                                window.history.back();
+                            } else {
+                                window.location.href = backBtn.getAttribute('href');
+                            }
+                        }
+                    }, 250);
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -32,4 +32,25 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
+
+    // Delegated click handler to open liquidation report window smoothly without duplicate tabs
+    document.addEventListener('click', function (e) {
+        const reportBtn = e.target.closest('.btn-liquidation-report-action');
+        if (!reportBtn) return;
+
+        const url = reportBtn.getAttribute('href');
+        if (url && url !== '#') {
+            e.preventDefault();
+            // Open via named window to ensure script-closable context and reuse the liquidation report tab
+            const reportWin = window.open(url, 'mswdo_liquidation_report_window');
+            if (reportWin) {
+                try {
+                    reportWin.focus();
+                } catch (err) {}
+            } else {
+                // Fallback in case popup blocker intervened
+                window.location.href = url;
+            }
+        }
+    });
 });

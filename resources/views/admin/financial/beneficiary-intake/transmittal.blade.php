@@ -24,7 +24,7 @@
     <div class="no-print bg-dark text-white py-3 px-4 shadow-sm mb-3">
         <div class="container-fluid d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-3">
-                <a href="{{ route('admin.beneficiary-intake.index') }}" class="btn btn-outline-light btn-sm rounded-pill">
+                <a href="{{ route('admin.beneficiary-intake.index') }}" id="btnBackToIntake" class="btn btn-outline-light btn-sm rounded-pill">
                     <i class="fas fa-arrow-left me-1"></i> Back to Intake Directory
                 </a>
                 <span class="text-white-50">|</span>
@@ -45,10 +45,18 @@
 
         <!-- Government Header -->
         <div class="transmittal-header">
-            @if(file_exists(public_path('iservesilang1.ico')))
-                <img src="{{ asset('iservesilang1.ico') }}" alt="Silang Seal" class="transmittal-logo">
+            @if(file_exists(public_path('images/silangseal.png')))
+                <img src="{{ asset('images/silangseal.png') }}" alt="Silang Seal" class="transmittal-logo transmittal-logo-left">
+            @elseif(file_exists(public_path('iservesilang1.ico')))
+                <img src="{{ asset('iservesilang1.ico') }}" alt="Silang Seal" class="transmittal-logo transmittal-logo-left">
             @elseif(file_exists(public_path('iservesilang.ico')))
-                <img src="{{ asset('iservesilang.ico') }}" alt="Silang Seal" class="transmittal-logo">
+                <img src="{{ asset('iservesilang.ico') }}" alt="Silang Seal" class="transmittal-logo transmittal-logo-left">
+            @endif
+
+            @if(file_exists(public_path('images/dswd.png')))
+                <img src="{{ asset('images/dswd.png') }}" alt="DSWD Logo" class="transmittal-logo transmittal-logo-right">
+            @elseif(file_exists(public_path('images/dswdlogo.png')))
+                <img src="{{ asset('images/dswdlogo.png') }}" alt="DSWD Logo" class="transmittal-logo transmittal-logo-right">
             @endif
             
             <div class="header-govt-title">
@@ -122,5 +130,45 @@
 
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const backBtn = document.getElementById('btnBackToIntake');
+            if (backBtn) {
+                backBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // 1. If opened from the existing Intake Directory tab
+                    if (window.opener && !window.opener.closed) {
+                        try {
+                            window.opener.focus();
+                        } catch (err) {}
+                        window.close();
+
+                        // Fallback if browser restricted window.close()
+                        setTimeout(function () {
+                            if (!window.closed) {
+                                window.location.href = "{{ route('admin.beneficiary-intake.index') }}";
+                            }
+                        }, 250);
+                        return;
+                    }
+
+                    // 2. Try closing this tab if it was opened as a separate window/tab
+                    window.close();
+
+                    // 3. If window is still open (e.g., opened directly or in same tab), return smoothly
+                    setTimeout(function () {
+                        if (!window.closed) {
+                            if (window.history.length > 1) {
+                                window.history.back();
+                            } else {
+                                window.location.href = "{{ route('admin.beneficiary-intake.index') }}";
+                            }
+                        }
+                    }, 250);
+                });
+            }
+        });
+    </script>
 </body>
 </html>

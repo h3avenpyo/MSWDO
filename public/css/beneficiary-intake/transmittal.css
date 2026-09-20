@@ -30,11 +30,21 @@ body.transmittal-page {
 
 .transmittal-logo {
     position: absolute;
-    left: 20px;
     top: 0;
-    width: 75px;
-    height: 75px;
     object-fit: contain;
+    display: block;
+}
+
+.transmittal-logo-left {
+    left: 4px;
+    width: 72px;
+    height: 72px;
+}
+
+.transmittal-logo-right {
+    right: 4px;
+    width: 80px;
+    height: 72px;
 }
 
 .header-govt-title {
@@ -138,5 +148,10 @@ body.transmittal-page {
     .transmittal-table th {
         background-color: #ffffff !important;
         -webkit-print-color-adjust: exact;
+    }
+
+    .transmittal-logo {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 }

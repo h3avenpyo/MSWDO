@@ -19,34 +19,101 @@
 
     <!-- External Module Stylesheet (Legal Landscape Print & Screen) -->
     <link href="{{ asset('css/financialstep2-payroll-print.css') }}" rel="stylesheet">
+
+    <!-- Print Header Logos Styles (Silang Seal Left, DSWD Logo Right) -->
+    <style>
+        .payroll-header {
+            position: relative;
+            text-align: center;
+            padding: 2px 85px 12px 85px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #0F172A;
+            min-height: 72px;
+        }
+
+        .header-logo-left {
+            position: absolute;
+            left: 8px;
+            top: 2px;
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .header-logo-right {
+            position: absolute;
+            right: 8px;
+            top: 2px;
+            width: 68px;
+            height: 64px;
+            object-fit: contain;
+            display: block;
+        }
+
+        @media print {
+            .payroll-header {
+                position: relative !important;
+                text-align: center !important;
+                padding: 0 75px 8px 75px !important;
+                margin-bottom: 12px !important;
+                border-bottom: 2px solid #000000 !important;
+                min-height: 62px !important;
+            }
+
+            .header-logo-left {
+                position: absolute !important;
+                left: 2px !important;
+                top: 0 !important;
+                width: 58px !important;
+                height: 58px !important;
+                object-fit: contain !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .header-logo-right {
+                position: absolute !important;
+                right: 2px !important;
+                top: 0 !important;
+                width: 64px !important;
+                height: 58px !important;
+                object-fit: contain !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
+
+    @php
+        $isFromRecords = request('from') === 'records' || request()->filled('payroll_id') || request()->has('records') || !empty($selectedPayrollRecord);
+        if ($isFromRecords) {
+            $backUrl = isset($targetDate)
+                ? route('admin.financial.financialstep2.payroll-records.date', array_filter(['date' => $targetDate->format('Y-m-d'), 'barangay' => request('barangay')]))
+                : route('admin.financial.financialstep2.payroll-records');
+            $backLabel = 'Back to Payroll Records';
+        } else {
+            $backUrl = route('admin.financial.financialstep2.payroll', array_filter(['date' => request('date')]));
+            $backLabel = 'Back to Payroll Generator';
+        }
+    @endphp
 
     <!-- Web Top Action Bar (Hidden when printing) -->
     <div class="no-print no-print-bar">
         <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div class="d-flex align-items-center gap-3">
-                <a href="{{ route('admin.financial.financialstep2.payroll') }}"
+                <a href="{{ $backUrl }}" id="btnBackPayroll"
                     class="btn btn-outline-light btn-sm rounded-pill px-3">
-                    <i class="fas fa-arrow-left me-1"></i> Back to Payroll Generator
+                    <i class="fas fa-arrow-left me-1"></i> {{ $backLabel }}
                 </a>
-                <span class="text-white-50">|</span>
-                <span class="badge bg-secondary text-white rounded-pill px-2.5 py-1">Paper: Legal (8.5 × 14 in)
-                    Landscape</span>
-                <span class="fw-semibold">Date: <span class="text-warning">{{ $payrollDate }}</span></span>
-                @if(!empty($generatedTime))
-                <span class="badge bg-secondary text-white rounded-pill px-2.5 py-1"><i class="fas fa-clock me-1"></i>{{ $generatedTime }}</span>
-                @endif
-                <span class="badge bg-primary rounded-pill px-3">{{ $totalBeneficiaries }} Beneficiaries</span>
-                <span class="badge bg-success rounded-pill px-3">Total: {{ $formattedTotalAmount }}</span>
-                @if($missingAmountCount > 0)
-                <span class="badge bg-warning text-dark rounded-pill px-3"><i
-                        class="fas fa-exclamation-triangle me-1"></i> {{ $missingAmountCount }} Pending Amount</span>
-                @endif
+
             </div>
             <div class="d-flex align-items-center gap-2">
-                <button type="button" id="btnPrintPayroll" class="btn btn-warning fw-bold text-dark px-4 rounded-pill shadow-sm btn-print-payroll">
+                <button type="button" id="btnPrintPayroll"
+                    class="btn btn-warning fw-bold text-dark px-4 rounded-pill shadow-sm btn-print-payroll">
                     <i class="fas fa-print me-1"></i> Print Legal Landscape Payroll
                 </button>
             </div>
@@ -58,10 +125,18 @@
 
         <!-- Official Seal & Government Heading -->
         <div class="payroll-header">
-            @if(file_exists(public_path('iservesilang1.ico')))
+            @if(file_exists(public_path('images/silangseal.png')))
+            <img src="{{ asset('images/silangseal.png') }}" alt="Silang Seal" class="header-logo-left">
+            @elseif(file_exists(public_path('iservesilang1.ico')))
             <img src="{{ asset('iservesilang1.ico') }}" alt="Silang Seal" class="header-logo-left">
             @elseif(file_exists(public_path('iservesilang.ico')))
             <img src="{{ asset('iservesilang.ico') }}" alt="Silang Seal" class="header-logo-left">
+            @endif
+
+            @if(file_exists(public_path('images/dswd.png')))
+            <img src="{{ asset('images/dswd.png') }}" alt="DSWD Logo" class="header-logo-right">
+            @elseif(file_exists(public_path('images/dswdlogo.png')))
+            <img src="{{ asset('images/dswdlogo.png') }}" alt="DSWD Logo" class="header-logo-right">
             @endif
 
             <div class="govt-titles">
@@ -201,7 +276,47 @@
     </div>
 
     <!-- External Module Script -->
-    <script src="{{ asset('js/financialstep2-payroll-print.js') }}"></script>
+    <script src="{{ asset('js/financialstep2-payroll-print.js') }}?v={{ file_exists(public_path('js/financialstep2-payroll-print.js')) ? filemtime(public_path('js/financialstep2-payroll-print.js')) : time() }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const backBtn = document.getElementById('btnBackPayroll');
+            if (backBtn) {
+                backBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // 1. If opened from an existing opener tab (Payroll Records or Generator)
+                    if (window.opener && !window.opener.closed) {
+                        try {
+                            window.opener.focus();
+                        } catch (err) {}
+                        window.close();
+
+                        // Fallback if browser restricted window.close()
+                        setTimeout(function () {
+                            if (!window.closed) {
+                                window.location.href = backBtn.getAttribute('href');
+                            }
+                        }, 250);
+                        return;
+                    }
+
+                    // 2. Try closing this tab if it was opened as a separate window/tab
+                    window.close();
+
+                    // 3. If window is still open (e.g. opened directly or in same tab), return smoothly
+                    setTimeout(function () {
+                        if (!window.closed) {
+                            if (window.history.length > 1) {
+                                window.history.back();
+                            } else {
+                                window.location.href = backBtn.getAttribute('href');
+                            }
+                        }
+                    }, 250);
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
