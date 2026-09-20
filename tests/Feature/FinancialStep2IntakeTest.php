@@ -665,7 +665,7 @@ class FinancialStep2IntakeTest extends TestCase
         $this->assertGreaterThanOrEqual(2, $dialysis['beneficiaries']);
         $this->assertGreaterThanOrEqual(9000, $dialysis['amount']);
 
-        $response->assertSee('medicalBarChart');
+        $response->assertSee('medicalListContainer');
         $response->assertSee('Most Common Medical Concerns');
     }
 

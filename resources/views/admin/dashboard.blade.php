@@ -1198,11 +1198,11 @@ $initials = count($words) >= 2
                 <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                 <span>Generate</span>
             </button>
-            <a href="#" target="_blank" id="btnDownloadPdf" class="btn-report-action btn-report-pdf" title="Download Printable PDF">
+            <a href="#" target="_blank" rel="opener" id="btnDownloadPdf" class="btn-report-action btn-report-pdf" title="Download Printable PDF">
                 <i data-lucide="download" class="w-4 h-4"></i>
                 <span>PDF</span>
             </a>
-            <a href="#" target="_blank" id="btnPrintReport" class="btn-report-action btn-report-print" title="Open Print-Friendly View">
+            <a href="#" target="_blank" rel="opener" id="btnPrintReport" class="btn-report-action btn-report-print" title="Open Print-Friendly View">
                 <i data-lucide="printer" class="w-4 h-4"></i>
                 <span>Print</span>
             </a>

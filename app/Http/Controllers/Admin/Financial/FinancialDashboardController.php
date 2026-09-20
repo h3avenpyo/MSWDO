@@ -534,45 +534,144 @@ class FinancialDashboardController extends Controller
         ));
     }
 
-    public function statistics()
+    public function statistics(Request $request)
     {
-        $totalIntakes = BeneficiaryIntake::count();
+        $currentMonthKey = Carbon::now()->format('Y-m');
+        $selectedMonth = $request->query('month');
+        if ($selectedMonth === null || $selectedMonth === '') {
+            $selectedMonth = $currentMonthKey;
+        }
 
-        // 1. Monthly Intake Cases (Last 12 Months)
+        $isAll = ($selectedMonth === 'all');
+        $filterYear = null;
+        $filterMonth = null;
+        $selectedMonthLabel = 'All Months (Overall)';
+
+        if (!$isAll) {
+            if (preg_match('/^(\d{4})-(\d{2})$/', $selectedMonth, $matches)) {
+                $filterYear = (int) $matches[1];
+                $filterMonth = (int) $matches[2];
+                try {
+                    $parsedDate = Carbon::createFromDate($filterYear, $filterMonth, 1);
+                    $selectedMonthLabel = $parsedDate->format('F Y');
+                } catch (\Exception $e) {
+                    $isAll = true;
+                    $selectedMonth = 'all';
+                    $selectedMonthLabel = 'All Months (Overall)';
+                }
+            } else {
+                $selectedMonth = $currentMonthKey;
+                $filterYear = (int) Carbon::now()->year;
+                $filterMonth = (int) Carbon::now()->month;
+                $selectedMonthLabel = Carbon::now()->format('F Y');
+            }
+        }
+
+        // Available Months list for the dropdown filter (past 24 months + all records in DB)
+        $availableMonths = [];
+        for ($i = 0; $i < 24; $i++) {
+            $m = Carbon::now()->subMonths($i);
+            $availableMonths[$m->format('Y-m')] = $m->format('F Y');
+        }
+
+        try {
+            $dbDates = BeneficiaryIntake::select(DB::raw('COALESCE(date_processed, created_at) as intake_date'))
+                ->whereNotNull('date_processed')
+                ->orWhereNotNull('created_at')
+                ->pluck('intake_date');
+
+            foreach ($dbDates as $d) {
+                if ($d) {
+                    $c = Carbon::parse($d);
+                    $key = $c->format('Y-m');
+                    if (!isset($availableMonths[$key])) {
+                        $availableMonths[$key] = $c->format('F Y');
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Keep generated months
+        }
+
+        krsort($availableMonths);
+
+        // Helper to apply month/year filter based on date_processed with fallback to created_at
+        $applyMonthFilter = function ($query) use ($isAll, $filterYear, $filterMonth) {
+            if (!$isAll && $filterYear && $filterMonth) {
+                $query->where(function ($q) use ($filterYear, $filterMonth) {
+                    $q->where(function ($sub) use ($filterYear, $filterMonth) {
+                        $sub->whereNotNull('date_processed')
+                            ->whereYear('date_processed', $filterYear)
+                            ->whereMonth('date_processed', $filterMonth);
+                    })->orWhere(function ($sub) use ($filterYear, $filterMonth) {
+                        $sub->whereNull('date_processed')
+                            ->whereYear('created_at', $filterYear)
+                            ->whereMonth('created_at', $filterMonth);
+                    });
+                });
+            }
+            return $query;
+        };
+
+        // Total Intake Cases for the filtered period
+        $intakesQuery = BeneficiaryIntake::query();
+        $applyMonthFilter($intakesQuery);
+        $totalIntakes = $intakesQuery->count();
+
+        // 1. Monthly Intake Cases (12 Months Trend Context)
         $monthlyIntakes = [];
+        $trendAnchor = Carbon::now();
+        if (!$isAll && $filterYear && $filterMonth) {
+            $selDate = Carbon::createFromDate($filterYear, $filterMonth, 1);
+            if ($selDate->diffInMonths(Carbon::now(), false) > 11) {
+                $trendAnchor = $selDate->copy()->endOfMonth();
+            }
+        }
+
         for ($i = 11; $i >= 0; $i--) {
-            $month = Carbon::now()->subMonths($i);
+            $month = $trendAnchor->copy()->subMonths($i);
             $monthKey = $month->format('M Y');
             
-            $count = BeneficiaryIntake::whereYear('date_processed', $month->year)
-                ->whereMonth('date_processed', $month->month)
-                ->count();
-
-            if ($count === 0) {
-                $count = BeneficiaryIntake::whereYear('created_at', $month->year)
-                    ->whereMonth('created_at', $month->month)
-                    ->count();
-            }
+            $count = BeneficiaryIntake::where(function ($q) use ($month) {
+                $q->where(function ($sub) use ($month) {
+                    $sub->whereNotNull('date_processed')
+                        ->whereYear('date_processed', $month->year)
+                        ->whereMonth('date_processed', $month->month);
+                })->orWhere(function ($sub) use ($month) {
+                    $sub->whereNull('date_processed')
+                        ->whereYear('created_at', $month->year)
+                        ->whereMonth('created_at', $month->month);
+                });
+            })->count();
 
             $monthlyIntakes[$monthKey] = $count;
         }
 
         // 2. Beneficiaries Breakdown by Barangay
-        $barangayBreakdown = BeneficiaryIntake::select('beneficiary_barangay', DB::raw('count(*) as count'))
+        $brgyQuery = BeneficiaryIntake::select('beneficiary_barangay', DB::raw('count(*) as count'))
             ->whereNotNull('beneficiary_barangay')
-            ->where('beneficiary_barangay', '!=', '')
-            ->groupBy('beneficiary_barangay')
+            ->where('beneficiary_barangay', '!=', '');
+        $applyMonthFilter($brgyQuery);
+        $barangayBreakdown = $brgyQuery->groupBy('beneficiary_barangay')
             ->orderByDesc('count')
             ->limit(12)
             ->pluck('count', 'beneficiary_barangay')
             ->toArray();
 
         // 3. Comparison of Male and Female Beneficiaries
-        $maleCount = BeneficiaryIntake::where('beneficiary_sex', 'Male')->count();
-        $femaleCount = BeneficiaryIntake::where('beneficiary_sex', 'Female')->count();
-        $otherGenderCount = BeneficiaryIntake::whereNotIn('beneficiary_sex', ['Male', 'Female'])
+        $maleQuery = BeneficiaryIntake::where('beneficiary_sex', 'Male');
+        $applyMonthFilter($maleQuery);
+        $maleCount = $maleQuery->count();
+
+        $femaleQuery = BeneficiaryIntake::where('beneficiary_sex', 'Female');
+        $applyMonthFilter($femaleQuery);
+        $femaleCount = $femaleQuery->count();
+
+        $otherQuery = BeneficiaryIntake::whereNotIn('beneficiary_sex', ['Male', 'Female'])
             ->whereNotNull('beneficiary_sex')
-            ->count();
+            ->where('beneficiary_sex', '!=', '');
+        $applyMonthFilter($otherQuery);
+        $otherGenderCount = $otherQuery->count();
 
         $genderBreakdown = [
             'Male' => $maleCount,
@@ -583,29 +682,51 @@ class FinancialDashboardController extends Controller
         }
 
         // 4. Summary of Types of Medical Concerns / Issues
-        $medicalConcernsSummary = BeneficiaryIntake::select('assistance_purpose', DB::raw('count(*) as count'))
+        $medQuery = BeneficiaryIntake::select('assistance_purpose', DB::raw('count(*) as count'))
             ->whereNotNull('assistance_purpose')
-            ->where('assistance_purpose', '!=', '')
-            ->groupBy('assistance_purpose')
+            ->where('assistance_purpose', '!=', '');
+        $applyMonthFilter($medQuery);
+        $medicalConcernsSummary = $medQuery->groupBy('assistance_purpose')
             ->orderByDesc('count')
             ->pluck('count', 'assistance_purpose')
             ->toArray();
 
         // 5. "Dahilan ng Paghingi ng Tulong" (Reasons for Seeking Assistance)
-        $reasonsAssistance = BeneficiaryIntake::select('assistance_purpose', DB::raw('count(*) as total_cases'))
+        $reasonsQuery = BeneficiaryIntake::select('assistance_purpose', DB::raw('count(*) as total_cases'))
             ->whereNotNull('assistance_purpose')
-            ->where('assistance_purpose', '!=', '')
-            ->groupBy('assistance_purpose')
+            ->where('assistance_purpose', '!=', '');
+        $applyMonthFilter($reasonsQuery);
+        $reasonsAssistance = $reasonsQuery->groupBy('assistance_purpose')
             ->orderByDesc('total_cases')
             ->get();
+
+        // 6. Daily Intake Breakdown for the selected month (used in the official print report)
+        $dailyBreakdown = [];
+        if (!$isAll && $filterYear && $filterMonth) {
+            $dailyQuery = BeneficiaryIntake::select(
+                DB::raw('DATE(COALESCE(date_processed, created_at)) as intake_date'),
+                DB::raw('count(*) as count')
+            );
+            $applyMonthFilter($dailyQuery);
+            $dailyBreakdown = $dailyQuery->groupBy('intake_date')
+                ->orderBy('intake_date', 'asc')
+                ->pluck('count', 'intake_date')
+                ->toArray();
+        }
 
         return view('admin.financial.financialstep1statistics', compact(
             'totalIntakes',
             'monthlyIntakes',
+            'dailyBreakdown',
             'barangayBreakdown',
             'genderBreakdown',
             'medicalConcernsSummary',
-            'reasonsAssistance'
+            'reasonsAssistance',
+            'availableMonths',
+            'selectedMonth',
+            'selectedMonthLabel',
+            'currentMonthKey',
+            'isAll'
         ));
     }
 
@@ -616,29 +737,140 @@ class FinancialDashboardController extends Controller
      */
     public function financialStep2Statistics(Request $request)
     {
-        $totalBeneficiaries = BeneficiaryIntake::count();
-        $totalAmount = (float) BeneficiaryIntake::sum('recommended_amount');
-        $totalClaimed = BeneficiaryIntake::where('claim_status', 'Claimed')->count();
-        $totalClaimedAmount = (float) BeneficiaryIntake::where('claim_status', 'Claimed')->sum('recommended_amount');
-        $totalUnclaimed = BeneficiaryIntake::where('is_payroll_generated', true)
+        $currentMonthKey = Carbon::now()->format('Y-m');
+        $selectedMonth = $request->query('month');
+        if ($selectedMonth === null || $selectedMonth === '') {
+            $selectedMonth = $currentMonthKey;
+        }
+
+        $isAll = ($selectedMonth === 'all');
+        $filterYear = null;
+        $filterMonth = null;
+        $selectedMonthLabel = 'All Months (Overall)';
+
+        if (!$isAll) {
+            if (preg_match('/^(\d{4})-(\d{2})$/', $selectedMonth, $matches)) {
+                $filterYear = (int) $matches[1];
+                $filterMonth = (int) $matches[2];
+                try {
+                    $parsedDate = Carbon::createFromDate($filterYear, $filterMonth, 1);
+                    $selectedMonthLabel = $parsedDate->format('F Y');
+                } catch (\Exception $e) {
+                    $isAll = true;
+                    $selectedMonth = 'all';
+                    $selectedMonthLabel = 'All Months (Overall)';
+                }
+            } else {
+                $selectedMonth = $currentMonthKey;
+                $filterYear = (int) Carbon::now()->year;
+                $filterMonth = (int) Carbon::now()->month;
+                $selectedMonthLabel = Carbon::now()->format('F Y');
+            }
+        }
+
+        // Available Months list for the dropdown filter (past 24 months + all records in DB)
+        $availableMonths = [];
+        for ($i = 0; $i < 24; $i++) {
+            $m = Carbon::now()->subMonths($i);
+            $availableMonths[$m->format('Y-m')] = $m->format('F Y');
+        }
+
+        try {
+            $dbDates = BeneficiaryIntake::select(DB::raw('COALESCE(date_processed, created_at) as intake_date'))
+                ->whereNotNull('date_processed')
+                ->orWhereNotNull('created_at')
+                ->pluck('intake_date');
+
+            foreach ($dbDates as $d) {
+                if ($d) {
+                    $c = Carbon::parse($d);
+                    $key = $c->format('Y-m');
+                    if (!isset($availableMonths[$key])) {
+                        $availableMonths[$key] = $c->format('F Y');
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Keep generated months
+        }
+
+        krsort($availableMonths);
+
+        // Helper to apply month/year filter based on date_processed with fallback to created_at
+        $applyMonthFilter = function ($query) use ($isAll, $filterYear, $filterMonth) {
+            if (!$isAll && $filterYear && $filterMonth) {
+                $query->where(function ($q) use ($filterYear, $filterMonth) {
+                    $q->where(function ($sub) use ($filterYear, $filterMonth) {
+                        $sub->whereNotNull('date_processed')
+                            ->whereYear('date_processed', $filterYear)
+                            ->whereMonth('date_processed', $filterMonth);
+                    })->orWhere(function ($sub) use ($filterYear, $filterMonth) {
+                        $sub->whereNull('date_processed')
+                            ->whereYear('created_at', $filterYear)
+                            ->whereMonth('created_at', $filterMonth);
+                    });
+                });
+            }
+            return $query;
+        };
+
+        // Total Beneficiaries & Financials
+        $benQuery = BeneficiaryIntake::query();
+        $applyMonthFilter($benQuery);
+        $totalBeneficiaries = $benQuery->count();
+
+        $amountQuery = BeneficiaryIntake::query();
+        $applyMonthFilter($amountQuery);
+        $totalAmount = (float) $amountQuery->sum('recommended_amount');
+
+        $claimedQuery = BeneficiaryIntake::where('claim_status', 'Claimed');
+        $applyMonthFilter($claimedQuery);
+        $totalClaimed = $claimedQuery->count();
+
+        $claimedAmountQuery = BeneficiaryIntake::where('claim_status', 'Claimed');
+        $applyMonthFilter($claimedAmountQuery);
+        $totalClaimedAmount = (float) $claimedAmountQuery->sum('recommended_amount');
+
+        $unclaimedQuery = BeneficiaryIntake::where('is_payroll_generated', true)
             ->where(function ($q) {
                 $q->where('claim_status', '!=', 'Claimed')->orWhereNull('claim_status');
-            })->count();
-        $totalInPayroll = BeneficiaryIntake::where('is_payroll_generated', true)->count();
-        $totalPayrollBatches = FinancialPayrollRecord::count();
+            });
+        $applyMonthFilter($unclaimedQuery);
+        $totalUnclaimed = $unclaimedQuery->count();
+
+        $inPayrollQuery = BeneficiaryIntake::where('is_payroll_generated', true);
+        $applyMonthFilter($inPayrollQuery);
+        $totalInPayroll = $inPayrollQuery->count();
+
+        $payrollBatchesQuery = FinancialPayrollRecord::query();
+        if (!$isAll && $filterYear && $filterMonth) {
+            $payrollBatchesQuery->where(function ($q) use ($filterYear, $filterMonth) {
+                $q->where(function ($sub) use ($filterYear, $filterMonth) {
+                    $sub->whereNotNull('payroll_date')
+                        ->whereYear('payroll_date', $filterYear)
+                        ->whereMonth('payroll_date', $filterMonth);
+                })->orWhere(function ($sub) use ($filterYear, $filterMonth) {
+                    $sub->whereNull('payroll_date')
+                        ->whereYear('created_at', $filterYear)
+                        ->whereMonth('created_at', $filterMonth);
+                });
+            });
+        }
+        $totalPayrollBatches = $payrollBatchesQuery->count();
 
         // 1. Number of beneficiaries who received financial assistance per Barangay
-        $barangayRaw = BeneficiaryIntake::select(
+        $barangayRawQuery = BeneficiaryIntake::select(
             'beneficiary_barangay',
             DB::raw('count(*) as total_beneficiaries'),
             DB::raw('SUM(CASE WHEN recommended_amount > 0 THEN recommended_amount ELSE 0 END) as total_amount'),
             DB::raw('SUM(CASE WHEN claim_status = "Claimed" THEN 1 ELSE 0 END) as claimed_count')
         )
         ->whereNotNull('beneficiary_barangay')
-        ->where('beneficiary_barangay', '!=', '')
-        ->groupBy('beneficiary_barangay')
-        ->orderByDesc('total_beneficiaries')
-        ->get();
+        ->where('beneficiary_barangay', '!=', '');
+        $applyMonthFilter($barangayRawQuery);
+        $barangayRaw = $barangayRawQuery->groupBy('beneficiary_barangay')
+            ->orderByDesc('total_beneficiaries')
+            ->get();
 
         $barangayStats = [];
         $topBarangay = null;
@@ -660,12 +892,19 @@ class FinancialDashboardController extends Controller
         }
 
         // 2. Male vs. Female beneficiaries
-        $maleCount = BeneficiaryIntake::where('beneficiary_sex', 'Male')->count();
-        $femaleCount = BeneficiaryIntake::where('beneficiary_sex', 'Female')->count();
-        $otherGenderCount = BeneficiaryIntake::whereNotIn('beneficiary_sex', ['Male', 'Female'])
+        $maleQuery = BeneficiaryIntake::where('beneficiary_sex', 'Male');
+        $applyMonthFilter($maleQuery);
+        $maleCount = $maleQuery->count();
+
+        $femaleQuery = BeneficiaryIntake::where('beneficiary_sex', 'Female');
+        $applyMonthFilter($femaleQuery);
+        $femaleCount = $femaleQuery->count();
+
+        $otherGenderQuery = BeneficiaryIntake::whereNotIn('beneficiary_sex', ['Male', 'Female'])
             ->whereNotNull('beneficiary_sex')
-            ->where('beneficiary_sex', '!=', '')
-            ->count();
+            ->where('beneficiary_sex', '!=', '');
+        $applyMonthFilter($otherGenderQuery);
+        $otherGenderCount = $otherGenderQuery->count();
 
         $genderBreakdown = [
             'Male' => $maleCount,
@@ -679,7 +918,9 @@ class FinancialDashboardController extends Controller
         $femalePercentage = $totalBeneficiaries > 0 ? round(($femaleCount / $totalBeneficiaries) * 100, 1) : 0;
 
         // 3. Financial assistance by sector (arranged from highest to lowest)
-        $intakes = BeneficiaryIntake::select('beneficiary_category', 'beneficiary_categories', 'recommended_amount')->cursor();
+        $sectorQuery = BeneficiaryIntake::select('beneficiary_category', 'beneficiary_categories', 'recommended_amount');
+        $applyMonthFilter($sectorQuery);
+        $intakes = $sectorQuery->cursor();
 
         $sectorCounts = [];
         $sectorAmounts = [];
@@ -737,14 +978,16 @@ class FinancialDashboardController extends Controller
         $medicalCounts = [];
         $medicalAmounts = [];
 
-        $medicalIntakes = BeneficiaryIntake::select(
+        $medQuery = BeneficiaryIntake::select(
             'medical_conditions',
             'medical_condition_other',
             'assistance_purpose',
             'purpose',
             'purpose_other',
             'recommended_amount'
-        )->cursor();
+        );
+        $applyMonthFilter($medQuery);
+        $medicalIntakes = $medQuery->cursor();
 
         foreach ($medicalIntakes as $intake) {
             $amount = (float) ($intake->recommended_amount ?? 0);
@@ -835,7 +1078,12 @@ class FinancialDashboardController extends Controller
             'topSectorCount',
             'medicalRanked',
             'topMedicalConcern',
-            'topMedicalConcernCount'
+            'topMedicalConcernCount',
+            'availableMonths',
+            'selectedMonth',
+            'selectedMonthLabel',
+            'currentMonthKey',
+            'isAll'
         ));
     }
 
