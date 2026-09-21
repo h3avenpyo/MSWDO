@@ -78,29 +78,30 @@ class FinancialDashboardController extends Controller
 
     public function financialDashboard()
     {
-        $totalIntakes = class_exists(BeneficiaryIntake::class) 
-            ? BeneficiaryIntake::count() 
-            : 0;
+        $activeQuery = class_exists(BeneficiaryIntake::class)
+            ? BeneficiaryIntake::where(function ($q) {
+                $q->where('is_archived', false)->orWhereNull('is_archived');
+            })
+            : null;
+
+        $totalIntakes = $activeQuery ? (clone $activeQuery)->count() : 0;
 
         $today = Carbon::today();
-        $todayIntakes = class_exists(BeneficiaryIntake::class)
-            ? BeneficiaryIntake::where(function ($q) use ($today) {
-                $q->whereDate('created_at', $today)
-                  ->orWhereDate('date_processed', $today);
-            })->count()
+        $todayIntakes = $activeQuery
+            ? (clone $activeQuery)->whereDate('date_processed', $today)->count()
             : 0;
 
         $step1Approved = $totalIntakes;
-        $readyForStep2 = class_exists(BeneficiaryIntake::class)
-            ? (BeneficiaryIntake::whereNotNull('recommended_amount')->where('recommended_amount', '>', 0)->count() ?: $totalIntakes)
+        $readyForStep2 = $activeQuery
+            ? ((clone $activeQuery)->whereNotNull('recommended_amount')->where('recommended_amount', '>', 0)->count() ?: $totalIntakes)
             : 0;
 
-        $totalAmount = class_exists(BeneficiaryIntake::class)
-            ? (BeneficiaryIntake::sum('recommended_amount') ?? 0)
+        $totalAmount = $activeQuery
+            ? ((clone $activeQuery)->sum('recommended_amount') ?? 0)
             : 0;
 
-        $recentIntakes = class_exists(BeneficiaryIntake::class) 
-            ? BeneficiaryIntake::with(['client', 'encoderUser'])->latest()->take(6)->get() 
+        $recentIntakes = $activeQuery 
+            ? (clone $activeQuery)->with(['client', 'encoderUser'])->latest()->take(6)->get() 
             : collect();
 
         return view('admin.financial.financial-dashboard', compact(
@@ -156,15 +157,44 @@ class FinancialDashboardController extends Controller
 
         if (class_exists(BeneficiaryIntake::class)) {
             $query = BeneficiaryIntake::with(['client', 'encoderUser'])
-                ->where('is_archived', false);
+                ->where(function ($q) {
+                    $q->where('is_archived', false)->orWhereNull('is_archived');
+                });
 
-            // STRICT FILTER: Only display intake records processed today (or created today if date_processed is null)
-            $query->where(function ($q) use ($today) {
-                $q->whereDate('date_processed', $today)
-                  ->orWhere(function ($sq) use ($today) {
-                      $sq->whereNull('date_processed')->whereDate('created_at', $today);
-                  });
-            });
+            $period = $request->input('period', 'today');
+
+            // Date / Period filter logic:
+            // 1. Explicit specific date provided:
+            if ($request->filled('date')) {
+                try {
+                    $filterDate = Carbon::parse($request->date)->toDateString();
+                    $query->where(function ($q) use ($filterDate) {
+                        $q->whereDate('date_processed', $filterDate)
+                          ->orWhere(function ($sq) use ($filterDate) {
+                              $sq->whereNull('date_processed')->whereDate('created_at', $filterDate);
+                          });
+                    });
+                } catch (\Exception $e) {
+                    $query->where(function ($q) use ($today) {
+                        $q->whereDate('date_processed', $today)
+                          ->orWhere(function ($sq) use ($today) {
+                              $sq->whereNull('date_processed')->whereDate('created_at', $today);
+                          });
+                    });
+                }
+            } elseif ($period === 'all') {
+                // View all masterlist records without forcing date restriction
+            } elseif ($request->filled('search')) {
+                // When actively searching, search across all masterlist records so user can immediately find any encoded beneficiary
+            } else {
+                // STRICT FILTER: By default, only display intake records processed today (or created today if date_processed is null)
+                $query->where(function ($q) use ($today) {
+                    $q->whereDate('date_processed', $today)
+                      ->orWhere(function ($sq) use ($today) {
+                          $sq->whereNull('date_processed')->whereDate('created_at', $today);
+                      });
+                });
+            }
 
             // Search by control number, beneficiary name, representative name, or barangay
             if ($request->filled('search')) {
@@ -249,7 +279,9 @@ class FinancialDashboardController extends Controller
                     break;
             }
 
-            $todayQueueBase = BeneficiaryIntake::where('is_archived', false)->where(function ($q) use ($today) {
+            $todayQueueBase = BeneficiaryIntake::where(function ($q) {
+                $q->where('is_archived', false)->orWhereNull('is_archived');
+            })->where(function ($q) use ($today) {
                 $q->whereDate('date_processed', $today)
                   ->orWhere(function ($sq) use ($today) {
                       $sq->whereNull('date_processed')->whereDate('created_at', $today);
@@ -257,29 +289,38 @@ class FinancialDashboardController extends Controller
             });
 
             $todayQueueCount = (clone $todayQueueBase)->count();
-            $totalQueueCount = BeneficiaryIntake::where('is_archived', false)->count();
+            $totalQueueCount = BeneficiaryIntake::where(function ($q) {
+                $q->where('is_archived', false)->orWhereNull('is_archived');
+            })->count();
 
-            $pendingAmountCount = (clone $todayQueueBase)->where(function ($q) {
+            // Status card base: when viewing all records, status counts reflect the full masterlist
+            $statBase = ($period === 'all')
+                ? BeneficiaryIntake::where(function ($q) {
+                    $q->where('is_archived', false)->orWhereNull('is_archived');
+                })
+                : $todayQueueBase;
+
+            $pendingAmountCount = (clone $statBase)->where(function ($q) {
                 $q->whereNull('recommended_amount')->orWhere('recommended_amount', '<=', 0);
             })->count();
 
-            $unprocessedCount = (clone $todayQueueBase)->where(function ($q) {
+            $unprocessedCount = (clone $statBase)->where(function ($q) {
                 $q->where('is_payroll_generated', false)
                   ->orWhereNull('is_payroll_generated');
             })->whereNull('payroll_record_id')->count();
             $unprocessedIntakesCount = $unprocessedCount;
 
-            $unclaimedCount = (clone $todayQueueBase)->where('is_payroll_generated', true)
+            $unclaimedCount = (clone $statBase)->where('is_payroll_generated', true)
                 ->where(function ($q) {
                     $q->where('claim_status', '!=', 'Claimed')
                       ->orWhereNull('claim_status');
                 })->count();
 
-            $claimedCount = (clone $todayQueueBase)->where('claim_status', 'Claimed')->count();
+            $claimedCount = (clone $statBase)->where('claim_status', 'Claimed')->count();
 
-            $pendingPayoutCount = (clone $todayQueueBase)->whereNotNull('recommended_amount')->where('recommended_amount', '>', 0)->count();
+            $pendingPayoutCount = (clone $statBase)->whereNotNull('recommended_amount')->where('recommended_amount', '>', 0)->count();
 
-            $totalRecommendedAmount = (clone $todayQueueBase)->sum('recommended_amount') ?? 0;
+            $totalRecommendedAmount = (clone $statBase)->sum('recommended_amount') ?? 0;
 
             $intakes = $query->paginate(15)->withQueryString();
         } else {
@@ -346,7 +387,9 @@ class FinancialDashboardController extends Controller
 
         if (class_exists(BeneficiaryIntake::class)) {
             $query = BeneficiaryIntake::with(['client', 'encoderUser'])
-                ->where('is_archived', false);
+                ->where(function ($q) {
+                    $q->where('is_archived', false)->orWhereNull('is_archived');
+                });
 
             // Search by control number, beneficiary name, representative name, or barangay
             if ($request->filled('search')) {
@@ -454,23 +497,30 @@ class FinancialDashboardController extends Controller
                     break;
             }
 
-            $totalIntakesCount = BeneficiaryIntake::count();
-            $todayIntakesCount = BeneficiaryIntake::where(function ($q) use ($today) {
-                $q->whereDate('created_at', $today)
-                  ->orWhereDate('date_processed', $today);
+            $totalIntakesCount = BeneficiaryIntake::where(function ($q) {
+                $q->where('is_archived', false)->orWhereNull('is_archived');
             })->count();
+            $todayIntakesCount = BeneficiaryIntake::where(function ($q) {
+                $q->where('is_archived', false)->orWhereNull('is_archived');
+            })->whereDate('date_processed', $today)->count();
 
             $pendingAmountCount = BeneficiaryIntake::where(function ($q) {
+                $q->where('is_archived', false)->orWhereNull('is_archived');
+            })->where(function ($q) {
                 $q->whereNull('recommended_amount')->orWhere('recommended_amount', '<=', 0);
             })->count();
 
-            $unclaimedCount = BeneficiaryIntake::where('is_payroll_generated', true)
+            $unclaimedCount = BeneficiaryIntake::where(function ($q) {
+                $q->where('is_archived', false)->orWhereNull('is_archived');
+            })->where('is_payroll_generated', true)
                 ->where(function ($q) {
                     $q->where('claim_status', '!=', 'Claimed')
                       ->orWhereNull('claim_status');
                 })->count();
 
-            $claimedCount = BeneficiaryIntake::where('claim_status', 'Claimed')->count();
+            $claimedCount = BeneficiaryIntake::where(function ($q) {
+                $q->where('is_archived', false)->orWhereNull('is_archived');
+            })->where('claim_status', 'Claimed')->count();
 
             $indigentCount = BeneficiaryIntake::where(function ($q) {
                 $q->where('beneficiary_category', 'Indigent Resident')

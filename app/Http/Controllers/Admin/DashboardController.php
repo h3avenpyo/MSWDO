@@ -61,7 +61,7 @@ class DashboardController extends Controller
             'caseDistribution' => [],
         ];
 
-        return view('admin.dashboard', $data);
+        return view('admin.admin-dashboard', $data);
     }
 
     private function getReportsSummary()
@@ -157,14 +157,17 @@ class DashboardController extends Controller
 
         // Financial Assistance
         if (class_exists(\App\Models\SocialCase\BeneficiaryIntake::class)) {
-            $totalIntakes = \App\Models\SocialCase\BeneficiaryIntake::count();
-            $pendingAssessments = \App\Models\SocialCase\BeneficiaryIntake::whereHas('socialCaseStudy', function($query) {
+            $activeIntakes = \App\Models\SocialCase\BeneficiaryIntake::where(function ($q) {
+                $q->where('is_archived', false)->orWhereNull('is_archived');
+            });
+            $totalIntakes = (clone $activeIntakes)->count();
+            $pendingAssessments = (clone $activeIntakes)->whereHas('socialCaseStudy', function($query) {
                 $query->where('status', 'pending');
             })->count();
-            $step1Approved = \App\Models\SocialCase\BeneficiaryIntake::whereHas('socialCaseStudy', function($query) {
+            $step1Approved = (clone $activeIntakes)->whereHas('socialCaseStudy', function($query) {
                 $query->where('status', 'active');
             })->count();
-            $readyForStep2 = \App\Models\SocialCase\BeneficiaryIntake::whereHas('socialCaseStudy', function($query) {
+            $readyForStep2 = (clone $activeIntakes)->whereHas('socialCaseStudy', function($query) {
                 $query->where('status', 'resolved');
             })->count();
 
@@ -378,25 +381,27 @@ class DashboardController extends Controller
 
     public function financialDashboard()
     {
-        $totalIntakes = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class) 
-            ? \App\Models\SocialCase\BeneficiaryIntake::count() 
-            : 0;
-        $recentIntakes = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class) 
-            ? \App\Models\SocialCase\BeneficiaryIntake::with(['client', 'encoderUser'])->latest()->take(6)->get() 
+        $activeQuery = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class) 
+            ? \App\Models\SocialCase\BeneficiaryIntake::where(function ($q) {
+                $q->where('is_archived', false)->orWhereNull('is_archived');
+            })
+            : null;
+
+        $totalIntakes = $activeQuery ? (clone $activeQuery)->count() : 0;
+        $recentIntakes = $activeQuery 
+            ? (clone $activeQuery)->with(['client', 'encoderUser'])->latest()->take(6)->get() 
             : collect();
 
         $today = \Carbon\Carbon::today();
-        $todayIntakes = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class)
-            ? \App\Models\SocialCase\BeneficiaryIntake::where(function ($q) use ($today) {
-                $q->whereDate('created_at', $today)->orWhereDate('date_processed', $today);
-            })->count()
+        $todayIntakes = $activeQuery
+            ? (clone $activeQuery)->whereDate('date_processed', $today)->count()
             : 0;
         $step1Approved = $totalIntakes;
-        $readyForStep2 = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class)
-            ? (\App\Models\SocialCase\BeneficiaryIntake::whereNotNull('recommended_amount')->where('recommended_amount', '>', 0)->count() ?: $totalIntakes)
+        $readyForStep2 = $activeQuery
+            ? ((clone $activeQuery)->whereNotNull('recommended_amount')->where('recommended_amount', '>', 0)->count() ?: $totalIntakes)
             : 0;
-        $totalAmount = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class)
-            ? (\App\Models\SocialCase\BeneficiaryIntake::sum('recommended_amount') ?? 0)
+        $totalAmount = $activeQuery
+            ? ((clone $activeQuery)->sum('recommended_amount') ?? 0)
             : 0;
 
         return view('admin.financial.financial-dashboard', compact('totalIntakes', 'todayIntakes', 'step1Approved', 'readyForStep2', 'totalAmount', 'recentIntakes'));

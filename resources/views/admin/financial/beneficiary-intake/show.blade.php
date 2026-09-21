@@ -50,6 +50,9 @@
             <div>
                 <span class="badge bg-white text-dark fw-bold px-3 py-1 rounded-pill mb-1">MSWDO Silang Intake
                     Record</span>
+                @if($intake->is_historical)
+                    <span class="badge bg-warning text-dark fw-bold px-3 py-1 rounded-pill mb-1 ms-1"><i class="fas fa-history me-1"></i> Historical Record</span>
+                @endif
                 <h5 class="fw-bold mb-0 text-white">{{ $intake->beneficiary_full_name }}</h5>
             </div>
             <div class="text-end">

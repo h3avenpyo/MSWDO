@@ -246,6 +246,7 @@ class FinancialIntakeController extends Controller
                 ->with('error', 'This client is not eligible to proceed to intake.');
         }
 
+        $data['is_archived'] = false;
         $intake = BeneficiaryIntake::create($data);
 
         return redirect()->route('admin.beneficiary-intake.show', $intake)

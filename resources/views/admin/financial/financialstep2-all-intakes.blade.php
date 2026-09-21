@@ -236,6 +236,9 @@
                                         <span class="fw-bold control-number-code">{{ $intake->control_number }}</span>
                                         <div>
                                             <span class="badge bg-light text-secondary border px-2 py-0.5 rounded-pill badge-client-type">{{ $intake->client_type ?? 'New' }}</span>
+                                            @if($intake->is_historical)
+                                                <span class="badge bg-warning text-dark border px-2 py-0.5 rounded-pill" style="font-size: 10px;"><i class="fas fa-history me-1"></i>Historical</span>
+                                            @endif
                                         </div>
                                     </td>
                                     <td>

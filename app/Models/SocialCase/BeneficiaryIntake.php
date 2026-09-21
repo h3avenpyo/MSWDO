@@ -84,6 +84,11 @@ class BeneficiaryIntake extends Model
         'archived_by',
         'archive_module',
         'archive_reason',
+        'is_historical',
+    ];
+
+    protected $attributes = [
+        'is_archived' => false,
     ];
 
     protected $casts = [
@@ -93,6 +98,7 @@ class BeneficiaryIntake extends Model
         'is_client_beneficiary' => 'boolean',
         'has_representative' => 'boolean',
         'is_payroll_generated' => 'boolean',
+        'is_historical' => 'boolean',
         'payroll_generated_at' => 'datetime',
         'payroll_date' => 'date',
         'claiming_date' => 'date',
@@ -264,5 +270,12 @@ class BeneficiaryIntake extends Model
         }
 
         return 'Amount Assigned';
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('is_archived', false)->orWhereNull('is_archived');
+        });
     }
 }

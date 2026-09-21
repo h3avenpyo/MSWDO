@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\FinancialAssistanceController;
 use App\Http\Controllers\Admin\Financial\OnlineFinancialIntakeController;
+use App\Http\Controllers\Admin\Historical\HistoricalFinancialIntakeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -262,5 +263,14 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::get('/{intake}/edit', [FinancialIntakeController::class, 'edit'])->name('edit');
         Route::put('/{intake}', [FinancialIntakeController::class, 'update'])->name('update');
         Route::delete('/{intake}', [FinancialIntakeController::class, 'destroy'])->name('destroy');
+    });
+});
+
+// Historical Data Entry Routes (admin session required)
+Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
+    Route::prefix('admin/historical-data')->name('admin.historical-data.')->group(function () {
+        Route::get('/financial-intake', [HistoricalFinancialIntakeController::class, 'create'])->name('financial-intake');
+        Route::post('/financial-intake', [HistoricalFinancialIntakeController::class, 'store'])->name('financial-intake.store');
+        Route::post('/financial-intake/check-duplicate', [HistoricalFinancialIntakeController::class, 'checkDuplicate'])->name('financial-intake.check-duplicate');
     });
 });

@@ -142,6 +142,9 @@
                     <tr>
                         <td>
                             <span class="fw-bold text-primary">{{ $intake->control_number }}</span>
+                            @if($intake->is_historical)
+                                <div><span class="badge bg-warning text-dark border px-2 py-0.5 rounded-pill" style="font-size: 10px;"><i class="fas fa-history me-1"></i>Historical</span></div>
+                            @endif
                         </td>
                         <td>
                             <div class="fw-bold text-dark">{{ $intake->beneficiary_full_name }}</div>

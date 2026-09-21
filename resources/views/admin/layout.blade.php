@@ -540,6 +540,15 @@
                     <span>Password Resets</span>
                 </a>
             </li>
+            <li style="border-top:1px solid rgba(255,255,255,.1);margin-top:.75rem;padding-top:.75rem;padding-left:1.5rem;padding-right:1.5rem;font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:rgba(255,255,255,0.45);">
+                Historical Data Entry
+            </li>
+            <li>
+                <a href="{{ route('admin.historical-data.financial-intake') }}" class="{{ request()->routeIs('admin.historical-data.financial-intake*') ? 'active' : '' }}">
+                    <i data-lucide="history"></i>
+                    <span>Financial Intake</span>
+                </a>
+            </li>
             <li style="border-top:1px solid rgba(255,255,255,.1);margin-top:.5rem;padding-top:.5rem;">
                 <a href="#" onclick="confirmLogout(event)">
                     <i data-lucide="log-out"></i>

@@ -6,13 +6,13 @@
 @section('page-styles')
 <link href="{{ asset('css/financialstep2.css') }}" rel="stylesheet">
 <style>
-@media (max-width: 575.98px) {
-    .filter-card .row.g-2 > [class*="col-md-"] {
-        width: 100%;
-        max-width: 100%;
-        flex: 0 0 100%;
+    @media (max-width: 575.98px) {
+        .filter-card .row.g-2>[class*="col-md-"] {
+            width: 100%;
+            max-width: 100%;
+            flex: 0 0 100%;
+        }
     }
-}
 </style>
 @endsection
 
@@ -45,7 +45,8 @@ $userName = session('admin_user_name') ?? 'Officer';
                 Assistance records processed today ({{ date('F d, Y') }})</p>
         </div>
         <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('admin.financial.financialstep2.liquidation') }}" class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs">
+            <a href="{{ route('admin.financial.financialstep2.liquidation') }}"
+                class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs">
                 <i class="fas fa-receipt me-1"></i> Liquidation
             </a>
             <div class="user-welcome">
@@ -61,19 +62,24 @@ $userName = session('admin_user_name') ?? 'Officer';
 <!-- Stat Cards Grid -->
 <div class="stat-cards-grid mb-4">
     <div class="card animate-fade-in mb-0">
-        <div class="stat-card-inner">
-            <div>
-                <p class="stat-label">Total Masterlist Records</p>
-                <h3 class="stat-value">{{ number_format($totalQueueCount ?? 0) }}</h3>
+        <a href="{{ route('admin.financial.financialstep2', ['period' => 'all']) }}" class="text-decoration-none"
+            title="Click to view all masterlist records">
+            <div class="stat-card-inner">
+                <div>
+                    <p class="stat-label mb-1">Total Masterlist Records</p>
+                    <h3 class="stat-value text-dark mb-0">{{ number_format($totalQueueCount ?? 0) }}</h3>
+                </div>
+                <div class="stat-icon primary"><i class="fas fa-users"></i></div>
             </div>
-            <div class="stat-icon primary"><i class="fas fa-users"></i></div>
-        </div>
+        </a>
     </div>
     <div class="card animate-fade-in mb-0">
         <div class="stat-card-inner">
             <div>
-                <p class="stat-label">Unprocessed Intakes</p>
-                <h3 class="stat-value">{{ number_format($unprocessedCount ?? $unprocessedIntakesCount ?? 0) }}</h3>
+                <p class="stat-label mb-1">Unprocessed Intakes</p>
+                <h3 class="stat-value mb-0">{{ number_format($unprocessedCount ?? $unprocessedIntakesCount ?? 0) }}</h3>
+                <small class="text-muted text-xs">{{ request('period') === 'all' ? 'All Masterlist' : "Today's Queue"
+                    }}</small>
             </div>
             <div class="stat-icon warning"><i class="fas fa-clock"></i></div>
         </div>
@@ -81,8 +87,10 @@ $userName = session('admin_user_name') ?? 'Officer';
     <div class="card animate-fade-in mb-0">
         <div class="stat-card-inner">
             <div>
-                <p class="stat-label">Unclaimed</p>
-                <h3 class="stat-value">{{ number_format($unclaimedCount ?? 0) }}</h3>
+                <p class="stat-label mb-1">Unclaimed</p>
+                <h3 class="stat-value mb-0">{{ number_format($unclaimedCount ?? 0) }}</h3>
+                <small class="text-muted text-xs">{{ request('period') === 'all' ? 'All Masterlist' : "Today's Queue"
+                    }}</small>
             </div>
             <div class="stat-icon info"><i class="fas fa-file-invoice-dollar"></i></div>
         </div>
@@ -90,8 +98,10 @@ $userName = session('admin_user_name') ?? 'Officer';
     <div class="card animate-fade-in mb-0">
         <div class="stat-card-inner">
             <div>
-                <p class="stat-label">Claimed</p>
-                <h3 class="stat-value">{{ number_format($claimedCount ?? 0) }}</h3>
+                <p class="stat-label mb-1">Claimed</p>
+                <h3 class="stat-value mb-0">{{ number_format($claimedCount ?? 0) }}</h3>
+                <small class="text-muted text-xs">{{ request('period') === 'all' ? 'All Masterlist' : "Today's Queue"
+                    }}</small>
             </div>
             <div class="stat-icon success"><i class="fas fa-check-circle"></i></div>
         </div>
@@ -100,8 +110,9 @@ $userName = session('admin_user_name') ?? 'Officer';
 
 <!-- Search, Filter & Sorting Controls -->
 <div class="filter-card animate-fade-in mb-4">
-    <form id="step2FilterForm" action="{{ route('admin.financial.financialstep2') }}" method="GET" class="row g-2 align-items-end">
-        <div class="col-md-3 col-lg-3">
+    <form id="step2FilterForm" action="{{ route('admin.financial.financialstep2') }}" method="GET"
+        class="row g-2 align-items-end">
+        <div class="col-md-3 col-lg-2">
             <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search
                 Beneficiary / Control No.</label>
             <input type="text" id="step2SearchInput" name="search" class="form-control form-control-sm rounded-3"
@@ -131,7 +142,8 @@ $userName = session('admin_user_name') ?? 'Officer';
                 Status</label>
             <select name="status" class="form-select form-select-sm rounded-3">
                 <option value="All">All Statuses</option>
-                <option value="unprocessed" {{ request('status')=='unprocessed' ? 'selected' : '' }}>Unprocessed Intakes</option>
+                <option value="unprocessed" {{ request('status')=='unprocessed' ? 'selected' : '' }}>Unprocessed Intakes
+                </option>
                 <option value="pending_amount" {{ request('status')=='pending_amount' ||
                     request('status')=='for_assessment' ? 'selected' : '' }}>Pending Amount</option>
                 <option value="unclaimed" {{ request('status')=='unclaimed' ? 'selected' : '' }}>Unclaimed</option>
@@ -141,39 +153,46 @@ $userName = session('admin_user_name') ?? 'Officer';
             </select>
         </div>
         <div class="col-md-2 col-lg-2">
-            <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-sort me-1"></i> Sort By</label>
+            <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-layer-group me-1"></i> Records
+                View</label>
+            <select name="period" class="form-select form-select-sm rounded-3">
+                <option value="today" {{ request('period', 'today' )==='today' ? 'selected' : '' }}>Today's Queue ({{
+                    date('M d') }})</option>
+                <option value="all" {{ request('period')==='all' ? 'selected' : '' }}>All Masterlist Records</option>
+            </select>
+        </div>
+        <div class="col-md-1 col-lg-1">
+            <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-sort me-1"></i> Sort</label>
             <select name="sort" class="form-select form-select-sm rounded-3">
-                <option value="date_desc" {{ request('sort')=='date_desc' ? 'selected' : '' }}>Date (Newest First)
+                <option value="date_desc" {{ request('sort')=='date_desc' ? 'selected' : '' }}>Newest</option>
+                <option value="date_asc" {{ request('sort')=='date_asc' ? 'selected' : '' }}>Oldest</option>
+                <option value="name_asc" {{ request('sort')=='name_asc' ? 'selected' : '' }}>Name A-Z</option>
+                <option value="name_desc" {{ request('sort')=='name_desc' ? 'selected' : '' }}>Name Z-A</option>
+                <option value="amount_desc" {{ request('sort')=='amount_desc' ? 'selected' : '' }}>Amount &darr;
                 </option>
-                <option value="date_asc" {{ request('sort')=='date_asc' ? 'selected' : '' }}>Date (Oldest First)
-                </option>
-                <option value="name_asc" {{ request('sort')=='name_asc' ? 'selected' : '' }}>Client Name (A-Z)</option>
-                <option value="name_desc" {{ request('sort')=='name_desc' ? 'selected' : '' }}>Client Name (Z-A)
-                </option>
-                <option value="amount_desc" {{ request('sort')=='amount_desc' ? 'selected' : '' }}>Grant Amount
-                    (Highest)</option>
-                <option value="amount_asc" {{ request('sort')=='amount_asc' ? 'selected' : '' }}>Grant Amount (Lowest)
-                </option>
-                <option value="control_asc" {{ request('sort')=='control_asc' ? 'selected' : '' }}>Control No. (Asc)
+                <option value="amount_asc" {{ request('sort')=='amount_asc' ? 'selected' : '' }}>Amount &uarr;</option>
+                <option value="control_asc" {{ request('sort')=='control_asc' ? 'selected' : '' }}>Ctrl # &uarr;
                 </option>
             </select>
         </div>
         <div class="col-md-1 col-lg-1 filter-actions-group">
-            <!-- <button type="submit" class="btn btn-sm btn-primary btn-brand-primary rounded-3 w-100 fw-semibold"
-                title="Apply Filter">
-                <i class="fas fa-filter"></i>
-            </button> -->
-            @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort', 'date']))
-            <a href="{{ route('admin.financial.financialstep2') }}" class="btn btn-sm btn-outline-secondary rounded-3"
-                title="Reset Filters">
+            @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort', 'date', 'period']))
+            <a href="{{ route('admin.financial.financialstep2') }}"
+                class="btn btn-sm btn-outline-secondary rounded-3 w-100" title="Reset Filters">
                 <i class="fas fa-redo"></i>
             </a>
             @endif
         </div>
 
-        @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort']))
+        @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort', 'period']))
         <div class="d-flex align-items-center gap-2 flex-wrap mt-2 pt-2 border-top col-12">
             <span class="text-muted small fw-semibold me-1"><i class="fas fa-sliders-h me-1"></i> Active Filters:</span>
+            @if(request('period') === 'all')
+            <span
+                class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 text-xs fw-semibold">
+                <i class="fas fa-layer-group me-1"></i> View: All Masterlist Records
+            </span>
+            @endif
             @if(request('search'))
             <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
                 Search: "{{ request('search') }}"
@@ -199,7 +218,8 @@ $userName = session('admin_user_name') ?? 'Officer';
                 Sort: {{ ucwords(str_replace('_', ' ', request('sort'))) }}
             </span>
             @endif
-            <a href="{{ route('admin.financial.financialstep2') }}" class="btn btn-link btn-sm text-danger p-0 ms-auto text-decoration-none fw-semibold text-xs">
+            <a href="{{ route('admin.financial.financialstep2') }}"
+                class="btn btn-link btn-sm text-danger p-0 ms-auto text-decoration-none fw-semibold text-xs">
                 <i class="fas fa-times-circle me-1"></i>Clear all filters
             </a>
         </div>
@@ -213,12 +233,35 @@ $userName = session('admin_user_name') ?? 'Officer';
         <div class="card animate-fade-in">
             <div class="card-header-clean d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div>
-                    <h3 class="card-title-clean"><i class="fas fa-address-book me-2 text-primary"></i>Today's General
-                        Intake Masterlist Records ({{ date('M d, Y') }})</h3>
-                    <p class="card-subtitle-clean">Clients processed today &bull; To view all historical intakes, visit
-                        the <a href="{{ route('admin.financial.financialstep2.all-intakes') }}"
-                            class="text-primary fw-semibold text-decoration-none">All Intakes</a> page</p>
+                    <h3 class="card-title-clean">
+                        @if(request()->filled('search'))
+                        <i class="fas fa-search me-2 text-primary"></i>Search Results for "{{ request('search') }}" in
+                        Masterlist
+                        @elseif(request('period') === 'all')
+                        <i class="fas fa-layer-group me-2 text-primary"></i>All General Intake Masterlist Records
+                        @elseif(request()->filled('date'))
+                        <i class="fas fa-calendar-day me-2 text-primary"></i>General Intake Masterlist Records ({{
+                        \Carbon\Carbon::parse(request('date'))->format('M d, Y') }})
+                        @else
+                        <i class="fas fa-address-book me-2 text-primary"></i>Today's General Intake Masterlist Records
+                        ({{ date('M d, Y') }})
+                        @endif
+                    </h3>
+                    <p class="card-subtitle-clean">
+                        @if(request('period') === 'all')
+                        Displaying all active and historical general intake masterlist records &bull; <a
+                            href="{{ route('admin.financial.financialstep2') }}"
+                            class="text-primary fw-semibold text-decoration-none">Switch to Today's Queue</a>
+                        @else
+                        Clients processed today &bull; To view all historical intakes, visit the <a
+                            href="{{ route('admin.financial.financialstep2', ['period' => 'all']) }}"
+                            class="text-primary fw-semibold text-decoration-none">All Masterlist Records</a> view or <a
+                            href="{{ route('admin.financial.financialstep2.all-intakes') }}"
+                            class="text-primary fw-semibold text-decoration-none">All Intakes</a> page
+                        @endif
+                    </p>
                 </div>
+
             </div>
             <div class="p-3">
                 <div class="table-responsive">
@@ -322,17 +365,14 @@ $userName = session('admin_user_name') ?? 'Officer';
                                         <!-- View -->
                                         <button type="button"
                                             class="btn btn-sm btn-outline-primary action-btn btn-view-intake"
-                                            title="View Details"
-                                            data-intake="{{ json_encode($intake) }}">
+                                            title="View Details" data-intake="{{ json_encode($intake) }}">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                         <!-- Archive -->
                                         <button type="button"
                                             class="btn btn-sm btn-outline-danger action-btn btn-archive-step2"
-                                            data-id="{{ $intake->id }}"
-                                            data-control="{{ $intake->control_number }}"
-                                            data-name="{{ $intake->beneficiary_full_name }}"
-                                            title="Archive Record">
+                                            data-id="{{ $intake->id }}" data-control="{{ $intake->control_number }}"
+                                            data-name="{{ $intake->beneficiary_full_name }}" title="Archive Record">
                                             <i class="fas fa-box-archive"></i>
                                         </button>
                                     </div>
@@ -343,17 +383,40 @@ $userName = session('admin_user_name') ?? 'Officer';
                                 <td colspan="8" class="p-5 text-center">
                                     <div class="empty-state-box text-center py-4">
                                         <i class="fas fa-folder-open fa-3x mb-3 text-muted opacity-50 d-block"></i>
-                                        <h4 class="fw-bold mb-1 empty-title">No General Intake records found for today
-                                        </h4>
-                                        <p class="text-muted mb-0 empty-desc">
-                                            @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort']))
-                                            No records matched your search filters for today. Try resetting the filter
-                                            criteria.
+                                        <h4 class="fw-bold mb-1 empty-title">
+                                            @if(request('period') === 'all')
+                                            No General Intake records found in masterlist
+                                            @elseif(request()->filled('search'))
+                                            No records found matching "{{ request('search') }}"
                                             @else
-                                            Clients who complete the Step 1 General Intake process today will
-                                            automatically appear in this masterlist.
+                                            No General Intake records found for today
                                             @endif
-                                        </p>
+                                        </h4>
+                                        <div class="text-muted mb-0 empty-desc">
+                                            @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort']))
+                                            <p class="mb-2">No records matched your search filters. Try resetting the
+                                                filter criteria or viewing all masterlist records.</p>
+                                            <a href="{{ route('admin.financial.financialstep2', ['period' => 'all']) }}"
+                                                class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-xs">
+                                                <i class="fas fa-layer-group me-1"></i> View All Masterlist Records ({{
+                                                number_format($totalQueueCount ?? 0) }})
+                                            </a>
+                                            @elseif(($totalQueueCount ?? 0) > 0 && request('period') !== 'all')
+                                            <p class="mb-2">There are no intake records processed today, but there are
+                                                <strong>{{ number_format($totalQueueCount) }}</strong> records in the
+                                                full masterlist.
+                                            </p>
+                                            <a href="{{ route('admin.financial.financialstep2', ['period' => 'all']) }}"
+                                                class="btn btn-sm btn-primary rounded-pill px-3 shadow-xs">
+                                                <i class="fas fa-layer-group me-1"></i> View All Masterlist Records ({{
+                                                number_format($totalQueueCount) }})
+                                            </a>
+                                            @else
+                                            <p class="mb-0">Clients who complete the Step 1 General Intake process or
+                                                intakes encoded from Admin will automatically appear in this masterlist.
+                                            </p>
+                                            @endif
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -531,7 +594,7 @@ $userName = session('admin_user_name') ?? 'Officer';
 @section('page-scripts')
 <script src="{{ asset('js/financialstep2.js') }}"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.btn-archive-step2').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
