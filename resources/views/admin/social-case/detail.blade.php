@@ -66,7 +66,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         }
     @endphp
     <!-- Page Sub-Header -->
-    <div class="mb-6">
+    <div class="mb-6 no-print">
         <p class="text-[#6B7280] text-sm m-0">View and manage a specific social case study record.</p>
     </div>
 

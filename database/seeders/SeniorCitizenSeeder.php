@@ -101,16 +101,15 @@ class SeniorCitizenSeeder extends Seeder
                 $controlNumber = "SC-{$barangayCode}-{$currentYear}-{$sequence}";
                 $sequenceCounter[$barangay]++;
 
-                $recordNumber = 'SR-' . str_pad($recordNumberCounter, 5, '0', STR_PAD_LEFT);
-                $seniorIdNumber = "SC-{$currentYear}-" . str_pad($recordNumberCounter, 6, '0', STR_PAD_LEFT);
-                $oscaId = 'OSCA-' . str_pad($recordNumberCounter, 5, '0', STR_PAD_LEFT);
                 $contactNumber = '09' . str_pad(rand(10, 99), 2, '0', STR_PAD_LEFT) . str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT);
+                $philsysNumber = str_pad((string) rand(100000000000, 999999999999), 12, '0', STR_PAD_LEFT);
+                $rrnNumber = str_pad((string) rand(10000000000000, 99999999999999) . rand(100000000000000, 999999999999999), 29, '0', STR_PAD_LEFT);
 
                 $records[] = [
-                    'record_number' => $recordNumber,
+                    'record_number' => null,
                     'year_applied' => (string) $currentYear,
                     'control_number' => $controlNumber,
-                    'senior_id_number' => $seniorIdNumber,
+                    'senior_id_number' => null,
                     'first_name' => $firstName,
                     'middle_name' => $middleName,
                     'last_name' => $lastName,
@@ -120,9 +119,12 @@ class SeniorCitizenSeeder extends Seeder
                     'date_issued' => $now,
                     'sex' => $sex,
                     'contact_number' => $contactNumber,
+                    'philsys_number' => $philsysNumber,
+                    'rrn_number' => $rrnNumber,
                     'blood_type' => $bloodTypes[array_rand($bloodTypes)],
                     'civil_status' => $civilStatuses[array_rand($civilStatuses)],
-                    'osca_id' => $oscaId,
+                    'osca_id' => $controlNumber,
+                    'qr_code' => $controlNumber,
                     'created_by' => $adminUserId,
                     'status' => 'active',
                     'emergency_contact_name' => $firstName . ' ' . $lastName . ' Jr.',
@@ -131,8 +133,6 @@ class SeniorCitizenSeeder extends Seeder
                     'created_at' => $now,
                     'updated_at' => $now,
                 ];
-
-                $recordNumberCounter++;
             }
         }
 
