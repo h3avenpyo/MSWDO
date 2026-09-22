@@ -275,8 +275,8 @@
                                     <input type="text" name="client_occupation" class="form-control" value="{{ old('client_occupation') }}">
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label" style="font-size:12px;margin-bottom:4px">Monthly Income</label>
-                                    <input type="text" name="client_monthly_income" class="form-control" value="{{ old('client_monthly_income') }}" oninput="this.value=formatNumberWithCommas(this.value)" style="padding:6px 8px;font-size:13px">
+                                    <label class="form-label" style="font-size:12px;margin-bottom:4px">Monthly Salary</label>
+                                    <input type="text" inputmode="decimal" name="client_monthly_income" id="client_monthly_income" class="form-control salary-comma-input" value="{{ old('client_monthly_income') }}" placeholder="0.00" oninput="handleSalaryInput(this)" style="padding:6px 8px;font-size:13px">
                                 </div>
                             </div>
                         </div>
@@ -478,11 +478,63 @@
         let currentStep = 1;
         const totalSteps = 8;
 
-        function formatNumberWithCommas(value){
-            if(!value) return '';
-            const numericValue = value.toString().replace(/,/g, '');
-            if(numericValue === '' || isNaN(numericValue)) return value;
-            return parseFloat(numericValue).toLocaleString('en-US');
+        function formatNumberWithCommas(value) {
+            if (value === null || value === undefined) return '';
+            let str = value.toString();
+
+            // Keep only digits and decimal point (strip existing commas and non-numeric chars)
+            str = str.replace(/[^\d.]/g, '');
+
+            // Allow only one decimal point
+            const parts = str.split('.');
+            let integerPart = parts[0];
+            let decimalPart = parts.length > 1 ? '.' + parts.slice(1).join('') : '';
+
+            // If empty
+            if (integerPart === '' && decimalPart === '') return '';
+
+            // Remove leading zeros if more than 1 digit before decimal
+            if (integerPart.length > 1) {
+                integerPart = integerPart.replace(/^0+/, '') || '0';
+            }
+
+            // Limit decimal places to 2
+            if (decimalPart.length > 3) {
+                decimalPart = decimalPart.substring(0, 3);
+            }
+
+            // Format integer part with thousands separators
+            const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+            return (integerPart === '' && decimalPart !== '' ? '0' : formattedInteger) + decimalPart;
+        }
+
+        function handleSalaryInput(input) {
+            const originalValue = input.value;
+            const cursorPosition = input.selectionStart || 0;
+            
+            // Count how many numeric/decimal characters were before the cursor
+            const rawBeforeCursor = originalValue.slice(0, cursorPosition).replace(/[^\d.]/g, '');
+            const numCharsBeforeCursor = rawBeforeCursor.length;
+
+            const formatted = formatNumberWithCommas(originalValue);
+            input.value = formatted;
+
+            // Calculate new cursor position preserving user's edit point
+            let newCursorPos = 0;
+            let countedChars = 0;
+            for (let i = 0; i < formatted.length; i++) {
+                if (/[\d.]/.test(formatted[i])) {
+                    countedChars++;
+                }
+                if (countedChars <= numCharsBeforeCursor) {
+                    newCursorPos = i + 1;
+                }
+            }
+            
+            if (input.setSelectionRange) {
+                input.setSelectionRange(newCursorPos, newCursorPos);
+            }
         }
 
         function getStepFields(step) {
@@ -686,9 +738,12 @@
             document.getElementById('reviewContent').innerHTML = html;
         }
 
-        // Real-time uppercase conversion for editable user inputs
+        // Real-time uppercase conversion for editable user inputs (excluding numeric/salary fields)
         document.addEventListener('input', function (e) {
             const el = e.target;
+            if (el.matches?.('.salary-comma-input, #client_monthly_income, [name*="[salary]"]')) {
+                return;
+            }
             if (el.matches?.('#intakeForm :is(input[type="text"], input:not([type]), textarea):not([readonly])')) {
                 const { selectionStart: s, selectionEnd: end, value } = el;
                 const upper = value.toUpperCase();
@@ -707,6 +762,13 @@
                     return;
                 }
             }
+
+            // Strip commas from salary/income inputs before submission so backend receives raw numeric value
+            document.querySelectorAll('#intakeForm .salary-comma-input, #intakeForm input[name="client_monthly_income"], #intakeForm input[name*="[salary]"]').forEach(input => {
+                if (input.value) {
+                    input.value = input.value.replace(/,/g, '');
+                }
+            });
         });
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -714,8 +776,15 @@
             toggleMedicalOther();
             togglePurposeOther();
 
-            document.querySelectorAll('#intakeForm :is(input[type="text"], input:not([type]), textarea):not([readonly])')
+            document.querySelectorAll('#intakeForm :is(input[type="text"], input:not([type]), textarea):not([readonly]):not(.salary-comma-input)')
                 .forEach(el => el.value && (el.value = el.value.toUpperCase()));
+
+            // Format initial salary/income values with commas
+            document.querySelectorAll('#intakeForm .salary-comma-input, #intakeForm input[name="client_monthly_income"], #intakeForm input[name*="[salary]"]').forEach(input => {
+                if (input.value) {
+                    input.value = formatNumberWithCommas(input.value);
+                }
+            });
 
             @if($errors->any())
                 showStep(2);

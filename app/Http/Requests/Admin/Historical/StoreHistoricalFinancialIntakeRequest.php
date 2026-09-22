@@ -19,7 +19,11 @@ class StoreHistoricalFinancialIntakeRequest extends FormRequest
         $procDate = $this->normalizeDate($this->date_processed);
         $claimDate = $this->normalizeDate($this->claiming_date);
 
-        $this->merge([
+        $benSalary = $this->beneficiary_monthly_salary !== null 
+            ? str_replace(',', '', (string)$this->beneficiary_monthly_salary) 
+            : null;
+
+        $mergeData = [
             'client_type' => $this->client_type ?: 'New',
             'control_number' => $this->control_number ?: ('MSWDO-' . ($procDate ? Carbon::parse($procDate)->format('Y') : date('Y')) . '-' . str_pad(\App\Models\SocialCase\BeneficiaryIntake::count() + 1, 5, '0', STR_PAD_LEFT)),
             'has_representative' => $this->boolean('has_representative'),
@@ -34,7 +38,25 @@ class StoreHistoricalFinancialIntakeRequest extends FormRequest
             'date_processed' => $procDate,
             'claiming_date' => $claimDate,
             'claim_status' => $this->claim_status ?: 'Claimed',
-        ]);
+        ];
+
+        if ($this->has('beneficiary_monthly_salary')) {
+            $mergeData['beneficiary_monthly_salary'] = ($benSalary === '' || $benSalary === null) ? null : $benSalary;
+        }
+
+        $familyComposition = $this->family_composition;
+        if (is_array($familyComposition)) {
+            foreach ($familyComposition as &$famMember) {
+                if (isset($famMember['salary']) && $famMember['salary'] !== null) {
+                    $cleanSalary = str_replace(',', '', (string)$famMember['salary']);
+                    $famMember['salary'] = ($cleanSalary === '') ? null : $cleanSalary;
+                }
+            }
+            unset($famMember);
+            $mergeData['family_composition'] = $familyComposition;
+        }
+
+        $this->merge($mergeData);
     }
 
     private function normalizeDate(?string $dateStr): ?string

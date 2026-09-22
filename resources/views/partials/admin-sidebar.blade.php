@@ -14,7 +14,7 @@
         <li class="sidebar-menu-header">Clients</li>
         <li><a href="/admin/beneficiary-intake" class="submenu {{ request()->is('admin/beneficiary-intake/*') ? 'active' : '' }}"><i class="fas fa-users"></i> Beneficiary Intake</a></li>
         
-        <li class="sidebar-menu-header">Historical Data Entry</li>
+        <li class="sidebar-menu-header">Historical Records</li>
         <li><a href="{{ route('admin.historical-data.financial-intake') }}" class="submenu {{ request()->routeIs('admin.historical-data.financial-intake*') ? 'active' : '' }}"><i class="fas fa-history"></i> Financial Intake</a></li>
         
         <li class="sidebar-menu-header">System</li>

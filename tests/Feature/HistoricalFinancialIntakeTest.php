@@ -136,7 +136,8 @@ class HistoricalFinancialIntakeTest extends TestCase
 
         $intake = BeneficiaryIntake::where('control_number', $controlNumber)->first();
         $this->assertNotNull($intake, 'Historical intake record should be created in database');
-        $response->assertRedirect(route('admin.beneficiary-intake.show', $intake));
+        $response->assertRedirect(route('admin.historical-data.financial-intake'));
+        $response->assertSessionHas('success');
 
         // Assert that historical date, amount, and relationships are preserved
         $this->assertTrue($intake->is_historical);
@@ -294,4 +295,82 @@ class HistoricalFinancialIntakeTest extends TestCase
         $stats2Response->assertSee('June 2023');
         $stats2Response->assertSee('6,000');
     }
+
+    public function test_monthly_salary_with_commas_is_accepted_and_saved_numerically(): void
+    {
+        $controlNumber = 'MSWDO-2023-' . rand(10000, 99999);
+
+        $response = $this->withSession([
+            'admin_user_id' => $this->admin->id,
+            'admin_user_name' => $this->admin->name,
+            'admin_user_role' => 'admin',
+        ])->post(route('admin.historical-data.financial-intake.store'), [
+            'control_number' => $controlNumber,
+            'client_type' => 'New',
+            'date_processed' => '2023-07-15',
+            'recommended_amount' => 5000,
+            'claim_status' => 'Claimed',
+            'beneficiary_first_name' => 'Maria',
+            'beneficiary_last_name' => 'Dela Cruz',
+            'beneficiary_street_address' => 'Purok 2',
+            'beneficiary_barangay' => 'Biga I',
+            'beneficiary_contact_number' => '09171234567',
+            'beneficiary_birthday' => '1990-01-01',
+            'beneficiary_sex' => 'Female',
+            'beneficiary_civil_status' => 'Single',
+            'beneficiary_monthly_salary' => '25,000',
+        ]);
+
+        $response->assertSessionDoesntHaveErrors(['beneficiary_monthly_salary']);
+        $response->assertRedirect(route('admin.historical-data.financial-intake'));
+
+        $intake = BeneficiaryIntake::where('control_number', $controlNumber)->first();
+        $this->assertNotNull($intake);
+        $this->assertEquals(25000.00, (float) $intake->beneficiary_monthly_salary);
+    }
+
+    public function test_family_composition_salary_with_commas_is_accepted_and_saved_numerically(): void
+    {
+        $controlNumber = 'MSWDO-2023-' . rand(10000, 99999);
+
+        $response = $this->withSession([
+            'admin_user_id' => $this->admin->id,
+            'admin_user_name' => $this->admin->name,
+            'admin_user_role' => 'admin',
+        ])->post(route('admin.historical-data.financial-intake.store'), [
+            'control_number' => $controlNumber,
+            'client_type' => 'New',
+            'date_processed' => '2023-07-20',
+            'recommended_amount' => 5000,
+            'claim_status' => 'Claimed',
+            'beneficiary_first_name' => 'Juan',
+            'beneficiary_last_name' => 'Dela Cruz',
+            'beneficiary_street_address' => 'Purok 1',
+            'beneficiary_barangay' => 'Biga I',
+            'beneficiary_contact_number' => '09171234567',
+            'beneficiary_birthday' => '1985-05-15',
+            'beneficiary_sex' => 'Male',
+            'beneficiary_civil_status' => 'Married',
+            'beneficiary_monthly_salary' => '20,000',
+            'family_composition' => [
+                [
+                    'name' => 'Juana Dela Cruz',
+                    'relationship' => 'Asawa',
+                    'age' => 38,
+                    'occupation' => 'Tindera',
+                    'salary' => '15,000',
+                ]
+            ],
+        ]);
+
+        $response->assertSessionDoesntHaveErrors();
+        $response->assertRedirect(route('admin.historical-data.financial-intake'));
+
+        $intake = BeneficiaryIntake::where('control_number', $controlNumber)->first();
+        $this->assertNotNull($intake);
+        $this->assertNotEmpty($intake->family_composition);
+        $this->assertEquals('15000', $intake->family_composition[0]['salary']);
+    }
 }
+
+

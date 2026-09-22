@@ -136,7 +136,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
 
-            <h4 class="fw-bold mb-1" style="color: #1A237E;">Historical Financial Intake Encoding</h4>
+            <h4 class="fw-bold mb-1" style="color: #1A237E;"> Financial Intake Encoding</h4>
             <p class="text-muted small mb-0">
                 Encode historical client records created before system implementation. The original intake date and
                 actual assistance amount will be preserved and reflected in existing masterlists, statistics, and
@@ -144,16 +144,25 @@
             </p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('admin.beneficiary-intake.index') }}"
-                class="btn btn-outline-secondary btn-sm rounded-pill px-3" title="View All Intakes">
-                <i class="fas fa-list me-1"></i> All Intakes Masterlist
-            </a>
             <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3"
                 title="Back to Dashboard">
                 <i class="fas fa-arrow-left me-1"></i> Dashboard
             </a>
         </div>
     </div>
+
+    <!-- Success Alert -->
+    @if (session('success'))
+    <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4 shadow-sm" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-check-circle fa-lg me-2 text-success"></i>
+            <div>
+                <strong>Success!</strong> {{ session('success') }}
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
 
     <!-- Error Summary Alert -->
     @if ($errors->any())
@@ -501,9 +510,10 @@
                     <div class="col-md-6">
                         <label class="form-label" for="beneficiary_monthly_salary">Buwanang Kita (Monthly
                             Salary)</label>
-                        <input type="number" step="0.01" min="0" name="beneficiary_monthly_salary"
-                            id="beneficiary_monthly_salary" class="form-control"
-                            value="{{ old('beneficiary_monthly_salary') }}" placeholder="0.00">
+                        <input type="text" inputmode="decimal" name="beneficiary_monthly_salary"
+                            id="beneficiary_monthly_salary" class="form-control salary-comma-input"
+                            value="{{ old('beneficiary_monthly_salary') }}" placeholder="0.00"
+                            oninput="handleSalaryInput(this)">
                     </div>
                 </div>
 
@@ -737,10 +747,10 @@
                                         placeholder="Trabaho">
                                 </td>
                                 <td>
-                                    <input type="number" step="0.01" min="0"
+                                    <input type="text" inputmode="decimal"
                                         name="family_composition[{{ $index }}][salary]"
-                                        class="form-control form-control-sm" value="{{ $fam['salary'] ?? '' }}"
-                                        placeholder="0.00">
+                                        class="form-control form-control-sm salary-comma-input" value="{{ $fam['salary'] ?? '' }}"
+                                        placeholder="0.00" oninput="handleSalaryInput(this)">
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-link text-danger p-0"
@@ -816,7 +826,7 @@
             </a>
             <button type="submit" class="btn btn-primary px-5 py-2.5 fw-bold rounded-3 shadow"
                 style="background: #1A237E; border: none;">
-                <i class="fas fa-save me-2"></i> Save Historical Record
+                <i class="fas fa-save me-2"></i> Save Financial Intake
             </button>
         </div>
 
@@ -826,9 +836,12 @@
 
 @push('scripts')
 <script>
-    // Uppercase text transformation
+    // Uppercase text transformation (excluding salary input)
     document.addEventListener('input', function (e) {
         const el = e.target;
+        if (el.matches?.('.salary-comma-input, #beneficiary_monthly_salary, [name*="[salary]"]')) {
+            return;
+        }
         if (el.matches?.(':is(input[type="text"], input:not([type]), textarea):not([readonly])')) {
             const { selectionStart: s, selectionEnd: end, value } = el;
             if (value !== value.toUpperCase()) {
@@ -837,6 +850,66 @@
             }
         }
     });
+
+    // Monthly Salary thousands comma formatting functions
+    function formatNumberWithCommas(value) {
+        if (value === null || value === undefined) return '';
+        let str = value.toString();
+
+        // Keep only digits and decimal point (strip existing commas and non-numeric chars)
+        str = str.replace(/[^\d.]/g, '');
+
+        // Allow only one decimal point
+        const parts = str.split('.');
+        let integerPart = parts[0];
+        let decimalPart = parts.length > 1 ? '.' + parts.slice(1).join('') : '';
+
+        // If empty
+        if (integerPart === '' && decimalPart === '') return '';
+
+        // Remove leading zeros if more than 1 digit before decimal
+        if (integerPart.length > 1) {
+            integerPart = integerPart.replace(/^0+/, '') || '0';
+        }
+
+        // Limit decimal places to 2
+        if (decimalPart.length > 3) {
+            decimalPart = decimalPart.substring(0, 3);
+        }
+
+        // Format integer part with thousands separators
+        const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+        return (integerPart === '' && decimalPart !== '' ? '0' : formattedInteger) + decimalPart;
+    }
+
+    function handleSalaryInput(input) {
+        const originalValue = input.value;
+        const cursorPosition = input.selectionStart || 0;
+        
+        // Count how many numeric/decimal characters were before the cursor
+        const rawBeforeCursor = originalValue.slice(0, cursorPosition).replace(/[^\d.]/g, '');
+        const numCharsBeforeCursor = rawBeforeCursor.length;
+
+        const formatted = formatNumberWithCommas(originalValue);
+        input.value = formatted;
+
+        // Calculate new cursor position preserving user's edit point
+        let newCursorPos = 0;
+        let countedChars = 0;
+        for (let i = 0; i < formatted.length; i++) {
+            if (/[\d.]/.test(formatted[i])) {
+                countedChars++;
+            }
+            if (countedChars <= numCharsBeforeCursor) {
+                newCursorPos = i + 1;
+            }
+        }
+        
+        if (input.setSelectionRange) {
+            input.setSelectionRange(newCursorPos, newCursorPos);
+        }
+    }
 
     // Dynamic Beneficiary Age Calculation based on Original Intake Date
     function calculateBeneficiaryAge() {
@@ -950,7 +1023,7 @@
             <td><input type="text" name="family_composition[${famRowIdx}][relationship]" class="form-control form-control-sm" placeholder="e.g. Asawa, Anak"></td>
             <td><input type="number" min="0" name="family_composition[${famRowIdx}][age]" class="form-control form-control-sm" placeholder="Edad"></td>
             <td><input type="text" name="family_composition[${famRowIdx}][occupation]" class="form-control form-control-sm" placeholder="Trabaho"></td>
-            <td><input type="number" step="0.01" min="0" name="family_composition[${famRowIdx}][salary]" class="form-control form-control-sm" placeholder="0.00"></td>
+            <td><input type="text" inputmode="decimal" name="family_composition[${famRowIdx}][salary]" class="form-control form-control-sm salary-comma-input" placeholder="0.00" oninput="handleSalaryInput(this)"></td>
             <td class="text-center"><button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeFamilyRow(this)"><i class="fas fa-trash"></i></button></td>
         `;
         tbody.appendChild(tr);
@@ -1039,5 +1112,35 @@
         calculateRepAge();
         triggerDuplicateCheck();
     });
+
+    // Strip commas from beneficiary_monthly_salary and family salary inputs before submission
+    document.getElementById('historicalIntakeForm')?.addEventListener('submit', function () {
+        document.querySelectorAll('#historicalIntakeForm .salary-comma-input, #historicalIntakeForm input[name*="[salary]"]').forEach(input => {
+            if (input && input.value) {
+                input.value = input.value.replace(/,/g, '');
+            }
+        });
+    });
+
+    // Initialize formatting on page load if old value exists
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('#historicalIntakeForm .salary-comma-input, #historicalIntakeForm input[name*="[salary]"]').forEach(input => {
+            if (input && input.value) {
+                input.value = formatNumberWithCommas(input.value);
+            }
+        });
+    });
+
+    @if(session('success'))
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'success',
+            title: 'Historical Record Saved',
+            text: @json(session('success')),
+            confirmButtonColor: '#1A237E',
+            confirmButtonText: 'OK'
+        });
+    }
+    @endif
 </script>
 @endpush

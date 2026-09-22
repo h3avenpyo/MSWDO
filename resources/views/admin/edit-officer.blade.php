@@ -243,7 +243,6 @@ $initials = count($words) >= 2
                     <select class="form-select" name="role" id="roleSelect" required>
                         <option value="" disabled selected>Select Role / Assignment</option>
                         <option value="Senior Citizen officer" {{ old('role', $officer->role) == 'Senior Citizen officer' ? 'selected' : '' }}>Senior Citizen Officer</option>
-                        <option value="Financial assistance officer" {{ old('role', $officer->role) == 'Financial assistance officer' ? 'selected' : '' }}>Financial Assistance Officer</option>
                         <option value="financialstep1" {{ old('role', $officer->role) == 'financialstep1' ? 'selected' : '' }}>Financial Assistance Step 1</option>
                         <option value="financialstep2" {{ old('role', $officer->role) == 'financialstep2' ? 'selected' : '' }}>Financial Assistance Step 2</option>
                         <option value="eligibility_checker" {{ old('role', $officer->role) == 'eligibility_checker' ? 'selected' : '' }}>Social Case Worker (Checker)</option>

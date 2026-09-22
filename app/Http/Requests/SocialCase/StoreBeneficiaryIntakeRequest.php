@@ -19,7 +19,27 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
 
         $isOnlineSubmission = $this->is('financial-assistance*') || $this->routeIs('financial-assistance.*');
 
-        $this->merge([
+        $benSalary = $this->beneficiary_monthly_salary !== null 
+            ? str_replace(',', '', (string)$this->beneficiary_monthly_salary) 
+            : null;
+        $repSalary = $this->rep_monthly_salary !== null 
+            ? str_replace(',', '', (string)$this->rep_monthly_salary) 
+            : null;
+        $clientIncome = $this->client_monthly_income !== null 
+            ? str_replace(',', '', (string)$this->client_monthly_income) 
+            : null;
+
+        $familyComposition = $this->family_composition;
+        if (is_array($familyComposition)) {
+            foreach ($familyComposition as &$famMember) {
+                if (isset($famMember['salary']) && $famMember['salary'] !== null) {
+                    $famMember['salary'] = str_replace(',', '', (string)$famMember['salary']);
+                }
+            }
+            unset($famMember);
+        }
+
+        $mergeData = [
             'client_type' => $this->client_type ?: 'New',
             'control_number' => $isOnlineSubmission ? null : ($this->control_number ?: ('MSWDO-' . date('Y') . '-' . str_pad(\App\Models\SocialCase\BeneficiaryIntake::count() + 1, 5, '0', STR_PAD_LEFT))),
             'has_representative' => $this->boolean('has_representative'),
@@ -32,7 +52,22 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
             'rep_birthday' => $repBday,
             'rep_age' => $this->rep_age ?? (!empty($repBday) ? Carbon::parse($repBday)->age : null),
             'date_processed' => $this->normalizeDate($this->date_processed),
-        ]);
+        ];
+
+        if ($this->has('beneficiary_monthly_salary')) {
+            $mergeData['beneficiary_monthly_salary'] = ($benSalary === '' || $benSalary === null) ? null : $benSalary;
+        }
+        if ($this->has('rep_monthly_salary')) {
+            $mergeData['rep_monthly_salary'] = ($repSalary === '' || $repSalary === null) ? null : $repSalary;
+        }
+        if ($this->has('client_monthly_income')) {
+            $mergeData['client_monthly_income'] = ($clientIncome === '' || $clientIncome === null) ? null : $clientIncome;
+        }
+        if ($familyComposition !== null) {
+            $mergeData['family_composition'] = $familyComposition;
+        }
+
+        $this->merge($mergeData);
     }
 
     private function normalizeDate(?string $dateStr): ?string
@@ -83,6 +118,7 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
             'beneficiary_civil_status' => ['required', 'string', 'max:50'],
             'beneficiary_occupation' => ['nullable', 'string', 'max:150'],
             'beneficiary_monthly_salary' => ['nullable', 'numeric', 'min:0'],
+            'client_monthly_income' => ['nullable', 'numeric', 'min:0'],
             'beneficiary_category' => ['nullable', 'string', 'max:100'],
             'beneficiary_category_other' => ['nullable', 'string', 'max:150'],
             'beneficiary_categories' => ['nullable', 'array'],

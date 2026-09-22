@@ -42,6 +42,20 @@
                     <span class="badge bg-warning text-dark rounded-pill px-2.5 py-1 text-xs fw-bold">Previously Notified</span>
                 </div>
 
+                <!-- Beneficiary Claimed Alert Banner (Shown when beneficiary status is Claimed) -->
+                <div id="smsClaimedAlert" class="alert alert-secondary d-flex align-items-center justify-content-between rounded-3 mb-3 py-2.5 px-3 d-none" role="alert" style="background-color: #f1f5f9; border-color: #cbd5e1;">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-check-circle fs-5 me-2 text-success"></i>
+                        <div>
+                            <span class="fw-semibold text-dark">This beneficiary has already claimed their financial assistance.</span>
+                            <div class="text-muted small" id="smsClaimedSubtitle">SMS messaging is automatically disabled for claimed beneficiaries.</div>
+                        </div>
+                    </div>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 text-xs fw-semibold">
+                        <i class="fas fa-check me-1"></i> Claimed
+                    </span>
+                </div>
+
                 <!-- Beneficiary Summary Details Card -->
                 <div class="card border rounded-3 p-3 mb-3 bg-light bg-opacity-50">
                     <!-- Top Row: Beneficiary / Recipient & Contact Number -->
@@ -49,7 +63,12 @@
                         <!-- Beneficiary / Recipient -->
                         <div class="col-md-6 col-12">
                             <span class="text-muted small text-uppercase fw-semibold d-block mb-1" style="font-size: 0.74rem; letter-spacing: 0.04em;">Beneficiary / Recipient</span>
-                            <div class="fw-bold text-dark fs-6" id="smsModalBeneficiaryName">--</div>
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <div class="fw-bold text-dark fs-6" id="smsModalBeneficiaryName">--</div>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle text-2xs rounded-pill d-none" id="smsModalClaimStatusClaimedBadge">
+                                    <i class="fas fa-check-circle me-0.5"></i> Claimed
+                                </span>
+                            </div>
                             <div class="text-muted small mt-0.5" id="smsModalRepContainer">
                                 <span class="badge bg-info-subtle text-info border border-info-subtle text-2xs rounded-pill" id="smsModalRepBadge">Representative</span>
                                 <span class="ms-1" id="smsModalRepName">--</span>
@@ -58,12 +77,7 @@
 
                         <!-- Contact Number -->
                         <div class="col-md-6 col-12">
-                            <div class="d-flex align-items-center justify-content-between mb-1">
-                                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.04em;">Contact Number</span>
-                                <button type="button" class="btn btn-link btn-sm text-primary p-0 text-decoration-none" id="btnEditContactNumber" style="font-size: 0.78rem;" title="Change or update contact number">
-                                    <i class="fas fa-pen-to-square me-1"></i> Change
-                                </button>
-                            </div>
+                            <span class="text-muted small text-uppercase fw-semibold d-block mb-1" style="font-size: 0.74rem; letter-spacing: 0.04em;">Contact Number</span>
                             <div class="d-flex align-items-center gap-2 flex-wrap">
                                 <span class="fw-bold text-dark font-monospace fs-6" id="smsModalContactNumber">--</span>
                                 <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill py-0.5 px-2" id="smsContactStatusBadge" style="font-size: 0.72rem; font-weight: 500;">
@@ -73,12 +87,6 @@
                             <div class="text-muted mt-1 d-none" id="smsModalConvertedContainer" style="font-size: 0.76rem;">
                                 <span class="text-secondary">Sends via SMS as:</span>
                                 <span class="fw-semibold text-primary font-monospace ms-1" id="smsModalConvertedNumber">+63XXXXXXXXXX</span>
-                            </div>
-                            <!-- Inline Contact Number Editor (Hidden by default) -->
-                            <div class="input-group input-group-sm mt-2 d-none" id="smsInlineContactGroup">
-                                <input type="text" class="form-control form-control-sm rounded-start font-monospace" id="smsInlineContactInput" placeholder="09XXXXXXXXX or +63XXXXXXXXXX">
-                                <button class="btn btn-outline-primary btn-sm" type="button" id="btnSaveInlineContact">Apply</button>
-                                <button class="btn btn-outline-secondary btn-sm" type="button" id="btnCancelInlineContact">Cancel</button>
                             </div>
                             <div class="text-danger small mt-1 d-none" id="smsInvalidContactAlert" style="font-size: 0.75rem;">
                                 <i class="fas fa-triangle-exclamation me-1"></i> Invalid Philippine mobile number (e.g. 09XXXXXXXXX or +639XXXXXXXXX).
@@ -127,6 +135,7 @@
                 <!-- Message Formulation Section -->
                 <form id="smsComposeForm" onsubmit="return false;">
                     <input type="hidden" id="smsIntakeId" name="intake_id" value="">
+                    <input type="hidden" id="smsClaimStatus" name="claim_status" value="">
                     <input type="hidden" id="smsRecipientNumber" name="recipient_contact_number" value="">
                     <input type="hidden" id="smsClaimingDateHidden" name="claiming_date" value="">
 
@@ -205,16 +214,122 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="modal-footer bg-light py-2.5 px-4 d-flex justify-content-between">
+            <div class="modal-footer bg-light py-2.5 px-4 d-flex justify-content-between align-items-center">
                 <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
                     Cancel
                 </button>
-                <button type="button" class="btn btn-primary rounded-pill px-4 shadow-xs fw-semibold btn-brand-primary" id="btnSendSmsSubmit">
-                    <span class="spinner-border spinner-border-sm me-1.5 d-none" id="smsSendSpinner" role="status" aria-hidden="true"></span>
-                    <i class="fas fa-paper-plane me-1.5" id="smsSendIcon"></i>
-                    <span id="smsSendBtnText">Send Message</span>
-                </button>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted small d-none" id="smsClaimedFooterNotice">
+                        <i class="fas fa-lock me-1 text-secondary"></i> Messaging disabled (Claimed)
+                    </span>
+                    <button type="button" class="btn btn-primary rounded-pill px-4 shadow-xs fw-semibold btn-brand-primary" id="btnSendSmsSubmit" title="Send SMS message">
+                        <span class="spinner-border spinner-border-sm me-1.5 d-none" id="smsSendSpinner" role="status" aria-hidden="true"></span>
+                        <i class="fas fa-paper-plane me-1.5" id="smsSendIcon"></i>
+                        <span id="smsSendBtnText">Send Message</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Disabled state for SMS Submit button when beneficiary is Claimed */
+    #btnSendSmsSubmit.sms-claimed-disabled,
+    #btnSendSmsSubmit:disabled {
+        opacity: 0.55 !important;
+        cursor: not-allowed !important;
+        pointer-events: auto !important; /* Ensures mouse cursor: not-allowed and title tooltip display properly */
+        box-shadow: none !important;
+    }
+    #btnSendSmsSubmit.sms-claimed-disabled {
+        background-color: #6c757d !important;
+        border-color: #6c757d !important;
+        color: #ffffff !important;
+    }
+</style>
+
+<script>
+    /**
+     * Updates the SMS Modal UI state based on beneficiary claim status.
+     * When status is 'Claimed', the Message/SMS button is automatically disabled.
+     */
+    function updateSmsModalClaimStatusState(claimStatus) {
+        const isClaimed = String(claimStatus || '').trim().toLowerCase() === 'claimed';
+        const alertEl = document.getElementById('smsClaimedAlert');
+        const claimedBadge = document.getElementById('smsModalClaimStatusClaimedBadge');
+        const footerNotice = document.getElementById('smsClaimedFooterNotice');
+        const sendBtn = document.getElementById('btnSendSmsSubmit');
+        const sendBtnText = document.getElementById('smsSendBtnText');
+        const sendIcon = document.getElementById('smsSendIcon');
+        const messageBody = document.getElementById('smsMessageBody');
+        const claimStatusInput = document.getElementById('smsClaimStatus');
+        const templateBtns = document.querySelectorAll('.btn-template-select');
+
+        if (claimStatusInput) {
+            claimStatusInput.value = isClaimed ? 'Claimed' : (claimStatus || 'Unclaimed');
+        }
+
+        if (isClaimed) {
+            if (alertEl) alertEl.classList.remove('d-none');
+            if (claimedBadge) claimedBadge.classList.remove('d-none');
+            if (footerNotice) footerNotice.classList.remove('d-none');
+
+            if (sendBtn) {
+                sendBtn.disabled = true;
+                sendBtn.classList.add('sms-claimed-disabled');
+                sendBtn.setAttribute('title', 'SMS messaging is disabled: Beneficiary has already claimed financial assistance.');
+                sendBtn.setAttribute('aria-disabled', 'true');
+            }
+            if (sendBtnText) sendBtnText.textContent = 'Message Disabled (Claimed)';
+            if (sendIcon) sendIcon.className = 'fas fa-ban me-1.5';
+
+            if (messageBody) {
+                messageBody.disabled = true;
+                messageBody.setAttribute('placeholder', 'SMS messaging is disabled for beneficiaries who have already claimed their financial assistance.');
+            }
+            templateBtns.forEach(btn => {
+                btn.disabled = true;
+            });
+        } else {
+            if (alertEl) alertEl.classList.add('d-none');
+            if (claimedBadge) claimedBadge.classList.add('d-none');
+            if (footerNotice) footerNotice.classList.add('d-none');
+
+            if (sendBtn) {
+                sendBtn.classList.remove('sms-claimed-disabled');
+                sendBtn.removeAttribute('title');
+                sendBtn.removeAttribute('aria-disabled');
+            }
+            if (sendBtnText) sendBtnText.textContent = 'Send Message';
+            if (sendIcon) sendIcon.className = 'fas fa-paper-plane me-1.5';
+
+            if (messageBody) {
+                messageBody.disabled = false;
+                messageBody.setAttribute('placeholder', 'Write message to beneficiary...');
+            }
+            templateBtns.forEach(btn => {
+                btn.disabled = false;
+            });
+        }
+    }
+
+    window.updateSmsModalClaimStatusState = updateSmsModalClaimStatusState;
+
+    // Attach listener for show.bs.modal on smsMessagingModal to automatically detect claim status
+    document.addEventListener('DOMContentLoaded', function () {
+        const smsModal = document.getElementById('smsMessagingModal');
+        if (smsModal) {
+            smsModal.addEventListener('show.bs.modal', function (event) {
+                const trigger = event.relatedTarget;
+                if (trigger && typeof trigger.getAttribute === 'function') {
+                    const status = trigger.getAttribute('data-claim-status') ||
+                        (trigger.classList.contains('btn-message-beneficiary') ? 'Claimed' : null);
+                    if (status) {
+                        updateSmsModalClaimStatusState(status);
+                    }
+                }
+            });
+        }
+    });
+</script>

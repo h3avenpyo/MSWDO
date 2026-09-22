@@ -336,7 +336,7 @@
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="form-label">Buwanang Kita (Monthly Salary)</label>
-                        <input type="number" step="0.01" min="0" name="beneficiary_monthly_salary" class="form-control"
+                        <input type="text" inputmode="decimal" name="beneficiary_monthly_salary" id="beneficiary_monthly_salary" class="form-control salary-comma-input"
                             value="{{ old('beneficiary_monthly_salary') }}" placeholder="0.00">
                     </div>
                 </div>
@@ -504,8 +504,8 @@
                         </div>
                         <div class="col-md-4 mt-3">
                             <label class="form-label">Buwanang Kita (Monthly Salary)</label>
-                            <input type="number" step="0.01" min="0" name="rep_monthly_salary"
-                                class="form-control rep-field" value="{{ old('rep_monthly_salary') }}"
+                            <input type="text" inputmode="decimal" name="rep_monthly_salary" id="rep_monthly_salary"
+                                class="form-control rep-field salary-comma-input" value="{{ old('rep_monthly_salary') }}"
                                 placeholder="0.00">
                         </div>
                         <div class="col-md-4 mt-3">
@@ -634,10 +634,10 @@
                                         placeholder="Trabaho">
                                 </td>
                                 <td>
-                                    <input type="number" step="0.01" min="0"
+                                    <input type="text" inputmode="decimal"
                                         name="family_composition[{{ $index }}][salary]"
-                                        class="form-control form-control-sm" value="{{ $fam['salary'] ?? '' }}"
-                                        placeholder="0.00">
+                                        class="form-control form-control-sm salary-comma-input" value="{{ $fam['salary'] ?? '' }}"
+                                        placeholder="0.00" oninput="handleSalaryInput(this)">
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-link text-danger p-0"
@@ -702,6 +702,9 @@
 <script>
     document.addEventListener('input', function (e) {
         const el = e.target;
+        if (el.matches?.('.salary-comma-input')) {
+            return;
+        }
         if (el.matches?.(':is(input[type="text"], input:not([type]), textarea):not([readonly])')) {
             const { selectionStart: s, selectionEnd: end, value } = el;
             if (value !== value.toUpperCase()) {

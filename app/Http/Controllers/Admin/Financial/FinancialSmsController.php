@@ -35,6 +35,14 @@ class FinancialSmsController extends Controller
 
         $intake = BeneficiaryIntake::with(['client', 'payrollRecord'])->findOrFail($request->intake_id);
 
+        // Prevent SMS sending if beneficiary has already claimed assistance
+        if ($intake->claim_status === 'Claimed') {
+            return response()->json([
+                'success' => false,
+                'message' => 'SMS messaging is disabled: This beneficiary has already claimed their financial assistance.',
+            ], 422);
+        }
+
         // Determine recipient name and contact number
         $isRep = $intake->has_representative && !empty(trim($intake->representative_full_name ?? '')) && $intake->representative_full_name !== 'N/A';
         $beneficiaryName = $intake->beneficiary_full_name;

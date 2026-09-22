@@ -208,7 +208,7 @@ function addFamilyMember() {
                             Buwanang Kita <span class="label-sub">(Monthly Income)</span>
                         </label>
                     </div>
-                    <input type="number" step="0.01" min="0" name="family_composition[${familyMemberIndex}][salary]" placeholder="0.00" class="form-input-custom">
+                    <input type="text" inputmode="decimal" name="family_composition[${familyMemberIndex}][salary]" placeholder="0.00" class="form-input-custom salary-comma-input" oninput="handleSalaryInput(this)">
                 </div>
             </div>
         </div>
@@ -419,12 +419,89 @@ function setupAdvisoryModalListeners() {
 }
 
 // =====================================
+// SALARY COMMA FORMATTING HELPERS
+// =====================================
+function formatNumberWithCommas(value) {
+    if (value === null || value === undefined) return '';
+    let str = value.toString();
+
+    // Keep only digits and decimal point (strip existing commas and non-numeric chars)
+    str = str.replace(/[^\d.]/g, '');
+
+    // Allow only one decimal point
+    const parts = str.split('.');
+    let integerPart = parts[0];
+    let decimalPart = parts.length > 1 ? '.' + parts.slice(1).join('') : '';
+
+    // If empty
+    if (integerPart === '' && decimalPart === '') return '';
+
+    // Remove leading zeros if more than 1 digit before decimal
+    if (integerPart.length > 1) {
+        integerPart = integerPart.replace(/^0+/, '') || '0';
+    }
+
+    // Limit decimal places to 2
+    if (decimalPart.length > 3) {
+        decimalPart = decimalPart.substring(0, 3);
+    }
+
+    // Format integer part with thousands separators
+    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    return (integerPart === '' && decimalPart !== '' ? '0' : formattedInteger) + decimalPart;
+}
+
+function handleSalaryInput(input) {
+    const originalValue = input.value;
+    const cursorPosition = input.selectionStart || 0;
+    
+    // Count how many numeric/decimal characters were before the cursor
+    const rawBeforeCursor = originalValue.slice(0, cursorPosition).replace(/[^\d.]/g, '');
+    const numCharsBeforeCursor = rawBeforeCursor.length;
+
+    const formatted = formatNumberWithCommas(originalValue);
+    input.value = formatted;
+
+    // Calculate new cursor position preserving user's edit point
+    let newCursorPos = 0;
+    let countedChars = 0;
+    for (let i = 0; i < formatted.length; i++) {
+        if (/[\d.]/.test(formatted[i])) {
+            countedChars++;
+        }
+        if (countedChars <= numCharsBeforeCursor) {
+            newCursorPos = i + 1;
+        }
+    }
+    
+    if (input.setSelectionRange) {
+        input.setSelectionRange(newCursorPos, newCursorPos);
+    }
+}
+
+// Delegation listener for salary inputs
+document.addEventListener('input', function (e) {
+    const el = e.target;
+    if (el.matches?.('.salary-comma-input')) {
+        handleSalaryInput(el);
+    }
+});
+
+// =====================================
 // FORM SUBMISSION & FEEDBACK
 // =====================================
 function initFinancialIntakeForm() {
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
+
+    // Format any initial/restored salary inputs
+    document.querySelectorAll('.salary-comma-input').forEach(input => {
+        if (input.value) {
+            input.value = formatNumberWithCommas(input.value);
+        }
+    });
 
     // Set up modal listeners & automatically display popup upon entering / redirecting
     setupAdvisoryModalListeners();
@@ -521,6 +598,13 @@ function initFinancialIntakeForm() {
                     `;
                 }
 
+                // Strip commas from salary inputs before building FormData
+                form.querySelectorAll('.salary-comma-input').forEach(input => {
+                    if (input.value) {
+                        input.value = input.value.replace(/,/g, '');
+                    }
+                });
+
                 const formData = new FormData(form);
 
                 fetch('/financial-assistance', {
@@ -579,6 +663,13 @@ function initFinancialIntakeForm() {
                         if (typeof lucide !== 'undefined') lucide.createIcons();
                     }
 
+                    // Re-apply comma formatting to salary inputs on submission failure
+                    form.querySelectorAll('.salary-comma-input').forEach(input => {
+                        if (input.value) {
+                            input.value = formatNumberWithCommas(input.value);
+                        }
+                    });
+
                     if (err.is_duplicate) {
                         showDuplicateAlert(err.message, err.matches);
                         Swal.fire({
@@ -615,6 +706,8 @@ window.toggleCategoryOther = toggleCategoryOther;
 window.togglePurposeOther = togglePurposeOther;
 window.triggerDuplicateCheck = triggerDuplicateCheck;
 window.closeAdvisoryModal = closeAdvisoryModal;
+window.formatNumberWithCommas = formatNumberWithCommas;
+window.handleSalaryInput = handleSalaryInput;
 
 // Run on DOM ready
 if (document.readyState === 'loading') {

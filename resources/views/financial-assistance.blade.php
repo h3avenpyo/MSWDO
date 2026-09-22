@@ -375,7 +375,7 @@
                                         Buwanang Kita <span class="label-sub">(Monthly Salary)</span>
                                     </label>
                                 </div>
-                                <input type="number" step="0.01" min="0" id="beneficiary_monthly_salary" name="beneficiary_monthly_salary" placeholder="0.00" class="form-input-custom">
+                                <input type="text" inputmode="decimal" id="beneficiary_monthly_salary" name="beneficiary_monthly_salary" placeholder="0.00" class="form-input-custom salary-comma-input" value="{{ old('beneficiary_monthly_salary') }}" oninput="handleSalaryInput(this)">
                             </div>
                         </div>
                     </div>
@@ -582,7 +582,7 @@
                                             Buwanang Kita <span class="label-sub">(Monthly Salary)</span>
                                         </label>
                                     </div>
-                                    <input type="number" step="0.01" min="0" id="rep_monthly_salary" name="rep_monthly_salary" placeholder="0.00" class="form-input-custom rep-field">
+                                    <input type="text" inputmode="decimal" id="rep_monthly_salary" name="rep_monthly_salary" placeholder="0.00" class="form-input-custom rep-field salary-comma-input" value="{{ old('rep_monthly_salary') }}" oninput="handleSalaryInput(this)">
                                 </div>
                             </div>
                         </div>
@@ -681,7 +681,7 @@
                                                 Buwanang Kita <span class="label-sub">(Monthly Income)</span>
                                             </label>
                                         </div>
-                                        <input type="number" step="0.01" min="0" name="family_composition[0][salary]" placeholder="0.00" class="form-input-custom">
+                                        <input type="text" inputmode="decimal" name="family_composition[0][salary]" placeholder="0.00" class="form-input-custom salary-comma-input" value="{{ old('family_composition.0.salary') }}" oninput="handleSalaryInput(this)">
                                     </div>
                                 </div>
                             </div>

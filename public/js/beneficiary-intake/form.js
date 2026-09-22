@@ -98,7 +98,7 @@ function addFamilyRow() {
         <td><input type="text" name="family_composition[${familyIndex}][relationship]" class="form-control form-control-sm" placeholder="e.g. Spouse, Son"></td>
         <td><input type="number" min="0" name="family_composition[${familyIndex}][age]" class="form-control form-control-sm" placeholder="Edad"></td>
         <td><input type="text" name="family_composition[${familyIndex}][occupation]" class="form-control form-control-sm" placeholder="Trabaho"></td>
-        <td><input type="number" step="0.01" min="0" name="family_composition[${familyIndex}][salary]" class="form-control form-control-sm" placeholder="0.00"></td>
+        <td><input type="text" inputmode="decimal" name="family_composition[${familyIndex}][salary]" class="form-control form-control-sm salary-comma-input" placeholder="0.00" oninput="handleSalaryInput(this)"></td>
         <td class="text-center"><button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeFamilyRow(this)"><i class="fas fa-trash"></i></button></td>
     `;
     tbody.appendChild(tr);
@@ -533,15 +533,96 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Strip commas from salary inputs before submission so backend receives raw numeric value
+                    formEl.querySelectorAll('.salary-comma-input').forEach(input => {
+                        if (input.value) {
+                            input.value = input.value.replace(/,/g, '');
+                        }
+                    });
                     formEl.submit();
                 }
             });
         });
     }
 
-    // Real-time uppercase conversion for editable user inputs
+    // Salary comma formatting helper functions
+    function formatNumberWithCommas(value) {
+        if (value === null || value === undefined) return '';
+        let str = value.toString();
+
+        // Keep only digits and decimal point (strip existing commas and non-numeric chars)
+        str = str.replace(/[^\d.]/g, '');
+
+        // Allow only one decimal point
+        const parts = str.split('.');
+        let integerPart = parts[0];
+        let decimalPart = parts.length > 1 ? '.' + parts.slice(1).join('') : '';
+
+        // If empty
+        if (integerPart === '' && decimalPart === '') return '';
+
+        // Remove leading zeros if more than 1 digit before decimal
+        if (integerPart.length > 1) {
+            integerPart = integerPart.replace(/^0+/, '') || '0';
+        }
+
+        // Limit decimal places to 2
+        if (decimalPart.length > 3) {
+            decimalPart = decimalPart.substring(0, 3);
+        }
+
+        // Format integer part with thousands separators
+        const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+        return (integerPart === '' && decimalPart !== '' ? '0' : formattedInteger) + decimalPart;
+    }
+
+    function handleSalaryInput(input) {
+        const originalValue = input.value;
+        const cursorPosition = input.selectionStart || 0;
+        
+        // Count how many numeric/decimal characters were before the cursor
+        const rawBeforeCursor = originalValue.slice(0, cursorPosition).replace(/[^\d.]/g, '');
+        const numCharsBeforeCursor = rawBeforeCursor.length;
+
+        const formatted = formatNumberWithCommas(originalValue);
+        input.value = formatted;
+
+        // Calculate new cursor position preserving user's edit point
+        let newCursorPos = 0;
+        let countedChars = 0;
+        for (let i = 0; i < formatted.length; i++) {
+            if (/[\d.]/.test(formatted[i])) {
+                countedChars++;
+            }
+            if (countedChars <= numCharsBeforeCursor) {
+                newCursorPos = i + 1;
+            }
+        }
+        
+        if (input.setSelectionRange) {
+            input.setSelectionRange(newCursorPos, newCursorPos);
+        }
+    }
+
+    // Expose helpers globally
+    window.formatNumberWithCommas = formatNumberWithCommas;
+    window.handleSalaryInput = handleSalaryInput;
+
+    // Format existing salary values on load
+    document.querySelectorAll('.salary-comma-input').forEach(input => {
+        if (input.value) {
+            input.value = formatNumberWithCommas(input.value);
+        }
+    });
+
+    // Real-time uppercase conversion for editable user inputs (excluding salary fields)
     document.addEventListener('input', function (e) {
         const el = e.target;
+        if (el.matches?.('.salary-comma-input')) {
+            handleSalaryInput(el);
+            return;
+        }
         if (el.matches?.(':is(input[type="text"], input:not([type]), textarea):not([readonly])')) {
             const { selectionStart: s, selectionEnd: end, value } = el;
             if (value !== value.toUpperCase()) {

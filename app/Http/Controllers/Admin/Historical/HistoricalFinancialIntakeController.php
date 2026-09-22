@@ -214,8 +214,8 @@ class HistoricalFinancialIntakeController extends Controller
         $intake->created_at = $historicalDate;
         $intake->save();
 
-        return redirect()->route('admin.beneficiary-intake.show', $intake)
-            ->with('success', "Historical Intake Record ({$intake->control_number}) for {$beneficiaryFullName} (Intake Date: {$historicalDate->format('M d, Y')}, Amount: ₱" . number_format($intake->recommended_amount, 2) . ") has been successfully encoded and integrated into the system.");
+        return redirect()->route('admin.historical-data.financial-intake')
+            ->with('success', "Historical Intake Record ({$intake->control_number}) for {$beneficiaryFullName} (Intake Date: {$historicalDate->format('M d, Y')}, Amount: ₱" . number_format($intake->recommended_amount, 2) . ") has been successfully encoded and saved.");
     }
 
     /**

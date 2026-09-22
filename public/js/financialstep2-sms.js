@@ -19,6 +19,7 @@
         lastMessageDate: '',
         activeTemplate: 'Unclaimed Assistance',
         history: [],
+        claimStatus: 'Unclaimed',
     };
 
     // DOM Elements
@@ -154,6 +155,13 @@
      */
     function validateForm() {
         if (!sendBtnEl) return;
+
+        // If beneficiary status is Claimed, button is automatically and permanently disabled
+        if (smsState.claimStatus === 'Claimed') {
+            sendBtnEl.disabled = true;
+            sendBtnEl.classList.add('sms-claimed-disabled');
+            return;
+        }
 
         const convertedContact = convertToPhilippineInternational(smsState.contactNumber);
         const hasValidContact = Boolean(convertedContact);
@@ -323,10 +331,13 @@
         smsState.claimingDateRaw = data.rawClaimingDate || '';
         smsState.lastMessageDate = data.lastMessageDate || '';
         smsState.activeTemplate = data.defaultTemplate || 'Unclaimed Assistance';
+        smsState.claimStatus = data.claimStatus || (data.status || 'Unclaimed');
 
         // Populate hidden form inputs
         const intakeInput = document.getElementById('smsIntakeId');
         if (intakeInput) intakeInput.value = smsState.intakeId;
+        const claimStatusInput = document.getElementById('smsClaimStatus');
+        if (claimStatusInput) claimStatusInput.value = smsState.claimStatus;
         const recipientInput = document.getElementById('smsRecipientNumber');
         if (recipientInput) recipientInput.value = smsState.convertedContactNumber || smsState.contactNumber;
         const claimingInput = document.getElementById('smsClaimingDateHidden');
@@ -411,6 +422,11 @@
         // Load History
         loadHistory(smsState.intakeId);
 
+        // Update Claimed UI state and disable Message/SMS button if Claimed
+        if (typeof window.updateSmsModalClaimStatusState === 'function') {
+            window.updateSmsModalClaimStatusState(smsState.claimStatus);
+        }
+
         // Validate
         validateForm();
 
@@ -430,6 +446,20 @@
      * Submit SMS message with pre-send SweetAlert confirmation dialog.
      */
     function submitSms() {
+        if (smsState.claimStatus === 'Claimed') {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Action Not Allowed',
+                    text: 'SMS messaging is disabled for beneficiaries who have already claimed their financial assistance.',
+                    confirmButtonColor: '#1A237E'
+                });
+            } else {
+                alert('SMS messaging is disabled for beneficiaries who have already claimed their financial assistance.');
+            }
+            return;
+        }
+
         const converted = convertToPhilippineInternational(smsState.contactNumber);
         if (!converted) {
             if (typeof Swal !== 'undefined') {
@@ -806,6 +836,7 @@
             const intakeId = btn.getAttribute('data-intake-id');
             if (!intakeId) return;
 
+            const claimStatus = btn.getAttribute('data-claim-status') || (btn.classList.contains('btn-message-beneficiary') ? 'Claimed' : 'Unclaimed');
             const beneficiaryName = btn.getAttribute('data-beneficiary-name') || '';
             const representativeName = btn.getAttribute('data-representative-name') || '';
             const isSeparateRep = btn.getAttribute('data-is-separate-rep') === '1' || btn.getAttribute('data-is-separate-rep') === 'true';
@@ -815,39 +846,22 @@
             const claimingDate = btn.getAttribute('data-claiming-date') || '';
             const rawClaimingDate = btn.getAttribute('data-raw-claiming-date') || '';
             const lastMessageDate = btn.getAttribute('data-last-message-date') || '';
-            const defaultTemplate = btn.getAttribute('data-default-template') || 'Unclaimed Assistance';
+            const defaultTemplate = btn.getAttribute('data-default-template') || (claimStatus === 'Claimed' ? 'Follow-up' : 'Unclaimed Assistance');
 
-            // Check if already notified and show gentle prompt
-            if (lastMessageDate && btn.classList.contains('btn-send-sms')) {
-                // If clicked from unclaimed row with existing message, show notice or open modal directly
-                openSmsModal({
-                    intakeId,
-                    beneficiaryName,
-                    representativeName,
-                    isSeparateRep,
-                    contactNumber,
-                    purpose,
-                    amount,
-                    claimingDate,
-                    rawClaimingDate,
-                    lastMessageDate,
-                    defaultTemplate,
-                });
-            } else {
-                openSmsModal({
-                    intakeId,
-                    beneficiaryName,
-                    representativeName,
-                    isSeparateRep,
-                    contactNumber,
-                    purpose,
-                    amount,
-                    claimingDate,
-                    rawClaimingDate,
-                    lastMessageDate,
-                    defaultTemplate,
-                });
-            }
+            openSmsModal({
+                intakeId,
+                beneficiaryName,
+                representativeName,
+                isSeparateRep,
+                contactNumber,
+                purpose,
+                amount,
+                claimingDate,
+                rawClaimingDate,
+                lastMessageDate,
+                defaultTemplate,
+                claimStatus,
+            });
         });
     });
 

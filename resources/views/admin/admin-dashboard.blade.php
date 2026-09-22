@@ -774,11 +774,7 @@ $initials = count($words) >= 2
         <div class="dash-banner-title">Welcome back, {{ $adminName }}</div>
         <div class="dash-banner-sub">
             <span>MSWDO Silang Portal</span>
-            <span class="opacity-40">•</span>
-            <span class="dash-live-badge">
-                <span class="dash-pulse-dot"></span>
-                <span>System Online</span>
-            </span>
+            
         </div>
     </div>
     <div class="flex items-center gap-3 self-start md:self-auto">
@@ -791,6 +787,17 @@ $initials = count($words) >= 2
         </div>
     </div>
 </header>
+
+{{-- Session Success Notification --}}
+@if(session('success'))
+    <div class="mb-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center justify-between gap-3 shadow-sm">
+        <div class="flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600 flex-shrink-0"></i>
+            <span>{{ session('success') }}</span>
+        </div>
+        <button type="button" onclick="this.parentElement.remove()" class="text-emerald-700 hover:text-emerald-900 bg-transparent border-0 cursor-pointer font-bold text-base leading-none px-2">&times;</button>
+    </div>
+@endif
 
 {{-- Top Executive KPI Strip --}}
 <section class="kpi-strip">
