@@ -7,7 +7,6 @@ use App\Http\Controllers\Admin\Auth\AuthController;
 use App\Http\Controllers\Admin\Auth\EmailCodeController;
 use App\Http\Controllers\Admin\Auth\OfficerController;
 use App\Http\Controllers\Admin\SocialCase\SocialCaseController;
-use App\Http\Controllers\Admin\SocialCase\SocialCaseIntakeController;
 use App\Http\Controllers\Admin\Financial\FinancialDashboardController;
 use App\Http\Controllers\Admin\Financial\FinancialIntakeController;
 use App\Http\Controllers\Admin\Financial\FinancialSmsController;
