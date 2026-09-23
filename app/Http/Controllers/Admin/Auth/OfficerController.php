@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin\Auth;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Officer\StoreOfficerRequest;
+use App\Http\Requests\Admin\Officer\UpdateOfficerRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -103,26 +105,8 @@ class OfficerController extends Controller
         return view('admin.officers-directory', compact('officers', 'officerStats'));
     }
 
-    public function storeOfficer(Request $request)
+    public function storeOfficer(StoreOfficerRequest $request)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255', function ($attribute, $value, $fail) {
-                $exists = User::
-                    whereRaw('LOWER(name) = ?', [strtolower($value)])
-                    ->exists();
-                if ($exists) {
-                    $fail('An officer with this name already exists.');
-                }
-            }],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'confirmed', 'min:8'],
-            'role' => ['required', Rule::enum(UserRole::class)],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'status' => ['nullable', 'in:active,inactive'],
-            'signature_position' => ['nullable', 'in:osca_head,mswdo_officer,mswdo_staff'],
-            'signature_image' => ['nullable', 'image', 'max:2048'],
-        ]);
-
         $signatureImagePath = null;
         if ($request->hasFile('signature_image')) {
             $file = $request->file('signature_image');
@@ -151,27 +135,9 @@ class OfficerController extends Controller
         return view('admin.edit-officer', compact('officer'));
     }
 
-    public function updateOfficer(Request $request, $id)
+    public function updateOfficer(UpdateOfficerRequest $request, $id)
     {
         $officer = User::findOrFail($id);
-
-        $request->validate([
-            'name' => ['required', 'string', 'max:255', function ($attribute, $value, $fail) use ($officer) {
-                $exists = User::
-                    whereRaw('LOWER(name) = ?', [strtolower($value)])
-                    ->where('id', '!=', $officer->id)
-                    ->exists();
-                if ($exists) {
-                    $fail('An officer with this name already exists.');
-                }
-            }],
-            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($officer->id)],
-            'role' => ['required', Rule::enum(UserRole::class)],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'status' => ['nullable', 'in:active,inactive'],
-            'signature_position' => ['nullable', 'in:osca_head,mswdo_officer,mswdo_staff'],
-            'signature_image' => ['nullable', 'image', 'max:2048'],
-        ]);
 
         $signatureImagePath = $officer->signature_image;
         if ($request->hasFile('signature_image')) {

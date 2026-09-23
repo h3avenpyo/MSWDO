@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Auth\SendLoginCodeRequest;
+use App\Http\Requests\Admin\Auth\VerifyLoginCodeRequest;
 use App\Mail\LoginCodeMail;
 use App\Models\EmailLoginCode;
 use App\Models\User;
@@ -13,11 +15,9 @@ use Illuminate\Support\Facades\Mail;
 
 class EmailCodeController extends Controller
 {
-    public function send(Request $request)
+    public function send(SendLoginCodeRequest $request)
     {
-        $data = $request->validate([
-            'email' => ['required', 'email'],
-        ]);
+        $data = $request->validated();
 
         $user = User::where('email', $data['email'])
             ->where('status', 'active')
@@ -50,12 +50,9 @@ class EmailCodeController extends Controller
         ]);
     }
 
-    public function verify(Request $request)
+    public function verify(VerifyLoginCodeRequest $request)
     {
-        $data = $request->validate([
-            'email' => ['required', 'email'],
-            'code' => ['required', 'string', 'size:6'],
-        ]);
+        $data = $request->validated();
 
         $user = User::where('email', $data['email'])
             ->where('status', 'active')

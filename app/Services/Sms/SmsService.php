@@ -13,7 +13,7 @@ class SmsService
         if ($provider) {
             $this->provider = $provider;
         } else {
-            $driver = config('services.sms.default', 'textbee');
+            $driver = config('sms.default', config('services.sms.default', 'textbee'));
             $this->provider = match ($driver) {
                 'log' => new LogSmsProvider(),
                 default => new TextBeeHttpProvider(),

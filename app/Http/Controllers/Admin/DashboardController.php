@@ -378,42 +378,4 @@ class DashboardController extends Controller
             'data' => $monthlyData
         ];
     }
-
-    public function financialDashboard()
-    {
-        $activeQuery = class_exists(\App\Models\SocialCase\BeneficiaryIntake::class) 
-            ? \App\Models\SocialCase\BeneficiaryIntake::where(function ($q) {
-                $q->where('is_archived', false)->orWhereNull('is_archived');
-            })
-            : null;
-
-        $totalIntakes = $activeQuery ? (clone $activeQuery)->count() : 0;
-        $recentIntakes = $activeQuery 
-            ? (clone $activeQuery)->with(['client', 'encoderUser'])->latest()->take(6)->get() 
-            : collect();
-
-        $today = \Carbon\Carbon::today();
-        $todayIntakes = $activeQuery
-            ? (clone $activeQuery)->whereDate('date_processed', $today)->count()
-            : 0;
-        $step1Approved = $totalIntakes;
-        $readyForStep2 = $activeQuery
-            ? ((clone $activeQuery)->whereNotNull('recommended_amount')->where('recommended_amount', '>', 0)->count() ?: $totalIntakes)
-            : 0;
-        $totalAmount = $activeQuery
-            ? ((clone $activeQuery)->sum('recommended_amount') ?? 0)
-            : 0;
-
-        return view('admin.financial.financial-dashboard', compact('totalIntakes', 'todayIntakes', 'step1Approved', 'readyForStep2', 'totalAmount', 'recentIntakes'));
-    }
-
-    public function financialStep1(\Illuminate\Http\Request $request)
-    {
-        return app(\App\Http\Controllers\Admin\Financial\FinancialDashboardController::class)->financialStep1($request);
-    }
-
-    public function financialStep2(\Illuminate\Http\Request $request)
-    {
-        return app(\App\Http\Controllers\Admin\Financial\FinancialDashboardController::class)->financialStep2($request);
-    }
 }

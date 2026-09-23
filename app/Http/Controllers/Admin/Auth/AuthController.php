@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Auth\LoginRequest;
+use App\Http\Requests\Admin\Auth\ResetPasswordRequest;
+use App\Http\Requests\Admin\Auth\SendResetLinkRequest;
 use App\Models\PasswordResetRequest;
 use App\Models\User;
 use App\Services\DashboardRedirector;
@@ -17,13 +20,8 @@ class AuthController extends Controller
         return view('admin.login');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
-
         $user = User::where('email', $request->email)->first();
 
         if (! $user) {
@@ -119,12 +117,8 @@ class AuthController extends Controller
         return view('admin.forgot-password');
     }
 
-    public function sendResetLink(Request $request)
+    public function sendResetLink(SendResetLinkRequest $request)
     {
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
-
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
@@ -172,14 +166,8 @@ class AuthController extends Controller
         ]);
     }
 
-    public function resetPassword(Request $request)
+    public function resetPassword(ResetPasswordRequest $request)
     {
-        $request->validate([
-            'token' => ['required'],
-            'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', 'min:8'],
-        ]);
-
         $resetRequest = PasswordResetRequest::where('token', $request->token)
             ->where('email', $request->email)
             ->where('status', 'approved')

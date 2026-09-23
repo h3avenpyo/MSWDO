@@ -70,7 +70,7 @@ class SeniorCitizenRecord extends Model
 
     public function inBetweenBenefits(): HasMany
     {
-        return $this->hasMany(\App\Models\InBetweenBenefitHistory::class, 'senior_id');
+        return $this->hasMany(InBetweenBenefitHistory::class, 'senior_id');
     }
 
     public function getFullNameAttribute(): string

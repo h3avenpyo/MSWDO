@@ -13,9 +13,9 @@ class TextBeeHttpProvider implements SmsProviderInterface
 
     public function __construct(?string $apiKey = null, ?string $apiUrl = null, ?string $deviceId = null)
     {
-        $this->apiKey = $apiKey ?? config('services.sms.api_key');
-        $this->apiUrl = $apiUrl ?? config('services.sms.api_url');
-        $this->deviceId = $deviceId ?? config('services.sms.device_id');
+        $this->apiKey = $apiKey ?? config('sms.api_key', config('services.sms.api_key'));
+        $this->apiUrl = $apiUrl ?? config('sms.api_url', config('services.sms.api_url'));
+        $this->deviceId = $deviceId ?? config('sms.device_id', config('services.sms.device_id'));
     }
 
     /**
@@ -188,7 +188,7 @@ class TextBeeHttpProvider implements SmsProviderInterface
                     'x-api-key' => $this->apiKey,
                     'Accept' => 'application/json',
                 ])
-                ->get('https://api.textbee.dev/api/v1/gateway/devices');
+                ->get(config('sms.devices_url', 'https://api.textbee.dev/api/v1/gateway/devices'));
 
             if ($response->successful()) {
                 $body = $response->json();
@@ -241,7 +241,7 @@ class TextBeeHttpProvider implements SmsProviderInterface
                     'x-api-key' => $this->apiKey,
                     'Accept' => 'application/json',
                 ])
-                ->get('https://api.textbee.dev/api/v1/gateway/devices');
+                ->get(config('sms.devices_url', 'https://api.textbee.dev/api/v1/gateway/devices'));
 
             if ($response->successful()) {
                 $body = $response->json();
