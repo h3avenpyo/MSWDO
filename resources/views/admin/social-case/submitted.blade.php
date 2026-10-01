@@ -50,7 +50,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .submitted-toggle-container { display: flex; gap: 8px; margin-bottom: 16px; }
     .submitted-toggle-btn { flex: 1; padding: 10px 16px; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; color: #6B7280; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all .15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
     .submitted-toggle-btn:hover { border-color: #9CA3AF; background: #F9FAFB; }
-    .submitted-toggle-btn.active { border-color: #1A237E; background: #1A237E; color: #fff; font-weight: 600; }
+    .submitted-toggle-btn.active { border-color: #B11116; background: #B11116; color: #fff; font-weight: 600; }
 
     /* ── View Toggle ── */
     .submitted-view { display: none; }
@@ -58,7 +58,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     /* ── Submitted Requests section ── */
     .submitted-section-header { margin-bottom: 10px; }
-    .submitted-section-title { font-size: 1.05rem; font-weight: 800; color: #1A237E; margin: 0 0 4px; letter-spacing: -0.01em; }
+    .submitted-section-title { font-size: 1.05rem; font-weight: 800; color: #B11116; margin: 0 0 4px; letter-spacing: -0.01em; }
 
     /* ── Filter bar ── */
     .submitted-filter-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; padding: 0; background: transparent; border: none; border-radius: 0; }
@@ -69,10 +69,10 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .filter-search-wrap { display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s; }
     .filter-search-wrap:focus-within { box-shadow: 0 0 0 3px rgba(26,35,126,.12); border-radius: 8px; }
     .filter-search input { flex: 1 1 auto; width: 1%; min-width: 0; height: 44px !important; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; padding: 0 16px; font-size: 0.875rem; color: #111827; background: #fff; outline: none; transition: border-color .15s; box-sizing: border-box !important; margin: 0 !important; }
-    .filter-search input:focus { border-color: #1A237E; }
+    .filter-search input:focus { border-color: #B11116; }
     .filter-search input::placeholder { color: #9CA3AF; }
-    .filter-search-btn { height: 44px !important; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch; }
-    .filter-search-btn:hover { background: #121858; }
+    .filter-search-btn { height: 44px !important; padding: 0 20px; border: 1px solid #B11116; border-radius: 0 8px 8px 0; background: #B11116; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch; }
+    .filter-search-btn:hover { background: #8A0D11; }
 
     .filter-reset { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; }
     .filter-reset-btn { height: 44px; padding: 0 16px; border: 1px solid #DC2626; border-radius: 8px; background: #fff; color: #DC2626; font-size: 0.875rem; font-weight: 500; cursor: pointer; display: none; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
@@ -106,7 +106,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
     .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
     .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
-    .sc-page-btn.active { background: #1A237E; color: #fff; border-color: #1A237E; font-weight: 700; }
+    .sc-page-btn.active { background: #B11116; color: #fff; border-color: #B11116; font-weight: 700; }
     .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     /* ── Empty state ── */
@@ -114,7 +114,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .empty-cell { padding: 3rem 1rem !important; text-align: center !important; border: none !important; }
     .empty-cell::before { display: none !important; content: none !important; }
     .empty-state-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-    .empty-icon-wrap { width: 72px; height: 72px; border-radius: 50%; background: #EEF2FF; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: #1A237E; }
+    .empty-icon-wrap { width: 72px; height: 72px; border-radius: 50%; background: #FDF2F2; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: #B11116; }
     .empty-icon-wrap svg { width: 36px; height: 36px; }
     .empty-title { font-size: 1.125rem; font-weight: 700; color: #1F2937; margin-bottom: 6px; }
     .empty-subtitle { font-size: 0.875rem; color: #6B7280; line-height: 1.5; max-width: 360px; }
@@ -261,7 +261,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     /* ── Accepted Online Requests table ── */
     .accepted-section { margin-top: 0; padding-top: 0; }
     .accepted-section-header { margin-bottom: 10px; }
-    .accepted-section-title { font-size: 1.05rem; font-weight: 800; color: #1A237E; margin: 0 0 4px; letter-spacing: -0.01em; }
+    .accepted-section-title { font-size: 1.05rem; font-weight: 800; color: #B11116; margin: 0 0 4px; letter-spacing: -0.01em; }
     .accepted-online-panel { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden; }
     .accepted-online-table-wrap { overflow-x: auto; width: 100%; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; height: 500px !important; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     #acceptedOnlineTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; }
@@ -806,18 +806,18 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         var attachmentsHtml = '';
         if (details.attachments && details.attachments.length > 0) {
             var items = details.attachments.map(function (a) {
-                return '<li style="margin-bottom:4px;"><a href="' + a.file_url + '" target="_blank" style="color:#1A237E;text-decoration:underline;">' + a.file_name + '</a></li>';
+                return '<li style="margin-bottom:4px;"><a href="' + a.file_url + '" target="_blank" style="color:#B11116;text-decoration:underline;">' + a.file_name + '</a></li>';
             }).join('');
-            attachmentsHtml = '<div style="margin-top:12px;"><h4 style="margin:0 0 8px 0;color:#1A237E;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Attached Files</h4><ul style="margin:0;padding-left:20px;">' + items + '</ul></div>';
+            attachmentsHtml = '<div style="margin-top:12px;"><h4 style="margin:0 0 8px 0;color:#B11116;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Attached Files</h4><ul style="margin:0;padding-left:20px;">' + items + '</ul></div>';
         } else {
             attachmentsHtml = '<div style="margin-top:12px;"><p style="margin:0;font-size:14px;color:#6B7280;">No files attached</p></div>';
         }
 
         Swal.fire({
-            title: '<div style="display: flex; align-items: center; gap: 10px;"><i data-lucide="file-text" style="width: 24px; height: 24px; color: #1A237E;"></i><span>Accepted Online Request</span></div>',
+            title: '<div style="display: flex; align-items: center; gap: 10px;"><i data-lucide="file-text" style="width: 24px; height: 24px; color: #B11116;"></i><span>Accepted Online Request</span></div>',
             html: '<div style="text-align: left; padding: 10px;">' +
                 '<div style="background: #F8FAFC; border-radius: 8px; padding: 16px; margin-bottom: 16px;">' +
-                    '<h4 style="margin: 0 0 12px 0; color: #1A237E; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Personal Information</h4>' +
+                    '<h4 style="margin: 0 0 12px 0; color: #B11116; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Personal Information</h4>' +
                     '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">' +
                         '<div><span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Full Name</span><span style="font-size: 14px; color: #1F2937; font-weight: 500;">' + details.first_name + ' ' + details.last_name + '</span></div>' +
                         '<div><span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Email</span><span style="font-size: 14px; color: #1F2937;">' + details.email + '</span></div>' +
@@ -826,14 +826,14 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                     '</div>' +
                 '</div>' +
                 '<div style="background: #F8FAFC; border-radius: 8px; padding: 16px; margin-bottom: 16px;">' +
-                    '<h4 style="margin: 0 0 12px 0; color: #1A237E; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Service Information</h4>' +
+                    '<h4 style="margin: 0 0 12px 0; color: #B11116; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Service Information</h4>' +
                     '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">' +
                         '<div><span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Service Type</span><span style="font-size: 14px; color: #1F2937;">' + details.service_type + '</span></div>' +
                         '<div><span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Assistance Type</span><span style="font-size: 14px; color: #1F2937;">' + details.assistance_type + '</span></div>' +
                     '</div>' +
                 '</div>' +
                 '<div style="background: #F8FAFC; border-radius: 8px; padding: 16px;">' +
-                    '<h4 style="margin: 0 0 12px 0; color: #1A237E; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Request Details</h4>' +
+                    '<h4 style="margin: 0 0 12px 0; color: #B11116; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Request Details</h4>' +
                     '<div style="margin-bottom: 12px;"><span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Date Submitted</span><span style="font-size: 14px; color: #1F2937;">' + details.created_at + '</span></div>' +
                     '<div style="margin-bottom: 12px;"><span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Situation</span><p style="margin: 0; font-size: 14px; color: #1F2937; line-height: 1.5;">' + details.situation + '</p></div>' +
                     attachmentsHtml +
@@ -842,7 +842,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             icon: false,
             showDenyButton: true,
             denyButtonText: 'Encode',
-            denyButtonColor: '#1A237E',
+            denyButtonColor: '#B11116',
             confirmButtonText: 'Close',
             confirmButtonColor: '#6B7280',
             width: '600px',

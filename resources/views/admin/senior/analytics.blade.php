@@ -17,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root{
-            --primary:#1A237E;--primary-hover:#121858;--primary-dark:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--success:#16A34A;--success-bg:#ECFDF5;--danger:#DC2626;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EEF2FF;--purple:#7C3AED;--purple-bg:#F3E8FF;--icon-blue:#3B82F6;--icon-green:#16A34A;--icon-purple:#7C3AED;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--shadow-hover:0 20px 40px rgba(15,23,42,.12);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+            --primary:#B11116;--primary-hover:#8A0D11;--primary-dark:#8A0D11;--sidebar-bg:#B11116;--sidebar-dark:#8A0D11;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--success:#16A34A;--success-bg:#ECFDF5;--danger:#DC2626;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EEF2FF;--purple:#7C3AED;--purple-bg:#F3E8FF;--icon-blue:#3B82F6;--icon-green:#16A34A;--icon-purple:#7C3AED;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--shadow-hover:0 20px 40px rgba(15,23,42,.12);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
         }
         *,*::before,*::after{box-sizing:border-box;}
         html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);min-height:100%;}
@@ -600,7 +600,7 @@
     // Gender Distribution Chart
     const genderLabels = {!! json_encode($genderStats->pluck('sex')) !!};
     const genderValues = {!! json_encode($genderStats->pluck('total')) !!};
-    const genderColors = ['#1A237E', '#EC4899'];
+    const genderColors = ['#B11116', '#EC4899'];
     const genderTotal = genderValues.reduce((a, b) => a + b, 0);
 
     new Chart(document.getElementById('genderChart'), {

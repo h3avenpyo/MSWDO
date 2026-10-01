@@ -120,15 +120,15 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         outline: none;
     }
     .notif-bell-btn:hover {
-        background: #EEF2FF;
-        color: #4338CA;
-        border-color: #C7D2FE;
+        background: #FDF2F2;
+        color: #B11116;
+        border-color: #F8C9C9;
         transform: translateY(-1px);
         box-shadow: 0 4px 10px rgba(67, 56, 202, 0.15);
     }
     .notif-bell-btn.active {
-        background: #EEF2FF;
-        color: #4338CA;
+        background: #FDF2F2;
+        color: #B11116;
         border-color: #818CF8;
     }
     .notif-badge {
@@ -205,7 +205,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         }
     }
     .notif-dropdown-header {
-        background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%);
+        background: #B11116;
         padding: 14px 18px;
         display: flex;
         align-items: center;
@@ -234,7 +234,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         background: rgba(255, 255, 255, 0.12);
         border: none;
         border-radius: 6px;
-        color: #E0E7FF;
+        color: #FDF2F2;
         font-size: 11.5px;
         font-weight: 600;
         padding: 5px 10px;
@@ -274,7 +274,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     }
     .notif-tab.active {
         background: #FFFFFF;
-        color: #4338CA;
+        color: #B11116;
         box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
     .notif-tab-num {
@@ -317,7 +317,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         top: 0;
         bottom: 0;
         width: 3.5px;
-        background: #4338CA;
+        background: #B11116;
         border-radius: 0 2px 2px 0;
     }
     .notif-icon-circle {
@@ -331,9 +331,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         margin-top: 2px;
     }
     .notif-icon-walkin {
-        background: #EEF2FF;
-        color: #4338CA;
-        border: 1px solid #C7D2FE;
+        background: #FDF2F2;
+        color: #B11116;
+        border: 1px solid #F8C9C9;
     }
     .notif-icon-online {
         background: #ECFDF5;
@@ -365,8 +365,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         letter-spacing: 0.03em;
     }
     .badge-walkin {
-        background: #E0E7FF;
-        color: #3730A3;
+        background: #FDF2F2;
+        color: #B11116;
     }
     .badge-online {
         background: #D1FAE5;
@@ -415,9 +415,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         transition: all 0.15s;
     }
     .notif-btn-action:hover {
-        background: #4338CA;
+        background: #B11116;
         color: #FFFFFF;
-        border-color: #4338CA;
+        border-color: #B11116;
     }
     .notif-empty {
         padding: 36px 20px;
@@ -459,7 +459,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         width: 18px;
         height: 18px;
         border: 2px solid #E2E8F0;
-        border-top-color: #4338CA;
+        border-top-color: #B11116;
         border-radius: 50%;
         animation: notif-spin 0.7s linear infinite;
     }
@@ -475,7 +475,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .notif-footer-link {
         font-size: 12px;
         font-weight: 600;
-        color: #4338CA;
+        color: #B11116;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
@@ -483,7 +483,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         transition: color 0.15s;
     }
     .notif-footer-link:hover {
-        color: #312E81;
+        color: #8A0D11;
         text-decoration: underline;
     }
 </style>
@@ -610,7 +610,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                 </div>
             </div>
 
-            <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
+            <div class="w-11 h-11 rounded-full bg-[#B11116] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
                 {{ $initials }}
             </div>
         </div>
@@ -622,11 +622,11 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         $dashIsEncoder = in_array($dashRole, ['social_worker', 'admin'], true);
     @endphp
     @if($dashIsChecker)
-    <div class="role-banner" style="background:#EEF2FF;border:1px solid #C7D2FE;">
-        <i data-lucide="shield-check" style="width:20px;height:20px;color:#4338CA;"></i>
+    <div class="role-banner" style="background:#ECFDF5;border:1px solid #A7F3D0;">
+        <i data-lucide="shield-check" style="width:20px;height:20px;color:#059669;"></i>
         <div class="role-banner-text">
-            <div class="role-banner-title" style="color:#4338CA;">Eligibility Checking Only</div>
-            <div class="role-banner-subtitle" style="color:#4F46E5;">Your account only performs client eligibility checks and forwards eligible clients for case encoding. You cannot encode or modify Social Case Study information.</div>
+            <div class="role-banner-title" style="color:#065F46;">Eligibility Checking Only</div>
+            <div class="role-banner-subtitle" style="color:#047857;">Your account only performs client eligibility checks and forwards eligible clients for case encoding. You cannot encode or modify Social Case Study information.</div>
         </div>
     </div>
     @elseif($dashIsEncoder)

@@ -13,7 +13,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root{--primary:#1A237E;--primary-hover:#121858;--primary-dark:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+        :root{--primary:#B11116;--primary-hover:#8A0D11;--primary-dark:#8A0D11;--sidebar-bg:#B11116;--sidebar-dark:#8A0D11;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
         *,*::before,*::after{box-sizing:border-box;}
         html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);min-height:100%;}
         body{font-size:14px;line-height:1.5;overflow-x:hidden;}
@@ -152,7 +152,7 @@
     }
 
     function exportArchivePDF() {
-        Swal.fire({title:'Archive Export',text:'To export archived records, please visit the Archive page and use the export function there.',icon:'info',confirmButtonColor:'#1A237E',confirmButtonText:'OK',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}});
+        Swal.fire({title:'Archive Export',text:'To export archived records, please visit the Archive page and use the export function there.',icon:'info',confirmButtonColor:'#B11116',confirmButtonText:'OK',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}});
     }
 
     function exportAgeDistribution() {

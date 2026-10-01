@@ -13,10 +13,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root{
-            --primary:#1A237E;
-            --primary-hover:#121858;
-            --primary-dark:#0D1442;
-            --sidebar-bg:#1A237E;
+            --primary:#B11116;
+            --primary-hover:#8A0D11;
+            --primary-dark:#8A0D11;
+            --sidebar-bg:#B11116;--sidebar-dark:#8A0D11;
             --sidebar-width:260px;
             --accent-yellow:#FBC02D;
             --background:#F1F5F9;
@@ -401,13 +401,13 @@
             margin:0;
         }
         .table-count-badge{
-            background:#EEF2FF;
+            background:#FDF2F2;
             color:var(--primary);
             font-size:12px;
             font-weight:700;
             padding:2px 8px;
             border-radius:999px;
-            border:1px solid #C7D2FE;
+            border:1px solid #F8C9C9;
             display:inline-flex;
             align-items:center;
             line-height:1;
@@ -483,8 +483,8 @@
             border-radius:50%;
             display:inline-block;
         }
-        .badge-approved, .badge-eligible{background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE;}
-        .badge-approved .badge-dot, .badge-eligible .badge-dot{background:#4F46E5;}
+        .badge-approved, .badge-eligible{background:#FDF2F2;color:#B11116;border:1px solid #F8C9C9;}
+        .badge-approved .badge-dot, .badge-eligible .badge-dot{background:#C8181E;}
         .badge-released, .badge-claimed{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;}
         .badge-released .badge-dot, .badge-claimed .badge-dot{background:#10B981;}
         .badge-pending{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;}
@@ -507,11 +507,11 @@
             font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
             font-size:12px;
             font-weight:700;
-            color:#1A237E;
-            background:#EEF2FF;
+            color:#B11116;
+            background:#FDF2F2;
             padding:3px 8px;
             border-radius:6px;
-            border:1px solid #C7D2FE;
+            border:1px solid #F8C9C9;
             display:inline-block;
         }
 
@@ -599,7 +599,7 @@
             100%{opacity:1;transform:scale(1) translateY(0);}
         }
         .modal-panel-header{
-            background:#1A237E;
+            background:#B11116;
             color:#ffffff;
             padding:16px 20px;
             display:flex;
@@ -649,14 +649,14 @@
             color:#fff;
         }
         .modal-btn svg{width:18px;height:18px;}
-        .modal-btn-claim{background:#1A237E;}
-        .modal-btn-claim:hover{background:#121858;}
+        .modal-btn-claim{background:#B11116;}
+        .modal-btn-claim:hover{background:#8A0D11;}
         .modal-btn-danger{background:#DC2626;}
         .modal-btn-danger:hover{background:#B91C1C;}
         .modal-btn-success{background:#10B981;}
         .modal-btn-success:hover{background:#059669;}
-        .modal-btn-indigo{background:#4F46E5;}
-        .modal-btn-indigo:hover{background:#4338CA;}
+        .modal-btn-indigo{background:#C8181E;}
+        .modal-btn-indigo:hover{background:#B11116;}
 
         /* ── Masterlist Style Modal (Senior Details) ── */
         .senior-modal-backdrop {
@@ -688,7 +688,7 @@
             border: 1px solid #CBD5E1;
         }
         .senior-modal-header {
-            background: #1A237E;
+            background: #B11116;
             color: #ffffff;
             padding: 14px 22px;
             display: flex;
@@ -888,7 +888,7 @@
                 font-size:1.02rem;
                 font-weight:700;
                 line-height:1.35;
-                color:#1A237E;
+                color:#B11116;
             }
             .archive-table tbody td[data-label="Senior Citizen"]::before{display:none;}
             .archive-table tbody td[data-label="Status"]{
@@ -938,7 +938,7 @@
             box-shadow:0 24px 60px rgba(15,23,42,.22) !important;
             overflow:hidden;
         }
-        .claim-process-title{margin:0 !important;padding:20px 24px 16px !important;background:#1A237E;color:#fff !important;font-size:1.05rem !important;font-weight:800 !important;text-align:left !important;}
+        .claim-process-title{margin:0 !important;padding:20px 24px 16px !important;background:#B11116;color:#fff !important;font-size:1.05rem !important;font-weight:800 !important;text-align:left !important;}
         .claim-process-icon{margin:18px auto 0 !important;transform:scale(.78);}
         .claim-process-content{margin:0 !important;padding:18px 24px 0 !important;color:#334155 !important;}
         .claim-process-summary{margin:0 !important;padding:4px 16px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;text-align:left;}
@@ -946,15 +946,15 @@
         .claim-process-row:last-child{border-bottom:0;}
         .claim-process-label{color:#64748B;font-size:12px;font-weight:700;}
         .claim-process-value{color:#0F172A;font-size:13px;font-weight:600;text-align:right;overflow-wrap:anywhere;}
-        .claim-process-id,.claim-process-interval{display:inline-block;padding:3px 8px;border-radius:6px;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;}
+        .claim-process-id,.claim-process-interval{display:inline-block;padding:3px 8px;border-radius:6px;background:#FDF2F2;border:1px solid #F8C9C9;color:#B11116;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;}
         .claim-process-amount{color:#059669;font-size:16px;font-weight:800;}
         .claim-process-remarks{margin-top:16px;text-align:left;}
         .claim-process-remarks label{display:block;margin-bottom:6px;color:#475569;font-size:12px;font-weight:700;}
         .claim-process-remarks input{width:100%;height:42px;padding:0 12px;border:1px solid #CBD5E1;border-radius:8px;color:#1E293B;background:#fff;font:inherit;outline:none;}
-        .claim-process-remarks input:focus{border-color:#1A237E;box-shadow:0 0 0 3px rgba(26,35,126,.12);}
+        .claim-process-remarks input:focus{border-color:#B11116;box-shadow:0 0 0 3px rgba(26,35,126,.12);}
         .claim-process-confirm,.claim-process-cancel{min-width:132px !important;height:40px !important;padding:0 18px !important;border-radius:8px !important;font-family:inherit !important;font-size:13px !important;font-weight:700 !important;}
-        .claim-process-confirm{background:#1A237E !important;}
-        .claim-process-confirm:hover{background:#121858 !important;}
+        .claim-process-confirm{background:#B11116 !important;}
+        .claim-process-confirm:hover{background:#8A0D11 !important;}
         .claim-process-cancel{color:#334155 !important;border:1px solid #CBD5E1 !important;background:#fff !important;}
         .claim-process-cancel:hover{background:#F8FAFC !important;}
         @media (max-width:520px){
@@ -966,13 +966,13 @@
             .claim-process-confirm,.claim-process-cancel{width:100%;}
         }
         .claim-process-dialog{max-width:520px;}
-        .claim-process-dialog .senior-modal-header{background:#1A237E;}
+        .claim-process-dialog .senior-modal-header{background:#B11116;}
         .claim-process-dialog .senior-modal-body{padding:20px 24px;}
         .claim-process-dialog .claim-process-summary{margin:0;}
         .claim-process-error{display:none;margin-top:14px;padding:10px 12px;border:1px solid #FECACA;border-radius:8px;background:#FEF2F2;color:#991B1B;font-size:13px;text-align:left;}
         .claim-process-success{display:none;padding:18px;border:1px solid #A7F3D0;border-radius:10px;background:#ECFDF5;color:#065F46;text-align:center;font-size:14px;font-weight:600;}
         .claim-process-confirmation{display:flex;align-items:flex-start;gap:9px;margin-top:16px;color:#334155;font-size:13px;font-weight:600;text-align:left;line-height:1.4;}
-        .claim-process-confirmation input{width:17px;height:17px;flex:0 0 auto;margin:1px 0 0;accent-color:#1A237E;cursor:pointer;}
+        .claim-process-confirmation input{width:17px;height:17px;flex:0 0 auto;margin:1px 0 0;accent-color:#B11116;cursor:pointer;}
         .claim-process-dialog.is-loading .claim-process-confirm{opacity:.65;pointer-events:none;}
         @media (max-width:520px){.claim-process-dialog .senior-modal-body{padding:18px;}}
 
@@ -1107,7 +1107,7 @@
                 font-size:1.02rem;
                 font-weight:700;
                 line-height:1.35;
-                color:#1A237E;
+                color:#B11116;
             }
             .archive-table tbody td[data-label="Senior Citizen"]::before{display:none;}
             .archive-table tbody td[data-label="Status"]{
@@ -1173,7 +1173,7 @@
             <!-- Metrics Summary -->
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <div class="metric-icon" style="background:#EEF2FF;color:#3730A3;">
+                    <div class="metric-icon" style="background:#FDF2F2;color:#B11116;">
                         <i data-lucide="users"></i>
                     </div>
                     <div class="metric-info">
@@ -1279,7 +1279,7 @@
                         <span class="table-count-badge">{{ $seniors->total() }}</span>
                     </h3>
                     <div id="bulkHeaderActions" style="display:none; align-items:center; gap:8px; margin-left:auto; margin-right:16px;">
-                        <span id="selectedCountBadge" style="display:inline-flex; align-items:center; font-size:12px; font-weight:700; color:#3730A3; background:#EEF2FF; padding:4px 10px; border-radius:999px; border:1px solid #C7D2FE; white-space:nowrap;">
+                        <span id="selectedCountBadge" style="display:inline-flex; align-items:center; font-size:12px; font-weight:700; color:#B11116; background:#FDF2F2; padding:4px 10px; border-radius:999px; border:1px solid #F8C9C9; white-space:nowrap;">
                             <span id="selectedCount">0</span> selected
                         </span>
                         <button type="button" id="bulkActionButton" class="btn btn-primary btn-sm" onclick="showBulkActionPopup()">
@@ -1292,10 +1292,10 @@
                 </div>
 
                 @if($seniors->total() > $seniors->count())
-                <div id="selectAllPagesNotice" style="display:none;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;padding:10px 16px;border-radius:8px;margin:12px 16px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
-                    <i data-lucide="info" style="width:16px;height:16px;color:#4F46E5;flex-shrink:0;"></i>
+                <div id="selectAllPagesNotice" style="display:none;background:#FDF2F2;border:1px solid #F8C9C9;color:#B11116;padding:10px 16px;border-radius:8px;margin:12px 16px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
+                    <i data-lucide="info" style="width:16px;height:16px;color:#C8181E;flex-shrink:0;"></i>
                     <span id="selectAllPagesText">All <strong>{{ $seniors->total() }}</strong> senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'this list' }} are selected across all pages.</span>
-                    <button type="button" onclick="clearSelections()" style="margin-left:auto;background:transparent;border:none;color:#4338CA;text-decoration:underline;cursor:pointer;font-weight:600;font-size:12.5px;">Clear selection</button>
+                    <button type="button" onclick="clearSelections()" style="margin-left:auto;background:transparent;border:none;color:#B11116;text-decoration:underline;cursor:pointer;font-weight:600;font-size:12.5px;">Clear selection</button>
                 </div>
                 @endif
 
@@ -1846,7 +1846,7 @@
             text: `You are about to process in-between birthday cash gift claims for ${count} selected senior(s). Ineligible or already-claimed seniors will be automatically skipped.`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#1A237E',
+            confirmButtonColor: '#B11116',
             cancelButtonColor: '#6B7280',
             confirmButtonText: 'Yes, Process Claims',
             cancelButtonText: 'Cancel',
@@ -1886,7 +1886,7 @@
                     title: 'Claims Processed!',
                     text: result.value.message || 'Selected claims have been processed successfully.',
                     icon: 'success',
-                    confirmButtonColor: '#1A237E'
+                    confirmButtonColor: '#B11116'
                 }).then(() => {
                     window.location.reload();
                 });
@@ -1914,7 +1914,7 @@
             text: `You are about to archive ${count} record(s). This action can be undone from the archive page.`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#1A237E',
+            confirmButtonColor: '#B11116',
             cancelButtonColor: '#6B7280',
             confirmButtonText: 'Yes, Archive',
             cancelButtonText: 'Cancel'
@@ -1970,7 +1970,7 @@
             text: `You are about to generate ID cards for ${count} senior(s). Continue?`,
             icon: 'info',
             showCancelButton: true,
-            confirmButtonColor: '#1A237E',
+            confirmButtonColor: '#B11116',
             cancelButtonColor: '#6B7280',
             confirmButtonText: 'Yes, Generate',
             cancelButtonText: 'Cancel'
@@ -2135,15 +2135,15 @@
                             font-family: Arial, Helvetica, sans-serif;
                             font-size: 14px;
                             font-weight: bold;
-                            color: #1A237E;
+                            color: #B11116;
                             letter-spacing: 0.4px;
                         }
                         .line {
-                            border-top: 2px solid #1A237E;
+                            border-top: 2px solid #B11116;
                             margin: 2px 0 1px;
                         }
                         .line2 {
-                            border-top: 1px solid #1A237E;
+                            border-top: 1px solid #B11116;
                             margin-bottom: 4px;
                         }
                         .report-title {
@@ -2153,7 +2153,7 @@
                         .report-title h3 {
                             font-size: 14px;
                             margin: 0;
-                            color: #1A237E;
+                            color: #B11116;
                             text-transform: uppercase;
                             font-weight: bold;
                             letter-spacing: 0.5px;
@@ -2172,14 +2172,14 @@
                             page-break-inside: avoid;
                         }
                         .data-table th {
-                            background: #1A237E;
+                            background: #B11116;
                             color: #ffffff;
                             padding: 7px 4.5px;
                             text-align: left;
                             font-weight: bold;
                             font-size: 11.5px;
                             text-transform: uppercase;
-                            border: 1px solid #1A237E;
+                            border: 1px solid #B11116;
                             overflow: hidden;
                             word-wrap: break-word;
                             -webkit-print-color-adjust: exact;
@@ -2293,7 +2293,7 @@
                 icon: 'error',
                 title: 'Export Failed',
                 text: 'An error occurred while preparing the export. Please try again.',
-                confirmButtonColor: '#1A237E'
+                confirmButtonColor: '#B11116'
             });
         }
     }
@@ -2371,7 +2371,7 @@
                 title: 'Success!',
                 text: '{{ session('success') }}',
                 icon: 'success',
-                confirmButtonColor: '#1A237E',
+                confirmButtonColor: '#B11116',
                 confirmButtonText: 'OK',
                 timer: 3000,
                 timerProgressBar: true
@@ -2382,7 +2382,7 @@
                 title: 'Error!',
                 text: '{{ session('error') }}',
                 icon: 'error',
-                confirmButtonColor: '#1A237E',
+                confirmButtonColor: '#B11116',
                 confirmButtonText: 'OK'
             });
         @endif
@@ -2397,7 +2397,7 @@
         document.getElementById('modalControlNumber').innerHTML = `<span class="ref-badge" style="background:#F1F5F9; color:#334155; border-color:#CBD5E1;">${data.control_number}</span>`;
 
         const statusColors = {
-            approved: { bg: '#EEF2FF', text: '#3730A3', border: '#C7D2FE', dot: '#4F46E5' },
+            approved: { bg: '#FDF2F2', text: '#B11116', border: '#F8C9C9', dot: '#C8181E' },
             released: { bg: '#ECFDF5', text: '#065F46', border: '#A7F3D0', dot: '#10B981' },
             pending: { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A', dot: '#F59E0B' },
             rejected: { bg: '#FEE2E2', text: '#991B1B', border: '#FECACA', dot: '#EF4444' }
@@ -2542,7 +2542,7 @@
                     icon: 'success',
                     title: 'Claim Processed',
                     text: 'The claim has been processed successfully.',
-                    confirmButtonColor: '#1A237E',
+                    confirmButtonColor: '#B11116',
                     timer: 5000,
                     timerProgressBar: true,
                     didClose: () => window.location.reload()

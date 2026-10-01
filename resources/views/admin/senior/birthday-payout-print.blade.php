@@ -32,11 +32,11 @@
             line-height: 1.3;
         }
         .lh-meta  { font-size: 8.5px; color: #4b5563; }
-        .lh-title { font-size: 13px; font-weight: bold; color: #1A237E; margin: 2px 0 1px; }
+        .lh-title { font-size: 13px; font-weight: bold; color: #B11116; margin: 2px 0 1px; }
         .lh-sub   { font-size: 9px; color: #374151; margin: 0; }
 
-        .rule-thick { border-top: 2.5px solid #1A237E; margin: 2px 0 1px; }
-        .rule-thin  { border-top: 1px solid #1A237E; margin-bottom: 3px; }
+        .rule-thick { border-top: 2.5px solid #B11116; margin: 2px 0 1px; }
+        .rule-thin  { border-top: 1px solid #B11116; margin-bottom: 3px; }
 
         /* â”€â”€â”€ DOC TITLE ROW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .doc-title-table {
@@ -46,7 +46,7 @@
             margin-bottom: 3px;
         }
         .doc-title-table td { border: none; padding: 0 4px; vertical-align: middle; }
-        .doc-title-left  { font-size: 12px; font-weight: bold; color: #1A237E; text-transform: uppercase; }
+        .doc-title-left  { font-size: 12px; font-weight: bold; color: #B11116; text-transform: uppercase; }
         .doc-title-right {
             font-size: 9px;
             color: #374151;
@@ -80,14 +80,14 @@
         .data-table tr    { page-break-inside: avoid; }
 
         .data-table th {
-            background: #1A237E;
+            background: #B11116;
             color: #fff;
             font-size: 10px;
             font-weight: bold;
             text-transform: uppercase;
             text-align: center;
             padding: 6px 4px;
-            border: 1px solid #1A237E;
+            border: 1px solid #B11116;
         }
         .data-table th.tl { text-align: left; }
 
@@ -104,7 +104,7 @@
         .total-row td {
             font-weight: bold;
             background: #e8eaf6;
-            border-top: 2px solid #1A237E;
+            border-top: 2px solid #B11116;
             font-size: 10.5px;
         }
 

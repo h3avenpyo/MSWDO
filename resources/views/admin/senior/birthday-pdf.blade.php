@@ -5,12 +5,12 @@
     <title>Birthday Beneficiaries Report</title>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10px; color: #333; margin: 20px; }
-        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #1A237E; padding-bottom: 10px; }
-        .header h1 { font-size: 16px; margin: 0 0 4px; color: #1A237E; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #B11116; padding-bottom: 10px; }
+        .header h1 { font-size: 16px; margin: 0 0 4px; color: #B11116; }
         .header h2 { font-size: 12px; margin: 0 0 4px; color: #333; }
         .header p { font-size: 9px; margin: 0; color: #666; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 8.5px; }
-        th { background: #1A237E; color: white; padding: 5px 4px; text-align: left; font-weight: 600; font-size: 7.5px; text-transform: uppercase; }
+        th { background: #B11116; color: white; padding: 5px 4px; text-align: left; font-weight: 600; font-size: 7.5px; text-transform: uppercase; }
         td { padding: 4px; border-bottom: 1px solid #ddd; }
         tr:nth-child(even) { background: #f9f9f9; }
         .summary { margin-top: 15px; }
@@ -66,7 +66,7 @@
 
     @if($barangaySummary->count() > 0)
     <div class="summary">
-        <h3 style="font-size: 10px; color: #1A237E; margin-bottom: 5px;">Barangay Summary</h3>
+        <h3 style="font-size: 10px; color: #B11116; margin-bottom: 5px;">Barangay Summary</h3>
         <table>
             <thead><tr><th>Barangay</th><th>Total Beneficiaries</th></tr></thead>
             <tbody>

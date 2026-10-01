@@ -12,10 +12,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root{
-            --primary:#1A237E;
-            --primary-hover:#121858;
-            --primary-dark:#0D1442;
-            --sidebar-bg:#1A237E;
+            --primary:#B11116;
+            --primary-hover:#8A0D11;
+            --primary-dark:#8A0D11;
+            --sidebar-bg:#B11116;--sidebar-dark:#8A0D11;
             --sidebar-width:260px;
             --accent-yellow:#FBC02D;
             --background:#F1F5F9;
@@ -393,13 +393,13 @@
             margin:0;
         }
         .table-count-badge{
-            background:#EEF2FF;
+            background:#FDF2F2;
             color:var(--primary);
             font-size:12px;
             font-weight:700;
             padding:2px 8px;
             border-radius:999px;
-            border:1px solid #C7D2FE;
+            border:1px solid #F8C9C9;
         }
         .archive-table-wrap{
             border:none;
@@ -472,8 +472,8 @@
             border-radius:50%;
             display:inline-block;
         }
-        .badge-approved{background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE;}
-        .badge-approved .badge-dot{background:#4F46E5;}
+        .badge-approved{background:#FDF2F2;color:#B11116;border:1px solid #F8C9C9;}
+        .badge-approved .badge-dot{background:#C8181E;}
         .badge-released{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;}
         .badge-released .badge-dot{background:#10B981;}
         .badge-pending{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;}
@@ -496,11 +496,11 @@
             font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
             font-size:12px;
             font-weight:700;
-            color:#1A237E;
-            background:#EEF2FF;
+            color:#B11116;
+            background:#FDF2F2;
             padding:3px 8px;
             border-radius:6px;
-            border:1px solid #C7D2FE;
+            border:1px solid #F8C9C9;
             display:inline-block;
         }
 
@@ -643,12 +643,12 @@
             border-color:#CBD5E1;
         }
         .modal-btn-indigo{
-            background:#EEF2FF;
-            border-color:#C7D2FE;
-            color:#3730A3;
+            background:#FDF2F2;
+            border-color:#F8C9C9;
+            color:#B11116;
         }
         .modal-btn-indigo:hover{
-            background:#E0E7FF;
+            background:#FDF2F2;
             border-color:#A5B4FC;
         }
 
@@ -682,7 +682,7 @@
             border: 1px solid #CBD5E1;
         }
         .senior-modal-header {
-            background: #1A237E;
+            background: #B11116;
             color: #ffffff;
             padding: 14px 22px;
             display: flex;
@@ -883,7 +883,7 @@
                 font-size:1.02rem;
                 font-weight:700;
                 line-height:1.35;
-                color:#1A237E;
+                color:#B11116;
             }
             .archive-table tbody td[data-label="Senior Citizen"]::before{display:none;}
             .archive-table tbody td[data-label="Status"]{
@@ -964,7 +964,7 @@
             <!-- Metrics Summary -->
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <div class="metric-icon" style="background:#EEF2FF;color:#3730A3;">
+                    <div class="metric-icon" style="background:#FDF2F2;color:#B11116;">
                         <i data-lucide="receipt-text"></i>
                     </div>
                     <div class="metric-info">
@@ -1098,7 +1098,7 @@
                             <i data-lucide="list"></i> Benefit History Records
                             <span class="table-count-badge">{{ $benefits->total() }}</span>
                         </h3>
-                        <span id="selectedCountBadge" style="display:none; font-size:12px; font-weight:700; color:#3730A3; background:#EEF2FF; padding:3px 10px; border-radius:999px; border:1px solid #C7D2FE;">
+                        <span id="selectedCountBadge" style="display:none; font-size:12px; font-weight:700; color:#B11116; background:#FDF2F2; padding:3px 10px; border-radius:999px; border:1px solid #F8C9C9;">
                             <span id="selectedCount">0</span> selected
                         </span>
                     </div>
@@ -1628,15 +1628,15 @@
                             font-family: Arial, Helvetica, sans-serif;
                             font-size: 14px;
                             font-weight: bold;
-                            color: #1A237E;
+                            color: #B11116;
                             letter-spacing: 0.4px;
                         }
                         .line {
-                            border-top: 2px solid #1A237E;
+                            border-top: 2px solid #B11116;
                             margin: 2px 0 1px;
                         }
                         .line2 {
-                            border-top: 1px solid #1A237E;
+                            border-top: 1px solid #B11116;
                             margin-bottom: 4px;
                         }
                         .report-title {
@@ -1646,7 +1646,7 @@
                         .report-title h3 {
                             font-size: 14px;
                             margin: 0;
-                            color: #1A237E;
+                            color: #B11116;
                             text-transform: uppercase;
                             font-weight: bold;
                             letter-spacing: 0.5px;
@@ -1665,14 +1665,14 @@
                             page-break-inside: avoid;
                         }
                         .data-table th {
-                            background: #1A237E;
+                            background: #B11116;
                             color: #ffffff;
                             padding: 7px 4.5px;
                             text-align: left;
                             font-weight: bold;
                             font-size: 11.5px;
                             text-transform: uppercase;
-                            border: 1px solid #1A237E;
+                            border: 1px solid #B11116;
                             overflow: hidden;
                             word-wrap: break-word;
                             -webkit-print-color-adjust: exact;
@@ -1833,7 +1833,7 @@
                 icon: 'error',
                 title: 'Export Failed',
                 text: 'An error occurred while preparing the export. Please try again.',
-                confirmButtonColor: '#1A237E'
+                confirmButtonColor: '#B11116'
             });
         }
     }
@@ -1842,7 +1842,7 @@
         document.getElementById('modalControlNumber').innerHTML = `<span class="ref-badge" style="background:transparent; color:#334155; border-color:transparent; padding:0;">${data.senior_id}</span>`;
         
         const statusColors = {
-            approved: { bg: '#EEF2FF', text: '#3730A3', border: '#C7D2FE', dot: '#4F46E5' },
+            approved: { bg: '#FDF2F2', text: '#B11116', border: '#F8C9C9', dot: '#C8181E' },
             released: { bg: '#ECFDF5', text: '#065F46', border: '#A7F3D0', dot: '#10B981' },
             pending: { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A', dot: '#F59E0B' },
             rejected: { bg: '#FEE2E2', text: '#991B1B', border: '#FECACA', dot: '#EF4444' },
@@ -1889,7 +1889,7 @@
                 icon: 'success',
                 title: 'Export Complete',
                 text: 'Selected records exported successfully.',
-                confirmButtonColor: '#1A237E'
+                confirmButtonColor: '#B11116'
             });
         }
     });

@@ -16,7 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root{
-            --primary:#1A237E;--primary-hover:#121858;--primary-dark:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--success:#16A34A;--success-bg:#ECFDF5;--danger:#DC2626;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EEF2FF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+            --primary:#B11116;--primary-hover:#8A0D11;--primary-dark:#8A0D11;--sidebar-bg:#B11116;--sidebar-dark:#8A0D11;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--success:#16A34A;--success-bg:#ECFDF5;--danger:#DC2626;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EEF2FF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
         }
         *,*::before,*::after{box-sizing:border-box;}
         html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);min-height:100%;}
@@ -31,8 +31,8 @@
         .btn svg{width:16px;height:16px;}
         .btn-export{background:var(--primary);color:#fff;border-color:var(--primary);}
         .btn-export:hover{background:var(--primary-hover);border-color:var(--primary-hover);}
-        .btn-bulk{background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE;}
-        .btn-bulk:hover{border-color:#3730A3;transform:none;}
+        .btn-bulk{background:#FDF2F2;color:#B11116;border:1px solid #F8C9C9;}
+        .btn-bulk:hover{border-color:#B11116;transform:none;}
         .btn-bulk:disabled{opacity:.45;cursor:not-allowed;pointer-events:none;}
         .btn-clear{background:#FEF2F2;color:var(--danger);border:1px solid #FECACA;font-weight:600;}
         .btn-clear:hover{border-color:var(--danger);background:#FEE2E2;}
@@ -42,7 +42,7 @@
         .modal-overlay.active{display:flex;}
         .modal-panel{background:var(--surface);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.15);width:90%;max-width:440px;overflow:hidden;transform:scale(.95);opacity:0;transition:all .2s ease;}
         .modal-overlay.active .modal-panel{transform:scale(1);opacity:1;}
-        .modal-panel-header{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#1A237E;color:#ffffff;}
+        .modal-panel-header{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#B11116;color:#ffffff;}
         .modal-panel-header h5{font-size:1rem;font-weight:600;display:flex;align-items:center;gap:8px;color:#ffffff;margin:0;}
         .modal-close{color:#ffffff;cursor:pointer;border:none;background:transparent;padding:4px;border-radius:6px;display:flex;align-items:center;justify-content:center;opacity:0.8;transition:opacity 0.2s;}
         .modal-close:hover{opacity:1;}
@@ -119,7 +119,7 @@
         .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
         .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
         .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
-        .sc-page-btn.active { background: #1A237E; color: #fff; border-color: #1A237E; font-weight: 700; }
+        .sc-page-btn.active { background: #B11116; color: #fff; border-color: #B11116; font-weight: 700; }
         .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         /* ── Filter container ── */
@@ -204,7 +204,7 @@
             .app .main-scroll{flex:1 !important;min-height:0 !important;overflow-y:auto !important;overflow-x:hidden !important;display:flex !important;flex-direction:column !important;}
             .archive-panel-wrap{padding:1rem !important;margin-bottom:0 !important;flex:1 !important;min-height:0 !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;}
             .archive-table-wrap{flex:1 !important;min-height:0 !important;border:1px solid var(--border) !important;overflow:auto !important;border-radius:8px !important;}
-            .empty-icon-wrap{width:80px;height:80px;margin-bottom:20px;background:#EEF2FF;color:#1A237E;}
+            .empty-icon-wrap{width:80px;height:80px;margin-bottom:20px;background:#FDF2F2;color:#B11116;}
             .empty-icon-wrap svg{width:40px !important;height:40px !important;}
             .empty-title{font-size:1.35rem !important;font-weight:700 !important;color:#111827 !important;margin-bottom:8px !important;}
             .empty-subtitle{font-size:0.95rem !important;color:#6B7280 !important;max-width:400px;line-height:1.5;}
@@ -249,7 +249,7 @@
             min-width: 140px;
         }
         .selected-count-badge {
-            background: #3730A3;
+            background: #B11116;
             color: #fff;
             padding: 2px 8px;
             border-radius: 10px;
@@ -284,7 +284,7 @@
             .archive-table tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;text-align:left;line-height:1.5;grid-column:1;}
             .archive-table tbody td.col-check{order:-4;display:flex;justify-content:flex-end;align-items:center;padding:0 0 8px;border-bottom:none;}
             .archive-table tbody td.col-check::before{display:none;}
-            .archive-table tbody td[data-label="Full Name"]{order:-3;display:block;padding:2px 120px 12px 0;border-bottom:none;font-size:1.02rem;font-weight:700;line-height:1.35;color:#1A237E;}
+            .archive-table tbody td[data-label="Full Name"]{order:-3;display:block;padding:2px 120px 12px 0;border-bottom:none;font-size:1.02rem;font-weight:700;line-height:1.35;color:#B11116;}
             .archive-table tbody td[data-label="Full Name"]::before{display:none;}
             .archive-table tbody td[data-label="Status"]{position:absolute;top:30px;right:14px;display:flex;align-items:center;gap:8px;}
             .archive-table tbody td[data-label="Status"]::before{display:none;}
@@ -379,7 +379,7 @@
             overflow: hidden;
         }
         .senior-modal-header {
-            background: #1A237E;
+            background: #B11116;
             color: #ffffff;
             padding: 12px 20px;
             display: flex;
@@ -639,7 +639,7 @@
             @endif
 
             @if($seniors->total() > $seniors->count())
-            <div id="selectAllPagesNotice" style="display:none;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
+            <div id="selectAllPagesNotice" style="display:none;background:#FDF2F2;border:1px solid #F8C9C9;color:#B11116;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
                 <span id="selectAllPagesText">All {{ $seniors->total() }} senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.</span>
             </div>
             @endif
@@ -947,7 +947,7 @@
             text: `You are about to generate ID cards for ${count} senior(s). Continue?`,
             icon: 'info',
             showCancelButton: true,
-            confirmButtonColor: '#1A237E',
+            confirmButtonColor: '#B11116',
             cancelButtonColor: '#6B7280',
             confirmButtonText: 'Yes, Generate',
             cancelButtonText: 'Cancel'
@@ -1017,7 +1017,7 @@
                 text: `Are you sure you want to archive ${seniorName}? This can be undone from the archive page.`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#1A237E',
+                confirmButtonColor: '#B11116',
                 cancelButtonColor: '#6B7280',
                 confirmButtonText: 'Yes, Archive',
                 cancelButtonText: 'Cancel',
@@ -1180,9 +1180,9 @@
                 bulkBtn.style.display    = 'inline-flex';
                 bulkBtn.disabled         = false;
                 bulkBtn.style.opacity    = '1';
-                bulkBtn.style.background = '#3730A3';
+                bulkBtn.style.background = '#B11116';
                 bulkBtn.style.color      = 'white';
-                bulkBtn.style.borderColor = '#312E81';
+                bulkBtn.style.borderColor = '#8A0D11';
             }
             if (clearSelectBtn) clearSelectBtn.style.display = 'inline-flex';
             if (clearFilterBtn) clearFilterBtn.style.display = 'none';          // hidden in selection mode
@@ -1202,9 +1202,9 @@
                 bulkBtn.style.display    = 'none';
                 bulkBtn.disabled         = true;
                 bulkBtn.style.opacity    = '0.45';
-                bulkBtn.style.background = '#E0E7FF';
-                bulkBtn.style.color      = '#3730A3';
-                bulkBtn.style.borderColor = '#C7D2FE';
+                bulkBtn.style.background = '#FDF2F2';
+                bulkBtn.style.color      = '#B11116';
+                bulkBtn.style.borderColor = '#F8C9C9';
             }
             if (clearSelectBtn) clearSelectBtn.style.display = 'none';
             if (clearFilterBtn) clearFilterBtn.style.display = 'none';
@@ -1246,7 +1246,7 @@
             text: `You are about to archive ${count} record(s). This action can be undone from the archive page.`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#1A237E',
+            confirmButtonColor: '#B11116',
             cancelButtonColor: '#6B7280',
             confirmButtonText: 'Yes, Archive',
             cancelButtonText: 'Cancel',
@@ -1357,7 +1357,7 @@
                     icon: 'info',
                     title: 'No Records',
                     text: 'No senior citizen records found to export.',
-                    confirmButtonColor: '#1A237E'
+                    confirmButtonColor: '#B11116'
                 });
                 return;
             }
@@ -1407,7 +1407,7 @@
                 text: totalBatches > 1 
                     ? `Successfully downloaded all ${totalBatches} batches (${totalCount.toLocaleString()} total records).`
                     : `Successfully exported ${totalCount.toLocaleString()} record(s).`,
-                confirmButtonColor: '#1A237E',
+                confirmButtonColor: '#B11116',
                 timer: 3500,
                 timerProgressBar: true
             });
@@ -1417,7 +1417,7 @@
                 icon: 'error',
                 title: 'Download Failed',
                 text: 'Something went wrong during export. Please try again.',
-                confirmButtonColor: '#1A237E'
+                confirmButtonColor: '#B11116'
             });
         }
     }
@@ -1452,7 +1452,7 @@
             text: `You are about to export ${count} record(s) to CSV.`,
             icon: 'info',
             showCancelButton: true,
-            confirmButtonColor: '#1A237E',
+            confirmButtonColor: '#B11116',
             cancelButtonColor: '#EF4444',
             confirmButtonText: 'Yes, Export',
             cancelButtonText: 'Cancel'
@@ -1520,7 +1520,7 @@
                 title: 'Success!',
                 text: '{{ session('success') }}',
                 icon: 'success',
-                confirmButtonColor: '#1A237E',
+                confirmButtonColor: '#B11116',
                 confirmButtonText: 'OK',
                 background: '#ffffff',
                 timer: 3000,
@@ -1533,7 +1533,7 @@
                 title: 'Error!',
                 text: '{{ session('error') }}',
                 icon: 'error',
-                confirmButtonColor: '#1A237E',
+                confirmButtonColor: '#B11116',
                 confirmButtonText: 'OK',
                 background: '#ffffff',
                 customClass: { popup: 'rounded-4 shadow-lg' }

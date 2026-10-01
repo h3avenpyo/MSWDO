@@ -16,7 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root{
-            --primary:#1A237E;--primary-hover:#121858;--primary-dark:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--success:#16A34A;--success-bg:#ECFDF5;--danger:#DC2626;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EEF2FF;--purple:#7C3AED;--purple-bg:#F3E8FF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+            --primary:#B11116;--primary-hover:#8A0D11;--primary-dark:#8A0D11;--sidebar-bg:#B11116;--sidebar-dark:#8A0D11;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--success:#16A34A;--success-bg:#ECFDF5;--danger:#DC2626;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EEF2FF;--purple:#7C3AED;--purple-bg:#F3E8FF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
         }
         *,*::before,*::after{box-sizing:border-box;}
         html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);min-height:100%;}
@@ -46,10 +46,10 @@
         .search-btn:hover{background:var(--primary-hover);}
         .search-btn svg{width:18px;height:18px;}
         .bulk-actions-row{display:flex;gap:8px;align-items:center;min-width:0;}
-        .bulk-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE;cursor:pointer;transition:all .2s ease;font-family:inherit;height:44px;min-height:44px;flex:1;white-space:nowrap;}
+        .bulk-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;background:#FDF2F2;color:#B11116;border:1px solid #F8C9C9;cursor:pointer;transition:all .2s ease;font-family:inherit;height:44px;min-height:44px;flex:1;white-space:nowrap;}
         .bulk-btn:disabled{opacity:.45;cursor:not-allowed;}
         .bulk-btn svg{width:15px;height:15px;flex-shrink:0;}
-        .bulk-count{background:#3730A3;color:white;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:4px;}
+        .bulk-count{background:#B11116;color:white;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:4px;}
 
         /* ── Table Card ── */
         .table-card-title{font-size:1.25rem;font-weight:700;color:var(--text-primary);margin:0 0 1.25rem 0;flex-shrink:0;padding:0 24px;}
@@ -102,7 +102,7 @@
         .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
         .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
         .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
-        .sc-page-btn.active { background: #1A237E; color: #fff; border-color: #1A237E; font-weight: 700; }
+        .sc-page-btn.active { background: #B11116; color: #fff; border-color: #B11116; font-weight: 700; }
         .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         /* ── Mobile Select All ── */
@@ -131,7 +131,7 @@
         .modal-overlay.active{display:flex;}
         .modal-panel{background:var(--surface);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.15);width:90%;max-width:440px;overflow:hidden;transform:scale(.95);opacity:0;transition:all .2s ease;}
         .modal-overlay.active .modal-panel{transform:scale(1);opacity:1;}
-        .modal-panel-header{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#1A237E;color:#ffffff;}
+        .modal-panel-header{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#B11116;color:#ffffff;}
         .modal-panel-header h5{font-size:1rem;font-weight:600;display:flex;align-items:center;gap:8px;color:#ffffff;margin:0;}
         .modal-close{color:#ffffff;cursor:pointer;border:none;background:transparent;padding:4px;border-radius:6px;display:flex;align-items:center;justify-content:center;opacity:0.8;transition:opacity 0.2s;}
         .modal-close:hover{opacity:1;}
@@ -296,7 +296,7 @@
             .archive-table tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;text-align:left;line-height:1.5;grid-column:1;}
             .archive-table tbody td.col-check{order:-4;display:flex;justify-content:flex-end;align-items:center;padding:0 0 8px;border-bottom:none;}
             .archive-table tbody td.col-check::before{display:none;}
-            .archive-table tbody td[data-label="Full Name"]{order:-3;display:block;padding:2px 120px 12px 0;border-bottom:none;font-size:1.02rem;font-weight:700;line-height:1.35;color:#1A237E;}
+            .archive-table tbody td[data-label="Full Name"]{order:-3;display:block;padding:2px 120px 12px 0;border-bottom:none;font-size:1.02rem;font-weight:700;line-height:1.35;color:#B11116;}
             .archive-table tbody td[data-label="Full Name"]::before{display:none;}
             .archive-table tbody td[data-label="Status"]{position:absolute;top:30px;right:14px;display:flex;align-items:center;gap:8px;}
             .archive-table tbody td[data-label="Status"]::before{display:none;}
@@ -306,7 +306,7 @@
             .archive-table tbody tr.empty-row{display:block !important;background:transparent !important;border:none !important;box-shadow:none !important;padding:0 !important;margin:0 !important;}
             .archive-table tbody td.empty-cell{display:flex !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:0 !important;}
             .archive-table tbody td.empty-cell::before{display:none !important;}
-            .td-name{font-size:1.05rem !important;font-weight:700 !important;color:#1A237E !important;}
+            .td-name{font-size:1.05rem !important;font-weight:700 !important;color:#B11116 !important;}
             .td-addr{white-space:normal !important;overflow:visible !important;text-overflow:clip !important;font-size:.85rem !important;color:var(--text-secondary);margin-top:3px;}
             .sex-age-wrap{white-space:nowrap;}
             .btn-restore{min-height:44px;padding:10px 14px;font-size:13px;}
@@ -336,7 +336,7 @@
             .archive-table tbody tr.empty-row{display:table-row !important;background:transparent !important;border:none !important;box-shadow:none !important;margin:0 !important;}
             .archive-table tbody tr.empty-row td.empty-cell{display:table-cell !important;padding:3rem 1.5rem !important;border:none !important;text-align:center !important;}
             .archive-table tbody tr.empty-row td.empty-cell::before{display:none !important;}
-            .empty-icon-wrap{width:80px;height:80px;margin-bottom:20px;background:#EEF2FF;color:#1A237E;}
+            .empty-icon-wrap{width:80px;height:80px;margin-bottom:20px;background:#FDF2F2;color:#B11116;}
             .empty-icon-wrap svg{width:40px !important;height:40px !important;}
             .empty-title{font-size:1.35rem !important;font-weight:700 !important;color:#111827 !important;margin-bottom:8px !important;}
             .empty-subtitle{font-size:0.95rem !important;color:#6B7280 !important;max-width:400px;line-height:1.5;}
@@ -436,7 +436,7 @@
                 </div>
             @endif
             @if($archivedSeniors->total() > $archivedSeniors->count())
-            <div id="selectAllPagesNotice" style="display:none;background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
+            <div id="selectAllPagesNotice" style="display:none;background:#FDF2F2;border:1px solid #F8C9C9;color:#B11116;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:13px;align-items:center;flex-wrap:wrap;gap:8px;">
                 <span id="selectAllPagesText">All {{ $archivedSeniors->total() }} archived senior citizens in {{ request('barangay') ? 'Barangay ' . request('barangay') : 'the list' }} are selected.</span>
             </div>
             @endif
@@ -662,9 +662,9 @@
             button.disabled = !selectAllChecked;
             button.style.display = selectAllChecked ? 'inline-flex' : 'none';
             button.style.opacity = selectAllChecked ? '1' : '0.45';
-            button.style.background = selectAllChecked ? '#3730A3' : '#E0E7FF';
-            button.style.color = selectAllChecked ? 'white' : '#3730A3';
-            button.style.borderColor = selectAllChecked ? '#312E81' : '#C7D2FE';
+            button.style.background = selectAllChecked ? '#B11116' : '#FDF2F2';
+            button.style.color = selectAllChecked ? 'white' : '#B11116';
+            button.style.borderColor = selectAllChecked ? '#8A0D11' : '#F8C9C9';
         }
     }
 
@@ -779,7 +779,7 @@
                     icon: 'info',
                     title: 'No Records',
                     text: 'No archived senior citizen records found to export.',
-                    confirmButtonColor: '#1A237E'
+                    confirmButtonColor: '#B11116'
                 });
                 return;
             }
@@ -829,7 +829,7 @@
                 text: totalBatches > 1 
                     ? `Successfully downloaded all ${totalBatches} batches (${totalCount.toLocaleString()} total records).`
                     : `Successfully exported ${totalCount.toLocaleString()} record(s).`,
-                confirmButtonColor: '#1A237E',
+                confirmButtonColor: '#B11116',
                 timer: 3500,
                 timerProgressBar: true
             });
@@ -839,7 +839,7 @@
                 icon: 'error',
                 title: 'Download Failed',
                 text: 'Something went wrong during export. Please try again.',
-                confirmButtonColor: '#1A237E'
+                confirmButtonColor: '#B11116'
             });
         }
     }
@@ -928,7 +928,7 @@
                 title: 'Success!',
                 text: "{{ session('success') }}",
                 icon: 'success',
-                confirmButtonColor: '#1A237E',
+                confirmButtonColor: '#B11116',
                 confirmButtonText: 'OK',
                 background: '#ffffff',
                 timer: 3000,

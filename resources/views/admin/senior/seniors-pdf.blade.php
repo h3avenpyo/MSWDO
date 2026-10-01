@@ -51,15 +51,15 @@
             font-family: Arial, Helvetica, sans-serif;
             font-size: 14px;
             font-weight: bold;
-            color: #1A237E;
+            color: #B11116;
             letter-spacing: 0.4px;
         }
         .line {
-            border-top: 2px solid #1A237E;
+            border-top: 2px solid #B11116;
             margin: 2px 0 1px;
         }
         .line2 {
-            border-top: 1px solid #1A237E;
+            border-top: 1px solid #B11116;
             margin-bottom: 4px;
         }
         .report-title {
@@ -69,7 +69,7 @@
         .report-title h3 {
             font-size: 14px;
             margin: 0;
-            color: #1A237E;
+            color: #B11116;
             text-transform: uppercase;
             font-weight: bold;
             letter-spacing: 0.5px;
@@ -97,7 +97,7 @@
         }
         .data-table thead {
             display: table-header-group;
-            background: #1A237E;
+            background: #B11116;
             color: white;
         }
         .data-table tr {
@@ -109,7 +109,7 @@
             font-weight: bold;
             font-size: 11.5px;
             text-transform: uppercase;
-            border: 1px solid #1A237E;
+            border: 1px solid #B11116;
             color: #ffffff;
             overflow: hidden;
             word-wrap: break-word;
@@ -204,7 +204,7 @@
             <td style="text-align: right;">
                 <strong>Total Records:</strong> {{ number_format($total) }}
                 @if(isset($totalParts) && $totalParts > 1)
-                    <span style="color:#1A237E;font-weight:bold;">&nbsp;(Batch {{ $currentPart }} of {{ $totalParts }} &bull; Records {{ number_format($partStart) }}–{{ number_format($partEnd) }})</span>
+                    <span style="color:#B11116;font-weight:bold;">&nbsp;(Batch {{ $currentPart }} of {{ $totalParts }} &bull; Records {{ number_format($partStart) }}–{{ number_format($partEnd) }})</span>
                 @endif
             </td>
         </tr>

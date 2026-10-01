@@ -46,7 +46,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
     /* ── Header & Subtitle ── */
     .cases-section-header { margin-bottom: 10px; }
-    .cases-section-title { font-size: 1.05rem; font-weight: 800; color: #1A237E; margin: 0 0 4px; letter-spacing: -0.01em; }
+    .cases-section-title { font-size: 1.05rem; font-weight: 800; color: #B11116; margin: 0 0 4px; letter-spacing: -0.01em; }
     .cases-subtitle { color: #6B7280; font-size: 0.85rem; margin: 0 0 10px; white-space: normal; overflow-wrap: break-word; line-height: 1.4; }
 
     /* ── Filter bar ── */
@@ -58,10 +58,10 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .filter-search-wrap { display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s; }
     .filter-search-wrap:focus-within { box-shadow: 0 0 0 3px rgba(26,35,126,.12); border-radius: 8px; }
     .filter-search input { flex: 1 1 auto; width: 1%; min-width: 0; height: 44px !important; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; padding: 0 16px; font-size: 0.875rem; color: #111827; background: #fff; outline: none; transition: border-color .15s; box-sizing: border-box !important; margin: 0 !important; }
-    .filter-search input:focus { border-color: #1A237E; }
+    .filter-search input:focus { border-color: #B11116; }
     .filter-search input::placeholder { color: #9CA3AF; }
-    .filter-search-btn { height: 44px !important; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch; }
-    .filter-search-btn:hover { background: #121858; }
+    .filter-search-btn { height: 44px !important; padding: 0 20px; border: 1px solid #B11116; border-radius: 0 8px 8px 0; background: #B11116; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch; }
+    .filter-search-btn:hover { background: #8A0D11; }
 
     .filter-dropdown { flex: 1 1 200px; min-width: 180px; position: relative; }
     .filter-select-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; height: 44px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 0.875rem; cursor: pointer; background: #fff; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
@@ -75,10 +75,10 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .filter-reset-btn.visible { display: inline-flex; }
 
     /* ── Dropdown options ── */
-    .status-opt.selected, .assistance-opt.selected, .barangay-opt.selected { background: #EEF2FF; color: #1A237E; font-weight: 600; }
+    .status-opt.selected, .assistance-opt.selected, .barangay-opt.selected { background: #FDF2F2; color: #B11116; font-weight: 600; }
     .status-opt:hover, .assistance-opt:hover, .barangay-opt:hover { background: #F3F4F6; }
-    #statusBtn.active   { border-color: #1A237E; background: #EEF2FF; }
-    #assistanceBtn.active { border-color: #1A237E; background: #EEF2FF; }
+    #statusBtn.active   { border-color: #B11116; background: #FDF2F2; }
+    #assistanceBtn.active { border-color: #B11116; background: #FDF2F2; }
     #barangayBtn.active { border-color: #059669; background: #ECFDF5; color: #065F46; }
 
     /* ── Panel / wrap ── */
@@ -109,7 +109,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .b-review, .badge-review { background: #FEF3C7 !important; color: #92400E !important; border: 1px solid #FDE68A !important; }
     .b-approved, .badge-approved { background: #DEF7EC !important; color: #03543F !important; border: 1px solid #BCF0DA !important; }
     .b-released, .badge-released { background: #DEF7EC !important; color: #03543F !important; border: 1px solid #BCF0DA !important; }
-    .b-printed, .badge-printed { background: #E0E7FF !important; color: #3730A3 !important; border: 1px solid #C7D2FE !important; }
+    .b-printed, .badge-printed { background: #FDF2F2 !important; color: #B11116 !important; border: 1px solid #F8C9C9 !important; }
     .b-archived, .badge-archived { background: #FEE2E2 !important; color: #991B1B !important; border: 1px solid #FECACA !important; }
     .b-rejected, .badge-rejected { background: #FEE2E2 !important; color: #991B1B !important; border: 1px solid #FECACA !important; }
 
@@ -128,7 +128,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
     .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
     .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
-    .sc-page-btn.active { background: #1A237E; color: #fff; border-color: #1A237E; font-weight: 700; }
+    .sc-page-btn.active { background: #B11116; color: #fff; border-color: #B11116; font-weight: 700; }
     .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     /* ── Empty state ── */
@@ -136,7 +136,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .empty-cell { padding: 3rem 1rem !important; text-align: center !important; border: none !important; }
     .empty-cell::before { display: none !important; content: none !important; }
     .empty-state-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 2rem 1rem; margin-top: 50px; }
-    .empty-icon-wrap { width: 72px; height: 72px; border-radius: 50%; background: #EEF2FF; display: flex; align-items: center; justify-content: center; color: #1A237E; }
+    .empty-icon-wrap { width: 72px; height: 72px; border-radius: 50%; background: #FDF2F2; display: flex; align-items: center; justify-content: center; color: #B11116; }
     .empty-icon-wrap svg { width: 36px; height: 36px; }
     .empty-title { font-size: 1.125rem; font-weight: 700; color: #1F2937; margin: 0; }
     .empty-subtitle { font-size: 0.875rem; color: #6B7280; margin: 0; line-height: 1.5; max-width: 360px; }
@@ -231,7 +231,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             font-size: 1.02rem !important; 
             font-weight: 700 !important; 
             line-height: 1.35 !important; 
-            color: #1A237E !important; 
+            color: #B11116 !important; 
         }
         #dataTable tbody td[data-label="Client"]::before { 
             display: none !important; 

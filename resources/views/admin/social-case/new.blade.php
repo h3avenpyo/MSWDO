@@ -113,11 +113,11 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     <!-- Page Sub-Header -->
     <div style="margin-bottom:20px;">
         @if($canCheckEligibility && !$canEncode)
-            <div class="role-banner" style="background:#EEF2FF;border:1px solid #C7D2FE;">
-                <i data-lucide="shield-check" style="width:20px;height:20px;color:#4338CA;"></i>
+            <div class="role-banner" style="background:#ECFDF5;border:1px solid #A7F3D0;">
+                <i data-lucide="shield-check" style="width:20px;height:20px;color:#059669;"></i>
                 <div class="role-banner-text">
-                    <div class="role-banner-title" style="color:#4338CA;">Eligibility Checking Only</div>
-                    <div class="role-banner-subtitle" style="color:#4F46E5;">Your account is responsible for verifying client eligibility. Eligible clients are forwarded to the case encoder for Social Case Study encoding.</div>
+                    <div class="role-banner-title" style="color:#065F46;">Eligibility Checking Only</div>
+                    <div class="role-banner-subtitle" style="color:#047857;">Your account is responsible for verifying client eligibility. Eligible clients are forwarded to the case encoder for Social Case Study encoding.</div>
                 </div>
             </div>
             <p class="page-subtitle">Search for an existing client, verify their eligibility, then submit eligible clients for case encoding.</p>

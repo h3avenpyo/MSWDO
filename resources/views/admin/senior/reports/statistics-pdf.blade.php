@@ -17,7 +17,7 @@
         }
         .header {
             text-align: center;
-            border-bottom: 2.5px solid #1A237E;
+            border-bottom: 2.5px solid #B11116;
             padding-bottom: 10px;
             margin-bottom: 12px;
         }
@@ -29,7 +29,7 @@
             margin-bottom: 2px;
         }
         .header h1 {
-            color: #1A237E;
+            color: #B11116;
             margin: 2px 0 3px 0;
             font-size: 17px;
             font-weight: bold;
@@ -57,13 +57,13 @@
             border: none;
         }
         .filter-label {
-            color: #1A237E;
+            color: #B11116;
             font-weight: bold;
         }
         .section-title {
             font-size: 12px;
             font-weight: bold;
-            color: #1A237E;
+            color: #B11116;
             text-transform: uppercase;
             letter-spacing: 0.4px;
             border-bottom: 1.5px solid #CBD5E1;
@@ -84,7 +84,7 @@
         .summary-num {
             font-size: 16px;
             font-weight: bold;
-            color: #1A237E;
+            color: #B11116;
             margin-bottom: 2px;
         }
         .summary-lbl {
@@ -101,14 +101,14 @@
             font-size: 10.5px;
         }
         .data-table th {
-            background: #1A237E;
+            background: #B11116;
             color: #FFFFFF;
             padding: 5px 8px;
             font-size: 10px;
             text-transform: uppercase;
             font-weight: bold;
             text-align: left;
-            border: 1px solid #1A237E;
+            border: 1px solid #B11116;
         }
         .data-table td {
             padding: 4.5px 8px;
@@ -176,7 +176,7 @@
     <div class="section-title">Executive Summary</div>
     <table class="summary-grid">
         <tr>
-            <td style="width: 20%; background: #EEF2FF;">
+            <td style="width: 20%; background: #FDF2F2;">
                 <div class="summary-num">{{ number_format($totalSeniors) }}</div>
                 <div class="summary-lbl">Total Matching</div>
             </td>

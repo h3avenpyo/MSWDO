@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin\Senior;
 use App\Http\Controllers\Controller;
 use App\Models\Senior\BirthdayPayoutHistory;
 use App\Models\Senior\SeniorActivityLog;
-use App\Models\InBetweenBenefitHistory;
+use App\Models\Senior\InBetweenBenefitHistory;
 use Illuminate\Http\Request;
 
 class BirthdayPayoutController extends Controller

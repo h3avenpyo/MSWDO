@@ -28,10 +28,12 @@
     <style>
         :root{
             /* Government Color Palette */
-            --primary: #1A237E;
-            --primary-hover: #121858;
-            --primary-dark: #121858;
-            --sidebar-bg: #1A237E;
+            --primary: #B11116;
+            --primary-hover: #8A0D11;
+            --primary-dark: #8A0D11;
+            /* Sidebar chrome */
+            --sidebar-bg: #B11116;
+            --sidebar-dark: #8A0D11;
             --background: #F5F7FB;
             --surface: #FFFFFF;
             --border: #E5E7EB;
@@ -86,7 +88,7 @@
         .sidebar{
             width:var(--sidebar-width);
             flex-shrink:0;
-            background:var(--primary);
+            background:var(--sidebar-bg);
             color:#FFFFFF;
             position:fixed;
             left:0;
@@ -1710,7 +1712,7 @@
         .status-opt.selected,
         .assistance-opt.selected,
         .barangay-opt.selected {
-            background: #EEF2FF;
+            background: #FDF2F2;
             color: var(--primary);
             font-weight: 600;
         }
@@ -1923,7 +1925,7 @@
             top: 12px;
             left: 12px;
             z-index: 1002;
-            background: var(--primary);
+            background: var(--sidebar-bg);
             color: #fff;
             border: none;
             border-radius: 10px;
@@ -1935,7 +1937,7 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             transition: background 0.2s;
         }
-        .hamburger-btn:hover { background: var(--primary-hover); }
+        .hamburger-btn:hover { background: var(--sidebar-dark); }
 
         /* ── Sidebar Overlay ── */
         .sidebar-overlay.active { display: block !important; }
@@ -1943,7 +1945,7 @@
         /* ── Mobile Header: hidden by default, shown only on mobile (< 768px) ── */
         .mobile-header { display: none !important; }
         @media (max-width: 767.98px) {
-            .mobile-header { display: flex !important; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #1A237E; color: #fff; padding: 0 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); align-items: center; justify-content: space-between; height: 60px; }
+            .mobile-header { display: flex !important; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: var(--sidebar-bg); color: #fff; padding: 0 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); align-items: center; justify-content: space-between; height: 60px; }
         }
 
         /* ── Mobile Welcome Message ── */
@@ -2282,7 +2284,7 @@
                 left: calc(100% + 12px) !important;
                 top: 50% !important;
                 transform: translateY(-50%) !important;
-                background: #1A237E !important;
+                background: var(--sidebar-bg) !important;
                 color: #fff !important;
                 padding: 6px 12px !important;
                 border-radius: 6px !important;
@@ -2441,7 +2443,7 @@
                 font-size: 15px !important;
                 padding: 12px 14px !important;
                 height: 48px !important;
-                border: 1px solid #C7D2FE !important;
+                border: 1px solid #F8C9C9 !important;
             }
             textarea { height: auto !important; min-height: 90px !important; }
 
@@ -2449,7 +2451,7 @@
             #statusBtn, #assistanceBtn, #barangayBtn,
             #archiveBrgyBtn, #archiveTypeBtn,
             .archive-filter-bar {
-                border-color: #C7D2FE !important;
+                border-color: #F8C9C9 !important;
             }
             #statusBtn, #assistanceBtn, #barangayBtn,
             #archiveBrgyBtn, #archiveTypeBtn {
@@ -2479,7 +2481,7 @@
             box-sizing: border-box !important;
         }
         .swal2-title {
-            color: #1A237E !important;
+            color: #B11116 !important;
             font-weight: 700 !important;
             font-size: 1.35rem !important;
         }
@@ -2491,7 +2493,7 @@
             -webkit-overflow-scrolling: touch !important;
         }
         .swal2-confirm {
-            background-color: #1A237E !important;
+            background-color: #B11116 !important;
             border-radius: 8px !important;
             font-weight: 600 !important;
             padding: 10px 24px !important;
@@ -2588,7 +2590,7 @@
             icon: 'warning',
             showCancelButton: true,
             reverseButtons: true,
-            confirmButtonColor: '#1A237E',
+            confirmButtonColor: '#B11116',
             cancelButtonColor: '#EF4444',
             confirmButtonText: 'Yes, log out',
             cancelButtonText: 'Cancel',

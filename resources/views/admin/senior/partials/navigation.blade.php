@@ -14,7 +14,7 @@
         box-sizing: border-box !important;
     }
     .swal2-title {
-        color: #1A237E !important;
+        color: #B11116 !important;
         font-weight: 700 !important;
         font-size: 1.35rem !important;
     }
@@ -26,7 +26,7 @@
         -webkit-overflow-scrolling: touch !important;
     }
     .swal2-confirm {
-        background-color: #1A237E !important;
+        background-color: #B11116 !important;
         border-radius: 8px !important;
         font-weight: 600 !important;
         padding: 10px 24px !important;
@@ -65,7 +65,7 @@
     .app{display:flex;min-height:100vh;flex-direction:row;}
 
     /* Sidebar */
-    .sidebar{width:var(--sidebar-width);flex-shrink:0;background:var(--primary);color:#FFF;position:fixed;left:0;top:0;height:100vh;z-index:1001;display:flex;flex-direction:column;transition:transform .3s ease;transform:translateX(-100%);}
+    .sidebar{width:var(--sidebar-width);flex-shrink:0;background:var(--sidebar-bg);color:#FFF;position:fixed;left:0;top:0;height:100vh;z-index:1001;display:flex;flex-direction:column;transition:transform .3s ease;transform:translateX(-100%);}
     .sidebar.show{transform:translateX(0);}
     .sidebar-brand{height:72px;padding:0 1.5rem;border-bottom:1px solid rgba(255,255,255,.1);color:#fff;font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:.65rem;}
     .sidebar-brand i,.sidebar-brand [data-lucide]{width:24px;height:24px;color:var(--accent-yellow);}
@@ -85,11 +85,11 @@
     .sidebar-overlay.active{display:block !important;}
 
     /* Floating Hamburger Button */
-    .hamburger-btn{display:none;position:fixed;top:12px;left:12px;z-index:1002;background:var(--primary);color:#fff;border:none;border-radius:12px;width:44px;height:44px;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);transition:background 0.2s;}
-    .hamburger-btn:hover{background:var(--primary-hover);}
+    .hamburger-btn{display:none;position:fixed;top:12px;left:12px;z-index:1002;background:var(--sidebar-bg);color:#fff;border:none;border-radius:12px;width:44px;height:44px;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);transition:background 0.2s;}
+    .hamburger-btn:hover{background:var(--sidebar-dark);}
 
     /* Mobile Header (integrated hamburger + brand, mobile only) */
-    .mobile-header{display:none;position:fixed;top:0;left:0;right:0;z-index:1000;background:#1A237E;color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
+    .mobile-header{display:none;position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--sidebar-bg);color:#fff;padding:0 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);align-items:center;justify-content:space-between;height:80px;}
     .mobile-header-brand{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
     .mobile-logo{width:56px;height:56px;border-radius:50%;background:#FBC02D;padding:4px;flex-shrink:0;}
     .mobile-logo-img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
@@ -122,7 +122,7 @@
         .sidebar-brand span{display:none !important;}
         .sidebar-menu{padding:0.75rem 0;}
         .sidebar-menu a{position:relative;justify-content:center;padding:0.95rem 0 !important;}
-        .sidebar-menu a span{display:none;position:absolute;left:72px;top:50%;transform:translateY(-50%);background:var(--primary-dark);color:#fff;padding:0.4rem 0.65rem;border-radius:6px;font-size:12px;font-weight:600;white-space:nowrap;z-index:1002;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+        .sidebar-menu a span{display:none;position:absolute;left:72px;top:50%;transform:translateY(-50%);background:var(--sidebar-dark);color:#fff;padding:0.4rem 0.65rem;border-radius:6px;font-size:12px;font-weight:600;white-space:nowrap;z-index:1002;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
         .sidebar-menu a:hover span{display:block;}
         .sidebar-foot{display:none !important;}
         .sidebar-overlay{display:none !important;}
@@ -284,7 +284,7 @@
             icon: 'warning',
             showCancelButton: true,
             reverseButtons: true,
-            confirmButtonColor: '#1A237E',
+            confirmButtonColor: '#B11116',
             cancelButtonColor: '#EF4444',
             confirmButtonText: 'Yes, log out',
             cancelButtonText: 'Cancel',

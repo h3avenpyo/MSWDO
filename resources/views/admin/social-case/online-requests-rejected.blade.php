@@ -31,10 +31,10 @@
     .filter-search-wrap { display: flex; align-items: stretch; width: 100%; border-radius: 8px; box-sizing: border-box; transition: box-shadow .15s; }
     .filter-search-wrap:focus-within { box-shadow: 0 0 0 3px rgba(26,35,126,.12); border-radius: 8px; }
     .filter-search input { flex: 1 1 auto; width: 1%; min-width: 0; height: 44px !important; border: 1px solid #D1D5DB; border-right: none; border-radius: 8px 0 0 8px; padding: 0 16px; font-size: 0.875rem; color: #111827; background: #fff; outline: none; transition: border-color .15s; box-sizing: border-box !important; margin: 0 !important; }
-    .filter-search input:focus { border-color: #1A237E; }
+    .filter-search input:focus { border-color: #B11116; }
     .filter-search input::placeholder { color: #9CA3AF; }
-    .filter-search-btn { height: 44px !important; padding: 0 20px; border: 1px solid #1A237E; border-radius: 0 8px 8px 0; background: #1A237E; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch; }
-    .filter-search-btn:hover { background: #121858; }
+    .filter-search-btn { height: 44px !important; padding: 0 20px; border: 1px solid #B11116; border-radius: 0 8px 8px 0; background: #B11116; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; box-sizing: border-box !important; margin: 0 !important; align-self: stretch; }
+    .filter-search-btn:hover { background: #8A0D11; }
 
     .filter-dropdown { flex: 1 1 200px; min-width: 180px; position: relative; }
     .filter-select-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; height: 44px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 0.875rem; cursor: pointer; background: #fff; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
@@ -47,9 +47,9 @@
     .filter-reset-btn.visible { display: inline-flex; }
     .filter-reset-btn:hover { background: #FEE2E2; border-color: #DC2626; }
 
-    .type-opt.selected, .brgy-opt.selected { background: #EEF2FF; color: #1A237E; font-weight: 600; }
+    .type-opt.selected, .brgy-opt.selected { background: #FDF2F2; color: #B11116; font-weight: 600; }
     .type-opt:hover, .brgy-opt:hover { background: #F3F4F6; }
-    .filter-select-btn.active { border-color: #1A237E; background: #EEF2FF; }
+    .filter-select-btn.active { border-color: #B11116; background: #FDF2F2; }
 
     @media (max-width: 767.98px) {
         .online-filter-bar {
@@ -262,11 +262,11 @@
         width: 72px;
         height: 72px;
         border-radius: 50%;
-        background: #EEF2FF;
+        background: #FDF2F2;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #1A237E;
+        color: #B11116;
     }
     .empty-icon-wrap svg {
         width: 36px;
@@ -331,9 +331,9 @@
         border-color: #CBD5E1;
     }
     .sc-page-btn.active {
-        background: #1A237E;
+        background: #B11116;
         color: #fff;
-        border-color: #1A237E;
+        border-color: #B11116;
         font-weight: 700;
     }
     .sc-page-btn[disabled],
@@ -357,11 +357,11 @@
         text-decoration: none;
     }
     .btn-primary {
-        background: #1A237E;
+        background: #B11116;
         color: #fff;
     }
     .btn-primary:hover {
-        background: #121858;
+        background: #8A0D11;
     }
     .btn-sm {
         padding: 6px 12px;
@@ -472,7 +472,7 @@
             font-size: 1.02rem !important;
             font-weight: 700 !important;
             line-height: 1.35 !important;
-            color: #1A237E !important;
+            color: #B11116 !important;
         }
         #onlineRequestsTable tbody td[data-label="Name"]::before {
             display: none !important;
@@ -480,7 +480,7 @@
         #onlineRequestsTable tbody td[data-label="Name"] .req-val-wrap > div:first-child {
             font-size: 1.02rem !important;
             font-weight: 700 !important;
-            color: #1A237E !important;
+            color: #B11116 !important;
             line-height: 1.35 !important;
         }
         #onlineRequestsTable tbody td[data-label="Name"] .req-val-wrap > div.text-xs {
@@ -832,7 +832,7 @@
 
     /* Modal Top Header */
     .or-modal-header {
-        background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
+        background: linear-gradient(135deg, #B11116 0%, #8A0D11 100%);
         color: #FFFFFF;
         padding: 22px 26px;
         position: relative;
@@ -857,7 +857,7 @@
         font-weight: 700;
         letter-spacing: 0.05em;
         text-transform: uppercase;
-        color: #E0E7FF;
+        color: #FDF2F2;
         border: 1px solid rgba(255, 255, 255, 0.2);
     }
     .or-modal-title {
@@ -873,7 +873,7 @@
     .or-modal-subtitle {
         margin: 5px 0 0 0;
         font-size: 12.5px;
-        color: #C7D2FE;
+        color: #F8C9C9;
         display: flex;
         align-items: center;
         gap: 6px;
@@ -931,7 +931,7 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        color: #1A237E;
+        color: #B11116;
         display: flex;
         align-items: center;
         gap: 7px;
@@ -941,9 +941,9 @@
         font-weight: 600;
         padding: 3px 10px;
         border-radius: 20px;
-        background: #EEF2FF;
-        color: #3730A3;
-        border: 1px solid #C7D2FE;
+        background: #FDF2F2;
+        color: #B11116;
+        border: 1px solid #F8C9C9;
     }
 
     /* Grid Elements */
@@ -971,7 +971,7 @@
         word-break: break-word;
     }
     .or-field-val a {
-        color: #1A237E;
+        color: #B11116;
         text-decoration: none;
         transition: color 0.15s;
     }
@@ -983,7 +983,7 @@
     /* Situation Block */
     .or-situation-box {
         background: #F8FAFC;
-        border-left: 4px solid #1A237E;
+        border-left: 4px solid #B11116;
         border-radius: 0 10px 10px 0;
         padding: 14px 16px;
         font-size: 13.5px;
@@ -1013,7 +1013,7 @@
     }
     .or-attachment-card:hover {
         background: #FFFFFF;
-        border-color: #1A237E;
+        border-color: #B11116;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(26, 35, 126, 0.08);
     }
@@ -1031,8 +1031,8 @@
         color: #DC2626;
     }
     .or-attachment-icon.img {
-        background: #E0E7FF;
-        color: #4338CA;
+        background: #FDF2F2;
+        color: #B11116;
     }
     .or-attachment-icon.doc {
         background: #DBEAFE;
@@ -1529,7 +1529,7 @@ function viewOnlineRequest(id) {
                                 <div class="or-attachment-meta">
                                     <span>${escapeHtml(att.file_size)}</span>
                                     <span>•</span>
-                                    <span style="color:#1A237E;font-weight:600;display:inline-flex;align-items:center;gap:3px;">
+                                    <span style="color:#B11116;font-weight:600;display:inline-flex;align-items:center;gap:3px;">
                                         Open <i data-lucide="external-link" style="width:10px;height:10px;"></i>
                                     </span>
                                 </div>
@@ -1602,7 +1602,7 @@ function viewOnlineRequest(id) {
                         <div class="or-grid-2">
                             <div>
                                 <div class="or-field-label"><i data-lucide="user-check" style="width:12px;height:12px;"></i> Full Name</div>
-                                <div class="or-field-val" style="font-size:15px;color:#1A237E;font-weight:700;">
+                                <div class="or-field-val" style="font-size:15px;color:#B11116;font-weight:700;">
                                     ${escapeHtml(data.first_name)} ${escapeHtml(data.last_name)}
                                 </div>
                             </div>
@@ -1650,7 +1650,7 @@ function viewOnlineRequest(id) {
                             <div>
                                 <div class="or-field-label"><i data-lucide="briefcase" style="width:12px;height:12px;"></i> Program Category</div>
                                 <div class="or-field-val">
-                                    <span style="display:inline-block;background:#EEF2FF;color:#1E3A8A;padding:4px 10px;border-radius:6px;font-size:12.5px;font-weight:700;border:1px solid #C7D2FE;">
+                                    <span style="display:inline-block;background:#FDF2F2;color:#1E3A8A;padding:4px 10px;border-radius:6px;font-size:12.5px;font-weight:700;border:1px solid #F8C9C9;">
                                         ${escapeHtml(data.service_type)}
                                     </span>
                                 </div>

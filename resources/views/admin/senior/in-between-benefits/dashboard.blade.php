@@ -17,10 +17,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root{
-            --primary:#1A237E;
-            --primary-hover:#121858;
-            --primary-dark:#121858;
-            --sidebar-bg:#1A237E;
+            --primary:#B11116;
+            --primary-hover:#8A0D11;
+            --primary-dark:#8A0D11;
+            --sidebar-bg:#B11116;--sidebar-dark:#8A0D11;
             --accent-yellow:#FBC02D;
             --background:#F1F5F9;
             --surface:#FFFFFF;

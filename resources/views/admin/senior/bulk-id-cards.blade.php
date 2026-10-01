@@ -16,7 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root{
-            --primary:#1A237E;--primary-hover:#121858;--primary-dark:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--success:#16A34A;--success-bg:#ECFDF5;--danger:#DC2626;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EEF2FF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+            --primary:#B11116;--primary-hover:#8A0D11;--primary-dark:#8A0D11;--sidebar-bg:#B11116;--sidebar-dark:#8A0D11;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--success:#16A34A;--success-bg:#ECFDF5;--danger:#DC2626;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EEF2FF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
         }
         *,*::before,*::after{box-sizing:border-box;}
         html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);min-height:100%;}
@@ -150,8 +150,8 @@
         .page { width: 210mm; min-height: 297mm; background: white; padding: 10mm; display: flex; flex-direction: column; gap: 5mm; page-break-after: always; margin: 0 auto 24px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-radius: 8px; }
         .cards-row { display: flex; flex-wrap: wrap; gap: 5mm; justify-content: center; }
         .card-pair { display: flex; flex-direction: row; gap: 2mm; }
-        .id-card { width: 85.6mm; height: 53.98mm; background-color: #ffffff; border-radius: 3.18mm; border: 2px solid #1A237E; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); position: relative; overflow: hidden; display: flex; flex-direction: column; padding: 3mm; color: #1a1a1a; }
-        .header { text-align: center; border-bottom: 2px solid #1A237E; padding-bottom: 1mm; margin-bottom: 2mm; background: linear-gradient(to bottom, #1A237E, #121858); padding: 2mm 0; margin: -3mm -3mm 2mm -3mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .id-card { width: 85.6mm; height: 53.98mm; background-color: #ffffff; border-radius: 3.18mm; border: 2px solid #B11116; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); position: relative; overflow: hidden; display: flex; flex-direction: column; padding: 3mm; color: #1a1a1a; }
+        .header { text-align: center; border-bottom: 2px solid #B11116; padding-bottom: 1mm; margin-bottom: 2mm; background: linear-gradient(to bottom, #B11116, #8A0D11); padding: 2mm 0; margin: -3mm -3mm 2mm -3mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .header-content { display: flex; justify-content: space-between; align-items: center; gap: 2mm; }
         .header-content img { height: 8mm; width: auto; }
         .header-content img:first-child { margin-left: 2mm; }
@@ -230,7 +230,7 @@
                         <i data-lucide="printer" style="width:16px;height:16px;"></i>
                         Print
                     </button>
-                    <button type="button" class="header-btn" style="background:#1A237E;color:white;border-color:#1A237E;width:120px;flex-shrink:0;" onclick="openSeniorSelectModal()">
+                    <button type="button" class="header-btn" style="background:#B11116;color:white;border-color:#B11116;width:120px;flex-shrink:0;" onclick="openSeniorSelectModal()">
                         <i data-lucide="edit" style="width:16px;height:16px;"></i>
                         Edit
                     </button>
@@ -319,7 +319,7 @@
 <!-- Select Senior to Edit Modal (For bulk batches) -->
 <div id="selectSeniorModal" class="no-print" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;padding:16px;">
     <div style="background:#fff;border-radius:16px;width:100%;max-width:640px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 20px 25px -5px rgba(0,0,0,0.2);overflow:hidden;">
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid #E5E7EB;background:#1A237E;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid #E5E7EB;background:#B11116;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;color:#fff;">
                     <i data-lucide="users" style="width:20px;height:20px;"></i>
@@ -359,7 +359,7 @@
                         'contact_number' => $s->contact_number ?? '',
                         'emergency_contact_name' => $s->emergency_contact_name ?? '',
                         'emergency_contact_number' => $s->emergency_contact_number ?? ''
-                    ]) }})" style="padding:8px 14px;border:none;background:#1A237E;color:#fff;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;flex-shrink:0;">
+                    ]) }})" style="padding:8px 14px;border:none;background:#B11116;color:#fff;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;flex-shrink:0;">
                         <i data-lucide="edit-3" style="width:14px;height:14px;"></i>
                         Edit
                     </button>
@@ -376,7 +376,7 @@
 <!-- Edit Senior Modal -->
 <div id="editSeniorModal" class="no-print" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:2100;align-items:center;justify-content:center;padding:16px;">
     <div style="background:#fff;border-radius:16px;width:100%;max-width:640px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 25px -5px rgba(0,0,0,0.2);overflow:hidden;">
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid #E5E7EB;background:#1A237E;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid #E5E7EB;background:#B11116;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;color:#fff;">
                     <i data-lucide="edit" style="width:20px;height:20px;"></i>
@@ -474,7 +474,7 @@
 
             <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:12px;">
                 <button type="button" onclick="closeEditSeniorModal()" style="padding:10px 20px;border:1px solid #D1D5DB;background:#fff;color:#374151;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;">Cancel</button>
-                <button type="submit" id="saveEditBtn" style="padding:10px 24px;border:none;background:#1A237E;color:#fff;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;">
+                <button type="submit" id="saveEditBtn" style="padding:10px 24px;border:none;background:#B11116;color:#fff;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;">
                     <i data-lucide="check" style="width:16px;height:16px;"></i>
                     Save Changes
                 </button>
@@ -499,7 +499,7 @@
                 title: 'Printing complete',
                 text: 'The print dialog has been closed.',
                 icon: 'success',
-                confirmButtonColor: '#1A237E',
+                confirmButtonColor: '#B11116',
                 confirmButtonText: 'OK',
                 background: '#ffffff',
                 customClass: { popup: 'rounded-4 shadow-lg' }
@@ -512,7 +512,7 @@
                 title: 'Printing complete',
                 text: 'The print dialog has been closed.',
                 icon: 'success',
-                confirmButtonColor: '#1A237E',
+                confirmButtonColor: '#B11116',
                 confirmButtonText: 'OK',
                 background: '#ffffff',
                 customClass: { popup: 'rounded-4 shadow-lg' }
@@ -678,7 +678,7 @@
                 title: 'Updated!',
                 text: 'Senior citizen record updated successfully.',
                 icon: 'success',
-                confirmButtonColor: '#1A237E'
+                confirmButtonColor: '#B11116'
             });
         })
         .catch(err => {

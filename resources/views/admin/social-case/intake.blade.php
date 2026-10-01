@@ -385,7 +385,7 @@ function toggleDropdown(id) {
         overflow: hidden;
     }
     .custom-modal-header {
-        background: #1A237E;
+        background: #B11116;
         color: #ffffff;
         padding: 14px 20px;
         display: flex;

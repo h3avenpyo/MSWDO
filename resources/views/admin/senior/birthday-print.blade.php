@@ -6,20 +6,20 @@
     @vite(['resources/css/admin-compat.css'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #1A237E; }
+        :root { --primary: #B11116; }
         body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; color: #333; padding: 20px; }
-        .header { text-align: center; margin-bottom: 25px; border-bottom: 3px solid #1A237E; padding-bottom: 15px; }
-        .header .logo-placeholder { width: 70px; height: 70px; border-radius: 50%; background: #1A237E; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; margin: 0 auto 10px; }
-        .header h1 { font-size: 18px; margin: 0 0 4px; color: #1A237E; font-weight: 800; }
+        .header { text-align: center; margin-bottom: 25px; border-bottom: 3px solid #B11116; padding-bottom: 15px; }
+        .header .logo-placeholder { width: 70px; height: 70px; border-radius: 50%; background: #B11116; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; margin: 0 auto 10px; }
+        .header h1 { font-size: 18px; margin: 0 0 4px; color: #B11116; font-weight: 800; }
         .header h2 { font-size: 14px; margin: 0 0 4px; color: #333; font-weight: 600; }
         .header p { font-size: 10px; margin: 0; color: #666; }
         .meta { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 15px; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 9px; }
-        th { background: #1A237E; color: white; padding: 6px 5px; text-align: left; font-weight: 600; font-size: 8px; text-transform: uppercase; }
+        th { background: #B11116; color: white; padding: 6px 5px; text-align: left; font-weight: 600; font-size: 8px; text-transform: uppercase; }
         td { padding: 5px; border-bottom: 1px solid #ddd; }
         tr:nth-child(even) { background: #f9f9f9; }
         .summary-section { margin-top: 20px; page-break-inside: avoid; }
-        .summary-section h3 { font-size: 11px; color: #1A237E; margin-bottom: 5px; }
+        .summary-section h3 { font-size: 11px; color: #B11116; margin-bottom: 5px; }
         .summary-table { width: 50%; }
         .summary-table th { background: #FBC02D; color: #333; }
         .footer { margin-top: 30px; border-top: 1px solid #ddd; padding-top: 10px; }

@@ -13,7 +13,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root{--primary:#1A237E;--primary-hover:#121858;--primary-dark:#121858;--sidebar-bg:#1A237E;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+        :root{--primary:#B11116;--primary-hover:#8A0D11;--primary-dark:#8A0D11;--sidebar-bg:#B11116;--sidebar-dark:#8A0D11;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
         *,*::before,*::after{box-sizing:border-box;}
         html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);height:100%;overflow-x:hidden;overflow-y:auto;}
         body{font-size:14px;line-height:1.5;}
@@ -67,7 +67,7 @@
             overflow: hidden;
         }
         .custom-modal-header {
-            background: #1A237E;
+            background: #B11116;
             color: #ffffff;
             padding: 12px 20px;
             display: flex;
@@ -597,10 +597,10 @@
     });
 
     @if($seniorCreated ?? false)
-        Swal.fire({title:'Success!',text:'Senior citizen registered successfully.',icon:'success',confirmButtonColor:'#1A237E',confirmButtonText:'OK',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}});
+        Swal.fire({title:'Success!',text:'Senior citizen registered successfully.',icon:'success',confirmButtonColor:'#B11116',confirmButtonText:'OK',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}});
     @endif
     @if($errors->any())
-        Swal.fire({title:'Error!',text:'{{ $errors->first() }}',icon:'error',confirmButtonColor:'#1A237E',confirmButtonText:'OK',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}});
+        Swal.fire({title:'Error!',text:'{{ $errors->first() }}',icon:'error',confirmButtonColor:'#B11116',confirmButtonText:'OK',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}});
     @endif
 
     function calculateAge(){
@@ -621,11 +621,11 @@
     function confirmSubmit(event){
         event.preventDefault();
         const age=parseInt(document.getElementById('age').value);
-        if(!age||age<60){Swal.fire({title:'Age Requirement',text:'The age field must be at least 60 to register as a senior citizen.',icon:'warning',confirmButtonColor:'#1A237E',confirmButtonText:'OK',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}});return false;}
+        if(!age||age<60){Swal.fire({title:'Age Requirement',text:'The age field must be at least 60 to register as a senior citizen.',icon:'warning',confirmButtonColor:'#B11116',confirmButtonText:'OK',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}});return false;}
         const barangay=document.getElementById('barangay').value;
-        if(!barangay){Swal.fire({title:'Barangay Required',text:'Please select a barangay before proceeding.',icon:'warning',confirmButtonColor:'#1A237E',confirmButtonText:'OK',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}});return false;}
+        if(!barangay){Swal.fire({title:'Barangay Required',text:'Please select a barangay before proceeding.',icon:'warning',confirmButtonColor:'#B11116',confirmButtonText:'OK',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}});return false;}
         const sex=document.querySelector('[name="sex"]').value;
-        if(!sex){Swal.fire({title:'Sex Required',text:'Please select a sex before proceeding.',icon:'warning',confirmButtonColor:'#1A237E',confirmButtonText:'OK',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}});return false;}
+        if(!sex){Swal.fire({title:'Sex Required',text:'Please select a sex before proceeding.',icon:'warning',confirmButtonColor:'#B11116',confirmButtonText:'OK',background:'#ffffff',customClass:{popup:'rounded-4 shadow-lg'}});return false;}
 
         // Populate modal with form data
         const f=document.getElementById('registrationForm');

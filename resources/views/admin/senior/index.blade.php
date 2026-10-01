@@ -17,10 +17,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root{
-            --primary:#1A237E;
-            --primary-hover:#121858;
-            --primary-dark:#121858;
-            --sidebar-bg:#1A237E;
+            --primary:#B11116;
+            --primary-hover:#8A0D11;
+            --primary-dark:#8A0D11;
+            --sidebar-bg:#B11116;--sidebar-dark:#8A0D11;
             --accent-yellow:#FBC02D;
             --background:#F1F5F9;
             --surface:#FFFFFF;
@@ -563,7 +563,7 @@
             </div>
             <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
                 <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime"></div>
-                <div class="w-11 h-11 rounded-full bg-[#4338CA] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
+                <div class="w-11 h-11 rounded-full bg-[#B11116] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
                     {{ $initials }}
                 </div>
             </div>
@@ -692,7 +692,7 @@
 <!-- Barangay Distribution Modal -->
 <div id="barangayModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)" onclick="if(event.target===this)this.style.display='none'">
     <div style="background:var(--surface);border-radius:14px;width:100%;max-width:780px;max-height:75vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15)">
-        <div class="flex items-center justify-between px-5 py-3" style="background:#1A237E;color:#ffffff">
+        <div class="flex items-center justify-between px-5 py-3" style="background:#B11116;color:#ffffff">
             <h4 class="font-semibold flex items-center gap-2 m-0 text-white" style="font-size:1rem"><i data-lucide="map-pin" style="width:20px;height:20px"></i> All Barangays Distribution</h4>
             <button onclick="document.getElementById('barangayModal').style.display='none'" class="w-8 h-8 rounded-full flex items-center justify-center" style="background:rgba(255,255,255,.15);border:none;color:#ffffff;cursor:pointer"><i data-lucide="x" style="width:16px;height:16px"></i></button>
         </div>

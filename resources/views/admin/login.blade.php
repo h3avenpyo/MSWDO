@@ -14,8 +14,19 @@
         /* ══════════════════════════════════════════════
            MSWDO iServe Silang — Login Portal
            Mobile-first, CSS Grid + Flexbox, Poppins
-           Modern Red Gradient Theme
+           Solid Brand Theme — primary #B11116
            ══════════════════════════════════════════════ */
+
+        /* ---------- Brand palette ---------- */
+        :root {
+            --brand: #B11116;
+            --brand-rgb: 177, 17, 22;
+            --brand-800: #8A0D11;
+            --brand-300: #F4B1B1;
+            --brand-200: #F8C9C9;
+            --brand-100: #FCE3E3;
+            --brand-050: #FDF2F2;
+        }
 
         /* ---------- Reset & base ---------- */
         *,
@@ -67,7 +78,7 @@
             height: 460px;
             top: -100px;
             left: -100px;
-            background: radial-gradient(circle, rgba(239, 68, 68, 0.12) 0%, transparent 70%);
+            background: rgba(var(--brand-rgb), 0.12);
         }
 
         .bg-blur--two {
@@ -75,7 +86,7 @@
             height: 540px;
             bottom: -140px;
             right: -100px;
-            background: radial-gradient(circle, rgba(244, 63, 94, 0.10) 0%, transparent 70%);
+            background: rgba(var(--brand-rgb), 0.10);
         }
 
         /* ---------- Layout shell ---------- */
@@ -116,7 +127,7 @@
         }
 
         /* ══════════════════════════════════════════════
-           LEFT — Brand panel (red gradient)
+           LEFT — Brand panel (solid #B11116)
            ══════════════════════════════════════════════ */
         .brand-panel {
             position: relative;
@@ -126,31 +137,7 @@
             display: flex;
             flex-direction: column;
             gap: 1.1rem;
-            background: linear-gradient(155deg, #7F1D1D 0%, #991B1B 45%, #B91C1C 75%, #DC2626 100%);
-        }
-
-        /* Quiet radial washes — soft luminous accents */
-        .brand-panel::before,
-        .brand-panel::after {
-            content: '';
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 255, 255, .12) 0%, transparent 65%);
-            pointer-events: none;
-        }
-
-        .brand-panel::before {
-            width: 420px;
-            height: 420px;
-            top: -160px;
-            right: -140px;
-        }
-
-        .brand-panel::after {
-            width: 360px;
-            height: 360px;
-            bottom: -160px;
-            left: -140px;
+            background: var(--brand);
         }
 
         .brand-top {
@@ -343,11 +330,11 @@
         }
 
         .back-link:hover {
-            color: #B91C1C;
+            color: var(--brand);
         }
 
         .back-link:focus-visible {
-            outline: 3px solid #FECACA;
+            outline: 3px solid var(--brand-200);
             outline-offset: 2px;
         }
 
@@ -378,8 +365,8 @@
         .mode-toggle {
             display: flex;
             gap: .25rem;
-            background: #FEF2F2;
-            border: 1px solid #FEE2E2;
+            background: var(--brand-050);
+            border: 1px solid var(--brand-100);
             border-radius: 14px;
             padding: .3rem;
             margin-bottom: 1rem;
@@ -401,12 +388,12 @@
 
         .mode-btn.active {
             background: #FFFFFF;
-            color: #991B1B;
-            box-shadow: 0 2px 8px rgba(153, 27, 27, .15);
+            color: var(--brand-800);
+            box-shadow: 0 2px 8px rgba(var(--brand-rgb), .15);
         }
 
         .mode-btn:focus-visible {
-            outline: 3px solid #FECACA;
+            outline: 3px solid var(--brand-200);
             outline-offset: 2px;
         }
 
@@ -459,9 +446,9 @@
 
         /* Red glow on focus */
         .form-input:focus {
-            border-color: #B91C1C;
+            border-color: var(--brand);
             background: #FFFFFF;
-            box-shadow: 0 0 0 4px rgba(185, 28, 28, .12);
+            box-shadow: 0 0 0 4px rgba(var(--brand-rgb), .12);
         }
 
         .form-input:focus-visible {
@@ -469,7 +456,7 @@
         }
 
         .form-input:focus~.input-icon {
-            color: #B91C1C;
+            color: var(--brand);
         }
 
         /* Password reveal button */
@@ -492,12 +479,12 @@
         }
 
         .password-toggle:hover {
-            color: #B91C1C;
-            background: #FEF2F2;
+            color: var(--brand);
+            background: var(--brand-050);
         }
 
         .password-toggle:focus-visible {
-            outline: 3px solid #FECACA;
+            outline: 3px solid var(--brand-200);
             outline-offset: 1px;
         }
 
@@ -526,11 +513,11 @@
         }
 
         .forgot-password:hover {
-            color: #B91C1C;
+            color: var(--brand);
         }
 
         .forgot-password:focus-visible {
-            outline: 3px solid #FECACA;
+            outline: 3px solid var(--brand-200);
             outline-offset: 2px;
             border-radius: 4px;
         }
@@ -547,15 +534,15 @@
             letter-spacing: .03em;
             text-transform: uppercase;
             color: #FFFFFF;
-            background: linear-gradient(135deg, #881337 0%, #991B1B 45%, #DC2626 100%);
-            box-shadow: 0 10px 22px rgba(185, 28, 28, .28);
+            background: var(--brand);
+            box-shadow: 0 10px 22px rgba(var(--brand-rgb), .28);
             cursor: pointer;
             transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
         }
 
         .submit-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 16px 30px rgba(185, 28, 28, .36);
+            box-shadow: 0 16px 30px rgba(var(--brand-rgb), .36);
             filter: brightness(1.06);
         }
 
@@ -570,7 +557,7 @@
         }
 
         .submit-button:focus-visible {
-            outline: 3px solid #FECACA;
+            outline: 3px solid var(--brand-200);
             outline-offset: 2px;
         }
 
@@ -590,11 +577,11 @@
         }
 
         .support-link:hover {
-            color: #B91C1C;
+            color: var(--brand);
         }
 
         .support-link:focus-visible {
-            outline: 3px solid #FECACA;
+            outline: 3px solid var(--brand-200);
             outline-offset: 2px;
         }
 
@@ -605,9 +592,9 @@
 
         /* Errors + email-code notices */
         .form-error {
-            background: #FEF2F2;
-            border: 1px solid #FECACA;
-            color: #B91C1C;
+            background: var(--brand-050);
+            border: 1px solid var(--brand-200);
+            color: var(--brand);
             border-radius: 12px;
             padding: .75rem 1rem;
             margin-bottom: 1.25rem;
@@ -622,9 +609,9 @@
             display: flex;
             align-items: flex-start;
             gap: .55rem;
-            background: #FEF2F2;
-            border: 1px solid #FECDD3;
-            color: #991B1B;
+            background: var(--brand-050);
+            border: 1px solid var(--brand-300);
+            color: var(--brand-800);
             border-radius: 12px;
             padding: .8rem 1rem;
             margin-bottom: 1.25rem;
@@ -637,7 +624,7 @@
             height: 1.15rem;
             flex-shrink: 0;
             margin-top: .1rem;
-            color: #B91C1C;
+            color: var(--brand);
         }
 
         .resend-hint {
@@ -651,7 +638,7 @@
             background: none;
             border: none;
             padding: 0;
-            color: #B91C1C;
+            color: var(--brand);
             font-weight: 600;
             font-family: 'Poppins', sans-serif;
             cursor: pointer;
@@ -749,7 +736,7 @@
                         <img src="{{ asset('images/'.$logo) }}" class="brand-logo" alt="MSWDO Logo">
                         @else
                         <div class="brand-logo"
-                            style="display:flex;align-items:center;justify-content:center;color:#991B1B;font-weight:700;font-size:1.4rem;">
+                            style="display:flex;align-items:center;justify-content:center;color:var(--brand-800);font-weight:700;font-size:1.4rem;">
                             M</div>
                         @endif
                     </div>
@@ -971,7 +958,7 @@
                         title: 'Account Deactivated',
                         text: 'Your account has been deactivated. Please contact the administrator.',
                         icon: 'error',
-                        confirmButtonColor: '#DC2626',
+                        confirmButtonColor: '#B11116',
                         confirmButtonText: 'OK',
                         background: '#ffffff',
                         customClass: { popup: 'rounded-4 shadow-lg' },
@@ -1000,7 +987,7 @@
                               '<p style="margin:0;font-size:13px;color:#94A3B8">Sign in below with your account to continue.</p>' +
                               '</div>',
                         icon: 'info',
-                        confirmButtonColor: '#991B1B',
+                        confirmButtonColor: '#B11116',
                         confirmButtonText: 'Get Started',
                         background: '#ffffff',
                         customClass: { popup: 'rounded-4 shadow-lg' },

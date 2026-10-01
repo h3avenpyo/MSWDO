@@ -328,7 +328,7 @@ function showCaseDetailsModal(caseId){
     </style>
     <div class="cs-modal-box" style="background:var(--background);border-radius:16px;width:100%;max-width:780px;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.15);overflow:hidden;">
       <!-- Header -->
-      <div class="cs-modal-header" style="background:#1A237E;color:white;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+      <div class="cs-modal-header" style="background:#B11116;color:white;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
         <h5 style="margin:0;font-size:1.05rem;font-weight:600;display:flex;align-items:center;gap:8px;">
           <i data-lucide="user-circle" style="width:20px;height:20px;"></i>
           Social Case Study Details
@@ -394,7 +394,7 @@ function showCaseDetailsModal(caseId){
         <div class="cs-footer-btns" style="display:flex;gap:12px;justify-content:flex-end;">
           <button onclick="document.getElementById('caseDetailsModal').remove()" style="padding:8px 16px;background:var(--background);border:1px solid var(--border);border-radius:6px;font-weight:500;color:var(--text-primary);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='var(--background)'">Close</button>
           ${(caseRec.status || '').toLowerCase() !== 'archived' && !window.location.pathname.includes('/archive') ? `
-          <button onclick="window.location.href='/admin/social-case/detail/${caseRec.id}'" style="padding:8px 16px;background:var(--primary);border:none;border-radius:6px;font-weight:500;color:white;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.2s;" onmouseover="this.style.background='#3730A3'" onmouseout="this.style.background='var(--primary)'">
+          <button onclick="window.location.href='/admin/social-case/detail/${caseRec.id}'" style="padding:8px 16px;background:var(--primary);border:none;border-radius:6px;font-weight:500;color:white;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.2s;" onmouseover="this.style.background='#B11116'" onmouseout="this.style.background='var(--primary)'">
             <i data-lucide="edit" style="width:16px;height:16px;"></i> Full Details / Edit
           </button>
           ` : ''}
@@ -798,7 +798,7 @@ function proceedToIntake(caseId = null, clientName = null){
 async function submitForEncoding(){
   const name = (view.eligClientName || '').trim();
   if(!name){
-    Swal.fire({icon:'warning', title:'No client selected', text:'Please search and select a client first.', confirmButtonColor:'#1A237E'});
+    Swal.fire({icon:'warning', title:'No client selected', text:'Please search and select a client first.', confirmButtonColor:'#B11116'});
     return;
   }
 
@@ -838,7 +838,7 @@ async function submitForEncoding(){
       title: 'No Encoder Accounts Found',
       text: 'There are no active accounts configured for social case encoding.',
       icon: 'warning',
-      confirmButtonColor: '#1A237E'
+      confirmButtonColor: '#B11116'
     });
     return;
   }
@@ -854,9 +854,9 @@ async function submitForEncoding(){
       .toUpperCase();
 
     return `
-      <label class="encoder-option-card ${index === 0 ? 'selected' : ''}" for="enc_opt_${enc.id}" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border:2px solid ${index === 0 ? '#1A237E' : '#E2E8F0'};border-radius:10px;margin-bottom:8px;cursor:pointer;background:${index === 0 ? '#F8FAFC' : '#FFFFFF'};transition:all .15s ease;text-align:left;user-select:none;">
-        <input type="radio" id="enc_opt_${enc.id}" name="selected_encoder" value="${enc.id}" ${isChecked} style="width:18px;height:18px;accent-color:#1A237E;cursor:pointer;margin:0;flex-shrink:0;">
-        <div style="width:38px;height:38px;border-radius:50%;background:#1A237E;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">
+      <label class="encoder-option-card ${index === 0 ? 'selected' : ''}" for="enc_opt_${enc.id}" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border:2px solid ${index === 0 ? '#B11116' : '#E2E8F0'};border-radius:10px;margin-bottom:8px;cursor:pointer;background:${index === 0 ? '#F8FAFC' : '#FFFFFF'};transition:all .15s ease;text-align:left;user-select:none;">
+        <input type="radio" id="enc_opt_${enc.id}" name="selected_encoder" value="${enc.id}" ${isChecked} style="width:18px;height:18px;accent-color:#B11116;cursor:pointer;margin:0;flex-shrink:0;">
+        <div style="width:38px;height:38px;border-radius:50%;background:#B11116;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">
           ${escapeHtml(initials)}
         </div>
         <div style="flex:1;min-width:0;">
@@ -884,7 +884,7 @@ async function submitForEncoding(){
     showCancelButton: true,
     confirmButtonText: 'Submit to Selected Encoder',
     cancelButtonText: 'Cancel',
-    confirmButtonColor: '#1A237E',
+    confirmButtonColor: '#B11116',
     cancelButtonColor: '#6B7280',
     background: '#ffffff',
     customClass: {
@@ -900,7 +900,7 @@ async function submitForEncoding(){
               c.style.borderColor = '#E2E8F0';
               c.style.background = '#FFFFFF';
             });
-            card.style.borderColor = '#1A237E';
+            card.style.borderColor = '#B11116';
             card.style.background = '#F8FAFC';
             const radio = card.querySelector('input[type="radio"]');
             if(radio) radio.checked = true;
@@ -962,7 +962,7 @@ async function submitForEncoding(){
       title: 'Forwarded Successfully!',
       html: `<strong>${escapeHtml(data.case?.client?.name || name)}</strong> was successfully forwarded and assigned to <strong>${escapeHtml(assignedName)}</strong> for case encoding.`,
       icon: 'success',
-      confirmButtonColor: '#1A237E'
+      confirmButtonColor: '#B11116'
     });
 
     await loadCases();
@@ -1111,7 +1111,7 @@ function deleteCase(id, fromList = false){
     text: 'This will move the case to the archive. You can still view it but it will be removed from the active cases list.',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#1A237E',
+    confirmButtonColor: '#B11116',
     cancelButtonColor: '#6B7280',
     confirmButtonText: 'Yes, Archive',
     cancelButtonText: 'Cancel',
@@ -1293,7 +1293,7 @@ function renderArchive(){
         <td data-label="Date">${fmtDate(c.updatedAt)}</td>
         <td data-label="Action">
           <div class="actions" style="display:flex; gap: 4px;">
-            <button style="background-color: #1A237E; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); showCaseDetailsModal('${c.id}')" title="View">
+            <button style="background-color: #B11116; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); showCaseDetailsModal('${c.id}')" title="View">
               <i data-lucide="eye" style="width:16px;height:16px; color:#ffffff;"></i>
             </button>
             <button style="background-color: rgba(20,184,166,0.1); color: #0f766e; border: 1px solid rgba(20,184,166,0.3); border-radius: 6px; padding: 6px 10px; cursor:pointer; transition: background 0.2s;" onmouseover="this.style.backgroundColor='rgba(20,184,166,0.2)'" onmouseout="this.style.backgroundColor='rgba(20,184,166,0.1)'" onclick="event.stopPropagation(); restoreCase('${c.id}')" title="Restore">
@@ -1784,7 +1784,7 @@ function renderEncoderQueue(){
           ${escapeHtml(String(c.client?.age || ''))} • ${escapeHtml(c.client?.sex || c.client?.gender || '')} • ${escapeHtml(c.client?.address || c.client?.barangay || '—')}
         </div>
         <div style="font-size:11px;color:var(--text-muted);margin-top:2px">
-          Forwarded by ${escapeHtml(c.eligibleByUser?.name || 'Eligibility Checker')}${c.officer?.name ? ` • Assigned to: <strong style="color:#1A237E">${escapeHtml(c.officer.name)}</strong>` : ''}${c.eligibleAt ? ' • ' + fmtDate(c.eligibleAt) : ''}
+          Forwarded by ${escapeHtml(c.eligibleByUser?.name || 'Eligibility Checker')}${c.officer?.name ? ` • Assigned to: <strong style="color:#B11116">${escapeHtml(c.officer.name)}</strong>` : ''}${c.eligibleAt ? ' • ' + fmtDate(c.eligibleAt) : ''}
         </div>
       </div>
       <div style="display:flex;gap:6px;flex-shrink:0">
@@ -1799,7 +1799,7 @@ function renderEncoderQueue(){
 
 async function startEncodingFromQueue(caseId, clientName){
   if(!clientName || clientName === 'Unnamed'){
-    Swal.fire({icon:'warning', title:'Missing client name', text:'This case has no client name to pre-fill. Please encode it manually.', confirmButtonColor:'#1A237E'});
+    Swal.fire({icon:'warning', title:'Missing client name', text:'This case has no client name to pre-fill. Please encode it manually.', confirmButtonColor:'#B11116'});
     return;
   }
   sessionStorage.setItem('intake_caseId', caseId);
@@ -1898,7 +1898,7 @@ function renderSearchResults(query){
       showCancelButton: true,
       confirmButtonText: 'Proceed with New Client',
       cancelButtonText: 'Select Existing',
-      confirmButtonColor: '#1A237E',
+      confirmButtonColor: '#B11116',
       cancelButtonColor: '#6B7280',
       background: '#ffffff',
       customClass: { popup: 'rounded-4 shadow-lg' }
@@ -1944,7 +1944,7 @@ function renderSearchResults(query){
       showCancelButton: true,
       confirmButtonText: 'Proceed with New Client',
       cancelButtonText: 'Cancel',
-      confirmButtonColor: '#1A237E',
+      confirmButtonColor: '#B11116',
       cancelButtonColor: '#6B7280',
       background: '#ffffff',
       customClass: { popup: 'rounded-4 shadow-lg' }
@@ -2130,7 +2130,7 @@ async function startEligibilityCheck(){
       icon: 'warning',
       title: 'Input Required',
       text: 'Please enter at least 2 characters to search.',
-      confirmButtonColor: '#1A237E',
+      confirmButtonColor: '#B11116',
       confirmButtonText: 'OK',
       background: '#ffffff',
       customClass: { popup: 'rounded-4 shadow-lg' }
@@ -2145,7 +2145,7 @@ async function startEligibilityCheck(){
       icon: 'warning',
       title: 'Invalid Name',
       text: 'Please enter a valid name (letters, spaces, hyphens, and apostrophes only).',
-      confirmButtonColor: '#1A237E',
+      confirmButtonColor: '#B11116',
       confirmButtonText: 'OK',
       background: '#ffffff',
       customClass: { popup: 'rounded-4 shadow-lg' }
@@ -2502,7 +2502,7 @@ function renderIntakeForm(){
         <p class="text-sm m-0" style="color:var(--text-secondary)">Fill in the details below to encode a new social case study record.</p>
       </div>
       <div class="hidden sm:flex items-center gap-2">
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold" style="background:#EEF2FF;color:var(--primary);border:1px solid #C7D2FE;">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold" style="background:#FDF2F2;color:var(--primary);border:1px solid #F8C9C9;">
           <i data-lucide="file-text" style="width:14px;height:14px;margin-right:6px;"></i> Step 2: Case Encoding
         </span>
       </div>
@@ -2903,7 +2903,7 @@ function reviewIntake() {
           <span>Fields with (<span style="color:#DC2626;font-weight:700;">*</span>) are mandatory</span>
         </div>
       `,
-      confirmButtonColor: '#1A237E',
+      confirmButtonColor: '#B11116',
       confirmButtonText: 'Got it, I\'ll complete them',
       customClass: {
         popup: 'swal-custom-popup'
@@ -3091,7 +3091,7 @@ function showIntakeSummaryModal(){
             <div class="custom-modal-field custom-modal-col-full">
               <label class="custom-modal-label">Assistance Agencies</label>
               <div class="custom-modal-value" style="flex-wrap:wrap;gap:6px;padding:8px 10px;">
-                ${selectedAgencies.length ? selectedAgencies.map(a => `<span style="display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;background:#EEF2FF;color:var(--primary);font-size:12px;font-weight:600;border:1px solid #C7D2FE;">${a.key === 'OP' ? 'Office of the President' : `${escapeHtml(a.key)} - ${escapeHtml(a.name)}`}</span>`).join('') : '<span style="color:#9CA3AF;font-style:italic">None selected</span>'}
+                ${selectedAgencies.length ? selectedAgencies.map(a => `<span style="display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;background:#FDF2F2;color:var(--primary);font-size:12px;font-weight:600;border:1px solid #F8C9C9;">${a.key === 'OP' ? 'Office of the President' : `${escapeHtml(a.key)} - ${escapeHtml(a.name)}`}</span>`).join('') : '<span style="color:#9CA3AF;font-style:italic">None selected</span>'}
               </div>
             </div>
             <div class="custom-modal-field custom-modal-col-full">
@@ -3233,12 +3233,12 @@ function renderCaseList(){
         <td data-label="Created">${fmtDate(c.createdAt)}</td>
         <td data-label="Action">
           <div class="actions" style="display:flex; gap: 4px;">
-            <button style="background-color: #1A237E; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); showCaseDetailsModal('${c.id}')" title="View">
+            <button style="background-color: #B11116; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); showCaseDetailsModal('${c.id}')" title="View">
               <i data-lucide="eye" style="width:16px;height:16px; color:#ffffff;"></i>
             </button>
             ${CAN_ENCODE && c.status === 'Approved' ? `
               <button style="background-color: #FBC02D; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); window.location.href='/admin/social-case/document/${c.id}/PCSO'" title="Print">
-                <i data-lucide="printer" style="width:16px;height:16px; color:#121858;"></i>
+                <i data-lucide="printer" style="width:16px;height:16px; color:#8A0D11;"></i>
               </button>
             ` : ''}
             ${CAN_ENCODE && c.status !== 'Archived' ? `
@@ -3686,7 +3686,7 @@ async function reprintCase(caseId){
       title: 'Reprint Successful',
       html: `Case <strong>${escapeHtml(caseRec.controlNo || '')}</strong> has been updated with today's date (<strong>${escapeHtml(docData?.document_date || todayISO())}</strong>).${docData?.client_age !== null ? '<br>Client age at reprint: <strong>' + escapeHtml(String(docData.client_age)) + '</strong>' : ''}<br><br>You can now print the document.`,
       icon: 'success',
-      confirmButtonColor: '#1A237E',
+      confirmButtonColor: '#B11116',
       confirmButtonText: 'OK',
       background: '#ffffff',
       customClass: { popup: 'rounded-4 shadow-lg' }
@@ -3855,7 +3855,7 @@ function renderCaseDetail(){
         <i data-lucide="alert-triangle" style="width:48px;height:48px;margin-bottom:16px;color:#D1D5DB;"></i>
         <p style="font-size:1rem;font-weight:600;">Case not found.</p>
         <p style="font-size:14px;margin-top:8px;">Case ID: ${view.caseId}</p>
-        <button onclick="window.location.href='/admin/social-case/cases'" style="margin-top:16px;padding:8px 20px;background:#1A237E;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;">← Back to Cases</button>
+        <button onclick="window.location.href='/admin/social-case/cases'" style="margin-top:16px;padding:8px 20px;background:#B11116;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;">← Back to Cases</button>
       </div>`;
     lucide.createIcons();
     return;
@@ -4273,7 +4273,7 @@ function renderCaseDetail(){
             </button>
           ` : ''}
           ${CAN_ENCODE ? `
-            <button class="header-btn" style="background:#1A237E;color:white;border-color:#1A237E;width:120px;flex-shrink:0;" onclick="editCaseFromDetail('${c.id}')">
+            <button class="header-btn" style="background:#B11116;color:white;border-color:#B11116;width:120px;flex-shrink:0;" onclick="editCaseFromDetail('${c.id}')">
               <i data-lucide="edit" style="width:16px;height:16px;"></i>
               Edit
             </button>

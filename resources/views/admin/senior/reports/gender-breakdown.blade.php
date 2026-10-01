@@ -11,7 +11,7 @@
     <script>tailwind.config={corePlugins:{preflight:false}}</script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        :root{--primary:#1A237E;--primary-hover:#121858;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+        :root{--primary:#B11116;--primary-hover:#8A0D11;--sidebar-bg:#B11116;--sidebar-dark:#8A0D11;--sidebar-width:260px;--content-padding:32px;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
         *,*::before,*::after{box-sizing:border-box;}
         html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);min-height:100%;}
         body{font-size:14px;line-height:1.5;overflow-x:hidden;}
