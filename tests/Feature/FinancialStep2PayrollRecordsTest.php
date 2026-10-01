@@ -756,4 +756,161 @@ class FinancialStep2PayrollRecordsTest extends TestCase
         $allIntakesPendingFilter->assertSee('Lapu Lapu');
         $allIntakesPendingFilter->assertDontSee('Francisco Dagohoy');
     }
+
+    public function test_payroll_records_directory_date_filtering(): void
+    {
+        $date1 = '2026-11-10';
+        $date2 = '2026-11-20';
+
+        FinancialPayrollRecord::create([
+            'payroll_number' => 'PAYROLL-20261110-001-TEST',
+            'payroll_date' => $date1,
+            'batch_number' => 1,
+            'disbursing_officer' => 'Disbursing Officer',
+            'total_beneficiaries' => 5,
+            'total_amount' => 25000,
+            'status' => 'Completed',
+        ]);
+
+        FinancialPayrollRecord::create([
+            'payroll_number' => 'PAYROLL-20261120-001-TEST',
+            'payroll_date' => $date2,
+            'batch_number' => 1,
+            'disbursing_officer' => 'Disbursing Officer',
+            'total_beneficiaries' => 3,
+            'total_amount' => 15000,
+            'status' => 'Completed',
+        ]);
+
+        $response = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->get(route('admin.financial.financialstep2.payroll-records', [
+            'filter_date' => $date1,
+        ]));
+
+        $response->assertStatus(200);
+        $response->assertSee('November 10, 2026');
+        $response->assertDontSee('November 20, 2026');
+        $response->assertSee('Date: Nov 10, 2026');
+    }
+
+    public function test_payroll_records_directory_pagination_10_per_page(): void
+    {
+        // Create 12 distinct dates of payroll records
+        for ($i = 1; $i <= 12; $i++) {
+            $dayStr = str_pad($i, 2, '0', STR_PAD_LEFT);
+            FinancialPayrollRecord::create([
+                'payroll_number' => "PAYROLL-202612{$dayStr}-001-TEST",
+                'payroll_date' => "2026-12-{$dayStr}",
+                'batch_number' => 1,
+                'disbursing_officer' => 'Disbursing Officer',
+                'total_beneficiaries' => 1,
+                'total_amount' => 5000,
+                'status' => 'Completed',
+            ]);
+        }
+
+        // Page 1 (sorted date_desc by default: 2026-12-12 down to 2026-12-03)
+        $responsePage1 = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->get(route('admin.financial.financialstep2.payroll-records', [
+            'month' => '2026-12',
+        ]));
+
+        $responsePage1->assertStatus(200);
+        $responsePage1->assertSee('December 12, 2026');
+        $responsePage1->assertSee('December 03, 2026');
+        $responsePage1->assertDontSee('December 02, 2026');
+        $responsePage1->assertDontSee('December 01, 2026');
+        $responsePage1->assertSee('10 dates per page');
+        $responsePage1->assertSee('Previous');
+        $responsePage1->assertSee('Next');
+
+        // Page 2 (2026-12-02 and 2026-12-01)
+        $responsePage2 = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->get(route('admin.financial.financialstep2.payroll-records', [
+            'month' => '2026-12',
+            'page' => 2,
+        ]));
+
+        $responsePage2->assertStatus(200);
+        $responsePage2->assertSee('December 02, 2026');
+        $responsePage2->assertSee('December 01, 2026');
+        $responsePage2->assertDontSee('December 12, 2026');
+    }
+
+    public function test_liquidation_monthly_records_pagination_5_per_page(): void
+    {
+        // Create 7 distinct months of payroll records
+        for ($m = 1; $m <= 7; $m++) {
+            $monthStr = str_pad($m, 2, '0', STR_PAD_LEFT);
+            FinancialPayrollRecord::create([
+                'payroll_number' => "PAYROLL-2026{$monthStr}15-001-TEST",
+                'payroll_date' => "2026-{$monthStr}-15",
+                'batch_number' => 1,
+                'disbursing_officer' => 'Disbursing Officer',
+                'total_beneficiaries' => 1,
+                'total_amount' => 5000,
+                'status' => 'Completed',
+            ]);
+        }
+
+        // Page 1 (sorted date desc: July 2026 down to March 2026)
+        $responsePage1 = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->get(route('admin.financial.financialstep2.liquidation'));
+
+        $responsePage1->assertStatus(200);
+        $responsePage1->assertSee('July 2026');
+        $responsePage1->assertSee('June 2026');
+        $responsePage1->assertSee('May 2026');
+        $responsePage1->assertSee('April 2026');
+        $responsePage1->assertSee('March 2026');
+        // 6th and 7th month should not be on page 1
+        $responsePage1->assertDontSee('February 2026');
+        $responsePage1->assertDontSee('January 2026');
+        // Pagination info
+        $responsePage1->assertSee('5 records per page');
+        $responsePage1->assertSee('Previous');
+        $responsePage1->assertSee('Next');
+
+        // Page 2 (February 2026 and January 2026)
+        $responsePage2 = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->step2Officer->id,
+            'admin_user_name' => $this->step2Officer->name,
+            'admin_user_role' => 'financialstep2',
+            'financial_step2_authorized' => true,
+        ])->get(route('admin.financial.financialstep2.liquidation', [
+            'page' => 2,
+        ]));
+
+        $responsePage2->assertStatus(200);
+        $responsePage2->assertSee('February 2026');
+        $responsePage2->assertSee('January 2026');
+        $responsePage2->assertDontSee('July 2026');
+        $responsePage2->assertDontSee('June 2026');
+        $responsePage2->assertDontSee('May 2026');
+        $responsePage2->assertDontSee('April 2026');
+        $responsePage2->assertDontSee('March 2026');
+    }
 }
+
+

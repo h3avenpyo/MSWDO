@@ -29,6 +29,8 @@
     font-size: 0.95rem;
     font-weight: 600;
     color: #1E293B;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .badge-status {
@@ -508,7 +510,23 @@
 
 .gis-underline-med {
     width: 28%;
+    min-width: 0;
+    flex-shrink: 0;
     margin-right: 4px;
+    min-height: 18px;
+    height: auto;
+    line-height: 1.15;
+    padding-top: 1px;
+    padding-bottom: 2px;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
 }
 
 .gis-underline-blank {
@@ -730,7 +748,8 @@
     .gis-meta-box,
     .gis-oath-container,
     .gis-thumbmark-box,
-    .gis-checkbox {
+    .gis-checkbox,
+    .gis-rec-underline {
         border-color: #000000 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;

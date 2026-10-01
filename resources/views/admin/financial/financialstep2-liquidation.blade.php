@@ -221,8 +221,11 @@
     @if($monthlyRecords->isNotEmpty())
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div class="text-muted small">
-            Showing <strong>{{ $monthlyRecords->count() }}</strong> {{ Str::plural('monthly liquidation record',
-            $monthlyRecords->count()) }}
+            @if($monthlyRecords->total() > 1 && $monthlyRecords->firstItem() !== $monthlyRecords->lastItem())
+            Showing <strong>{{ $monthlyRecords->firstItem() }}</strong> - <strong>{{ $monthlyRecords->lastItem() }}</strong> of <strong>{{ $monthlyRecords->total() }}</strong> {{ Str::plural('monthly liquidation record', $monthlyRecords->total()) }}
+            @else
+            Showing <strong>{{ $monthlyRecords->total() }}</strong> {{ Str::plural('monthly liquidation record', $monthlyRecords->total()) }}
+            @endif
             (Total Allocated: <strong class="text-dark">{{ $formattedGlobalAllocated }}</strong> &bull; Total Claimed:
             <strong class="text-success">{{ $formattedGlobalClaimed }}</strong> &bull; Remaining: <strong
                 class="text-warning-emphasis">{{ $formattedGlobalRemaining }}</strong>)
@@ -383,6 +386,23 @@
         </div>
     </div>
     @endforelse
+
+    <!-- Monthly Records Pagination Navigation -->
+    @if(method_exists($monthlyRecords, 'hasPages') && $monthlyRecords->hasPages())
+    <div class="card border-0 shadow-xs rounded-4 bg-white p-3 mt-4 mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+            <div class="text-muted small fw-medium text-center text-md-start">
+                Showing <span class="fw-semibold text-dark">{{ $monthlyRecords->firstItem() }}</span> to <span
+                    class="fw-semibold text-dark">{{ $monthlyRecords->lastItem() }}</span> of <span
+                    class="fw-semibold text-dark">{{ $monthlyRecords->total() }}</span> {{
+                Str::plural('monthly record', $monthlyRecords->total()) }} &bull; <span class="fw-semibold text-secondary">5 records per page</span>
+            </div>
+            <div class="d-flex justify-content-center">
+                {{ $monthlyRecords->links('vendor.pagination.mswdo-compact') }}
+            </div>
+        </div>
+    </div>
+    @endif
 
 </div>
 @endsection

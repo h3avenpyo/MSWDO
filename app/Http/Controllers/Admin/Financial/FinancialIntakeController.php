@@ -48,7 +48,19 @@ class FinancialIntakeController extends Controller
             });
         }
 
-        // Filter by Month & Year (e.g. 'YYYY-MM')
+        // Filter by Specific Intake Date (e.g. 'YYYY-MM-DD')
+        if ($request->filled('date')) {
+            $dateInput = trim($request->date);
+            $query->where(function ($q) use ($dateInput) {
+                $q->whereDate('date_processed', $dateInput)
+                  ->orWhere(function ($sq) use ($dateInput) {
+                      $sq->whereNull('date_processed')
+                         ->whereDate('created_at', $dateInput);
+                  });
+            });
+        }
+
+        // Filter by Month & Year (e.g. 'YYYY-MM') for backward compatibility
         if ($request->filled('month')) {
             $monthInput = trim($request->month);
             $parts = explode('-', $monthInput);

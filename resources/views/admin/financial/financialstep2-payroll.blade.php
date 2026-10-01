@@ -6,13 +6,13 @@
 @section('page-styles')
 <link href="{{ asset('css/financialstep2-payroll.css') }}" rel="stylesheet">
 <style>
-@media (max-width: 575.98px) {
-    .filter-card .row.g-2 > [class*="col-md-"] {
-        width: 100%;
-        max-width: 100%;
-        flex: 0 0 100%;
+    @media (max-width: 575.98px) {
+        .filter-card .row.g-2>[class*="col-md-"] {
+            width: 100%;
+            max-width: 100%;
+            flex: 0 0 100%;
+        }
     }
-}
 </style>
 @endsection
 
@@ -21,17 +21,14 @@
 $userName = session('financial_step2_authorized_user') ?? session('admin_user_name') ?? 'Step 2 Officer';
 @endphp
 
-<div class="container-fluid px-0" id="payrollWorkspace"
-    data-csrf-token="{{ csrf_token() }}"
+<div class="container-fluid px-0" id="payrollWorkspace" data-csrf-token="{{ csrf_token() }}"
     data-update-amount-url="{{ route('admin.financial.financialstep2.payroll.update-amount') }}"
     data-generate-payroll-url="{{ route('admin.financial.financialstep2.payroll.generate') }}"
     data-print-payroll-url="{{ route('admin.financial.financialstep2.payroll.print') }}"
     data-payroll-records-url="{{ route('admin.financial.financialstep2.payroll-records') }}"
     data-payroll-date="{{ isset($targetDate) ? $targetDate->format('Y-m-d') : (request('date') ?: date('Y-m-d')) }}"
-    data-total-intakes="{{ $totalTodayCount ?? 0 }}"
-    data-encoded-intakes="{{ $encodedCount ?? 0 }}"
-    data-pending-intakes="{{ $pendingCount ?? 0 }}"
-    data-all-encoded="{{ $allAmountsEncoded ? 'true' : 'false' }}">
+    data-total-intakes="{{ $totalTodayCount ?? 0 }}" data-encoded-intakes="{{ $encodedCount ?? 0 }}"
+    data-pending-intakes="{{ $pendingCount ?? 0 }}" data-all-encoded="{{ $allAmountsEncoded ? 'true' : 'false' }}">
 
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4 shadow-sm border-success-subtle"
@@ -42,7 +39,8 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
     @endif
 
     @if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4 shadow-sm border-danger-subtle" role="alert">
+    <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4 shadow-sm border-danger-subtle"
+        role="alert">
         <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -52,20 +50,16 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
     <div class="payroll-wizard-hero mb-4">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
             <div>
-                <h2 class="h4 fw-bold mb-1"><i class="fas fa-file-invoice-dollar me-2"></i>Step 2: Payroll Generation &amp;
+                <h2 class="h4 fw-bold mb-1"><i class="fas fa-file-invoice-dollar me-2"></i>Step 2: Payroll Generation
+                    &amp;
                     Financial Encoding</h2>
                 <p class="mb-0 text-white-50 small">
-                    Encode and review the financial assistance amount for each unprocessed intake for {{ isset($targetDate)
+                    Encode and review the financial assistance amount for each unprocessed intake for {{
+                    isset($targetDate)
                     ? $targetDate->format('F d, Y') : date('F d, Y') }} before generating the official payroll.
                 </p>
             </div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                <button type="button"
-                    class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs btn-open-monthly-unclaimed"
-                    data-month="{{ isset($targetDate) ? $targetDate->format('Y-m') : date('Y-m') }}"
-                    title="Message unclaimed beneficiaries for a selected month">
-                    <i class="fas fa-bullhorn me-1"></i> Message Unclaimed
-                </button>
                 <a href="{{ route('admin.financial.financialstep2.payroll-records', ['date' => isset($targetDate) ? $targetDate->format('Y-m-d') : date('Y-m-d')]) }}"
                     class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
                     <i class="fas fa-archive me-1"></i> View Payroll Records
@@ -120,10 +114,12 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                 </h5>
                 <p class="mb-0 text-muted small" id="readinessSubtitle">
                     @if($totalTodayCount === 0)
-                    All intakes processed for this date have been generated into payroll records or no new intakes have been
+                    All intakes processed for this date have been generated into payroll records or no new intakes have
+                    been
                     recorded yet in Step 1.
                     @elseif($allAmountsEncoded)
-                    Every client in the pending list has an assigned grant amount. You can now generate the official payroll
+                    Every client in the pending list has an assigned grant amount. You can now generate the official
+                    payroll
                     record.
                     @else
                     Please encode the financial assistance amount for all remaining intakes below. Once verified, the
@@ -133,13 +129,13 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
             </div>
         </div>
         <div class="d-flex align-items-center gap-2">
-            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-semibold"
-                id="btnBulkSave" {{ $totalTodayCount===0 ? 'disabled' : '' }}>
+            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-semibold" id="btnBulkSave" {{
+                $totalTodayCount===0 ? 'disabled' : '' }}>
                 <i class="fas fa-save me-1"></i> Save All Amounts
             </button>
             <button type="button" id="btnGeneratePayroll"
-                class="btn btn-generate-payroll d-inline-flex align-items-center gap-2"
-                {{ ($totalTodayCount> 0 && $allAmountsEncoded) ? '' : 'disabled' }}>
+                class="btn btn-generate-payroll d-inline-flex align-items-center gap-2" {{ ($totalTodayCount> 0 &&
+                $allAmountsEncoded) ? '' : 'disabled' }}>
                 <i class="fas fa-file-invoice-dollar"></i> Generate Payroll
             </button>
         </div>
@@ -173,7 +169,8 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                 </select>
             </div>
             <div class="col-md-2 col-lg-2">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-tags me-1"></i> Category</label>
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-tags me-1"></i>
+                    Category</label>
                 <select name="category" class="form-select form-select-sm rounded-3">
                     <option value="All">All Categories</option>
                     @foreach($categories as $cat)
@@ -182,17 +179,20 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                 </select>
             </div>
             <div class="col-md-1 col-lg-1">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-filter me-1"></i> Status</label>
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-filter me-1"></i>
+                    Status</label>
                 <select name="status" class="form-select form-select-sm rounded-3">
                     <option value="All">All</option>
                     <option value="encoded" {{ request('status')=='encoded' ? 'selected' : '' }}>Encoded</option>
-                    <option value="pending" {{ request('status')=='pending' || request('status')=='pending_amount' ? 'selected' : '' }}>Pending Amount</option>
+                    <option value="pending" {{ request('status')=='pending' || request('status')=='pending_amount'
+                        ? 'selected' : '' }}>Pending Amount</option>
                 </select>
             </div>
             <div class="col-md-1 col-lg-1">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-sort me-1"></i> Sort</label>
                 <select name="sort" class="form-select form-select-sm rounded-3">
-                    <option value="date_desc" {{ request('sort')=='date_desc' || !request('sort') ? 'selected' : '' }}>Date
+                    <option value="date_desc" {{ request('sort')=='date_desc' || !request('sort') ? 'selected' : '' }}>
+                        Date
                         &darr;</option>
                     <option value="date_asc" {{ request('sort')=='date_asc' ? 'selected' : '' }}>Date &uarr;</option>
                     <option value="control_asc" {{ request('sort')=='control_asc' ? 'selected' : '' }}>Ctrl # &uarr;
@@ -203,7 +203,8 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                     <option value="name_desc" {{ request('sort')=='name_desc' ? 'selected' : '' }}>Name Z-A</option>
                     <option value="amount_desc" {{ request('sort')=='amount_desc' ? 'selected' : '' }}>Amount &darr;
                     </option>
-                    <option value="amount_asc" {{ request('sort')=='amount_asc' ? 'selected' : '' }}>Amount &uarr;</option>
+                    <option value="amount_asc" {{ request('sort')=='amount_asc' ? 'selected' : '' }}>Amount &uarr;
+                    </option>
                 </select>
             </div>
             <div class="col-md-1 col-lg-1 d-flex gap-1">
@@ -227,19 +228,22 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
         method="POST">
         @csrf
         <div class="filter-card mb-4 p-0 overflow-hidden">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 p-4 border-bottom border-subtle-color">
+            <div
+                class="d-flex justify-content-between align-items-center flex-wrap gap-2 p-4 border-bottom border-subtle-color">
                 <div>
                     <h3 class="h6 fw-bold mb-1 text-dark">
                         <i class="fas fa-list-ol me-2 icon-brand-color"></i>Pending Intakes for Payroll
                         Encoding ({{ count($intakes) }} Records)
                     </h3>
                     <p class="text-muted small mb-0">
-                        Enter the approved financial grant amount in the input field for each beneficiary. Fast save per row
+                        Enter the approved financial grant amount in the input field for each beneficiary. Fast save per
+                        row
                         or bulk save all.
                     </p>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <button type="submit" class="btn btn-primary btn-brand-primary btn-sm rounded-pill px-3 fw-semibold">
+                    <button type="submit"
+                        class="btn btn-primary btn-brand-primary btn-sm rounded-pill px-3 fw-semibold">
                         <i class="fas fa-save me-1"></i> Save All Encoded Amounts
                     </button>
                 </div>
@@ -270,21 +274,26 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                             // Representative Name Rule:
                             // If has separate rep -> show rep name.
                             // If no separate rep -> show beneficiary name.
-                            $hasRep = $intake->has_representative && !empty(trim($intake->representative_full_name ?? ''))
+                            $hasRep = $intake->has_representative && !empty(trim($intake->representative_full_name ??
+                            ''))
                             && $intake->representative_full_name !== 'N/A';
-                            $repDisplayName = $hasRep ? $intake->representative_full_name : $intake->beneficiary_full_name;
+                            $repDisplayName = $hasRep ? $intake->representative_full_name :
+                            $intake->beneficiary_full_name;
                             @endphp
-                            <tr id="row-intake-{{ $intake->id }}" class="{{ $hasAmount ? '' : 'table-warning-subtle' }}">
+                            <tr id="row-intake-{{ $intake->id }}"
+                                class="{{ $hasAmount ? '' : 'table-warning-subtle' }}">
                                 <td class="text-muted fw-bold">{{ $index + 1 }}</td>
                                 <td>
                                     <span class="fw-bold text-brand-color">{{ $intake->control_number }}</span>
                                     <div>
-                                        <span class="badge bg-light text-secondary border px-2 py-0.5 rounded-pill badge-client-subtle">{{
+                                        <span
+                                            class="badge bg-light text-secondary border px-2 py-0.5 rounded-pill badge-client-subtle">{{
                                             $intake->client_type ?? 'New' }}</span>
                                     </div>
                                 </td>
                                 <td class="text-nowrap">
-                                    <span class="badge bg-light text-dark border px-2.5 py-1 rounded-pill badge-client-subtle">
+                                    <span
+                                        class="badge bg-light text-dark border px-2.5 py-1 rounded-pill badge-client-subtle">
                                         <i class="fas fa-calendar-day text-primary me-1"></i>
                                         {{ $intake->date_processed ?
                                         \Carbon\Carbon::parse($intake->date_processed)->format('M d, Y') :
@@ -309,17 +318,20 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                                         <span class="rep-badge-authorized"><i class="fas fa-user-friends me-1"></i>{{
                                             $intake->rep_relationship ?? 'Authorized Rep' }}</span>
                                         @else
-                                        <span class="rep-badge-self"><i class="fas fa-user-check me-1"></i>Self (Beneficiary
+                                        <span class="rep-badge-self"><i class="fas fa-user-check me-1"></i>Self
+                                            (Beneficiary
                                             as Rep)</span>
                                         @endif
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="text-dark fw-medium">{{ $intake->beneficiary_barangay ?? 'Silang, Cavite' }}
+                                    <div class="text-dark fw-medium">{{ $intake->beneficiary_barangay ?? 'Silang,
+                                        Cavite' }}
                                     </div>
                                     <div class="text-muted small">
                                         <i class="fas fa-phone-alt me-1 text-secondary font-text-xs"></i>
-                                        {{ $hasRep && !empty($intake->rep_contact_number) ? $intake->rep_contact_number :
+                                        {{ $hasRep && !empty($intake->rep_contact_number) ? $intake->rep_contact_number
+                                        :
                                         ($intake->beneficiary_contact_number ?: 'No contact') }}
                                     </div>
                                 </td>
@@ -338,7 +350,8 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                                         <div class="d-flex align-items-center gap-1">
                                             <div class="amount-input-group flex-grow-1">
                                                 <span class="currency-symbol">&#8369;</span>
-                                                <input type="number" step="0.01" min="0" name="amounts[{{ $intake->id }}]"
+                                                <input type="number" step="0.01" min="0"
+                                                    name="amounts[{{ $intake->id }}]"
                                                     id="input-amount-{{ $intake->id }}"
                                                     class="form-control form-control-sm amount-input-field {{ $hasAmount ? 'is-saved' : 'is-unencoded' }}"
                                                     placeholder="0.00" value="{{ $currentAmount }}"
@@ -353,10 +366,14 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                                         <!-- Quick Preset Buttons -->
                                         <div class="d-flex align-items-center gap-1 mt-1">
                                             <span class="text-muted preset-label">Presets:</span>
-                                            <button type="button" class="preset-btn" data-intake-id="{{ $intake->id }}" data-amount="1000">&#8369;1k</button>
-                                            <button type="button" class="preset-btn" data-intake-id="{{ $intake->id }}" data-amount="2000">&#8369;2k</button>
-                                            <button type="button" class="preset-btn" data-intake-id="{{ $intake->id }}" data-amount="3000">&#8369;3k</button>
-                                            <button type="button" class="preset-btn" data-intake-id="{{ $intake->id }}" data-amount="5000">&#8369;5k</button>
+                                            <button type="button" class="preset-btn" data-intake-id="{{ $intake->id }}"
+                                                data-amount="1000">&#8369;1k</button>
+                                            <button type="button" class="preset-btn" data-intake-id="{{ $intake->id }}"
+                                                data-amount="2000">&#8369;2k</button>
+                                            <button type="button" class="preset-btn" data-intake-id="{{ $intake->id }}"
+                                                data-amount="3000">&#8369;3k</button>
+                                            <button type="button" class="preset-btn" data-intake-id="{{ $intake->id }}"
+                                                data-amount="5000">&#8369;5k</button>
                                         </div>
                                     </div>
                                 </td>
@@ -377,8 +394,7 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                                         <!-- View -->
                                         <button type="button"
                                             class="btn btn-sm btn-outline-primary action-btn btn-view-intake"
-                                            title="View Details"
-                                            data-intake="{{ json_encode($intake) }}">
+                                            title="View Details" data-intake="{{ json_encode($intake) }}">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </div>
@@ -389,12 +405,16 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                                 <td colspan="10" class="p-5 text-center">
                                     <div class="empty-state-box text-center py-4">
                                         <i class="fas fa-clipboard-check fa-3x mb-3 text-muted opacity-50 d-block"></i>
-                                        <h4 class="fw-bold mb-1 empty-title">No Pending Intakes for Payroll Generation</h4>
+                                        <h4 class="fw-bold mb-1 empty-title">No Pending Intakes for Payroll Generation
+                                        </h4>
                                         <p class="text-muted mb-3 empty-desc">
-                                            @if(request()->hasAny(['date', 'search', 'barangay', 'category', 'status', 'sort']))
-                                            No ungenerated records matched your search filters. Try resetting the filter criteria.
+                                            @if(request()->hasAny(['date', 'search', 'barangay', 'category', 'status',
+                                            'sort']))
+                                            No ungenerated records matched your search filters. Try resetting the filter
+                                            criteria.
                                             @else
-                                            All intakes for this date have already been generated into official payrolls, or no new intakes have arrived from Step 1.
+                                            All intakes for this date have already been generated into official
+                                            payrolls, or no new intakes have arrived from Step 1.
                                             @endif
                                         </p>
                                         <a href="{{ route('admin.financial.financialstep2.payroll-records') }}"
@@ -410,15 +430,18 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                 </div>
 
                 <!-- Bottom Table Summary Footer -->
-                <div class="d-flex justify-content-start align-items-center flex-wrap gap-3 p-3 rounded-3 mt-3 border panel-footer-canvas">
+                <div
+                    class="d-flex justify-content-start align-items-center flex-wrap gap-3 p-3 rounded-3 mt-3 border panel-footer-canvas">
                     <span class="text-muted small">Total Listed: <strong>{{ count($intakes) }}</strong> Intakes</span>
                     <span class="text-muted small">|</span>
                     <span class="small fw-semibold text-color-success">
-                        <i class="fas fa-check-circle me-1"></i> <span id="footerEncodedCount">{{ $encodedCount }}</span>
+                        <i class="fas fa-check-circle me-1"></i> <span id="footerEncodedCount">{{ $encodedCount
+                            }}</span>
                         Encoded
                     </span>
                     <span class="small fw-semibold text-color-warning">
-                        <i class="fas fa-hourglass-half me-1"></i> <span id="footerPendingCount">{{ $pendingCount }}</span>
+                        <i class="fas fa-hourglass-half me-1"></i> <span id="footerPendingCount">{{ $pendingCount
+                            }}</span>
                         Pending
                     </span>
                 </div>
@@ -435,7 +458,8 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                     <div class="d-flex align-items-center gap-2">
                         <i class="fas fa-clipboard-check fa-lg"></i>
                         <div>
-                            <h5 class="modal-title fw-bold mb-0" id="intakeQuickViewModalLabel">General Intake Preview</h5>
+                            <h5 class="modal-title fw-bold mb-0" id="intakeQuickViewModalLabel">General Intake Preview
+                            </h5>
                             <div class="text-white-50 small" id="modalControlNumberHeader">Control No: N/A</div>
                         </div>
                     </div>
@@ -542,13 +566,14 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                             </div>
                             <div class="col-12">
                                 <div class="detail-field-label">Social Worker Assessment</div>
-                                <div class="detail-field-value p-3 rounded-2 border modal-assessment-box" id="modalSocialWorkerAssessment">
+                                <div class="detail-field-value p-3 rounded-2 border modal-assessment-box"
+                                    id="modalSocialWorkerAssessment">
                                     N/A</div>
                             </div>
                             <div class="col-md-6">
                                 <div class="detail-field-label">Recommended Assistance Type</div>
-                                <div class="detail-field-value fw-bold text-brand-color"
-                                    id="modalRecommendedType">N/A</div>
+                                <div class="detail-field-value fw-bold text-brand-color" id="modalRecommendedType">N/A
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="detail-field-label">Recommended Amount (Assessed Grant)</div>

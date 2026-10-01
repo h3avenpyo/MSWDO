@@ -45,10 +45,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                 Assistance records processed today ({{ date('F d, Y') }})</p>
         </div>
         <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('admin.financial.financialstep2.liquidation') }}"
-                class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs">
-                <i class="fas fa-receipt me-1"></i> Liquidation
-            </a>
+
             <div class="user-welcome">
                 <i class="fas fa-user-circle me-1"></i>
                 <span>{{ $userName }}</span>

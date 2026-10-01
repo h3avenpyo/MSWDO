@@ -1,14 +1,14 @@
 /**
  * Financial Assistance Step 2 Printable Payroll Stylesheet
+ * Faithfully redesigned to match official Silang MSWDO Payroll format
  * Optimized for Screen Simulation & Physical Legal Landscape (8.5 x 14 in) Printing
  */
 
 :root {
     --print-width: 14in;
     --print-height: 8.5in;
-    --color-primary: #1A237E;
-    --color-dark: #0F172A;
-    --color-border-table: #1E293B;
+    --table-header-bg: #EDA766;
+    --table-border-color: #000000;
 }
 
 * {
@@ -20,10 +20,10 @@
 body {
     font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background-color: #E2E8F0;
-    color: #0F172A;
+    color: #000000;
     margin: 0;
     padding: 0;
-    font-size: 9pt;
+    font-size: 8.5pt;
     line-height: 1.35;
 }
 
@@ -38,88 +38,245 @@ body {
     z-index: 1000;
 }
 
-/* Paper Simulation on Screen (Legal Landscape) */
-.payroll-sheet-wrapper {
-    width: 13.6in;
+/* Paper Simulation on Screen (Legal Landscape Multi-Page) */
+.payroll-preview-container {
+    padding: 10px 0 40px 0;
+}
+
+.payroll-page-wrapper {
+    margin-bottom: 25px;
+}
+
+.preview-page-header {
+    width: 14in;
     max-width: 98%;
+    margin: 0 auto 8px auto;
+}
+
+.payroll-page-sheet {
+    position: relative;
+    width: 14in;
+    max-width: 98%;
+    height: 8.5in;
+    margin: 0 auto;
+    background: #FFFFFF;
+    padding: 0.35in 0.45in;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid #CBD5E1;
+    border-radius: 4px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.sheet-body-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Backward compatibility for single sheet wrapper */
+.payroll-sheet-wrapper {
+    position: relative;
+    width: 14in;
+    max-width: 98%;
+    min-height: 8.5in;
+    height: auto;
     margin: 20px auto 40px auto;
     background: #FFFFFF;
-    padding: 0.4in 0.45in;
+    padding: 0.35in 0.45in;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     border: 1px solid #CBD5E1;
     border-radius: 4px;
+    overflow: visible;
 }
 
-/* Government Header Layout */
+/* Watermark in background */
+.watermark-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 480px;
+    height: 480px;
+    opacity: 0.10;
+    pointer-events: none;
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sheet-watermark {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: grayscale(25%);
+}
+
+/* Header Layout */
 .payroll-header {
     position: relative;
-    text-align: center;
-    padding: 2px 85px 12px 85px;
-    margin-bottom: 16px;
-    border-bottom: 2px solid #0F172A;
-    min-height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 4px 0;
+    margin-bottom: 0;
+    z-index: 1;
 }
 
 .header-logo-left {
-    position: absolute;
-    left: 8px;
-    top: 2px;
-    width: 64px;
-    height: 64px;
+    width: 72px;
+    height: 72px;
     object-fit: contain;
+    flex-shrink: 0;
     display: block;
 }
 
-.header-logo-right {
-    position: absolute;
-    right: 8px;
-    top: 2px;
-    width: 68px;
-    height: 64px;
-    object-fit: contain;
-    display: block;
+.header-center-text {
+    flex: 1;
+    text-align: center;
+    padding: 0 16px;
 }
 
-.govt-titles {
-    font-size: 8.5pt;
-    font-weight: 600;
-    color: #334155;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    line-height: 1.25;
+.header-province {
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 11pt;
+    line-height: 1.2;
+    color: #000000;
 }
 
-.office-title {
-    font-size: 10pt;
+.header-municipality {
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 11pt;
+    line-height: 1.2;
+    color: #000000;
+    margin-bottom: 2px;
+}
+
+.header-office {
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 13.5pt;
     font-weight: 800;
-    color: #0F172A;
-    margin-top: 3px;
+    line-height: 1.25;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: #000000;
+}
+
+.header-doc-title {
+    font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    font-size: 9.5pt;
+    font-weight: 800;
+    line-height: 1.25;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    color: #000000;
+    margin-top: 2px;
 }
 
-.document-title {
-    font-size: 13pt;
-    font-weight: 800;
-    color: #DC2626;
-    margin-top: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+.header-logos-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
 }
 
-.document-subtitle {
+.logo-bagong-pilipinas {
+    height: 52px;
+    width: auto;
+    max-width: 65px;
+    object-fit: contain;
+    display: block;
+}
+
+.logo-dswd {
+    height: 52px;
+    width: auto;
+    max-width: 60px;
+    object-fit: contain;
+    display: block;
+}
+
+/* Solid horizontal black divider below header */
+.header-black-bar {
+    width: 100%;
+    height: 3.5px;
+    background-color: #000000;
+    margin: 4px 0 8px 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Sub-header / Program Info */
+.payroll-program-header {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.program-title {
     font-size: 8.5pt;
+    font-weight: 700;
+    color: #000000;
+    line-height: 1.35;
+}
+
+.program-subtitle {
+    font-size: 8pt;
     font-weight: 600;
-    color: #475569;
-    margin-top: 1px;
+    color: #000000;
+    line-height: 1.35;
+}
+
+/* Continuation Header for Page 2+ */
+.payroll-continuation-header {
+    position: relative;
+    padding: 0 0 2px 0;
+    margin-bottom: 6px;
+    z-index: 1;
+}
+
+.header-logo-mini {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.continuation-lgu {
+    font-size: 9pt;
+    font-weight: 800;
+    color: #000000;
+    letter-spacing: 0.02em;
+}
+
+.continuation-prog {
+    font-size: 8pt;
+    font-weight: 600;
+    color: #334155;
+}
+
+.continuation-meta {
+    font-size: 7.5pt;
+    color: #000000;
+}
+
+.header-black-bar-thin {
+    height: 2px;
+    background-color: #000000;
+    margin: 4px 0 6px 0;
 }
 
 /* Master Payroll Table - Legal Landscape Proportions */
 .payroll-table {
+    position: relative;
+    z-index: 1;
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 16px;
+    margin-bottom: 0;
+    table-layout: fixed;
     page-break-inside: auto;
+    border: 1px solid #000000;
 }
 
 .payroll-table thead {
@@ -133,156 +290,239 @@ body {
 
 .payroll-table tfoot {
     display: table-footer-group;
+    page-break-inside: avoid;
 }
 
 .payroll-table th,
 .payroll-table td {
-    border: 1px solid #0F172A;
-    padding: 5px 7px;
+    border: 1px solid #000000;
+    padding: 4px 6px;
     font-size: 8pt;
     vertical-align: middle;
+    color: #000000;
 }
 
 .payroll-table th {
-    background-color: #F1F5F9 !important;
-    color: #0F172A;
+    background-color: #EDA766 !important;
+    color: #000000;
     font-weight: 800;
     text-align: center;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
     font-size: 7.5pt;
-    white-space: nowrap;
+    padding: 6px 4px;
 }
 
 /* Column Width Distribution for Legal Landscape */
 .col-no {
-    width: 3.5%;
+    width: 4%;
     text-align: center;
     font-weight: 700;
+    height: 70px;
 }
 
-.col-control {
-    width: 10%;
+.col-date {
+    width: 9%;
     text-align: center;
-    font-weight: 700;
-    font-family: monospace;
-    font-size: 8pt;
+    white-space: nowrap;
+    height: 70px;
 }
 
-.col-rep {
-    width: 21%;
+.col-client {
+    width: 20%;
     text-align: left;
+    word-break: break-word;
+    height: 70px;
 }
 
 .col-ben {
     width: 21%;
     text-align: left;
+    word-break: break-word;
+    height: 70px;
 }
 
 .col-brgy {
-    width: 12%;
-    text-align: left;
-}
-
-.col-contact {
-    width: 10%;
+    width: 11%;
     text-align: center;
-    font-size: 7.5pt;
+    word-break: break-word;
+    height: 70px;
 }
 
 .col-amount {
-    width: 11%;
+    width: 9%;
     text-align: right;
     font-weight: 700;
-    font-size: 8.5pt;
+    font-size: 8pt;
     white-space: nowrap;
+    height: 70px;
+}
+
+.col-contact {
+    width: 11%;
+    text-align: center;
+    font-size: 7.5pt;
+    white-space: nowrap;
+    height: 70px;
 }
 
 .col-signature {
-    width: 11.5%;
+    width: 15%;
     text-align: center;
-    padding: 3px 6px;
+    padding: 2px 4px;
+    height: 70px;
+}
+
+.payroll-table thead th {
+    height: 28px !important;
+}
+
+.payroll-table tbody td {
+    height: 70px;
 }
 
 /* Blank space specifically reserved for physical manual pen signing */
 .signature-box {
-    min-height: 38px;
+    min-height: 52px;
+    height: 100%;
     width: 100%;
     display: block;
-    border-bottom: 1px solid #000000;
-    margin: 18px 0 2px 0;
 }
 
-.payroll-total-row th,
+.empty-padding-row td {
+    height: 70px;
+}
+
 .payroll-total-row td {
     background-color: #F8FAFC !important;
     font-weight: 800;
-    border-top: 2px solid #0F172A;
-    border-bottom: 2px solid #0F172A;
+    border-top: 2px solid #000000;
+    border-bottom: 2px solid #000000;
     font-size: 8.5pt;
+    padding: 6px 8px;
 }
 
 .payroll-grand-total-amount {
-    color: #1A237E;
+    color: #000000;
 }
 
-/* Signatories Block */
-.signatories-container {
-    margin-top: 24px;
+/* Spacer row inside tfoot is hidden on screen to maintain clean layout */
+.tfoot-spacer-row {
+    display: none;
+}
+
+.tfoot-spacer-cell {
+    border: none;
+    padding: 0;
+    margin: 0;
+    height: 0;
+}
+
+.tfoot-spacer-box {
+    display: none;
+    height: 0;
+}
+
+/* Signatories & Certifications Block (Fixed to bottom of each Legal sheet) */
+.signatories-section {
+    position: absolute;
+    bottom: 0.35in;
+    left: 0.45in;
+    right: 0.45in;
+    z-index: 2;
+    background-color: #FFFFFF;
+    padding-top: 4px;
+}
+
+.certifications-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 20px;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    gap: 24px;
+    margin-bottom: 6px;
 }
 
-.signatory-card {
+.cert-left-text {
+    flex: 0 0 38%;
+    font-size: 7pt;
+    line-height: 1.3;
+    color: #000000;
+    text-align: left;
+}
+
+.cert-right-text {
+    flex: 0 0 58%;
+    font-size: 7pt;
+    line-height: 1.3;
+    color: #000000;
+    text-align: left;
+}
+
+.signatories-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.signatory-col {
     flex: 1;
     text-align: center;
+    min-width: 0;
 }
 
 .signatory-role {
     font-size: 7.5pt;
-    font-weight: 700;
-    color: #334155;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: 40px;
+    font-weight: 600;
+    color: #000000;
+    min-height: 14px;
+    margin-bottom: 22px;
+    line-height: 1.2;
+}
+
+.signatory-role-empty {
+    visibility: hidden;
 }
 
 .signatory-line {
-    border-bottom: 1.2px solid #0F172A;
-    margin: 0 auto 4px auto;
-    width: 85%;
+    border-bottom: 1.5px solid #000000;
+    margin: 0 auto 3px auto;
+    width: 92%;
 }
 
 .signatory-name {
-    font-size: 8.5pt;
+    font-size: 8pt;
     font-weight: 800;
-    color: #0F172A;
+    color: #000000;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
+    min-height: 14px;
+    line-height: 1.2;
+}
+
+.signatory-name-empty {
+    visibility: hidden;
 }
 
 .signatory-title {
     font-size: 7pt;
-    color: #475569;
+    font-weight: 500;
+    color: #000000;
+    margin-top: 1px;
+    line-height: 1.2;
 }
 
-/* Print Page Footer Notes */
-.print-footer-note {
+.sheet-footer-page-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 14px;
-    padding-top: 6px;
-    border-top: 1px solid #CBD5E1;
-    font-size: 6.8pt;
+    margin-top: 5px;
+    padding-top: 3px;
+    border-top: 0.5px solid #E2E8F0;
+    font-size: 6.5pt;
     color: #64748B;
-    page-break-inside: avoid;
-    break-inside: avoid;
 }
+
 
 /* ============================================================
    PRINT MEDIA RULES (Legal Landscape Strict Mode)
@@ -290,131 +530,313 @@ body {
 @media print {
     @page {
         size: legal landscape;
-        margin: 8mm 10mm 10mm 10mm;
+        margin: 0;
     }
 
     html,
     body {
         background: #FFFFFF !important;
         color: #000000 !important;
-        width: 100% !important;
+        width: 14in !important;
         height: auto !important;
         margin: 0 !important;
         padding: 0 !important;
         font-size: 8pt !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 
     .no-print {
         display: none !important;
     }
 
-    .payroll-sheet-wrapper {
-        width: 100% !important;
-        max-width: 100% !important;
+    .payroll-preview-container {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .payroll-page-wrapper {
         margin: 0 !important;
         padding: 0 !important;
-        border: none !important;
+    }
+
+    .payroll-page-sheet {
+        position: relative !important;
+        width: 14in !important;
+        height: 8.5in !important;
+        max-height: 8.5in !important;
+        margin: 0 !important;
+        padding: 0.35in 0.45in !important;
         box-shadow: none !important;
+        border: none !important;
         border-radius: 0 !important;
+        box-sizing: border-box !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        overflow: hidden !important;
+    }
+
+    .payroll-page-sheet:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+    }
+
+    .watermark-container {
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 440px !important;
+        height: 440px !important;
+        opacity: 0.08 !important;
+        pointer-events: none !important;
+        z-index: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 
     .payroll-header {
         position: relative !important;
-        text-align: center !important;
-        padding: 0 75px 8px 75px !important;
-        margin-bottom: 12px !important;
-        border-bottom: 2px solid #000000 !important;
-        min-height: 62px !important;
+        padding: 0 0 2px 0 !important;
+        margin-bottom: 0 !important;
     }
 
     .header-logo-left {
-        position: absolute !important;
-        width: 58px !important;
-        height: 58px !important;
-        left: 2px !important;
-        top: 0 !important;
-        object-fit: contain !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-    }
-
-    .header-logo-right {
-        position: absolute !important;
         width: 64px !important;
-        height: 58px !important;
-        right: 2px !important;
-        top: 0 !important;
-        object-fit: contain !important;
+        height: 64px !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
     }
 
-    .govt-titles {
-        font-size: 7.5pt;
+    .logo-bagong-pilipinas {
+        height: 48px !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .logo-dswd {
+        height: 48px !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .header-province,
+    .header-municipality {
+        font-size: 10pt !important;
         color: #000000 !important;
     }
 
-    .office-title {
-        font-size: 9pt;
+    .header-office {
+        font-size: 12.5pt !important;
         color: #000000 !important;
     }
 
-    .document-title {
-        font-size: 11.5pt;
+    .header-doc-title {
+        font-size: 9pt !important;
         color: #000000 !important;
     }
 
-    .document-subtitle {
-        font-size: 7.5pt;
+    .header-black-bar {
+        height: 3px !important;
+        background-color: #000000 !important;
+        margin: 4px 0 6px 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .payroll-program-header {
+        margin-bottom: 6px !important;
+    }
+
+    .program-title {
+        font-size: 8pt !important;
         color: #000000 !important;
+    }
+
+    .program-subtitle {
+        font-size: 7.5pt !important;
+        color: #000000 !important;
+    }
+
+    /* Continuation Header in Print */
+    .payroll-continuation-header {
+        padding: 0 0 2px 0 !important;
+        margin-bottom: 4px !important;
+    }
+
+    .header-logo-mini {
+        width: 28px !important;
+        height: 28px !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .continuation-lgu {
+        font-size: 8.5pt !important;
+        font-weight: 800 !important;
+    }
+
+    .continuation-prog {
+        font-size: 8pt !important;
+        font-weight: 600 !important;
+    }
+
+    .continuation-meta {
+        font-size: 7.5pt !important;
+    }
+
+    .header-black-bar-thin {
+        height: 2px !important;
+        background-color: #000000 !important;
+        margin: 3px 0 5px 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Masterlist Table Multi-Page Setup */
+    .payroll-table {
+        width: 100% !important;
+        margin-bottom: 0 !important;
+        border-collapse: collapse !important;
+        table-layout: fixed !important;
+    }
+
+    .payroll-table thead {
+        display: table-header-group !important;
+    }
+
+    .payroll-table tbody {
+        display: table-row-group !important;
+    }
+
+    .payroll-table tbody tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .payroll-total-row {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
     }
 
     .payroll-table th,
     .payroll-table td {
         border: 1px solid #000000 !important;
         color: #000000 !important;
-        padding: 4px 6px;
-        font-size: 7.5pt;
+        padding: 3.5px 5px !important;
+        font-size: 7.5pt !important;
     }
 
-    .payroll-table th {
-        background-color: #E2E8F0 !important;
-        font-size: 7pt;
+    .payroll-table thead th {
+        background-color: #EDA766 !important;
+        font-size: 7pt !important;
+        height: 28px !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .payroll-table tbody td {
+        height: 70px !important;
     }
 
     .signature-box {
-        min-height: 32px;
-        border-bottom: 1px solid #000000 !important;
-        margin: 14px 0 2px 0;
+        min-height: 50px !important;
+        height: 100% !important;
     }
 
-    .payroll-grand-total-amount {
+    .empty-padding-row td {
+        height: 70px !important;
+    }
+
+    /* Official Signatories & Certifications Section: Fixed on EVERY printed page */
+    .signatories-section {
+        position: absolute !important;
+        bottom: 0.35in !important;
+        left: 0.45in !important;
+        right: 0.45in !important;
+        width: auto !important;
+        background-color: #FFFFFF !important;
+        z-index: 2 !important;
+        padding-top: 4px !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .certifications-row {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: flex-start !important;
+        gap: 24px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .cert-left-text,
+    .cert-right-text {
+        font-size: 7pt !important;
+        line-height: 1.3 !important;
         color: #000000 !important;
     }
 
-    .signatories-container {
-        margin-top: 20px;
+    .cert-left-text {
+        flex: 0 0 38% !important;
     }
 
-    .signatory-line {
-        border-bottom: 1px solid #000000 !important;
+    .cert-right-text {
+        flex: 0 0 58% !important;
+    }
+
+    .signatories-grid {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+
+    .signatory-col {
+        flex: 1 !important;
+        text-align: center !important;
+        min-width: 0 !important;
     }
 
     .signatory-role {
+        font-size: 7.5pt !important;
+        font-weight: 600 !important;
         color: #000000 !important;
-        margin-bottom: 34px;
+        min-height: 14px !important;
+        margin-bottom: 22px !important;
+        line-height: 1.2 !important;
+    }
+
+    .signatory-line {
+        border-bottom: 1.5px solid #000000 !important;
+        margin: 0 auto 3px auto !important;
+        width: 92% !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 
     .signatory-name {
+        font-size: 8pt !important;
+        font-weight: 800 !important;
         color: #000000 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.02em !important;
+        min-height: 14px !important;
+        line-height: 1.2 !important;
     }
 
     .signatory-title {
+        font-size: 7pt !important;
+        font-weight: 500 !important;
         color: #000000 !important;
+        margin-top: 1px !important;
+        line-height: 1.2 !important;
     }
 
-    .print-footer-note {
-        border-top: 1px solid #000000 !important;
+    .sheet-footer-page-meta {
         color: #000000 !important;
+        border-top-color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 }

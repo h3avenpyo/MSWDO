@@ -51,7 +51,8 @@
                 <span class="badge bg-white text-dark fw-bold px-3 py-1 rounded-pill mb-1">MSWDO Silang Intake
                     Record</span>
                 @if($intake->is_historical)
-                    <span class="badge bg-warning text-dark fw-bold px-3 py-1 rounded-pill mb-1 ms-1"><i class="fas fa-history me-1"></i> Historical Record</span>
+                <span class="badge bg-warning text-dark fw-bold px-3 py-1 rounded-pill mb-1 ms-1"><i
+                        class="fas fa-history me-1"></i> Historical Record</span>
                 @endif
                 <h5 class="fw-bold mb-0 text-white">{{ $intake->beneficiary_full_name }}</h5>
             </div>
@@ -642,13 +643,12 @@ $otherCategory = $intake->beneficiary_category_other ?? '';
             <span class="gis-rec-text">assistance for</span>
         </div>
         <div class="gis-rec-line" style="margin-top: 4px;">
-            <span class="gis-rec-underline gis-underline-med">{{ $intake->display_assistance_purpose !== 'N/A' ?
-                $intake->display_assistance_purpose : '' }}</span>
+            <span class="gis-rec-underline gis-underline-med">{!! ($intake->display_assistance_purpose && $intake->display_assistance_purpose !== 'N/A') ?
+                e($intake->display_assistance_purpose) : '&nbsp;' !!}</span>
             <span class="gis-rec-text">in the amount of</span>
             <span class="gis-rec-underline gis-underline-blank"></span>
             <span class="gis-rec-text">Php</span>
-            <span class="gis-rec-underline gis-underline-amount">{{ $intake->recommended_amount ?
-                number_format($intake->recommended_amount, 2) : '' }}</span>
+            <span class="gis-rec-underline gis-underline-amount">&nbsp;</span>
             <span class="gis-rec-text">.</span>
         </div>
     </div>

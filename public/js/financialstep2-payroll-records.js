@@ -92,22 +92,38 @@ document.addEventListener('DOMContentLoaded', function () {
         searchInput.addEventListener('input', function () {
             clearTimeout(timeout);
             timeout = setTimeout(function () {
+                try {
+                    sessionStorage.setItem('payroll_search_focus', 'true');
+                } catch(e) {}
                 filterForm.submit();
-            }, 550);
+            }, 500);
         });
 
-        // Maintain cursor position at end of text after auto-submit
-        if (searchInput.value.trim().length > 0 && document.activeElement !== searchInput) {
-            const val = searchInput.value;
-            searchInput.focus();
-            searchInput.setSelectionRange(val.length, val.length);
-        }
+        searchInput.addEventListener('search', function () {
+            clearTimeout(timeout);
+            try {
+                sessionStorage.setItem('payroll_search_focus', 'true');
+            } catch(e) {}
+            filterForm.submit();
+        });
+
+        // Maintain cursor position at end of text after auto-submit only when typing in search
+        try {
+            if (sessionStorage.getItem('payroll_search_focus') === 'true') {
+                sessionStorage.removeItem('payroll_search_focus');
+                if (searchInput.value.trim().length > 0 && document.activeElement !== searchInput) {
+                    const val = searchInput.value;
+                    searchInput.focus();
+                    searchInput.setSelectionRange(val.length, val.length);
+                }
+            }
+        } catch(e) {}
     }
 
-    // Automatic form submission on filter change for selects and date inputs
+    // Automatic form submission on filter change for selects and date/month inputs
     const filterForms = document.querySelectorAll('#payrollRecordsFilterForm, #datePayrollFilterForm');
     filterForms.forEach(function (form) {
-        const inputs = form.querySelectorAll('select[name="barangay"], select[name="payroll_id"], select[name="claim_status"], select[name="sort"], input[name="date_from"], input[name="date_to"]');
+        const inputs = form.querySelectorAll('select[name="barangay"], select[name="payroll_id"], select[name="claim_status"], select[name="sort"], input[name="month"], input[name="date_from"], input[name="date_to"]');
         inputs.forEach(function (input) {
             input.addEventListener('change', function () {
                 form.submit();

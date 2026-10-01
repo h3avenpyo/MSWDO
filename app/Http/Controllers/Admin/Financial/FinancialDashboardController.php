@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FinancialDashboardController extends Controller
@@ -1583,14 +1584,12 @@ class FinancialDashboardController extends Controller
 
         if ($selectedPayrollRecord) {
             $targetDate = Carbon::parse($selectedPayrollRecord->payroll_date);
-            $payrollRefNo = $selectedPayrollRecord->payroll_number;
             $disbursingOfficer = $selectedPayrollRecord->disbursing_officer ?: (session('financial_step2_authorized_user') ?? session('admin_user_name') ?? 'MSWDO Disbursing Officer');
             $generatedTime = $selectedPayrollRecord->created_at ? $selectedPayrollRecord->created_at->format('h:i A') : null;
         } else {
             $today = Carbon::today();
             $targetDate = $request->filled('date') ? Carbon::parse($request->date) : $today;
             $disbursingOfficer = session('financial_step2_authorized_user') ?? session('admin_user_name') ?? 'MSWDO Disbursing Officer';
-            $payrollRefNo = 'PAYROLL-' . $targetDate->format('Ymd') . '-' . str_pad((string) rand(100, 999), 3, '0', STR_PAD_LEFT);
             $generatedTime = null;
         }
 
@@ -1717,7 +1716,6 @@ class FinancialDashboardController extends Controller
             'missingAmountCount',
             'disbursingOfficer',
             'payrollDate',
-            'payrollRefNo',
             'targetDate',
             'selectedPayrollRecord',
             'generatedTime'
@@ -1765,8 +1763,9 @@ class FinancialDashboardController extends Controller
         }
 
         // Determine if this is a Date-Specific View (when 'date' parameter or route is provided, or payroll_id)
-        $filterDateInput = $request->route('date') ?? $request->date;
-        $isDateView = !empty($filterDateInput) || $request->filled('payroll_id');
+        $isExplicitDirectory = $request->filled('filter_date') || ($request->get('view') === 'directory');
+        $filterDateInput = $request->route('date') ?? (!$isExplicitDirectory ? $request->date : null);
+        $isDateView = (!empty($filterDateInput) || $request->filled('payroll_id')) && !$isExplicitDirectory;
         $selectedDate = !empty($filterDateInput) ? Carbon::parse($filterDateInput) : null;
 
         if (!$selectedDate && $request->filled('payroll_id')) {
@@ -1852,6 +1851,24 @@ class FinancialDashboardController extends Controller
                     }
                 }
 
+                // Calculate Batch Totals at Database level across all matching intakes (before pagination)
+                $batchTotalsQuery = clone $intakesQuery;
+                $recBeneficiaries = (int) $batchTotalsQuery->count();
+
+                if (($request->filled('search') || ($request->filled('barangay') && $request->barangay !== 'All') || $request->filled('claim_status')) && $recBeneficiaries === 0) {
+                    continue;
+                }
+
+                $recAmount = (float) ((clone $batchTotalsQuery)->sum('recommended_amount') ?? 0);
+                $recClaimed = (int) ((clone $batchTotalsQuery)->where('claim_status', 'Claimed')->count());
+                $recUnclaimed = (int) ((clone $batchTotalsQuery)->where(function ($q) {
+                    $q->where('claim_status', '!=', 'Claimed')->orWhereNull('claim_status');
+                })->count());
+                $recClaimedAmount = (float) ((clone $batchTotalsQuery)->where('claim_status', 'Claimed')->sum('recommended_amount') ?? 0);
+                $recUnclaimedAmount = (float) ((clone $batchTotalsQuery)->where(function ($q) {
+                    $q->where('claim_status', '!=', 'Claimed')->orWhereNull('claim_status');
+                })->sum('recommended_amount') ?? 0);
+
                 // Apply Sorting to Beneficiaries
                 $sort = $request->get('sort', 'control_asc');
                 switch ($sort) {
@@ -1876,13 +1893,17 @@ class FinancialDashboardController extends Controller
                         break;
                 }
 
-                $intakes = $intakesQuery->get();
-
-                if (($request->filled('search') || ($request->filled('barangay') && $request->barangay !== 'All') || $request->filled('claim_status')) && $intakes->isEmpty()) {
-                    continue;
+                // Database pagination: 15 records per page
+                $pageName = (count($rawRecords) > 1) ? ('page_' . $record->id) : 'page';
+                $currentPage = null;
+                if (count($rawRecords) > 1 && $request->filled('page') && !$request->filled($pageName)) {
+                    $currentPage = (int) $request->get('page');
                 }
 
-                $payrollRows = $intakes->map(function ($intake, $index) use ($record) {
+                $paginatedIntakes = $intakesQuery->paginate(15, ['*'], $pageName, $currentPage)->withQueryString();
+                $firstItemNumber = $paginatedIntakes->firstItem() ?? 1;
+
+                $payrollRows = $paginatedIntakes->getCollection()->map(function ($intake, $index) use ($record, $firstItemNumber) {
                     $beneficiaryName = $intake->beneficiary_full_name ?? 'N/A';
 
                     if ($intake->has_representative && !empty(trim($intake->representative_full_name ?? '')) && $intake->representative_full_name !== 'N/A') {
@@ -1902,7 +1923,7 @@ class FinancialDashboardController extends Controller
 
                     return (object) [
                         'id' => $intake->id,
-                        'item_no' => $index + 1,
+                        'item_no' => $firstItemNumber + $index,
                         'control_number' => $intake->control_number,
                         'representative_name' => $representativeName,
                         'beneficiary_name' => $beneficiaryName,
@@ -1925,14 +1946,8 @@ class FinancialDashboardController extends Controller
                     ];
                 });
 
-                $recBeneficiaries = $payrollRows->count();
-                $recAmount = (float) $payrollRows->sum('amount');
-                $recClaimed = $payrollRows->where('claim_status', 'Claimed')->count();
-                $recUnclaimed = $payrollRows->where('claim_status', '!=', 'Claimed')->count();
-                $recClaimedAmount = (float) $payrollRows->where('claim_status', 'Claimed')->sum('amount');
-                $recUnclaimedAmount = (float) $payrollRows->where('claim_status', '!=', 'Claimed')->sum('amount');
-
                 $record->payrollRows = $payrollRows;
+                $record->paginatedIntakes = $paginatedIntakes;
                 $record->recordBeneficiariesCount = $recBeneficiaries;
                 $record->recordTotalAmount = $recAmount;
                 $record->formattedRecordAmount = '₱' . number_format($recAmount, 2);
@@ -1990,6 +2005,12 @@ class FinancialDashboardController extends Controller
 
         // Filter matching dates based on search or barangay
         $datesQuery = FinancialPayrollRecord::query();
+
+        // Specific Date filtering on directory
+        if ($request->filled('filter_date') || ($request->filled('date') && !$isDateView)) {
+            $filterDateVal = $request->filter_date ?? $request->date;
+            $datesQuery->whereDate('payroll_date', $filterDateVal);
+        }
 
         // Month and Year filtering on directory
         if ($request->filled('month')) {
@@ -2063,7 +2084,7 @@ class FinancialDashboardController extends Controller
                 break;
         }
 
-        $paginatedDateGroups = $datesQuery->paginate(15)->withQueryString();
+        $paginatedDateGroups = $datesQuery->paginate(10)->withQueryString();
 
         $paginatedDateGroups->getCollection()->transform(function ($item) {
             $dateKey = $item->payroll_date ? Carbon::parse($item->payroll_date)->format('Y-m-d') : 'Unknown';
@@ -2418,6 +2439,25 @@ class FinancialDashboardController extends Controller
         $formattedGlobalRemaining = '₱' . number_format($globalRemainingBalance, 2);
 
         $totalMonthsCount = $monthlyRecords->count();
+
+        // Paginate monthly liquidation records to a maximum of 5 records per page
+        $perPage = 5;
+        $currentPage = LengthAwarePaginator::resolveCurrentPage('page');
+        $currentMonthlyItems = $monthlyRecords->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        $paginatedMonthlyRecords = new LengthAwarePaginator(
+            $currentMonthlyItems,
+            $totalMonthsCount,
+            $perPage,
+            $currentPage,
+            [
+                'path' => LengthAwarePaginator::resolveCurrentPath(),
+                'pageName' => 'page',
+            ]
+        );
+        $paginatedMonthlyRecords->withQueryString();
+
+        $monthlyRecords = $paginatedMonthlyRecords;
 
         return view('admin.financial.financialstep2-liquidation', compact(
             'monthlyRecords',

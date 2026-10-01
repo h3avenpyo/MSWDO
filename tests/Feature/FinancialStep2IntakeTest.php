@@ -801,6 +801,62 @@ class FinancialStep2IntakeTest extends TestCase
         $response->assertSee('Month:');
         $response->assertSee('September 2026');
     }
+
+    public function test_beneficiary_intakes_masterlist_date_filtering(): void
+    {
+        $targetDateCtrl = 'MSWDO-DATE1-' . rand(10000, 99999);
+        $otherDateCtrl = 'MSWDO-DATE2-' . rand(10000, 99999);
+
+        // Intake on 2026-10-01
+        BeneficiaryIntake::create([
+            'control_number' => $targetDateCtrl,
+            'client_type' => 'New',
+            'date_processed' => '2026-10-01',
+            'beneficiary_first_name' => 'ExactDateUser',
+            'beneficiary_last_name' => 'Tester',
+            'beneficiary_birthday' => '1990-01-01',
+            'beneficiary_sex' => 'Female',
+            'beneficiary_barangay' => 'Biluso',
+            'beneficiary_category' => 'Solo Parents',
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Medicine',
+            'submitted_to' => 'MSWDO Silang Main Office',
+        ]);
+
+        // Intake on 2026-10-02 (different day)
+        BeneficiaryIntake::create([
+            'control_number' => $otherDateCtrl,
+            'client_type' => 'New',
+            'date_processed' => '2026-10-02',
+            'beneficiary_first_name' => 'OtherDateUser',
+            'beneficiary_last_name' => 'Tester',
+            'beneficiary_birthday' => '1991-02-02',
+            'beneficiary_sex' => 'Male',
+            'beneficiary_barangay' => 'Biga I',
+            'beneficiary_category' => 'PWD',
+            'service_provided' => 'Financial Assistance',
+            'purpose' => 'Hospital Bill',
+            'submitted_to' => 'MSWDO Silang Main Office',
+        ]);
+
+        // Filter for 2026-10-01
+        $response = $this->withSession([
+            'admin_logged_in' => true,
+            'admin_user_id' => $this->admin->id,
+            'admin_user_name' => $this->admin->name,
+            'admin_user_role' => 'admin',
+        ])->get(route('admin.beneficiary-intake.index', [
+            'date' => '2026-10-01',
+        ]));
+
+        $response->assertStatus(200);
+        $response->assertSee($targetDateCtrl);
+        $response->assertSee('ExactDateUser');
+        $response->assertDontSee($otherDateCtrl);
+        $response->assertDontSee('OtherDateUser');
+        $response->assertSee('Date:');
+        $response->assertSee('Oct 01, 2026');
+    }
 }
 
 

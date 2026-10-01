@@ -74,19 +74,19 @@
                 </select>
             </div>
             <div class="col-md-4 col-lg-2">
-                <label class="form-label fw-bold text-secondary small"><i class="fas fa-calendar-alt me-1 text-muted"></i> Filter by Month</label>
-                <input type="month" name="month" class="form-control" value="{{ request('month') }}" onchange="this.form.submit()" title="Filter by Month & Year">
+                <label class="form-label fw-bold text-secondary small"><i class="fas fa-calendar-day me-1 text-muted"></i> Filter by Date</label>
+                <input type="date" name="date" class="form-control" value="{{ request('date') }}" onchange="this.form.submit()" title="Filter by Date">
             </div>
             <div class="col-md-4 col-lg-2 d-flex gap-2">
                 <button type="submit" class="btn btn-secondary w-100 fw-bold rounded-3">Filter</button>
-                @if(request()->hasAny(['search', 'barangay', 'category', 'month']))
+                @if(request()->hasAny(['search', 'barangay', 'category', 'date', 'month']))
                 <a href="{{ route('admin.beneficiary-intake.index') }}" class="btn btn-outline-secondary rounded-3"
                     title="Reset Filters"><i class="fas fa-redo"></i></a>
                 @endif
             </div>
         </form>
 
-        @if(request()->hasAny(['search', 'barangay', 'category', 'month']))
+        @if(request()->hasAny(['search', 'barangay', 'category', 'date', 'month']))
         <div class="d-flex align-items-center gap-2 flex-wrap mt-3 pt-2 border-top">
             <span class="text-muted small fw-semibold me-1"><i class="fas fa-sliders-h me-1"></i> Active Filters:</span>
             @if(request('search'))
@@ -102,6 +102,17 @@
             @if(request('category') && request('category') !== 'All')
             <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill small">
                 Category: <strong>{{ request('category') }}</strong>
+            </span>
+            @endif
+            @if(request('date'))
+            @php
+                $dateLabel = request('date');
+                try {
+                    $dateLabel = \Carbon\Carbon::parse(request('date'))->format('M d, Y');
+                } catch (\Exception $e) {}
+            @endphp
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 rounded-pill small">
+                <i class="fas fa-calendar-day me-1"></i> Date: <strong>{{ $dateLabel }}</strong>
             </span>
             @endif
             @if(request('month'))
@@ -258,6 +269,9 @@
                     @if(request()->filled('barangay') && request('barangay') !== 'All')
                     <input type="hidden" name="barangay" value="{{ request('barangay') }}">
                     @endif
+                    @if(request()->filled('date'))
+                    <input type="hidden" name="date" value="{{ request('date') }}">
+                    @endif
                     @if(request()->filled('month'))
                     <input type="hidden" name="month" value="{{ request('month') }}">
                     @endif
@@ -265,7 +279,7 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small text-secondary">Transmittal Date</label>
-                            <input type="date" name="transmittal_date" class="form-control" value="{{ date('Y-m-d') }}"
+                            <input type="date" name="transmittal_date" class="form-control" value="{{ request('date') ?? date('Y-m-d') }}"
                                 required>
                         </div>
                         <div class="col-md-6">
