@@ -575,9 +575,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                         <button type="button" class="notif-tab" data-filter="pending_online_request" onclick="filterNotifications('pending_online_request', event)">
                             New Online <span id="countPending" class="notif-tab-num">(0)</span>
                         </button>
-                        <button type="button" class="notif-tab" data-filter="client_eligibility" onclick="filterNotifications('client_eligibility', event)">
-                            Walk-in <span id="countWalkin" class="notif-tab-num">(0)</span>
-                        </button>
                         @else
                         <button type="button" class="notif-tab" data-filter="client_eligibility" onclick="filterNotifications('client_eligibility', event)">
                             Walk-in <span id="countWalkin" class="notif-tab-num">(0)</span>
@@ -767,6 +764,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     let allNotifications = [];
     let activeNotifFilter = 'all';
     let previousUnreadCount = 0;
+    const notifEmptyText = @json((string) session('admin_user_role') === 'eligibility_checker'
+        ? 'No new online requests in this view right now.'
+        : 'No forwarded clients or online requests in this view right now.');
 
     function escapeHtmlNotif(str) {
         if (!str) return '';
@@ -906,8 +906,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                     <div class="notif-empty-icon">
                         <i data-lucide="bell-off" style="width:24px;height:24px;"></i>
                     </div>
-                    <div class="notif-empty-title">All caught up!</div>
-                    <div class="notif-empty-subtitle">No forwarded clients or online requests in this view right now.</div>
+<div class="notif-empty-title">All caught up!</div>
+                        <div class="notif-empty-subtitle">${notifEmptyText}</div>
                 </div>
             `;
             if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -951,7 +951,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                             <span style="font-weight:600;color:#334155;">${escapeHtmlNotif(n.control_no)}</span> • ${escapeHtmlNotif(n.subtitle)}
                         </div>
                         <div class="notif-actions-row">
-                            <a href="${n.url}" class="notif-btn-action">
+                            <a href="${n.url}" class="notif-btn-action" data-notif-id="${escapeHtmlNotif(n.id)}">
                                 <i data-lucide="${actionIcon}" style="width:12px;height:12px;"></i> ${actionBtnText}
                             </a>
                         </div>
@@ -962,6 +962,33 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
         container.innerHTML = html;
         if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    async function markSingleNotificationRead(id, url) {
+        const item = allNotifications.find(n => n.id === id);
+        if (item && item.is_unread) {
+            item.is_unread = false;
+            const remainingUnread = allNotifications.filter(n => n.is_unread).length;
+            updateNotificationUI(remainingUnread, false);
+        }
+
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+            await fetch('/admin/social-case/api/notifications/read', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: id })
+            });
+        } catch (err) {
+            console.error('Failed to mark notification as read:', err);
+        }
+
+        if (url) window.location.href = url;
     }
 
     async function markAllNotificationsRead(e) {
@@ -987,6 +1014,17 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        // Deduct a notification from the counter when its action button is clicked
+        const notifList = document.getElementById('notifListContainer');
+        if (notifList) {
+            notifList.addEventListener('click', function(e) {
+                const actionBtn = e.target.closest('.notif-btn-action[data-notif-id]');
+                if (!actionBtn) return;
+                e.preventDefault();
+                markSingleNotificationRead(actionBtn.dataset.notifId, actionBtn.getAttribute('href'));
+            });
+        }
+
         // Set current date and time
         function updateDateTime() {
             const now = new Date();

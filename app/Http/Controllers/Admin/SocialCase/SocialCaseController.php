@@ -1149,8 +1149,11 @@ class SocialCaseController extends Controller
     }
 
     /**
-     * Get real-time notifications for clients forwarded from Client Eligibility
-     * and accepted/forwarded Online Requests.
+     * Get real-time notifications.
+     *
+     * Eligibility checkers only receive new Online Requests from the public portal.
+     * Encoders and admin receive walk-in clients forwarded from Client Eligibility
+     * plus accepted/forwarded Online Requests.
      */
     public function getNotifications(Request $request)
     {
@@ -1159,29 +1162,36 @@ class SocialCaseController extends Controller
 
         $lastReadAt = session('social_case_notifications_read_at');
         $lastReadTime = $lastReadAt ? \Carbon\Carbon::parse($lastReadAt) : null;
+        $readIds = array_values(array_filter((array) session('social_case_notifications_read_ids', [])));
 
         $notifications = [];
 
-        // 1. Walk-in clients forwarded from Client Eligibility
-        $walkinQuery = SocialCaseStudy::with('client', 'eligibleByUser', 'officer')
-            ->where('eligibility_status', 'eligible')
-            ->whereNotNull('eligible_by')
-            ->whereNull('encoded_by')
-            ->whereNotIn('status', ['Printed', 'Released', 'Archived']);
+        // 1. Walk-in clients forwarded from Client Eligibility (encoders and admin only)
+        if ($userRole !== 'eligibility_checker') {
+            $walkinQuery = SocialCaseStudy::with('client', 'eligibleByUser', 'officer')
+                ->where('eligibility_status', 'eligible')
+                ->whereNotNull('eligible_by')
+                ->whereNull('encoded_by')
+                ->whereNotIn('status', ['Printed', 'Released', 'Archived']);
 
-        if ($userRole === 'social_worker') {
-            $walkinQuery->where(function ($q) use ($userId) {
-                $q->where('officer_id', $userId)
-                  ->orWhereNull('officer_id');
-            });
+            if ($userRole === 'social_worker') {
+                $walkinQuery->where(function ($q) use ($userId) {
+                    $q->where('officer_id', $userId)
+                      ->orWhereNull('officer_id');
+                });
+            }
+
+            $walkinCases = $walkinQuery->orderByDesc('eligible_at')->limit(20)->get();
+        } else {
+            $walkinCases = collect();
         }
 
-        $walkinCases = $walkinQuery->orderByDesc('eligible_at')->limit(20)->get();
-
         foreach ($walkinCases as $case) {
+            $notifId = 'walkin_' . $case->id;
             $timestamp = $case->eligible_at ?: $case->created_at;
             $carbonTime = $timestamp ? \Carbon\Carbon::parse($timestamp) : now();
-            $isUnread = $lastReadTime ? $carbonTime->gt($lastReadTime) : true;
+            $isUnread = !in_array($notifId, $readIds, true)
+                && ($lastReadTime ? $carbonTime->gt($lastReadTime) : true);
             $clientName = $case->client ? $case->client->full_name : trim(($case->first_name ?? '') . ' ' . ($case->last_name ?? ''));
             if (!$clientName) {
                 $clientName = 'Unnamed Client';
@@ -1191,7 +1201,7 @@ class SocialCaseController extends Controller
             $forwardedBy = $case->eligibleByUser ? $case->eligibleByUser->name : 'Eligibility Checker';
 
             $notifications[] = [
-                'id'             => 'walkin_' . $case->id,
+                'id'             => $notifId,
                 'source_id'      => $case->id,
                 'type'           => 'client_eligibility',
                 'title'          => 'Client Eligibility Forwarded',
@@ -1225,8 +1235,10 @@ class SocialCaseController extends Controller
             $onlineRequests = $onlineQuery->orderByDesc('updated_at')->limit(20)->get();
 
             foreach ($onlineRequests as $req) {
+                $notifId = 'online_' . $req->id;
                 $carbonTime = $req->updated_at ?: $req->created_at;
-                $isUnread = $lastReadTime ? $carbonTime->gt($lastReadTime) : true;
+                $isUnread = !in_array($notifId, $readIds, true)
+                    && ($lastReadTime ? $carbonTime->gt($lastReadTime) : true);
                 $clientName = trim($req->first_name . ' ' . $req->last_name);
                 if (!$clientName) {
                     $clientName = 'Online Applicant';
@@ -1237,7 +1249,7 @@ class SocialCaseController extends Controller
                 $assistanceType = ucfirst(str_replace('_', ' ', $req->assistance_type ?? 'Assistance'));
 
                 $notifications[] = [
-                    'id'             => 'online_' . $req->id,
+                    'id'             => $notifId,
                     'source_id'      => $req->id,
                     'type'           => 'online_request',
                     'title'          => 'Online Request Accepted',
@@ -1268,8 +1280,10 @@ class SocialCaseController extends Controller
                 ->get();
 
             foreach ($pendingQuery as $req) {
+                $notifId = 'pending_online_' . $req->id;
                 $carbonTime = $req->created_at ?: now();
-                $isUnread = $lastReadTime ? $carbonTime->gt($lastReadTime) : true;
+                $isUnread = !in_array($notifId, $readIds, true)
+                    && ($lastReadTime ? $carbonTime->gt($lastReadTime) : true);
                 $clientName = trim($req->first_name . ' ' . $req->last_name);
                 if (!$clientName) {
                     $clientName = 'Online Applicant';
@@ -1281,7 +1295,7 @@ class SocialCaseController extends Controller
                 $brgyText = $req->barangay ? " • Brgy. {$req->barangay}" : '';
 
                 $notifications[] = [
-                    'id'             => 'pending_online_' . $req->id,
+                    'id'             => $notifId,
                     'source_id'      => $req->id,
                     'type'           => 'pending_online_request',
                     'title'          => 'New Online Request Submitted',
@@ -1322,11 +1336,42 @@ class SocialCaseController extends Controller
     }
 
     /**
+     * Mark a single notification as read so it stops counting towards the badge.
+     */
+    public function markNotificationRead(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => ['required', 'string', 'max:100'],
+        ]);
+
+        $readIds = array_values(array_filter((array) session('social_case_notifications_read_ids', [])));
+        if (!in_array($validated['id'], $readIds, true)) {
+            $readIds[] = $validated['id'];
+        }
+
+        // Keep the session payload bounded
+        if (count($readIds) > 200) {
+            $readIds = array_slice($readIds, -200);
+        }
+
+        session(['social_case_notifications_read_ids' => $readIds]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification marked as read',
+            'id'      => $validated['id'],
+        ]);
+    }
+
+    /**
      * Mark all notifications as read for current session.
      */
     public function markNotificationsRead(Request $request)
     {
-        session(['social_case_notifications_read_at' => now()->toIso8601String()]);
+        session([
+            'social_case_notifications_read_at' => now()->toIso8601String(),
+            'social_case_notifications_read_ids' => [],
+        ]);
 
         return response()->json([
             'success' => true,

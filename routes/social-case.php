@@ -26,6 +26,7 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::get('/api/debug/document-counter', [SocialCaseController::class, 'debugDocumentCounter'])->name('api.debug.document-counter');
         Route::get('/api/notifications', [SocialCaseController::class, 'getNotifications'])->name('api.notifications');
         Route::post('/api/notifications/mark-read', [SocialCaseController::class, 'markNotificationsRead'])->name('api.notifications.mark-read');
+        Route::post('/api/notifications/read', [SocialCaseController::class, 'markNotificationRead'])->name('api.notifications.read');
 
         // Eligibility checker only (social2@mwsdo.test)
         Route::middleware('role:admin,eligibility_checker')->group(function () {

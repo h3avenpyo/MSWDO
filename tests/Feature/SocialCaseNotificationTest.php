@@ -155,6 +155,28 @@ class SocialCaseNotificationTest extends TestCase
         ]);
         $this->createdOnlineRequestIds[] = $pendingRequest->id;
 
+        // Create a forwarded walk-in case that must NOT be visible to the checker
+        $walkinClient = Client::create([
+            'first_name' => 'CheckerShouldNot',
+            'last_name' => 'SeeWalkin',
+        ]);
+        $this->createdClientIds[] = $walkinClient->id;
+
+        $walkinCase = SocialCaseStudy::create([
+            'main_client_id' => $walkinClient->id,
+            'first_name' => $walkinClient->first_name,
+            'last_name' => $walkinClient->last_name,
+            'case_number' => 'NOTIF-TEST-' . uniqid(),
+            'date_processed' => now()->toDateString(),
+            'status' => 'Draft',
+            'eligibility_status' => 'eligible',
+            'eligible_by' => $checker->id,
+            'eligible_at' => now(),
+            'workflow_step' => 'requirements_verification',
+            'document_ref_number' => 99998,
+        ]);
+        $this->createdCaseIds[] = $walkinCase->id;
+
         // Fetch notifications as eligibility checker
         $response = $this->withSession([
             'admin_user_id' => $checker->id,
@@ -178,5 +200,70 @@ class SocialCaseNotificationTest extends TestCase
         $this->assertEquals('PendingCitizen Applicant', $pendingItem['client_name']);
         $this->assertEquals('New Online Request', $pendingItem['badge_text']);
         $this->assertEquals(route('admin.social-case.online-requests'), $pendingItem['url']);
+
+        // Eligibility checkers must only see online requests
+        $types = array_unique(array_column($data['notifications'], 'type'));
+        $this->assertEquals(['pending_online_request'], $types);
+    }
+
+    public function test_clicking_review_request_marks_single_notification_as_read(): void
+    {
+        $checker = $this->createUser('eligibility_checker');
+
+        $pendingRequest = OnlineRequest::create([
+            'request_for' => 'myself',
+            'first_name' => 'Deduct',
+            'last_name' => 'Applicant',
+            'dob' => '1992-02-02',
+            'email' => 'deduct.applicant@example.com',
+            'contact_number' => '09181111111',
+            'service_type' => 'social_case_study',
+            'assistance_type' => 'medical',
+            'barangay' => 'ACACIA',
+            'status' => 'pending',
+            'situation' => 'Request that should be deducted when reviewed',
+        ]);
+        $this->createdOnlineRequestIds[] = $pendingRequest->id;
+
+        $session = [
+            'admin_user_id' => $checker->id,
+            'admin_user_name' => $checker->name,
+            'admin_user_role' => 'eligibility_checker',
+        ];
+
+        $before = $this->withSession($session)->getJson('/admin/social-case/api/notifications');
+        $before->assertStatus(200);
+        $this->assertGreaterThanOrEqual(1, $before->json()['unread_count']);
+
+        $notifId = 'pending_online_' . $pendingRequest->id;
+
+        $markResponse = $this->withSession($session)->postJson('/admin/social-case/api/notifications/read', [
+            'id' => $notifId,
+        ]);
+
+        $markResponse->assertStatus(200)
+            ->assertJson(['success' => true, 'id' => $notifId]);
+
+        // A fresh session carrying the read id must not count that item as unread
+        $after = $this->withSession($session + ['social_case_notifications_read_ids' => [$notifId]])
+            ->getJson('/admin/social-case/api/notifications');
+        $after->assertStatus(200);
+
+        $reviewed = collect($after->json()['notifications'])->firstWhere('id', $notifId);
+        $this->assertNotNull($reviewed);
+        $this->assertFalse((bool) $reviewed['is_unread']);
+    }
+
+    public function test_marking_single_notification_read_requires_an_id(): void
+    {
+        $checker = $this->createUser('eligibility_checker');
+
+        $this->withSession([
+            'admin_user_id' => $checker->id,
+            'admin_user_name' => $checker->name,
+            'admin_user_role' => 'eligibility_checker',
+        ])->postJson('/admin/social-case/api/notifications/read')
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('id');
     }
 }
