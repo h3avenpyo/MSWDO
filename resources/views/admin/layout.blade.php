@@ -662,10 +662,17 @@
             padding: 10px 24px !important;
         }
         .swal2-cancel {
-            background-color: #EF4444 !important;
+            background-color: #6B7280 !important;
+            color: #FFFFFF !important;
             border-radius: 8px !important;
             font-weight: 600 !important;
             padding: 10px 24px !important;
+            transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+        }
+        .swal2-cancel:hover,
+        .swal2-cancel:focus {
+            background-color: #4B5563 !important;
+            color: #FFFFFF !important;
         }
         .swal2-actions {
             flex-direction: row !important;
@@ -872,7 +879,7 @@
             showCancelButton: true,
             reverseButtons: true,
             confirmButtonColor: '#B11116',
-            cancelButtonColor: '#EF4444',
+            cancelButtonColor: '#6B7280',
             confirmButtonText: 'Yes, log out',
             cancelButtonText: 'Cancel',
             background: '#ffffff',

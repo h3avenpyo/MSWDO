@@ -114,7 +114,7 @@ function confirmLogout(event) {
         showCancelButton: true,
         reverseButtons: true,
         confirmButtonColor: '#1A237E',
-        cancelButtonColor: '#EF4444',
+        cancelButtonColor: '#6B7280',
         confirmButtonText: 'Yes, log out',
         cancelButtonText: 'Cancel',
         background: '#ffffff',
