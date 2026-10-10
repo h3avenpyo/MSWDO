@@ -38,7 +38,8 @@
             --primary: #1A237E;
             --primary-hover: #121858;
             --primary-dark: #121858;
-            --sidebar-bg: #1A237E;
+            --sidebar-bg: #b11116;
+            --sidebar-dark: #8A0D11;
             --background: #F5F7FB;
             --surface: #FFFFFF;
             --border: #E5E7EB;
@@ -115,10 +116,10 @@
         .sidebar-brand {
             height: 72px;
             padding: 0 1rem;
-            border-bottom: 1px solid rgba(255,255,255,.1);
+            border-bottom: 1px solid rgba(255,255,255,.15);
             color: #fff;
             font-weight: 700;
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -145,12 +146,16 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: #FFFFFF;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -0.01em;
             transition: opacity .2s ease;
         }
         .sidebar-toggle-btn {
-            width: 30px;
-            height: 30px;
-            min-width: 30px;
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
             border-radius: 8px;
             background: rgba(255,255,255,.12);
             border: 1px solid rgba(255,255,255,.2);
@@ -165,17 +170,21 @@
         }
         .sidebar-toggle-btn:hover {
             background: rgba(255,255,255,.24);
-            border-color: var(--accent-yellow);
-            color: var(--accent-yellow);
+            border-color: rgba(255,255,255,.4);
+            color: #ffffff;
             transform: scale(1.05);
         }
         .sidebar-toggle-btn .toggle-icon {
-            transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #FFFFFF;
+            transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1), color .2s ease;
         }
-        .sidebar-brand i, .sidebar-brand [data-lucide] {
+        .sidebar-toggle-btn:hover .toggle-icon {
+            color: #FFFFFF;
+        }
+        .sidebar-brand i, .sidebar-brand [data-lucide], .sidebar-brand svg {
             width: 24px;
             height: 24px;
-            color: var(--accent-yellow);
+            color: #FFFFFF;
             flex-shrink: 0;
         }
         .sidebar-menu {
@@ -185,32 +194,49 @@
             flex: 1;
             overflow-y: auto;
         }
-        .sidebar-menu li { margin-bottom: .2rem; }
+        .sidebar-menu li { margin-bottom: .25rem; }
         .sidebar-menu a {
-            color: rgba(255,255,255,.75);
+            color: #FFFFFF !important;
             padding: .75rem 1.5rem;
             display: flex;
             align-items: center;
             gap: .75rem;
             text-decoration: none;
-            font-size: .9rem;
-            border-left: 3px solid transparent;
-            transition: all .2s ease;
+            font-size: .95rem;
+            font-weight: 600;
+            border-left: none;
+            transition: background-color .2s ease, color .2s ease;
         }
         .sidebar-menu a:hover {
-            background: rgba(255,255,255,.1);
-            color: var(--accent-yellow);
+            background: rgba(255,255,255,.14);
+            color: #FFFFFF !important;
         }
         .sidebar-menu a.active {
-            background: rgba(255,255,255,.1);
-            color: var(--accent-yellow);
-            border-left-color: var(--accent-yellow);
-            font-weight: 600;
+            background: rgba(0, 0, 0, 0.24) !important;
+            color: #FFFFFF !important;
+            border-left: none !important;
+            font-weight: 700;
         }
-        .sidebar-menu a i, .sidebar-menu a [data-lucide] {
+        .sidebar-menu a i, .sidebar-menu a [data-lucide], .sidebar-menu a svg {
             width: 20px;
             height: 20px;
+            min-width: 20px;
+            min-height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
+            color: #FFFFFF;
+            flex-shrink: 0;
+            transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1), color .2s ease;
+        }
+        .sidebar-menu a:hover i, .sidebar-menu a:hover [data-lucide], .sidebar-menu a:hover svg {
+            transform: scale(1.12);
+            color: #FFFFFF;
+        }
+        .sidebar-menu a.active i, .sidebar-menu a.active [data-lucide], .sidebar-menu a.active svg {
+            color: #FFFFFF !important;
+            transform: scale(1.08);
         }
 
         /* ---------- Main Area ---------- */
@@ -245,7 +271,7 @@
             left: 0;
             right: 0;
             z-index: 998;
-            background: #1A237E;
+            background: var(--sidebar-bg);
             color: #fff;
             padding: 0 16px;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
@@ -363,6 +389,33 @@
                 justify-content: center !important;
                 position: relative;
             }
+            html.sidebar-collapsed .sidebar-menu a i,
+            body.sidebar-collapsed .sidebar-menu a i,
+            .sidebar.collapsed .sidebar-menu a i,
+            html.sidebar-collapsed .sidebar-menu a svg,
+            body.sidebar-collapsed .sidebar-menu a svg,
+            .sidebar.collapsed .sidebar-menu a svg {
+                width: 22px !important;
+                height: 22px !important;
+                margin: 0 auto !important;
+            }
+            html.sidebar-collapsed .sidebar-menu a:hover i,
+            body.sidebar-collapsed .sidebar-menu a:hover i,
+            .sidebar.collapsed .sidebar-menu a:hover i,
+            html.sidebar-collapsed .sidebar-menu a:hover svg,
+            body.sidebar-collapsed .sidebar-menu a:hover svg,
+            .sidebar.collapsed .sidebar-menu a:hover svg {
+                transform: scale(1.15) !important;
+                color: #FFFFFF !important;
+            }
+            html.sidebar-collapsed .sidebar-menu a.active i,
+            body.sidebar-collapsed .sidebar-menu a.active i,
+            .sidebar.collapsed .sidebar-menu a.active i,
+            html.sidebar-collapsed .sidebar-menu a.active svg,
+            body.sidebar-collapsed .sidebar-menu a.active svg,
+            .sidebar.collapsed .sidebar-menu a.active svg {
+                color: #FFFFFF !important;
+            }
             html.sidebar-collapsed .sidebar-menu a .menu-text,
             body.sidebar-collapsed .sidebar-menu a .menu-text,
             .sidebar.collapsed .sidebar-menu a .menu-text {
@@ -371,11 +424,12 @@
                 left: calc(var(--sidebar-collapsed-width) + 8px);
                 top: 50%;
                 transform: translateY(-50%);
-                background: #0F172A;
+                background: #8A0D11;
                 color: #FFFFFF;
+                border: 1px solid rgba(255,255,255,0.2);
                 padding: 6px 12px;
                 border-radius: 6px;
-                font-size: 12px;
+                font-size: 13px;
                 font-weight: 600;
                 white-space: nowrap;
                 z-index: 1005;
@@ -415,17 +469,30 @@
             .sidebar-toggle-btn { display: none !important; }
             .sidebar-menu { padding: 0.75rem 0; }
             .sidebar-menu a { position: relative; justify-content: center; padding: 0.95rem 0 !important; }
+            .sidebar-menu a i, .sidebar-menu a svg, .sidebar-menu a [data-lucide] {
+                width: 22px !important;
+                height: 22px !important;
+                margin: 0 auto !important;
+            }
+            .sidebar-menu a:hover i, .sidebar-menu a:hover svg, .sidebar-menu a:hover [data-lucide] {
+                transform: scale(1.15) !important;
+                color: #FFFFFF !important;
+            }
+            .sidebar-menu a.active i, .sidebar-menu a.active svg, .sidebar-menu a.active [data-lucide] {
+                color: #FFFFFF !important;
+            }
             .sidebar-menu a .menu-text {
                 display: none;
                 position: absolute;
                 left: 72px;
                 top: 50%;
                 transform: translateY(-50%);
-                background: var(--primary-dark);
+                background: #8A0D11;
                 color: #fff;
+                border: 1px solid rgba(255,255,255,0.2);
                 padding: 0.4rem 0.65rem;
                 border-radius: 6px;
-                font-size: 12px;
+                font-size: 13px;
                 font-weight: 600;
                 white-space: nowrap;
                 z-index: 1002;
@@ -577,7 +644,7 @@
             box-sizing: border-box !important;
         }
         .swal2-title {
-            color: #1A237E !important;
+            color: #B11116 !important;
             font-weight: 700 !important;
             font-size: 1.35rem !important;
         }
@@ -589,7 +656,7 @@
             -webkit-overflow-scrolling: touch !important;
         }
         .swal2-confirm {
-            background-color: #1A237E !important;
+            background-color: #B11116 !important;
             border-radius: 8px !important;
             font-weight: 600 !important;
             padding: 10px 24px !important;
@@ -700,7 +767,7 @@
                     <span class="menu-text">Password Resets</span>
                 </a>
             </li>
-            <li class="sidebar-menu-header" style="border-top:1px solid rgba(255,255,255,.1);margin-top:.75rem;padding-top:.75rem;padding-left:1.5rem;padding-right:1.5rem;font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:rgba(255,255,255,0.45);">
+            <li class="sidebar-menu-header" style="border-top:1px solid rgba(255,255,255,.18);margin-top:.75rem;padding-top:.75rem;padding-left:1.5rem;padding-right:1.5rem;font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:rgba(255,255,255,0.85);">
                 Pre-Record Data Entry
             </li>
             <li>
@@ -804,7 +871,7 @@
             icon: 'warning',
             showCancelButton: true,
             reverseButtons: true,
-            confirmButtonColor: '#1A237E',
+            confirmButtonColor: '#B11116',
             cancelButtonColor: '#EF4444',
             confirmButtonText: 'Yes, log out',
             cancelButtonText: 'Cancel',

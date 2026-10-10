@@ -8,7 +8,7 @@
     --cards: #FFFFFF;
     --text: #111827;
     --text-muted: #4B5563;
-    --sidebar-bg: #1A237E;
+    --sidebar-bg: #b11116;
     --border: #D1D5DB;
     --success: #10B981;
     --warning: #F59E0B;
@@ -43,10 +43,10 @@ body {
 .sidebar-brand {
     padding: 0 1.25rem;
     height: 72px;
-    border-bottom: 1px solid rgba(255,255,255,.1);
+    border-bottom: 1px solid rgba(255,255,255,.15);
     color: #fff;
     font-weight: 700;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     display: flex;
     align-items: center;
     gap: .65rem;
@@ -54,8 +54,8 @@ body {
 }
 
 .sidebar-brand img { flex-shrink: 0; }
-.sidebar-brand span { white-space: nowrap; }
-.sidebar-brand i { font-size: 1.3rem; color: var(--accent); flex-shrink: 0; }
+.sidebar-brand span { white-space: nowrap; color: #FFFFFF; font-weight: 700; }
+.sidebar-brand i, .sidebar-brand [data-lucide], .sidebar-brand svg { font-size: 1.3rem; width: 24px; height: 24px; color: #FFFFFF; flex-shrink: 0; }
 
 .sidebar-menu {
     list-style: none;
@@ -64,37 +64,55 @@ body {
     flex: 1;
 }
 
-.sidebar-menu li { margin-bottom: .2rem; }
+.sidebar-menu li { margin-bottom: .25rem; }
 
 .sidebar-menu a {
-    color: rgba(255,255,255,.75);
+    color: #FFFFFF !important;
     padding: .75rem 1.5rem;
     display: flex;
     align-items: center;
     gap: .75rem;
     text-decoration: none;
-    font-size: .9rem;
-    border-left: 3px solid transparent;
+    font-size: .95rem;
+    font-weight: 600;
+    border-left: none;
     transition: all .2s ease;
 }
 
 .sidebar-menu a:hover {
-    background: rgba(255,255,255,.1);
-    color: var(--accent);
+    background: rgba(255,255,255,.14);
+    color: #FFFFFF !important;
 }
 
 .sidebar-menu a.active {
-    background: rgba(255,255,255,.1);
-    color: var(--accent);
-    border-left-color: var(--accent);
+    background: rgba(0, 0, 0, 0.24);
+    color: #FFFFFF !important;
+    border-left: none !important;
+    font-weight: 700;
 }
 
-.sidebar-menu a i { width: 20px; text-align: center; }
+.sidebar-menu a i, .sidebar-menu a [data-lucide], .sidebar-menu a svg {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #FFFFFF;
+    transition: transform .2s ease, color .2s ease;
+}
+.sidebar-menu a:hover i, .sidebar-menu a:hover [data-lucide], .sidebar-menu a:hover svg {
+    transform: scale(1.12);
+    color: #FFFFFF;
+}
+.sidebar-menu a.active i, .sidebar-menu a.active [data-lucide], .sidebar-menu a.active svg {
+    color: #FFFFFF !important;
+}
 
 .sidebar-menu-header {
-    color: rgba(255,255,255,.5);
+    color: rgba(255,255,255,.85);
     font-size: .75rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: .75rem 1.5rem .25rem;

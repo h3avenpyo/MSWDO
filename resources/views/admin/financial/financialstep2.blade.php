@@ -6,6 +6,30 @@
 @section('page-styles')
 <link href="{{ asset('css/financialstep2.css') }}" rel="stylesheet">
 <style>
+    .step-wizard-card {
+        background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
+        box-shadow: 0 4px 16px rgba(177, 17, 22, 0.22) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .hero-subtitle {
+        color: rgba(255, 255, 255, 0.92) !important;
+    }
+    .step-2-badge {
+        background: #FFFFFF;
+        color: #b11116;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        vertical-align: middle;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+    .user-welcome {
+        background: rgba(255, 255, 255, 0.18) !important;
+        border: 1px solid rgba(255, 255, 255, 0.35) !important;
+        color: #ffffff !important;
+        backdrop-filter: blur(4px);
+    }
+
     @media (max-width: 575.98px) {
         .filter-card .row.g-2>[class*="col-md-"] {
             width: 100%;
@@ -37,23 +61,22 @@ $userName = session('admin_user_name') ?? 'Officer';
 
 <!-- Step Wizard Header Card -->
 <div class="step-wizard-card animate-fade-in mb-4">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
-            <h2 class="wizard-heading mb-1"><i class="fas fa-hand-holding-usd me-2"></i>Financial Assistance: Step 2
-                Masterlist</h2>
-            <p class="mb-0 text-white-50 hero-subtitle">Today's Client General Intake Masterlist &bull; Step 2 Financial
+            <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2">
+                <span><i class="fas fa-hand-holding-usd me-2"></i>Financial Assistance: Step 2 Masterlist</span>
+                <span class="badge step-2-badge rounded-pill px-2.5 py-1">Step 2</span>
+            </h2>
+            <p class="mb-0 hero-subtitle">Today's Client General Intake Masterlist &bull; Step 2 Financial
                 Assistance records processed today ({{ date('F d, Y') }})</p>
         </div>
         <div class="d-flex align-items-center gap-2">
-
             <div class="user-welcome">
                 <i class="fas fa-user-circle me-1"></i>
                 <span>{{ $userName }}</span>
             </div>
         </div>
     </div>
-
-
 </div>
 
 <!-- Stat Cards Grid -->
