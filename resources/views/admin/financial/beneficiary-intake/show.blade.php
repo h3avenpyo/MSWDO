@@ -31,7 +31,7 @@
                 <i class="fas fa-print me-1"></i> Print Hardcopy Form
             </button>
             <a href="{{ route('admin.beneficiary-intake.edit', $intake) }}"
-                class="btn btn-primary btn-sm rounded-pill px-3" style="background: #1A237E; border: none;">
+                class="btn btn-primary btn-sm rounded-pill px-3" style="background: #B11116; border: none;">
                 <i class="fas fa-edit me-1"></i> Edit Record
             </a>
         </div>
@@ -276,11 +276,13 @@
             <div class="row g-4">
                 <div class="col-md-4">
                     <div class="info-label">Assistance Purpose / Uri ng Assistance</div>
-                    <div class="info-value">{{ $intake->assistance_type ?? $intake->display_assistance_purpose ?? 'N/A' }}</div>
+                    <div class="info-value">{{ $intake->assistance_type ?? $intake->display_assistance_purpose ?? 'N/A'
+                        }}</div>
                 </div>
                 <div class="col-md-4">
                     <div class="info-label">Medical Condition</div>
-                    <div class="info-value">{{ $intake->display_medical_condition ?? $intake->assistance_purpose ?? 'N/A' }}</div>
+                    <div class="info-value">{{ $intake->display_medical_condition ?? $intake->assistance_purpose ??
+                        'N/A' }}</div>
                 </div>
                 <div class="col-md-4">
                     <div class="info-label">Interviewed by</div>
@@ -647,7 +649,8 @@ $otherCategory = $intake->beneficiary_category_other ?? '';
             <span class="gis-rec-text">assistance for</span>
         </div>
         <div class="gis-rec-line" style="margin-top: 4px;">
-            <span class="gis-rec-underline gis-underline-med">{!! ($intake->display_assistance_purpose && $intake->display_assistance_purpose !== 'N/A') ?
+            <span class="gis-rec-underline gis-underline-med">{!! ($intake->display_assistance_purpose &&
+                $intake->display_assistance_purpose !== 'N/A') ?
                 e($intake->display_assistance_purpose) : '&nbsp;' !!}</span>
             <span class="gis-rec-text">in the amount of</span>
             <span class="gis-rec-underline gis-underline-blank"></span>

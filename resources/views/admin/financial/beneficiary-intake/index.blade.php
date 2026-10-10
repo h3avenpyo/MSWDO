@@ -6,13 +6,13 @@
 @section('page-styles')
 <link href="{{ asset('css/beneficiary-intake/index.css') }}" rel="stylesheet">
 <style>
-@media (max-width: 575.98px) {
-    .filter-card .row.g-3 > [class*="col-"] {
-        width: 100%;
-        max-width: 100%;
-        flex: 0 0 100%;
+    @media (max-width: 575.98px) {
+        .filter-card .row.g-3>[class*="col-"] {
+            width: 100%;
+            max-width: 100%;
+            flex: 0 0 100%;
+        }
     }
-}
 </style>
 @endsection
 
@@ -30,8 +30,8 @@
                 <p class="mb-0 hero-subtitle">View, search, edit, and manage all intake sheets.</p>
             </div>
             <div class="d-flex gap-2 flex-wrap">
-                <button type="button" class="btn btn-light rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;" data-bs-toggle="modal"
-                    data-bs-target="#transmittalModal" id="btnOpenTransmittalModal">
+                <button type="button" class="btn btn-light rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;"
+                    data-bs-toggle="modal" data-bs-target="#transmittalModal" id="btnOpenTransmittalModal">
                     <i class="fas fa-file-invoice me-1"></i> Transmittal Report
                 </button>
             </div>
@@ -65,7 +65,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-4 col-lg-2">
+            <div class="col-md-6 col-lg-3">
                 <label class="form-label fw-bold text-secondary small">Filter by Category</label>
                 <select name="category" class="form-select" onchange="this.form.submit()">
                     <option value="All">All Categories</option>
@@ -74,16 +74,11 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-4 col-lg-2">
-                <label class="form-label fw-bold text-secondary small"><i class="fas fa-calendar-day me-1 text-muted"></i> Filter by Date</label>
-                <input type="date" name="date" class="form-control" value="{{ request('date') }}" onchange="this.form.submit()" title="Filter by Date">
-            </div>
-            <div class="col-md-4 col-lg-2 d-flex gap-2">
-                <button type="submit" class="btn btn-secondary w-100 fw-bold rounded-3">Filter</button>
-                @if(request()->hasAny(['search', 'barangay', 'category', 'date', 'month']))
-                <a href="{{ route('admin.beneficiary-intake.index') }}" class="btn btn-outline-secondary rounded-3"
-                    title="Reset Filters"><i class="fas fa-redo"></i></a>
-                @endif
+            <div class="col-md-6 col-lg-3">
+                <label class="form-label fw-bold text-secondary small"><i
+                        class="fas fa-calendar-day me-1 text-muted"></i> Filter by Date</label>
+                <input type="date" name="date" class="form-control" value="{{ request('date') }}"
+                    onchange="this.form.submit()" title="Filter by Date">
             </div>
         </form>
 
@@ -107,27 +102,30 @@
             @endif
             @if(request('date'))
             @php
-                $dateLabel = request('date');
-                try {
-                    $dateLabel = \Carbon\Carbon::parse(request('date'))->format('M d, Y');
-                } catch (\Exception $e) {}
+            $dateLabel = request('date');
+            try {
+            $dateLabel = \Carbon\Carbon::parse(request('date'))->format('M d, Y');
+            } catch (\Exception $e) {}
             @endphp
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 rounded-pill small">
+            <span
+                class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 rounded-pill small">
                 <i class="fas fa-calendar-day me-1"></i> Date: <strong>{{ $dateLabel }}</strong>
             </span>
             @endif
             @if(request('month'))
             @php
-                $monthLabel = request('month');
-                try {
-                    $monthLabel = \Carbon\Carbon::createFromFormat('Y-m', request('month'))->format('F Y');
-                } catch (\Exception $e) {}
+            $monthLabel = request('month');
+            try {
+            $monthLabel = \Carbon\Carbon::createFromFormat('Y-m', request('month'))->format('F Y');
+            } catch (\Exception $e) {}
             @endphp
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 rounded-pill small">
+            <span
+                class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 rounded-pill small">
                 <i class="fas fa-calendar-alt me-1"></i> Month: <strong>{{ $monthLabel }}</strong>
             </span>
             @endif
-            <a href="{{ route('admin.beneficiary-intake.index') }}" class="text-danger small fw-semibold text-decoration-none ms-auto">
+            <a href="{{ route('admin.beneficiary-intake.index') }}"
+                class="text-danger small fw-semibold text-decoration-none ms-auto">
                 <i class="fas fa-times-circle me-1"></i> Clear All Filters
             </a>
         </div>
@@ -155,7 +153,8 @@
                         <td>
                             <span class="fw-bold text-primary">{{ $intake->control_number }}</span>
                             @if($intake->is_historical)
-                                <div><span class="badge bg-warning text-dark border px-2 py-0.5 rounded-pill" style="font-size: 10px;"><i class="fas fa-history me-1"></i>Historical</span></div>
+                            <div><span class="badge bg-warning text-dark border px-2 py-0.5 rounded-pill"
+                                    style="font-size: 10px;"><i class="fas fa-history me-1"></i>Historical</span></div>
                             @endif
                         </td>
                         <td>
@@ -199,10 +198,8 @@
                                 <!-- Archive -->
                                 <button type="button"
                                     class="btn btn-sm btn-outline-danger action-btn btn-archive-intake"
-                                    data-id="{{ $intake->id }}"
-                                    data-control="{{ $intake->control_number }}"
-                                    data-name="{{ $intake->beneficiary_full_name }}"
-                                    title="Archive Record">
+                                    data-id="{{ $intake->id }}" data-control="{{ $intake->control_number }}"
+                                    data-name="{{ $intake->beneficiary_full_name }}" title="Archive Record">
                                     <i class="fas fa-box-archive"></i>
                                 </button>
                             </div>
@@ -229,9 +226,12 @@
         </div>
 
         @if($intakes->total() > 0)
-        <div class="intake-pagination-wrapper d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+        <div
+            class="intake-pagination-wrapper d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
             <div class="text-muted small fw-medium text-center text-md-start">
-                Showing <span class="fw-semibold text-dark">{{ $intakes->firstItem() }}</span> to <span class="fw-semibold text-dark">{{ $intakes->lastItem() }}</span> of <span class="fw-semibold text-dark">{{ $intakes->total() }}</span> records
+                Showing <span class="fw-semibold text-dark">{{ $intakes->firstItem() }}</span> to <span
+                    class="fw-semibold text-dark">{{ $intakes->lastItem() }}</span> of <span
+                    class="fw-semibold text-dark">{{ $intakes->total() }}</span> records
             </div>
             @if($intakes->hasPages())
             <div class="d-flex justify-content-center">
@@ -258,7 +258,8 @@
                 <h5 class="modal-title fw-bold text-white m-0" id="transmittalModalLabel" style="font-size:1.05rem">
                     <i class="fas fa-file-invoice me-2"></i>Generate Transmittal Report
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <form action="{{ route('admin.beneficiary-intake.transmittal') }}" method="GET" target="_blank" rel="opener"
                 id="transmittalForm">
@@ -280,8 +281,8 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small text-secondary">Transmittal Date</label>
-                            <input type="date" name="transmittal_date" class="form-control" value="{{ request('date') ?? date('Y-m-d') }}"
-                                required>
+                            <input type="date" name="transmittal_date" class="form-control"
+                                value="{{ request('date') ?? date('Y-m-d') }}" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small text-secondary">Session / Time</label>
@@ -316,7 +317,7 @@
 @section('page-scripts')
 <script src="{{ asset('js/beneficiary-intake/index.js') }}"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     // Smooth Transmittal Report Generation & Window Management
     const transmittalForm = document.getElementById('transmittalForm');
     if (transmittalForm) {

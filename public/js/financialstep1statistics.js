@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // 4. Dahilan ng Paghingi ng Tulong (Doughnut Chart for Tagalog Section)
+    // 4. Dahilan ng Paghingi ng Tulong / Medical Condition (Doughnut Chart)
     const dahilanEl = document.getElementById('dahilanChart');
     if (dahilanEl) {
         const medicalLabels = data.medicalLabels || [];
@@ -148,7 +148,42 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     data: medicalData.length ? medicalData : [1],
                     backgroundColor: [
-                        accentAmber, brandPrimary, successGreen,
+                        dangerRed, accentAmber, purpleAccent,
+                        infoBlue, brandPrimary, successGreen,
+                        '#EC4899', '#14B8A6'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, font: { size: 11 } }
+                    }
+                },
+                cutout: '55%'
+            }
+        });
+    }
+
+    // 5. Assistance Purpose / Uri ng Assistance (Doughnut Chart)
+    const assistanceTypeEl = document.getElementById('assistanceTypeChart');
+    if (assistanceTypeEl) {
+        const assistanceLabels = data.assistanceTypeLabels || [];
+        const assistanceData = data.assistanceTypeData || [];
+
+        new Chart(assistanceTypeEl, {
+            type: 'doughnut',
+            data: {
+                labels: assistanceLabels.length ? assistanceLabels : ['Walang Datos'],
+                datasets: [{
+                    data: assistanceData.length ? assistanceData : [1],
+                    backgroundColor: [
+                        brandPrimary, successGreen, accentAmber,
                         infoBlue, purpleAccent, dangerRed
                     ],
                     borderWidth: 2,

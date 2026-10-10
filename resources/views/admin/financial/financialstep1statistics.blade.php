@@ -235,82 +235,47 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
             </div>
         </div>
 
-        <!-- 3. TAGALOG SECTION: Dahilan ng Paghingi ng Tulong -->
+        <!-- 3. Assistance Purpose & Medical Condition (Two Charts in One Section) -->
         <div class="chart-container-card p-4">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4 pb-3 border-bottom">
                 <div>
                     <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-3 py-1 rounded-pill mb-2"
                         style="font-size: 0.75rem;">
-                        <i class="fas fa-heart me-1"></i> SEKSYON NG MGA DAHILAN
+                        <i class="fas fa-heart me-1"></i> URI NG ASSISTANCE
                     </span>
                     <h4 class="fw-bold text-dark mb-1" style="letter-spacing: -0.01em;"><i
-                            class="fas fa-hand-holding-heart text-primary me-2"></i>Dahilan ng Paghingi ng Tulong</h4>
-                    <p class="text-muted small mb-0">Mga rason at uri ng tulong na idinulog ng mga benepisyaryo sa MSWDO
-                        Silang.</p>
+                            class="fas fa-hand-holding-heart text-primary me-2"></i>Assistance Purpose / Uri ng Assistance</h4>
+                    <p class="text-muted small mb-0">Mga uri ng tulong na hinihingi at medikal na sitwasyon ng mga benepisyaryo sa MSWDO Silang.</p>
                 </div>
             </div>
 
-            <div class="row g-4 align-items-center">
-                <div class="col-lg-5">
-                    <div class="p-3 rounded-4 bg-light border text-center">
-                        <h6 class="fw-bold text-dark mb-3 text-start small text-uppercase tracking-wider"><i
-                                class="fas fa-chart-pie me-2 text-primary"></i>Distribusyon ng mga Dahilan</h6>
-                        <div style="height: 240px; position: relative;">
+            <div class="row g-4 align-items-stretch">
+                <!-- Chart 1: Medical Condition -->
+                <div class="col-lg-6">
+                    <div class="p-3 rounded-4 bg-light border text-center h-100 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-dark mb-0 text-start small text-uppercase tracking-wider">
+                                <i class="fas fa-heartbeat me-2 text-danger"></i>Medical Condition / Dahilan
+                            </h6>
+                            <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-1 small fw-semibold">Medical Concerns</span>
+                        </div>
+                        <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="min-height: 280px; position: relative;">
                             <canvas id="dahilanChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-lg-7">
-                    <div class="p-3 rounded-4 bg-light border">
-                        <h6 class="fw-bold text-dark mb-3 small text-uppercase tracking-wider"><i
-                                class="fas fa-list-ul me-2 text-primary"></i>Mga Pangunahing Dahilan at Bilang ng Kaso
-                        </h6>
-                        <div class="table-responsive">
-                            <table class="table table-borderless align-middle mb-0">
-                                <thead>
-                                    <tr class="border-bottom"
-                                        style="font-size: 0.75rem; text-transform: uppercase; color: #64748B;">
-                                        <th class="ps-2">Dahilan / Assistance Concern</th>
-                                        <th class="text-center">Bilang ng Kaso</th>
-                                        <th class="text-end pe-2">Bahagdan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($reasonsAssistance as $reason)
-                                    @php
-                                    $percent = $totalIntakes > 0 ? number_format(($reason->total_cases / $totalIntakes)
-                                    *
-                                    100, 1) : 0;
-                                    @endphp
-                                    <tr class="border-bottom-subtle">
-                                        <td class="ps-2 py-2">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <div class="rounded-circle bg-primary bg-opacity-10 p-1 d-flex align-items-center justify-content-center"
-                                                    style="width: 24px; height: 24px;">
-                                                    <i class="fas fa-check text-primary" style="font-size: 0.7rem;"></i>
-                                                </div>
-                                                <span class="fw-semibold text-dark small">{{ $reason->assistance_purpose
-                                                    }}</span>
-                                            </div>
-                                        </td>
-                                        <td class="text-center fw-bold text-dark small">{{
-                                            number_format($reason->total_cases) }}</td>
-                                        <td class="text-end pe-2">
-                                            <span
-                                                class="badge bg-white text-dark border fw-bold px-2 py-1 small shadow-xs">{{
-                                                $percent }}%</span>
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="3" class="text-center text-muted py-4 small">Walang naitatalang
-                                            datos
-                                            ng dahilan sa kasalukuyan.</td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                <!-- Chart 2: Assistance Purpose / Uri ng Assistance -->
+                <div class="col-lg-6">
+                    <div class="p-3 rounded-4 bg-light border text-center h-100 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-dark mb-0 text-start small text-uppercase tracking-wider">
+                                <i class="fas fa-hand-holding-medical me-2 text-primary"></i>Assistance Purpose / Uri ng Assistance
+                            </h6>
+                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2 py-1 small fw-semibold">Uri ng Tulong</span>
+                        </div>
+                        <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="min-height: 280px; position: relative;">
+                            <canvas id="assistanceTypeChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -602,18 +567,60 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
             </table>
         </div>
 
-        <!-- Section 4: Dahilan ng Paghingi ng Tulong (Full Width: 12% / 58% / 30%) -->
+        <!-- Section 4: Uri ng Assistance / Assistance Purpose (Full Width: 12% / 58% / 30%) -->
         <div class="report-section section-reasons mb-3">
-            <div class="report-section-heading">4. Dahilan ng Paghingi ng Tulong (Summary of Assistance Purposes &amp;
-                Medical Concerns) &bull; {{ $isAll ? 'Overall Records' : $selectedMonthLabel }}</div>
-            <p class="report-table-subtext mb-2">Comprehensive distribution of assistance categories, medical concerns,
-                and emergency needs reported by beneficiaries upon intake assessment.</p>
+            <div class="report-section-heading">4. Uri ng Assistance / Assistance Purpose &bull; {{ $isAll ? 'Overall Records' : $selectedMonthLabel }}</div>
+            <p class="report-table-subtext mb-2">Comprehensive distribution of assistance purposes and categories reported by beneficiaries upon intake assessment.</p>
 
             <table class="report-table">
                 <thead>
                     <tr>
                         <th style="width: 12%; text-align: center;">No.</th>
-                        <th style="width: 58%;">Dahilan / Assistance Purpose / Medical Concern</th>
+                        <th style="width: 58%;">Assistance Purpose / Uri ng Assistance</th>
+                        <th style="width: 30%; text-align: right;">Bilang ng Kaso (Cases)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                    $pIndex = 1;
+                    $pSum = 0;
+                    @endphp
+                    @forelse($assistancePurposeBreakdown as $purpose)
+                    @php
+                    $pCases = $purpose->total_cases;
+                    $pSum += $pCases;
+                    @endphp
+                    <tr>
+                        <td style="text-align: center;">{{ $pIndex++ }}</td>
+                        <td style="font-weight: 600;">{{ $purpose->assistance_type }}</td>
+                        <td style="text-align: right; font-weight: 600;">{{ number_format($pCases) }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #64748B;">Walang naitatalang datos ng uri ng assistance sa kasalukuyan.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+                <tfoot>
+                    <tr class="report-table-total-row">
+                        <td colspan="2" style="font-weight: 700;">Kabuuan / Total Assistance Requests Evaluated ({{
+                            $isAll ? 'Overall' : $selectedMonthLabel }})</td>
+                        <td style="text-align: right; font-weight: 700;">{{ number_format($pSum) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Section 5: Dahilan ng Paghingi ng Tulong (Medical Concerns / Conditions) -->
+        <div class="report-section section-reasons mb-3">
+            <div class="report-section-heading">5. Dahilan ng Paghingi ng Tulong (Medical Conditions / Health Concerns) &bull; {{ $isAll ? 'Overall Records' : $selectedMonthLabel }}</div>
+            <p class="report-table-subtext mb-2">Summary of medical conditions, illnesses, and healthcare concerns recorded during beneficiary intake assessment.</p>
+
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th style="width: 12%; text-align: center;">No.</th>
+                        <th style="width: 58%;">Medical Condition / Dahilan</th>
                         <th style="width: 30%; text-align: right;">Bilang ng Kaso (Cases)</th>
                     </tr>
                 </thead>
@@ -634,14 +641,13 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="3" style="text-align: center; color: #64748B;">Walang naitatalang datos ng dahilan
-                            sa kasalukuyan.</td>
+                        <td colspan="3" style="text-align: center; color: #64748B;">Walang naitatalang datos ng medical condition sa kasalukuyan.</td>
                     </tr>
                     @endforelse
                 </tbody>
                 <tfoot>
                     <tr class="report-table-total-row">
-                        <td colspan="2" style="font-weight: 700;">Kabuuan / Total Assistance Requests Evaluated ({{
+                        <td colspan="2" style="font-weight: 700;">Kabuuan / Total Medical Conditions Recorded ({{
                             $isAll ? 'Overall' : $selectedMonthLabel }})</td>
                         <td style="text-align: right; font-weight: 700;">{{ number_format($rSum) }}</td>
                     </tr>
@@ -649,7 +655,7 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
             </table>
         </div>
 
-        <!-- Section 5: Administrative Certification & Signatures -->
+        <!-- Section 6: Administrative Certification & Signatures -->
         <div class="report-section section-signatures">
             <div class="report-notes-box mb-3">
                 <div class="fw-bold text-uppercase mb-1" style="font-size: 7.5pt; color: #1E293B;">Administrative Notes
@@ -714,7 +720,9 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
         genderLabels: @json(array_keys($genderBreakdown)),
         genderData: @json(array_values($genderBreakdown)),
         medicalLabels: @json(array_keys($medicalConcernsSummary)),
-        medicalData: @json(array_values($medicalConcernsSummary))
+        medicalData: @json(array_values($medicalConcernsSummary)),
+        assistanceTypeLabels: @json(array_keys($assistanceTypeSummary)),
+        assistanceTypeData: @json(array_values($assistanceTypeSummary))
     };
 </script>
 

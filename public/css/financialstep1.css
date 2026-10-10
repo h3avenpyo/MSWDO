@@ -608,7 +608,7 @@ body.sidebar-collapsed .main-content {
     width: 40px;
     height: 40px;
     border-radius: var(--radius-full);
-    background-color: var(--color-brand);
+    background-color: var(--sidebar-bg);
     color: #ffffff;
     display: flex;
     align-items: center;
@@ -1291,4 +1291,37 @@ body.sidebar-collapsed .main-content {
 .action-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================================
+   MSWDO RED THEME BUTTONS
+   ============================================================ */
+.btn-red-theme,
+.btn-search-red {
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(177, 17, 22, 0.2);
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-red-theme:hover,
+.btn-search-red:hover {
+    background-color: #8e0d11 !important;
+    border-color: #8e0d11 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(177, 17, 22, 0.3) !important;
+    transform: translateY(-1px);
+}
+
+.btn-red-theme:focus,
+.btn-red-theme:active,
+.btn-search-red:focus,
+.btn-search-red:active {
+    background-color: #7a0b0e !important;
+    border-color: #7a0b0e !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 0.25rem rgba(177, 17, 22, 0.25) !important;
+    transform: none;
 }

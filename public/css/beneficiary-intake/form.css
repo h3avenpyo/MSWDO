@@ -9,7 +9,7 @@
 }
 
 .form-header-bar {
-    background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
+    background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
     color: #ffffff;
     padding: 1.25rem 1.5rem;
     border-top-left-radius: 12px;
@@ -96,3 +96,30 @@
 
 :is(input[type="text"], input:not([type]), textarea):not([readonly]) { text-transform: uppercase !important; }
 :is(input, textarea)::placeholder { text-transform: none !important; }
+
+/* Red Form Action / Submit Button */
+.btn-submit-red {
+    background: #b11116 !important;
+    border: 1px solid #b11116 !important;
+    color: #ffffff !important;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(177, 17, 22, 0.22) !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-submit-red:hover {
+    background: #8e0d11 !important;
+    border-color: #8e0d11 !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 18px rgba(177, 17, 22, 0.32) !important;
+    transform: translateY(-1px);
+}
+
+.btn-submit-red:focus,
+.btn-submit-red:active {
+    background: #7a0b0e !important;
+    border-color: #7a0b0e !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 0.25rem rgba(177, 17, 22, 0.25) !important;
+    transform: none;
+}

@@ -45,9 +45,18 @@
     <!-- Search & Filter Card -->
     <div class="card border-0 shadow-sm rounded-3 mb-4 p-3 bg-white">
         <form action="{{ route('admin.financial.step1.archive') }}" method="GET" class="row g-2 align-items-end">
-            <div class="col-md-5 col-lg-5">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search</label>
+            <div class="col-md-6 col-lg-6">
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1" style="color: #b11116;"></i> Search</label>
+                @if(request('search'))
+                <div class="input-group input-group-sm">
+                    <input type="text" name="search" class="form-control rounded-start-3" placeholder="Search by Control No, Name, Representative, Barangay..." value="{{ request('search') }}">
+                    <a href="{{ route('admin.financial.step1.archive', request()->except('search')) }}" class="btn btn-light border border-start-0 rounded-end-3" title="Clear Search">
+                        <i class="fas fa-times text-muted"></i>
+                    </a>
+                </div>
+                @else
                 <input type="text" name="search" class="form-control form-control-sm rounded-3" placeholder="Search by Control No, Name, Representative, Barangay..." value="{{ request('search') }}">
+                @endif
             </div>
             <div class="col-md-3 col-lg-3">
                 <label class="form-label small fw-bold text-muted mb-1">Barangay</label>
@@ -58,7 +67,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-2 col-lg-2">
+            <div class="col-md-3 col-lg-3">
                 <label class="form-label small fw-bold text-muted mb-1">Category</label>
                 <select name="category" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
                     <option value="All">All Categories</option>
@@ -67,17 +76,31 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-2 col-lg-2 d-flex gap-2">
-                <button type="submit" class="btn btn-sm btn-primary rounded-3 px-3 fw-semibold w-100" style="background: #1A237E; border-color: #1A237E;">
-                    <i class="fas fa-filter me-1"></i> Filter
-                </button>
-                @if(request()->hasAny(['search', 'barangay', 'category']))
-                <a href="{{ route('admin.financial.step1.archive') }}" class="btn btn-sm btn-light border rounded-3 px-3" title="Clear Filters">
-                    <i class="fas fa-redo"></i>
-                </a>
-                @endif
-            </div>
         </form>
+
+        @if(request()->hasAny(['search', 'barangay', 'category']))
+        <div class="d-flex align-items-center gap-2 flex-wrap mt-3 pt-2 border-top">
+            <span class="text-muted small fw-semibold me-1"><i class="fas fa-sliders-h me-1"></i> Active Filters:</span>
+            @if(request('search'))
+            <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill small">
+                Search: <strong>{{ request('search') }}</strong>
+            </span>
+            @endif
+            @if(request('barangay') && request('barangay') !== 'All')
+            <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill small">
+                Barangay: <strong>{{ request('barangay') }}</strong>
+            </span>
+            @endif
+            @if(request('category') && request('category') !== 'All')
+            <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill small">
+                Category: <strong>{{ request('category') }}</strong>
+            </span>
+            @endif
+            <a href="{{ route('admin.financial.step1.archive') }}" class="text-danger small fw-semibold text-decoration-none ms-auto">
+                <i class="fas fa-times-circle me-1"></i> Clear All Filters
+            </a>
+        </div>
+        @endif
     </div>
 
     <!-- Records Table Card -->

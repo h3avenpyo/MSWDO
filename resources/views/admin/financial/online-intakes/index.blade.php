@@ -30,11 +30,13 @@
                     <span class="badge step-1-badge rounded-pill px-2.5 py-1">Step 1</span>
                 </h2>
                 <p class="mb-0 hero-subtitle">
-                    Suriin at patunayan ang mga aplikasyong isinumite sa pamamagitan ng Online Financial Assistance bago ilipat sa regular na Step 1 Intake.
+                    Suriin at patunayan ang mga aplikasyong isinumite sa pamamagitan ng Online Financial Assistance bago
+                    ilipat sa regular na Step 1 Intake.
                 </p>
             </div>
             <div class="d-flex gap-2 align-items-center flex-wrap">
-                <a href="{{ route('admin.financial.financialstep1') }}" class="btn btn-light rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;">
+                <a href="{{ route('admin.financial.financialstep1') }}"
+                    class="btn btn-light rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;">
                     <i class="fas fa-arrow-left me-1"></i>
                     <span>Pumunta sa Step 1 Intake</span>
                 </a>
@@ -44,54 +46,54 @@
 
     <!-- Status Tabs / Summary Metric Pills -->
     <div class="d-flex gap-2 mb-3 flex-wrap align-items-center">
-        <a href="{{ route('admin.financial.online-intakes.index') }}" 
-           class="btn btn-sm rounded-pill px-3 {{ (!request()->filled('status') || request('status') === 'All') ? 'btn-primary' : 'btn-light border' }}"
-           style="{{ (!request()->filled('status') || request('status') === 'All') ? 'background:#1A237E; border-color:#1A237E;' : '' }}">
+        <a href="{{ route('admin.financial.online-intakes.index') }}"
+            class="btn btn-sm btn-light border rounded-pill px-3 {{ (!request()->filled('status') || request('status') === 'All') ? 'border-dark fw-bold text-dark shadow-xs' : 'text-secondary' }}">
             <span>Lahat (All)</span>
-            <span class="badge bg-white text-dark ms-1.5 rounded-pill">{{ $totalCount }}</span>
+            <span class="badge bg-white text-dark border ms-1.5 rounded-pill">{{ $totalCount }}</span>
         </a>
-        <a href="{{ route('admin.financial.online-intakes.index', array_merge(request()->except(['status', 'page']), ['status' => 'For Review'])) }}" 
-           class="btn btn-sm rounded-pill px-3 {{ request('status') === 'For Review' ? 'btn-warning text-dark fw-bold' : 'btn-light border' }}">
+        <a href="{{ route('admin.financial.online-intakes.index', array_merge(request()->except(['status', 'page']), ['status' => 'For Review'])) }}"
+            class="btn btn-sm btn-light border rounded-pill px-3 {{ request('status') === 'For Review' ? 'border-dark fw-bold text-dark shadow-xs' : 'text-secondary' }}">
             <i class="fas fa-clock me-1 text-warning"></i>
             <span>For Review (Pending)</span>
-            <span class="badge bg-dark text-white ms-1.5 rounded-pill">{{ $pendingCount }}</span>
+            <span class="badge bg-white text-dark border ms-1.5 rounded-pill">{{ $pendingCount }}</span>
         </a>
-        <a href="{{ route('admin.financial.online-intakes.index', array_merge(request()->except(['status', 'page']), ['status' => 'Accepted'])) }}" 
-           class="btn btn-sm rounded-pill px-3 {{ request('status') === 'Accepted' ? 'btn-success text-white fw-bold' : 'btn-light border' }}">
+        <a href="{{ route('admin.financial.online-intakes.index', array_merge(request()->except(['status', 'page']), ['status' => 'Accepted'])) }}"
+            class="btn btn-sm btn-light border rounded-pill px-3 {{ request('status') === 'Accepted' ? 'border-dark fw-bold text-dark shadow-xs' : 'text-secondary' }}">
             <i class="fas fa-check-circle me-1 text-success"></i>
             <span>Accepted (Transferred)</span>
-            <span class="badge bg-white text-success ms-1.5 rounded-pill">{{ $acceptedCount }}</span>
+            <span class="badge bg-white text-dark border ms-1.5 rounded-pill">{{ $acceptedCount }}</span>
         </a>
-        <a href="{{ route('admin.financial.online-intakes.index', array_merge(request()->except(['status', 'page']), ['status' => 'Rejected'])) }}" 
-           class="btn btn-sm rounded-pill px-3 {{ request('status') === 'Rejected' ? 'btn-danger text-white fw-bold' : 'btn-light border' }}">
+        <a href="{{ route('admin.financial.online-intakes.index', array_merge(request()->except(['status', 'page']), ['status' => 'Rejected'])) }}"
+            class="btn btn-sm btn-light border rounded-pill px-3 {{ request('status') === 'Rejected' ? 'border-dark fw-bold text-dark shadow-xs' : 'text-secondary' }}">
             <i class="fas fa-times-circle me-1 text-danger"></i>
             <span>Rejected</span>
-            <span class="badge bg-white text-danger ms-1.5 rounded-pill">{{ $rejectedCount }}</span>
+            <span class="badge bg-white text-dark border ms-1.5 rounded-pill">{{ $rejectedCount }}</span>
         </a>
     </div>
 
     <!-- Compound Filtering Form -->
     <div class="card border-0 shadow-sm rounded-3 mb-4 p-3 bg-white">
         <form action="{{ route('admin.financial.online-intakes.index') }}" method="GET" class="row g-3 align-items-end">
-            
+
             <!-- Search Query -->
             <div class="col-md-4 col-lg-3">
                 <label class="form-label small fw-bold text-muted mb-1">
                     <i class="fas fa-search me-1"></i> Search Name / Control No.
                 </label>
-                <input type="text" name="search" class="form-control form-control-sm rounded-3" 
-                       placeholder="Hal. Juan Dela Cruz o Control No." 
-                       value="{{ request('search') }}">
+                <input type="text" name="search" class="form-control form-control-sm rounded-3"
+                    placeholder="Hal. Juan Dela Cruz o Control No." value="{{ request('search') }}">
             </div>
 
             <!-- Status Filter -->
             <div class="col-md-3 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1">Status</label>
                 <select name="status" class="form-select form-select-sm rounded-3">
-                    <option value="All" {{ request('status') == 'All' || !request()->filled('status') ? 'selected' : '' }}>Lahat ng Status</option>
-                    <option value="For Review" {{ request('status') == 'For Review' ? 'selected' : '' }}>For Review</option>
-                    <option value="Accepted" {{ request('status') == 'Accepted' ? 'selected' : '' }}>Accepted</option>
-                    <option value="Rejected" {{ request('status') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
+                    <option value="All" {{ request('status')=='All' || !request()->filled('status') ? 'selected' : ''
+                        }}>Lahat ng Status</option>
+                    <option value="For Review" {{ request('status')=='For Review' ? 'selected' : '' }}>For Review
+                    </option>
+                    <option value="Accepted" {{ request('status')=='Accepted' ? 'selected' : '' }}>Accepted</option>
+                    <option value="Rejected" {{ request('status')=='Rejected' ? 'selected' : '' }}>Rejected</option>
                 </select>
             </div>
 
@@ -101,7 +103,7 @@
                 <select name="barangay" class="form-select form-select-sm rounded-3">
                     <option value="All">Lahat ng Barangay</option>
                     @foreach($barangays as $b)
-                    <option value="{{ $b }}" {{ request('barangay') == $b ? 'selected' : '' }}>{{ $b }}</option>
+                    <option value="{{ $b }}" {{ request('barangay')==$b ? 'selected' : '' }}>{{ $b }}</option>
                     @endforeach
                 </select>
             </div>
@@ -109,23 +111,25 @@
             <!-- Date Range: From -->
             <div class="col-md-3 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1">Petsa Mula (From)</label>
-                <input type="date" name="date_from" class="form-control form-control-sm rounded-3" 
-                       value="{{ request('date_from') }}">
+                <input type="date" name="date_from" class="form-control form-control-sm rounded-3"
+                    value="{{ request('date_from') }}">
             </div>
 
             <!-- Date Range: To -->
             <div class="col-md-3 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1">Petsa Hanggang (To)</label>
-                <input type="date" name="date_to" class="form-control form-control-sm rounded-3" 
-                       value="{{ request('date_to') }}">
+                <input type="date" name="date_to" class="form-control form-control-sm rounded-3"
+                    value="{{ request('date_to') }}">
             </div>
 
             <!-- Filter Actions -->
             <div class="col-12 d-flex gap-2 justify-content-end pt-1">
-                <button type="submit" class="btn btn-sm btn-primary rounded-3 px-4 fw-semibold shadow-xs" style="background:#1A237E; border-color:#1A237E;">
+                <button type="submit" class="btn btn-sm btn-red-theme rounded-3 px-4 fw-semibold shadow-xs">
                     <i class="fas fa-filter me-1"></i> Apply Filters
                 </button>
-                <a href="{{ route('admin.financial.online-intakes.index') }}" class="btn btn-sm btn-light border rounded-3 px-3 fw-semibold text-secondary" title="Reset all filters">
+                <a href="{{ route('admin.financial.online-intakes.index') }}"
+                    class="btn btn-sm btn-light border rounded-3 px-3 fw-semibold text-secondary"
+                    title="Reset all filters">
                     <i class="fas fa-undo me-1"></i> Reset / Clear
                 </a>
             </div>
@@ -134,12 +138,14 @@
 
     <!-- Data Table -->
     <div class="card border-0 shadow-sm rounded-3 bg-white">
-        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div
+            class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div>
                 <h6 class="fw-bold mb-0 text-dark">
                     Mga Isinumiteng Online Intake Application
                 </h6>
-                <span class="text-muted small">Ipinapakita: {{ $applications->firstItem() ?? 0 }} hanggang {{ $applications->lastItem() ?? 0 }} sa kabuuang {{ $applications->total() }} tala</span>
+                <span class="text-muted small">Ipinapakita: {{ $applications->firstItem() ?? 0 }} hanggang {{
+                    $applications->lastItem() ?? 0 }} sa kabuuang {{ $applications->total() }} tala</span>
             </div>
             @if(request()->anyFilled(['search', 'status', 'barangay', 'date_from', 'date_to']))
             <span class="badge bg-light text-primary border px-2.5 py-1.5 rounded-pill small fw-semibold">
@@ -150,7 +156,8 @@
 
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0" style="font-size: 0.875rem;">
-                <thead class="table-light text-secondary" style="font-size: 0.775rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                <thead class="table-light text-secondary"
+                    style="font-size: 0.775rem; text-transform: uppercase; letter-spacing: 0.05em;">
                     <tr>
                         <th class="ps-3" style="width: 170px;">Control No. / Ref ID</th>
                         <th style="width: 140px;">Petsa Isinumite</th>
@@ -167,35 +174,42 @@
                         <!-- Control Number / Online Reference ID -->
                         <td class="ps-3">
                             @if($app->control_number)
-                                <div class="font-monospace fw-bold text-primary" style="font-size: 0.85rem;">{{ $app->control_number }}</div>
-                                <span class="badge bg-success-subtle text-success border border-success-subtle px-1.5 py-0.5" style="font-size: 0.68rem;">
-                                    <i class="fas fa-check-circle me-1"></i>Assigned (Step 1)
-                                </span>
+                            <div class="font-monospace fw-bold text-primary" style="font-size: 0.85rem;">{{
+                                $app->control_number }}</div>
+                            <span
+                                class="badge bg-success-subtle text-success border border-success-subtle px-1.5 py-0.5"
+                                style="font-size: 0.68rem;">
+                                <i class="fas fa-check-circle me-1"></i>Assigned (Step 1)
+                            </span>
                             @else
-                                <div class="font-monospace text-muted small fw-semibold">
-                                    <i class="fas fa-hashtag me-0.5 text-secondary"></i>{{ $app->reference_number }}
-                                </div>
-                                <span class="badge bg-light text-secondary border px-1.5 py-0.5" style="font-size: 0.68rem;" title="Ang Control Number ay itatalaga lamang kapag opisyal nang tinanggap (Accepted) ng staff.">
-                                    <i class="fas fa-hourglass-half me-1 text-warning"></i>Walang Control No. (Pending)
-                                </span>
+                            <div class="font-monospace text-muted small fw-semibold">
+                                <i class="fas fa-hashtag me-0.5 text-secondary"></i>{{ $app->reference_number }}
+                            </div>
+                            <span class="badge bg-light text-secondary border px-1.5 py-0.5" style="font-size: 0.68rem;"
+                                title="Ang Control Number ay itatalaga lamang kapag opisyal nang tinanggap (Accepted) ng staff.">
+                                <i class="fas fa-hourglass-half me-1 text-warning"></i>Walang Control No. (Pending)
+                            </span>
                             @endif
                         </td>
 
                         <!-- Date Submitted -->
                         <td class="text-muted small">
-                            <div class="fw-semibold text-dark">{{ $app->date_submitted ? $app->date_submitted->format('M d, Y') : 'N/A' }}</div>
-                            <div class="text-muted" style="font-size: 0.75rem;">{{ $app->date_submitted ? $app->date_submitted->format('h:i A') : '' }}</div>
+                            <div class="fw-semibold text-dark">{{ $app->date_submitted ? $app->date_submitted->format('M
+                                d, Y') : 'N/A' }}</div>
+                            <div class="text-muted" style="font-size: 0.75rem;">{{ $app->date_submitted ?
+                                $app->date_submitted->format('h:i A') : '' }}</div>
                         </td>
 
                         <!-- Beneficiary Info -->
                         <td>
                             <div class="fw-bold text-dark">{{ $app->beneficiary_full_name }}</div>
                             <div class="text-muted small">
-                                <span>{{ $app->beneficiary_age }} taong gulang</span> &bull; 
+                                <span>{{ $app->beneficiary_age }} taong gulang</span> &bull;
                                 <span>{{ $app->beneficiary_sex }}</span>
                                 @if($app->has_representative && $app->rep_full_name)
                                 <span class="d-block text-secondary mt-0.5" style="font-size: 0.75rem;">
-                                    <i class="fas fa-user-shield me-1 text-muted"></i>Rep: {{ $app->rep_full_name }} ({{ $app->rep_relationship ?: 'Kinatawan' }})
+                                    <i class="fas fa-user-shield me-1 text-muted"></i>Rep: {{ $app->rep_full_name }} ({{
+                                    $app->rep_relationship ?: 'Kinatawan' }})
                                 </span>
                                 @endif
                             </div>
@@ -203,15 +217,19 @@
 
                         <!-- Barangay -->
                         <td>
-                            <span class="badge bg-light text-dark border px-2 py-1">{{ $app->beneficiary_barangay }}</span>
+                            <span class="badge bg-light text-dark border px-2 py-1">{{ $app->beneficiary_barangay
+                                }}</span>
                         </td>
 
                         <!-- Purpose -->
                         <td>
-                            <div class="text-dark fw-medium">{{ $app->assistance_purpose ?: 'General Assistance' }}</div>
+                            <div class="text-dark fw-medium">{{ $app->assistance_purpose ?: 'General Assistance' }}
+                            </div>
                             @if(!empty($app->medical_conditions) && is_array($app->medical_conditions))
-                            <div class="text-muted small text-truncate" style="max-width: 220px;" title="{{ implode(', ', $app->medical_conditions) }}">
-                                <i class="fas fa-notes-medical me-1 text-danger"></i>{{ implode(', ', $app->medical_conditions) }}
+                            <div class="text-muted small text-truncate" style="max-width: 220px;"
+                                title="{{ implode(', ', $app->medical_conditions) }}">
+                                <i class="fas fa-notes-medical me-1 text-danger"></i>{{ implode(', ',
+                                $app->medical_conditions) }}
                             </div>
                             @endif
                         </td>
@@ -219,25 +237,24 @@
                         <!-- Status Badge -->
                         <td class="text-center">
                             @if($app->status === 'Accepted')
-                                <span class="badge bg-success text-white px-2.5 py-1 rounded-pill">
-                                    <i class="fas fa-check-circle me-1"></i>Accepted
-                                </span>
+                            <span class="badge bg-success text-white px-2.5 py-1 rounded-pill">
+                                <i class="fas fa-check-circle me-1"></i>Accepted
+                            </span>
                             @elseif($app->status === 'Rejected')
-                                <span class="badge bg-danger text-white px-2.5 py-1 rounded-pill">
-                                    <i class="fas fa-times-circle me-1"></i>Rejected
-                                </span>
+                            <span class="badge bg-danger text-white px-2.5 py-1 rounded-pill">
+                                <i class="fas fa-times-circle me-1"></i>Rejected
+                            </span>
                             @else
-                                <span class="badge bg-warning text-dark px-2.5 py-1 rounded-pill fw-semibold">
-                                    <i class="fas fa-clock me-1"></i>For Review
-                                </span>
+                            <span class="badge bg-warning text-dark px-2.5 py-1 rounded-pill fw-semibold">
+                                <i class="fas fa-clock me-1"></i>For Review
+                            </span>
                             @endif
                         </td>
 
                         <!-- Actions -->
                         <td class="text-end pe-3">
-                            <button type="button" 
-                                    class="btn btn-sm btn-primary-action px-3 py-1 rounded-3 shadow-xs" 
-                                    onclick="openReviewModal({{ $app->id }})">
+                            <button type="button" class="btn btn-sm btn-primary-action px-3 py-1 rounded-3 shadow-xs"
+                                onclick="openReviewModal({{ $app->id }})">
                                 <i class="fas fa-clipboard-check me-1"></i> Review
                             </button>
                         </td>
@@ -249,7 +266,8 @@
                                 <i class="fas fa-folder-open fa-3x text-slate-300" style="opacity: 0.5;"></i>
                             </div>
                             <p class="fw-semibold mb-1 text-secondary">Walang Nahanap na Online Intake Application</p>
-                            <p class="small text-muted mb-0">Subukang baguhin ang mga filter o maghintay ng mga bagong aplikasyon mula sa online form.</p>
+                            <p class="small text-muted mb-0">Subukang baguhin ang mga filter o maghintay ng mga bagong
+                                aplikasyon mula sa online form.</p>
                         </td>
                     </tr>
                     @endforelse
@@ -273,11 +291,12 @@
 <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content rounded-4 border-0 shadow-lg">
-            
+
             <!-- Modal Header -->
             <div class="modal-header border-bottom py-3 px-4" style="background: #F8FAFC;">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="h-10 w-10 rounded-circle bg-primary text-white d-flex align-items-center justify-center p-2" style="width:40px;height:40px;">
+                    <div class="h-10 w-10 rounded-circle bg-primary text-white d-flex align-items-center justify-center p-2"
+                        style="width:40px;height:40px;">
                         <i class="fas fa-file-invoice fa-lg"></i>
                     </div>
                     <div>
@@ -297,7 +316,7 @@
 
             <!-- Modal Body -->
             <div class="modal-body p-4" id="reviewModalBody">
-                
+
                 <!-- Loading State -->
                 <div id="modalLoadingSpinner" class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
@@ -312,8 +331,10 @@
 
                     <!-- Row 1: Beneficiary Information -->
                     <div class="card border rounded-3 p-3 mb-3 bg-white">
-                        <h6 class="fw-bold text-primary mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
-                            <span><i class="fas fa-user me-2 text-primary"></i>Impormasyon ng Benepisyaryo (Beneficiary Information)</span>
+                        <h6
+                            class="fw-bold text-primary mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
+                            <span><i class="fas fa-user me-2 text-primary"></i>Impormasyon ng Benepisyaryo (Beneficiary
+                                Information)</span>
                             <span class="badge bg-light text-dark border font-normal small" id="modalClientType"></span>
                         </h6>
                         <div class="row g-3 text-sm">
@@ -335,7 +356,8 @@
                             </div>
                             <div class="col-md-6">
                                 <span class="text-muted small d-block">Tirahan / Barangay:</span>
-                                <span id="benAddress" class="text-dark"></span>, <strong id="benBarangay" class="text-primary"></strong>, Silang, Cavite
+                                <span id="benAddress" class="text-dark"></span>, <strong id="benBarangay"
+                                    class="text-primary"></strong>, Silang, Cavite
                             </div>
                             <div class="col-md-3">
                                 <span class="text-muted small d-block">Numero ng Kontak:</span>
@@ -355,7 +377,8 @@
                     <!-- Row 2: Representative Information (Conditional) -->
                     <div id="repSectionCard" class="card border rounded-3 p-3 mb-3 bg-white d-none">
                         <h6 class="fw-bold text-secondary mb-3 pb-2 border-bottom">
-                            <i class="fas fa-user-shield me-2 text-secondary"></i>Impormasyon ng Kinatawan (Authorized Representative)
+                            <i class="fas fa-user-shield me-2 text-secondary"></i>Impormasyon ng Kinatawan (Authorized
+                            Representative)
                         </h6>
                         <div class="row g-3 text-sm">
                             <div class="col-md-4">
@@ -388,7 +411,8 @@
                     <!-- Row 3: Assistance Request & Medical Needs -->
                     <div class="card border rounded-3 p-3 mb-3 bg-white">
                         <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">
-                            <i class="fas fa-hand-holding-medical me-2 text-primary"></i>Layunin at Pangangailangan ng Tulong
+                            <i class="fas fa-hand-holding-medical me-2 text-primary"></i>Layunin at Pangangailangan ng
+                            Tulong
                         </h6>
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -435,7 +459,7 @@
                 <button type="button" class="btn btn-secondary btn-sm rounded-3 px-3" data-bs-dismiss="modal">
                     Isara (Close)
                 </button>
-                
+
                 <div id="modalActionButtons" class="d-flex gap-2">
                     <!-- Dynamic Buttons: Accept or Reject -->
                 </div>
@@ -462,25 +486,33 @@
                     Pakisaad ang opisyal na dahilan ng pagtanggi sa online intake application na ito.
                 </p>
                 <div class="mb-3">
-                    <label class="form-label small fw-bold text-dark">Dahilan ng Pag-reject <span class="text-danger">*</span></label>
-                    <select id="rejectReasonSelect" class="form-select form-select-sm mb-2" onchange="handleRejectSelectChange(this)">
+                    <label class="form-label small fw-bold text-dark">Dahilan ng Pag-reject <span
+                            class="text-danger">*</span></label>
+                    <select id="rejectReasonSelect" class="form-select form-select-sm mb-2"
+                        onchange="handleRejectSelectChange(this)">
                         <option value="">Pumili ng dahilan...</option>
-                        <option value="Hindi kwalipikado sa ilalim ng patakaran ng MSWDO">Hindi kwalipikado sa ilalim ng patakaran ng MSWDO</option>
-                        <option value="May umiiral na 6-Month Validity duplicate restriction">May umiiral na 6-Month Validity duplicate restriction</option>
-                        <option value="Hindi kumpleto o malabo ang mga impormasyon">Hindi kumpleto o malabo ang mga impormasyon</option>
+                        <option value="Hindi kwalipikado sa ilalim ng patakaran ng MSWDO">Hindi kwalipikado sa ilalim ng
+                            patakaran ng MSWDO</option>
+                        <option value="May umiiral na 6-Month Validity duplicate restriction">May umiiral na 6-Month
+                            Validity duplicate restriction</option>
+                        <option value="Hindi kumpleto o malabo ang mga impormasyon">Hindi kumpleto o malabo ang mga
+                            impormasyon</option>
                         <option value="Hindi residente ng Bayan ng Silang">Hindi residente ng Bayan ng Silang</option>
                         <option value="Iba pa (Pakilagay sa ibaba)">Iba pa (Pakilagay sa ibaba)</option>
                     </select>
-                    <textarea id="rejectionReasonText" rows="3" class="form-control form-control-sm rounded-3" placeholder="Ilarawan ang detalyadong dahilan..."></textarea>
+                    <textarea id="rejectionReasonText" rows="3" class="form-control form-control-sm rounded-3"
+                        placeholder="Ilarawan ang detalyadong dahilan..."></textarea>
                 </div>
                 <div>
                     <label class="form-label small fw-bold text-muted">Karagdagang Tala ng Staff (Opsyonal)</label>
-                    <textarea id="rejectNotesText" rows="2" class="form-control form-control-sm rounded-3" placeholder="Internal review notes..."></textarea>
+                    <textarea id="rejectNotesText" rows="2" class="form-control form-control-sm rounded-3"
+                        placeholder="Internal review notes..."></textarea>
                 </div>
             </div>
             <div class="modal-footer border-top py-2 px-3 bg-light">
                 <button type="button" class="btn btn-sm btn-light border" data-bs-dismiss="modal">Kanselahin</button>
-                <button type="button" class="btn btn-sm btn-danger px-4 rounded-3 fw-bold" onclick="submitRejectApplication()">
+                <button type="button" class="btn btn-sm btn-danger px-4 rounded-3 fw-bold"
+                    onclick="submitRejectApplication()">
                     Kumpirmahin ang Pag-reject
                 </button>
             </div>
@@ -492,7 +524,7 @@
 
 @section('page-scripts')
 <script>
-let currentActiveAppId = null;
+    let currentActiveAppId = null;
 let currentAppDetails = null;
 
 function openReviewModal(appId) {

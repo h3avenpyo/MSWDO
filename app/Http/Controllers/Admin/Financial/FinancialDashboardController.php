@@ -732,7 +732,7 @@ class FinancialDashboardController extends Controller
             $genderBreakdown['Other / Unspecified'] = $otherGenderCount;
         }
 
-        // 4. Summary of Types of Medical Concerns / Issues
+        // 4. Summary of Medical Conditions (feeds Medical Condition chart & breakdown)
         $medQuery = BeneficiaryIntake::select('assistance_purpose', DB::raw('count(*) as count'))
             ->whereNotNull('assistance_purpose')
             ->where('assistance_purpose', '!=', '');
@@ -742,19 +742,37 @@ class FinancialDashboardController extends Controller
             ->pluck('count', 'assistance_purpose')
             ->toArray();
 
-        // 5. "Dahilan ng Paghingi ng Tulong" (Reasons for Seeking Assistance)
-        $reasonsQuery = BeneficiaryIntake::select(
-            DB::raw('COALESCE(NULLIF(assistance_type, ""), assistance_purpose) as assistance_purpose'),
+        $medBreakdownQuery = BeneficiaryIntake::select(
+            'assistance_purpose',
             DB::raw('count(*) as total_cases')
         )
-            ->where(function ($q) {
-                $q->whereNotNull('assistance_type')->where('assistance_type', '!=', '')
-                  ->orWhere(function ($sub) {
-                      $sub->whereNotNull('assistance_purpose')->where('assistance_purpose', '!=', '');
-                  });
-            });
-        $applyMonthFilter($reasonsQuery);
-        $reasonsAssistance = $reasonsQuery->groupBy(DB::raw('COALESCE(NULLIF(assistance_type, ""), assistance_purpose)'))
+            ->whereNotNull('assistance_purpose')
+            ->where('assistance_purpose', '!=', '');
+        $applyMonthFilter($medBreakdownQuery);
+        $reasonsAssistance = $medBreakdownQuery
+            ->groupBy('assistance_purpose')
+            ->orderByDesc('total_cases')
+            ->get();
+
+        // 5. Summary of Assistance Purpose / Uri ng Assistance (feeds Uri ng Assistance chart & breakdown)
+        $assistanceTypeQuery = BeneficiaryIntake::select('assistance_type', DB::raw('count(*) as count'))
+            ->whereNotNull('assistance_type')
+            ->where('assistance_type', '!=', '');
+        $applyMonthFilter($assistanceTypeQuery);
+        $assistanceTypeSummary = $assistanceTypeQuery->groupBy('assistance_type')
+            ->orderByDesc('count')
+            ->pluck('count', 'assistance_type')
+            ->toArray();
+
+        $purposeBreakdownQuery = BeneficiaryIntake::select(
+            'assistance_type',
+            DB::raw('count(*) as total_cases')
+        )
+            ->whereNotNull('assistance_type')
+            ->where('assistance_type', '!=', '');
+        $applyMonthFilter($purposeBreakdownQuery);
+        $assistancePurposeBreakdown = $purposeBreakdownQuery
+            ->groupBy('assistance_type')
             ->orderByDesc('total_cases')
             ->get();
 
@@ -780,6 +798,8 @@ class FinancialDashboardController extends Controller
             'genderBreakdown',
             'medicalConcernsSummary',
             'reasonsAssistance',
+            'assistanceTypeSummary',
+            'assistancePurposeBreakdown',
             'availableMonths',
             'selectedMonth',
             'selectedMonthLabel',
