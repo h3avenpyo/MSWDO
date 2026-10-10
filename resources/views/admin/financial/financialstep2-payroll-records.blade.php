@@ -71,16 +71,16 @@
     </div>
 
     <!-- Date Hero Banner -->
-    <div class="date-hero-banner mb-4">
+    <div class="step-wizard-card date-hero-banner animate-fade-in mb-4">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <span class="badge bg-white text-primary rounded-pill px-3 py-1 fw-bold text-xs mb-2">
+                <span class="badge step-2-badge rounded-pill px-3 py-1 fw-bold text-xs mb-2">
                     <i class="fas fa-calendar-day me-1"></i> Payroll Date
                 </span>
-                <h3 class="h4 fw-bold mb-1">
+                <h3 class="wizard-heading mb-1">
                     {{ $selectedDate ? $selectedDate->format('F d, Y') : (request('date') ?: 'Selected Date') }}
                 </h3>
-                <p class="text-white-50 small mb-0">
+                <p class="hero-subtitle mb-0">
                     Displaying all separately generated payroll records and full beneficiary masterlists for this date.
                 </p>
             </div>
@@ -631,36 +631,39 @@
     {{-- ========================================================================= --}}
 
     <!-- Main Header Section -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <div>
-            <h4 class="fw-bold mb-1 text-brand-color">
-                <i class="fas fa-file-invoice-dollar me-2"></i>Step 2: Payroll Records
-            </h4>
-            <p class="text-muted small mb-0">Official payroll records organized by date. Click View on any date to
-                inspect all payroll batches and complete beneficiary lists.</p>
-        </div>
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-            <button type="button"
-                class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs btn-open-monthly-unclaimed"
-                data-month="{{ date('Y-m') }}" title="Message unclaimed beneficiaries for a selected month">
-                <i class="fas fa-bullhorn me-1"></i> Message Unclaimed
-            </button>
-            <a href="{{ route('admin.financial.financialstep2.payroll') }}"
-                class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold shadow-xs btn-brand-primary">
-                <i class="fas fa-edit me-1"></i> Payroll Generation
-            </a>
-            <a href="{{ route('admin.financial.financialstep2') }}"
-                class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                <i class="fas fa-list-check me-1"></i> Step 2 Masterlist
-            </a>
-            <a href="{{ route('admin.financial.financialstep2.liquidation') }}"
-                class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                <i class="fas fa-receipt me-1"></i> Liquidation
-            </a>
-            <a href="{{ route('admin.financial.financialstep2.statistics') }}"
-                class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                <i class="fas fa-chart-pie me-1"></i> Statistics
-            </a>
+    <div class="step-wizard-card animate-fade-in mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2">
+                    <span><i class="fas fa-file-invoice-dollar me-2"></i>Step 2: Payroll Records</span>
+                    <span class="badge step-2-badge rounded-pill px-2.5 py-1">Step 2</span>
+                </h2>
+                <p class="mb-0 hero-subtitle">Official payroll records organized by date. Click View on any date to
+                    inspect all payroll batches and complete beneficiary lists.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button type="button"
+                    class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs btn-open-monthly-unclaimed"
+                    data-month="{{ date('Y-m') }}" title="Message unclaimed beneficiaries for a selected month">
+                    <i class="fas fa-bullhorn me-1"></i> Message Unclaimed
+                </button>
+                <a href="{{ route('admin.financial.financialstep2.payroll') }}"
+                    class="btn btn-light btn-sm rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;">
+                    <i class="fas fa-edit me-1"></i> Payroll Generation
+                </a>
+                <a href="{{ route('admin.financial.financialstep2') }}"
+                    class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="fas fa-list-check me-1"></i> Step 2 Masterlist
+                </a>
+                <a href="{{ route('admin.financial.financialstep2.liquidation') }}"
+                    class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="fas fa-receipt me-1"></i> Liquidation
+                </a>
+                <a href="{{ route('admin.financial.financialstep2.statistics') }}"
+                    class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="fas fa-chart-pie me-1"></i> Statistics
+                </a>
+            </div>
         </div>
     </div>
 

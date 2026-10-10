@@ -9,12 +9,12 @@
 
 @section('content')
 @php
-    $silangSealSrc = file_exists(public_path('images/silangseal.png')) 
-        ? asset('images/silangseal.png') 
-        : (file_exists(public_path('images/silang.png')) ? asset('images/silang.png') : '');
-    $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png')) 
-        ? asset('images/mswdo-logo.png') 
-        : (file_exists(public_path('images/dswdlogo.png')) ? asset('images/dswdlogo.png') : '');
+$silangSealSrc = file_exists(public_path('images/silangseal.png'))
+? asset('images/silangseal.png')
+: (file_exists(public_path('images/silang.png')) ? asset('images/silang.png') : '');
+$mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
+? asset('images/mswdo-logo.png')
+: (file_exists(public_path('images/dswdlogo.png')) ? asset('images/dswdlogo.png') : '');
 @endphp
 
 <div class="container-fluid">
@@ -24,41 +24,54 @@
          ============================================================== -->
     <div class="screen-dashboard-container no-print">
 
-        <!-- Screen Header Action Bar -->
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-            <div>
-                <h4 class="fw-bold mb-1" style="color: #1A237E;">Financial Assistance Statistics &amp; Analytics</h4>
-                <p class="text-muted small mb-0">
-                    Demographic overview, intake volume trends, and assistance purpose breakdown
-                    <span class="ms-2 badge {{ $isAll ? 'bg-secondary bg-opacity-10 text-secondary' : 'bg-primary bg-opacity-10 text-primary' }} border fw-semibold">
-                        <i class="fas fa-calendar-alt me-1"></i>Period: {{ $selectedMonthLabel }}
-                    </span>
-                </p>
-            </div>
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-                <!-- Month/Year Filter Form -->
-                <form method="GET" action="{{ route('admin.financial.financialstep1statistics') }}" class="d-flex align-items-center m-0" id="monthFilterForm">
-                    <div class="input-group input-group-sm" style="min-width: 230px;">
-                        <span class="input-group-text bg-white border-end-0 text-muted" id="filter-addon">
-                            <i class="fas fa-filter text-primary"></i>
+        <!-- Step Wizard Header Card -->
+        <div class="step-wizard-card stats-header-card animate-fade-in mb-4">
+            <div class="stats-header-inner d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="stats-header-content">
+                    <div class="stats-header-title-row d-flex align-items-center flex-wrap gap-2 mb-1">
+                        <h2 class="wizard-heading mb-0 d-inline-flex align-items-center gap-2 text-white">
+                            <i class="fas fa-chart-pie me-1" aria-hidden="true"></i>
+                            <span>Financial Assistance Statistics &amp; Analytics</span>
+                        </h2>
+                        <span class="badge step-1-badge rounded-pill">Step 1</span>
+                    </div>
+                    <div class="stats-header-meta-row d-flex align-items-center flex-wrap gap-2 pt-1">
+                        <p class="hero-subtitle mb-0">Demographic overview, intake volume trends, and assistance purpose
+                            breakdown</p>
+                        <span class="stats-period-badge">
+
+                            <span>Period: {{ $selectedMonthLabel }}</span>
                         </span>
-                        <select name="month" id="monthFilterSelect" class="form-select form-select-sm border-start-0 fw-semibold" onchange="document.getElementById('monthFilterForm').submit()" title="Select month to filter statistics" aria-label="Select Month">
-                            <option value="all" {{ $isAll ? 'selected' : '' }}>
-                                All Months (Overall)
-                            </option>
-                            @foreach($availableMonths as $val => $label)
-                                <option value="{{ $val }}" {{ (!$isAll && $selectedMonth === $val) ? 'selected' : '' }}>
+                    </div>
+                </div>
+                <div class="stats-header-actions d-flex align-items-center gap-2.5 flex-wrap no-print">
+                    <!-- Month/Year Filter Form -->
+                    <form method="GET" action="{{ route('admin.financial.financialstep1statistics') }}"
+                        class="d-inline-flex m-0 p-0" id="monthFilterForm">
+                        <div class="stats-filter-pill">
+                            <i class="fas fa-filter stats-filter-icon" aria-hidden="true"></i>
+                            <select name="month" id="monthFilterSelect" class="stats-filter-select"
+                                onchange="document.getElementById('monthFilterForm').submit()"
+                                title="Select month to filter statistics" aria-label="Select Month">
+                                <option value="all" {{ $isAll ? 'selected' : '' }}>
+                                    All Months (Overall)
+                                </option>
+                                @foreach($availableMonths as $val => $label)
+                                <option value="{{ $val }}" {{ (!$isAll && $selectedMonth===$val) ? 'selected' : '' }}>
                                     {{ $label }} {{ $val === $currentMonthKey ? '(Current Month)' : '' }}
                                 </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </form>
+                                @endforeach
+                            </select>
+                        </div>
+                    </form>
 
-                <button type="button" onclick="window.print()" class="btn btn-primary d-inline-flex align-items-center gap-2 px-3.5 py-2 fw-semibold rounded-3 shadow-sm btn-print-statistics" title="Print official statistics report">
-                    <i class="fas fa-print"></i>
-                    <span>Print Statistics</span>
-                </button>
+                    <!-- Print Statistics Button -->
+                    <button type="button" onclick="window.print()" class="btn-stats-print btn-print-statistics"
+                        title="Print official statistics report" aria-label="Print Statistics">
+                        <i class="fas fa-print" aria-hidden="true"></i>
+                        <span>Print Statistics</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -126,7 +139,8 @@
                 <div class="chart-container-card">
                     <div class="chart-card-header">
                         <div>
-                            <h3 class="chart-card-title"><i class="fas fa-chart-line text-primary me-2"></i>Number of Intake
+                            <h3 class="chart-card-title"><i class="fas fa-chart-line text-primary me-2"></i>Number of
+                                Intake
                                 Cases per Month</h3>
                             <p class="chart-card-subtitle">Monthly volume of encoded financial assistance client intakes
                                 (Past 12 Months)</p>
@@ -250,7 +264,8 @@
                 <div class="col-lg-7">
                     <div class="p-3 rounded-4 bg-light border">
                         <h6 class="fw-bold text-dark mb-3 small text-uppercase tracking-wider"><i
-                                class="fas fa-list-ul me-2 text-primary"></i>Mga Pangunahing Dahilan at Bilang ng Kaso</h6>
+                                class="fas fa-list-ul me-2 text-primary"></i>Mga Pangunahing Dahilan at Bilang ng Kaso
+                        </h6>
                         <div class="table-responsive">
                             <table class="table table-borderless align-middle mb-0">
                                 <thead>
@@ -264,7 +279,8 @@
                                 <tbody>
                                     @forelse($reasonsAssistance as $reason)
                                     @php
-                                    $percent = $totalIntakes > 0 ? number_format(($reason->total_cases / $totalIntakes) *
+                                    $percent = $totalIntakes > 0 ? number_format(($reason->total_cases / $totalIntakes)
+                                    *
                                     100, 1) : 0;
                                     @endphp
                                     <tr class="border-bottom-subtle">
@@ -288,7 +304,8 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="3" class="text-center text-muted py-4 small">Walang naitatalang datos
+                                        <td colspan="3" class="text-center text-muted py-4 small">Walang naitatalang
+                                            datos
                                             ng dahilan sa kasalukuyan.</td>
                                     </tr>
                                     @endforelse
@@ -321,7 +338,8 @@
                     <div class="govt-province-text">Province of Cavite &bull; Municipality of Silang</div>
                     <div class="govt-office-text">Municipal Social Welfare and Development Office</div>
                     <h2 class="report-main-title">OFFICIAL STATISTICAL REPORT</h2>
-                    <div class="report-sub-title">General Intake &amp; Financial Assistance Assessment Overview &bull; {{ $isAll ? 'Overall Records' : $selectedMonthLabel }}</div>
+                    <div class="report-sub-title">General Intake &amp; Financial Assistance Assessment Overview &bull;
+                        {{ $isAll ? 'Overall Records' : $selectedMonthLabel }}</div>
                 </div>
                 <div class="header-seal-col text-end" style="width: 60px;">
                     @if($mswdoLogoSrc)
@@ -341,15 +359,16 @@
                         <div class="report-meta-title">Period Covered:</div>
                         <div class="report-meta-val" style="font-weight: 800; color: #1A237E;">
                             @if($isAll)
-                                All Records / Overall Historical Data
+                            All Records / Overall Historical Data
                             @else
-                                {{ $selectedMonthLabel }} ({{ $selectedMonth }})
+                            {{ $selectedMonthLabel }} ({{ $selectedMonth }})
                             @endif
                         </div>
                     </td>
                     <td class="report-meta-cell" style="width: 20%;">
                         <div class="report-meta-title">Total Intake Cases:</div>
-                        <div class="report-meta-val" style="font-weight: 800; color: #1A237E;">{{ number_format($totalIntakes) }} Cases</div>
+                        <div class="report-meta-val" style="font-weight: 800; color: #1A237E;">{{
+                            number_format($totalIntakes) }} Cases</div>
                     </td>
                     <td class="report-meta-cell text-end" style="width: 20%;">
                         <div class="report-meta-title">Reporting Agency:</div>
@@ -374,21 +393,26 @@
                         </td>
                         <td class="report-summary-cell" style="width: 25%;">
                             <div class="report-summary-title">Gender Demographics</div>
-                            <div class="report-summary-val">{{ $genderBreakdown['Male'] ?? 0 }} M / {{ $genderBreakdown['Female'] ?? 0 }} F</div>
+                            <div class="report-summary-val">{{ $genderBreakdown['Male'] ?? 0 }} M / {{
+                                $genderBreakdown['Female'] ?? 0 }} F</div>
                             <div class="report-summary-sub">
                                 @php
-                                    $mRatio = $totalIntakes > 0 ? number_format((($genderBreakdown['Male'] ?? 0) / $totalIntakes) * 100, 0) : 0;
-                                    $fRatio = $totalIntakes > 0 ? number_format((($genderBreakdown['Female'] ?? 0) / $totalIntakes) * 100, 0) : 0;
+                                $mRatio = $totalIntakes > 0 ? number_format((($genderBreakdown['Male'] ?? 0) /
+                                $totalIntakes) * 100, 0) : 0;
+                                $fRatio = $totalIntakes > 0 ? number_format((($genderBreakdown['Female'] ?? 0) /
+                                $totalIntakes) * 100, 0) : 0;
                                 @endphp
                                 {{ $mRatio }}% Male &bull; {{ $fRatio }}% Female
                             </div>
                         </td>
                         <td class="report-summary-cell" style="width: 25%;">
                             <div class="report-summary-title">Leading Assistance Type</div>
-                            <div class="report-summary-val text-truncate" title="{{ array_key_first($medicalConcernsSummary) ?? 'N/A' }}">
+                            <div class="report-summary-val text-truncate"
+                                title="{{ array_key_first($medicalConcernsSummary) ?? 'N/A' }}">
                                 {{ array_key_first($medicalConcernsSummary) ?? 'N/A' }}
                             </div>
-                            <div class="report-summary-sub">{{ reset($medicalConcernsSummary) ?: 0 }} reported cases</div>
+                            <div class="report-summary-sub">{{ reset($medicalConcernsSummary) ?: 0 }} reported cases
+                            </div>
                         </td>
                     </tr>
                 </table>
@@ -398,79 +422,81 @@
         <!-- Section 1: Intake Volume Breakdown (Full Width: 12% / 58% / 30%) -->
         <div class="report-section section-monthly mb-3">
             @if(!$isAll)
-                <div class="report-section-heading">1. Intake Cases Breakdown by Date &bull; {{ $selectedMonthLabel }}</div>
-                <table class="report-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 12%; text-align: center;">No.</th>
-                            <th style="width: 58%;">Date Processed</th>
-                            <th style="width: 30%; text-align: right;">Intake Cases Recorded</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php 
-                            $dIndex = 1; 
-                            $dSum = array_sum($dailyBreakdown); 
-                        @endphp
-                        @forelse($dailyBreakdown as $dateKey => $dCount)
-                            <tr>
-                                <td style="text-align: center;">{{ $dIndex++ }}</td>
-                                <td style="font-weight: 600;">{{ \Carbon\Carbon::parse($dateKey)->format('F d, Y (l)') }}</td>
-                                <td style="text-align: right; font-weight: 600;">{{ number_format($dCount) }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="3" style="text-align: center; color: #64748B;">No intake records found for {{ $selectedMonthLabel }}.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                    <tfoot>
-                        <tr class="report-table-total-row">
-                            <td colspan="2" style="font-weight: 700;">Total Encoded for {{ $selectedMonthLabel }}</td>
-                            <td style="text-align: right; font-weight: 700;">{{ number_format($dSum) }}</td>
-                        </tr>
-                    </tfoot>
-                </table>
+            <div class="report-section-heading">1. Intake Cases Breakdown by Date &bull; {{ $selectedMonthLabel }}</div>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th style="width: 12%; text-align: center;">No.</th>
+                        <th style="width: 58%;">Date Processed</th>
+                        <th style="width: 30%; text-align: right;">Intake Cases Recorded</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                    $dIndex = 1;
+                    $dSum = array_sum($dailyBreakdown);
+                    @endphp
+                    @forelse($dailyBreakdown as $dateKey => $dCount)
+                    <tr>
+                        <td style="text-align: center;">{{ $dIndex++ }}</td>
+                        <td style="font-weight: 600;">{{ \Carbon\Carbon::parse($dateKey)->format('F d, Y (l)') }}</td>
+                        <td style="text-align: right; font-weight: 600;">{{ number_format($dCount) }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #64748B;">No intake records found for {{
+                            $selectedMonthLabel }}.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+                <tfoot>
+                    <tr class="report-table-total-row">
+                        <td colspan="2" style="font-weight: 700;">Total Encoded for {{ $selectedMonthLabel }}</td>
+                        <td style="text-align: right; font-weight: 700;">{{ number_format($dSum) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
             @else
-                <div class="report-section-heading">1. Monthly Intake Volume Breakdown (Past 12 Months)</div>
-                <table class="report-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 12%; text-align: center;">No.</th>
-                            <th style="width: 58%;">Month &amp; Year</th>
-                            <th style="width: 30%; text-align: right;">Intake Cases Recorded</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php 
-                            $mIndex = 1; 
-                            $mSum = array_sum($monthlyIntakes); 
-                        @endphp
-                        @forelse($monthlyIntakes as $monthLabel => $mCount)
-                            <tr>
-                                <td style="text-align: center;">{{ $mIndex++ }}</td>
-                                <td style="font-weight: 600;">{{ $monthLabel }}</td>
-                                <td style="text-align: right; font-weight: 600;">{{ number_format($mCount) }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="3" style="text-align: center; color: #64748B;">No monthly data recorded.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                    <tfoot>
-                        <tr class="report-table-total-row">
-                            <td colspan="2" style="font-weight: 700;">Total Encoded Across All Months</td>
-                            <td style="text-align: right; font-weight: 700;">{{ number_format($mSum) }}</td>
-                        </tr>
-                    </tfoot>
-                </table>
+            <div class="report-section-heading">1. Monthly Intake Volume Breakdown (Past 12 Months)</div>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th style="width: 12%; text-align: center;">No.</th>
+                        <th style="width: 58%;">Month &amp; Year</th>
+                        <th style="width: 30%; text-align: right;">Intake Cases Recorded</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                    $mIndex = 1;
+                    $mSum = array_sum($monthlyIntakes);
+                    @endphp
+                    @forelse($monthlyIntakes as $monthLabel => $mCount)
+                    <tr>
+                        <td style="text-align: center;">{{ $mIndex++ }}</td>
+                        <td style="font-weight: 600;">{{ $monthLabel }}</td>
+                        <td style="text-align: right; font-weight: 600;">{{ number_format($mCount) }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #64748B;">No monthly data recorded.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+                <tfoot>
+                    <tr class="report-table-total-row">
+                        <td colspan="2" style="font-weight: 700;">Total Encoded Across All Months</td>
+                        <td style="text-align: right; font-weight: 700;">{{ number_format($mSum) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
             @endif
         </div>
 
         <!-- Section 2: Beneficiaries Demographics by Sex (Full Width: 12% / 58% / 30%) -->
         <div class="report-section section-gender mb-3">
-            <div class="report-section-heading">2. Beneficiaries Demographic Breakdown by Sex &bull; {{ $isAll ? 'Overall Records' : $selectedMonthLabel }}</div>
+            <div class="report-section-heading">2. Beneficiaries Demographic Breakdown by Sex &bull; {{ $isAll ?
+                'Overall Records' : $selectedMonthLabel }}</div>
             <table class="report-table">
                 <thead>
                     <tr>
@@ -480,40 +506,43 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php 
-                        $gIndex = 1; 
-                        $gSum = array_sum($genderBreakdown); 
+                    @php
+                    $gIndex = 1;
+                    $gSum = array_sum($genderBreakdown);
                     @endphp
                     @forelse($genderBreakdown as $genderLabel => $gCount)
-                        <tr>
-                            <td style="text-align: center;">{{ $gIndex++ }}</td>
-                            <td style="font-weight: 600;">{{ $genderLabel }}</td>
-                            <td style="text-align: right; font-weight: 600;">{{ number_format($gCount) }}</td>
-                        </tr>
+                    <tr>
+                        <td style="text-align: center;">{{ $gIndex++ }}</td>
+                        <td style="font-weight: 600;">{{ $genderLabel }}</td>
+                        <td style="text-align: right; font-weight: 600;">{{ number_format($gCount) }}</td>
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="3" style="text-align: center; color: #64748B;">No gender data recorded.</td>
-                        </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #64748B;">No gender data recorded.</td>
+                    </tr>
                     @endforelse
                 </tbody>
                 <tfoot>
                     <tr class="report-table-total-row">
-                        <td colspan="2" style="font-weight: 700;">Total Recorded ({{ $isAll ? 'Overall' : $selectedMonthLabel }})</td>
+                        <td colspan="2" style="font-weight: 700;">Total Recorded ({{ $isAll ? 'Overall' :
+                            $selectedMonthLabel }})</td>
                         <td style="text-align: right; font-weight: 700;">{{ number_format($gSum) }}</td>
                     </tr>
                 </tfoot>
             </table>
 
             <!-- Demographic Distribution Summary Strip -->
-            <div class="d-flex justify-content-between align-items-center p-2 mt-2 bg-light border rounded" style="font-size: 8pt;">
+            <div class="d-flex justify-content-between align-items-center p-2 mt-2 bg-light border rounded"
+                style="font-size: 8pt;">
                 <div>
-                    <strong>Demographic Summary ({{ $isAll ? 'Overall' : $selectedMonthLabel }}):</strong> 
-                    Male: <span class="fw-bold">{{ number_format($genderBreakdown['Male'] ?? 0) }}</span> &bull; 
+                    <strong>Demographic Summary ({{ $isAll ? 'Overall' : $selectedMonthLabel }}):</strong>
+                    Male: <span class="fw-bold">{{ number_format($genderBreakdown['Male'] ?? 0) }}</span> &bull;
                     Female: <span class="fw-bold">{{ number_format($genderBreakdown['Female'] ?? 0) }}</span>
                 </div>
                 <div>
-                    <strong>Primary Beneficiary Group:</strong> 
-                    <span class="fw-bold text-dark">{{ ($genderBreakdown['Female'] ?? 0) >= ($genderBreakdown['Male'] ?? 0) ? 'Female Beneficiaries' : 'Male Beneficiaries' }}</span>
+                    <strong>Primary Beneficiary Group:</strong>
+                    <span class="fw-bold text-dark">{{ ($genderBreakdown['Female'] ?? 0) >= ($genderBreakdown['Male'] ??
+                        0) ? 'Female Beneficiaries' : 'Male Beneficiaries' }}</span>
                 </div>
             </div>
         </div>
@@ -528,14 +557,16 @@
                     MUNICIPAL SOCIAL WELFARE AND DEVELOPMENT OFFICE &bull; MUNICIPALITY OF SILANG, CAVITE
                 </div>
                 <div class="small text-muted" style="font-size: 7.5pt;">
-                    FINANCIAL ASSISTANCE MODULE &bull; STATISTICAL REPORT (PAGE 2) &bull; {{ $isAll ? 'ALL MONTHS' : strtoupper($selectedMonthLabel) }}
+                    FINANCIAL ASSISTANCE MODULE &bull; STATISTICAL REPORT (PAGE 2) &bull; {{ $isAll ? 'ALL MONTHS' :
+                    strtoupper($selectedMonthLabel) }}
                 </div>
             </div>
         </div>
 
         <!-- Section 3: Geographic Distribution by Barangay (Full Width: 12% / 58% / 30%) -->
         <div class="report-section section-barangay mb-3">
-            <div class="report-section-heading">3. Geographic Distribution (Top Barangays) &bull; {{ $isAll ? 'Overall Records' : $selectedMonthLabel }}</div>
+            <div class="report-section-heading">3. Geographic Distribution (Top Barangays) &bull; {{ $isAll ? 'Overall
+                Records' : $selectedMonthLabel }}</div>
             <table class="report-table">
                 <thead>
                     <tr>
@@ -545,25 +576,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php 
-                        $bIndex = 1; 
-                        $bSum = array_sum($barangayBreakdown); 
+                    @php
+                    $bIndex = 1;
+                    $bSum = array_sum($barangayBreakdown);
                     @endphp
                     @forelse($barangayBreakdown as $bName => $bCount)
-                        <tr>
-                            <td style="text-align: center;">{{ $bIndex++ }}</td>
-                            <td style="font-weight: 600;">{{ $bName }}</td>
-                            <td style="text-align: right; font-weight: 600;">{{ number_format($bCount) }}</td>
-                        </tr>
+                    <tr>
+                        <td style="text-align: center;">{{ $bIndex++ }}</td>
+                        <td style="font-weight: 600;">{{ $bName }}</td>
+                        <td style="text-align: right; font-weight: 600;">{{ number_format($bCount) }}</td>
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="3" style="text-align: center; color: #64748B;">No barangay records found.</td>
-                        </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #64748B;">No barangay records found.</td>
+                    </tr>
                     @endforelse
                 </tbody>
                 <tfoot>
                     <tr class="report-table-total-row">
-                        <td colspan="2" style="font-weight: 700;">Top Barangays Subtotal ({{ $isAll ? 'Overall' : $selectedMonthLabel }})</td>
+                        <td colspan="2" style="font-weight: 700;">Top Barangays Subtotal ({{ $isAll ? 'Overall' :
+                            $selectedMonthLabel }})</td>
                         <td style="text-align: right; font-weight: 700;">{{ number_format($bSum) }}</td>
                     </tr>
                 </tfoot>
@@ -572,8 +604,10 @@
 
         <!-- Section 4: Dahilan ng Paghingi ng Tulong (Full Width: 12% / 58% / 30%) -->
         <div class="report-section section-reasons mb-3">
-            <div class="report-section-heading">4. Dahilan ng Paghingi ng Tulong (Summary of Assistance Purposes &amp; Medical Concerns) &bull; {{ $isAll ? 'Overall Records' : $selectedMonthLabel }}</div>
-            <p class="report-table-subtext mb-2">Comprehensive distribution of assistance categories, medical concerns, and emergency needs reported by beneficiaries upon intake assessment.</p>
+            <div class="report-section-heading">4. Dahilan ng Paghingi ng Tulong (Summary of Assistance Purposes &amp;
+                Medical Concerns) &bull; {{ $isAll ? 'Overall Records' : $selectedMonthLabel }}</div>
+            <p class="report-table-subtext mb-2">Comprehensive distribution of assistance categories, medical concerns,
+                and emergency needs reported by beneficiaries upon intake assessment.</p>
 
             <table class="report-table">
                 <thead>
@@ -584,29 +618,31 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php 
-                        $rIndex = 1; 
-                        $rSum = 0; 
+                    @php
+                    $rIndex = 1;
+                    $rSum = 0;
                     @endphp
                     @forelse($reasonsAssistance as $reason)
-                        @php 
-                            $rCases = $reason->total_cases;
-                            $rSum += $rCases;
-                        @endphp
-                        <tr>
-                            <td style="text-align: center;">{{ $rIndex++ }}</td>
-                            <td style="font-weight: 600;">{{ $reason->assistance_purpose }}</td>
-                            <td style="text-align: right; font-weight: 600;">{{ number_format($rCases) }}</td>
-                        </tr>
+                    @php
+                    $rCases = $reason->total_cases;
+                    $rSum += $rCases;
+                    @endphp
+                    <tr>
+                        <td style="text-align: center;">{{ $rIndex++ }}</td>
+                        <td style="font-weight: 600;">{{ $reason->assistance_purpose }}</td>
+                        <td style="text-align: right; font-weight: 600;">{{ number_format($rCases) }}</td>
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="3" style="text-align: center; color: #64748B;">Walang naitatalang datos ng dahilan sa kasalukuyan.</td>
-                        </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #64748B;">Walang naitatalang datos ng dahilan
+                            sa kasalukuyan.</td>
+                    </tr>
                     @endforelse
                 </tbody>
                 <tfoot>
                     <tr class="report-table-total-row">
-                        <td colspan="2" style="font-weight: 700;">Kabuuan / Total Assistance Requests Evaluated ({{ $isAll ? 'Overall' : $selectedMonthLabel }})</td>
+                        <td colspan="2" style="font-weight: 700;">Kabuuan / Total Assistance Requests Evaluated ({{
+                            $isAll ? 'Overall' : $selectedMonthLabel }})</td>
                         <td style="text-align: right; font-weight: 700;">{{ number_format($rSum) }}</td>
                     </tr>
                 </tfoot>
@@ -616,9 +652,13 @@
         <!-- Section 5: Administrative Certification & Signatures -->
         <div class="report-section section-signatures">
             <div class="report-notes-box mb-3">
-                <div class="fw-bold text-uppercase mb-1" style="font-size: 7.5pt; color: #1E293B;">Administrative Notes &amp; Data Verification</div>
+                <div class="fw-bold text-uppercase mb-1" style="font-size: 7.5pt; color: #1E293B;">Administrative Notes
+                    &amp; Data Verification</div>
                 <p class="mb-0" style="font-size: 7pt; color: #475569; line-height: 1.4;">
-                    This document represents the consolidated electronic record extracted from the Municipal Social Welfare and Development Office (MSWDO) General Intake Database under the Assistance to Individuals in Crisis Situations (AICS) and Financial Assistance Assessment Programs. All statistical records reflect direct encoding by authorized MSWDO personnel.
+                    This document represents the consolidated electronic record extracted from the Municipal Social
+                    Welfare and Development Office (MSWDO) General Intake Database under the Assistance to Individuals
+                    in Crisis Situations (AICS) and Financial Assistance Assessment Programs. All statistical records
+                    reflect direct encoding by authorized MSWDO personnel.
                 </p>
             </div>
 
@@ -628,21 +668,29 @@
                     <div class="col-6 text-center">
                         <div class="signature-space"></div>
                         <div class="signature-line mx-auto"></div>
-                        <div class="fw-bold text-dark mt-1" style="font-size: 9pt;">{{ session('admin_user_name') ?? 'MSWDO Staff / Statistician' }}</div>
-                        <div class="text-muted" style="font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.03em;">Prepared by / Reporting Officer</div>
+                        <div class="fw-bold text-dark mt-1" style="font-size: 9pt;">{{ session('admin_user_name') ??
+                            'MSWDO Staff / Statistician' }}</div>
+                        <div class="text-muted"
+                            style="font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.03em;">Prepared by /
+                            Reporting Officer</div>
                     </div>
                     <div class="col-6 text-center">
                         <div class="signature-space"></div>
                         <div class="signature-line mx-auto"></div>
-                        <div class="fw-bold text-dark mt-1" style="font-size: 9pt;">Municipal Social Welfare &amp; Development Officer</div>
-                        <div class="text-muted" style="font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.03em;">Noted &amp; Approved by</div>
+                        <div class="fw-bold text-dark mt-1" style="font-size: 9pt;">Municipal Social Welfare &amp;
+                            Development Officer</div>
+                        <div class="text-muted"
+                            style="font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.03em;">Noted &amp;
+                            Approved by</div>
                     </div>
                 </div>
             </div>
 
             <!-- Official Document Footer -->
-            <div class="report-official-footer d-flex justify-content-between align-items-center mt-3 pt-2 border-top text-muted" style="font-size: 7pt;">
-                <span>MSWDO Silang, Cavite &bull; Financial Assistance Module &bull; Confidential Official Report (Period: {{ $isAll ? 'All Months' : $selectedMonthLabel }})</span>
+            <div class="report-official-footer d-flex justify-content-between align-items-center mt-3 pt-2 border-top text-muted"
+                style="font-size: 7pt;">
+                <span>MSWDO Silang, Cavite &bull; Financial Assistance Module &bull; Confidential Official Report
+                    (Period: {{ $isAll ? 'All Months' : $selectedMonthLabel }})</span>
                 <span>Document Printed on {{ date('F d, Y \a\t h:i A') }}</span>
             </div>
         </div>

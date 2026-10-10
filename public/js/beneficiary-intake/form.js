@@ -55,6 +55,18 @@ function toggleCategoryOtherText() {
 function togglePurposeOtherInput() {
     const select = document.getElementById('assistance_purpose_select');
     const otherInput = document.getElementById('purpose_other_input');
+    const purposeError = document.getElementById('assistance_purpose_error');
+
+    if (select) {
+        const val = (select.value || '').trim();
+        if (val && val !== 'Select Medical Condition / Assistance Purpose') {
+            select.classList.remove('is-invalid');
+            if (purposeError) {
+                purposeError.style.display = 'none';
+            }
+        }
+    }
+
     if (select && (select.value === 'Other Medical Conditions' || select.value === 'Others')) {
         otherInput?.classList.remove('d-none');
     } else if (otherInput) {
@@ -479,6 +491,32 @@ document.addEventListener('DOMContentLoaded', function () {
                         });
                     } else {
                         alert('Representative contact number must be exactly 11 digits.');
+                    }
+                    return;
+                }
+            }
+
+            // Strict Assistance Purpose / Medical Condition Verification before submit
+            const purposeSelect = document.getElementById('assistance_purpose_select');
+            if (purposeSelect) {
+                const purposeVal = (purposeSelect.value || '').trim();
+                if (!purposeVal || purposeVal === 'Select Medical Condition / Assistance Purpose') {
+                    purposeSelect.classList.add('is-invalid');
+                    purposeSelect.focus();
+                    const purposeError = document.getElementById('assistance_purpose_error');
+                    if (purposeError) {
+                        purposeError.textContent = 'Please select a valid medical condition or assistance purpose.';
+                        purposeError.style.display = 'block';
+                    }
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Assistance Purpose Required',
+                            text: 'Please select a valid medical condition or assistance purpose.',
+                            confirmButtonColor: '#1A237E'
+                        });
+                    } else {
+                        alert('Please select a valid medical condition or assistance purpose.');
                     }
                     return;
                 }

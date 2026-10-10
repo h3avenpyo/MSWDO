@@ -21,22 +21,27 @@
     </div>
     @endif
 
-    <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <div>
-            <h4 class="fw-bold mb-1" style="color: #1A237E;">Archived Financial Records</h4>
-            <p class="text-muted small mb-0">View, search, and restore completed or archived financial assistance records.</p>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('admin.financial.financialstep2.all-intakes') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                <i class="fas fa-arrow-left me-1"></i> Step 2 Masterlist
-            </a>
-            <a href="{{ route('admin.financial.financialstep2.payroll-records') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                <i class="fas fa-file-invoice-dollar me-1"></i> Payroll Records
-            </a>
-            <a href="{{ route('admin.financial.financialstep2.liquidation') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                <i class="fas fa-receipt me-1"></i> Liquidation
-            </a>
+    <!-- Step Wizard Header Card -->
+    <div class="step-wizard-card animate-fade-in mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2 text-white">
+                    <span><i class="fas fa-box-archive me-2"></i>Archived Financial Records</span>
+                    <span class="badge step-2-badge rounded-pill px-2.5 py-1">Step 2</span>
+                </h2>
+                <p class="mb-0 hero-subtitle">View, search, and restore completed or archived financial assistance records.</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{{ route('admin.financial.financialstep2.all-intakes') }}" class="btn btn-light rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;">
+                    <i class="fas fa-arrow-left me-1"></i> Step 2 Masterlist
+                </a>
+                <a href="{{ route('admin.financial.financialstep2.payroll-records') }}" class="btn btn-outline-light rounded-pill px-3 fw-semibold">
+                    <i class="fas fa-file-invoice-dollar me-1"></i> Payroll Records
+                </a>
+                <a href="{{ route('admin.financial.financialstep2.liquidation') }}" class="btn btn-outline-light rounded-pill px-3 fw-semibold">
+                    <i class="fas fa-receipt me-1"></i> Liquidation
+                </a>
+            </div>
         </div>
     </div>
 

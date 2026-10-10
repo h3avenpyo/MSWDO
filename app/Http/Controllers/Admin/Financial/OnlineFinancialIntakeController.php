@@ -276,6 +276,7 @@ class OnlineFinancialIntakeController extends Controller
             'medical_conditions' => $onlineIntake->medical_conditions,
             'medical_condition_other' => $onlineIntake->medical_condition_other,
             'assistance_purpose' => $onlineIntake->assistance_purpose,
+            'assistance_type' => $onlineIntake->assistance_type,
             'service_provided' => $onlineIntake->service_provided ?: 'Financial Assistance Intake',
             'purpose' => $onlineIntake->purpose ?: ($onlineIntake->assistance_purpose ?: 'General Assistance Request'),
             'purpose_other' => $onlineIntake->purpose_other,

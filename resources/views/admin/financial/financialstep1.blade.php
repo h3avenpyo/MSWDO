@@ -40,16 +40,26 @@ $userName = session('admin_user_name') ?? 'Officer';
 </div>
 @endif
 
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-    <div>
-        <h4 class="fw-bold mb-1" style="color: #1A237E;">General Intake Form &amp; Assessment (Step 1)</h4>
-        <p class="text-muted small mb-0">Collect beneficiary identifying information, documentary requirements, and social worker assessment.</p>
-    </div>
-    <div class="d-flex gap-2 align-items-center">
-        <a href="{{ route('admin.beneficiary-intake.create') }}" class="btn btn-primary-action shadow-sm" id="btnNewClientIntake">
-            <i class="fas fa-plus"></i>
-            <span>New Client Intake</span>
-        </a>
+<!-- Step Wizard Header Card -->
+<div class="step-wizard-card animate-fade-in mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2">
+                <span><i class="fas fa-clipboard-list me-2"></i>General Intake Form &amp; Assessment (Step 1)</span>
+                <span class="badge step-1-badge rounded-pill px-2.5 py-1">Step 1</span>
+            </h2>
+            <p class="mb-0 hero-subtitle">Collect beneficiary identifying information, documentary requirements, and social worker assessment.</p>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="user-welcome">
+                <i class="fas fa-user-circle me-1"></i>
+                <span>{{ $userName }}</span>
+            </div>
+            <a href="{{ route('admin.beneficiary-intake.create') }}" class="btn btn-light rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;" id="btnNewClientIntake">
+                <i class="fas fa-plus me-1"></i>
+                <span>New Client Intake</span>
+            </a>
+        </div>
     </div>
 </div>
 

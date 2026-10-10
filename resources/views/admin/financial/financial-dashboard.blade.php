@@ -13,7 +13,7 @@ $userName = session('admin_user_name') ?? 'Officer';
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <div>
             <h2 class="wizard-heading mb-1"><i class="fas fa-hand-holding-usd me-2"></i>Financial Assistance Dashboard</h2>
-            <p class="mb-0 text-white-50" style="font-size: var(--text-sm);">General Intake Assessment &amp; Assistance Management System</p>
+            <p class="mb-0 hero-subtitle">General Intake Assessment &amp; Assistance Management System</p>
         </div>
         <div class="d-flex align-items-center">
             <div class="user-welcome">
@@ -32,13 +32,13 @@ $userName = session('admin_user_name') ?? 'Officer';
             <div class="col-md-6">
                 <div class="d-flex align-items-start gap-2">
                     <i class="fas fa-check-circle text-warning mt-1 flex-shrink-0" style="font-size: 0.85rem;"></i>
-                    <span class="text-white-50" style="font-size: var(--text-xs); line-height: 1.35;"><strong>Client Intake:</strong> Encode new client general intake assessment and identifying information.</span>
+                    <span style="color: rgba(255, 255, 255, 0.92); font-size: var(--text-xs); line-height: 1.35;"><strong>Client Intake:</strong> Encode new client general intake assessment and identifying information.</span>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="d-flex align-items-start gap-2">
                     <i class="fas fa-check-circle text-warning mt-1 flex-shrink-0" style="font-size: 0.85rem;"></i>
-                    <span class="text-white-50" style="font-size: var(--text-xs); line-height: 1.35;"><strong>Social Assessment:</strong> Review documentary requirements, evaluate circumstances, and complete the intake record.</span>
+                    <span style="color: rgba(255, 255, 255, 0.92); font-size: var(--text-xs); line-height: 1.35;"><strong>Social Assessment:</strong> Review documentary requirements, evaluate circumstances, and complete the intake record.</span>
                 </div>
             </div>
         </div>

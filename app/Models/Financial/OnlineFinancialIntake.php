@@ -57,6 +57,7 @@ class OnlineFinancialIntake extends Model
         'medical_conditions',
         'medical_condition_other',
         'assistance_purpose',
+        'assistance_type',
         'service_provided',
         'purpose',
         'purpose_other',
@@ -66,6 +67,12 @@ class OnlineFinancialIntake extends Model
         'review_notes',
         'rejection_reason',
         'beneficiary_intake_id',
+    ];
+
+    protected $appends = [
+        'beneficiary_full_name',
+        'display_assistance_purpose',
+        'uri_ng_assistance',
     ];
 
     protected $casts = [
@@ -130,5 +137,37 @@ class OnlineFinancialIntake extends Model
     public function getReferenceNumberAttribute(): string
     {
         return 'ONLINE-' . str_pad($this->id, 5, '0', STR_PAD_LEFT);
+    }
+
+    public function getDisplayAssistancePurposeAttribute(): string
+    {
+        if (! empty($this->assistance_type)) {
+            return $this->assistance_type;
+        }
+
+        if (($this->assistance_purpose === 'Other Medical Conditions' || $this->assistance_purpose === 'Others' || $this->assistance_purpose === 'Other' || $this->assistance_purpose === 'ASSISTANCE PURPOSE') && ! empty($this->purpose_other)) {
+            return $this->purpose_other;
+        }
+        return $this->assistance_purpose ?? 'N/A';
+    }
+
+    public function getUriNgAssistanceAttribute(): ?string
+    {
+        return $this->assistance_type;
+    }
+
+    public function setUriNgAssistanceAttribute($value): void
+    {
+        $this->attributes['assistance_type'] = $value;
+    }
+
+    public function getAssistancePurposeTypeAttribute(): ?string
+    {
+        return $this->assistance_type;
+    }
+
+    public function setAssistancePurposeTypeAttribute($value): void
+    {
+        $this->attributes['assistance_type'] = $value;
     }
 }

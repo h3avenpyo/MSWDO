@@ -62,6 +62,7 @@ class BeneficiaryIntake extends Model
         'social_worker_assessment',
         'recommended_assistance_type',
         'assistance_purpose',
+        'assistance_type',
         'recommended_amount',
         'interviewed_by',
         'reviewed_by',
@@ -89,6 +90,13 @@ class BeneficiaryIntake extends Model
 
     protected $attributes = [
         'is_archived' => false,
+    ];
+
+    protected $appends = [
+        'beneficiary_full_name',
+        'display_assistance_purpose',
+        'display_medical_condition',
+        'uri_ng_assistance',
     ];
 
     protected $casts = [
@@ -249,10 +257,42 @@ class BeneficiaryIntake extends Model
 
     public function getDisplayAssistancePurposeAttribute(): string
     {
-        if (($this->assistance_purpose === 'Other Medical Conditions' || $this->assistance_purpose === 'Others') && ! empty($this->purpose_other)) {
+        if (! empty($this->assistance_type)) {
+            return $this->assistance_type;
+        }
+
+        if (($this->assistance_purpose === 'Other Medical Conditions' || $this->assistance_purpose === 'Others' || $this->assistance_purpose === 'Other' || $this->assistance_purpose === 'ASSISTANCE PURPOSE') && ! empty($this->purpose_other)) {
             return $this->purpose_other;
         }
         return $this->assistance_purpose ?? 'N/A';
+    }
+
+    public function getDisplayMedicalConditionAttribute(): string
+    {
+        if (($this->assistance_purpose === 'Other Medical Conditions' || $this->assistance_purpose === 'Others' || $this->assistance_purpose === 'Other') && ! empty($this->purpose_other)) {
+            return $this->purpose_other;
+        }
+        return $this->assistance_purpose ?? 'N/A';
+    }
+
+    public function getUriNgAssistanceAttribute(): ?string
+    {
+        return $this->assistance_type;
+    }
+
+    public function setUriNgAssistanceAttribute($value): void
+    {
+        $this->attributes['assistance_type'] = $value;
+    }
+
+    public function getAssistancePurposeTypeAttribute(): ?string
+    {
+        return $this->assistance_type;
+    }
+
+    public function setAssistancePurposeTypeAttribute($value): void
+    {
+        $this->attributes['assistance_type'] = $value;
     }
 
     public function getStep2StatusAttribute(): string

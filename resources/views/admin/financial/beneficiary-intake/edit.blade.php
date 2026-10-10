@@ -568,7 +568,7 @@
                 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label">Assistance Purpose / Medical Condition</label>
+                        <label class="form-label">Medical Condition</label>
                         @php
                             $savedPurpose = old('assistance_purpose', $intake->assistance_purpose);
                             $isCustom = $savedPurpose && !in_array($savedPurpose, $medicalConditions);
@@ -580,6 +580,18 @@
                             @endforeach
                         </select>
                         <input type="text" name="purpose_other" id="purpose_other_input" class="form-control mt-2 {{ ($savedPurpose == 'Other Medical Conditions' || $isCustom) ? '' : 'd-none' }}" value="{{ old('purpose_other', $isCustom ? $savedPurpose : $intake->purpose_other) }}" placeholder="Specify medical condition or details...">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Assistance Purpose / Uri ng Assistance</label>
+                        @php $savedType = old('assistance_type', $intake->assistance_type); @endphp
+                        <select name="assistance_type" id="assistance_type_select" class="form-select">
+                            <option value="">Select Assistance Purpose / Uri ng Assistance</option>
+                            <option value="Medicine/Gamot" {{ $savedType == 'Medicine/Gamot' ? 'selected' : '' }}>Medicine/Gamot</option>
+                            <option value="Laboratory Test" {{ $savedType == 'Laboratory Test' ? 'selected' : '' }}>Laboratory Test</option>
+                            <option value="Therapy" {{ $savedType == 'Therapy' ? 'selected' : '' }}>Therapy</option>
+                            <option value="Checkup/Consultation" {{ $savedType == 'Checkup/Consultation' ? 'selected' : '' }}>Checkup/Consultation</option>
+                            <option value="Hospital Bill" {{ $savedType == 'Hospital Bill' ? 'selected' : '' }}>Hospital Bill</option>
+                        </select>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Interviewed by <span class="text-muted">(MSWD Personnel / Social Worker)</span></label>

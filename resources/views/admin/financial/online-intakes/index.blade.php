@@ -21,21 +21,24 @@
     </div>
     @endif
 
-    <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-        <div>
-            <h4 class="fw-bold mb-1" style="color: #1A237E;">
-                <i class="fas fa-globe me-2 text-primary"></i>Intake Online Applications
-            </h4>
-            <p class="text-muted small mb-0">
-                Suriin at patunayan ang mga aplikasyong isinumite sa pamamagitan ng Online Financial Assistance bago ilipat sa regular na Step 1 Intake.
-            </p>
-        </div>
-        <div class="d-flex gap-2 align-items-center">
-            <a href="{{ route('admin.financial.financialstep1') }}" class="btn btn-outline-primary btn-sm rounded-3 px-3 shadow-xs">
-                <i class="fas fa-arrow-left me-1"></i>
-                <span>Pumunta sa Step 1 Intake</span>
-            </a>
+    <!-- Step Wizard Header Card -->
+    <div class="step-wizard-card animate-fade-in mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2 text-white">
+                    <span><i class="fas fa-globe me-2"></i>Intake Online Applications</span>
+                    <span class="badge step-1-badge rounded-pill px-2.5 py-1">Step 1</span>
+                </h2>
+                <p class="mb-0 hero-subtitle">
+                    Suriin at patunayan ang mga aplikasyong isinumite sa pamamagitan ng Online Financial Assistance bago ilipat sa regular na Step 1 Intake.
+                </p>
+            </div>
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+                <a href="{{ route('admin.financial.financialstep1') }}" class="btn btn-light rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    <span>Pumunta sa Step 1 Intake</span>
+                </a>
+            </div>
         </div>
     </div>
 

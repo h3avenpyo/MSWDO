@@ -274,11 +274,15 @@
             </h5>
 
             <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="info-label">Assistance Purpose / Medical Condition</div>
-                    <div class="info-value">{{ $intake->display_assistance_purpose }}</div>
+                <div class="col-md-4">
+                    <div class="info-label">Assistance Purpose / Uri ng Assistance</div>
+                    <div class="info-value">{{ $intake->assistance_type ?? $intake->display_assistance_purpose ?? 'N/A' }}</div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
+                    <div class="info-label">Medical Condition</div>
+                    <div class="info-value">{{ $intake->display_medical_condition ?? $intake->assistance_purpose ?? 'N/A' }}</div>
+                </div>
+                <div class="col-md-4">
                     <div class="info-label">Interviewed by</div>
                     <div class="info-value">{{ $intake->interviewed_by ?? $intake->encoderUser?->name ?? 'MSWD Staff' }}
                     </div>

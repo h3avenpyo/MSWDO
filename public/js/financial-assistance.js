@@ -17,11 +17,11 @@ function calculateAge(birthdayStr) {
     if (!birthdayStr) return '';
     const birthDate = new Date(birthdayStr);
     if (isNaN(birthDate.getTime())) return '';
-    
+
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
         age--;
     }
@@ -48,7 +48,7 @@ function setupContactInput(inputId, counterId, errorId) {
         // Strip non-digits
         input.value = input.value.replace(/[^0-9]/g, '').slice(0, 11);
         const len = input.value.length;
-        
+
         if (counter) {
             counter.textContent = `${len}/11 digits`;
             if (len === 11) {
@@ -116,7 +116,7 @@ function updateFamilyMemberNumbers() {
     const emptyState = document.getElementById('familyEmptyState');
     if (!container) return;
     const cards = container.querySelectorAll('.family-member-card');
-    
+
     if (emptyState) {
         if (cards.length === 0) {
             emptyState.classList.remove('hidden');
@@ -312,17 +312,17 @@ function triggerDuplicateCheck() {
             },
             body: JSON.stringify(payload)
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data.is_duplicate) {
-                showDuplicateAlert(data.warning_message, data.matches);
-            } else {
-                hideDuplicateAlert();
-            }
-        })
-        .catch(err => {
-            console.error('Duplicate check error:', err);
-        });
+            .then(res => res.json())
+            .then(data => {
+                if (data.is_duplicate) {
+                    showDuplicateAlert(data.warning_message, data.matches);
+                } else {
+                    hideDuplicateAlert();
+                }
+            })
+            .catch(err => {
+                console.error('Duplicate check error:', err);
+            });
     }, 500);
 }
 
@@ -455,7 +455,7 @@ function formatNumberWithCommas(value) {
 function handleSalaryInput(input) {
     const originalValue = input.value;
     const cursorPosition = input.selectionStart || 0;
-    
+
     // Count how many numeric/decimal characters were before the cursor
     const rawBeforeCursor = originalValue.slice(0, cursorPosition).replace(/[^\d.]/g, '');
     const numCharsBeforeCursor = rawBeforeCursor.length;
@@ -474,7 +474,7 @@ function handleSalaryInput(input) {
             newCursorPos = i + 1;
         }
     }
-    
+
     if (input.setSelectionRange) {
         input.setSelectionRange(newCursorPos, newCursorPos);
     }
@@ -615,18 +615,18 @@ function initFinancialIntakeForm() {
                     },
                     body: formData
                 })
-                .then(async (response) => {
-                    const data = await response.json();
-                    if (!response.ok) {
-                        throw data;
-                    }
-                    return data;
-                })
-                .then((data) => {
-                    if (data.success) {
-                        Swal.fire({
-                            title: 'Aplikasyon Naisumite!',
-                            html: `
+                    .then(async (response) => {
+                        const data = await response.json();
+                        if (!response.ok) {
+                            throw data;
+                        }
+                        return data;
+                    })
+                    .then((data) => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Aplikasyon Naisumite!',
+                                html: `
                                 <div class="text-left p-2">
                                     <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4 text-center">
                                         <p class="text-xs uppercase tracking-wider text-amber-700 font-bold mb-1">Katayuan ng Aplikasyon</p>
@@ -644,53 +644,53 @@ function initFinancialIntakeForm() {
                                     </div>
                                 </div>
                             `,
-                            icon: 'success',
-                            confirmButtonColor: '#1A237E',
-                            confirmButtonText: 'Bumalik sa Home',
-                            allowOutsideClick: false
-                        }).then(() => {
-                            window.location.href = '/';
-                        });
-                    }
-                })
-                .catch((err) => {
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = `
+                                icon: 'success',
+                                confirmButtonColor: '#1A237E',
+                                confirmButtonText: 'Bumalik sa Home',
+                                allowOutsideClick: false
+                            }).then(() => {
+                                window.location.href = '/';
+                            });
+                        }
+                    })
+                    .catch((err) => {
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = `
                             <i data-lucide="send" class="w-5 h-5 mr-2 inline-block"></i>
                             <span>I-sumite ang Intake Sheet (Submit Application)</span>
                         `;
-                        if (typeof lucide !== 'undefined') lucide.createIcons();
-                    }
+                            if (typeof lucide !== 'undefined') lucide.createIcons();
+                        }
 
-                    // Re-apply comma formatting to salary inputs on submission failure
-                    form.querySelectorAll('.salary-comma-input').forEach(input => {
-                        if (input.value) {
-                            input.value = formatNumberWithCommas(input.value);
+                        // Re-apply comma formatting to salary inputs on submission failure
+                        form.querySelectorAll('.salary-comma-input').forEach(input => {
+                            if (input.value) {
+                                input.value = formatNumberWithCommas(input.value);
+                            }
+                        });
+
+                        if (err.is_duplicate) {
+                            showDuplicateAlert(err.message, err.matches);
+                            Swal.fire({
+                                title: '6-Month Policy Restriction',
+                                text: err.message || 'Beneficiary has already received financial assistance within the last 6 months.',
+                                icon: 'warning',
+                                confirmButtonColor: '#1A237E'
+                            });
+                        } else {
+                            let errorMsg = err.message || 'There was an error submitting your intake. Please check your form.';
+                            if (err.errors) {
+                                errorMsg = Object.values(err.errors).flat().join('<br>');
+                            }
+                            Swal.fire({
+                                title: 'Submission Error',
+                                html: `<div class="text-left text-sm text-rose-700">${errorMsg}</div>`,
+                                icon: 'error',
+                                confirmButtonColor: '#DC2626'
+                            });
                         }
                     });
-
-                    if (err.is_duplicate) {
-                        showDuplicateAlert(err.message, err.matches);
-                        Swal.fire({
-                            title: '6-Month Policy Restriction',
-                            text: err.message || 'Beneficiary has already received financial assistance within the last 6 months.',
-                            icon: 'warning',
-                            confirmButtonColor: '#1A237E'
-                        });
-                    } else {
-                        let errorMsg = err.message || 'There was an error submitting your intake. Please check your form.';
-                        if (err.errors) {
-                            errorMsg = Object.values(err.errors).flat().join('<br>');
-                        }
-                        Swal.fire({
-                            title: 'Submission Error',
-                            html: `<div class="text-left text-sm text-rose-700">${errorMsg}</div>`,
-                            icon: 'error',
-                            confirmButtonColor: '#DC2626'
-                        });
-                    }
-                });
             });
         });
     }

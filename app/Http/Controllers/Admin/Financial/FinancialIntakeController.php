@@ -172,7 +172,6 @@ class FinancialIntakeController extends Controller
             'Diabetes',
             'Surgical',
             'Trauma and Injury',
-            'Hospital Bill / Medical Needs',
             'Other Medical Conditions',
         ];
 
@@ -193,6 +192,12 @@ class FinancialIntakeController extends Controller
     public function store(StoreBeneficiaryIntakeRequest $request, EligibilityChecker $checker, FinancialDuplicateChecker $duplicateChecker)
     {
         $data = $request->validated();
+
+        if (empty($data['assistance_purpose']) || $data['assistance_purpose'] === 'Select Medical Condition / Assistance Purpose') {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['assistance_purpose' => 'Please select a valid medical condition or assistance purpose.']);
+        }
 
         // Strictly enforce today's date for Date Processed on creation
         $data['date_processed'] = Carbon::today()->toDateString();

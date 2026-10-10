@@ -619,22 +619,53 @@ body.sidebar-collapsed .main-content {
     box-shadow: var(--shadow-xs);
 }
 
-/* ── Step Wizard Banner ── */
+/* ── Step Wizard Banner (MSWDO Red Gradient Theme) ── */
 .step-wizard-card {
-    background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-dark) 100%);
-    color: #ffffff;
-    border-radius: var(--radius-xl);
-    padding: 1.75rem 2rem;
-    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
+    color: #ffffff !important;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 16px rgba(177, 17, 22, 0.22) !important;
     border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: var(--shadow-md);
 }
 
 .wizard-heading {
-    font-size: var(--text-xl);
+    font-size: 1.25rem;
     font-weight: 800;
-    letter-spacing: -0.02em;
+    color: #FFFFFF !important;
+    letter-spacing: -0.01em;
     margin-bottom: 0.25rem;
+}
+
+.hero-subtitle {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.step-1-badge,
+.step-2-badge,
+.step-pill-badge {
+    background: #FFFFFF !important;
+    color: #b11116 !important;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    vertical-align: middle;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.user-welcome {
+    background: rgba(255, 255, 255, 0.18) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #ffffff !important;
+    display: inline-flex;
+    align-items: center;
+    backdrop-filter: blur(4px);
 }
 
 

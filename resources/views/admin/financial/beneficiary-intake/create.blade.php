@@ -6,10 +6,16 @@
 @section('page-styles')
 <link href="{{ asset('css/beneficiary-intake/form.css') }}" rel="stylesheet">
 <style>
-    :is(input[type="text"], input:not([type]), textarea):not([readonly]) { text-transform: uppercase !important; }
-    :is(input, textarea)::placeholder { text-transform: none !important; }
+    :is(input[type="text"], input:not([type]), textarea):not([readonly]) {
+        text-transform: uppercase !important;
+    }
+
+    :is(input, textarea)::placeholder {
+        text-transform: none !important;
+    }
+
     @media (max-width: 575.98px) {
-        .row.g-3 > [class*="col-md-"] {
+        .row.g-3>[class*="col-md-"] {
             width: 100%;
             max-width: 100%;
             flex: 0 0 100%;
@@ -89,8 +95,8 @@
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Date Processed</label>
-                        <input type="text" class="form-control bg-light text-muted fw-bold"
-                            value="{{ date('F d, Y') }}" readonly tabindex="-1">
+                        <input type="text" class="form-control bg-light text-muted fw-bold" value="{{ date('F d, Y') }}"
+                            readonly tabindex="-1">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Time Start</label>
@@ -107,29 +113,37 @@
         </div>
 
         <!-- 6-MONTH VALIDITY DUPLICATE ALERT CARD -->
-        <div id="duplicateAlertCard" class="mb-4 {{ session('duplicate_check_error') ? '' : 'd-none' }}" style="background: #FFF5F5; border: 1.5px solid #FCA5A5; border-radius: 16px; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.06); transition: all 180ms ease;">
+        <div id="duplicateAlertCard" class="mb-4 {{ session('duplicate_check_error') ? '' : 'd-none' }}"
+            style="background: #FFF5F5; border: 1.5px solid #FCA5A5; border-radius: 16px; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.06); transition: all 180ms ease;">
             <div class="p-4">
                 <div class="d-flex align-items-start gap-3">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px; background: #FEE2E2; border: 1px solid #FCA5A5; color: #991B1B;">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style="width: 42px; height: 42px; background: #FEE2E2; border: 1px solid #FCA5A5; color: #991B1B;">
                         <i class="fas fa-user-lock fa-lg"></i>
                     </div>
                     <div class="flex-grow-1">
                         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                            <h5 class="fw-bold mb-0" style="color: #991B1B; font-size: 1.05rem; letter-spacing: -0.01em;">
+                            <h5 class="fw-bold mb-0"
+                                style="color: #991B1B; font-size: 1.05rem; letter-spacing: -0.01em;">
                                 <i class="fas fa-shield-halved me-2 text-danger"></i>6-Month Policy Restriction
                             </h5>
-                            <span class="px-3 py-1 rounded-pill fw-semibold" style="background: #FEF2F2; border: 1px solid #F87171; color: #991B1B; font-size: 0.75rem;">
+                            <span class="px-3 py-1 rounded-pill fw-semibold"
+                                style="background: #FEF2F2; border: 1px solid #F87171; color: #991B1B; font-size: 0.75rem;">
                                 Restricted: Duplicate Beneficiary
                             </span>
                         </div>
-                        <p class="mb-3" id="duplicateWarningText" style="color: #475569; font-size: 0.875rem; line-height: 1.5;">
-                            {{ session('duplicate_check_error', 'Beneficiary has already received financial assistance within the last 6 months.') }}
+                        <p class="mb-3" id="duplicateWarningText"
+                            style="color: #475569; font-size: 0.875rem; line-height: 1.5;">
+                            {{ session('duplicate_check_error', 'Beneficiary has already received financial assistance
+                            within the last 6 months.') }}
                         </p>
 
-                        <div class="table-responsive bg-white border rounded-3 overflow-hidden shadow-xs" style="border-color: #CBD5E1 !important;">
+                        <div class="table-responsive bg-white border rounded-3 overflow-hidden shadow-xs"
+                            style="border-color: #CBD5E1 !important;">
                             <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.85rem;">
                                 <thead style="background: #F8FAFC; border-bottom: 1px solid #CBD5E1;">
-                                    <tr class="text-secondary" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;">
+                                    <tr class="text-secondary"
+                                        style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;">
                                         <th class="ps-3 py-2">Control No.</th>
                                         <th class="py-2">App Date</th>
                                         <th class="py-2">Policy Status</th>
@@ -141,21 +155,24 @@
                                 </thead>
                                 <tbody id="duplicateMatchesTableBody">
                                     @if(session('duplicate_matches'))
-                                        @foreach(session('duplicate_matches') as $match)
-                                        <tr style="border-bottom: 1px solid #F1F5F9;">
-                                            <td class="ps-3 fw-bold" style="color: #1A237E;">{{ $match['control_number'] }}</td>
-                                            <td class="text-secondary">{{ $match['date_processed'] }}</td>
-                                            <td>
-                                                <span class="px-2.5 py-0.5 rounded-pill fw-semibold" style="background: #FEF2F2; border: 1px solid #F87171; color: #991B1B; font-size: 0.75rem;">
-                                                    {{ $match['matched_role'] }}
-                                                </span>
-                                            </td>
-                                            <td class="fw-semibold text-dark">{{ $match['beneficiary_name'] }}</td>
-                                            <td class="text-secondary">{{ $match['representative_name'] }}</td>
-                                            <td class="text-secondary">{{ $match['assistance_type'] }}</td>
-                                            <td class="pe-3 text-end fw-bold" style="color: #DC2626;">{{ $match['eligible_again_date'] }}</td>
-                                        </tr>
-                                        @endforeach
+                                    @foreach(session('duplicate_matches') as $match)
+                                    <tr style="border-bottom: 1px solid #F1F5F9;">
+                                        <td class="ps-3 fw-bold" style="color: #1A237E;">{{ $match['control_number'] }}
+                                        </td>
+                                        <td class="text-secondary">{{ $match['date_processed'] }}</td>
+                                        <td>
+                                            <span class="px-2.5 py-0.5 rounded-pill fw-semibold"
+                                                style="background: #FEF2F2; border: 1px solid #F87171; color: #991B1B; font-size: 0.75rem;">
+                                                {{ $match['matched_role'] }}
+                                            </span>
+                                        </td>
+                                        <td class="fw-semibold text-dark">{{ $match['beneficiary_name'] }}</td>
+                                        <td class="text-secondary">{{ $match['representative_name'] }}</td>
+                                        <td class="text-secondary">{{ $match['assistance_type'] }}</td>
+                                        <td class="pe-3 text-end fw-bold" style="color: #DC2626;">{{
+                                            $match['eligible_again_date'] }}</td>
+                                    </tr>
+                                    @endforeach
                                     @endif
                                 </tbody>
                             </table>
@@ -189,13 +206,14 @@
                     <div class="col-md-3">
                         <label class="form-label">Unang Pangalan (First Name) <span
                                 class="required-star">*</span></label>
-                        <input type="text" name="beneficiary_first_name" id="beneficiary_first_name" class="form-control"
-                            value="{{ old('beneficiary_first_name', $client->first_name ?? '') }}"
+                        <input type="text" name="beneficiary_first_name" id="beneficiary_first_name"
+                            class="form-control" value="{{ old('beneficiary_first_name', $client->first_name ?? '') }}"
                             placeholder="Unang Pangalan" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Gitnang Pangalan (Middle Name)</label>
-                        <input type="text" name="beneficiary_middle_name" id="beneficiary_middle_name" class="form-control"
+                        <input type="text" name="beneficiary_middle_name" id="beneficiary_middle_name"
+                            class="form-control"
                             value="{{ old('beneficiary_middle_name', $client->middle_name ?? '') }}"
                             placeholder="Gitnang Pangalan">
                     </div>
@@ -258,27 +276,23 @@
                     <div class="col-md-3">
                         <label class="form-label" for="beneficiary_contact_number">Numero ng Telepono (Mobile No.) <span
                                 class="required-star">*</span></label>
-                        <input type="text"
-                            name="beneficiary_contact_number"
-                            id="beneficiary_contact_number"
+                        <input type="text" name="beneficiary_contact_number" id="beneficiary_contact_number"
                             class="form-control contact-number-input @error('beneficiary_contact_number') is-invalid @enderror"
                             value="{{ old('beneficiary_contact_number', $client->contact_number ?? '') }}"
-                            placeholder="09XXXXXXXXX"
-                            inputmode="numeric"
-                            pattern="[0-9]{11}"
-                            minlength="11"
-                            maxlength="11"
-                            autocomplete="tel"
-                            required>
+                            placeholder="09XXXXXXXXX" inputmode="numeric" pattern="[0-9]{11}" minlength="11"
+                            maxlength="11" autocomplete="tel" required>
                         <div class="d-flex justify-content-between align-items-center mt-1">
-                            <span class="text-muted small contact-digit-counter" id="beneficiary_contact_number_counter" style="font-size: 0.76rem;">0/11 digits</span>
+                            <span class="text-muted small contact-digit-counter" id="beneficiary_contact_number_counter"
+                                style="font-size: 0.76rem;">0/11 digits</span>
                             <span class="text-muted small" style="font-size: 0.74rem;">(Strictly 11 digits)</span>
                         </div>
-                        <div class="invalid-feedback d-block contact-error-message" id="beneficiary_contact_number_error" style="{{ $errors->has('beneficiary_contact_number') ? '' : 'display: none !important;' }}">
+                        <div class="invalid-feedback d-block contact-error-message"
+                            id="beneficiary_contact_number_error"
+                            style="{{ $errors->has('beneficiary_contact_number') ? '' : 'display: none !important;' }}">
                             @error('beneficiary_contact_number')
-                                {{ $message }}
+                            {{ $message }}
                             @else
-                                Contact number must be exactly 11 digits (0–9) without letters, spaces, or symbols.
+                            Contact number must be exactly 11 digits (0–9) without letters, spaces, or symbols.
                             @enderror
                         </div>
                     </div>
@@ -336,7 +350,8 @@
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="form-label">Buwanang Kita (Monthly Salary)</label>
-                        <input type="text" inputmode="decimal" name="beneficiary_monthly_salary" id="beneficiary_monthly_salary" class="form-control salary-comma-input"
+                        <input type="text" inputmode="decimal" name="beneficiary_monthly_salary"
+                            id="beneficiary_monthly_salary" class="form-control salary-comma-input"
                             value="{{ old('beneficiary_monthly_salary') }}" placeholder="0.00">
                     </div>
                 </div>
@@ -382,8 +397,9 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Gitnang Pangalan (Middle Name)</label>
-                            <input type="text" name="rep_middle_name" id="rep_middle_name" class="form-control rep-field"
-                                value="{{ old('rep_middle_name') }}" placeholder="Gitnang Pangalan">
+                            <input type="text" name="rep_middle_name" id="rep_middle_name"
+                                class="form-control rep-field" value="{{ old('rep_middle_name') }}"
+                                placeholder="Gitnang Pangalan">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Ext. (Sr., Jr., III)</label>
@@ -439,26 +455,21 @@
                         <div class="col-md-3">
                             <label class="form-label" for="rep_contact_number">Numero ng Telepono <span
                                     class="required-star rep-star">*</span></label>
-                            <input type="text"
-                                name="rep_contact_number"
-                                id="rep_contact_number"
+                            <input type="text" name="rep_contact_number" id="rep_contact_number"
                                 class="form-control rep-field contact-number-input @error('rep_contact_number') is-invalid @enderror"
-                                value="{{ old('rep_contact_number') }}"
-                                placeholder="09XXXXXXXXX"
-                                inputmode="numeric"
-                                pattern="[0-9]{11}"
-                                minlength="11"
-                                maxlength="11"
-                                autocomplete="tel">
+                                value="{{ old('rep_contact_number') }}" placeholder="09XXXXXXXXX" inputmode="numeric"
+                                pattern="[0-9]{11}" minlength="11" maxlength="11" autocomplete="tel">
                             <div class="d-flex justify-content-between align-items-center mt-1">
-                                <span class="text-muted small contact-digit-counter" id="rep_contact_number_counter" style="font-size: 0.76rem;">0/11 digits</span>
+                                <span class="text-muted small contact-digit-counter" id="rep_contact_number_counter"
+                                    style="font-size: 0.76rem;">0/11 digits</span>
                                 <span class="text-muted small" style="font-size: 0.74rem;">(Strictly 11 digits)</span>
                             </div>
-                            <div class="invalid-feedback d-block contact-error-message" id="rep_contact_number_error" style="{{ $errors->has('rep_contact_number') ? '' : 'display: none !important;' }}">
+                            <div class="invalid-feedback d-block contact-error-message" id="rep_contact_number_error"
+                                style="{{ $errors->has('rep_contact_number') ? '' : 'display: none !important;' }}">
                                 @error('rep_contact_number')
-                                    {{ $message }}
+                                {{ $message }}
                                 @else
-                                    Representative contact number must be exactly 11 digits (0–9).
+                                Representative contact number must be exactly 11 digits (0–9).
                                 @enderror
                             </div>
                         </div>
@@ -505,8 +516,8 @@
                         <div class="col-md-4 mt-3">
                             <label class="form-label">Buwanang Kita (Monthly Salary)</label>
                             <input type="text" inputmode="decimal" name="rep_monthly_salary" id="rep_monthly_salary"
-                                class="form-control rep-field salary-comma-input" value="{{ old('rep_monthly_salary') }}"
-                                placeholder="0.00">
+                                class="form-control rep-field salary-comma-input"
+                                value="{{ old('rep_monthly_salary') }}" placeholder="0.00">
                         </div>
                         <div class="col-md-4 mt-3">
                             <label class="form-label">Relasyon sa Benepisyaryo <span
@@ -636,8 +647,9 @@
                                 <td>
                                     <input type="text" inputmode="decimal"
                                         name="family_composition[{{ $index }}][salary]"
-                                        class="form-control form-control-sm salary-comma-input" value="{{ $fam['salary'] ?? '' }}"
-                                        placeholder="0.00" oninput="handleSalaryInput(this)">
+                                        class="form-control form-control-sm salary-comma-input"
+                                        value="{{ $fam['salary'] ?? '' }}" placeholder="0.00"
+                                        oninput="handleSalaryInput(this)">
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-link text-danger p-0"
@@ -659,7 +671,7 @@
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label">Assistance Purpose / Medical Condition</label>
+                        <label class="form-label">Medical Condition</label>
                         <select name="assistance_purpose" id="assistance_purpose_select" class="form-select"
                             onchange="togglePurposeOtherInput()">
                             <option value="">Select Medical Condition / Assistance Purpose</option>
@@ -671,6 +683,17 @@
                         <input type="text" name="purpose_other" id="purpose_other_input"
                             class="form-control mt-2 {{ old('assistance_purpose') == 'Other Medical Conditions' ? '' : 'd-none' }}"
                             value="{{ old('purpose_other') }}" placeholder="Specify medical condition or details...">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Assistance Purpose / Uri ng Assistance</label>
+                        <select name="assistance_type" id="assistance_type_select" class="form-select">
+                            <option value="">Select Assistance Purpose / Uri ng Assistance</option>
+                            <option value="Medicine/Gamot" {{ old('assistance_type') == 'Medicine/Gamot' ? 'selected' : '' }}>Medicine/Gamot</option>
+                            <option value="Laboratory Test" {{ old('assistance_type') == 'Laboratory Test' ? 'selected' : '' }}>Laboratory Test</option>
+                            <option value="Therapy" {{ old('assistance_type') == 'Therapy' ? 'selected' : '' }}>Therapy</option>
+                            <option value="Checkup/Consultation" {{ old('assistance_type') == 'Checkup/Consultation' ? 'selected' : '' }}>Checkup/Consultation</option>
+                            <option value="Hospital Bill" {{ old('assistance_type') == 'Hospital Bill' ? 'selected' : '' }}>Hospital Bill</option>
+                        </select>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Interviewed by <span class="text-muted">(MSWD Personnel / Social

@@ -92,18 +92,18 @@
    Screen Controls & Action Bar
    ============================================================ */
 .btn-print-statistics {
-    background-color: var(--color-brand, #1A237E);
-    border-color: var(--color-brand, #1A237E);
-    color: #ffffff;
+    background-color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    color: #b11116 !important;
     transition: all 0.2s ease;
 }
 
 .btn-print-statistics:hover {
-    background-color: var(--color-brand-dark, #0F1746);
-    border-color: var(--color-brand-dark, #0F1746);
-    color: #ffffff;
+    background-color: #fdf2f2 !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    color: #8e0d11 !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(26, 35, 126, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
 }
 
 /* ============================================================
@@ -413,3 +413,261 @@
         padding-top: 4px !important;
     }
 }
+
+/* ============================================================
+   STEP WIZARD HERO BANNER & STATISTICS HEADER (MSWDO Red Gradient)
+   ============================================================ */
+.step-wizard-card {
+    background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
+    color: #ffffff !important;
+    border-radius: 14px;
+    padding: 1.35rem 1.6rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 16px rgba(177, 17, 22, 0.22) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.wizard-heading {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #FFFFFF !important;
+    letter-spacing: -0.01em;
+}
+
+.hero-subtitle {
+    font-size: 0.825rem;
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.step-1-badge,
+.step-2-badge {
+    background: #FFFFFF !important;
+    color: #b11116 !important;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 0.25rem 0.75rem;
+    vertical-align: middle;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.user-welcome {
+    background: rgba(255, 255, 255, 0.18) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #ffffff !important;
+    display: inline-flex;
+    align-items: center;
+    backdrop-filter: blur(4px);
+}
+
+/* ============================================================
+   STEP 1 STATISTICS SPECIFIC HEADER & CONTROLS UI
+   ============================================================ */
+.stats-header-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-header-content {
+    flex: 1 1 auto;
+    min-width: 260px;
+}
+
+.stats-header-title-row {
+    line-height: 1.3;
+}
+
+.stats-header-meta-row {
+    margin-top: 0.3rem;
+}
+
+/* Period indicator pill badge */
+.stats-period-badge {
+    display: inline-flex;
+    align-items: center;
+    background: #FFFFFF;
+    color: #b11116;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.stats-period-badge i {
+    color: #b11116;
+}
+
+/* Header actions container */
+.stats-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+/* Consistent 38px Pill Dropdown for Month/Year Filter */
+.stats-filter-pill {
+    display: inline-flex;
+    align-items: center;
+    height: 38px;
+    min-height: 38px;
+    max-height: 38px;
+    background: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 9999px;
+    padding: 0 0.85rem 0 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.stats-filter-pill:hover,
+.stats-filter-pill:focus-within {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    transform: translateY(-1px);
+}
+
+.stats-filter-icon {
+    color: #b11116;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+
+.stats-filter-select {
+    border: none;
+    background-color: transparent;
+    color: #1e293b;
+    font-size: 0.825rem;
+    font-weight: 700;
+    line-height: 38px;
+    height: 100%;
+    padding: 0 1.5rem 0 0;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23b11116' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: 11px 9px;
+}
+
+.stats-filter-select:focus {
+    outline: none;
+}
+
+/* Consistent 38px Pill Print Statistics Button */
+.btn-stats-print,
+.btn-print-statistics {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 38px;
+    min-height: 38px;
+    max-height: 38px;
+    padding: 0 1.25rem;
+    background: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    border-radius: 9999px !important;
+    color: #b11116 !important;
+    font-size: 0.825rem;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    box-sizing: border-box;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.btn-stats-print:hover,
+.btn-print-statistics:hover {
+    background-color: #fdf2f2 !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    color: #8e0d11 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.btn-stats-print:active,
+.btn-print-statistics:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.btn-stats-print i,
+.btn-print-statistics i {
+    color: #b11116;
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
+}
+
+.btn-stats-print:hover i,
+.btn-print-statistics:hover i {
+    color: #8e0d11;
+}
+
+/* ============================================================
+   RESPONSIVE DESIGN BREAKPOINTS FOR STEP 1 STATS HEADER
+   ============================================================ */
+@media (max-width: 991.98px) {
+    .stats-header-inner {
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .stats-header-card {
+        padding: 1.15rem 1.25rem;
+    }
+    
+    .stats-header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .stats-header-inner {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1.1rem;
+    }
+
+    .stats-header-actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 0.65rem;
+    }
+
+    .stats-header-actions form,
+    .stats-filter-pill,
+    .btn-stats-print,
+    .btn-print-statistics {
+        width: 100%;
+    }
+
+    .stats-filter-pill {
+        justify-content: space-between;
+    }
+
+    .stats-filter-select {
+        flex: 1 1 auto;
+        width: 100%;
+    }
+}
+

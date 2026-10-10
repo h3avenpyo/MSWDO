@@ -68,13 +68,54 @@
 /* ============================================================
    COMPONENT STYLES
    ============================================================ */
+.step-wizard-card,
 .payroll-wizard-hero {
-    background: linear-gradient(135deg, hsl(235, 66%, 28%) 0%, hsl(235, 66%, 36%) 100%);
-    border-radius: var(--radius-xl);
-    padding: 20px 24px;
-    color: #FFFFFF;
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 24px;
+    background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 16px rgba(177, 17, 22, 0.22) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    margin-bottom: 1.25rem;
+}
+
+.payroll-wizard-hero .hero-subtitle,
+.step-wizard-card .hero-subtitle {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.payroll-wizard-hero .wizard-heading,
+.step-wizard-card .wizard-heading {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #FFFFFF !important;
+    letter-spacing: -0.01em;
+}
+
+.step-2-badge,
+.step-1-badge {
+    background: #FFFFFF !important;
+    color: #b11116 !important;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    vertical-align: middle;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.payroll-wizard-hero .user-welcome,
+.step-wizard-card .user-welcome {
+    background: rgba(255, 255, 255, 0.18) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #ffffff !important;
+    display: inline-flex;
+    align-items: center;
+    backdrop-filter: blur(4px);
 }
 
 

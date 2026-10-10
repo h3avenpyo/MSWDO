@@ -47,13 +47,14 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
     @endif
 
     <!-- Step Wizard Header Hero -->
-    <div class="payroll-wizard-hero mb-4">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div class="step-wizard-card payroll-wizard-hero animate-fade-in mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div>
-                <h2 class="h4 fw-bold mb-1"><i class="fas fa-file-invoice-dollar me-2"></i>Step 2: Payroll Generation
-                    &amp;
-                    Financial Encoding</h2>
-                <p class="mb-0 text-white-50 small">
+                <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2">
+                    <span><i class="fas fa-file-invoice-dollar me-2"></i>Step 2: Payroll Generation &amp; Financial Encoding</span>
+                    <span class="badge step-2-badge rounded-pill px-2.5 py-1">Step 2</span>
+                </h2>
+                <p class="mb-0 hero-subtitle">
                     Encode and review the financial assistance amount for each unprocessed intake for {{
                     isset($targetDate)
                     ? $targetDate->format('F d, Y') : date('F d, Y') }} before generating the official payroll.

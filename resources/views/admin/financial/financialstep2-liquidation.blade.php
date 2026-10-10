@@ -31,16 +31,16 @@
     @endif
 
     <!-- Hero Banner -->
-    <div class="liquidation-hero-banner mb-4">
+    <div class="step-wizard-card liquidation-hero-banner animate-fade-in mb-4">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <span class="badge bg-white text-primary rounded-pill px-3 py-1 fw-bold text-xs mb-2">
+                <span class="badge step-2-badge rounded-pill px-3 py-1 fw-bold text-xs mb-2">
                     <i class="fas fa-calendar-check me-1"></i> Monthly Financial Liquidation
                 </span>
-                <h3 class="h4 fw-bold mb-1">
+                <h3 class="wizard-heading mb-1">
                     Monthly Payroll Liquidation Dashboard
                 </h3>
-                <p class="text-white-50 small mb-0">
+                <p class="hero-subtitle mb-0">
                     Monitor, summarize, and liquidate financial assistance payrolls <strong>per month</strong>. Track
                     monthly allocated funds, claimed disbursements, and remaining balances in real time.
                 </p>
@@ -51,7 +51,7 @@
                     <i class="fas fa-archive me-1"></i> Payroll Records
                 </a>
                 <a href="{{ route('admin.financial.financialstep2') }}"
-                    class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs">
+                    class="btn btn-light btn-sm rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;">
                     <i class="fas fa-list-check me-1"></i> Step 2 Masterlist
                 </a>
             </div>

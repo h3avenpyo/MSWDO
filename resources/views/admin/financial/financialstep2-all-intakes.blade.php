@@ -19,15 +19,23 @@
 @section('content')
 <div class="container-fluid">
 
-    <!-- Header Actions -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <div>
-            <h4 class="fw-bold mb-1 header-title-custom">
-                <i class="fas fa-layer-group me-2"></i>Step 2: All General Intake Records
-            </h4>
-            <p class="text-muted small mb-0">Masterlist of all General Intake records submitted from Step 1.</p>
+    <!-- Step Wizard Header Card -->
+    <div class="step-wizard-card animate-fade-in mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2">
+                    <span><i class="fas fa-layer-group me-2"></i>Step 2: All General Intake Records</span>
+                    <span class="badge step-2-badge rounded-pill px-2.5 py-1">Step 2</span>
+                </h2>
+                <p class="mb-0 hero-subtitle">Masterlist of all General Intake records submitted from Step 1.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <div class="user-welcome">
+                    <i class="fas fa-user-circle me-1"></i>
+                    <span>{{ session('admin_user_name') ?? 'Officer' }}</span>
+                </div>
+            </div>
         </div>
-        
     </div>
 
     @if(session('success'))

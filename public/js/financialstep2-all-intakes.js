@@ -99,13 +99,17 @@ function viewIntakeDetails(intake) {
         medCond = intake.medical_conditions.join(', ');
     } else if (intake.medical_condition_other) {
         medCond = intake.medical_condition_other;
+    } else if (intake.display_medical_condition && intake.display_medical_condition !== 'N/A') {
+        medCond = intake.display_medical_condition;
+    } else if (intake.assistance_purpose) {
+        medCond = (intake.assistance_purpose === 'Other Medical Conditions' && intake.purpose_other) ? intake.purpose_other : intake.assistance_purpose;
     }
     const medCondEl = document.getElementById('modalMedicalConditions');
     if (medCondEl) medCondEl.textContent = medCond;
 
     const assistPurposeEl = document.getElementById('modalAssistancePurpose');
     if (assistPurposeEl) {
-        assistPurposeEl.textContent = intake.purpose_other || intake.assistance_purpose || intake.purpose || 'N/A';
+        assistPurposeEl.textContent = intake.assistance_type || intake.display_assistance_purpose || intake.purpose_other || intake.assistance_purpose || intake.purpose || 'N/A';
     }
 
     const swAssessEl = document.getElementById('modalSocialWorkerAssessment');

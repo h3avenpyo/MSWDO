@@ -66,6 +66,18 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
         if ($familyComposition !== null) {
             $mergeData['family_composition'] = $familyComposition;
         }
+        if ($this->has('assistance_purpose')) {
+            $purposeVal = trim((string)$this->assistance_purpose);
+            if ($purposeVal === '' || $purposeVal === 'Select Medical Condition / Assistance Purpose') {
+                $mergeData['assistance_purpose'] = null;
+            }
+        }
+
+        $rawAssistanceType = $this->assistance_type ?? $this->uri_ng_assistance ?? $this->assistance_purpose_type;
+        if ($rawAssistanceType !== null) {
+            $typeVal = trim((string)$rawAssistanceType);
+            $mergeData['assistance_type'] = ($typeVal === '' || $typeVal === 'Select Assistance Purpose / Uri ng Assistance') ? null : $typeVal;
+        }
 
         $this->merge($mergeData);
     }
@@ -147,7 +159,15 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
             'family_composition' => ['nullable', 'array'],
             'social_worker_assessment' => ['nullable', 'string'],
             'recommended_assistance_type' => ['nullable', 'string', 'max:150'],
-            'assistance_purpose' => ['nullable', 'string', 'max:255'],
+            'assistance_purpose' => [
+                'required',
+                'string',
+                'not_in:Select Medical Condition / Assistance Purpose',
+                'max:255',
+            ],
+            'assistance_type' => ['nullable', 'string', 'max:150'],
+            'uri_ng_assistance' => ['nullable', 'string', 'max:150'],
+            'assistance_purpose_type' => ['nullable', 'string', 'max:150'],
             'recommended_amount' => ['nullable', 'numeric', 'min:0'],
             'interviewed_by' => ['nullable', 'string', 'max:150'],
             'reviewed_by' => ['nullable', 'string', 'max:150'],
@@ -171,6 +191,8 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
             'beneficiary_contact_number.regex' => 'Contact number must be exactly 11 digits (0–9) without letters, spaces, or symbols (e.g., 09XXXXXXXXX).',
             'rep_contact_number.required_if' => 'Representative contact number is required when representative is enabled.',
             'rep_contact_number.regex' => 'Representative contact number must be exactly 11 digits (0–9) without letters, spaces, or symbols (e.g., 09XXXXXXXXX).',
+            'assistance_purpose.required' => 'Please select a valid medical condition or assistance purpose.',
+            'assistance_purpose.not_in' => 'Please select a valid medical condition or assistance purpose.',
         ];
     }
 }

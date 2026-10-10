@@ -14,7 +14,9 @@
     .hero-subtitle {
         color: rgba(255, 255, 255, 0.92) !important;
     }
-    .step-2-badge {
+    .step-1-badge,
+    .step-2-badge,
+    .step-pill-badge {
         background: #FFFFFF;
         color: #b11116;
         font-size: 0.75rem;

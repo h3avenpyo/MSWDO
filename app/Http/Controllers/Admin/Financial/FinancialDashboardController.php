@@ -743,11 +743,18 @@ class FinancialDashboardController extends Controller
             ->toArray();
 
         // 5. "Dahilan ng Paghingi ng Tulong" (Reasons for Seeking Assistance)
-        $reasonsQuery = BeneficiaryIntake::select('assistance_purpose', DB::raw('count(*) as total_cases'))
-            ->whereNotNull('assistance_purpose')
-            ->where('assistance_purpose', '!=', '');
+        $reasonsQuery = BeneficiaryIntake::select(
+            DB::raw('COALESCE(NULLIF(assistance_type, ""), assistance_purpose) as assistance_purpose'),
+            DB::raw('count(*) as total_cases')
+        )
+            ->where(function ($q) {
+                $q->whereNotNull('assistance_type')->where('assistance_type', '!=', '')
+                  ->orWhere(function ($sub) {
+                      $sub->whereNotNull('assistance_purpose')->where('assistance_purpose', '!=', '');
+                  });
+            });
         $applyMonthFilter($reasonsQuery);
-        $reasonsAssistance = $reasonsQuery->groupBy('assistance_purpose')
+        $reasonsAssistance = $reasonsQuery->groupBy(DB::raw('COALESCE(NULLIF(assistance_type, ""), assistance_purpose)'))
             ->orderByDesc('total_cases')
             ->get();
 
@@ -1030,6 +1037,7 @@ class FinancialDashboardController extends Controller
         $medicalAmounts = [];
 
         $medQuery = BeneficiaryIntake::select(
+            'assistance_type',
             'medical_conditions',
             'medical_condition_other',
             'assistance_purpose',
@@ -1062,9 +1070,11 @@ class FinancialDashboardController extends Controller
                 }
             }
 
-            // Fallback or complement with assistance_purpose / purpose if conditions array is empty
+            // Fallback or complement with assistance_type / assistance_purpose / purpose if conditions array is empty
             if (empty($concerns)) {
-                if (!empty(trim($intake->assistance_purpose ?? '')) && !in_array(trim($intake->assistance_purpose), ['Others', 'Other Medical Conditions'])) {
+                if (!empty(trim($intake->assistance_type ?? ''))) {
+                    $concerns[] = trim($intake->assistance_type);
+                } elseif (!empty(trim($intake->assistance_purpose ?? '')) && !in_array(trim($intake->assistance_purpose), ['Others', 'Other Medical Conditions'])) {
                     $concerns[] = trim($intake->assistance_purpose);
                 } elseif (!empty(trim($intake->purpose_other ?? ''))) {
                     $concerns[] = trim($intake->purpose_other);

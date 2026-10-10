@@ -32,54 +32,57 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
          ============================================================== -->
     <div class="screen-dashboard-container no-print">
 
-        <!-- Header Section -->
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-            <div>
-                <h4 class="fw-bold mb-1" style="color: #1A237E;">
-                    <i class="fas fa-chart-pie me-2"></i>Step 2: Statistics &amp; Analytics
-                </h4>
-                <p class="text-muted small mb-0">
-                    Real-time beneficiary distributions, demographic breakdown, and sector financial assistance reports
-                    <span
-                        class="ms-2 badge {{ $isAll ? 'bg-secondary bg-opacity-10 text-secondary' : 'bg-primary bg-opacity-10 text-primary' }} border fw-semibold">
-                        <i class="fas fa-calendar-alt me-1"></i>Period: {{ $selectedMonthLabel }}
-                    </span>
-                </p>
-            </div>
-            <div class="d-flex align-items-center gap-2 flex-wrap no-print">
-                <!-- Month/Year Filter Form -->
-                <form method="GET" action="{{ route('admin.financial.financialstep2.statistics') }}"
-                    class="d-flex align-items-center m-0" id="monthFilterForm">
-                    <div class="input-group input-group-sm" style="min-width: 230px;">
-                        <span class="input-group-text bg-white border-end-0 text-muted" id="filter-addon">
-                            <i class="fas fa-filter text-primary"></i>
+        <!-- Step Wizard Header Card -->
+        <div class="step-wizard-card animate-fade-in mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2">
+                        <span><i class="fas fa-chart-pie me-2"></i>Step 2: Statistics &amp; Analytics</span>
+                        <span class="badge step-2-badge rounded-pill px-2.5 py-1">Step 2</span>
+                    </h2>
+                    <p class="mb-0 hero-subtitle">
+                        Real-time beneficiary distributions, demographic breakdown, and sector financial assistance reports
+                        <span class="ms-2 badge bg-white fw-semibold" style="color: #b11116;">
+                            <i class="fas fa-calendar-alt me-1"></i>Period: {{ $selectedMonthLabel }}
                         </span>
-                        <select name="month" id="monthFilterSelect"
-                            class="form-select form-select-sm border-start-0 fw-semibold"
-                            onchange="document.getElementById('monthFilterForm').submit()"
-                            title="Select month to filter statistics" aria-label="Select Month">
-                            <option value="all" {{ $isAll ? 'selected' : '' }}>
-                                All Months (Overall)
-                            </option>
-                            @foreach($availableMonths as $val => $label)
-                            <option value="{{ $val }}" {{ (!$isAll && $selectedMonth===$val) ? 'selected' : '' }}>
-                                {{ $label }} {{ $val === $currentMonthKey ? '(Current Month)' : '' }}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </form>
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-2 flex-wrap no-print">
+                    <!-- Month/Year Filter Form -->
+                    <form method="GET" action="{{ route('admin.financial.financialstep2.statistics') }}"
+                        class="d-flex align-items-center m-0" id="monthFilterForm">
+                        <div class="input-group input-group-sm" style="min-width: 230px;">
+                            <span class="input-group-text bg-white border-end-0 text-muted" id="filter-addon">
+                                <i class="fas fa-filter" style="color: #b11116;"></i>
+                            </span>
+                            <select name="month" id="monthFilterSelect"
+                                class="form-select form-select-sm border-start-0 fw-semibold"
+                                onchange="document.getElementById('monthFilterForm').submit()"
+                                title="Select month to filter statistics" aria-label="Select Month">
+                                <option value="all" {{ $isAll ? 'selected' : '' }}>
+                                    All Months (Overall)
+                                </option>
+                                @foreach($availableMonths as $val => $label)
+                                <option value="{{ $val }}" {{ (!$isAll && $selectedMonth===$val) ? 'selected' : '' }}>
+                                    {{ $label }} {{ $val === $currentMonthKey ? '(Current Month)' : '' }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </form>
 
-                <button type="button"
-                    class="btn btn-primary btn-sm rounded-pill px-3.5 py-2 fw-semibold shadow-xs d-inline-flex align-items-center gap-2 btn-print-statistics"
-                    onclick="window.print()" title="Print official statistics report">
-                    <i class="fas fa-print"></i>
-                    <span>Print Statistics</span>
-                </button>
-                <a href="{{ route('admin.financial.financialstep2') }}"
-                    class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold shadow-xs">
-                    <i class="fas fa-arrow-left me-1"></i> Back to Step 2
-                </a>
+                    <button type="button"
+                        class="btn btn-light rounded-pill px-3.5 py-2 fw-bold shadow-xs d-inline-flex align-items-center gap-2 btn-print-statistics"
+                        style="color: #b11116;"
+                        onclick="window.print()" title="Print official statistics report">
+                        <i class="fas fa-print"></i>
+                        <span>Print Statistics</span>
+                    </button>
+                    <a href="{{ route('admin.financial.financialstep2') }}"
+                        class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Step 2
+                    </a>
+                </div>
             </div>
         </div>
 

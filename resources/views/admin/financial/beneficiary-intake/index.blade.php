@@ -19,21 +19,22 @@
 @section('content')
 <div class="container-fluid">
 
-    <!-- Header Actions -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <div>
-            <h4 class="fw-bold mb-1" style="color: #1A237E;">Beneficiary Intake Records</h4>
-            <p class="text-muted small mb-0">View, search, edit, and manage all intake sheets.</p>
-        </div>
-        <div class="d-flex gap-2">
-            <button type="button" class="btn btn-outline-primary fw-bold rounded-pill px-3" data-bs-toggle="modal"
-                data-bs-target="#transmittalModal" id="btnOpenTransmittalModal">
-                <i class="fas fa-file-invoice me-1"></i> Transmittal Report
-            </button>
-            {{-- <a href="{{ route('admin.beneficiary-intake.create') }}"
-                class="btn btn-primary fw-bold rounded-pill px-4" style="background: #1A237E; border: none;">
-                <i class="fas fa-plus me-1"></i> Create New Intake
-            </a> --}}
+    <!-- Step Wizard Header Card -->
+    <div class="step-wizard-card animate-fade-in mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2 text-white">
+                    <span><i class="fas fa-list me-2"></i>Beneficiary Intake Records</span>
+                    <span class="badge step-1-badge rounded-pill px-2.5 py-1">Step 1 Masterlist</span>
+                </h2>
+                <p class="mb-0 hero-subtitle">View, search, edit, and manage all intake sheets.</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <button type="button" class="btn btn-light rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;" data-bs-toggle="modal"
+                    data-bs-target="#transmittalModal" id="btnOpenTransmittalModal">
+                    <i class="fas fa-file-invoice me-1"></i> Transmittal Report
+                </button>
+            </div>
         </div>
     </div>
 

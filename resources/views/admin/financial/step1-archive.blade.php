@@ -21,19 +21,24 @@
     </div>
     @endif
 
-    <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <div>
-            <h4 class="fw-bold mb-1" style="color: #1A237E;">Archived Intake Records</h4>
-            <p class="text-muted small mb-0">View, search, and restore archived Step 1 general intake forms.</p>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('admin.financial.financialstep1') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                <i class="fas fa-arrow-left me-1"></i> Step 1 Intake
-            </a>
-            <a href="{{ route('admin.beneficiary-intake.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                <i class="fas fa-list me-1"></i> All Intakes
-            </a>
+    <!-- Step Wizard Header Card -->
+    <div class="step-wizard-card animate-fade-in mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2 text-white">
+                    <span><i class="fas fa-box-archive me-2"></i>Archived Intake Records</span>
+                    <span class="badge step-1-badge rounded-pill px-2.5 py-1">Step 1</span>
+                </h2>
+                <p class="mb-0 hero-subtitle">View, search, and restore archived Step 1 general intake forms.</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{{ route('admin.financial.financialstep1') }}" class="btn btn-light rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;">
+                    <i class="fas fa-arrow-left me-1"></i> Step 1 Intake
+                </a>
+                <a href="{{ route('admin.beneficiary-intake.index') }}" class="btn btn-outline-light rounded-pill px-3 fw-semibold">
+                    <i class="fas fa-list me-1"></i> All Intakes
+                </a>
+            </div>
         </div>
     </div>
 
