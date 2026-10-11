@@ -40,7 +40,7 @@
     }
 
     .form-header-bar {
-        background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
+        background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
         color: #ffffff;
         padding: 1rem 1.5rem;
     }
@@ -136,7 +136,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
 
-            <h4 class="fw-bold mb-1" style="color: #1A237E;"> Financial Intake Encoding</h4>
+            <h4 class="fw-bold mb-1" style="color: #b11116;"><i class="fas fa-history me-2"></i>Financial Intake Encoding</h4>
             <p class="text-muted small mb-0">
                 Encode historical client records created before system implementation. The original intake date and
                 actual assistance amount will be preserved and reflected in existing masterlists, statistics, and

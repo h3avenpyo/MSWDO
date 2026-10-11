@@ -419,7 +419,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                                             <p class="mb-2">No records matched your search filters. Try resetting the
                                                 filter criteria or viewing all masterlist records.</p>
                                             <a href="{{ route('admin.financial.financialstep2', ['period' => 'all']) }}"
-                                                class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-xs">
+                                                class="btn btn-sm btn-outline-brand rounded-pill px-3 shadow-xs">
                                                 <i class="fas fa-layer-group me-1"></i> View All Masterlist Records ({{
                                                 number_format($totalQueueCount ?? 0) }})
                                             </a>
@@ -429,7 +429,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                                                 full masterlist.
                                             </p>
                                             <a href="{{ route('admin.financial.financialstep2', ['period' => 'all']) }}"
-                                                class="btn btn-sm btn-primary rounded-pill px-3 shadow-xs">
+                                                class="btn btn-sm btn-primary btn-brand-primary rounded-pill px-3 shadow-xs">
                                                 <i class="fas fa-layer-group me-1"></i> View All Masterlist Records ({{
                                                 number_format($totalQueueCount) }})
                                             </a>

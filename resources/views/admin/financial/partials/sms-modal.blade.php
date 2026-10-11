@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
             <!-- Modal Header -->
-            <div class="modal-header text-white py-3 px-4" style="background-color: #1A237E !important;">
+            <div class="modal-header text-white py-3 px-4" style="background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;">
                 <div class="d-flex align-items-center gap-2.5">
                     <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: rgba(255, 255, 255, 0.15); flex-shrink: 0;">
                         <i class="fas fa-paper-plane text-white fs-6"></i>

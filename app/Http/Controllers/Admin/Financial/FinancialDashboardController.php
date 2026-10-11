@@ -1052,12 +1052,44 @@ class FinancialDashboardController extends Controller
             }
         }
 
-        // 4. Most common medical concerns & assistance reasons (arranged from highest to lowest)
+        // 4. Summary of Medical Conditions (feeds Medical Condition / Dahilan chart)
+        $medQuery = BeneficiaryIntake::select('assistance_purpose', DB::raw('count(*) as count'))
+            ->whereNotNull('assistance_purpose')
+            ->where('assistance_purpose', '!=', '');
+        $applyMonthFilter($medQuery);
+        $medicalConcernsSummary = $medQuery->groupBy('assistance_purpose')
+            ->orderByDesc('count')
+            ->pluck('count', 'assistance_purpose')
+            ->toArray();
+
+        // 5. Summary of Assistance Purpose / Uri ng Assistance (feeds Uri ng Assistance chart & print section 4)
+        $assistanceTypeQuery = BeneficiaryIntake::select('assistance_type', DB::raw('count(*) as count'))
+            ->whereNotNull('assistance_type')
+            ->where('assistance_type', '!=', '');
+        $applyMonthFilter($assistanceTypeQuery);
+        $assistanceTypeSummary = $assistanceTypeQuery->groupBy('assistance_type')
+            ->orderByDesc('count')
+            ->pluck('count', 'assistance_type')
+            ->toArray();
+
+        $purposeBreakdownQuery = BeneficiaryIntake::select(
+            'assistance_type',
+            DB::raw('count(*) as total_cases'),
+            DB::raw('COALESCE(SUM(recommended_amount), 0) as total_amount')
+        )
+            ->whereNotNull('assistance_type')
+            ->where('assistance_type', '!=', '');
+        $applyMonthFilter($purposeBreakdownQuery);
+        $assistancePurposeBreakdown = $purposeBreakdownQuery
+            ->groupBy('assistance_type')
+            ->orderByDesc('total_cases')
+            ->get();
+
+        // 6. Most common medical concerns & assistance reasons (for summary directory & print report)
         $medicalCounts = [];
         $medicalAmounts = [];
 
-        $medQuery = BeneficiaryIntake::select(
-            'assistance_type',
+        $rankedMedQuery = BeneficiaryIntake::select(
             'medical_conditions',
             'medical_condition_other',
             'assistance_purpose',
@@ -1065,8 +1097,8 @@ class FinancialDashboardController extends Controller
             'purpose_other',
             'recommended_amount'
         );
-        $applyMonthFilter($medQuery);
-        $medicalIntakes = $medQuery->cursor();
+        $applyMonthFilter($rankedMedQuery);
+        $medicalIntakes = $rankedMedQuery->cursor();
 
         foreach ($medicalIntakes as $intake) {
             $amount = (float) ($intake->recommended_amount ?? 0);
@@ -1090,13 +1122,24 @@ class FinancialDashboardController extends Controller
                 }
             }
 
-            // Fallback or complement with assistance_type / assistance_purpose / purpose if conditions array is empty
+            // Primary Medical Condition from Step 1 intake assessment
+            $ap = trim($intake->assistance_purpose ?? '');
+            if (!empty($ap)) {
+                if (in_array($ap, ['Other Medical Conditions', 'Others', 'Other']) && !empty(trim($intake->purpose_other ?? ''))) {
+                    $customCond = trim($intake->purpose_other);
+                    if (!in_array($customCond, $concerns)) {
+                        $concerns[] = $customCond;
+                    }
+                } elseif (!in_array($ap, ['Other Medical Conditions', 'Others', 'Other'])) {
+                    if (!in_array($ap, $concerns)) {
+                        $concerns[] = $ap;
+                    }
+                }
+            }
+
+            // Fallback to purpose_other / purpose if concerns is still empty
             if (empty($concerns)) {
-                if (!empty(trim($intake->assistance_type ?? ''))) {
-                    $concerns[] = trim($intake->assistance_type);
-                } elseif (!empty(trim($intake->assistance_purpose ?? '')) && !in_array(trim($intake->assistance_purpose), ['Others', 'Other Medical Conditions'])) {
-                    $concerns[] = trim($intake->assistance_purpose);
-                } elseif (!empty(trim($intake->purpose_other ?? ''))) {
+                if (!empty(trim($intake->purpose_other ?? ''))) {
                     $concerns[] = trim($intake->purpose_other);
                 } elseif (!empty(trim($intake->purpose ?? ''))) {
                     $concerns[] = trim($intake->purpose);
@@ -1104,7 +1147,7 @@ class FinancialDashboardController extends Controller
             }
 
             if (empty($concerns)) {
-                $concerns[] = 'General Medical Assistance';
+                $concerns[] = 'Unspecified';
             }
 
             foreach ($concerns as $concern) {
@@ -1157,6 +1200,9 @@ class FinancialDashboardController extends Controller
             'sectorRanked',
             'topSector',
             'topSectorCount',
+            'medicalConcernsSummary',
+            'assistanceTypeSummary',
+            'assistancePurposeBreakdown',
             'medicalRanked',
             'topMedicalConcern',
             'topMedicalConcernCount',

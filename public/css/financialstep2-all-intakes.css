@@ -153,7 +153,7 @@
 
 /* Modal Details */
 .intake-modal-header {
-    background: #1A237E;
+    background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
     padding: 12px 18px;
@@ -164,8 +164,8 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: #1A237E;
-    border-bottom: 2px solid #EEF2FF;
+    color: #b11116;
+    border-bottom: 2px solid #fef2f2;
     padding-bottom: 5px;
     margin-bottom: 10px;
 }
@@ -258,16 +258,42 @@
 }
 
 .pagination .page-item.active .page-link {
-    background-color: #1A237E !important;
-    border-color: #1A237E !important;
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
     color: #FFFFFF !important;
-    box-shadow: 0 2px 4px rgba(26, 35, 126, 0.25);
+    box-shadow: 0 2px 4px rgba(177, 17, 22, 0.25);
 }
 
 .pagination .page-item .page-link:hover:not(.active) {
-    background-color: #EEF2FF;
-    color: #1A237E;
-    border-color: #C7D2FE;
+    background-color: #fef2f2;
+    color: #b11116;
+    border-color: #fecaca;
+}
+
+.btn-brand-primary {
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
+    color: #FFFFFF !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-brand-primary:hover {
+    background-color: #9b0e13 !important;
+    border-color: #9b0e13 !important;
+    color: #FFFFFF !important;
+}
+
+.btn-brand-primary:focus {
+    background-color: #9b0e13 !important;
+    border-color: #9b0e13 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.25) !important;
+}
+
+.btn-brand-primary:active {
+    background-color: #7c0b0f !important;
+    border-color: #7c0b0f !important;
+    color: #FFFFFF !important;
 }
 
 .pagination .page-item.disabled .page-link {

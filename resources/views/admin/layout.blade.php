@@ -252,6 +252,83 @@
             transition: margin-left .3s cubic-bezier(0.4, 0, 0.2, 1), width .3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* ── Unified MSWDO Red Gradient Header Banner ── */
+        .dash-banner {
+            background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
+            border-radius: 18px;
+            padding: 1.75rem 2rem;
+            margin-bottom: 1.75rem;
+            box-shadow: 0 10px 25px -5px rgba(177, 17, 22, 0.25) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            position: relative;
+            overflow: hidden;
+            color: #FFFFFF !important;
+        }
+        .dash-banner::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+            pointer-events: none;
+        }
+        .dash-banner-title {
+            font-family: 'Public Sans', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin: 0;
+            letter-spacing: -0.02em;
+            color: #FFFFFF !important;
+        }
+        .dash-banner-sub {
+            font-size: 0.925rem;
+            color: rgba(255, 255, 255, 0.88) !important;
+            margin-top: 0.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .dash-live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: rgba(255, 255, 255, 0.16);
+            backdrop-filter: blur(8px);
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.825rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            color: #FFFFFF !important;
+        }
+        .dash-pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ADE80;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.35);
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.85); }
+        }
+        @media (max-width: 767.98px) {
+            .dash-banner {
+                padding: 1.25rem 1.4rem !important;
+                border-radius: 14px !important;
+                margin-bottom: 1.25rem !important;
+            }
+            .dash-banner-title {
+                font-size: 1.35rem !important;
+            }
+        }
+
         /* ---------- Sidebar Overlay ---------- */
         .sidebar-overlay {
             display: none;

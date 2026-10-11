@@ -47,7 +47,7 @@
     <!-- Header / Actions -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
-            <h4 class="fw-bold mb-2" style="color: #1A237E;">Edit Intake Sheet: {{ $intake->control_number }}</h4>
+            <h4 class="fw-bold mb-2" style="color: #b11116;">Edit Intake Sheet: {{ $intake->control_number }}</h4>
             <p class="text-muted small mb-0">Update intake sheet details for {{ $intake->beneficiary_full_name }}.</p>
             <div class="d-flex align-items-center gap-3 flex-wrap">
                 <a href="{{ route('admin.beneficiary-intake.index') }}"

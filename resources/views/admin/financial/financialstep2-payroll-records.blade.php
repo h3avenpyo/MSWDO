@@ -681,9 +681,11 @@
                     autocomplete="off">
             </div>
             <div class="col-md-3 col-lg-3">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-day me-1"></i> Filter by Date</label>
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-day me-1"></i> Filter
+                    by Date</label>
                 <input type="date" name="filter_date" class="form-control form-control-sm rounded-3"
-                    value="{{ request('filter_date') ?? (request('view') === 'directory' ? request('date') : '') }}" onchange="this.form.submit()" title="Filter by Date">
+                    value="{{ request('filter_date') ?? (request('view') === 'directory' ? request('date') : '') }}"
+                    onchange="this.form.submit()" title="Filter by Date">
             </div>
             <div class="col-md-2 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i>
@@ -715,7 +717,8 @@
                     title="Apply Filters">
                     <i class="fas fa-filter"></i>
                 </button>
-                @if(request()->hasAny(['search', 'barangay', 'filter_date', 'date', 'month', 'date_from', 'date_to', 'sort']))
+                @if(request()->hasAny(['search', 'barangay', 'filter_date', 'date', 'month', 'date_from', 'date_to',
+                'sort']))
                 <a href="{{ route('admin.financial.financialstep2.payroll-records') }}"
                     class="btn btn-sm btn-outline-secondary rounded-3 px-2" title="Reset Filters">
                     <i class="fas fa-rotate-left"></i>
@@ -740,9 +743,9 @@
             $activeDateVal = request('filter_date') ?? request('date');
             $formattedFilterDate = null;
             try {
-                $formattedFilterDate = \Carbon\Carbon::parse($activeDateVal)->format('M d, Y');
+            $formattedFilterDate = \Carbon\Carbon::parse($activeDateVal)->format('M d, Y');
             } catch (\Exception $e) {
-                $formattedFilterDate = $activeDateVal;
+            $formattedFilterDate = $activeDateVal;
             }
             @endphp
             <span
@@ -908,7 +911,8 @@
                 Showing <span class="fw-semibold text-dark">{{ $paginatedDateGroups->firstItem() }}</span> to <span
                     class="fw-semibold text-dark">{{ $paginatedDateGroups->lastItem() }}</span> of <span
                     class="fw-semibold text-dark">{{ $paginatedDateGroups->total() }}</span> {{
-                Str::plural('date', $paginatedDateGroups->total()) }} &bull; <span class="fw-semibold text-secondary">10 dates per page</span>
+                Str::plural('date', $paginatedDateGroups->total()) }} &bull; <span class="fw-semibold text-secondary">10
+                    dates per page</span>
             </div>
             <div class="d-flex justify-content-center">
                 {{ $paginatedDateGroups->links('vendor.pagination.mswdo-compact') }}

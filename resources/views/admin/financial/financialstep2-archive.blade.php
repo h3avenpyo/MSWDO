@@ -3,6 +3,53 @@
 @section('title', 'Archived Financial Records - MSWDO Admin')
 @section('page-title', 'Archived Financial Records')
 
+@section('page-styles')
+<style>
+    .btn-brand-primary,
+    .btn-primary:not(.action-btn) {
+        background-color: #b11116 !important;
+        border-color: #b11116 !important;
+        color: #FFFFFF !important;
+        transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-brand-primary:hover,
+    .btn-primary:not(.action-btn):hover {
+        background-color: #9b0e13 !important;
+        border-color: #9b0e13 !important;
+        color: #FFFFFF !important;
+    }
+
+    .btn-brand-primary:focus,
+    .btn-primary:not(.action-btn):focus {
+        background-color: #9b0e13 !important;
+        border-color: #9b0e13 !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.25) !important;
+    }
+
+    .btn-brand-primary:active,
+    .btn-primary:not(.action-btn):active {
+        background-color: #7c0b0f !important;
+        border-color: #7c0b0f !important;
+        color: #FFFFFF !important;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #b11116 !important;
+        border-color: #b11116 !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 2px 4px rgba(177, 17, 22, 0.25);
+    }
+
+    .pagination .page-item .page-link:hover:not(.active) {
+        background-color: #fef2f2;
+        color: #b11116;
+        border-color: #fecaca;
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="container-fluid">
 
@@ -29,17 +76,17 @@
                     <span><i class="fas fa-box-archive me-2"></i>Archived Financial Records</span>
                     <span class="badge step-2-badge rounded-pill px-2.5 py-1">Step 2</span>
                 </h2>
-                <p class="mb-0 hero-subtitle">View, search, and restore completed or archived financial assistance records.</p>
+                <p class="mb-0 hero-subtitle">View, search, and restore completed or archived financial assistance
+                    records.</p>
             </div>
             <div class="d-flex gap-2 flex-wrap">
-                <a href="{{ route('admin.financial.financialstep2.all-intakes') }}" class="btn btn-light rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;">
+                <a href="{{ route('admin.financial.financialstep2.all-intakes') }}"
+                    class="btn btn-light rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;">
                     <i class="fas fa-arrow-left me-1"></i> Step 2 Masterlist
                 </a>
-                <a href="{{ route('admin.financial.financialstep2.payroll-records') }}" class="btn btn-outline-light rounded-pill px-3 fw-semibold">
+                <a href="{{ route('admin.financial.financialstep2.payroll-records') }}"
+                    class="btn btn-outline-light rounded-pill px-3 fw-semibold">
                     <i class="fas fa-file-invoice-dollar me-1"></i> Payroll Records
-                </a>
-                <a href="{{ route('admin.financial.financialstep2.liquidation') }}" class="btn btn-outline-light rounded-pill px-3 fw-semibold">
-                    <i class="fas fa-receipt me-1"></i> Liquidation
                 </a>
             </div>
         </div>
@@ -47,17 +94,20 @@
 
     <!-- Search & Filter Card -->
     <div class="card border-0 shadow-sm rounded-3 mb-4 p-3 bg-white">
-        <form action="{{ route('admin.financial.financialstep2.archive') }}" method="GET" class="row g-2 align-items-end">
+        <form action="{{ route('admin.financial.financialstep2.archive') }}" method="GET"
+            class="row g-2 align-items-end">
             <div class="col-md-4 col-lg-4">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search</label>
-                <input type="text" name="search" class="form-control form-control-sm rounded-3" placeholder="Search by Control No, Name, Rep, Payroll No..." value="{{ request('search') }}">
+                <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i>
+                    Search</label>
+                <input type="text" name="search" class="form-control form-control-sm rounded-3"
+                    placeholder="Search by Control No, Name, Rep, Payroll No..." value="{{ request('search') }}">
             </div>
             <div class="col-md-3 col-lg-3">
                 <label class="form-label small fw-bold text-muted mb-1">Barangay</label>
                 <select name="barangay" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
                     <option value="All">All Barangays</option>
                     @foreach($barangays as $brgy)
-                    <option value="{{ $brgy }}" {{ request('barangay') == $brgy ? 'selected' : '' }}>{{ $brgy }}</option>
+                    <option value="{{ $brgy }}" {{ request('barangay')==$brgy ? 'selected' : '' }}>{{ $brgy }}</option>
                     @endforeach
                 </select>
             </div>
@@ -65,21 +115,24 @@
                 <label class="form-label small fw-bold text-muted mb-1">Claim Status</label>
                 <select name="claim_status" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
                     <option value="All">All Statuses</option>
-                    <option value="Claimed" {{ request('claim_status') == 'Claimed' ? 'selected' : '' }}>Claimed</option>
-                    <option value="Unclaimed" {{ request('claim_status') == 'Unclaimed' ? 'selected' : '' }}>Unclaimed</option>
+                    <option value="Claimed" {{ request('claim_status')=='Claimed' ? 'selected' : '' }}>Claimed</option>
+                    <option value="Unclaimed" {{ request('claim_status')=='Unclaimed' ? 'selected' : '' }}>Unclaimed
+                    </option>
                 </select>
             </div>
             <div class="col-md-2 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1">Month &amp; Year</label>
-                <input type="month" name="month" class="form-control form-control-sm rounded-3" value="{{ request('month') }}" onchange="this.form.submit()">
+                <input type="month" name="month" class="form-control form-control-sm rounded-3"
+                    value="{{ request('month') }}" onchange="this.form.submit()">
             </div>
             <div class="col-md-1 col-lg-1 d-flex gap-1">
                 @if(request()->hasAny(['search', 'barangay', 'claim_status', 'month']))
-                <a href="{{ route('admin.financial.financialstep2.archive') }}" class="btn btn-sm btn-light border rounded-3 w-100" title="Reset Filters">
+                <a href="{{ route('admin.financial.financialstep2.archive') }}"
+                    class="btn btn-sm btn-light border rounded-3 w-100" title="Reset Filters">
                     <i class="fas fa-redo"></i>
                 </a>
                 @else
-                <button type="submit" class="btn btn-sm btn-primary rounded-3 w-100" style="background: #1A237E; border-color: #1A237E;" title="Filter">
+                <button type="submit" class="btn btn-sm btn-primary btn-brand-primary rounded-3 w-100" title="Filter">
                     <i class="fas fa-filter"></i>
                 </button>
                 @endif
@@ -120,31 +173,38 @@
                         <td>{{ $record->beneficiary_barangay ?? 'Silang' }}</td>
                         <td>
                             @if($record->payrollRecord)
-                                <div class="font-monospace small text-dark">{{ $record->payrollRecord->payroll_number }}</div>
+                            <div class="font-monospace small text-dark">{{ $record->payrollRecord->payroll_number }}
+                            </div>
                             @elseif($record->payroll_date)
-                                <div class="small text-muted">{{ Carbon\Carbon::parse($record->payroll_date)->format('M d, Y') }}</div>
+                            <div class="small text-muted">{{ Carbon\Carbon::parse($record->payroll_date)->format('M d,
+                                Y') }}</div>
                             @else
-                                <span class="text-muted small fst-italic">--</span>
+                            <span class="text-muted small fst-italic">--</span>
                             @endif
                         </td>
                         <td>
-                            <span class="fw-bold text-success">&#8369;{{ number_format($record->recommended_amount ?? 0, 2) }}</span>
+                            <span class="fw-bold text-success">&#8369;{{ number_format($record->recommended_amount ?? 0,
+                                2) }}</span>
                         </td>
                         <td>
                             @if($record->claim_status === 'Claimed')
-                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5 small">
-                                    Claimed
-                                </span>
+                            <span
+                                class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5 small">
+                                Claimed
+                            </span>
                             @else
-                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5 small">
-                                    Unclaimed
-                                </span>
+                            <span
+                                class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5 small">
+                                Unclaimed
+                            </span>
                             @endif
                         </td>
                         <td>
-                            <div class="small text-muted">{{ $record->archived_at ? $record->archived_at->format('M d, Y') : 'Archived' }}</div>
+                            <div class="small text-muted">{{ $record->archived_at ? $record->archived_at->format('M d,
+                                Y') : 'Archived' }}</div>
                             @if($record->archive_reason)
-                            <div class="text-muted small fst-italic" style="font-size: 0.75rem;">{{ Str::limit($record->archive_reason, 25) }}</div>
+                            <div class="text-muted small fst-italic" style="font-size: 0.75rem;">{{
+                                Str::limit($record->archive_reason, 25) }}</div>
                             @endif
                         </td>
                         <td class="text-end pe-4">
@@ -152,17 +212,14 @@
                                 <!-- View -->
                                 <button type="button"
                                     class="btn btn-sm btn-outline-primary action-btn btn-preview-record"
-                                    title="View Details"
-                                    data-record='@json($record)'>
+                                    title="View Details" data-record='@json($record)'>
                                     <i class="fas fa-eye"></i>
                                 </button>
                                 <!-- Restore -->
                                 <button type="button"
                                     class="btn btn-sm btn-outline-success action-btn btn-restore-step2"
-                                    data-id="{{ $record->id }}"
-                                    data-control="{{ $record->control_number }}"
-                                    data-name="{{ $record->beneficiary_full_name }}"
-                                    title="Restore Record">
+                                    data-id="{{ $record->id }}" data-control="{{ $record->control_number }}"
+                                    data-name="{{ $record->beneficiary_full_name }}" title="Restore Record">
                                     <i class="fas fa-rotate-left"></i>
                                 </button>
                             </div>
@@ -183,7 +240,8 @@
         @if($archivedRecords->hasPages())
         <div class="p-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div class="text-muted small">
-                Showing {{ $archivedRecords->firstItem() }} to {{ $archivedRecords->lastItem() }} of {{ $archivedRecords->total() }} records
+                Showing {{ $archivedRecords->firstItem() }} to {{ $archivedRecords->lastItem() }} of {{
+                $archivedRecords->total() }} records
             </div>
             <div>
                 {{ $archivedRecords->links('pagination::bootstrap-5') }}
@@ -202,11 +260,13 @@
                 <h5 class="modal-title fw-bold m-0" style="font-size: 1.05rem;">
                     <i class="fas fa-file-invoice-dollar me-2"></i>Archived Financial Record Details
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
                 <!-- Financial Summary -->
-                <h6 class="fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3" style="font-size: 0.8rem; letter-spacing: 0.05em;">
+                <h6 class="fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3"
+                    style="font-size: 0.8rem; letter-spacing: 0.05em;">
                     Assistance &amp; Payment Summary
                 </h6>
                 <div class="row g-3 mb-4">
@@ -233,7 +293,8 @@
                 </div>
 
                 <!-- Beneficiary Info -->
-                <h6 class="fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3" style="font-size: 0.8rem; letter-spacing: 0.05em;">
+                <h6 class="fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3"
+                    style="font-size: 0.8rem; letter-spacing: 0.05em;">
                     Beneficiary Information
                 </h6>
                 <div class="row g-3 mb-4">
@@ -265,7 +326,8 @@
 
                 <!-- Representative Info (if applicable) -->
                 <div id="previewRepCard" style="display: none;">
-                    <h6 class="fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3" style="font-size: 0.8rem; letter-spacing: 0.05em;">
+                    <h6 class="fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3"
+                        style="font-size: 0.8rem; letter-spacing: 0.05em;">
                         Representative Information
                     </h6>
                     <div class="row g-3 mb-4">
@@ -285,7 +347,8 @@
                 </div>
 
                 <!-- Assessment Notes -->
-                <h6 class="fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3" style="font-size: 0.8rem; letter-spacing: 0.05em;">
+                <h6 class="fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3"
+                    style="font-size: 0.8rem; letter-spacing: 0.05em;">
                     Assessment Notes
                 </h6>
                 <div class="row g-3">
@@ -295,7 +358,8 @@
                 </div>
             </div>
             <div class="modal-footer bg-light py-2 px-4">
-                <button type="button" class="btn btn-secondary btn-sm rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm rounded-pill px-4"
+                    data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -310,7 +374,7 @@
 
 @section('page-scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
     const previewModalEl = document.getElementById('financialPreviewModal');
     const previewModal = previewModalEl ? new bootstrap.Modal(previewModalEl) : null;
 

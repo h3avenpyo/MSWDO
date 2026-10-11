@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (printWin) {
                 try {
                     printWin.focus();
-                } catch (err) {}
+                } catch (err) { }
             } else {
                 // Fallback in case popup blocker intervened
                 window.location.href = url;
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
             timeout = setTimeout(function () {
                 try {
                     sessionStorage.setItem('payroll_search_focus', 'true');
-                } catch(e) {}
+                } catch (e) { }
                 filterForm.submit();
             }, 500);
         });
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
             clearTimeout(timeout);
             try {
                 sessionStorage.setItem('payroll_search_focus', 'true');
-            } catch(e) {}
+            } catch (e) { }
             filterForm.submit();
         });
 
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     searchInput.setSelectionRange(val.length, val.length);
                 }
             }
-        } catch(e) {}
+        } catch (e) { }
     }
 
     // Automatic form submission on filter change for selects and date/month inputs
@@ -216,64 +216,64 @@ document.addEventListener('DOMContentLoaded', function () {
                 status: targetStatus
             })
         })
-        .then(function (response) {
-            return response.json().then(function (data) {
-                return { ok: response.ok, status: response.status, data: data };
-            });
-        })
-        .then(function (res) {
-            btn.disabled = false;
-            if (!res.ok) {
-                btn.innerHTML = originalHtml;
-                const errorMsg = (res.data && res.data.message) ? res.data.message : 'Failed to update claim status.';
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Update Error',
-                        text: errorMsg,
-                        customClass: { popup: 'rounded-4 shadow-lg' }
-                    });
-                } else {
-                    alert(errorMsg);
+            .then(function (response) {
+                return response.json().then(function (data) {
+                    return { ok: response.ok, status: response.status, data: data };
+                });
+            })
+            .then(function (res) {
+                btn.disabled = false;
+                if (!res.ok) {
+                    btn.innerHTML = originalHtml;
+                    const errorMsg = (res.data && res.data.message) ? res.data.message : 'Failed to update claim status.';
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Update Error',
+                            text: errorMsg,
+                            customClass: { popup: 'rounded-4 shadow-lg' }
+                        });
+                    } else {
+                        alert(errorMsg);
+                    }
+                    return;
                 }
-                return;
-            }
 
-            const statusCol = document.getElementById(`claim-status-col-${intakeId}`);
-            const actionCol = document.getElementById(`claim-action-col-${intakeId}`);
-            const intakeAmount = (res.data && res.data.recommended_amount !== undefined) 
-                ? parseFloat(res.data.recommended_amount) 
-                : rowAmount;
+                const statusCol = document.getElementById(`claim-status-col-${intakeId}`);
+                const actionCol = document.getElementById(`claim-action-col-${intakeId}`);
+                const intakeAmount = (res.data && res.data.recommended_amount !== undefined)
+                    ? parseFloat(res.data.recommended_amount)
+                    : rowAmount;
 
-            // Preserve metadata for SMS action buttons from existing elements
-            const existingSmsBtn = actionCol ? actionCol.querySelector('.btn-send-sms, .btn-message-beneficiary') : null;
-            const repName = existingSmsBtn ? (existingSmsBtn.getAttribute('data-representative-name') || '') : '';
-            const isSeparateRep = existingSmsBtn ? (existingSmsBtn.getAttribute('data-is-separate-rep') || '0') : '0';
-            const contactNo = existingSmsBtn ? (existingSmsBtn.getAttribute('data-contact-number') || '') : '';
-            const purpose = existingSmsBtn ? (existingSmsBtn.getAttribute('data-purpose') || 'Financial Assistance') : 'Financial Assistance';
-            const amountFormatted = existingSmsBtn ? (existingSmsBtn.getAttribute('data-amount-formatted') || '') : '';
-            const claimingDate = existingSmsBtn ? (existingSmsBtn.getAttribute('data-claiming-date') || '') : '';
-            const rawClaimingDate = existingSmsBtn ? (existingSmsBtn.getAttribute('data-raw-claiming-date') || '') : '';
-            const lastMsgDate = existingSmsBtn ? (existingSmsBtn.getAttribute('data-last-message-date') || '') : '';
+                // Preserve metadata for SMS action buttons from existing elements
+                const existingSmsBtn = actionCol ? actionCol.querySelector('.btn-send-sms, .btn-message-beneficiary') : null;
+                const repName = existingSmsBtn ? (existingSmsBtn.getAttribute('data-representative-name') || '') : '';
+                const isSeparateRep = existingSmsBtn ? (existingSmsBtn.getAttribute('data-is-separate-rep') || '0') : '0';
+                const contactNo = existingSmsBtn ? (existingSmsBtn.getAttribute('data-contact-number') || '') : '';
+                const purpose = existingSmsBtn ? (existingSmsBtn.getAttribute('data-purpose') || 'Financial Assistance') : 'Financial Assistance';
+                const amountFormatted = existingSmsBtn ? (existingSmsBtn.getAttribute('data-amount-formatted') || '') : '';
+                const claimingDate = existingSmsBtn ? (existingSmsBtn.getAttribute('data-claiming-date') || '') : '';
+                const rawClaimingDate = existingSmsBtn ? (existingSmsBtn.getAttribute('data-raw-claiming-date') || '') : '';
+                const lastMsgDate = existingSmsBtn ? (existingSmsBtn.getAttribute('data-last-message-date') || '') : '';
 
-            // Check existing last-sent-badge
-            const existingBadge = document.getElementById(`last-sent-badge-${intakeId}`);
-            const lastSentDate = lastMsgDate || (existingBadge && !existingBadge.classList.contains('d-none') ? existingBadge.textContent.replace('Last sent:', '').trim() : '');
-            const badgeHtml = lastSentDate 
-                ? `<div class="last-sent-badge text-muted text-2xs" id="last-sent-badge-${intakeId}"><i class="fas fa-paper-plane text-primary me-1"></i> Last sent: ${lastSentDate}</div>`
-                : `<div class="last-sent-badge text-muted text-2xs d-none" id="last-sent-badge-${intakeId}"></div>`;
+                // Check existing last-sent-badge
+                const existingBadge = document.getElementById(`last-sent-badge-${intakeId}`);
+                const lastSentDate = lastMsgDate || (existingBadge && !existingBadge.classList.contains('d-none') ? existingBadge.textContent.replace('Last sent:', '').trim() : '');
+                const badgeHtml = lastSentDate
+                    ? `<div class="last-sent-badge text-muted text-2xs" id="last-sent-badge-${intakeId}"><i class="fas fa-paper-plane text-primary me-1"></i> Last sent: ${lastSentDate}</div>`
+                    : `<div class="last-sent-badge text-muted text-2xs d-none" id="last-sent-badge-${intakeId}"></div>`;
 
-            if (targetStatus === 'Claimed') {
-                if (statusCol) {
-                    statusCol.innerHTML = `
+                if (targetStatus === 'Claimed') {
+                    if (statusCol) {
+                        statusCol.innerHTML = `
                         <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 text-xs fw-semibold claim-status-badge">
                             <i class="fas fa-check-circle me-1"></i> Claimed
                         </span>
                         <div class="text-muted text-2xs mt-0.5">${res.data.claimed_at || 'Just now'}</div>
                     `;
-                }
-                if (actionCol) {
-                    actionCol.innerHTML = `
+                    }
+                    if (actionCol) {
+                        actionCol.innerHTML = `
                         <div class="table-action-wrapper">
                             <div class="table-action-group">
                                 <button type="button"
@@ -307,20 +307,20 @@ document.addEventListener('DOMContentLoaded', function () {
                             ${badgeHtml}
                         </div>
                     `;
-                }
+                    }
 
-                // Adjust batch & date counters: Claimed +1, Unclaimed -1
-                adjustBatchCounters(recordId, 1, -1, intakeAmount, 'Claimed', res.data);
-            } else {
-                if (statusCol) {
-                    statusCol.innerHTML = `
+                    // Adjust batch & date counters: Claimed +1, Unclaimed -1
+                    adjustBatchCounters(recordId, 1, -1, intakeAmount, 'Claimed', res.data);
+                } else {
+                    if (statusCol) {
+                        statusCol.innerHTML = `
                         <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1 text-xs fw-semibold claim-status-badge">
                             <i class="fas fa-clock me-1"></i> Unclaimed
                         </span>
                     `;
-                }
-                if (actionCol) {
-                    actionCol.innerHTML = `
+                    }
+                    if (actionCol) {
+                        actionCol.innerHTML = `
                         <div class="table-action-wrapper">
                             <div class="table-action-group">
                                 <button type="button"
@@ -354,40 +354,40 @@ document.addEventListener('DOMContentLoaded', function () {
                             ${badgeHtml}
                         </div>
                     `;
+                    }
+
+                    // Adjust batch & date counters: Claimed -1, Unclaimed +1
+                    adjustBatchCounters(recordId, -1, 1, intakeAmount, 'Unclaimed', res.data);
                 }
 
-                // Adjust batch & date counters: Claimed -1, Unclaimed +1
-                adjustBatchCounters(recordId, -1, 1, intakeAmount, 'Unclaimed', res.data);
-            }
-
-            // Toast notification
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: res.data.message || 'Claim status updated.',
-                    showConfirmButton: false,
-                    timer: 2500,
-                    timerProgressBar: true
-                });
-            }
-        })
-        .catch(function (err) {
-            btn.disabled = false;
-            btn.innerHTML = originalHtml;
-            console.error('Error updating claim status:', err);
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Network Error',
-                    text: 'Unable to update claim status. Please try again.',
-                    customClass: { popup: 'rounded-4 shadow-lg' }
-                });
-            } else {
-                alert('Unable to update claim status. Please try again.');
-            }
-        });
+                // Toast notification
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: res.data.message || 'Claim status updated.',
+                        showConfirmButton: false,
+                        timer: 2500,
+                        timerProgressBar: true
+                    });
+                }
+            })
+            .catch(function (err) {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+                console.error('Error updating claim status:', err);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Network Error',
+                        text: 'Unable to update claim status. Please try again.',
+                        customClass: { popup: 'rounded-4 shadow-lg' }
+                    });
+                } else {
+                    alert('Unable to update claim status. Please try again.');
+                }
+            });
     }
 
     /**
@@ -437,8 +437,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const batchUnclaimedAmountEl = document.getElementById(`batch-unclaimed-amount-${recordId}`);
             if (batchUnclaimedAmountEl) {
                 let currentRaw = parseFloat(batchUnclaimedAmountEl.getAttribute('data-raw-amount')) || 0;
-                let newBatchUnclaimed = status === 'Claimed' 
-                    ? Math.max(0, currentRaw - rowAmount) 
+                let newBatchUnclaimed = status === 'Claimed'
+                    ? Math.max(0, currentRaw - rowAmount)
                     : (currentRaw + rowAmount);
                 batchUnclaimedAmountEl.setAttribute('data-raw-amount', newBatchUnclaimed);
                 batchUnclaimedAmountEl.textContent = formatCurrency(newBatchUnclaimed);
@@ -460,8 +460,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (resData && resData.date_unclaimed_amount !== null && resData.date_unclaimed_amount !== undefined) {
                 finalUnclaimedAmount = parseFloat(resData.date_unclaimed_amount);
             } else {
-                finalUnclaimedAmount = status === 'Claimed' 
-                    ? Math.max(0, currentRaw - rowAmount) 
+                finalUnclaimedAmount = status === 'Claimed'
+                    ? Math.max(0, currentRaw - rowAmount)
                     : (currentRaw + rowAmount);
             }
             statUnclaimedEl.setAttribute('data-raw-amount', finalUnclaimedAmount);

@@ -381,7 +381,7 @@
 <div class="modal fade" id="intakeQuickViewModal" tabindex="-1" aria-labelledby="intakeQuickViewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg rounded-4">
-            <div class="modal-header text-white intake-modal-header">
+            <div class="modal-header text-white intake-modal-header" style="background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;">
                 <div class="d-flex align-items-center gap-2">
                     <i class="fas fa-clipboard-check fa-lg"></i>
                     <div>

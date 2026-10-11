@@ -21,6 +21,167 @@
     <link
         href="{{ asset('css/financialstep2-payroll-print.css') }}?v={{ file_exists(public_path('css/financialstep2-payroll-print.css')) ? filemtime(public_path('css/financialstep2-payroll-print.css')) : time() }}"
         rel="stylesheet">
+
+    <style>
+        /* Repeated Complete Payroll Header Across All Pages */
+        .payroll-header {
+            position: relative !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 0 0 4px 0 !important;
+            margin-bottom: 0 !important;
+            z-index: 1 !important;
+        }
+
+        .header-logo-left {
+            width: 72px !important;
+            height: 72px !important;
+            object-fit: contain !important;
+            flex-shrink: 0 !important;
+            display: block !important;
+        }
+
+        .header-center-text {
+            flex: 1 !important;
+            text-align: center !important;
+            padding: 0 16px !important;
+        }
+
+        .header-province,
+        .header-municipality {
+            font-family: 'Times New Roman', Times, Georgia, serif !important;
+            font-size: 11pt !important;
+            line-height: 1.2 !important;
+            color: #000000 !important;
+        }
+
+        .header-office {
+            font-family: 'Times New Roman', Times, Georgia, serif !important;
+            font-size: 13.5pt !important;
+            font-weight: 800 !important;
+            line-height: 1.25 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.02em !important;
+            color: #000000 !important;
+        }
+
+        .header-doc-title {
+            font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif !important;
+            font-size: 9.5pt !important;
+            font-weight: 800 !important;
+            line-height: 1.25 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.04em !important;
+            color: #000000 !important;
+            margin-top: 2px !important;
+        }
+
+        .header-logos-right {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            flex-shrink: 0 !important;
+        }
+
+        .logo-bagong-pilipinas,
+        .logo-dswd {
+            height: 52px !important;
+            width: auto !important;
+            object-fit: contain !important;
+            display: block !important;
+        }
+
+        .header-black-bar {
+            width: 100% !important;
+            height: 3.5px !important;
+            background-color: #000000 !important;
+            margin: 4px 0 8px 0 !important;
+            position: relative !important;
+            z-index: 1 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .payroll-program-header {
+            position: relative !important;
+            z-index: 1 !important;
+            margin-bottom: 8px !important;
+            text-align: left !important;
+        }
+
+        .payroll-table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            table-layout: fixed !important;
+        }
+
+        .payroll-table thead {
+            display: table-header-group !important;
+        }
+
+        .payroll-table tbody {
+            display: table-row-group !important;
+        }
+
+        @media print {
+            @page {
+                size: legal landscape;
+                margin: 0;
+            }
+
+            .payroll-page-sheet {
+                page-break-after: always !important;
+                break-after: page !important;
+            }
+
+            .payroll-page-sheet:last-child {
+                page-break-after: auto !important;
+                break-after: auto !important;
+            }
+
+            .payroll-header {
+                padding: 0 0 2px 0 !important;
+            }
+
+            .header-logo-left {
+                width: 64px !important;
+                height: 64px !important;
+            }
+
+            .logo-bagong-pilipinas,
+            .logo-dswd {
+                height: 48px !important;
+            }
+
+            .header-province,
+            .header-municipality {
+                font-size: 10pt !important;
+            }
+
+            .header-office {
+                font-size: 12.5pt !important;
+            }
+
+            .header-doc-title {
+                font-size: 9pt !important;
+            }
+
+            .header-black-bar {
+                height: 3px !important;
+                margin: 4px 0 6px 0 !important;
+            }
+
+            .payroll-program-header {
+                margin-bottom: 6px !important;
+            }
+
+            .payroll-table tbody tr {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -42,38 +203,26 @@
     // Program and Year Context
     $payrollYear = isset($targetDate) ? $targetDate->format('Y') : date('Y');
 
-    // Multi-Page Legal Landscape Pagination Distribution (Engineered for 70px row heights)
+    // Multi-Page Legal Landscape Pagination Distribution (Engineered for 70px row heights with repeated full header)
     $totalCount = count($payrollRows);
-    $page1Limit = 6;
-    $pageNextLimit = 7;
+    $rowsPerPage = 6;
 
     $pages = [];
-    if ($totalCount <= $page1Limit) { $pages[]=[ 'pageNumber'=> 1,
+    if ($totalCount <= $rowsPerPage) { $pages[]=[ 'pageNumber'=> 1,
         'isFirst' => true,
         'isLast' => true,
         'rows' => $payrollRows,
         ];
         } else {
-        // Page 1
-        $pages[] = [
-        'pageNumber' => 1,
-        'isFirst' => true,
-        'isLast' => false,
-        'rows' => $payrollRows->slice(0, $page1Limit),
-        ];
-
-        // Subsequent pages
-        $remaining = $payrollRows->slice($page1Limit);
-        $chunked = $remaining->chunk($pageNextLimit);
+        $chunked = $payrollRows->chunk($rowsPerPage);
         $totalChunks = $chunked->count();
 
         foreach ($chunked as $index => $chunkRows) {
-        $pageNum = $index + 2;
-        $isLast = ($index + 1) === $totalChunks;
+        $pageNum = $index + 1;
         $pages[] = [
         'pageNumber' => $pageNum,
-        'isFirst' => false,
-        'isLast' => $isLast,
+        'isFirst' => ($index === 0),
+        'isLast' => (($index + 1) === $totalChunks),
         'rows' => $chunkRows,
         ];
         }
@@ -90,13 +239,9 @@
                     </a>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <span class="text-white-50 small me-2 d-none d-md-inline">
-                        Document Format: <strong>Legal (8.5 &times; 14 in) Landscape</strong> &bull; {{ $totalPages }}
-                        {{ \Illuminate\Support\Str::plural('Page', $totalPages) }}
-                    </span>
                     <button type="button" id="btnPrintPayroll"
                         class="btn btn-warning fw-bold text-dark px-4 rounded-pill shadow-sm btn-print-payroll">
-                        <i class="fas fa-print me-1"></i> Print Legal Landscape Payroll
+                        <i class="fas fa-print me-1"></i> Print Payroll
                     </button>
                 </div>
             </div>
@@ -133,7 +278,6 @@
 
                     <!-- Page Body Content (Occupies Space Above the Fixed Footer) -->
                     <div class="sheet-body-content">
-                        @if($page['isFirst'])
                         <!-- Official Header: Silang Seal Left, Titles Center, Bagong Pilipinas & DSWD Right -->
                         <div class="payroll-header">
                             @if(file_exists(public_path('images/silangseal.png')))
@@ -179,38 +323,12 @@
                                 <div class="text-end text-muted small fw-semibold">
                                     Date: {{ $payrollDate }}
                                     @if($totalPages > 1)
-                                    <span class="ms-2 badge bg-light text-dark border">Sheet 1 of {{ $totalPages
-                                        }}</span>
+                                    <span class="ms-2 badge bg-light text-dark border">Sheet {{ $page['pageNumber'] }}
+                                        of {{ $totalPages }}</span>
                                     @endif
                                 </div>
                             </div>
                         </div>
-                        @else
-                        <!-- Continuation Header for Page 2 and beyond -->
-                        <div class="payroll-continuation-header">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center gap-2">
-                                    @if(file_exists(public_path('images/silangseal.png')))
-                                    <img src="{{ asset('images/silangseal.png') }}" alt="Seal" class="header-logo-mini">
-                                    @elseif(file_exists(public_path('images/silang.png')))
-                                    <img src="{{ asset('images/silang.png') }}" alt="Seal" class="header-logo-mini">
-                                    @endif
-                                    <div>
-                                        <span class="continuation-lgu">MUNICIPALITY OF SILANG &bull; MSWDO</span>
-                                        <span class="mx-2 text-muted">|</span>
-                                        <span class="continuation-prog">Cash Assistance Payroll (Continuation)</span>
-                                    </div>
-                                </div>
-                                <div class="continuation-meta">
-                                    <span>Date: <strong>{{ $payrollDate }}</strong></span>
-                                    <span class="mx-2 text-muted">&bull;</span>
-                                    <span>Sheet <strong>{{ $page['pageNumber'] }}</strong> of <strong>{{ $totalPages
-                                            }}</strong></span>
-                                </div>
-                            </div>
-                            <div class="header-black-bar-thin"></div>
-                        </div>
-                        @endif
 
                         <!-- Masterlist Payroll Data Table -->
                         <table class="payroll-table">

@@ -572,247 +572,135 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* ==========================================================
-       4. Most Common Medical Concerns & Reasons (Scalable & Responsive)
+       4. Medical Condition / Dahilan Chart (Doughnut Chart - Step 1 Design)
        ========================================================== */
-    const medicalCanvas = document.getElementById('medicalBarChart');
-    if (medicalCanvas) {
-        const rawMedical = Array.isArray(data.medicalRanked) ? data.medicalRanked : [];
-        let medicalLimit = 10; // 5, 10, 20, or 'all'
-        let medicalMetric = 'cases'; // 'cases' or 'amount'
-        let medicalSearchQuery = '';
+    const dahilanEl = document.getElementById('dahilanChart');
+    if (dahilanEl) {
+        const medicalLabels = Array.isArray(data.medicalLabels) ? data.medicalLabels : [];
+        const medicalData = Array.isArray(data.medicalData) ? data.medicalData : [];
+        const dahilanPalette = [
+            '#EF4444', '#F59E0B', '#8B5CF6', '#2563EB',
+            '#1A237E', '#10B981', '#EC4899', '#14B8A6',
+            '#F97316', '#06B6D4', '#84CC16', '#6366F1'
+        ];
 
-        const chartInner = document.getElementById('medicalChartInner');
-        const emptyState = document.getElementById('medicalChartEmpty');
-        const showingText = document.getElementById('medicalChartShowingText');
-        const activeCountBadge = document.getElementById('medicalActiveCountBadge');
-        const listCountText = document.getElementById('medicalListCountText');
-        const listEmpty = document.getElementById('medicalListEmpty');
-        const listContainer = document.getElementById('medicalListContainer');
-
-        // Standard institutional blue for consistent, professional government visualization
-        const medicalBarColor = '#1E40AF';
-        const medicalBarHoverColor = '#1D4ED8';
-
-        function getFilteredMedical() {
-            let list = rawMedical.slice();
-
-            // 1. Live Search Query Filter
-            if (medicalSearchQuery.trim().length > 0) {
-                const q = medicalSearchQuery.trim().toLowerCase();
-                list = list.filter(m => (m.concern || '').toLowerCase().includes(q));
-            }
-
-            // 2. Sort strictly highest to lowest according to selected metric
-            if (medicalMetric === 'cases') {
-                list.sort((a, b) => (b.beneficiaries || 0) - (a.beneficiaries || 0));
-            } else {
-                list.sort((a, b) => (b.amount || 0) - (a.amount || 0));
-            }
-
-            const totalMatches = list.length;
-
-            // 3. Slice Limit
-            let sliced = list;
-            if (medicalLimit !== 'all') {
-                const limitNum = parseInt(medicalLimit, 10) || 10;
-                sliced = list.slice(0, limitNum);
-            }
-
-            return {
-                visible: sliced,
-                totalMatches: totalMatches
-            };
-        }
-
-        // Initial Values
-        const initialFiltered = getFilteredMedical();
-        const initialLabels = initialFiltered.visible.map(m => m.concern);
-        const initialValues = initialFiltered.visible.map(m => m.beneficiaries);
-        const initialAmounts = initialFiltered.visible.map(m => m.amount);
-        const initialCounts = initialFiltered.visible.map(m => m.beneficiaries);
-
-        const medicalChart = new Chart(medicalCanvas, {
-            type: 'bar',
+        new Chart(dahilanEl, {
+            type: 'doughnut',
             data: {
-                labels: initialLabels.length ? initialLabels : ['No Data'],
+                labels: medicalLabels.length ? medicalLabels : ['Walang Datos'],
                 datasets: [{
-                    label: 'Beneficiaries',
-                    data: initialValues.length ? initialValues : [0],
-                    backgroundColor: medicalBarColor,
-                    hoverBackgroundColor: medicalBarHoverColor,
-                    borderRadius: 4,
-                    maxBarThickness: 22,
-                    minBarLength: 3
+                    data: medicalData.length ? medicalData : [1],
+                    backgroundColor: medicalLabels.length
+                        ? medicalLabels.map((_, i) => dahilanPalette[i % dahilanPalette.length])
+                        : ['#CBD5E1'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
                 }]
             },
             options: {
-                indexAxis: 'y', // Horizontal bars prevent crowded or overlapping labels
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: {
-                    duration: 250
-                },
                 plugins: {
-                    legend: { display: false },
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, font: { size: 11, weight: '600' }, padding: 10 }
+                    },
                     tooltip: {
                         backgroundColor: '#0F172A',
-                        titleFont: { size: 13, weight: '700' },
-                        bodyFont: { size: 12 },
                         padding: 10,
                         cornerRadius: 6,
                         callbacks: {
                             label: function (context) {
-                                const idx = context.dataIndex;
-                                const currentAmounts = medicalChart._cachedAmounts || initialAmounts;
-                                const currentCounts = medicalChart._cachedCounts || initialCounts;
-
-                                const amt = currentAmounts[idx] !== undefined ? currentAmounts[idx] : 0;
-                                const count = currentCounts[idx] !== undefined ? currentCounts[idx] : 0;
-
-                                return [
-                                    ` Beneficiaries: ${count.toLocaleString()} cases`,
-                                    ` Total Assistance: ${formatPHP(amt)}`
-                                ];
+                                if (medicalData.length === 0) return ' Walang Datos';
+                                const val = context.parsed;
+                                const total = medicalData.reduce((a, b) => a + b, 0);
+                                const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+                                return ` ${context.label}: ${val.toLocaleString()} cases (${pct}%)`;
                             }
                         }
                     }
                 },
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        grid: { color: '#F1F5F9' },
-                        ticks: {
-                            precision: 0,
-                            font: { size: 11 },
-                            callback: function (val) {
-                                if (medicalMetric === 'amount') {
-                                    if (val >= 1000000) return '₱' + (val / 1000000).toFixed(1) + 'M';
-                                    if (val >= 1000) return '₱' + (val / 1000).toFixed(0) + 'k';
-                                    return '₱' + val;
-                                }
-                                return val.toLocaleString();
+                cutout: '55%'
+            }
+        });
+    }
+
+    /* ==========================================================
+       5. Assistance Purpose / Uri ng Assistance (Doughnut Chart - Step 1 Design)
+       ========================================================== */
+    const assistanceTypeEl = document.getElementById('assistanceTypeChart');
+    if (assistanceTypeEl) {
+        const assistanceLabels = Array.isArray(data.assistanceTypeLabels) ? data.assistanceTypeLabels : [];
+        const assistanceData = Array.isArray(data.assistanceTypeData) ? data.assistanceTypeData : [];
+        const assistancePalette = [
+            '#1A237E', '#10B981', '#F59E0B', '#2563EB',
+            '#8B5CF6', '#EF4444', '#EC4899', '#14B8A6'
+        ];
+
+        new Chart(assistanceTypeEl, {
+            type: 'doughnut',
+            data: {
+                labels: assistanceLabels.length ? assistanceLabels : ['Walang Datos'],
+                datasets: [{
+                    data: assistanceData.length ? assistanceData : [1],
+                    backgroundColor: assistanceLabels.length
+                        ? assistanceLabels.map((_, i) => assistancePalette[i % assistancePalette.length])
+                        : ['#CBD5E1'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, font: { size: 11, weight: '600' }, padding: 10 }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0F172A',
+                        padding: 10,
+                        cornerRadius: 6,
+                        callbacks: {
+                            label: function (context) {
+                                if (assistanceData.length === 0) return ' Walang Datos';
+                                const val = context.parsed;
+                                const total = assistanceData.reduce((a, b) => a + b, 0);
+                                const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+                                return ` ${context.label}: ${val.toLocaleString()} cases (${pct}%)`;
                             }
                         }
-                    },
-                    y: {
-                        grid: { display: false },
-                        ticks: {
-                            font: { size: 12, weight: '600' },
-                            color: '#1E293B',
-                            autoSkip: false // Never skip or drop concern labels
-                        }
                     }
-                }
+                },
+                cutout: '55%'
             }
         });
+    }
 
-        medicalChart._cachedAmounts = initialAmounts;
-        medicalChart._cachedCounts = initialCounts;
+    /* ==========================================================
+       6. Medical Directory Table Search (if search field present)
+       ========================================================== */
+    const medicalSearch = document.getElementById('medicalSearchInput');
+    const medicalListContainer = document.getElementById('medicalListContainer');
+    if (medicalSearch && medicalListContainer) {
+        medicalSearch.addEventListener('input', debounce(function (e) {
+            const q = (e.target.value || '').trim().toLowerCase();
+            const items = medicalListContainer.querySelectorAll('.medical-card-item');
+            let visibleCount = 0;
 
-        function updateMedicalChart() {
-            const { visible, totalMatches } = getFilteredMedical();
-
-            if (visible.length === 0) {
-                if (emptyState) emptyState.classList.remove('d-none');
-                if (medicalCanvas) medicalCanvas.style.display = 'none';
-                if (showingText) showingText.textContent = 'No matching medical concerns found';
-                if (activeCountBadge) activeCountBadge.textContent = '0 Matches';
-            } else {
-                if (emptyState) emptyState.classList.add('d-none');
-                if (medicalCanvas) medicalCanvas.style.display = 'block';
-
-                // Dynamic height allocation prevents overcrowding
-                const optimalHeight = Math.max(320, visible.length * 32);
-                if (chartInner) {
-                    chartInner.style.height = `${optimalHeight}px`;
+            items.forEach(item => {
+                const name = item.getAttribute('data-name') || '';
+                if (!q || name.includes(q)) {
+                    item.style.display = '';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
                 }
-
-                const labels = visible.map(m => m.concern);
-                const counts = visible.map(m => m.beneficiaries);
-                const amounts = visible.map(m => m.amount);
-                const values = medicalMetric === 'cases' ? counts : amounts;
-
-                medicalChart.data.labels = labels;
-                medicalChart.data.datasets[0].data = values;
-                medicalChart.data.datasets[0].label = medicalMetric === 'cases' ? 'Beneficiaries' : 'Grant Amount';
-                medicalChart.data.datasets[0].backgroundColor = medicalBarColor;
-                medicalChart.data.datasets[0].hoverBackgroundColor = medicalBarHoverColor;
-                medicalChart._cachedAmounts = amounts;
-                medicalChart._cachedCounts = counts;
-                medicalChart.update('none');
-
-                // Update UI status labels
-                if (showingText) {
-                    const metricName = medicalMetric === 'cases' ? 'cases' : 'grant amount';
-                    if (medicalLimit === 'all' || visible.length === totalMatches) {
-                        showingText.textContent = `Showing all ${visible.length} concerns by ${metricName}`;
-                    } else {
-                        showingText.textContent = `Showing top ${visible.length} of ${totalMatches} concerns by ${metricName}`;
-                    }
-                }
-                if (activeCountBadge) {
-                    activeCountBadge.textContent = `${totalMatches} Concerns`;
-                }
-            }
-
-            // Sync Table List
-            if (listContainer) {
-                const items = listContainer.querySelectorAll('.medical-card-item');
-                let visibleCount = 0;
-                const q = medicalSearchQuery.trim().toLowerCase();
-
-                items.forEach(item => {
-                    const name = item.getAttribute('data-name') || '';
-                    if (!q || name.includes(q)) {
-                        item.style.display = '';
-                        visibleCount++;
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-
-                if (listEmpty) {
-                    if (visibleCount === 0) {
-                        listEmpty.classList.remove('d-none');
-                    } else {
-                        listEmpty.classList.add('d-none');
-                    }
-                }
-                if (listCountText) {
-                    listCountText.textContent = `${visibleCount} records`;
-                }
-            }
-        }
-
-        // Limit Toggle Buttons (Top 5 / Top 10 / Top 20 / All)
-        const limitButtons = document.querySelectorAll('.btn-medical-limit');
-        limitButtons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                limitButtons.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                medicalLimit = this.getAttribute('data-limit');
-                updateMedicalChart();
             });
-        });
 
-        // Metric Toggle Buttons (Cases vs Grants)
-        const metricButtons = document.querySelectorAll('.btn-medical-metric');
-        metricButtons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                metricButtons.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                medicalMetric = this.getAttribute('data-metric');
-                updateMedicalChart();
-            });
-        });
-
-        // Live Search Input
-        const searchInput = document.getElementById('medicalSearchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', debounce(function (e) {
-                medicalSearchQuery = e.target.value;
-                updateMedicalChart();
-            }, 150));
-        }
+            const countText = document.getElementById('medicalListCountText');
+            if (countText) countText.textContent = `${visibleCount} records`;
+        }, 150));
     }
 });

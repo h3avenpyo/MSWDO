@@ -242,15 +242,75 @@
 }
 
 .btn-brand-primary {
-    background-color: #1A237E !important;
-    border-color: #1A237E !important;
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
+    color: #FFFFFF !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.btn-brand-primary:hover {
+    background-color: #9b0e13 !important;
+    border-color: #9b0e13 !important;
     color: #FFFFFF !important;
 }
 
-.btn-brand-primary:hover,
 .btn-brand-primary:focus {
-    background-color: #0D1663 !important;
-    border-color: #0D1663 !important;
+    background-color: #9b0e13 !important;
+    border-color: #9b0e13 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.25) !important;
+}
+
+.btn-brand-primary:active {
+    background-color: #7c0b0f !important;
+    border-color: #7c0b0f !important;
+    color: #FFFFFF !important;
+}
+
+/* Regular interface buttons (excluding action buttons) */
+.empty-desc .btn-primary:not(.action-btn) {
+    background-color: #b11116;
+    border-color: #b11116;
+    color: #FFFFFF;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.empty-desc .btn-primary:not(.action-btn):hover {
+    background-color: #9b0e13;
+    border-color: #9b0e13;
+    color: #FFFFFF;
+}
+
+.empty-desc .btn-primary:not(.action-btn):focus {
+    background-color: #9b0e13;
+    border-color: #9b0e13;
+    color: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.25);
+}
+
+.empty-desc .btn-primary:not(.action-btn):active {
+    background-color: #7c0b0f;
+    border-color: #7c0b0f;
+    color: #FFFFFF;
+}
+
+.btn-outline-brand {
+    color: #b11116 !important;
+    border-color: #b11116 !important;
+    background-color: transparent !important;
+    transition: all 0.15s ease-in-out;
+}
+
+.btn-outline-brand:hover,
+.btn-outline-brand:focus {
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
+    color: #FFFFFF !important;
+}
+
+.btn-outline-brand:active {
+    background-color: #7c0b0f !important;
+    border-color: #7c0b0f !important;
     color: #FFFFFF !important;
 }
 
@@ -308,7 +368,7 @@
    MODAL COMPACT STYLING (For 1366x768 & Laptop Viewports)
    ============================================================ */
 .modal-header-brand {
-    background: #1A237E;
+    background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
     padding: 12px 18px;
@@ -319,8 +379,8 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: #1A237E;
-    border-bottom: 2px solid #EEF2FF;
+    color: #b11116;
+    border-bottom: 2px solid #fef2f2;
     padding-bottom: 5px;
     margin-bottom: 10px;
 }

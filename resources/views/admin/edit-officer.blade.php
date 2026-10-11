@@ -190,15 +190,25 @@ $initials = count($words) >= 2
     }
 </style>
 
-{{-- Page Header --}}
-<header class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none mb-6">
+{{-- Page Header Banner --}}
+<header class="dash-banner flex flex-col md:flex-row md:items-center justify-between gap-4 select-none">
     <div>
-        <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Edit Officer</h1>
-        <p class="text-sm text-slate-500 mt-1 font-medium">MSWDO Silang — Update Officer Information</p>
+        <div class="dash-banner-title">Edit Officer</div>
+        <div class="dash-banner-sub">
+            <span>MSWDO Silang — Update Officer Information</span>
+            <span class="opacity-40">•</span>
+            <span class="dash-live-badge">
+                <span class="dash-pulse-dot"></span>
+                <span>System Online</span>
+            </span>
+        </div>
     </div>
-    <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-        <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime">Loading date...</div>
-        <div class="w-11 h-11 rounded-full bg-[#1A237E] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(26,35,126,0.3)] hover:scale-105 select-none" title="Admin: {{ $adminName }}">
+    <div class="flex items-center gap-3 self-start md:self-auto">
+        <div class="text-right hidden sm:block">
+            <div class="text-xs font-semibold uppercase tracking-wider text-white/70">Philippine Standard Time</div>
+            <div class="text-sm font-semibold text-white tracking-wide" id="currentDateTime">Loading date...</div>
+        </div>
+        <div class="w-11 h-11 rounded-full bg-white/20 border-2 border-white/40 text-white font-bold text-sm flex items-center justify-center shadow-inner cursor-default" title="Logged in as: {{ $adminName }}">
             {{ $initials }}
         </div>
     </div>

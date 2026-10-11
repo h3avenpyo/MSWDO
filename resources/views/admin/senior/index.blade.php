@@ -557,13 +557,13 @@
     <!-- Main Content -->
     <div class="main">
         <!-- Page Header -->
-        <header class="bg-white border-b border-[#E5E7EB] flex flex-col sm:flex-row justify-between sm:items-center shadow-[0_1px_3px_rgba(15,23,42,0.05)] lg:h-[72px] lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8 lg:mb-3">
+        <header class="flex flex-col sm:flex-row justify-between sm:items-center text-white lg:px-8 lg:py-5 md:px-6 md:py-4 px-4 py-4 gap-4 sm:gap-0 select-none mb-6 sm:mb-8 lg:mb-4 rounded-2xl" style="background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important; box-shadow: 0 10px 25px -5px rgba(177, 17, 22, 0.25) !important; border: 1px solid rgba(255, 255, 255, 0.12);">
             <div class="flex items-center">
-                <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Welcome, {{ $userName }}</h1>
+                <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-white leading-none m-0">Welcome, {{ $userName }}</h1>
             </div>
             <div class="flex items-center gap-5 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-                <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime"></div>
-                <div class="w-11 h-11 rounded-full bg-[#B11116] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
+                <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-white/85" id="currentDateTime"></div>
+                <div class="w-11 h-11 rounded-full bg-white/20 border-2 border-white/40 text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
                     {{ $initials }}
                 </div>
             </div>

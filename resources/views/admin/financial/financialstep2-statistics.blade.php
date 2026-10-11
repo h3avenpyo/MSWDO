@@ -41,7 +41,8 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
                         <span class="badge step-2-badge rounded-pill px-2.5 py-1">Step 2</span>
                     </h2>
                     <p class="mb-0 hero-subtitle">
-                        Real-time beneficiary distributions, demographic breakdown, and sector financial assistance reports
+                        Real-time beneficiary distributions, demographic breakdown, and sector financial assistance
+                        reports
                         <span class="ms-2 badge bg-white fw-semibold" style="color: #b11116;">
                             <i class="fas fa-calendar-alt me-1"></i>Period: {{ $selectedMonthLabel }}
                         </span>
@@ -72,16 +73,12 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
                     </form>
 
                     <button type="button"
-                        class="btn btn-light rounded-pill px-3.5 py-2 fw-bold shadow-xs d-inline-flex align-items-center gap-2 btn-print-statistics"
-                        style="color: #b11116;"
-                        onclick="window.print()" title="Print official statistics report">
-                        <i class="fas fa-print"></i>
+                        class="btn rounded-pill px-3.5 py-2 fw-bold shadow-xs d-inline-flex align-items-center gap-2 btn-print-statistics"
+                        onclick="window.print()" title="Print official statistics report" aria-label="Print Statistics">
+                        <i class="fas fa-print" aria-hidden="true"></i>
                         <span>Print Statistics</span>
                     </button>
-                    <a href="{{ route('admin.financial.financialstep2') }}"
-                        class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
-                        <i class="fas fa-arrow-left me-1"></i> Back to Step 2
-                    </a>
+
                 </div>
             </div>
         </div>
@@ -485,7 +482,54 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
             </div>
         </div>
 
-        <!-- Section 3: Most Common Medical Concerns & Assistance Reasons -->
+        <!-- Section 3: Assistance Purpose & Medical Condition (Two Charts in One Section) -->
+        <div class="chart-container-card p-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4 pb-3 border-bottom">
+                <div>
+                    <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-3 py-1 rounded-pill mb-2"
+                        style="font-size: 0.75rem;">
+                        <i class="fas fa-heart me-1"></i> URI NG ASSISTANCE
+                    </span>
+                    <h4 class="fw-bold text-dark mb-1" style="letter-spacing: -0.01em;"><i
+                            class="fas fa-hand-holding-heart text-primary me-2"></i>Assistance Purpose / Uri ng Assistance</h4>
+                    <p class="text-muted small mb-0">Mga uri ng tulong na hinihingi at medikal na sitwasyon ng mga benepisyaryo sa MSWDO Silang.</p>
+                </div>
+            </div>
+
+            <div class="row g-4 align-items-stretch">
+                <!-- Chart 1: Medical Condition -->
+                <div class="col-lg-6">
+                    <div class="p-3 rounded-4 bg-light border text-center h-100 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-dark mb-0 text-start small text-uppercase tracking-wider">
+                                <i class="fas fa-heartbeat me-2 text-danger"></i>Medical Condition / Dahilan
+                            </h6>
+                            <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-1 small fw-semibold">Medical Concerns</span>
+                        </div>
+                        <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="min-height: 280px; position: relative;">
+                            <canvas id="dahilanChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Assistance Purpose / Uri ng Assistance -->
+                <div class="col-lg-6">
+                    <div class="p-3 rounded-4 bg-light border text-center h-100 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-dark mb-0 text-start small text-uppercase tracking-wider">
+                                <i class="fas fa-hand-holding-medical me-2 text-primary"></i>Assistance Purpose / Uri ng Assistance
+                            </h6>
+                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2 py-1 small fw-semibold">Uri ng Tulong</span>
+                        </div>
+                        <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="min-height: 280px; position: relative;">
+                            <canvas id="assistanceTypeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Most Common Medical Concerns & Assistance Reasons -->
         <div class="card border rounded-3 bg-white mb-4 shadow-none">
             <div class="card-header bg-white py-3 px-4 border-bottom">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -884,18 +928,70 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
             </table>
         </div>
 
-        <!-- Section 4: Most Common Medical Concerns & Assistance Reasons -->
+        <!-- Section 4: Uri ng Assistance / Assistance Purpose -->
+        <div class="report-section section-reasons mb-3">
+            <div class="report-section-heading">4. Uri ng Assistance / Assistance Purpose &bull; {{ $isAll ? 'Overall Records' : $selectedMonthLabel }}</div>
+            <p class="report-table-subtext mb-2">Comprehensive distribution of assistance purposes and service categories evaluated for Step 2 financial assistance.</p>
+
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th style="width: 8%; text-align: center;">No.</th>
+                        <th style="width: 42%;">Assistance Purpose / Uri ng Assistance</th>
+                        <th style="width: 18%; text-align: right;">Beneficiaries</th>
+                        <th style="width: 14%; text-align: right;">Share</th>
+                        <th style="width: 18%; text-align: right;">Assistance Granted</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                    $pIndex = 1;
+                    $pTotalBeneficiaries = 0;
+                    $pTotalAmount = 0.0;
+                    @endphp
+                    @forelse($assistancePurposeBreakdown as $purpose)
+                    @php
+                    $pCases = (int) $purpose->total_cases;
+                    $pAmt = (float) $purpose->total_amount;
+                    $pTotalBeneficiaries += $pCases;
+                    $pTotalAmount += $pAmt;
+                    $pShare = $totalBeneficiaries > 0 ? round(($pCases / $totalBeneficiaries) * 100, 1) : 0;
+                    @endphp
+                    <tr>
+                        <td style="text-align: center;">{{ $pIndex++ }}</td>
+                        <td style="font-weight: 600;">{{ $purpose->assistance_type }}</td>
+                        <td style="text-align: right; font-weight: 600;">{{ number_format($pCases) }}</td>
+                        <td style="text-align: right; color: #475569;">{{ $pShare }}%</td>
+                        <td style="text-align: right; font-weight: 600;">&#8369;{{ number_format($pAmt, 2) }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #64748B;">Walang naitatalang datos ng uri ng assistance sa kasalukuyan.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+                <tfoot>
+                    <tr class="report-table-total-row">
+                        <td colspan="2" style="font-weight: 700;">Total Evaluated ({{ count($assistancePurposeBreakdown) }} Categories &bull; {{ $isAll ? 'Overall' : $selectedMonthLabel }})</td>
+                        <td style="text-align: right; font-weight: 700;">{{ number_format($pTotalBeneficiaries) }}</td>
+                        <td style="text-align: right; font-weight: 700;">—</td>
+                        <td style="text-align: right; font-weight: 700;">&#8369;{{ number_format($pTotalAmount, 2) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Section 5: Dahilan ng Paghingi ng Tulong (Medical Conditions / Health Concerns) -->
         <div class="report-section section-medical mb-3">
-            <div class="report-section-heading">4. Most Common Medical Concerns &amp; Assistance Reasons &bull; {{
+            <div class="report-section-heading">5. Dahilan ng Paghingi ng Tulong (Medical Conditions / Health Concerns) &bull; {{
                 $isAll ? 'Overall Records' : $selectedMonthLabel }}</div>
-            <p class="report-table-subtext mb-2">Frequently reported medical conditions, diagnostic requests, and
-                emergency assistance reasons evaluated for Step 2 assistance.</p>
+            <p class="report-table-subtext mb-2">Summary of medical conditions, illnesses, and healthcare concerns recorded during beneficiary intake assessment.</p>
 
             <table class="report-table">
                 <thead>
                     <tr>
                         <th style="width: 8%; text-align: center;">Rank</th>
-                        <th style="width: 42%;">Medical Concern / Assistance Reason</th>
+                        <th style="width: 42%;">Medical Condition / Dahilan</th>
                         <th style="width: 18%; text-align: right;">Beneficiaries</th>
                         <th style="width: 14%; text-align: right;">Share</th>
                         <th style="width: 18%; text-align: right;">Assistance Granted</th>
@@ -930,7 +1026,7 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" style="text-align: center; color: #64748B;">No medical records found.</td>
+                        <td colspan="5" style="text-align: center; color: #64748B;">Walang naitatalang datos ng medical condition sa kasalukuyan.</td>
                     </tr>
                     @endforelse
 
@@ -964,7 +1060,7 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
             </table>
         </div>
 
-        <!-- Section 5: Administrative Certification & Signatures -->
+        <!-- Section 6: Administrative Certification & Signatures -->
         <div class="report-section section-signatures">
             <div class="report-notes-box mb-3">
                 <div class="fw-bold text-uppercase mb-1" style="font-size: 7.5pt; color: #1E293B;">Administrative Notes
@@ -1028,7 +1124,11 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
         genderLabels: @json(array_keys($genderBreakdown)),
         genderCounts: @json(array_values($genderBreakdown)),
         sectorRanked: @json($sectorRanked),
-        medicalRanked: @json($medicalRanked)
+        medicalRanked: @json($medicalRanked),
+        medicalLabels: @json(array_keys($medicalConcernsSummary)),
+        medicalData: @json(array_values($medicalConcernsSummary)),
+        assistanceTypeLabels: @json(array_keys($assistanceTypeSummary)),
+        assistanceTypeData: @json(array_values($assistanceTypeSummary))
     };
 </script>
 

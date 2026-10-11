@@ -192,12 +192,13 @@
 }
 
 .pagination .page-item.active .page-link {
-    background-color: var(--color-brand);
-    border-color: var(--color-brand);
+    background-color: #b11116;
+    border-color: #b11116;
+    color: #FFFFFF;
 }
 
 .pagination .page-link {
-    color: var(--color-brand);
+    color: #b11116;
     border-radius: 8px;
     margin: 0 2px;
     font-size: 0.85rem;
@@ -206,17 +207,62 @@
 
 /* Custom Reusable Utility Classes (Replacing inline styles) */
 .btn-brand-primary {
-    background-color: var(--color-brand) !important;
-    border-color: var(--color-brand) !important;
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
+    color: #FFFFFF !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-brand-primary:hover {
+    background-color: #9b0e13 !important;
+    border-color: #9b0e13 !important;
     color: #FFFFFF !important;
 }
 
-.btn-brand-primary:hover,
 .btn-brand-primary:focus {
-    background-color: var(--color-brand-dark) !important;
-    border-color: var(--color-brand-dark) !important;
+    background-color: #9b0e13 !important;
+    border-color: #9b0e13 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.25) !important;
+}
+
+.btn-brand-primary:active {
+    background-color: #7c0b0f !important;
+    border-color: #7c0b0f !important;
     color: #FFFFFF !important;
 }
+
+/* Modal Interface Buttons */
+#monthlyUnclaimedModal .btn-outline-primary,
+#smsMessagingModal .btn-outline-primary,
+#smsModal .btn-outline-primary {
+    color: #b11116;
+    border-color: #b11116;
+    transition: all 0.15s ease-in-out;
+}
+
+#monthlyUnclaimedModal .btn-outline-primary:hover,
+#monthlyUnclaimedModal .btn-outline-primary:focus,
+#monthlyUnclaimedModal .btn-outline-primary.active,
+#smsMessagingModal .btn-outline-primary:hover,
+#smsMessagingModal .btn-outline-primary:focus,
+#smsMessagingModal .btn-outline-primary.active,
+#smsModal .btn-outline-primary:hover,
+#smsModal .btn-outline-primary:focus,
+#smsModal .btn-outline-primary.active {
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
+    color: #FFFFFF !important;
+}
+
+#monthlyUnclaimedModal .btn-outline-primary:disabled,
+#smsMessagingModal .btn-outline-primary:disabled,
+#smsModal .btn-outline-primary:disabled {
+    color: #94A3B8 !important;
+    border-color: #CBD5E1 !important;
+    background-color: transparent !important;
+}
+
 
 .cursor-pointer {
     cursor: pointer;
@@ -328,17 +374,17 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
 }
 
-/* Send Message Action Button */
+/* Send Message Action Button (Preserved) */
 .btn-send-sms {
-    background-color: var(--color-brand) !important;
-    border: 1px solid var(--color-brand) !important;
+    background-color: #1A237E !important;
+    border: 1px solid #1A237E !important;
     color: #FFFFFF !important;
 }
 
 .btn-send-sms:hover,
 .btn-send-sms:focus {
-    background-color: var(--color-brand-dark) !important;
-    border-color: var(--color-brand-dark) !important;
+    background-color: #0D1642 !important;
+    border-color: #0D1642 !important;
     color: #FFFFFF !important;
     box-shadow: 0 4px 12px rgba(26, 35, 126, 0.25) !important;
 }
@@ -356,17 +402,17 @@
     transition: transform 0.15s ease;
 }
 
-/* Message Beneficiary Button (Claimed state) */
+/* Message Beneficiary Button (Claimed state - Preserved) */
 .btn-message-beneficiary {
     background-color: #EEF2FF !important;
     border: 1px solid #C7D2FE !important;
-    color: var(--color-brand) !important;
+    color: #1A237E !important;
 }
 
 .btn-message-beneficiary:hover,
 .btn-message-beneficiary:focus {
-    background-color: var(--color-brand) !important;
-    border-color: var(--color-brand) !important;
+    background-color: #1A237E !important;
+    border-color: #1A237E !important;
     color: #FFFFFF !important;
     box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2) !important;
 }
@@ -475,17 +521,17 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-.mswdo-page-link:hover {
-    color: #1A237E;
-    background-color: #EEF2FF;
-    border-color: #C7D2FE;
+.mswdo-page-link:hover:not(.mswdo-dots) {
+    color: #b11116;
+    background-color: #fef2f2;
+    border-color: #fecaca;
 }
 
 .mswdo-page-item.active .mswdo-page-link {
     color: #FFFFFF !important;
-    background-color: #1A237E !important;
-    border-color: #1A237E !important;
-    box-shadow: 0 2px 4px rgba(26, 35, 126, 0.25);
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
+    box-shadow: 0 2px 4px rgba(177, 17, 22, 0.25);
     cursor: default;
 }
 

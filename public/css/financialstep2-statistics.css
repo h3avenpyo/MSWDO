@@ -151,17 +151,45 @@
 .btn-barangay-limit.active,
 .btn-sector-limit.active,
 .btn-sector-metric.active {
-    background: #1A237E !important;
+    background: #b11116 !important;
     color: #FFFFFF !important;
-    box-shadow: 0 1px 3px rgba(26, 35, 126, 0.25);
+    box-shadow: 0 1px 3px rgba(177, 17, 22, 0.25);
+}
+
+.btn-barangay-limit.active:hover,
+.btn-sector-limit.active:hover,
+.btn-sector-metric.active:hover {
+    background: #9b0e13 !important;
+    color: #FFFFFF !important;
+}
+
+.btn-barangay-limit.active:active,
+.btn-sector-limit.active:active,
+.btn-sector-metric.active:active {
+    background: #7c0b0f !important;
+    color: #FFFFFF !important;
 }
 
 .btn-medical-limit.active,
 .btn-medical-metric.active {
-    background: #1A237E !important;
-    border-color: #1A237E !important;
+    background: #b11116 !important;
+    border-color: #b11116 !important;
     color: #FFFFFF !important;
     box-shadow: none !important;
+}
+
+.btn-medical-limit.active:hover,
+.btn-medical-metric.active:hover {
+    background: #9b0e13 !important;
+    border-color: #9b0e13 !important;
+    color: #FFFFFF !important;
+}
+
+.btn-medical-limit.active:active,
+.btn-medical-metric.active:active {
+    background: #7c0b0f !important;
+    border-color: #7c0b0f !important;
+    color: #FFFFFF !important;
 }
 
 .barangay-chart-wrapper,
@@ -291,20 +319,58 @@
     }
 }
 
-/* Screen Print Button Styling */
+/* Screen Print Button Styling (Compliments MSWDO Crimson Module Theme) */
 .btn-print-statistics {
-    background-color: var(--color-brand, #1A237E);
-    border-color: var(--color-brand, #1A237E);
-    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    border-radius: 9999px !important;
+    color: #b11116 !important;
+    font-size: 0.825rem;
+    font-weight: 700;
+    line-height: 1.2;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
     transition: all 0.2s ease;
 }
 
 .btn-print-statistics:hover {
-    background-color: var(--color-brand-dark, #0F1746);
-    border-color: var(--color-brand-dark, #0F1746);
-    color: #ffffff;
+    background-color: #fdf2f2 !important;
+    border-color: rgba(255, 255, 255, 0.85) !important;
+    color: #8e0d11 !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(26, 35, 126, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.btn-print-statistics:focus {
+    background-color: #fdf2f2 !important;
+    border-color: #ffffff !important;
+    color: #8e0d11 !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
+    outline: none;
+}
+
+.btn-print-statistics:active {
+    background-color: #fae8e8 !important;
+    border-color: rgba(255, 255, 255, 0.8) !important;
+    color: #7c0b0f !important;
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.btn-print-statistics i {
+    color: #b11116;
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
+}
+
+.btn-print-statistics:hover i {
+    color: #8e0d11;
 }
 
 /* ============================================================

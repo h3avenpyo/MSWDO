@@ -113,13 +113,15 @@ function confirmLogout(event) {
         icon: 'warning',
         showCancelButton: true,
         reverseButtons: true,
-        confirmButtonColor: '#1A237E',
-        cancelButtonColor: '#6B7280',
+        confirmButtonColor: '#b11116',
+        cancelButtonColor: '#6c757d',
         confirmButtonText: 'Yes, log out',
         cancelButtonText: 'Cancel',
         background: '#ffffff',
         customClass: {
-            popup: 'rounded-4 shadow-lg'
+            popup: 'rounded-4 shadow-lg swal2-logout-popup',
+            confirmButton: 'swal2-logout-confirm-btn fw-bold text-white',
+            cancelButton: 'swal2-logout-cancel-btn text-white'
         }
     }).then((result) => {
         if (result.isConfirmed) {

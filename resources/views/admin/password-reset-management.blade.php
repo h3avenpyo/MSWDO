@@ -12,13 +12,14 @@ $initials = count($words) >= 2
 @endphp
 
 <style>
-    /* ── Dashboard Header Banner ── */
+    /* ── Dashboard Header Banner (MSWDO Red Gradient Theme) ── */
     .dash-banner {
-        background: linear-gradient(135deg, #1A237E 0%, #1E3A8A 55%, #1e40af 100%);
+        background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
         border-radius: 18px;
         padding: 1.75rem 2rem;
         margin-bottom: 1.75rem;
-        box-shadow: 0 10px 25px -5px rgba(26, 35, 126, 0.25);
+        box-shadow: 0 10px 25px -5px rgba(177, 17, 22, 0.25) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12);
         position: relative;
         overflow: hidden;
         color: #FFFFFF;
@@ -31,7 +32,7 @@ $initials = count($words) >= 2
         width: 220px;
         height: 220px;
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(251, 192, 45, 0.2) 0%, rgba(255,255,255,0) 70%);
+        background: radial-gradient(circle, rgba(251, 192, 45, 0.15) 0%, rgba(255,255,255,0) 70%);
         pointer-events: none;
     }
     .dash-banner-title {

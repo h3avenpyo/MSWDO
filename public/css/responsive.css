@@ -117,6 +117,55 @@ img, svg, video, canvas, embed, iframe {
     background-color: #4B5563 !important;
     color: #FFFFFF !important;
 }
+/* Step 1 & Step 2 Logout Confirmation Dialog Buttons */
+.swal2-popup.swal2-logout-popup .swal2-confirm,
+.swal2-confirm.swal2-logout-confirm-btn {
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+}
+.swal2-popup.swal2-logout-popup .swal2-confirm:hover,
+.swal2-popup.swal2-logout-popup .swal2-confirm:focus,
+.swal2-confirm.swal2-logout-confirm-btn:hover,
+.swal2-confirm.swal2-logout-confirm-btn:focus {
+    background-color: #9b0e13 !important;
+    border-color: #9b0e13 !important;
+    color: #ffffff !important;
+    background-image: none !important;
+}
+.swal2-popup.swal2-logout-popup .swal2-confirm:active,
+.swal2-confirm.swal2-logout-confirm-btn:active {
+    background-color: #850c10 !important;
+    border-color: #850c10 !important;
+    color: #ffffff !important;
+    background-image: none !important;
+}
+.swal2-popup.swal2-logout-popup .swal2-cancel,
+.swal2-cancel.swal2-logout-cancel-btn {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+}
+.swal2-popup.swal2-logout-popup .swal2-cancel:hover,
+.swal2-popup.swal2-logout-popup .swal2-cancel:focus,
+.swal2-cancel.swal2-logout-cancel-btn:hover,
+.swal2-cancel.swal2-logout-cancel-btn:focus {
+    background-color: #5c636a !important;
+    border-color: #565e64 !important;
+    color: #ffffff !important;
+    background-image: none !important;
+}
+.swal2-popup.swal2-logout-popup .swal2-cancel:active,
+.swal2-cancel.swal2-logout-cancel-btn:active {
+    background-color: #4b5157 !important;
+    border-color: #4b5157 !important;
+    color: #ffffff !important;
+    background-image: none !important;
+}
 .swal2-actions {
     flex-direction: row !important;
     gap: 12px !important;

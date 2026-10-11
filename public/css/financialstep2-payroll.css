@@ -7,10 +7,10 @@
    DESIGN TOKENS - Policy 2.0 Compliance System
    ============================================================ */
 :root {
-    /* Brand (10% accent) */
-    --color-brand: hsl(235, 66%, 30%);
-    --color-brand-light: hsl(235, 66%, 96%);
-    --color-brand-dark: hsl(235, 66%, 22%);
+    /* Brand (10% accent) - Complementing MSWDO #b11116 */
+    --color-brand: #b11116;
+    --color-brand-light: #fef2f2;
+    --color-brand-dark: #8e0d11;
 
     /* Semantic Accents */
     --color-success: hsl(158, 64%, 40%);
@@ -246,9 +246,23 @@
 
 .btn-save-amount:hover {
     background: var(--color-brand-dark);
+    border-color: var(--color-brand-dark);
     color: #FFFFFF;
     box-shadow: var(--shadow-xs);
     transform: scale(1.02);
+}
+
+.btn-save-amount:focus {
+    background: var(--color-brand-dark);
+    border-color: var(--color-brand-dark);
+    color: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.25);
+}
+
+.btn-save-amount:active {
+    background: #7c0b0f;
+    border-color: #7c0b0f;
+    color: #FFFFFF;
 }
 
 .payroll-readiness-banner {
@@ -381,13 +395,57 @@
     background-color: var(--color-brand) !important;
     border-color: var(--color-brand) !important;
     color: #FFFFFF !important;
+    transition: background-color var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
-.btn-brand-primary:hover,
+.btn-brand-primary:hover {
+    background-color: var(--color-brand-dark) !important;
+    border-color: var(--color-brand-dark) !important;
+    color: #FFFFFF !important;
+}
+
 .btn-brand-primary:focus {
     background-color: var(--color-brand-dark) !important;
     border-color: var(--color-brand-dark) !important;
     color: #FFFFFF !important;
+    box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.25) !important;
+}
+
+.btn-brand-primary:active {
+    background-color: #7c0b0f !important;
+    border-color: #7c0b0f !important;
+    color: #FFFFFF !important;
+}
+
+/* Modal Interface Buttons */
+#monthlyUnclaimedModal .btn-outline-primary,
+#smsMessagingModal .btn-outline-primary,
+#smsModal .btn-outline-primary {
+    color: var(--color-brand);
+    border-color: var(--color-brand);
+    transition: all var(--transition-base);
+}
+
+#monthlyUnclaimedModal .btn-outline-primary:hover,
+#monthlyUnclaimedModal .btn-outline-primary:focus,
+#monthlyUnclaimedModal .btn-outline-primary.active,
+#smsMessagingModal .btn-outline-primary:hover,
+#smsMessagingModal .btn-outline-primary:focus,
+#smsMessagingModal .btn-outline-primary.active,
+#smsModal .btn-outline-primary:hover,
+#smsModal .btn-outline-primary:focus,
+#smsModal .btn-outline-primary.active {
+    background-color: var(--color-brand) !important;
+    border-color: var(--color-brand) !important;
+    color: #FFFFFF !important;
+}
+
+#monthlyUnclaimedModal .btn-outline-primary:disabled,
+#smsMessagingModal .btn-outline-primary:disabled,
+#smsModal .btn-outline-primary:disabled {
+    color: #94A3B8 !important;
+    border-color: #CBD5E1 !important;
+    background-color: transparent !important;
 }
 
 .th-w-40 { width: 40px; }
@@ -441,7 +499,7 @@
 }
 
 .modal-header-brand {
-    background: var(--color-brand);
+    background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
 }
 
 .modal-body-canvas {
