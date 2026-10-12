@@ -93,7 +93,7 @@ class HistoricalFinancialIntakeController extends Controller
             $step1Officers = User::where('status', 'active')->orderBy('name')->get()->unique('name');
         }
 
-        return view('admin.historical.financial-intake', compact(
+        return view('admin.mswdo-admin.admin-financial-intake', compact(
             'controlNumber',
             'encoder',
             'barangays',

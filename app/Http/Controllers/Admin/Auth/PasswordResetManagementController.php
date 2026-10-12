@@ -46,7 +46,7 @@ class PasswordResetManagementController extends Controller
             'rejected' => PasswordResetRequest::where('status', 'rejected')->count(),
         ];
 
-        return view('admin.password-reset-management', compact('requests', 'stats'));
+        return view('admin.mswdo-admin.password-reset-management', compact('requests', 'stats'));
     }
 
     public function approve(Request $request, $id)

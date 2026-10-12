@@ -19,10 +19,10 @@ Route::post('/admin/clear-welcome', [AuthController::class, 'clearWelcome'])->na
 Route::get('/admin/check-account-status', [AuthController::class, 'checkAccountStatus'])->name('admin.check-account-status');
 
 // Forgot Password Routes
-Route::get('/admin/forgot-password', [PasswordResetManagementController::class, 'showForgotPasswordForm'])->name('admin.forgot-password');
-Route::post('/admin/forgot-password/send-code', [PasswordResetManagementController::class, 'sendResetCode'])->name('admin.forgot-password.send-code');
-Route::post('/admin/forgot-password/verify-code', [PasswordResetManagementController::class, 'verifyResetCode'])->name('admin.forgot-password.verify-code');
-Route::post('/admin/forgot-password/reset', [PasswordResetManagementController::class, 'resetPassword'])->name('admin.forgot-password.reset');
+Route::get('/admin/forgot-password', [AuthController::class, 'showForgotPassword'])->name('admin.forgot-password');
+Route::post('/admin/forgot-password', [AuthController::class, 'sendResetLink'])->name('admin.password.send-link');
+Route::get('/admin/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('admin.password.reset');
+Route::post('/admin/reset-password', [AuthController::class, 'resetPassword'])->name('admin.password.update');
 
 // Authenticated Admin Dashboard & Management Routes
 Route::middleware(['admin.auth', 'check.account.status'])->group(function () {

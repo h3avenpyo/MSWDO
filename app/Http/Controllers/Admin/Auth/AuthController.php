@@ -17,7 +17,7 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
-        return view('admin.login');
+        return view('admin.mswdo-admin.login');
     }
 
     public function login(LoginRequest $request)
@@ -114,7 +114,7 @@ class AuthController extends Controller
     // Forgot Password
     public function showForgotPassword()
     {
-        return view('admin.forgot-password');
+        return view('admin.mswdo-admin.forgot-password');
     }
 
     public function sendResetLink(SendResetLinkRequest $request)
@@ -160,7 +160,7 @@ class AuthController extends Controller
                 ->with('error', 'Invalid or expired password reset token.');
         }
 
-        return view('admin.reset-password', [
+        return view('admin.mswdo-admin.reset-password', [
             'token' => $token,
             'email' => $resetRequest->email,
         ]);

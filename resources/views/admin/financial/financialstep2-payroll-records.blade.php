@@ -926,10 +926,10 @@
 </div>
 
 <!-- SMS Messaging Modal Component -->
-@include('admin.financial.partials.sms-modal')
+@include('admin.financial.sms.sms-modal')
 
 <!-- Monthly Unclaimed Assistance Modal Component -->
-@include('admin.financial.partials.monthly-unclaimed-modal')
+@include('admin.financial.sms.monthly-unclaimed-modal')
 
 <!-- Hidden Form for Step 2 Payroll Record Row Archive Action -->
 <form id="archiveStep2PayrollRowForm" method="POST" style="display: none;">

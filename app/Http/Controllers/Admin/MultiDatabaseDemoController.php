@@ -19,7 +19,7 @@ class MultiDatabaseDemoController extends Controller
         $financialApplications = FinancialAssistanceApplication::query()->count();
         $seniorRecords = SeniorCitizenRecord::query()->count();
 
-        return view('admin.multi-database-demo', compact(
+        return view('admin.mswdo-admin.multi-database-demo', compact(
             'adminUsers',
             'adminProfiles',
             'financialApplications',

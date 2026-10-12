@@ -61,7 +61,7 @@ class DashboardController extends Controller
             'caseDistribution' => [],
         ];
 
-        return view('admin.admin-dashboard', $data);
+        return view('admin.mswdo-admin.admin-dashboard', $data);
     }
 
     private function getReportsSummary()

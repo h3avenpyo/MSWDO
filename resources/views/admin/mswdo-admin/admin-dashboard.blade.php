@@ -1,4 +1,4 @@
-@extends('admin.layout')
+@extends('admin.mswdo-admin.layout')
 @section('title', 'MSWDO Admin Dashboard')
 @section('page_title', 'Admin Dashboard')
 

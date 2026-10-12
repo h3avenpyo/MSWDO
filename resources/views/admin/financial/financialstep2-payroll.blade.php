@@ -596,8 +596,8 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
 </div>
 
 <!-- SMS Messaging Modals -->
-@include('admin.financial.partials.sms-modal')
-@include('admin.financial.partials.monthly-unclaimed-modal')
+@include('admin.financial.sms.sms-modal')
+@include('admin.financial.sms.monthly-unclaimed-modal')
 @endsection
 
 @section('page-scripts')

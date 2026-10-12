@@ -21,7 +21,7 @@ class OfficerController extends Controller
             session()->forget('officer_created');
         }
 
-        return view('admin.add-officers', compact('officerCreated'));
+        return view('admin.mswdo-admin.add-officers', compact('officerCreated'));
     }
 
     public function officersDirectory(Request $request)
@@ -102,7 +102,7 @@ class OfficerController extends Controller
             'inactive' => User::where('status', 'inactive')->where('email', '!=', 'admin@mswdo.test')->count(),
         ];
 
-        return view('admin.officers-directory', compact('officers', 'officerStats'));
+        return view('admin.mswdo-admin.officers-directory', compact('officers', 'officerStats'));
     }
 
     public function storeOfficer(StoreOfficerRequest $request)
@@ -132,7 +132,7 @@ class OfficerController extends Controller
     public function editOfficer($id)
     {
         $officer = User::findOrFail($id);
-        return view('admin.edit-officer', compact('officer'));
+        return view('admin.mswdo-admin.edit-officer', compact('officer'));
     }
 
     public function updateOfficer(UpdateOfficerRequest $request, $id)

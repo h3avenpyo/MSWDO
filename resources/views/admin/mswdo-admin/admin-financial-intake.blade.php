@@ -1,4 +1,4 @@
-@extends('admin.layout')
+@extends('admin.mswdo-admin.layout')
 
 @section('title', 'Historical Financial Intake - MSWDO Admin')
 @section('page_title', 'Historical Financial Intake')

@@ -1,4 +1,4 @@
-@extends('admin.layout')
+@extends('admin.mswdo-admin.layout')
 @section('title', 'MSWDO – Add New Officer')
 @section('page_title', 'Add New Officer')
 

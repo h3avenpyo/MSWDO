@@ -1,6 +1,6 @@
-@extends('admin.layout')
-@section('title', 'MSWDO – Officers Directory')
-@section('page_title', 'Officers Directory')
+@extends('admin.mswdo-admin.layout')
+@section('title', 'MSWDO – Password Reset Management')
+@section('page_title', 'Password Reset Management')
 
 @section('content')
 @php
@@ -32,7 +32,7 @@ $initials = count($words) >= 2
         width: 220px;
         height: 220px;
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255,255,255,0) 70%);
+        background: radial-gradient(circle, rgba(251, 192, 45, 0.15) 0%, rgba(255,255,255,0) 70%);
         pointer-events: none;
     }
     .dash-banner-title {
@@ -77,14 +77,14 @@ $initials = count($words) >= 2
         50% { opacity: 0.6; transform: scale(0.85); }
     }
 
-    /* ── Top Metric Strip ── */
-    .officer-kpi-strip {
+    /* ── Top Status Counters ── */
+    .reset-kpi-strip {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 1.25rem;
         margin-bottom: 1.75rem;
     }
-    .officer-kpi-card {
+    .reset-kpi-card {
         background: #FFFFFF;
         border: 1px solid #E2E8F0;
         border-radius: 16px;
@@ -95,11 +95,11 @@ $initials = count($words) >= 2
         gap: 1rem;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .officer-kpi-card:hover {
+    .reset-kpi-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 18px -2px rgba(15, 23, 42, 0.08);
     }
-    .kpi-icon-wrap {
+    .kpi-icon-box {
         width: 48px;
         height: 48px;
         border-radius: 12px;
@@ -108,14 +108,14 @@ $initials = count($words) >= 2
         justify-content: center;
         flex-shrink: 0;
     }
-    .kpi-icon-wrap svg { width: 24px; height: 24px; }
-    .kpi-card-indigo .kpi-icon-wrap { background: #EEF2FF; color: #4338CA; }
-    .kpi-card-sky .kpi-icon-wrap { background: #E0F2FE; color: #0284C7; }
-    .kpi-card-amber .kpi-icon-wrap { background: #FEF3C7; color: #D97706; }
-    .kpi-card-emerald .kpi-icon-wrap { background: #ECFDF5; color: #059669; }
+    .kpi-icon-box svg { width: 24px; height: 24px; }
+    .card-kpi-indigo .kpi-icon-box { background: #EEF2FF; color: #4338CA; }
+    .card-kpi-amber .kpi-icon-box  { background: #FEF3C7; color: #D97706; }
+    .card-kpi-sky .kpi-icon-box    { background: #E0F2FE; color: #0284C7; }
+    .card-kpi-emerald .kpi-icon-box{ background: #ECFDF5; color: #059669; }
 
-    /* ── Directory Shell ── */
-    .directory-shell {
+    /* ── Content Shell ── */
+    .reset-shell {
         background: #FFFFFF;
         border: 1px solid #E2E8F0;
         border-radius: 18px;
@@ -218,7 +218,7 @@ $initials = count($words) >= 2
         height: 16px;
     }
 
-    /* Role Dropdown */
+    /* Status Dropdown */
     .filter-dropdown {
         position: relative;
         min-width: 180px;
@@ -273,7 +273,7 @@ $initials = count($words) >= 2
         overflow-y: auto;
         padding: 6px;
     }
-    .role-opt, .status-opt {
+    .status-opt {
         padding: 8px 12px;
         border-radius: 6px;
         font-size: 0.85rem;
@@ -284,11 +284,11 @@ $initials = count($words) >= 2
         align-items: center;
         justify-content: space-between;
     }
-    .role-opt:hover, .status-opt:hover {
+    .status-opt:hover {
         background: #EFF6FF;
         color: #1E3A8A;
     }
-    .role-opt.selected, .status-opt.selected {
+    .status-opt.selected {
         background: #EFF6FF;
         color: #1E3A8A;
         font-weight: 600;
@@ -317,54 +317,44 @@ $initials = count($words) >= 2
         border-color: #F87171;
     }
 
-
-
-    /* ── Desktop & Tablet Table ── */
-    .table-responsive-container {
-        width: 100%;
-        max-width: 100%;
-        overflow: hidden !important;
-        overflow-x: hidden !important;
-        overflow-y: hidden !important;
+    /* ── Table Layout ── */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
         border-radius: 14px;
         border: 1px solid #EDF2F7;
-        background: #FFFFFF;
     }
-    .officers-tbl {
-        width: 100% !important;
-        max-width: 100% !important;
-        table-layout: fixed;
+    .reset-tbl {
+        width: 100%;
         border-collapse: separate;
         border-spacing: 0;
         font-size: 0.875rem;
     }
-    .officers-tbl th {
+    .reset-tbl th {
         background: #F8FAFC;
         color: #475569;
         font-weight: 600;
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        padding: 0.85rem 1rem;
+        padding: 0.85rem 1.15rem;
         text-align: left;
         border-bottom: 1px solid #E2E8F0;
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
-    .officers-tbl td {
-        padding: 0.85rem 1rem;
+    .reset-tbl td {
+        padding: 0.95rem 1.15rem;
         border-bottom: 1px solid #F1F5F9;
         color: #1E293B;
         vertical-align: middle;
+        white-space: nowrap;
         background: #FFFFFF;
-        overflow: hidden;
     }
-    .officers-tbl tbody tr:last-child td { border-bottom: none; }
-    .officers-tbl tbody tr:hover td { background: #F8FAFC; }
+    .reset-tbl tbody tr:last-child td { border-bottom: none; }
+    .reset-tbl tbody tr:hover td { background: #F8FAFC; }
 
     /* Officer Profile Cell */
-    .officer-profile-cell {
+    .officer-cell {
         display: flex;
         align-items: center;
         gap: 0.75rem;
@@ -373,34 +363,19 @@ $initials = count($words) >= 2
         width: 38px;
         height: 38px;
         border-radius: 10px;
+        background: #EEF2FF;
+        color: #4338CA;
+        font-weight: 700;
+        font-size: 0.825rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 700;
-        font-size: 0.825rem;
         flex-shrink: 0;
-    }
-    .avatar-admin { background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE; }
-    .avatar-social { background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD; }
-    .avatar-senior { background: #FEF3C7; color: #D97706; border: 1px solid #FDE68A; }
-    .avatar-financial { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
-    .avatar-staff { background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; }
-
-    /* Role Badges */
-    .role-tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.3rem 0.75rem;
-        border-radius: 8px;
-        font-size: 0.775rem;
-        font-weight: 600;
-        background: #F1F5F9;
-        color: #334155;
+        border: 1px solid #C7D2FE;
     }
 
     /* Status Pills */
-    .status-pill {
+    .status-tag {
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
@@ -410,93 +385,71 @@ $initials = count($words) >= 2
         font-weight: 600;
         line-height: 1;
     }
-    .status-pill-active { background: #ECFDF5; color: #047857; }
-    .status-pill-inactive { background: #FEF2F2; color: #B91C1C; }
+    .tag-pending   { background: #FEF3C7; color: #B45309; }
+    .tag-approved  { background: #EFF6FF; color: #1D4ED8; }
+    .tag-completed { background: #ECFDF5; color: #047857; }
+    .tag-rejected  { background: #FEF2F2; color: #BE123C; }
 
     /* Action Buttons */
-    .action-rail {
-        display: flex;
-        align-items: center;
-        gap: 0.45rem;
-    }
-    .btn-action-icon {
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
+    .btn-approve {
         display: inline-flex;
         align-items: center;
-        justify-content: center;
-        border: 1px solid #E2E8F0;
-        background: #FFFFFF;
+        gap: 0.35rem;
+        padding: 0.4rem 0.85rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #FFFFFF;
+        background: #059669;
+        border: none;
         cursor: pointer;
         transition: all 0.15s ease;
-        text-decoration: none;
     }
-    .btn-action-icon svg { width: 16px; height: 16px; }
-    .btn-action-icon.act-edit {
-        color: #1A237E;
-        background: #EEF2FF;
-        border-color: #C7D2FE;
-    }
-    .btn-action-icon.act-edit:hover {
-        background: #1A237E;
-        color: #FFFFFF;
-    }
-    .btn-action-icon.act-deactivate {
+    .btn-approve:hover { background: #047857; }
+
+    .btn-reject {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.4rem 0.85rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
         color: #DC2626;
         background: #FEF2F2;
+        border: 1px solid #FECACA;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .btn-reject:hover { background: #FEE2E2; }
+
+    .btn-delete-record {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-size: 0.775rem;
+        font-weight: 600;
+        color: #64748B;
+        background: #F1F5F9;
+        border: 1px solid #E2E8F0;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .btn-delete-record:hover {
+        background: #FEF2F2;
+        color: #DC2626;
         border-color: #FECACA;
     }
-    .btn-action-icon.act-deactivate:hover {
-        background: #DC2626;
-        color: #FFFFFF;
-    }
-    .btn-action-icon.act-activate {
-        color: #059669;
-        background: #ECFDF5;
-        border-color: #A7F3D0;
-    }
-    .btn-action-icon.act-activate:hover {
-        background: #059669;
-        color: #FFFFFF;
-    }
 
-    @media (max-width: 1199.98px) {
-        .officers-tbl th,
-        .officers-tbl td {
-            padding: 0.75rem 0.65rem;
-            font-size: 0.8125rem;
-        }
-        .officers-tbl th {
-            font-size: 0.7rem;
-            letter-spacing: 0.02em;
-        }
-        .btn-action-icon {
-            width: 30px;
-            height: 30px;
-        }
-        .btn-action-icon svg {
-            width: 14px;
-            height: 14px;
-        }
-        .role-tag {
-            padding: 0.2rem 0.5rem;
-            font-size: 0.7rem;
-        }
-        .status-pill {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.7rem;
-        }
-    }
-
-    /* ── Mobile Layout & Responsiveness (< 768px) ── */
-    .mobile-officers-list { display: none; }
-
+    /* ── Mobile Stacked Cards (< 768px) ── */
+    .mobile-requests-list { display: none; }
     @media (max-width: 767.98px) {
         .dash-banner {
             padding: 1.15rem 1.25rem;
             border-radius: 14px;
-            margin-bottom: 0.85rem;
+            margin-bottom: 1rem;
         }
         .dash-banner-title {
             font-size: 1.35rem;
@@ -505,84 +458,76 @@ $initials = count($words) >= 2
             font-size: 0.8rem;
         }
 
-        /* Compact KPI Strip on Mobile */
-        .officer-kpi-strip {
+        .reset-kpi-strip {
             grid-template-columns: repeat(2, 1fr);
             gap: 0.65rem;
-            margin-bottom: 0.95rem;
+            margin-bottom: 1.25rem;
         }
-        .officer-kpi-card {
+        .reset-kpi-card {
             padding: 0.85rem 0.95rem;
             gap: 0.65rem;
             border-radius: 14px;
             min-width: 0;
             overflow: hidden;
         }
-        .kpi-icon-wrap {
+        .kpi-icon-box {
             width: 38px;
             height: 38px;
             border-radius: 10px;
         }
-        .kpi-icon-wrap svg {
+        .kpi-icon-box svg {
             width: 18px;
             height: 18px;
         }
-        .officer-kpi-card .text-2xl {
+        .reset-kpi-card .text-2xl {
             font-size: 1.35rem;
             line-height: 1.2;
         }
-        .officer-kpi-card .text-xs {
+        .reset-kpi-card .text-xs {
             font-size: 0.7rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .officer-kpi-card .text-\[11px\] {
+        .reset-kpi-card .text-\[11px\] {
             font-size: 0.65rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .directory-shell {
+        .reset-shell {
             padding: 1rem 0.85rem;
             border-radius: 14px;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
         }
 
-        /* Toolbar & Filters on Mobile */
         .toolbar-rail {
             flex-direction: column;
             align-items: stretch;
-            justify-content: flex-start !important;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
+            gap: 0.35rem;
+            margin-bottom: 0.75rem;
         }
         .filter-rail {
             flex-direction: column;
             align-items: stretch;
             width: 100%;
             gap: 0.65rem;
-            flex: none !important;
         }
         .filter-item {
             width: 100%;
             max-width: 100%;
             min-width: 0;
-            flex: none !important;
         }
         .filter-item.filter-search {
             width: 100%;
             max-width: 100%;
             min-width: 0;
-            flex: none !important;
         }
         .filter-dropdown {
             width: 100%;
             max-width: 100%;
             min-width: 0;
-            flex: none !important;
-            height: auto !important;
         }
         .filter-search-wrap {
             width: 100%;
@@ -602,32 +547,26 @@ $initials = count($words) >= 2
             width: 100%;
             justify-content: center;
             height: 40px;
-            flex: none !important;
         }
         #showingCounter {
             width: 100%;
             font-size: 0.75rem;
             text-align: left;
-            margin: 0.15rem 0 0.35rem 0 !important;
+            margin-top: 0.2rem;
+            margin-bottom: 0.2rem;
             align-self: flex-start;
             color: #64748B;
         }
 
-        /* Table hidden, stacked cards shown */
-        .table-responsive-container {
-            display: none !important;
-            height: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-        .mobile-officers-list {
+        .table-container { display: none; }
+        .mobile-requests-list {
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
             width: 100%;
             min-width: 0;
         }
-        .mobile-officer-card {
+        .mobile-req-card {
             background: #FFFFFF;
             border: 1px solid #E2E8F0;
             border-radius: 14px;
@@ -641,7 +580,7 @@ $initials = count($words) >= 2
             overflow: hidden;
             box-sizing: border-box;
         }
-        .mobile-officer-head {
+        .mobile-req-head {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -649,7 +588,7 @@ $initials = count($words) >= 2
             gap: 0.5rem;
             width: 100%;
         }
-        .mobile-officer-body {
+        .mobile-req-body {
             display: flex;
             flex-direction: column;
             gap: 0.4rem;
@@ -661,12 +600,30 @@ $initials = count($words) >= 2
             min-width: 0;
             width: 100%;
         }
-        .mobile-officer-actions {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .mobile-req-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
             width: 100%;
             min-width: 0;
+        }
+        .mobile-req-actions .btn-reject,
+        .mobile-req-actions .btn-approve {
+            width: 100%;
+            justify-content: center;
+            padding: 0.55rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+        .mobile-req-actions .btn-delete-record {
+            grid-column: span 2;
+            width: 100%;
+            justify-content: center;
+            padding: 0.55rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: 10px;
+            box-sizing: border-box;
         }
 
         /* Pagination on Mobile */
@@ -691,14 +648,14 @@ $initials = count($words) >= 2
         .dash-banner {
             padding: 1rem;
         }
-        .officer-kpi-strip {
+        .reset-kpi-strip {
             grid-template-columns: 1fr;
             gap: 0.5rem;
         }
-        .directory-shell {
+        .reset-shell {
             padding: 0.85rem 0.65rem;
         }
-        .mobile-officer-card {
+        .mobile-req-card {
             padding: 0.85rem;
         }
     }
@@ -783,10 +740,25 @@ $initials = count($words) >= 2
             align-items: center;
             text-align: center;
             gap: 0.75rem;
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+        .pagination-info {
+            justify-content: center;
+            text-align: center;
+            font-size: 0.775rem;
         }
         .sc-pagination-controls {
             width: 100%;
             justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .sc-page-btn {
+            height: 36px;
+            min-width: 36px;
+            padding: 0 12px;
+            font-size: 0.775rem;
         }
     }
 </style>
@@ -794,14 +766,21 @@ $initials = count($words) >= 2
 {{-- Page Header Banner --}}
 <header class="dash-banner flex flex-col md:flex-row md:items-center justify-between gap-4 select-none">
     <div>
-        <div class="dash-banner-title">Officers Directory</div>
+        <div class="dash-banner-title">Password Reset Management</div>
         <div class="dash-banner-sub">
-            <span>MSWDO Silang — Staff &amp; Account Management</span>
+            <span>MSWDO Silang — Access Security &amp; Officer Account Recovery</span>
             <span class="opacity-40">•</span>
-            <span class="dash-live-badge">
-                <span class="dash-pulse-dot"></span>
-                <span>System Online</span>
-            </span>
+            @if(($stats['pending'] ?? 0) > 0)
+                <span class="inline-flex items-center gap-1.5 bg-amber-400/25 text-amber-200 border border-amber-300/30 text-xs font-bold px-3 py-1 rounded-full">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span>{{ $stats['pending'] }} Pending Authorization</span>
+                </span>
+            @else
+                <span class="dash-live-badge">
+                    <span class="dash-pulse-dot"></span>
+                    <span>All Requests Clear</span>
+                </span>
+            @endif
         </div>
     </div>
     <div class="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto">
@@ -815,99 +794,105 @@ $initials = count($words) >= 2
     </div>
 </header>
 
-{{-- Top KPI Strip --}}
-<section class="officer-kpi-strip">
-    <div class="officer-kpi-card kpi-card-indigo">
-        <div class="kpi-icon-wrap">
-            <i data-lucide="users"></i>
+{{-- Status KPI Cards --}}
+<section class="reset-kpi-strip">
+    <div class="reset-kpi-card card-kpi-indigo">
+        <div class="kpi-icon-box">
+            <i data-lucide="key"></i>
         </div>
         <div>
-            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Officers</div>
-            <div class="text-2xl font-bold text-slate-900 leading-tight">{{ number_format($officerStats['total'] ?? $officers->total()) }}</div>
-            <div class="text-[11px] text-slate-400">Registered System Accounts</div>
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Requests</div>
+            <div class="text-2xl font-bold text-slate-900 leading-tight">{{ number_format($stats['total'] ?? $requests->total()) }}</div>
+            <div class="text-[11px] text-slate-400">All Time Submissions</div>
         </div>
     </div>
 
-    <div class="officer-kpi-card kpi-card-sky">
-        <div class="kpi-icon-wrap">
-            <i data-lucide="shield"></i>
+    <div class="reset-kpi-card card-kpi-amber">
+        <div class="kpi-icon-box">
+            <i data-lucide="clock"></i>
         </div>
         <div>
-            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Administrators</div>
-            <div class="text-2xl font-bold text-slate-900 leading-tight">{{ number_format($officerStats['admins'] ?? 0) }}</div>
-            <div class="text-[11px] text-slate-400">Full Access Privileges</div>
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pending Review</div>
+            <div class="text-2xl font-bold text-amber-600 leading-tight">{{ number_format($stats['pending'] ?? 0) }}</div>
+            <div class="text-[11px] text-slate-400">Requires Admin Approval</div>
         </div>
     </div>
 
-    <div class="officer-kpi-card kpi-card-amber">
-        <div class="kpi-icon-wrap">
-            <i data-lucide="folder-heart"></i>
+    <div class="reset-kpi-card card-kpi-sky">
+        <div class="kpi-icon-box">
+            <i data-lucide="send"></i>
         </div>
         <div>
-            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Social Workers</div>
-            <div class="text-2xl font-bold text-slate-900 leading-tight">{{ number_format($officerStats['socialWorkers'] ?? 0) }}</div>
-            <div class="text-[11px] text-slate-400">Checkers &amp; Case Encoders</div>
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Link Dispatched</div>
+            <div class="text-2xl font-bold text-slate-900 leading-tight">{{ number_format($stats['approved'] ?? 0) }}</div>
+            <div class="text-[11px] text-slate-400">Email Sent to Officer</div>
         </div>
     </div>
 
-    <div class="officer-kpi-card kpi-card-emerald">
-        <div class="kpi-icon-wrap">
-            <i data-lucide="check-circle-2"></i>
+    <div class="reset-kpi-card card-kpi-emerald">
+        <div class="kpi-icon-box">
+            <i data-lucide="shield-check"></i>
         </div>
         <div>
-            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Active Status</div>
-            <div class="text-2xl font-bold text-slate-900 leading-tight">{{ number_format($officerStats['active'] ?? 0) }}</div>
-            <div class="text-[11px] text-slate-400">{{ number_format($officerStats['inactive'] ?? 0) }} currently inactive</div>
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Completed Resets</div>
+            <div class="text-2xl font-bold text-emerald-600 leading-tight">{{ number_format($stats['completed'] ?? 0) }}</div>
+            <div class="text-[11px] text-slate-400">Password Updated Successfully</div>
         </div>
     </div>
 </section>
 
 {{-- Alerts --}}
 @if(session('success'))
-    <div class="mb-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-3 shadow-sm" id="successAlert">
+    <div class="mb-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-3 shadow-sm">
         <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600 flex-shrink-0"></i>
         <span>{{ session('success') }}</span>
     </div>
 @endif
 
-{{-- Main Directory Container --}}
-<div class="directory-shell">
-    {{-- Search & Filter Toolbar --}}
+@if(session('error'))
+    <div class="mb-4 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center gap-3 shadow-sm">
+        <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-600 flex-shrink-0"></i>
+        <span>{{ session('error') }}</span>
+    </div>
+@endif
+
+{{-- Main Table Shell --}}
+<div class="reset-shell">
+    {{-- Filter Rail --}}
     <div class="toolbar-rail">
         <div class="filter-rail">
             <div class="filter-item filter-search">
                 <label class="filter-label">Search</label>
                 <div class="filter-search-wrap">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search by name, email, role..." value="{{ request()->get('search', '') }}" oninput="onSearchInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();handleSearch();}">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by name, email, or status..." value="{{ request()->get('search', '') }}" oninput="onSearchInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();handleSearch();}">
                     <button type="button" class="filter-search-btn" onclick="handleSearch()" title="Search">
                         <i data-lucide="search"></i>
                     </button>
                 </div>
             </div>
 
-            @php $curRole = request()->get('role', 'All Roles'); @endphp
-            <div class="filter-item filter-dropdown" id="roleDropdown">
-                <label class="filter-label">Filter by Role</label>
-                <div onclick="toggleRoleMenu(event)" class="filter-select-btn {{ ($curRole && $curRole !== 'All Roles') ? 'active' : '' }}" id="roleBtn">
-                    <span id="roleLabel" class="filter-select-label">{{ $curRole ?: 'All Roles' }}</span>
+            @php 
+                $curStatus = request()->get('status', 'All Status');
+                $statusLabels = [
+                    'All Status' => 'All Status',
+                    'pending' => 'Pending',
+                    'approved' => 'Approved',
+                    'completed' => 'Completed',
+                    'rejected' => 'Rejected',
+                ];
+                $curStatusLabel = $statusLabels[$curStatus] ?? $curStatus;
+            @endphp
+            <div class="filter-item filter-dropdown" id="statusDropdown">
+                <label class="filter-label">Filter by Status</label>
+                <div onclick="toggleStatusMenu(event)" class="filter-select-btn {{ ($curStatus && $curStatus !== 'All Status') ? 'active' : '' }}" id="statusBtn">
+                    <span id="statusLabel" class="filter-select-label">{{ $curStatusLabel }}</span>
                     <i data-lucide="chevron-down" style="width:16px;height:16px;color:#64748B;flex-shrink:0;transition:transform 0.2s;"></i>
                 </div>
-                <div id="roleMenu" class="filter-menu" style="display:none">
-                    @php
-                        $roles = [
-                            'All Roles',
-                            'Administrator',
-                            'Social Case Worker (Encoder)',
-                            'Social Case Worker (Checker)',
-                            'Senior Citizen Officer',
-                            'Financial Assistance Step 1',
-                            'Financial Assistance Step 2',
-                        ];
-                    @endphp
-                    @foreach($roles as $r)
-                        <div class="role-opt {{ $curRole === $r ? 'selected' : '' }}" data-value="{{ $r }}" onclick="selectRole('{{ $r }}')">
-                            <span>{{ $r }}</span>
-                            @if($curRole === $r)
+                <div id="statusMenu" class="filter-menu" style="display:none">
+                    @foreach($statusLabels as $val => $lbl)
+                        <div class="status-opt {{ $curStatus === $val ? 'selected' : '' }}" data-value="{{ $val }}" onclick="selectStatus('{{ $val }}', '{{ $lbl }}')">
+                            <span>{{ $lbl }}</span>
+                            @if($curStatus === $val)
                                 <i data-lucide="check" style="width:14px;height:14px;color:#1E3A8A;"></i>
                             @endif
                         </div>
@@ -922,109 +907,111 @@ $initials = count($words) >= 2
         </div>
 
         <div class="text-xs text-slate-500 font-medium" id="showingCounter">
-            @if($officers->total() > 0)
-                Showing <span class="font-bold text-slate-800">{{ $officers->firstItem() ?? 0 }}–{{ $officers->lastItem() ?? 0 }}</span> of <span class="font-bold text-slate-800">{{ $officers->total() }}</span> officers
+            @if($requests->total() > 0)
+                Showing <span class="font-bold text-slate-800">{{ $requests->firstItem() ?? 0 }}–{{ $requests->lastItem() ?? 0 }}</span> of <span class="font-bold text-slate-800">{{ $requests->total() }}</span> records
             @else
-                Showing <span class="font-bold text-slate-800">0</span> officers
+                Showing <span class="font-bold text-slate-800">0</span> records
             @endif
         </div>
     </div>
 
-    {{-- Desktop & Tablet Table --}}
-    <div class="table-responsive-container">
-        <table class="officers-tbl">
+    {{-- Desktop Table --}}
+    <div class="table-container">
+        <table class="reset-tbl">
             <thead>
                 <tr>
-                    <th style="width: 27%;">Officer</th>
-                    <th style="width: 28%;">Email Address</th>
-                    <th style="width: 21%;">Assigned Role</th>
-                    <th style="width: 12%;">Account Status</th>
-                    <th style="width: 12%; text-align:right;">Actions</th>
+                    <th>Officer Details</th>
+                    <th>Email Address</th>
+                    <th>Request Status</th>
+                    <th>Submitted At</th>
+                    <th>Expires At</th>
+                    <th>Processed By</th>
+                    <th style="text-align:right;">Actions</th>
                 </tr>
             </thead>
-            <tbody id="officersTableBody">
-                @forelse($officers as $officer)
+            <tbody id="resetTableBody">
+                @forelse($requests as $req)
                 @php
-                    $name = $officer->name ?? 'Officer';
-                    $words = explode(' ', trim($name));
+                    $userName = $req->user ? $req->user->name : 'Unregistered Officer';
+                    $words = explode(' ', trim($userName));
                     $init = count($words) >= 2 
                         ? strtoupper(substr($words[0],0,1).substr($words[1],0,1))
-                        : strtoupper(substr($name,0,2));
+                        : strtoupper(substr($userName,0,2));
 
-                    // Determine Role Label & Avatar Style
-                    $roleKey = is_object($officer->role) ? $officer->role->value : strtolower((string)$officer->role);
-                    $avatarClass = 'avatar-staff';
-                    $roleLabel = ucfirst(str_replace('_', ' ', $roleKey));
-
-                    if ($roleKey === 'admin') {
-                        $avatarClass = 'avatar-admin';
-                        $roleLabel = 'Administrator';
-                    } elseif (in_array($roleKey, ['social_worker', 'eligibility_checker'])) {
-                        $avatarClass = 'avatar-social';
-                        $roleLabel = $roleKey === 'social_worker' ? 'Social Worker (Encoder)' : 'Social Worker (Checker)';
-                    } elseif (str_contains($roleKey, 'senior')) {
-                        $avatarClass = 'avatar-senior';
-                        $roleLabel = 'Senior Citizen Officer';
-                    } elseif (str_contains($roleKey, 'financial')) {
-                        $avatarClass = 'avatar-financial';
-                        $roleLabel = $roleKey === 'financialstep1' ? 'Financial Asst. Step 1' : ($roleKey === 'financialstep2' ? 'Financial Asst. Step 2' : 'Financial Officer');
-                    }
-
-                    $statusVal = is_object($officer->status) ? $officer->status->value : $officer->status;
-                    $isActive = ($statusVal === 'active' || empty($statusVal));
+                    $tagClass = 'tag-pending';
+                    if ($req->status === 'approved') $tagClass = 'tag-approved';
+                    elseif ($req->status === 'completed') $tagClass = 'tag-completed';
+                    elseif ($req->status === 'rejected') $tagClass = 'tag-rejected';
                 @endphp
                 <tr>
-                    <td class="overflow-hidden">
-                        <div class="min-w-0">
-                            <div class="font-bold text-slate-900 truncate" title="{{ $name }}">{{ $name }}</div>
-                            <div class="text-[11px] text-slate-400 truncate">Enrolled {{ $officer->created_at ? $officer->created_at->format('M d, Y') : 'N/A' }}</div>
+                    <td>
+                        <div class="officer-cell">
+                            <div class="officer-avatar">{{ $init }}</div>
+                            <div>
+                                <div class="font-bold text-slate-900">{{ $userName }}</div>
+                                <div class="text-[11px] text-slate-400">{{ $req->user ? ucfirst(str_replace('_', ' ', $req->user->role ?? 'Staff')) : 'External Request' }}</div>
+                            </div>
                         </div>
                     </td>
-                    <td class="overflow-hidden">
-                        <div class="flex items-center gap-1.5 text-slate-600 text-sm min-w-0">
-                            <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
-                            <span class="truncate" title="{{ $officer->email ?? '-' }}">{{ $officer->email ?? '-' }}</span>
+                    <td>
+                        <div class="flex items-center gap-1.5 text-slate-600 text-sm">
+                            <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400"></i>
+                            <span>{{ $req->email }}</span>
                         </div>
                     </td>
-                    <td class="overflow-hidden">
-                        <span class="role-tag truncate max-w-full" title="{{ $roleLabel }}">{{ $roleLabel }}</span>
+                    <td>
+                        <span class="status-tag {{ $tagClass }}">
+                            <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                            <span>{{ ucfirst($req->status) }}</span>
+                        </span>
                     </td>
-                    <td style="white-space: nowrap;">
-                        @if($isActive)
-                            <span class="status-pill status-pill-active">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
-                                <span>Active</span>
-                            </span>
+                    <td>
+                        <div class="text-sm text-slate-700 font-medium">{{ $req->requested_at ? $req->requested_at->format('M d, Y') : '-' }}</div>
+                        <div class="text-[11px] text-slate-400">{{ $req->requested_at ? $req->requested_at->format('h:i A') : '' }}</div>
+                    </td>
+                    <td>
+                        @if($req->expires_at)
+                            <div class="text-sm {{ $req->isExpired() ? 'text-rose-600 font-medium' : 'text-slate-700' }}">
+                                {{ $req->expires_at->format('M d, Y') }}
+                            </div>
+                            <div class="text-[11px] {{ $req->isExpired() ? 'text-rose-500 font-bold' : 'text-slate-400' }}">
+                                {{ $req->isExpired() ? 'Expired' : $req->expires_at->format('h:i A') }}
+                            </div>
                         @else
-                            <span class="status-pill status-pill-inactive">
-                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
-                                <span>Inactive</span>
-                            </span>
+                            <span class="text-slate-400">-</span>
                         @endif
                     </td>
-                    <td style="text-align:right; white-space: nowrap;">
-                        <div class="action-rail justify-end">
-                            <a href="{{ route('admin.officers.edit', $officer->id) }}" class="btn-action-icon act-edit" title="Edit Officer Details">
-                                <i data-lucide="pencil"></i>
-                            </a>
-                            @if($isActive)
-                                <button type="button" class="btn-action-icon act-deactivate" title="Deactivate Officer Account" onclick="deactivateOfficer({{ $officer->id }}, '{{ addslashes($officer->name) }}')">
-                                    <i data-lucide="user-x"></i>
+                    <td>
+                        <span class="text-sm text-slate-600">{{ $req->processedBy ? $req->processedBy->name : 'Pending Action' }}</span>
+                    </td>
+                    <td style="text-align:right;">
+                        @if($req->status === 'pending')
+                            <div class="flex items-center justify-end gap-2">
+                                <button type="button" class="btn-approve" onclick="confirmApprove({{ $req->id }}, '{{ addslashes($userName) }}')">
+                                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                    <span>Approve</span>
                                 </button>
-                            @else
-                                <button type="button" class="btn-action-icon act-activate" title="Activate Officer Account" onclick="activateOfficer({{ $officer->id }}, '{{ addslashes($officer->name) }}')">
-                                    <i data-lucide="user-check"></i>
+                                <button type="button" class="btn-reject" onclick="confirmReject({{ $req->id }}, '{{ addslashes($userName) }}')">
+                                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                                    <span>Reject</span>
                                 </button>
-                            @endif
-                        </div>
+                            </div>
+                        @else
+                            <div class="flex items-center justify-end">
+                                <button type="button" class="btn-delete-record" onclick="confirmDelete({{ $req->id }}, '{{ addslashes($userName) }}')">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5 text-slate-400"></i>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        @endif
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="text-center py-10 text-slate-400">
-                        <i data-lucide="users" class="w-9 h-9 mx-auto mb-2 text-slate-300"></i>
-                        <div class="font-semibold text-slate-600">No officers found matching your criteria.</div>
-                        <div class="text-xs text-slate-400 mt-1">Try adjusting the search query or role filter.</div>
+                    <td colspan="7" class="text-center py-12 text-slate-400">
+                        <i data-lucide="shield-check" class="w-10 h-10 mx-auto mb-2 text-slate-300"></i>
+                        <div class="font-semibold text-slate-600">No password reset requests found.</div>
+                        <div class="text-xs text-slate-400 mt-1">Pending password recovery submissions from staff will appear here.</div>
                     </td>
                 </tr>
                 @endforelse
@@ -1033,74 +1020,70 @@ $initials = count($words) >= 2
     </div>
 
     {{-- Mobile Stacked Cards (< 768px) --}}
-    <div class="mobile-officers-list" id="mobileOfficersList">
-        @forelse($officers as $officer)
+    <div class="mobile-requests-list" id="mobileRequestsList">
+        @forelse($requests as $req)
         @php
-            $name = $officer->name ?? 'Officer';
-            $words = explode(' ', trim($name));
+            $userName = $req->user ? $req->user->name : 'Unregistered Officer';
+            $words = explode(' ', trim($userName));
             $init = count($words) >= 2 
                 ? strtoupper(substr($words[0],0,1).substr($words[1],0,1))
-                : strtoupper(substr($name,0,2));
+                : strtoupper(substr($userName,0,2));
 
-            $roleKey = is_object($officer->role) ? $officer->role->value : strtolower((string)$officer->role);
-            $avatarClass = 'avatar-staff';
-            $roleLabel = ucfirst(str_replace('_', ' ', $roleKey));
-            if ($roleKey === 'admin') { $avatarClass = 'avatar-admin'; $roleLabel = 'Administrator'; }
-            elseif (in_array($roleKey, ['social_worker', 'eligibility_checker'])) { $avatarClass = 'avatar-social'; $roleLabel = 'Social Worker'; }
-            elseif (str_contains($roleKey, 'senior')) { $avatarClass = 'avatar-senior'; $roleLabel = 'Senior Officer'; }
-            elseif (str_contains($roleKey, 'financial')) { $avatarClass = 'avatar-financial'; $roleLabel = 'Financial Officer'; }
-
-            $statusVal = is_object($officer->status) ? $officer->status->value : $officer->status;
-            $isActive = ($statusVal === 'active' || empty($statusVal));
+            $tagClass = 'tag-pending';
+            if ($req->status === 'approved') $tagClass = 'tag-approved';
+            elseif ($req->status === 'completed') $tagClass = 'tag-completed';
+            elseif ($req->status === 'rejected') $tagClass = 'tag-rejected';
         @endphp
-        <div class="mobile-officer-card">
-            <div class="mobile-officer-head">
-                <div class="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
-                    <div class="officer-avatar {{ $avatarClass }} flex-shrink-0" style="width:36px;height:36px;font-size:0.75rem;">{{ $init }}</div>
+        <div class="mobile-req-card">
+            <div class="mobile-req-head">
+                <div class="flex items-center gap-3 min-w-0 flex-1 mr-2">
+                    <div class="officer-avatar flex-shrink-0">{{ $init }}</div>
                     <div class="min-w-0 flex-1">
-                        <div class="font-bold text-slate-900 text-sm truncate leading-snug">{{ $name }}</div>
-                        <span class="role-tag text-[10px] py-0.5 px-2 mt-0.5">{{ $roleLabel }}</span>
+                        <div class="font-bold text-slate-900 text-sm truncate leading-snug">{{ $userName }}</div>
+                        <div class="text-xs text-slate-500 truncate mt-0.5">{{ $req->email }}</div>
                     </div>
                 </div>
-                @if($isActive)
-                    <span class="status-pill status-pill-active text-[11px] flex-shrink-0">Active</span>
+                <span class="status-tag {{ $tagClass }} text-[11px] flex-shrink-0">{{ ucfirst($req->status) }}</span>
+            </div>
+
+            <div class="mobile-req-body">
+                <div class="flex justify-between items-center text-xs gap-2">
+                    <span class="text-slate-500 flex-shrink-0">Requested:</span>
+                    <span class="font-medium text-slate-700 text-right truncate">{{ $req->requested_at ? $req->requested_at->format('M d, Y h:i A') : '-' }}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs gap-2">
+                    <span class="text-slate-500 flex-shrink-0">Expires:</span>
+                    <span class="font-medium text-right truncate {{ $req->isExpired() ? 'text-rose-600 font-bold' : 'text-slate-700' }}">
+                        {{ $req->expires_at ? ($req->isExpired() ? 'Expired' : $req->expires_at->format('M d, Y h:i A')) : '-' }}
+                    </span>
+                </div>
+                <div class="flex justify-between items-center text-xs gap-2">
+                    <span class="text-slate-500 flex-shrink-0">Processed By:</span>
+                    <span class="text-slate-700 text-right truncate font-medium">{{ $req->processedBy ? $req->processedBy->name : 'Pending' }}</span>
+                </div>
+            </div>
+
+            <div class="mobile-req-actions">
+                @if($req->status === 'pending')
+                    <button type="button" class="btn-reject" onclick="confirmReject({{ $req->id }}, '{{ addslashes($userName) }}')">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                        <span>Reject</span>
+                    </button>
+                    <button type="button" class="btn-approve" onclick="confirmApprove({{ $req->id }}, '{{ addslashes($userName) }}')">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                        <span>Approve Reset</span>
+                    </button>
                 @else
-                    <span class="status-pill status-pill-inactive text-[11px] flex-shrink-0">Inactive</span>
+                    <button type="button" class="btn-delete-record" onclick="confirmDelete({{ $req->id }}, '{{ addslashes($userName) }}')">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        <span>Delete Record</span>
+                    </button>
                 @endif
-            </div>
-
-            <div class="mobile-officer-body">
-                <div class="flex items-center gap-2 min-w-0">
-                    <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
-                    <span class="truncate">{{ $officer->email ?? '-' }}</span>
-                </div>
-                <div class="flex items-center gap-2 min-w-0">
-                    <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
-                    <span class="truncate">{{ $officer->phone ?? 'No phone' }}</span>
-                </div>
-            </div>
-
-            <div class="mobile-officer-actions">
-                <span class="text-[11px] text-slate-400">{{ $officer->created_at ? $officer->created_at->format('M d, Y') : '' }}</span>
-                <div class="action-rail">
-                    <a href="{{ route('admin.officers.edit', $officer->id) }}" class="btn-action-icon act-edit" title="Edit Officer">
-                        <i data-lucide="pencil"></i>
-                    </a>
-                    @if($isActive)
-                        <button type="button" class="btn-action-icon act-deactivate" title="Deactivate Officer" onclick="deactivateOfficer({{ $officer->id }}, '{{ addslashes($officer->name) }}')">
-                            <i data-lucide="user-x"></i>
-                        </button>
-                    @else
-                        <button type="button" class="btn-action-icon act-activate" title="Activate Officer" onclick="activateOfficer({{ $officer->id }}, '{{ addslashes($officer->name) }}')">
-                            <i data-lucide="user-check"></i>
-                        </button>
-                    @endif
-                </div>
             </div>
         </div>
         @empty
         <div class="text-center py-8 text-slate-400 text-sm">
-            No officers found matching your criteria.
+            No password reset requests found.
         </div>
         @endforelse
     </div>
@@ -1108,22 +1091,22 @@ $initials = count($words) >= 2
     {{-- Pagination Footer --}}
     <div class="pagination-footer" id="paginationFooter">
         <div class="pagination-info">
-            @if($officers->total() > 0)
+            @if($requests->total() > 0)
                 <span>Showing</span>
-                <span class="font-bold text-slate-800">{{ $officers->firstItem() ?? 0 }}–{{ $officers->lastItem() ?? 0 }}</span>
+                <span class="font-bold text-slate-800">{{ $requests->firstItem() ?? 0 }}–{{ $requests->lastItem() ?? 0 }}</span>
                 <span>of</span>
-                <span class="font-bold text-slate-800">{{ $officers->total() }}</span>
-                <span>officers</span>
+                <span class="font-bold text-slate-800">{{ $requests->total() }}</span>
+                <span>records</span>
                 <span class="text-slate-300 mx-1.5">•</span>
-                <span>Page <strong class="text-slate-800">{{ $officers->currentPage() }}</strong> of <strong class="text-slate-800">{{ $officers->lastPage() }}</strong></span>
+                <span>Page <strong class="text-slate-800">{{ $requests->currentPage() }}</strong> of <strong class="text-slate-800">{{ $requests->lastPage() }}</strong></span>
             @else
                 <span>Showing</span>
                 <span class="font-bold text-slate-800">0</span>
-                <span>officers</span>
+                <span>records</span>
             @endif
         </div>
         <div>
-            {{ $officers->appends(request()->only(['search', 'role', 'status', 'per_page']))->links('vendor.pagination.custom-simple') }}
+            {{ $requests->appends(request()->only(['search', 'status', 'per_page']))->links('vendor.pagination.custom-simple') }}
         </div>
     </div>
 </div>
@@ -1133,37 +1116,25 @@ $initials = count($words) >= 2
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof lucide !== 'undefined') lucide.createIcons();
-    updateClearButtonVisibility();
-    attachPaginationListeners();
-
-    // Live Clock with Philippine formatting
-    function updateLiveClock() {
-        const now = new Date();
-        const opts = { 
-            weekday: 'short', 
-            month: 'short', 
-            day: 'numeric', 
-            hour: 'numeric', 
-            minute: '2-digit', 
-            second: '2-digit', 
-            hour12: true 
-        };
-        const el = document.getElementById('liveClock');
-        if (el) el.textContent = now.toLocaleDateString('en-US', opts);
-    }
     updateLiveClock();
     setInterval(updateLiveClock, 1000);
+    attachPaginationListeners();
+    updateClearButtonVisibility();
 });
 
-function updateClearButtonVisibility() {
-    const searchInput = document.getElementById('searchInput');
-    const hasSearch = searchInput && searchInput.value.trim().length > 0;
-    const url = new URL(window.location.href);
-    const hasRole = url.searchParams.has('role') && url.searchParams.get('role') !== 'All Roles';
-    const clearBtn = document.getElementById('clearFiltersBtn');
-    if (clearBtn) {
-        clearBtn.style.display = (hasSearch || hasRole) ? 'inline-flex' : 'none';
-    }
+function updateLiveClock() {
+    const now = new Date();
+    const opts = { 
+        weekday: 'short', 
+        month: 'short', 
+        day: 'numeric', 
+        hour: 'numeric', 
+        minute: '2-digit', 
+        second: '2-digit', 
+        hour12: true 
+    };
+    const el = document.getElementById('liveClock');
+    if (el) el.textContent = now.toLocaleDateString('en-US', opts);
 }
 
 let searchDebounceTimer = null;
@@ -1176,7 +1147,7 @@ function onSearchInput() {
     // 1. Instant client-side row filter on current visible rows (0ms feedback)
     filterTableRows(q);
 
-    // 2. Debounced asynchronous server search (250ms) to query database without full page reload
+    // 2. Debounced asynchronous server search (250ms) to query database across all records without full page reload
     clearTimeout(searchDebounceTimer);
     searchDebounceTimer = setTimeout(function() {
         performLiveSearch(1);
@@ -1185,7 +1156,7 @@ function onSearchInput() {
 
 function filterTableRows(query) {
     const q = query.toLowerCase();
-    const rows = document.querySelectorAll('#officersTableBody tr, #mobileOfficersList .mobile-officer-card');
+    const rows = document.querySelectorAll('#resetTableBody tr, #mobileRequestsList .mobile-req-card');
     rows.forEach(function(row) {
         if (row.querySelector('td[colspan]')) return;
         const text = row.textContent.toLowerCase();
@@ -1215,8 +1186,8 @@ function performLiveSearch(page = 1) {
     // Update browser URL without reloading
     window.history.replaceState({}, '', url.toString());
 
-    const tableContainer = document.querySelector('.table-responsive-container');
-    const mobileContainer = document.getElementById('mobileOfficersList');
+    const tableContainer = document.querySelector('.table-container');
+    const mobileContainer = document.getElementById('mobileRequestsList');
     if (tableContainer) tableContainer.style.opacity = '0.65';
     if (mobileContainer) mobileContainer.style.opacity = '0.65';
 
@@ -1232,15 +1203,15 @@ function performLiveSearch(page = 1) {
         const doc = parser.parseFromString(html, 'text/html');
 
         // Update Desktop Table Body
-        const newTableBody = doc.getElementById('officersTableBody');
-        const oldTableBody = document.getElementById('officersTableBody');
+        const newTableBody = doc.getElementById('resetTableBody');
+        const oldTableBody = document.getElementById('resetTableBody');
         if (newTableBody && oldTableBody) {
             oldTableBody.innerHTML = newTableBody.innerHTML;
         }
 
         // Update Mobile List
-        const newMobileList = doc.getElementById('mobileOfficersList');
-        const oldMobileList = document.getElementById('mobileOfficersList');
+        const newMobileList = doc.getElementById('mobileRequestsList');
+        const oldMobileList = document.getElementById('mobileRequestsList');
         if (newMobileList && oldMobileList) {
             oldMobileList.innerHTML = newMobileList.innerHTML;
         }
@@ -1277,62 +1248,73 @@ function handleSearch() {
     performLiveSearch(1);
 }
 
-function toggleRoleMenu(e) {
+function toggleStatusMenu(e) {
     if (e) e.stopPropagation();
-    const menu = document.getElementById('roleMenu');
-    const arrow = document.querySelector('#roleBtn [data-lucide="chevron-down"]');
+    const menu = document.getElementById('statusMenu');
+    const arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
     if (!menu) return;
     const isHidden = (menu.style.display === 'none' || !menu.style.display);
     menu.style.display = isHidden ? 'block' : 'none';
     if (arrow) arrow.style.transform = isHidden ? 'rotate(180deg)' : '';
 }
 
-function selectRole(role) {
+function selectStatus(status, label) {
     clearTimeout(searchDebounceTimer);
     const url = new URL(window.location.href);
-    if (role && role !== 'All Roles') {
-        url.searchParams.set('role', role);
+    if (status && status !== 'All Status') {
+        url.searchParams.set('status', status);
     } else {
-        url.searchParams.delete('role');
+        url.searchParams.delete('status');
     }
     url.searchParams.set('page', '1');
     window.history.replaceState({}, '', url.toString());
 
     // Update label & button state
-    const label = document.getElementById('roleLabel');
-    if (label) label.textContent = role;
-    const btn = document.getElementById('roleBtn');
-    if (btn) btn.classList.toggle('active', role !== 'All Roles');
+    const labelEl = document.getElementById('statusLabel');
+    if (labelEl) labelEl.textContent = label || status;
+    const btn = document.getElementById('statusBtn');
+    if (btn) btn.classList.toggle('active', status !== 'All Status');
 
     // Update options selection
-    const opts = document.querySelectorAll('#roleMenu .role-opt');
+    const opts = document.querySelectorAll('#statusMenu .status-opt');
     opts.forEach(opt => {
         const val = opt.getAttribute('data-value');
-        opt.classList.toggle('selected', val === role);
+        opt.classList.toggle('selected', val === status);
         const check = opt.querySelector('svg');
-        if (check) check.style.display = (val === role) ? '' : 'none';
+        if (check) check.style.display = (val === status) ? '' : 'none';
     });
 
     // Close menu
-    const menu = document.getElementById('roleMenu');
+    const menu = document.getElementById('statusMenu');
     if (menu) menu.style.display = 'none';
-    const arrow = document.querySelector('#roleBtn [data-lucide="chevron-down"]');
+    const arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
     if (arrow) arrow.style.transform = '';
 
     updateClearButtonVisibility();
     performLiveSearch(1);
 }
 
-// Close role dropdown when clicking outside
+// Close status dropdown when clicking outside
 document.addEventListener('click', function(e) {
-    const roleDD = document.getElementById('roleDropdown');
-    if (roleDD && !roleDD.contains(e.target)) {
-        const menu = document.getElementById('roleMenu');
-        const arrow = document.querySelector('#roleBtn [data-lucide="chevron-down"]');
+    const statusDD = document.getElementById('statusDropdown');
+    if (statusDD && !statusDD.contains(e.target)) {
+        const menu = document.getElementById('statusMenu');
+        const arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
         if (menu) menu.style.display = 'none';
         if (arrow) arrow.style.transform = '';
     }
 });
+
+function updateClearButtonVisibility() {
+    const searchInput = document.getElementById('searchInput');
+    const hasSearch = searchInput && searchInput.value.trim().length > 0;
+    const url = new URL(window.location.href);
+    const hasStatus = url.searchParams.has('status') && url.searchParams.get('status') !== 'All Status';
+    const clearBtn = document.getElementById('clearFiltersBtn');
+    if (clearBtn) {
+        clearBtn.style.display = (hasSearch || hasStatus) ? 'inline-flex' : 'none';
+    }
+}
 
 function clearFilters() {
     clearTimeout(searchDebounceTimer);
@@ -1341,28 +1323,27 @@ function clearFilters() {
 
     const url = new URL(window.location.href);
     url.searchParams.delete('search');
-    url.searchParams.delete('role');
     url.searchParams.delete('status');
     url.searchParams.set('page', '1');
     window.history.replaceState({}, '', url.toString());
 
     // Reset dropdown UI
-    const label = document.getElementById('roleLabel');
-    if (label) label.textContent = 'All Roles';
-    const btn = document.getElementById('roleBtn');
+    const label = document.getElementById('statusLabel');
+    if (label) label.textContent = 'All Status';
+    const btn = document.getElementById('statusBtn');
     if (btn) btn.classList.remove('active');
 
-    const opts = document.querySelectorAll('#roleMenu .role-opt');
+    const opts = document.querySelectorAll('#statusMenu .status-opt');
     opts.forEach(opt => {
-        const isAll = opt.getAttribute('data-value') === 'All Roles';
+        const isAll = opt.getAttribute('data-value') === 'All Status';
         opt.classList.toggle('selected', isAll);
         const check = opt.querySelector('svg');
         if (check) check.style.display = isAll ? '' : 'none';
     });
 
-    const menu = document.getElementById('roleMenu');
+    const menu = document.getElementById('statusMenu');
     if (menu) menu.style.display = 'none';
-    const arrow = document.querySelector('#roleBtn [data-lucide="chevron-down"]');
+    const arrow = document.querySelector('#statusBtn [data-lucide="chevron-down"]');
     if (arrow) arrow.style.transform = '';
 
     updateClearButtonVisibility();
@@ -1386,22 +1367,21 @@ function attachPaginationListeners() {
     });
 }
 
-// Deactivate confirmation with SweetAlert2
-function deactivateOfficer(id, name) {
+function confirmApprove(id, name) {
     Swal.fire({
-        title: 'Deactivate Account?',
-        text: `Are you sure you want to deactivate ${name}? This officer will lose access to the MSWDO portal.`,
-        icon: 'warning',
+        title: 'Approve Password Reset?',
+        text: `Authorize password reset for ${name}? A secure reset link will be sent to their email.`,
+        icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#DC2626',
+        confirmButtonColor: '#059669',
         cancelButtonColor: '#64748B',
-        confirmButtonText: 'Yes, Deactivate',
+        confirmButtonText: 'Yes, Approve & Dispatch Link',
         cancelButtonText: 'Cancel'
     }).then((res) => {
         if (res.isConfirmed) {
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = `/admin/officers/${id}/deactivate`;
+            form.action = `/admin/password-reset/${id}/approve`;
             const token = document.querySelector('meta[name="csrf-token"]').content;
             form.innerHTML = `<input type="hidden" name="_token" value="${token}">`;
             document.body.appendChild(form);
@@ -1410,24 +1390,46 @@ function deactivateOfficer(id, name) {
     });
 }
 
-// Activate confirmation with SweetAlert2
-function activateOfficer(id, name) {
+function confirmReject(id, name) {
     Swal.fire({
-        title: 'Activate Account?',
-        text: `Are you sure you want to activate ${name}? This officer will be able to log in immediately.`,
-        icon: 'question',
+        title: 'Reject Password Reset?',
+        text: `Are you sure you want to reject the reset request for ${name}?`,
+        icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#059669',
+        confirmButtonColor: '#DC2626',
         cancelButtonColor: '#64748B',
-        confirmButtonText: 'Yes, Activate',
+        confirmButtonText: 'Yes, Reject',
         cancelButtonText: 'Cancel'
     }).then((res) => {
         if (res.isConfirmed) {
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = `/admin/officers/${id}/activate`;
+            form.action = `/admin/password-reset/${id}/reject`;
             const token = document.querySelector('meta[name="csrf-token"]').content;
             form.innerHTML = `<input type="hidden" name="_token" value="${token}">`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+}
+
+function confirmDelete(id, name) {
+    Swal.fire({
+        title: 'Delete Request Record?',
+        text: `Delete the password reset log for ${name}? This action cannot be undone.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#DC2626',
+        cancelButtonColor: '#64748B',
+        confirmButtonText: 'Yes, Delete',
+        cancelButtonText: 'Cancel'
+    }).then((res) => {
+        if (res.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/password-reset/${id}`;
+            const token = document.querySelector('meta[name="csrf-token"]').content;
+            form.innerHTML = `<input type="hidden" name="_token" value="${token}"><input type="hidden" name="_method" value="DELETE">`;
             document.body.appendChild(form);
             form.submit();
         }
