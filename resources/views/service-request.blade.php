@@ -22,7 +22,7 @@
     <!-- ========================= -->
     <!-- NAVBAR -->
     <!-- ========================= -->
-    <header class="sticky top-0 z-50 w-full bg-[#1A237E] shadow-sm">
+    <header class="sticky top-0 z-50 w-full shadow-sm" style="background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);">
         <div class="max-w-5xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16 sm:h-18">
                 @php
@@ -84,8 +84,8 @@
                     </div>
                 </a>
                 <!-- Desktop Back Navigation -->
-                <nav class="hidden lg:flex items-center text-sm text-slate-100 shrink-0">
-                    <a href="/" class="hover:text-white transition flex items-center gap-1.5 font-medium px-2.5 py-1.5 rounded hover:bg-white/10">
+                <nav class="hidden lg:flex items-center text-sm text-white/90 shrink-0">
+                    <a href="/" class="hover:text-[#FBC02D] transition flex items-center gap-1.5 font-medium px-2.5 py-1.5 rounded hover:bg-white/10">
                         <i data-lucide="arrow-left" class="w-4 h-4"></i>
                         <span>Back to Home</span>
                     </a>
@@ -118,7 +118,7 @@
             <p class="text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
                 TANGGAPAN NG KAGALINGANG PANLIPUNAN AT PAGPAPAUNLAD (MSWDO)
             </p>
-            <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#1A237E] tracking-tight">
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#b11116] tracking-tight">
                 SOCIAL CASE STUDY APPLICATION
             </h1>
             <p class="text-xs sm:text-sm text-slate-600 mt-1 max-w-xl mx-auto">
@@ -149,36 +149,36 @@
                     <p class="section-subtext">Client / Beneficiary — Piliin kung sino ang nangangailangan ng Social Case Study Report.</p>
 
                     <div class="space-y-2.5">
-                        <label class="flex items-center gap-3 p-3 sm:p-3.5 rounded border border-slate-200 hover:border-[#1A237E]/40 hover:bg-[#1A237E]/5 cursor-pointer transition select-none">
-                            <input type="radio" name="request_for" value="myself" required class="w-4 h-4 text-[#1A237E] focus:ring-[#1A237E] shrink-0">
+                        <label class="flex items-center gap-3 p-3 sm:p-3.5 rounded border border-slate-200 hover:border-[#b11116]/40 hover:bg-[#b11116]/5 cursor-pointer transition select-none">
+                            <input type="radio" name="request_for" value="myself" required class="w-4 h-4 text-[#b11116] focus:ring-[#b11116] shrink-0">
                             <div>
                                 <span class="block font-semibold text-slate-900 text-xs sm:text-sm">Sarili ko (Myself)</span>
                                 <span class="block text-[11px] sm:text-xs text-slate-500">Ako ang mismong nangangailangan ng Social Case Study Report.</span>
                             </div>
                         </label>
-                        <label class="flex items-center gap-3 p-3 sm:p-3.5 rounded border border-slate-200 hover:border-[#1A237E]/40 hover:bg-[#1A237E]/5 cursor-pointer transition select-none">
-                            <input type="radio" name="request_for" value="child" class="w-4 h-4 text-[#1A237E] focus:ring-[#1A237E] shrink-0">
+                        <label class="flex items-center gap-3 p-3 sm:p-3.5 rounded border border-slate-200 hover:border-[#b11116]/40 hover:bg-[#b11116]/5 cursor-pointer transition select-none">
+                            <input type="radio" name="request_for" value="child" class="w-4 h-4 text-[#b11116] focus:ring-[#b11116] shrink-0">
                             <div>
                                 <span class="block font-semibold text-slate-900 text-xs sm:text-sm">Aking Anak (My Child)</span>
                                 <span class="block text-[11px] sm:text-xs text-slate-500">Ang kahilingan ng Social Case Study ay para sa aking anak.</span>
                             </div>
                         </label>
-                        <label class="flex items-center gap-3 p-3 sm:p-3.5 rounded border border-slate-200 hover:border-[#1A237E]/40 hover:bg-[#1A237E]/5 cursor-pointer transition select-none">
-                            <input type="radio" name="request_for" value="parent" class="w-4 h-4 text-[#1A237E] focus:ring-[#1A237E] shrink-0">
+                        <label class="flex items-center gap-3 p-3 sm:p-3.5 rounded border border-slate-200 hover:border-[#b11116]/40 hover:bg-[#b11116]/5 cursor-pointer transition select-none">
+                            <input type="radio" name="request_for" value="parent" class="w-4 h-4 text-[#b11116] focus:ring-[#b11116] shrink-0">
                             <div>
                                 <span class="block font-semibold text-slate-900 text-xs sm:text-sm">Aking Magulang (My Parent)</span>
                                 <span class="block text-[11px] sm:text-xs text-slate-500">Ang kahilingan ay para sa aking magulang (tatay o nanay).</span>
                             </div>
                         </label>
-                        <label class="flex items-center gap-3 p-3 sm:p-3.5 rounded border border-slate-200 hover:border-[#1A237E]/40 hover:bg-[#1A237E]/5 cursor-pointer transition select-none">
-                            <input type="radio" name="request_for" value="family" class="w-4 h-4 text-[#1A237E] focus:ring-[#1A237E] shrink-0">
+                        <label class="flex items-center gap-3 p-3 sm:p-3.5 rounded border border-slate-200 hover:border-[#b11116]/40 hover:bg-[#b11116]/5 cursor-pointer transition select-none">
+                            <input type="radio" name="request_for" value="family" class="w-4 h-4 text-[#b11116] focus:ring-[#b11116] shrink-0">
                             <div>
                                 <span class="block font-semibold text-slate-900 text-xs sm:text-sm">Ibang Miyembro ng Pamilya (Family Member)</span>
                                 <span class="block text-[11px] sm:text-xs text-slate-500">Ang kahilingan ay para sa aming kasambahay o miyembro ng pamilya.</span>
                             </div>
                         </label>
-                        <label class="flex items-center gap-3 p-3 sm:p-3.5 rounded border border-slate-200 hover:border-[#1A237E]/40 hover:bg-[#1A237E]/5 cursor-pointer transition select-none">
-                            <input type="radio" name="request_for" value="assisting" class="w-4 h-4 text-[#1A237E] focus:ring-[#1A237E] shrink-0">
+                        <label class="flex items-center gap-3 p-3 sm:p-3.5 rounded border border-slate-200 hover:border-[#b11116]/40 hover:bg-[#b11116]/5 cursor-pointer transition select-none">
+                            <input type="radio" name="request_for" value="assisting" class="w-4 h-4 text-[#b11116] focus:ring-[#b11116] shrink-0">
                             <div>
                                 <span class="block font-semibold text-slate-900 text-xs sm:text-sm">Tinutulungang Kliyente / Kinatawan (Authorized Representative)</span>
                                 <span class="block text-[11px] sm:text-xs text-slate-500">Ako ay nag-aasikaso sa ngalan ng ibang tao o pasyente.</span>
@@ -360,7 +360,7 @@
                                     </label>
                                 </div>
                                 <div class="form-input-custom bg-slate-50 flex items-center gap-2 text-slate-700 font-semibold cursor-not-allowed">
-                                    <i data-lucide="file-check-2" class="w-4 h-4 text-[#1A237E] shrink-0"></i>
+                                    <i data-lucide="file-check-2" class="w-4 h-4 text-[#b11116] shrink-0"></i>
                                     <span class="text-sm">Social Case Study Report (SCSR)</span>
                                 </div>
                                 <input type="hidden" id="serviceType" name="service_type" value="social_case_study">
@@ -412,7 +412,7 @@
                     <!-- Documentary Checklist -->
                     <div class="bg-slate-50 border border-slate-200 rounded p-3 mb-4 text-xs leading-relaxed">
                         <p class="font-bold text-slate-700 mb-2 flex items-center gap-1.5">
-                            <i data-lucide="paperclip" class="w-3.5 h-3.5 text-[#1A237E]"></i>
+                            <i data-lucide="paperclip" class="w-3.5 h-3.5 text-[#b11116]"></i>
                             Mga Karaniwang Kinakailangang Dokumento para sa Social Case Study Report:
                         </p>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-slate-600">
@@ -436,9 +436,9 @@
                     </div>
 
                     <!-- Upload Area -->
-                    <div id="uploadArea" class="border-2 border-dashed border-[#1A237E]/40 rounded p-6 sm:p-8 text-center bg-slate-50/70 cursor-pointer transition-all duration-200 hover:bg-[#EEF2FF] hover:border-[#1A237E]">
-                        <i data-lucide="upload-cloud" class="w-10 h-10 mx-auto text-[#1A237E] mb-2.5"></i>
-                        <p class="text-[#1A237E] font-bold text-sm mb-1">Pindutin upang mag-upload ng files</p>
+                    <div id="uploadArea" class="border-2 border-dashed border-[#b11116]/40 rounded p-6 sm:p-8 text-center bg-slate-50/70 cursor-pointer transition-all duration-200 hover:bg-[#FEF2F2] hover:border-[#b11116]">
+                        <i data-lucide="upload-cloud" class="w-10 h-10 mx-auto text-[#b11116] mb-2.5"></i>
+                        <p class="text-[#b11116] font-bold text-sm mb-1">Pindutin upang mag-upload ng files</p>
                         <p class="text-slate-600 text-xs">o i-drag at i-drop ang mga dokumento rito</p>
                         <p class="text-slate-500 text-[11px] mt-2">Tinatanggap na format: PDF, DOC, DOCX, JPG, JPEG, PNG</p>
                         <p class="text-slate-500 text-[11px]">Pinakamalaking sukat: 10MB bawat file</p>
@@ -589,16 +589,16 @@
 
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
-            uploadArea.classList.add('bg-[#EEF2FF]', 'border-[#1A237E]');
+            uploadArea.classList.add('bg-[#FEF2F2]', 'border-[#b11116]');
         });
 
         uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('bg-[#EEF2FF]', 'border-[#1A237E]');
+            uploadArea.classList.remove('bg-[#FEF2F2]', 'border-[#b11116]');
         });
 
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
-            uploadArea.classList.remove('bg-[#EEF2FF]', 'border-[#1A237E]');
+            uploadArea.classList.remove('bg-[#FEF2F2]', 'border-[#b11116]');
             handleFileSelection(e.dataTransfer.files);
         });
 
@@ -615,7 +615,7 @@
                         title: 'Hindi Tinatanggap na Format',
                         text: `Hindi suportado ang uri ng "${file.name}". Pakilakip lamang ang PDF, DOC, DOCX, JPG, JPEG, o PNG.`,
                         icon: 'error',
-                        confirmButtonColor: '#1A237E'
+                        confirmButtonColor: '#b11116'
                     });
                     continue;
                 }
@@ -625,7 +625,7 @@
                         title: 'Masyadong Malaki ang File',
                         text: `Ang "${file.name}" ay lagpas sa pinahihintulutang 10MB na sukat.`,
                         icon: 'error',
-                        confirmButtonColor: '#1A237E'
+                        confirmButtonColor: '#b11116'
                     });
                     continue;
                 }
@@ -646,7 +646,7 @@
                 fileItem.className = 'flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded text-xs';
                 fileItem.innerHTML = `
                     <div class="flex items-center gap-2 min-w-0">
-                        <i data-lucide="file" class="w-4 h-4 text-[#1A237E] shrink-0"></i>
+                        <i data-lucide="file" class="w-4 h-4 text-[#b11116] shrink-0"></i>
                         <span class="text-slate-700 truncate font-medium">${file.name}</span>
                         <span class="text-slate-500 shrink-0">(${(file.size / 1024).toFixed(1)} KB)</span>
                     </div>
@@ -716,7 +716,7 @@
                         title: 'Aplikasyon Naisumite!',
                         text: 'Matagumpay na naisumite ang inyong aplikasyon para sa Social Case Study Report (SCSR). Susuriin ito ng MSWDO Social Worker para sa case evaluation.',
                         icon: 'success',
-                        confirmButtonColor: '#1A237E',
+                        confirmButtonColor: '#b11116',
                         confirmButtonText: 'Bumalik sa Home'
                     }).then(() => {
                         window.location.href = '/';

@@ -4,8 +4,10 @@
    ========================================================================== */
 
 :root {
-    --color-primary: #1A237E;
-    --color-primary-hover: #121858;
+    --color-primary: #b11116;
+    --color-primary-hover: #8A0D11;
+    --color-primary-dark: #68080B;
+    --accent-gold: #FBC02D;
     --color-surface: #FFFFFF;
     --color-background: #F1F5F9;
     --color-border: #CBD5E1;
@@ -185,7 +187,7 @@ select.form-input-custom {
 
 .form-input-custom:focus {
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.12);
+    box-shadow: 0 0 0 2px rgba(177, 17, 22, 0.15);
 }
 
 .form-input-custom:disabled,
@@ -215,7 +217,7 @@ select.form-input-custom {
 
 .form-radio-box:focus-within {
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.12);
+    box-shadow: 0 0 0 2px rgba(177, 17, 22, 0.15);
 }
 
 .form-radio-option {
@@ -297,10 +299,10 @@ select.form-input-custom {
     color: var(--color-primary);
     text-transform: uppercase;
     letter-spacing: 0.025em;
-    background-color: #EEF2FF;
+    background-color: #FEF2F2;
     padding: 0.2rem 0.55rem;
     border-radius: 3px;
-    border: 1px solid rgba(26, 35, 126, 0.15);
+    border: 1px solid rgba(177, 17, 22, 0.2);
 }
 
 .family-remove-btn {
@@ -350,7 +352,7 @@ select.form-input-custom {
 }
 
 .family-add-btn:hover {
-    background-color: #EEF2FF;
+    background-color: #FEF2F2;
     border-color: var(--color-primary-hover);
     color: var(--color-primary-hover);
 }
@@ -507,7 +509,7 @@ body.modal-open {
 }
 
 .advisory-modal-header {
-    background-color: #192534;
+    background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);
     padding: 0.875rem 1.25rem;
     color: #FFFFFF;
     flex-shrink: 0;
@@ -566,7 +568,7 @@ body.modal-open {
 }
 
 .advisory-btn-close {
-    background-color: #0c2340;
+    background-color: #b11116;
     color: #FFFFFF;
     font-weight: 600;
     font-size: 0.875rem;
@@ -578,7 +580,7 @@ body.modal-open {
 }
 
 .advisory-btn-close:hover {
-    background-color: #16365c;
+    background-color: #8A0D11;
 }
 
 /* =====================================
@@ -595,7 +597,7 @@ body.modal-open {
     max-height: calc(100vh - 64px);
     overflow-y: auto;
     z-index: 999;
-    background: #1A237E;
+    background: linear-gradient(180deg, #b11116 0%, #8A0D11 100%);
     transform: translateY(-8px);
     opacity: 0;
     visibility: hidden;

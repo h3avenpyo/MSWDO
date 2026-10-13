@@ -365,7 +365,7 @@ function showAdvisoryModal() {
     // Fallback to SweetAlert2 if custom DOM modal is not present
     if (typeof Swal !== 'undefined') {
         Swal.fire({
-            title: '<div class="w-full bg-[#192534] text-white text-left font-extrabold text-base px-6 py-4 -mx-6 -mt-6 rounded-t-xl uppercase tracking-wide">PAUNAWA</div>',
+            title: '<div class="w-full text-white text-left font-extrabold text-base px-6 py-4 -mx-6 -mt-6 rounded-t-xl uppercase tracking-wide" style="background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);">PAUNAWA</div>',
             html: `
                 <div class="text-left text-slate-700 text-sm sm:text-[15px] leading-relaxed space-y-4 pt-4">
                     <p>
@@ -381,13 +381,13 @@ function showAdvisoryModal() {
             `,
             showConfirmButton: true,
             confirmButtonText: 'Close',
-            confirmButtonColor: '#0c2340',
+            confirmButtonColor: '#b11116',
             buttonsStyling: true,
             allowOutsideClick: true,
             allowEscapeKey: true,
             customClass: {
                 popup: 'rounded-xl shadow-2xl p-6 border-0 max-w-md',
-                confirmButton: 'bg-[#0c2340] text-white px-6 py-2 rounded-lg font-semibold text-sm'
+                confirmButton: 'bg-[#b11116] hover:bg-[#8A0D11] text-white px-6 py-2 rounded-lg font-semibold text-sm'
             }
         });
     }
@@ -554,7 +554,7 @@ function initFinancialIntakeForm() {
                     title: 'Invalid Contact Number',
                     text: 'Numero ng Telepono ng Benepisyaryo must be strictly 11 digits (e.g., 09XXXXXXXXX).',
                     icon: 'warning',
-                    confirmButtonColor: '#1A237E'
+                    confirmButtonColor: '#b11116'
                 });
                 return;
             }
@@ -567,7 +567,7 @@ function initFinancialIntakeForm() {
                         title: 'Invalid Representative Contact',
                         text: 'Numero ng Telepono ng Kinatawan must be strictly 11 digits (e.g., 09XXXXXXXXX).',
                         icon: 'warning',
-                        confirmButtonColor: '#1A237E'
+                        confirmButtonColor: '#b11116'
                     });
                     return;
                 }
@@ -579,7 +579,7 @@ function initFinancialIntakeForm() {
                 text: 'Please confirm that all beneficiary identifying details are correct before submitting.',
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#1A237E',
+                confirmButtonColor: '#b11116',
                 cancelButtonColor: '#64748B',
                 confirmButtonText: 'Yes, Submit Application',
                 cancelButtonText: 'Review Form'
@@ -645,7 +645,7 @@ function initFinancialIntakeForm() {
                                 </div>
                             `,
                                 icon: 'success',
-                                confirmButtonColor: '#1A237E',
+                                confirmButtonColor: '#b11116',
                                 confirmButtonText: 'Bumalik sa Home',
                                 allowOutsideClick: false
                             }).then(() => {
@@ -676,7 +676,7 @@ function initFinancialIntakeForm() {
                                 title: '6-Month Policy Restriction',
                                 text: err.message || 'Beneficiary has already received financial assistance within the last 6 months.',
                                 icon: 'warning',
-                                confirmButtonColor: '#1A237E'
+                                confirmButtonColor: '#b11116'
                             });
                         } else {
                             let errorMsg = err.message || 'There was an error submitting your intake. Please check your form.';

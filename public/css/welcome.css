@@ -1,6 +1,52 @@
 /* ==========================================================================
    MSWDO Silang - Welcome Page Styles
+   Brand Red Theme (#b11116) with Yellow Accent (#FBC02D)
    ========================================================================== */
+
+:root {
+    --primary-red: #b11116;
+    --primary-red-hover: #8A0D11;
+    --primary-red-dark: #68080B;
+    --accent-gold: #FBC02D;
+}
+
+.text-primary {
+    color: #b11116 !important;
+}
+
+.bg-primary {
+    background-color: #b11116 !important;
+}
+
+.border-primary {
+    border-color: #b11116 !important;
+}
+
+/* Navbar Login button */
+.navbar-login-btn {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #FFFFFF !important;
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    padding: 0.45rem 1.25rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    white-space: nowrap;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navbar-login-btn:hover {
+    background-color: #FBC02D;
+    color: #1F2937 !important;
+    border-color: #FBC02D;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
 
 /* ===================================== */
 /* PROGRAMS IN ACTION (AUTOMATIC CAROUSEL) */
@@ -241,7 +287,7 @@
 .contact-title {
     font-size: 2rem;
     font-weight: 800;
-    color: #1A237E;
+    color: #b11116;
     margin-bottom: 0.75rem;
     letter-spacing: -0.025em;
 }
@@ -322,7 +368,7 @@
 .card-title {
     font-size: 1.15rem;
     font-weight: 800;
-    color: #1A237E;
+    color: #b11116;
     margin-bottom: 1.25rem;
     letter-spacing: -0.01em;
     display: flex;
@@ -366,7 +412,7 @@
 .info-icon {
     width: 1.35rem;
     height: 1.35rem;
-    color: #1A237E;
+    color: #b11116;
     margin-top: 0.15rem;
     flex-shrink: 0;
 }
@@ -405,18 +451,18 @@
 }
 
 .info-link:hover {
-    color: #1A237E;
+    color: #b11116;
     text-decoration: underline;
 }
 
 /* Emergency Hotlines Card */
 .emergency-card {
-    background-color: #1A237E;
+    background: linear-gradient(145deg, #b11116 0%, #8A0D11 100%);
     border-radius: 1rem;
     padding: 1.75rem;
     color: #FFFFFF;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 10px 25px -5px rgba(177, 17, 22, 0.25), 0 8px 10px -6px rgba(177, 17, 22, 0.2);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -527,8 +573,8 @@
 }
 
 .hotline-label {
-    color: #E2E8F0;
-    font-weight: 500;
+    color: #FFFFFF;
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -588,7 +634,7 @@ a.hotline-value:hover {
     max-height: calc(100vh - 60px);
     overflow-y: auto;
     z-index: 999;
-    background: #1A237E;
+    background: linear-gradient(180deg, #b11116 0%, #8A0D11 100%);
     transform: translateY(-8px);
     opacity: 0;
     visibility: hidden;

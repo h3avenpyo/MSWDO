@@ -21,7 +21,8 @@
     <!-- ========================= -->
     <!-- NAVBAR -->
     <!-- ========================= -->
-    <header class="fixed top-0 left-0 right-0 z-50 w-full shadow-lg" style="background: #1A237E;">
+    <header class="fixed top-0 left-0 right-0 z-50 w-full shadow-lg"
+        style="background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);">
         <div class="max-w-7xl mx-auto px-4">
             <div class="welcome-navbar flex items-center justify-between h-[60px] lg:h-20">
                 @php
@@ -75,13 +76,13 @@
                         </p>
                     </div>
                 </a>
-                <nav class="hidden lg:flex items-center gap-8 text-white/75">
-                    <a href="#home" class="hover:text-[#FBC02D] transition">Home</a>
-                    <a href="#services" class="hover:text-[#FBC02D] transition">Services</a>
-                    <a href="#about" class="hover:text-[#FBC02D] transition">About</a>
-                    <a href="#programs" class="hover:text-[#FBC02D] transition">Programs</a>
-                    <a href="#contact" class="hover:text-[#FBC02D] transition">Contact</a>
-                    <a href="/admin" class="navbar-login-btn">Login</a>
+                <nav class="hidden lg:flex items-center gap-8 text-white/90">
+                    <a href="#home" class="hover:text-[#FBC02D] transition font-medium">Home</a>
+                    <a href="#services" class="hover:text-[#FBC02D] transition font-medium">Services</a>
+                    <a href="#about" class="hover:text-[#FBC02D] transition font-medium">About</a>
+                    <a href="#programs" class="hover:text-[#FBC02D] transition font-medium">Programs</a>
+                    <a href="#contact" class="hover:text-[#FBC02D] transition font-medium">Contact</a>
+                    {{-- <a href="/admin" class="navbar-login-btn">Login</a> --}}
                 </nav>
             </div>
         </div>
@@ -157,9 +158,9 @@
                 <!-- Simple Elegant Eyebrow Tag -->
                 <p
                     class="text-xs sm:text-sm font-bold tracking-wider uppercase mb-2 sm:mb-2.5 lg:mb-2 xl:mb-4 leading-normal">
-                    <span class="text-[#1A237E]">Official Portal</span>
+                    <span class="text-[#b11116]">Official Portal</span>
                     <span class="text-[#FBC02D] mx-1.5 sm:mx-2">&bull;</span>
-                    <span class="text-[#D32F2F]">Municipality of Silang</span>
+                    <span class="text-[#b11116]">Municipality of Silang</span>
                 </p>
 
                 <!-- Headline -->
@@ -169,7 +170,7 @@
                         Municipal Social Welfare &amp; Development Office
                     </span>
                     <span
-                        class="block text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-black text-[#D32F2F] uppercase tracking-normal leading-none mt-0.5 sm:mt-1">
+                        class="block text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-black text-[#b11116] uppercase tracking-normal leading-none mt-0.5 sm:mt-1">
                         SILANG
                     </span>
                 </h1>
@@ -177,7 +178,7 @@
                 <!-- Subtitle -->
                 <p
                     class="text-base sm:text-lg md:text-xl lg:text-lg xl:text-2xl font-bold text-[#1F2937] mt-2.5 sm:mt-3.5 lg:mt-3 xl:mt-5 tracking-tight leading-snug">
-                    Empowering &amp; Uplifting <span class="text-[#D32F2F] font-extrabold">Every Silangueño</span>,
+                    Empowering &amp; Uplifting <span class="text-[#b11116] font-extrabold">Every Silangueño</span>,
                     Together.
                 </p>
 
@@ -192,11 +193,11 @@
                 <div
                     class="mt-4 sm:mt-6 lg:mt-4 xl:mt-8 flex flex-row items-center justify-center gap-2.5 sm:gap-3.5 w-full sm:w-auto">
                     <a href="#services"
-                        class="flex-1 sm:flex-none sm:w-auto text-center bg-[#1A237E] text-white px-6 sm:px-8 xl:px-9 py-2.5 sm:py-3.5 rounded-xl text-sm sm:text-base xl:text-lg font-bold hover:bg-[#111827] hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition duration-200">
+                        class="flex-1 sm:flex-none sm:w-auto text-center bg-[#b11116] text-white px-6 sm:px-8 xl:px-9 py-2.5 sm:py-3.5 rounded-xl text-sm sm:text-base xl:text-lg font-bold hover:bg-[#8A0D11] hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition duration-200">
                         Explore Services
                     </a>
                     <a href="#contact"
-                        class="flex-1 sm:flex-none sm:w-auto text-center border-2 border-[#CBD5E1] text-[#1F2937] hover:border-[#1A237E] hover:text-[#1A237E] px-6 sm:px-8 xl:px-9 py-2.5 sm:py-3.5 rounded-xl text-sm sm:text-base xl:text-lg font-bold hover:-translate-y-0.5 active:translate-y-0 transition duration-200">
+                        class="flex-1 sm:flex-none sm:w-auto text-center border-2 border-[#CBD5E1] text-[#1F2937] hover:border-[#b11116] hover:text-[#b11116] px-6 sm:px-8 xl:px-9 py-2.5 sm:py-3.5 rounded-xl text-sm sm:text-base xl:text-lg font-bold hover:-translate-y-0.5 active:translate-y-0 transition duration-200">
                         Contact Us
                     </a>
                 </div>
@@ -211,10 +212,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
 
             <div
-                class="relative bg-white rounded-2xl sm:rounded-3xl lg:rounded-[2.5rem] shadow-[0_20px_50px_rgba(21,61,107,0.08)] p-6 sm:p-8 lg:p-12 border border-slate-100 -mt-16 sm:-mt-20 lg:-mt-16 xl:-mt-24 mb-16">
+                class="relative bg-white rounded-2xl sm:rounded-3xl lg:rounded-[2.5rem] shadow-[0_20px_50px_rgba(177,17,22,0.06)] p-6 sm:p-8 lg:p-12 border border-slate-100 -mt-16 sm:-mt-20 lg:-mt-16 xl:-mt-24 mb-16">
                 <div class="text-center mb-8 sm:mb-12">
 
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-primary mt-2">Get Started with Our Online
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-[#b11116] mt-2">Get Started with Our Online
                         Services</h2>
                     <p class="text-slate-500 mt-2 text-xs sm:text-sm max-w-md mx-auto">Providing quality welfare
                         services and
@@ -234,7 +235,7 @@
                                         d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-12 9h10.5M5.25 10.5h13.5m-12 3h10.5" />
                                 </svg>
                             </div>
-                            <h3 class="font-bold text-lg sm:text-xl text-primary">Financial Assistance</h3>
+                            <h3 class="font-bold text-lg sm:text-xl text-[#b11116]">Financial Assistance</h3>
                             <p class="text-slate-600 text-xs sm:text-sm mt-3 leading-relaxed">
                                 Emergency financial, medical, burial, and transportation assistance for individuals and
                                 families in crisis.
@@ -252,24 +253,24 @@
                     </div>
                     <!-- Service 2: Social Case Study -->
                     <div
-                        class="group bg-slate-50 hover:bg-white hover:border-emerald-500/40 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
-                                class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+                                class="w-12 h-12 rounded-xl bg-warm-gold/10 text-warm-gold flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                     stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                 </svg>
                             </div>
-                            <h3 class="font-bold text-lg sm:text-xl text-primary">Social Case Study</h3>
+                            <h3 class="font-bold text-lg sm:text-xl text-[#b11116]">Social Case Study</h3>
                             <p class="text-slate-600 text-xs sm:text-sm mt-3 leading-relaxed">
                                 Formal social case study reports for hospitalization, medicines, burial referrals, and
                                 government benefits support.
                             </p>
                         </div>
                         <a href="/service-request"
-                            class="mt-6 flex items-center text-emerald-600 font-bold text-[10px] sm:text-xs uppercase tracking-wider gap-1.5 group-hover:translate-x-1 transition duration-200 cursor-pointer">
+                            class="mt-6 flex items-center text-warm-gold font-bold text-[10px] sm:text-xs uppercase tracking-wider gap-1.5 group-hover:translate-x-1 transition duration-200 cursor-pointer">
                             Request Report
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
                                 stroke="currentColor" class="w-3.5 h-3.5">
@@ -289,12 +290,12 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
                 <div>
-                    <span class="text-primary font-semibold uppercase tracking-widest">
+                    <span class="text-[#b11116] font-semibold uppercase tracking-widest">
                         About Us
                     </span>
                     <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mt-4">
                         Serving the People of
-                        <span class="text-primary">Silang</span>
+                        <span class="text-[#b11116]">Silang</span>
                     </h2>
                     <p class="mt-6 sm:mt-8 text-base sm:text-lg leading-7 sm:leading-8 text-secondary">
                         The Municipal Social Welfare and Development Office (MSWDO)
@@ -361,11 +362,12 @@
     <section class="py-16 sm:py-20 lg:py-24 bg-offwhite">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="grid lg:grid-cols-2 gap-6 lg:gap-10">
-                <div class="bg-primary text-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-xl">
-                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 sm:mb-8">
+                <div class="text-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-xl"
+                    style="background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);">
+                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 sm:mb-8 text-white">
                         Mission
                     </h2>
-                    <p class="text-base sm:text-lg leading-7 sm:leading-8">
+                    <p class="text-base sm:text-lg leading-7 sm:leading-8 text-white">
                         To provide efficient, compassionate, and accessible social welfare
                         services that improve the quality of life of every Silangueño through
                         people-centered programs, community participation, and sustainable
@@ -376,7 +378,7 @@
                     <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-6 sm:mb-8">
                         Vision
                     </h2>
-                    <p class="text-base sm:text-lg leading-7 sm:leading-8 text-slate-800">
+                    <p class="text-base sm:text-lg leading-7 sm:leading-8 text-slate-900">
                         A resilient, inclusive, and empowered municipality where every citizen
                         has equal access to opportunities, protection, and quality social
                         services.
@@ -401,14 +403,14 @@
             <div class="flex flex-wrap justify-center gap-4 sm:gap-6 lg:gap-8 mt-8 sm:mt-12 lg:mt-16">
                 <div class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
-                        class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-primary text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                        class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-[#b11116] text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold shadow-md">
                         1
                     </div>
                     <h3 class="font-bold text-xs sm:text-sm md:text-base mt-3 sm:mt-4 md:mt-6">
                         Submit Request
                     </h3>
                 </div>
-                <div class="hidden lg:flex items-center justify-center text-primary -mt-8 sm:-mt-10 md:-mt-12">
+                <div class="hidden lg:flex items-center justify-center text-[#b11116] -mt-8 sm:-mt-10 md:-mt-12">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -416,14 +418,14 @@
                 </div>
                 <div class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
-                        class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-primary text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                        class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-[#b11116] text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold shadow-md">
                         2
                     </div>
                     <h3 class="font-bold text-xs sm:text-sm md:text-base mt-3 sm:mt-4 md:mt-6">
                         Document Review
                     </h3>
                 </div>
-                <div class="hidden lg:flex items-center justify-center text-primary -mt-8 sm:-mt-10 md:-mt-12">
+                <div class="hidden lg:flex items-center justify-center text-[#b11116] -mt-8 sm:-mt-10 md:-mt-12">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -431,14 +433,14 @@
                 </div>
                 <div class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
-                        class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-primary text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                        class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-[#b11116] text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold shadow-md">
                         3
                     </div>
                     <h3 class="font-bold text-xs sm:text-sm md:text-base mt-3 sm:mt-4 md:mt-6">
                         Assessment
                     </h3>
                 </div>
-                <div class="hidden lg:flex items-center justify-center text-primary -mt-8 sm:-mt-10 md:-mt-12">
+                <div class="hidden lg:flex items-center justify-center text-[#b11116] -mt-8 sm:-mt-10 md:-mt-12">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -446,14 +448,14 @@
                 </div>
                 <div class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
-                        class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-primary text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                        class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-[#b11116] text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold shadow-md">
                         4
                     </div>
                     <h3 class="font-bold text-xs sm:text-sm md:text-base mt-3 sm:mt-4 md:mt-6">
                         Approval
                     </h3>
                 </div>
-                <div class="hidden lg:flex items-center justify-center text-primary -mt-8 sm:-mt-10 md:-mt-12">
+                <div class="hidden lg:flex items-center justify-center text-[#b11116] -mt-8 sm:-mt-10 md:-mt-12">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -461,7 +463,7 @@
                 </div>
                 <div class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
-                        class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-warm-gold text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                        class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-warm-gold text-slate-900 flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold shadow-md">
                         5
                     </div>
                     <h3 class="font-bold text-xs sm:text-sm md:text-base mt-3 sm:mt-4 md:mt-6">
@@ -535,23 +537,24 @@
     <!-- ===================================== -->
     <!-- CALL TO ACTION -->
     <!-- ===================================== -->
-    <section class="py-16 sm:py-20 bg-primary relative overflow-hidden">
+    <section class="py-16 sm:py-20 relative overflow-hidden"
+        style="background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);">
         <div class="max-w-5xl mx-auto text-center px-4 sm:px-6 relative z-10">
             <h2 class="text-2xl sm:text-3xl lg:text-4xl sm:text-5xl font-bold text-white">
                 Need Social Assistance?
             </h2>
-            <p class="text-offwhite mt-4 sm:mt-6 text-base sm:text-lg sm:text-xl max-w-2xl mx-auto">
+            <p class="text-white/90 mt-4 sm:mt-6 text-base sm:text-lg sm:text-xl max-w-2xl mx-auto">
                 Our dedicated team is ready to assist you with your concerns. Select your required social service below
                 to proceed.
             </p>
             <div class="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
                 <a href="/financial-assistance"
-                    class="bg-warm-gold text-[#1F2937] px-8 sm:px-10 py-4 rounded-xl font-bold hover:scale-105 transition shadow-lg inline-flex items-center justify-center text-base sm:text-lg gap-2.5">
+                    class="bg-warm-gold text-slate-900 px-8 sm:px-10 py-4 rounded-xl font-bold hover:scale-105 hover:bg-[#F9A825] transition shadow-lg inline-flex items-center justify-center text-base sm:text-lg gap-2.5">
                     <i data-lucide="hand-coins" class="w-5 h-5"></i>
                     <span>Financial Assistance</span>
                 </a>
                 <a href="/service-request"
-                    class="bg-warm-gold text-[#1F2937] px-8 sm:px-10 py-4 rounded-xl font-bold hover:scale-105 transition shadow-lg inline-flex items-center justify-center text-base sm:text-lg gap-2.5">
+                    class="bg-warm-gold text-slate-900 px-8 sm:px-10 py-4 rounded-xl font-bold hover:scale-105 hover:bg-[#F9A825] transition shadow-lg inline-flex items-center justify-center text-base sm:text-lg gap-2.5">
                     <i data-lucide="file-text" class="w-5 h-5"></i>
                     <span>Social Case Study</span>
                 </a>
@@ -576,7 +579,7 @@
                 <div class="contact-card">
                     <h3 class="card-title">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
-                            stroke="currentColor" class="w-5 h-5 text-primary shrink-0">
+                            stroke="currentColor" class="w-5 h-5 text-[#b11116] shrink-0">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.333A2.25 2.25 0 0 0 18 8.083h-3.75V6.75a2.25 2.25 0 0 0-4.5 0v1.333H6a2.25 2.25 0 0 0-2.25 2.25V21" />
                         </svg>
@@ -646,72 +649,56 @@
                     </div>
                     <div id="emergencyGrid" class="emergency-grid">
                         <div class="hotline-item">
-                            <span class="hotline-label">Silang Municipal Office:</span>
-                            <a href="tel:0464140202" class="hotline-value">(046) 414-0202</a>
+                            <span class="hotline-label text-warm-gold font-bold">Nationwide Emergency Hotline:</span>
+                            <a href="tel:911" class="hotline-value font-bold text-base">911</a>
                         </div>
                         <div class="hotline-item">
-                            <span class="hotline-label">PDRRMO (Silang):</span>
-                            <a href="tel:0464240203" class="hotline-value">(046) 424-0203</a>
+                            <span class="hotline-label">MDRRMO:</span>
+                            <a href="tel:09356016738" class="hotline-value">0935-601-6738</a>
                         </div>
                         <div class="hotline-item">
-                            <span class="hotline-label">PNP WCPD – Silang:</span>
-                            <a href="tel:09983970222" class="hotline-value">0998-397-0222</a>
+                            <span class="hotline-label">MDRRMO:</span>
+                            <a href="tel:09223846130" class="hotline-value">0922-384-6130</a>
                         </div>
                         <div class="hotline-item">
-                            <span class="hotline-label">Silang PNP Mobile:</span>
+                            <span class="hotline-label">MDRRMO:</span>
+                            <a href="tel:0464143776" class="hotline-value">(046) 414-3776</a>
+                        </div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">PNP:</span>
+                            <a href="tel:09959878996" class="hotline-value">0995-987-8996</a>
+                        </div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">PNP:</span>
                             <a href="tel:09985985622" class="hotline-value">0998-598-5622</a>
                         </div>
                         <div class="hotline-item hidden-mobile">
-                            <span class="hotline-label">DSWD AICS:</span>
-                            <a href="tel:89622813" class="hotline-value">8962-2813</a>
+                            <span class="hotline-label">PNP:</span>
+                            <a href="tel:0464140204" class="hotline-value">(046) 414-0204</a>
                         </div>
                         <div class="hotline-item hidden-mobile">
-                            <span class="hotline-label">DSWD Central Office:</span>
-                            <a href="tel:89318101" class="hotline-value">8-931-8101</a>
+                            <span class="hotline-label">Central BFP:</span>
+                            <a href="tel:09455595557" class="hotline-value">0945-559-5557</a>
                         </div>
                         <div class="hotline-item hidden-mobile">
-                            <span class="hotline-label">DSWD Mobile:</span>
-                            <a href="tel:09199116200" class="hotline-value">0919-911-6200</a>
+                            <span class="hotline-label">Central BFP:</span>
+                            <a href="tel:0464140484" class="hotline-value">(046) 414-0484</a>
                         </div>
                         <div class="hotline-item hidden-mobile">
-                            <span class="hotline-label">Makabata Helpline:</span>
-                            <a href="tel:1383" class="hotline-value">1383</a>
+                            <span class="hotline-label">Bulihan BFP Sub-Station:</span>
+                            <a href="tel:09304308892" class="hotline-value">0930-430-8892</a>
                         </div>
                         <div class="hotline-item hidden-mobile">
-                            <span class="hotline-label">Bantay Bata Hotline:</span>
-                            <a href="tel:163" class="hotline-value">163</a>
+                            <span class="hotline-label">Bulihan BFP Sub-Station:</span>
+                            <a href="tel:0464439457" class="hotline-value">(046) 443-9457</a>
                         </div>
                         <div class="hotline-item hidden-mobile">
-                            <span class="hotline-label">Emergency (All):</span>
-                            <a href="tel:911" class="hotline-value">911</a>
+                            <span class="hotline-label">Inchican BFP Sub-Station:</span>
+                            <a href="tel:09563992123" class="hotline-value">0956-399-2123</a>
                         </div>
                         <div class="hotline-item hidden-mobile">
-                            <span class="hotline-label">NCMH Mental Health:</span>
-                            <a href="tel:1553" class="hotline-value">1553</a>
-                        </div>
-                        <div class="hotline-item hidden-mobile">
-                            <span class="hotline-label">Complaints Hotline:</span>
-                            <a href="tel:8888" class="hotline-value">8888</a>
-                        </div>
-                        <div class="hotline-item hidden-mobile">
-                            <span class="hotline-label">Anti-Trafficking Line:</span>
-                            <a href="tel:1343" class="hotline-value">1343</a>
-                        </div>
-                        <div class="hotline-item hidden-mobile">
-                            <span class="hotline-label">PNP Women's Desk:</span>
-                            <a href="tel:117" class="hotline-value">117</a>
-                        </div>
-                        <div class="hotline-item hidden-mobile">
-                            <span class="hotline-label">Medical Assistance:</span>
-                            <a href="tel:1555" class="hotline-value">1555</a>
-                        </div>
-                        <div class="hotline-item hidden-mobile">
-                            <span class="hotline-label">DOH Hotline:</span>
-                            <a href="tel:894COVID" class="hotline-value">894-COVID</a>
-                        </div>
-                        <div class="hotline-item hidden-mobile">
-                            <span class="hotline-label">DSWD Help:</span>
-                            <a href="tel:09329333251" class="hotline-value">0932-933-3251</a>
+                            <span class="hotline-label">Inchican BFP Sub-Station:</span>
+                            <a href="tel:0464209989" class="hotline-value">(046) 420-9989</a>
                         </div>
                     </div>
                     <button id="showAllHotlines"
@@ -725,24 +712,24 @@
     <!-- ===================================== -->
     <!-- FOOTER -->
     <!-- ===================================== -->
-    <footer class="bg-primary text-white">
+    <footer class="text-white" style="background: linear-gradient(180deg, #8A0D11 0%, #68080B 100%);">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 lg:py-20">
             <div class="grid gap-6 sm:gap-8 lg:gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4">
                 <div class="hidden sm:block lg:col-span-1">
-                    <h2 class="text-2xl sm:text-3xl font-bold">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">
                         MSWDO Silang
                     </h2>
-                    <p class="mt-4 sm:mt-5 text-offwhite leading-7 sm:leading-8 text-sm sm:text-base hidden lg:block">
+                    <p class="mt-4 sm:mt-5 text-white/80 leading-7 sm:leading-8 text-sm sm:text-base hidden lg:block">
                         Municipal Social Welfare and Development Office committed to
                         providing quality, transparent, and compassionate public
                         service.
                     </p>
                 </div>
                 <div class="hidden sm:block">
-                    <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5">
+                    <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-white">
                         Quick Links
                     </h3>
-                    <ul class="space-y-2 sm:space-y-3 text-offwhite text-sm sm:text-base">
+                    <ul class="space-y-2 sm:space-y-3 text-white/80 text-sm sm:text-base">
                         <li><a href="#home" class="hover:text-warm-gold transition">Home</a></li>
                         <li><a href="#services" class="hover:text-warm-gold transition">Services</a></li>
                         <li><a href="#about" class="hover:text-warm-gold transition">About</a></li>
@@ -750,10 +737,10 @@
                     </ul>
                 </div>
                 <div class="hidden lg:block">
-                    <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5">
+                    <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-white">
                         Programs
                     </h3>
-                    <ul class="space-y-2 sm:space-y-3 text-offwhite text-sm sm:text-base">
+                    <ul class="space-y-2 sm:space-y-3 text-white/80 text-sm sm:text-base">
                         <li>Financial Assistance</li>
                         <li>VAWC</li>
                         <li>BCPC</li>
@@ -763,18 +750,19 @@
                     </ul>
                 </div>
                 <div class="hidden lg:block">
-                    <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5">
+                    <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-white">
                         Office Hours
                     </h3>
-                    <p class="text-offwhite leading-6 sm:leading-7 text-sm sm:text-base">
+                    <p class="text-white/80 leading-6 sm:leading-7 text-sm sm:text-base">
                         Monday - Friday
                         <br><br>
                         8:00 AM - 5:00 PM
                     </p>
                 </div>
             </div>
-            <div class="mt-8 sm:mt-12 lg:mt-16 flex justify-center items-center text-[10px] sm:text-xs sm:text-sm">
-                <p class="text-offwhite text-center">
+            <div
+                class="mt-8 sm:mt-12 lg:mt-16 flex justify-center items-center text-[10px] sm:text-xs sm:text-sm border-t border-white/10 pt-8">
+                <p class="text-white/80 text-center">
                     © {{ date('Y') }} MSWDO Silang. All Rights Reserved.
                 </p>
             </div>
@@ -784,7 +772,8 @@
     <!-- SCROLL TO TOP -->
     <!-- ===================================== -->
     <button id="scrollTop"
-        class="hidden fixed bottom-6 right-6 bg-warm-gold p-4 rounded-full shadow-xl hover:scale-110 transition">
+        class="hidden fixed bottom-6 right-6 bg-warm-gold text-slate-900 font-bold p-4 rounded-full shadow-xl hover:scale-110 transition z-40"
+        aria-label="Scroll to top">
         ↑
     </button>
     <!-- ===================================== -->

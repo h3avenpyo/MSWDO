@@ -23,7 +23,7 @@
     <!-- ========================= -->
     <!-- NAVBAR -->
     <!-- ========================= -->
-    <header class="sticky top-0 z-50 w-full bg-[#1A237E] shadow-sm">
+    <header class="sticky top-0 z-50 w-full shadow-sm" style="background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);">
         <div class="max-w-5xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16 sm:h-18">
                 @php
@@ -87,9 +87,9 @@
                     </div>
                 </a>
                 <!-- Desktop Back Navigation -->
-                <nav class="hidden lg:flex items-center text-sm text-slate-100 shrink-0">
+                <nav class="hidden lg:flex items-center text-sm text-white/90 shrink-0">
                     <a href="/"
-                        class="hover:text-white transition flex items-center gap-1.5 font-medium px-2.5 py-1.5 rounded hover:bg-white/10">
+                        class="hover:text-[#FBC02D] transition flex items-center gap-1.5 font-medium px-2.5 py-1.5 rounded hover:bg-white/10">
                         <i data-lucide="arrow-left" class="w-4 h-4"></i>
                         <span>Back to Home</span>
                     </a>
@@ -122,7 +122,7 @@
             <p class="text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
                 TANGGAPAN NG KAGALINGANG PANLIPUNAN AT PAGPAPAUNLAD (MSWDO)
             </p>
-            <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#1A237E] tracking-tight">
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#b11116] tracking-tight">
                 GENERAL INTAKE SHEET (STEP 1)
             </h1>
             <p class="text-xs sm:text-sm text-slate-600 mt-1 max-w-xl mx-auto">
@@ -205,13 +205,13 @@
                             <label
                                 class="inline-flex items-center gap-2 cursor-pointer py-1 text-xs sm:text-sm text-slate-700">
                                 <input type="radio" name="client_type" value="New"
-                                    class="w-4 h-4 text-[#1A237E] focus:ring-[#1A237E]" checked>
+                                    class="w-4 h-4 text-[#b11116] focus:ring-[#b11116]" checked>
                                 <span class="font-medium">Bagong Kliyente (New)</span>
                             </label>
                             <label
                                 class="inline-flex items-center gap-2 cursor-pointer py-1 text-xs sm:text-sm text-slate-700">
                                 <input type="radio" name="client_type" value="Returning"
-                                    class="w-4 h-4 text-[#1A237E] focus:ring-[#1A237E]">
+                                    class="w-4 h-4 text-[#b11116] focus:ring-[#b11116]">
                                 <span class="font-medium">Dating Kliyente (Returning)</span>
                             </label>
                         </div>
@@ -433,7 +433,7 @@
                     <div id="repSwitchContainer" class="rep-toggle-box">
                         <label class="flex items-start sm:items-center gap-3 cursor-pointer select-none">
                             <input type="checkbox" name="has_representative" id="has_representative" value="1"
-                                class="mt-0.5 sm:mt-0 w-4 h-4 text-[#1A237E] rounded border-slate-300 focus:ring-[#1A237E]"
+                                class="mt-0.5 sm:mt-0 w-4 h-4 text-[#b11116] rounded border-slate-300 focus:ring-[#b11116]"
                                 onchange="toggleRepresentative(this.checked)">
                             <div>
                                 <span class="text-xs sm:text-sm font-bold text-slate-800">May kinatawan ba na nagfa-file
@@ -820,14 +820,14 @@
                             @if($cat !== 'Others')
                             <label class="category-checkbox-item">
                                 <input type="checkbox" name="beneficiary_categories[]" value="{{ $cat }}"
-                                    class="w-4 h-4 rounded text-[#1A237E] border-slate-300 focus:ring-[#1A237E]">
+                                    class="w-4 h-4 rounded text-[#b11116] border-slate-300 focus:ring-[#b11116]">
                                 <span>{{ $cat }}</span>
                             </label>
                             @endif
                             @endforeach
                             <label class="category-checkbox-item">
                                 <input type="checkbox" name="beneficiary_categories[]" value="Others" id="cat_others"
-                                    class="w-4 h-4 rounded text-[#1A237E] border-slate-300 focus:ring-[#1A237E]"
+                                    class="w-4 h-4 rounded text-[#b11116] border-slate-300 focus:ring-[#b11116]"
                                     onchange="toggleCategoryOther()">
                                 <span>Iba pa (Others)</span>
                             </label>
