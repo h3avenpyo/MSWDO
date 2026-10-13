@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\SocialCase;
 
+use App\Models\SocialCase\BeneficiaryIntake;
+use App\Services\Financial\FinancialControlNumberService;
 use Illuminate\Foundation\Http\FormRequest;
 use Carbon\Carbon;
 
@@ -39,9 +41,18 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
             unset($famMember);
         }
 
+        $assignedControlNumber = null;
+        if (!$isOnlineSubmission) {
+            if (!empty($this->control_number) && !BeneficiaryIntake::where('control_number', $this->control_number)->exists()) {
+                $assignedControlNumber = $this->control_number;
+            } else {
+                $assignedControlNumber = FinancialControlNumberService::generate();
+            }
+        }
+
         $mergeData = [
             'client_type' => $this->client_type ?: 'New',
-            'control_number' => $isOnlineSubmission ? null : ($this->control_number ?: ('MSWDO-' . date('Y') . '-' . str_pad(\App\Models\SocialCase\BeneficiaryIntake::count() + 1, 5, '0', STR_PAD_LEFT))),
+            'control_number' => $assignedControlNumber,
             'has_representative' => $this->boolean('has_representative'),
             'is_client_beneficiary' => $this->boolean('is_client_beneficiary'),
             'beneficiary_birthday' => $benBday,

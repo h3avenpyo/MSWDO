@@ -136,19 +136,15 @@
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
 
-            <h4 class="fw-bold mb-1" style="color: #b11116;"><i class="fas fa-history me-2"></i>Financial Intake Encoding</h4>
+            <h4 class="fw-bold mb-1" style="color: #b11116;"><i class="fas fa-history me-2"></i>Financial Intake
+                Encoding</h4>
             <p class="text-muted small mb-0">
                 Encode historical client records created before system implementation. The original intake date and
                 actual assistance amount will be preserved and reflected in existing masterlists, statistics, and
                 reports.
             </p>
         </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3"
-                title="Back to Dashboard">
-                <i class="fas fa-arrow-left me-1"></i> Dashboard
-            </a>
-        </div>
+
     </div>
 
     <!-- Success Alert -->
@@ -200,7 +196,7 @@
                         <label class="form-label" for="control_number">Control Number <span
                                 class="required-star">*</span></label>
                         <input type="text" name="control_number" id="control_number" class="form-control fw-bold"
-                            value="{{ old('control_number', $controlNumber) }}" placeholder="e.g. MSWDO-2023-00001"
+                            value="{{ old('control_number', $controlNumber) }}" placeholder="e.g. MSWDO-2026-07-0001"
                             required>
                         <small class="text-muted" style="font-size: 0.75rem;">Original or generated reference
                             number.</small>
@@ -244,12 +240,14 @@
 
                 <div class="row g-3 mt-2 pt-3 border-top">
                     <div class="col-md-3">
-                        <label class="form-label" for="time_start">Time Start <span class="text-muted fw-normal">(Optional)</span></label>
+                        <label class="form-label" for="time_start">Time Start <span
+                                class="text-muted fw-normal">(Optional)</span></label>
                         <input type="text" name="time_start" id="time_start" class="form-control"
                             value="{{ old('time_start') }}" placeholder="e.g. 09:00 AM">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label" for="time_end">Time End <span class="text-muted fw-normal">(Optional)</span></label>
+                        <label class="form-label" for="time_end">Time End <span
+                                class="text-muted fw-normal">(Optional)</span></label>
                         <input type="text" name="time_end" id="time_end" class="form-control"
                             value="{{ old('time_end') }}" placeholder="e.g. 09:30 AM">
                     </div>
@@ -749,8 +747,9 @@
                                 <td>
                                     <input type="text" inputmode="decimal"
                                         name="family_composition[{{ $index }}][salary]"
-                                        class="form-control form-control-sm salary-comma-input" value="{{ $fam['salary'] ?? '' }}"
-                                        placeholder="0.00" oninput="handleSalaryInput(this)">
+                                        class="form-control form-control-sm salary-comma-input"
+                                        value="{{ $fam['salary'] ?? '' }}" placeholder="0.00"
+                                        oninput="handleSalaryInput(this)">
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-link text-danger p-0"
@@ -799,11 +798,13 @@
                         <select name="interviewed_by" id="interviewed_by" class="form-select">
                             <option value="">Pumili ng Step 1 Officer</option>
                             @foreach($step1Officers ?? [] as $officer)
-                            <option value="{{ $officer->name }}" {{ old('interviewed_by') == $officer->name ? 'selected' : '' }}>
+                            <option value="{{ $officer->name }}" {{ old('interviewed_by')==$officer->name ? 'selected' :
+                                '' }}>
                                 {{ $officer->name }}
                             </option>
                             @endforeach
-                            @if(old('interviewed_by') && (!isset($step1Officers) || !$step1Officers->contains('name', old('interviewed_by'))))
+                            @if(old('interviewed_by') && (!isset($step1Officers) || !$step1Officers->contains('name',
+                            old('interviewed_by'))))
                             <option value="{{ old('interviewed_by') }}" selected>{{ old('interviewed_by') }}</option>
                             @endif
                         </select>

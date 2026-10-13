@@ -9,6 +9,7 @@ use App\Models\Client;
 use App\Models\User;
 use App\Enums\UserRole;
 use App\Services\Financial\FinancialDuplicateChecker;
+use App\Services\Financial\FinancialControlNumberService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -19,9 +20,7 @@ class HistoricalFinancialIntakeController extends Controller
      */
     public function create()
     {
-        $currentYear = date('Y');
-        $seq = str_pad(BeneficiaryIntake::count() + 1, 5, '0', STR_PAD_LEFT);
-        $controlNumber = "MSWDO-{$currentYear}-{$seq}";
+        $controlNumber = FinancialControlNumberService::previewNext();
         $encoder = session('admin_user_name') ?? 'Admin User';
 
         $barangays = [
@@ -206,9 +205,12 @@ class HistoricalFinancialIntakeController extends Controller
             $data['claimed_by'] = null;
         }
 
-        // Align created_at with date_processed for accurate reporting periods
         $historicalDate = Carbon::parse($data['date_processed'])->setTime(9, 0, 0);
         $data['created_at'] = $historicalDate;
+
+        if (empty($data['control_number'])) {
+            $data['control_number'] = FinancialControlNumberService::generate($data['date_processed'] ?? null);
+        }
 
         $intake = BeneficiaryIntake::create($data);
         $intake->created_at = $historicalDate;

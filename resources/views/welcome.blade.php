@@ -27,14 +27,14 @@
                 @php
                 $logo = 'IserveIcon.png';
                 if (!file_exists(public_path('images/IserveIcon.png'))) {
-                    $logo = null;
-                    if (file_exists(public_path('images/mswdo-logo.png'))) {
-                        $logo = 'mswdo-logo.png';
-                    } else {
-                        $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
-                        if (!empty($files))
-                            $logo = basename($files[0]);
-                    }
+                $logo = null;
+                if (file_exists(public_path('images/mswdo-logo.png'))) {
+                $logo = 'mswdo-logo.png';
+                } else {
+                $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
+                if (!empty($files))
+                $logo = basename($files[0]);
+                }
                 }
                 @endphp
                 <!-- Mobile: hamburger + text (left) ... logo (right) -->
@@ -49,13 +49,16 @@
                         </svg>
                     </button>
                     <div class="min-w-0">
-                        <h1 class="text-white font-bold text-sm leading-tight" style="white-space:nowrap;">iSERVE SILANG</h1>
-                        <p class="text-white/60 text-[10px] leading-tight" style="white-space:nowrap;">Municipal Social Welfare &amp; Development Office</p>
+                        <h1 class="text-white font-bold text-sm leading-tight" style="white-space:nowrap;">iSERVE SILANG
+                        </h1>
+                        <p class="text-white/60 text-[10px] leading-tight" style="white-space:nowrap;">Municipal Social
+                            Welfare &amp; Development Office</p>
                     </div>
                 </div>
                 <div class="lg:hidden shrink-0">
                     @if($logo)
-                        <img src="{{ asset('images/' . $logo) }}" style="width:40px;height:40px;object-fit:contain;border-radius:50%;flex-shrink:0;" alt="Logo">
+                    <img src="{{ asset('images/' . $logo) }}"
+                        style="width:40px;height:40px;object-fit:contain;border-radius:50%;flex-shrink:0;" alt="Logo">
                     @endif
                 </div>
 
@@ -63,12 +66,13 @@
                 <a href="#" class="hidden lg:flex items-center gap-3 shrink-0">
                     <div class="h-14 w-14 rounded-full p-1 shrink-0">
                         @if($logo)
-                            <img src="{{ asset('images/' . $logo) }}" class="rounded-full h-full w-full object-cover">
+                        <img src="{{ asset('images/' . $logo) }}" class="rounded-full h-full w-full object-cover">
                         @endif
                     </div>
                     <div>
                         <h1 class="text-white font-bold text-lg tracking-tight leading-tight">iSERVE SILANG</h1>
-                        <p class="text-white/60 text-xs leading-tight">Municipal Social Welfare &amp; Development Office</p>
+                        <p class="text-white/60 text-xs leading-tight">Municipal Social Welfare &amp; Development Office
+                        </p>
                     </div>
                 </a>
                 <nav class="hidden lg:flex items-center gap-8 text-white/75">
@@ -217,10 +221,10 @@
                         assistance programs for every Silangueño.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 max-w-5xl mx-auto">
                     <!-- Service 1: Financial Assistance -->
                     <div
-                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
                                 class="w-12 h-12 rounded-xl bg-warm-gold/10 text-warm-gold flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
@@ -230,14 +234,14 @@
                                         d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-12 9h10.5M5.25 10.5h13.5m-12 3h10.5" />
                                 </svg>
                             </div>
-                            <h3 class="font-bold text-lg text-primary">Financial Assistance</h3>
-                            <p class="text-slate-600 text-xs mt-3 leading-relaxed">
+                            <h3 class="font-bold text-lg sm:text-xl text-primary">Financial Assistance</h3>
+                            <p class="text-slate-600 text-xs sm:text-sm mt-3 leading-relaxed">
                                 Emergency financial, medical, burial, and transportation assistance for individuals and
                                 families in crisis.
                             </p>
                         </div>
                         <a href="/financial-assistance"
-                            class="mt-6 flex items-center text-warm-gold font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200 cursor-pointer">
+                            class="mt-6 flex items-center text-warm-gold font-bold text-[10px] sm:text-xs uppercase tracking-wider gap-1.5 group-hover:translate-x-1 transition duration-200 cursor-pointer">
                             Apply & Details
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
                                 stroke="currentColor" class="w-3.5 h-3.5">
@@ -246,65 +250,9 @@
                             </svg>
                         </a>
                     </div>
-                    <!-- Service 2: Protection & VAWC -->
+                    <!-- Service 2: Social Case Study -->
                     <div
-                        class="group bg-slate-50 hover:bg-white hover:border-accent/40 rounded-2xl p-6 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
-                        <div>
-                            <div
-                                class="w-12 h-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751A11.956 11.956 0 0 1 12 2.714z" />
-                                </svg>
-                            </div>
-                            <h3 class="font-bold text-lg text-primary">Protection & VAWC</h3>
-                            <p class="text-slate-600 text-xs mt-3 leading-relaxed">
-                                Counseling, shelter assistance, and immediate protective services for survivors of
-                                domestic violence and abuse.
-                            </p>
-                        </div>
-                        <a href="/service-request"
-                            class="mt-6 flex items-center text-accent font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200 cursor-pointer">
-                            Get Support
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                                stroke="currentColor" class="w-3.5 h-3.5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                            </svg>
-                        </a>
-                    </div>
-                    <!-- Service 3: Senior & PWD Welfare -->
-                    <div
-                        class="group bg-slate-50 hover:bg-white hover:border-primary/40 rounded-2xl p-6 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
-                        <div>
-                            <div
-                                class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-                                </svg>
-                            </div>
-                            <h3 class="font-bold text-lg text-primary">Senior Citizen</h3>
-                            <p class="text-slate-600 text-xs mt-3 leading-relaxed">
-                                Social pension applications, ID issuances, and community-centered assistance programs
-                                for senior citizens and PWDs.
-                            </p>
-                        </div>
-                        <a href="/service-request"
-                            class="mt-6 flex items-center text-primary font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200 cursor-pointer">
-                            Apply Pension
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                                stroke="currentColor" class="w-3.5 h-3.5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                            </svg>
-                        </a>
-                    </div>
-                    <!-- Service 4: Social Case Study -->
-                    <div
-                        class="group bg-slate-50 hover:bg-white hover:border-emerald-500/40 rounded-2xl p-6 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                        class="group bg-slate-50 hover:bg-white hover:border-emerald-500/40 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
                                 class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
@@ -314,14 +262,14 @@
                                         d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                 </svg>
                             </div>
-                            <h3 class="font-bold text-lg text-primary">Social Case Study</h3>
-                            <p class="text-slate-600 text-xs mt-3 leading-relaxed">
+                            <h3 class="font-bold text-lg sm:text-xl text-primary">Social Case Study</h3>
+                            <p class="text-slate-600 text-xs sm:text-sm mt-3 leading-relaxed">
                                 Formal social case study reports for hospitalization, medicines, burial referrals, and
                                 government benefits support.
                             </p>
                         </div>
                         <a href="/service-request"
-                            class="mt-6 flex items-center text-emerald-600 font-bold text-[10px] uppercase tracking-wider gap-1 group-hover:translate-x-1 transition duration-200 cursor-pointer">
+                            class="mt-6 flex items-center text-emerald-600 font-bold text-[10px] sm:text-xs uppercase tracking-wider gap-1.5 group-hover:translate-x-1 transition duration-200 cursor-pointer">
                             Request Report
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
                                 stroke="currentColor" class="w-3.5 h-3.5">
@@ -542,38 +490,42 @@
             <div id="simpleCarousel" class="programs-carousel">
                 <!-- Slides -->
                 @php
-                    $carouselImages = [
-                        ['file' => 'fa1.jpg', 'title' => 'Financial Assistance Intake & Verification'],
-                        ['file' => 'fa2.jpg', 'title' => 'Senior Citizen & Sectoral Assistance Desk'],
-                        ['file' => 'fa3.jpg', 'title' => 'Direct Cash Assistance Release'],
-                        ['file' => 'socialcase1.jpg', 'title' => 'Social Case Study Intake & Interview'],
-                        ['file' => 'socialcase2.jpg', 'title' => 'Personalized Welfare Consultation'],
-                        ['file' => 'socialcase3.jpg', 'title' => 'Community Intake & Evaluation Desk'],
-                        ['file' => 'socialcase4.jpg', 'title' => 'Social Case Report Documentation & Review'],
-                    ];
+                $carouselImages = [
+                ['file' => 'fa1.jpg', 'title' => 'Financial Assistance Intake & Verification'],
+                ['file' => 'fa2.jpg', 'title' => 'Senior Citizen & Sectoral Assistance Desk'],
+                ['file' => 'fa3.jpg', 'title' => 'Direct Cash Assistance Release'],
+                ['file' => 'socialcase1.jpg', 'title' => 'Social Case Study Intake & Interview'],
+                ['file' => 'socialcase2.jpg', 'title' => 'Personalized Welfare Consultation'],
+                ['file' => 'socialcase3.jpg', 'title' => 'Community Intake & Evaluation Desk'],
+                ['file' => 'socialcase4.jpg', 'title' => 'Social Case Report Documentation & Review'],
+                ];
                 @endphp
 
                 @foreach ($carouselImages as $index => $item)
-                    <div class="carousel-slide absolute inset-0 w-full h-full"
-                        style="transition: opacity 0.8s ease-in-out; opacity: {{ $index === 0 ? '1' : '0' }}; z-index: {{ $index === 0 ? '10' : '1' }}; pointer-events: {{ $index === 0 ? 'auto' : 'none' }};"
-                        data-index="{{ $index }}">
-                        <img src="{{ asset('images/' . $item['file']) }}" alt="{{ $item['title'] }}" class="w-full h-full object-cover object-center" loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
-                        <!-- Clean gradient overlay -->
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent pointer-events-none"></div>
-                        <!-- Caption positioned cleanly on bottom left -->
-                        <div class="programs-carousel-caption absolute bottom-0 inset-x-0 z-10 pointer-events-none">
-                            <p class="programs-carousel-title font-semibold text-white drop-shadow-md line-clamp-2">
-                                {{ $item['title'] }}
-                            </p>
-                        </div>
+                <div class="carousel-slide absolute inset-0 w-full h-full"
+                    style="transition: opacity 0.8s ease-in-out; opacity: {{ $index === 0 ? '1' : '0' }}; z-index: {{ $index === 0 ? '10' : '1' }}; pointer-events: {{ $index === 0 ? 'auto' : 'none' }};"
+                    data-index="{{ $index }}">
+                    <img src="{{ asset('images/' . $item['file']) }}" alt="{{ $item['title'] }}"
+                        class="w-full h-full object-cover object-center"
+                        loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
+                    <!-- Clean gradient overlay -->
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent pointer-events-none">
                     </div>
+                    <!-- Caption positioned cleanly on bottom left -->
+                    <div class="programs-carousel-caption absolute bottom-0 inset-x-0 z-10 pointer-events-none">
+                        <p class="programs-carousel-title font-semibold text-white drop-shadow-md line-clamp-2">
+                            {{ $item['title'] }}
+                        </p>
+                    </div>
+                </div>
                 @endforeach
 
                 <!-- Indicator Dots -->
                 <div class="programs-carousel-dots absolute z-20 flex items-center">
                     @foreach ($carouselImages as $index => $item)
-                        <button type="button" class="programs-carousel-dot carousel-dot {{ $index === 0 ? 'active' : '' }}"
-                            data-index="{{ $index }}" aria-label="Go to slide {{ $index + 1 }}"></button>
+                    <button type="button" class="programs-carousel-dot carousel-dot {{ $index === 0 ? 'active' : '' }}"
+                        data-index="{{ $index }}" aria-label="Go to slide {{ $index + 1 }}"></button>
                     @endforeach
                 </div>
             </div>
@@ -589,7 +541,8 @@
                 Need Social Assistance?
             </h2>
             <p class="text-offwhite mt-4 sm:mt-6 text-base sm:text-lg sm:text-xl max-w-2xl mx-auto">
-                Our dedicated team is ready to assist you with your concerns. Select your required social service below to proceed.
+                Our dedicated team is ready to assist you with your concerns. Select your required social service below
+                to proceed.
             </p>
             <div class="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
                 <a href="/financial-assistance"
@@ -622,8 +575,10 @@
                 <!-- Office Info Card -->
                 <div class="contact-card">
                     <h3 class="card-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" class="w-5 h-5 text-primary shrink-0">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.333A2.25 2.25 0 0 0 18 8.083h-3.75V6.75a2.25 2.25 0 0 0-4.5 0v1.333H6a2.25 2.25 0 0 0-2.25 2.25V21" />
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
+                            stroke="currentColor" class="w-5 h-5 text-primary shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.333A2.25 2.25 0 0 0 18 8.083h-3.75V6.75a2.25 2.25 0 0 0-4.5 0v1.333H6a2.25 2.25 0 0 0-2.25 2.25V21" />
                         </svg>
                         Office Information
                     </h3>
@@ -663,7 +618,8 @@
                             <div class="info-content">
                                 <h4 class="info-label">Email</h4>
                                 <p class="info-text">
-                                    <a href="mailto:socialwelfaresilang@gmail.com" class="info-link">socialwelfaresilang@gmail.com</a>
+                                    <a href="mailto:socialwelfaresilang@gmail.com"
+                                        class="info-link">socialwelfaresilang@gmail.com</a>
                                 </p>
                             </div>
                         </div>
@@ -817,7 +773,7 @@
                     </p>
                 </div>
             </div>
-            <div class="flex justify-center items-center text-[10px] sm:text-xs sm:text-sm">
+            <div class="mt-8 sm:mt-12 lg:mt-16 flex justify-center items-center text-[10px] sm:text-xs sm:text-sm">
                 <p class="text-offwhite text-center">
                     © {{ date('Y') }} MSWDO Silang. All Rights Reserved.
                 </p>

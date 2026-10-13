@@ -9,6 +9,7 @@ use App\Models\SocialCase\BeneficiaryIntake;
 use App\Models\Client;
 use App\Services\SocialCase\EligibilityChecker;
 use App\Services\Financial\FinancialDuplicateChecker;
+use App\Services\Financial\FinancialControlNumberService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -122,7 +123,7 @@ class FinancialIntakeController extends Controller
                 ->with('error', 'This client is not eligible to proceed to beneficiary intake.');
         }
 
-        $controlNumber = 'MSWDO-' . date('Y') . '-' . str_pad(BeneficiaryIntake::count() + 1, 5, '0', STR_PAD_LEFT);
+        $controlNumber = FinancialControlNumberService::previewNext();
         $encoder = session('admin_user_name') ?? 'Admin User';
 
         $barangays = [
@@ -261,6 +262,10 @@ class FinancialIntakeController extends Controller
         if ($client && ! $checker->check($client)['eligible']) {
             return redirect()->route('admin.social-case-eligibility.show', $client)
                 ->with('error', 'This client is not eligible to proceed to intake.');
+        }
+
+        if (empty($data['control_number'])) {
+            $data['control_number'] = FinancialControlNumberService::generate();
         }
 
         $data['is_archived'] = false;

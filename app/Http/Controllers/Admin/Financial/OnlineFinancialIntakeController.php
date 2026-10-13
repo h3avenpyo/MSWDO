@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Financial;
 use App\Http\Controllers\Controller;
 use App\Models\Financial\OnlineFinancialIntake;
 use App\Models\SocialCase\BeneficiaryIntake;
+use App\Services\Financial\FinancialControlNumberService;
 use App\Services\Financial\FinancialDuplicateChecker;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -219,13 +220,7 @@ class OnlineFinancialIntakeController extends Controller
         // Uses the same sequence used by the regular Step 1 Intake to prevent duplicates or conflicts.
         $controlNumber = $onlineIntake->control_number;
         if (empty($controlNumber)) {
-            $year = date('Y');
-            $nextSeq = BeneficiaryIntake::count() + 1;
-            $controlNumber = 'MSWDO-' . $year . '-' . str_pad($nextSeq, 5, '0', STR_PAD_LEFT);
-            while (BeneficiaryIntake::where('control_number', $controlNumber)->exists() || OnlineFinancialIntake::where('control_number', $controlNumber)->exists()) {
-                $nextSeq++;
-                $controlNumber = 'MSWDO-' . $year . '-' . str_pad($nextSeq, 5, '0', STR_PAD_LEFT);
-            }
+            $controlNumber = FinancialControlNumberService::generate();
         }
 
         $intakeData = [

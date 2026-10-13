@@ -147,7 +147,7 @@ class OnlineFinancialIntakeControlNumberTest extends TestCase
 
         $assignedControlNumber = $response->json('data.control_number');
         $this->assertNotNull($assignedControlNumber);
-        $this->assertMatchesRegularExpression('/^MSWDO-\d{4}-\d{5}$/', $assignedControlNumber);
+        $this->assertMatchesRegularExpression('/^MSWDO-\d{4}-\d{2}-\d{4}$/', $assignedControlNumber);
 
         // Check Online record has updated status and control_number
         $online->refresh();
