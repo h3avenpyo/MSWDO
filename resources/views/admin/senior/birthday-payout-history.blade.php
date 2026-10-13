@@ -47,7 +47,8 @@
 
         /* ── Archive-style panel & table (matches archive page) ── */
         .archive-panel-wrap{width:100%;padding:1rem;margin-bottom:1rem;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
-        .archive-table-wrap{border:2px solid #CBD5E1;border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;min-height: 480px; max-height: calc(100vh - 280px); overflow-y: auto;}
+        .archive-table-wrap{border:2px solid #CBD5E1;border-radius:8px;overflow:visible;min-height:auto;max-height:none;scrollbar-width:none;-ms-overflow-style:none;}
+        .archive-table-wrap::-webkit-scrollbar{display:none !important;width:0 !important;height:0 !important;}
         .archive-table{width:100%;border-collapse:collapse;font-size:14px;}
         .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:#1E293B;text-align:left;border-bottom:2px solid #94A3B8;background:#E2E8F0;white-space:nowrap;position: sticky; top: 0; z-index: 10;}
         .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid #CBD5E1;vertical-align:middle;white-space:normal;word-break:break-word;}
@@ -160,25 +161,25 @@
             .empty-icon-wrap{width:56px;height:56px;}
         }
 
-        /* ── Desktop full-height layout (matches archive page) ── */
+        /* ── Desktop layout ── */
         @media (min-width:1200px){
-            html,body{overflow:hidden !important;}
-            .app{height:100vh !important;overflow:hidden !important;}
-            .app .main{height:100vh !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;box-sizing:border-box !important;}
-            .app .main-scroll{flex:1 !important;min-height:0 !important;overflow-y:auto !important;overflow-x:hidden !important;display:flex !important;flex-direction:column !important;}
+            html,body{overflow-y:auto !important;overflow-x:hidden !important;}
+            .app{height:auto !important;min-height:100vh !important;overflow:visible !important;}
+            .app .main{height:auto !important;overflow:visible !important;display:flex !important;flex-direction:column !important;}
+            .app .main-scroll{overflow:visible !important;}
             #birthdayTableSection:not(.hidden-table),
-            #inBetweenTableSection:not(.hidden-table){flex:1 !important;min-height:0 !important;display:flex !important;flex-direction:column !important;overflow:hidden !important;}
-            .archive-panel-wrap{padding:0.75rem !important;margin-bottom:0 !important;flex:1 !important;min-height:0 !important;overflow:hidden !important;display:flex !important;flex-direction:column !important;}
+            #inBetweenTableSection:not(.hidden-table){display:block !important;overflow:visible !important;}
+            .archive-panel-wrap{padding:1rem !important;margin-bottom:1rem !important;overflow:visible !important;}
             .archive-panel-wrap.hidden-table{display:none !important;}
-            .archive-table-wrap{flex:1 !important;min-height:0 !important;max-height:none !important;height:100% !important;border:1px solid var(--border) !important;overflow:auto !important;border-radius:8px !important;}
-            .sc-pagination{margin-top:10px !important;flex-shrink:0 !important;}
+            .archive-table-wrap{border:1px solid var(--border) !important;overflow:visible !important;height:auto !important;max-height:none !important;min-height:auto !important;border-radius:8px !important;}
+            .sc-pagination{margin-top:14px !important;flex-shrink:0 !important;}
             .empty-icon-wrap{width:80px;height:80px;margin-bottom:20px;background:#FDF2F2;color:#B11116;}
             .empty-icon-wrap svg{width:40px !important;height:40px !important;}
             .empty-title{font-size:1.35rem !important;font-weight:700 !important;color:#111827 !important;margin-bottom:8px !important;}
             .empty-subtitle{font-size:0.95rem !important;color:#6B7280 !important;max-width:400px;line-height:1.5;}
         }
         @media (min-width:768px) and (max-width:1199px){
-            .archive-table-wrap{min-height:480px !important;max-height:calc(100vh - 280px) !important;}
+            .archive-table-wrap{min-height:auto !important;max-height:none !important;overflow:visible !important;}
             .archive-table tbody tr.empty-row{display:table-row !important;background:transparent !important;border:none !important;box-shadow:none !important;margin:0 !important;}
             .archive-table tbody tr.empty-row td.empty-cell{display:table-cell !important;padding:2.5rem 1.5rem !important;border:none !important;text-align:center !important;}
             .archive-table tbody tr.empty-row td.empty-cell::before{display:none !important;}
@@ -267,7 +268,8 @@
             @endif
 
             {{-- Filter Bar --}}
-            <form method="GET" action="{{ route('admin.senior.payouts-history') }}" style="margin-bottom: 20px;">
+            <form method="GET" action="{{ route('admin.senior.payouts-history') }}" style="margin-bottom: 20px;" id="payoutFilterForm">
+                <input type="hidden" name="tab" id="activeTabInput" value="{{ $activeTab ?? 'birthday' }}">
                 <div id="filterGrid">
                     <div class="filter-field">
                         <label class="filter-label" for="barangayFilter">Barangay</label>
@@ -293,7 +295,7 @@
                                 Filter
                             </button>
                             @if(request('barangay') || request('date_from') || request('date_to'))
-                                <a href="{{ route('admin.senior.payouts-history') }}" class="btn btn-clear">
+                                <a href="{{ route('admin.senior.payouts-history', ['tab' => $activeTab ?? 'birthday']) }}" class="btn btn-clear">
                                     <i data-lucide="x"></i> Clear
                                 </a>
                             @endif
@@ -304,18 +306,18 @@
 
             {{-- Toggle Buttons --}}
             <div class="history-toggle" style="margin-bottom: 20px; display: flex; gap: 12px;">
-                <button type="button" id="showBirthdayBtn" class="btn primary" onclick="showTable('birthday')">
+                <button type="button" id="showBirthdayBtn" class="btn {{ ($activeTab ?? 'birthday') === 'birthday' ? 'primary' : '' }}" onclick="showTable('birthday')">
                     <i data-lucide="cake" style="width: 16px; height: 16px;"></i>
                     Birthday Payout History
                 </button>
-                <button type="button" id="showInBetweenBtn" class="btn" onclick="showTable('in-between')">
+                <button type="button" id="showInBetweenBtn" class="btn {{ ($activeTab ?? 'birthday') === 'in-between' ? 'primary' : '' }}" onclick="showTable('in-between')">
                     <i data-lucide="gift" style="width: 16px; height: 16px;"></i>
                     In-Between Payout History
                 </button>
             </div>
 
             {{-- History Table --}}
-            <div class="hidden-table" id="birthdayTableSection">
+            <div class="{{ ($activeTab ?? 'birthday') === 'birthday' ? '' : 'hidden-table' }}" id="birthdayTableSection">
                 <div class="archive-panel-wrap">
                     <div class="archive-table-wrap">
                         <table class="archive-table">
@@ -404,7 +406,7 @@
             </div>
         </div>
 
-            <div class="hidden-table" id="inBetweenTableSection">
+            <div class="{{ ($activeTab ?? 'birthday') === 'in-between' ? '' : 'hidden-table' }}" id="inBetweenTableSection">
                 <div class="archive-panel-wrap">
                     <div class="archive-table-wrap">
                         <table class="archive-table">
@@ -438,7 +440,7 @@
                                     <td data-label="Amount">₱{{ number_format($record->amount, 2) }}</td>
                                     <td data-label="Next Eligible">
                                         @if($record->payout_date)
-                                            {{ $record->payout_date->addYears(6)->format('M d, Y') }}
+                                            {{ $record->payout_date->copy()->addYears(6)->format('M d, Y') }}
                                         @else
                                             <span style="color:#94A3B8; font-style:italic;">Pending payout</span>
                                         @endif
@@ -507,6 +509,17 @@
         const inBetweenSection = document.getElementById('inBetweenTableSection');
         const birthdayBtn = document.getElementById('showBirthdayBtn');
         const inBetweenBtn = document.getElementById('showInBetweenBtn');
+        const tabInput = document.getElementById('activeTabInput');
+
+        if (tabInput) {
+            tabInput.value = type;
+        }
+
+        try {
+            const url = new URL(window.location.href);
+            url.searchParams.set('tab', type);
+            window.history.replaceState({}, '', url.toString());
+        } catch (e) {}
 
         if (type === 'birthday') {
             birthdaySection.classList.remove('hidden-table');
@@ -521,9 +534,12 @@
         }
     }
 
-    // Initialize with birthday table shown after DOM is ready
+    // Initialize with selected tab
     document.addEventListener('DOMContentLoaded', function() {
-        showTable('birthday');
+        const urlParams = new URLSearchParams(window.location.search);
+        const hash = window.location.hash;
+        const currentTab = urlParams.get('tab') || urlParams.get('type') || (hash === '#in-between' ? 'in-between' : '{{ $activeTab ?? 'birthday' }}');
+        showTable(currentTab === 'in-between' ? 'in-between' : 'birthday');
     });
 </script>
 

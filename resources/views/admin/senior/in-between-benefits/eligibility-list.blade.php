@@ -1164,8 +1164,11 @@
                     <p>Eligible senior citizens for milestone interval cash gifts</p>
                 </div>
                 <div class="history-header-actions">
-                    <a href="/admin/senior/in-between/history" class="btn btn-primary">
-                        <i data-lucide="history"></i> Process Client
+                    <a href="{{ route('admin.senior.in-between.eligibility-list') }}" class="btn btn-primary">
+                        <i data-lucide="users"></i> Eligibility List
+                    </a>
+                    <a href="{{ route('admin.senior.in-between.history') }}" class="btn btn-outline">
+                        <i data-lucide="history"></i> Benefit History
                     </a>
                 </div>
             </div>
@@ -1949,84 +1952,6 @@
         });
     }
 
-    // ── Bulk Action: Print Selected IDs ──
-    function bulkPrintIdCards(e) {
-        if (e) { e.preventDefault(); e.stopPropagation(); }
-        closeBulkModal();
-
-        const selectAll = document.getElementById('selectAll');
-        const savedIds = localStorage.getItem('selectedInBetweenSeniorIds');
-        const ids = savedIds ? JSON.parse(savedIds) : [];
-
-        if (ids.length === 0 && !selectAll.checked) {
-            Swal.fire('No Selection', 'Please select at least one record.', 'warning');
-            return;
-        }
-
-        const count = selectAll.checked ? {{ $seniors->total() ?? 0 }} : ids.length;
-
-        Swal.fire({
-            title: 'Print Selected IDs?',
-            text: `You are about to generate ID cards for ${count} senior(s). Continue?`,
-            icon: 'info',
-            showCancelButton: true,
-            confirmButtonColor: '#B11116',
-            cancelButtonColor: '#6B7280',
-            confirmButtonText: 'Yes, Generate',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '{{ route('admin.senior.bulk-print-ids') }}';
-                
-                const csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = '_token';
-                csrfInput.value = '{{ csrf_token() }}';
-                form.appendChild(csrfInput);
-                
-                if (selectAll.checked) {
-                    const searchInput = document.getElementById('searchInput');
-                    const barangayFilter = document.getElementById('barangayFilter');
-                    
-                    if (searchInput && searchInput.value) {
-                        const searchInput2 = document.createElement('input');
-                        searchInput2.type = 'hidden';
-                        searchInput2.name = 'search';
-                        searchInput2.value = searchInput.value;
-                        form.appendChild(searchInput2);
-                    }
-                    
-                    if (barangayFilter && barangayFilter.value) {
-                        const barangayInput = document.createElement('input');
-                        barangayInput.type = 'hidden';
-                        barangayInput.name = 'barangay';
-                        barangayInput.value = barangayFilter.value;
-                        form.appendChild(barangayInput);
-                    }
-                    
-                    const selectAllInput = document.createElement('input');
-                    selectAllInput.type = 'hidden';
-                    selectAllInput.name = 'select_all';
-                    selectAllInput.value = '1';
-                    form.appendChild(selectAllInput);
-                } else {
-                    const idsInput = document.createElement('input');
-                    idsInput.type = 'hidden';
-                    idsInput.name = 'ids';
-                    idsInput.value = JSON.stringify(ids);
-                    form.appendChild(idsInput);
-                }
-
-                clearSelections();
-                document.body.appendChild(form);
-                form.submit();
-                document.body.removeChild(form);
-            }
-        });
-    }
-
     // ── Bulk Action: Export PDF ──
     function triggerFileDownload(blob, filename) {
         const url = window.URL.createObjectURL(blob);
@@ -2541,11 +2466,20 @@
                 Swal.fire({
                     icon: 'success',
                     title: 'Claim Processed',
-                    text: 'The claim has been processed successfully.',
+                    text: 'The claim has been processed successfully and placed in Payout History.',
+                    showCancelButton: true,
                     confirmButtonColor: '#B11116',
-                    timer: 5000,
+                    cancelButtonColor: '#6B7280',
+                    confirmButtonText: 'View in Payout History',
+                    cancelButtonText: 'Stay on This Page',
+                    timer: 6000,
                     timerProgressBar: true,
-                    didClose: () => window.location.reload()
+                }).then((res) => {
+                    if (res.isConfirmed) {
+                        window.location.href = '/admin/senior/payouts-history?tab=in-between';
+                    } else {
+                        window.location.reload();
+                    }
                 });
             }, 600);
         } catch (error) {

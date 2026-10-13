@@ -377,7 +377,7 @@
                             <i data-lucide="check" style="width:16px;height:16px"></i> Apply
                         </button>
                         <button type="button" onclick="generateReport()" class="btn primary" style="background:#16A34A;border-color:#16A34A;">
-                            <i data-lucide="file-text" style="width:16px;height:16px"></i> Generate Report
+                            <i data-lucide="file-text" style="width:16px;height:16px"></i> Reports
                         </button>
                         <button type="button" id="clearFiltersBtn" class="btn btn-clear" onclick="clearFilters()" style="display:none;">
                             <i data-lucide="x" style="width:16px;height:16px"></i> Clear

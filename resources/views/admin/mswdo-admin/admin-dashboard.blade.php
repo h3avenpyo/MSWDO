@@ -595,9 +595,13 @@ $initials = count($words) >= 2
         width: 100%;
         box-sizing: border-box;
     }
+    .report-studio-card .section-title i,
+    .report-studio-card .section-title svg {
+        color: #b11116;
+    }
     .report-select:focus, .report-input:focus {
-        border-color: #1A237E;
-        box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.12);
+        border-color: #b11116;
+        box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.12);
     }
     .report-actions-wrap {
         display: flex;
@@ -622,24 +626,26 @@ $initials = count($words) >= 2
         border: 1px solid transparent;
     }
     .btn-report-generate {
-        background: #1A237E;
+        background: #b11116;
         color: #FFFFFF;
-        border-color: #1A237E;
+        border-color: #b11116;
         flex: 1;
         min-width: 130px;
     }
     .btn-report-generate:hover {
-        background: #121858;
-        border-color: #121858;
+        background: #8A0D11;
+        border-color: #8A0D11;
+        color: #FFFFFF;
     }
     .btn-report-pdf {
-        background: #EEF2FF;
-        color: #1A237E;
-        border-color: #C7D2FE;
+        background: #FEF2F2;
+        color: #b11116;
+        border-color: #FECACA;
     }
     .btn-report-pdf:hover {
-        background: #E0E7FF;
-        color: #121858;
+        background: #FEE2E2;
+        color: #8A0D11;
+        border-color: #F87171;
     }
     .btn-report-print {
         background: #FFFFFF;
@@ -653,8 +659,8 @@ $initials = count($words) >= 2
 
     /* Live Scope Badge Bar */
     .report-scope-strip {
-        background: #EFF6FF;
-        border: 1px solid #BFDBFE;
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
         border-radius: 10px;
         padding: 0.65rem 1rem;
         margin-bottom: 1.25rem;
@@ -669,11 +675,11 @@ $initials = count($words) >= 2
         align-items: center;
         gap: 0.6rem;
         font-size: 0.825rem;
-        color: #1E3A8A;
+        color: #8A0D11;
         font-weight: 600;
     }
     .report-scope-pill {
-        background: #1E3A8A;
+        background: #b11116;
         color: #FFFFFF;
         font-size: 0.7rem;
         font-weight: 700;
@@ -720,14 +726,14 @@ $initials = count($words) >= 2
         border-color: #CBD5E1;
     }
     .btn-pill-primary {
-        background: #1A237E;
+        background: #b11116;
         color: #FFFFFF;
-        border-color: #1A237E;
+        border-color: #b11116;
     }
     .btn-pill-primary:hover {
-        background: #121858;
+        background: #8A0D11;
         color: #FFFFFF;
-        border-color: #121858;
+        border-color: #8A0D11;
     }
 
     /* ── Responsive Adaptations ── */
@@ -993,7 +999,12 @@ $initials = count($words) >= 2
             <h3 class="section-title">
                 <i data-lucide="clock-3"></i> Recent Casework Activity
             </h3>
-            <p class="section-subtitle">Recently registered or updated beneficiaries across services</p>
+            <p class="section-subtitle">Showing the 10 latest registered or updated beneficiaries across services</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                10 Latest
+            </span>
         </div>
     </div>
 
@@ -1005,32 +1016,19 @@ $initials = count($words) >= 2
                     <th>Beneficiary / Client</th>
                     <th>Service Division</th>
                     <th>Assigned Worker</th>
-                    <th>Status</th>
                     <th>Last Updated</th>
                     <th style="text-align:right;">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @if($recentCases && $recentCases->count() > 0)
-                    @foreach($recentCases as $case)
+                    @foreach($recentCases->take(10) as $case)
                     @php
                         $cName = $case['client'] ?? 'Unknown Client';
                         $cWords = explode(' ', trim($cName));
                         $cInit = count($cWords) >= 2
                             ? strtoupper(substr($cWords[0],0,1).substr($cWords[1],0,1))
                             : strtoupper(substr($cName,0,2));
-
-                        $st = strtolower($case['status'] ?? 'pending');
-                        $pillClass = 'status-pill-slate';
-                        if (in_array($st, ['active', 'in review', 'step 1 approved'])) {
-                            $pillClass = 'status-pill-blue';
-                        } elseif (in_array($st, ['resolved', 'completed', 'released'])) {
-                            $pillClass = 'status-pill-emerald';
-                        } elseif (in_array($st, ['pending', 'pending review'])) {
-                            $pillClass = 'status-pill-amber';
-                        } elseif (in_array($st, ['overdue', 'rejected', 'archived'])) {
-                            $pillClass = 'status-pill-rose';
-                        }
                     @endphp
                     <tr>
                         <td>
@@ -1046,9 +1044,6 @@ $initials = count($words) >= 2
                             <span class="text-slate-600">{{ $case['officer'] }}</span>
                         </td>
                         <td>
-                            <span class="status-pill {{ $pillClass }}">{{ $case['status'] }}</span>
-                        </td>
-                        <td>
                             <span class="text-xs text-slate-500 font-medium">{{ $case['updated'] }}</span>
                         </td>
                         <td style="text-align:right;">
@@ -1061,7 +1056,7 @@ $initials = count($words) >= 2
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="6" style="padding:2.5rem; text-align:center; color:#94A3B8;">
+                        <td colspan="5" style="padding:2.5rem; text-align:center; color:#94A3B8;">
                             <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
                             <div>No recent casework activity recorded yet.</div>
                         </td>
@@ -1074,27 +1069,13 @@ $initials = count($words) >= 2
     <!-- Mobile Stacked Card View (<640px) -->
     <div class="mobile-cases-list">
         @if($recentCases && $recentCases->count() > 0)
-            @foreach($recentCases as $case)
-            @php
-                $st = strtolower($case['status'] ?? 'pending');
-                $pillClass = 'status-pill-slate';
-                if (in_array($st, ['active', 'in review', 'step 1 approved'])) {
-                    $pillClass = 'status-pill-blue';
-                } elseif (in_array($st, ['resolved', 'completed', 'released'])) {
-                    $pillClass = 'status-pill-emerald';
-                } elseif (in_array($st, ['pending', 'pending review'])) {
-                    $pillClass = 'status-pill-amber';
-                } elseif (in_array($st, ['overdue', 'rejected', 'archived'])) {
-                    $pillClass = 'status-pill-rose';
-                }
-            @endphp
+            @foreach($recentCases->take(10) as $case)
             <div class="mobile-case-card">
                 <div class="mobile-case-card-head">
                     <div>
                         <div class="font-bold text-slate-900 text-sm">{{ $case['client'] }}</div>
                         <div class="text-xs text-slate-500 mt-0.5">{{ $case['service'] }} • {{ $case['officer'] }}</div>
                     </div>
-                    <span class="status-pill {{ $pillClass }}">{{ $case['status'] }}</span>
                 </div>
                 <div class="mobile-case-card-body">
                     <span>Updated {{ $case['updated'] }}</span>
@@ -1234,7 +1215,7 @@ $initials = count($words) >= 2
     <div style="position: relative; min-height: 200px;">
         <div id="reportLoadingSpinner" style="display:none; position: absolute; inset: 0; background: rgba(255,255,255,0.78); backdrop-filter: blur(2px); z-index: 20; border-radius: 12px; align-items: center; justify-content: center;">
             <div class="flex flex-col items-center gap-2">
-                <div class="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                <div class="w-8 h-8 border-3 border-[#b11116] border-t-transparent rounded-full animate-spin"></div>
                 <span class="text-xs font-semibold text-slate-600">Aggregating report records...</span>
             </div>
         </div>
@@ -1710,7 +1691,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <span class="font-semibold text-slate-700 truncate max-w-[200px]" title="${k}">${k}</span>
                             <div class="flex items-center gap-2">
                                 <span class="text-slate-500 font-mono">${cnt.toLocaleString()}</span>
-                                <span class="bg-indigo-50 text-indigo-700 font-bold px-1.5 py-0.5 rounded text-[10px]">${pct}%</span>
+                                <span class="bg-[#FDF2F2] text-[#B11116] font-bold px-1.5 py-0.5 rounded text-[10px]">${pct}%</span>
                             </div>
                         </div>
                     `;

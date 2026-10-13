@@ -99,7 +99,7 @@ $initials = count($words) >= 2
         border-bottom: 1px solid #F1F5F9;
     }
     .form-section-title svg {
-        color: #1A237E;
+        color: #b11116;
         width: 20px;
         height: 20px;
     }
@@ -147,8 +147,8 @@ $initials = count($words) >= 2
     }
     .form-input:focus {
         background: #FFFFFF;
-        border-color: #1A237E;
-        box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.12);
+        border-color: #b11116;
+        box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.12);
     }
     .form-select-custom {
         width: 100%;
@@ -165,8 +165,8 @@ $initials = count($words) >= 2
     }
     .form-select-custom:focus {
         background-color: #FFFFFF;
-        border-color: #1A237E;
-        box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.12);
+        border-color: #b11116;
+        box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.12);
     }
 
     .pw-toggle-btn {
@@ -182,7 +182,7 @@ $initials = count($words) >= 2
         justify-content: center;
         transition: color 0.15s ease;
     }
-    .pw-toggle-btn:hover { color: #1A237E; }
+    .pw-toggle-btn:hover { color: #b11116; }
 
     /* ── Password Strength Checklist ── */
     .pw-criteria {
@@ -283,7 +283,7 @@ $initials = count($words) >= 2
 
     /* ── Action Rails ── */
     .btn-action-primary {
-        background: #1A237E;
+        background: #b11116;
         color: #FFFFFF;
         border: none;
         border-radius: 10px;
@@ -295,12 +295,12 @@ $initials = count($words) >= 2
         align-items: center;
         gap: 0.5rem;
         transition: all 0.2s ease;
-        box-shadow: 0 2px 4px rgba(26, 35, 126, 0.2);
+        box-shadow: 0 2px 4px rgba(177, 17, 22, 0.25);
     }
     .btn-action-primary:hover {
-        background: #121858;
+        background: #8A0D11;
         transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(26, 35, 126, 0.3);
+        box-shadow: 0 4px 10px rgba(177, 17, 22, 0.35);
     }
     .btn-action-secondary {
         background: #FFFFFF;
@@ -574,7 +574,7 @@ document.addEventListener('DOMContentLoaded', function() {
             title: 'Officer Created Successfully!',
             text: 'The new officer account is active and can now log in.',
             icon: 'success',
-            confirmButtonColor: '#1A237E',
+            confirmButtonColor: '#b11116',
             confirmButtonText: 'View Officers Directory',
             showCancelButton: true,
             cancelButtonText: 'Add Another',
