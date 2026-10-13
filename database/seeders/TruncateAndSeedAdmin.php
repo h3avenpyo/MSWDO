@@ -29,9 +29,9 @@ class TruncateAndSeedAdmin extends Seeder
 
         // Seed the single administrator account
         User::create([
-            'name' => 'Administrator',
-            'email' => 'admin@mswdo.test',
-            'password' => Hash::make('password'),
+            'name' => 'Fred Calos',
+            'email' => 'fredcalos@gmail.com',
+            'password' => 'Password1!',
             'role' => 'admin',
             'status' => 'active',
             'position' => 'MSWDO Administrator',
@@ -40,7 +40,7 @@ class TruncateAndSeedAdmin extends Seeder
 
         $this->command->info('Database truncated successfully.');
         $this->command->info('Administrator account created:');
-        $this->command->info('  Email: admin@mswdo.test');
-        $this->command->info('  Password: password');
+        $this->command->info('  Email: fredcalos@gmail.com');
+        $this->command->info('  Password: Password1!');
     }
 }

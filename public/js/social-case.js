@@ -816,7 +816,25 @@ async function submitForEncoding(){
 
   let encoders = [];
   try {
-    const encRes = await fetch('/admin/social-case/api/encoders');
+    const encRes = await fetch('/admin/social-case/api/encoders', {
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    });
+
+    if(encRes.status === 401){
+      Swal.fire({
+        title: 'Session Expired',
+        text: 'Your session has expired. Please log in again.',
+        icon: 'warning',
+        confirmButtonColor: '#B11116'
+      }).then(() => {
+        window.location.href = '/admin/login';
+      });
+      return;
+    }
+
     if(encRes.ok){
       encoders = await encRes.json();
     } else {
