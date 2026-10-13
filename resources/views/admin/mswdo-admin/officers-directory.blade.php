@@ -109,8 +109,8 @@ $initials = count($words) >= 2
         flex-shrink: 0;
     }
     .kpi-icon-wrap svg { width: 24px; height: 24px; }
-    .kpi-card-indigo .kpi-icon-wrap { background: #EEF2FF; color: #4338CA; }
-    .kpi-card-sky .kpi-icon-wrap { background: #E0F2FE; color: #0284C7; }
+    .kpi-card-indigo .kpi-icon-wrap { background: #FEF2F2; color: #b11116; }
+    .kpi-card-sky .kpi-icon-wrap { background: #FFF1F2; color: #BE123C; }
     .kpi-card-amber .kpi-icon-wrap { background: #FEF3C7; color: #D97706; }
     .kpi-card-emerald .kpi-icon-wrap { background: #ECFDF5; color: #059669; }
 
@@ -191,15 +191,15 @@ $initials = count($words) >= 2
     }
     .filter-search-wrap .form-control:focus {
         background: #FFFFFF;
-        border-color: #1A237E;
-        box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.12);
+        border-color: #b11116;
+        box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.12);
     }
     .filter-search-btn {
         height: 40px !important;
         padding: 0 16px;
-        border: 1px solid #1E3A8A;
+        border: 1px solid #b11116;
         border-radius: 0 8px 8px 0;
-        background: #1E3A8A;
+        background: #b11116;
         color: #FFFFFF;
         cursor: pointer;
         display: inline-flex;
@@ -211,7 +211,7 @@ $initials = count($words) >= 2
         margin: 0 !important;
     }
     .filter-search-btn:hover {
-        background: #1E40AF;
+        background: #8A0D11;
     }
     .filter-search-btn svg {
         width: 16px;
@@ -243,12 +243,12 @@ $initials = count($words) >= 2
         user-select: none;
     }
     .filter-select-btn:hover {
-        border-color: #1E3A8A;
+        border-color: #b11116;
         background: #FFFFFF;
     }
     .filter-select-btn.active {
-        border-color: #1E3A8A;
-        background: #EFF6FF;
+        border-color: #b11116;
+        background: #FEF2F2;
     }
     .filter-select-label {
         flex: 1;
@@ -285,12 +285,12 @@ $initials = count($words) >= 2
         justify-content: space-between;
     }
     .role-opt:hover, .status-opt:hover {
-        background: #EFF6FF;
-        color: #1E3A8A;
+        background: #FEF2F2;
+        color: #b11116;
     }
     .role-opt.selected, .status-opt.selected {
-        background: #EFF6FF;
-        color: #1E3A8A;
+        background: #FEF2F2;
+        color: #b11116;
         font-weight: 600;
     }
 
@@ -380,8 +380,8 @@ $initials = count($words) >= 2
         font-size: 0.825rem;
         flex-shrink: 0;
     }
-    .avatar-admin { background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE; }
-    .avatar-social { background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD; }
+    .avatar-admin { background: #FEF2F2; color: #b11116; border: 1px solid #FECACA; }
+    .avatar-social { background: #FFF1F2; color: #BE123C; border: 1px solid #FECDD3; }
     .avatar-senior { background: #FEF3C7; color: #D97706; border: 1px solid #FDE68A; }
     .avatar-financial { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
     .avatar-staff { background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; }
@@ -434,13 +434,14 @@ $initials = count($words) >= 2
     }
     .btn-action-icon svg { width: 16px; height: 16px; }
     .btn-action-icon.act-edit {
-        color: #1A237E;
-        background: #EEF2FF;
-        border-color: #C7D2FE;
+        color: #b11116;
+        background: #FEF2F2;
+        border-color: #FECACA;
     }
     .btn-action-icon.act-edit:hover {
-        background: #1A237E;
+        background: #b11116;
         color: #FFFFFF;
+        border-color: #b11116;
     }
     .btn-action-icon.act-deactivate {
         color: #DC2626;
@@ -754,18 +755,18 @@ $initials = count($words) >= 2
         flex-shrink: 0;
     }
     .sc-page-btn:hover:not(:disabled):not(.active) {
-        background: #EEF2FF;
-        border-color: #A5B4FC;
-        color: #1A237E;
+        background: #FEF2F2;
+        border-color: #FECACA;
+        color: #b11116;
         transform: translateY(-1px);
-        box-shadow: 0 2px 5px rgba(26, 35, 126, 0.12);
+        box-shadow: 0 2px 5px rgba(177, 17, 22, 0.12);
     }
     .sc-page-btn.active {
-        background: #1A237E;
+        background: #b11116;
         color: #FFFFFF;
-        border-color: #1A237E;
+        border-color: #b11116;
         font-weight: 700;
-        box-shadow: 0 2px 6px rgba(26, 35, 126, 0.25);
+        box-shadow: 0 2px 6px rgba(177, 17, 22, 0.25);
         cursor: default;
     }
     .sc-page-btn:disabled {
@@ -908,7 +909,7 @@ $initials = count($words) >= 2
                         <div class="role-opt {{ $curRole === $r ? 'selected' : '' }}" data-value="{{ $r }}" onclick="selectRole('{{ $r }}')">
                             <span>{{ $r }}</span>
                             @if($curRole === $r)
-                                <i data-lucide="check" style="width:14px;height:14px;color:#1E3A8A;"></i>
+                                <i data-lucide="check" style="width:14px;height:14px;color:#b11116;"></i>
                             @endif
                         </div>
                     @endforeach

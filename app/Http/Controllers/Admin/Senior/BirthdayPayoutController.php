@@ -8,6 +8,8 @@ use App\Models\Senior\SeniorActivityLog;
 use App\Models\Senior\InBetweenBenefitHistory;
 use Illuminate\Http\Request;
 
+use Carbon\Carbon;
+
 class BirthdayPayoutController extends Controller
 {
     /**
@@ -17,6 +19,11 @@ class BirthdayPayoutController extends Controller
     {
         if (! session('admin_user_id')) {
             return redirect()->route('admin.login.form');
+        }
+
+        $activeTab = $request->get('tab', $request->get('type', 'birthday'));
+        if ($request->has('in_between_page')) {
+            $activeTab = 'in-between';
         }
 
         // Get birthday payout history
@@ -37,16 +44,23 @@ class BirthdayPayoutController extends Controller
         $dateFrom = $request->get('date_from', '');
         $dateTo = $request->get('date_to', '');
         if ($dateFrom && $dateTo) {
-            $birthdayQuery->whereBetween('created_at', [$dateFrom, $dateTo]);
+            $birthdayQuery->whereBetween('created_at', [
+                Carbon::parse($dateFrom)->startOfDay(),
+                Carbon::parse($dateTo)->endOfDay()
+            ]);
+        } elseif ($dateFrom) {
+            $birthdayQuery->where('created_at', '>=', Carbon::parse($dateFrom)->startOfDay());
+        } elseif ($dateTo) {
+            $birthdayQuery->where('created_at', '<=', Carbon::parse($dateTo)->endOfDay());
         }
 
-        $history = $birthdayQuery->paginate(15);
+        $history = $birthdayQuery->paginate(15, ['*'], 'birthday_page')->withQueryString();
 
-        // Get In-Between Benefits history
+        // Get In-Between Benefits history (includes processed claims immediately)
         $inBetweenQuery = InBetweenBenefitHistory::with(['senior', 'processedBy', 'approvedBy'])
-            ->where('status', 'released')
-            ->where('is_exported', true) // Only show exported records
-            ->orderBy('payout_date', 'desc');
+            ->whereIn('status', ['approved', 'released'])
+            ->orderBy('payout_date', 'desc')
+            ->orderBy('id', 'desc');
 
         // Apply barangay filter for in-between
         if ($barangay) {
@@ -57,10 +71,17 @@ class BirthdayPayoutController extends Controller
 
         // Apply date filters for in-between
         if ($dateFrom && $dateTo) {
-            $inBetweenQuery->whereBetween('payout_date', [$dateFrom, $dateTo]);
+            $inBetweenQuery->whereBetween('payout_date', [
+                Carbon::parse($dateFrom)->startOfDay(),
+                Carbon::parse($dateTo)->endOfDay()
+            ]);
+        } elseif ($dateFrom) {
+            $inBetweenQuery->where('payout_date', '>=', Carbon::parse($dateFrom)->startOfDay());
+        } elseif ($dateTo) {
+            $inBetweenQuery->where('payout_date', '<=', Carbon::parse($dateTo)->endOfDay());
         }
 
-        $inBetweenHistory = $inBetweenQuery->paginate(15);
+        $inBetweenHistory = $inBetweenQuery->paginate(15, ['*'], 'in_between_page')->withQueryString();
 
         $barangays = [
             'Acacia', 'Adlas', 'Anahaw I', 'Anahaw II', 'Balite I', 'Balite II', 'Balubad', 'Banaba', 'Batas',
@@ -81,7 +102,8 @@ class BirthdayPayoutController extends Controller
             'actions',
             'barangays',
             'dateFrom',
-            'dateTo'
+            'dateTo',
+            'activeTab'
         ));
     }
 

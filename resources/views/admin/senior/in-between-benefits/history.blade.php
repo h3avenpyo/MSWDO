@@ -955,8 +955,11 @@
                     <p>Audit trail and release history of approved in-between birthday benefit transactions.</p>
                 </div>
                 <div class="history-header-actions">
-                    <a href="/admin/senior/in-between/eligibility-list" class="btn btn-primary">
+                    <a href="{{ route('admin.senior.in-between.eligibility-list') }}" class="btn btn-outline">
                         <i data-lucide="users"></i> Eligibility List
+                    </a>
+                    <a href="{{ route('admin.senior.in-between.history') }}" class="btn btn-primary">
+                        <i data-lucide="history"></i> Benefit History
                     </a>
                 </div>
             </div>
@@ -1007,11 +1010,6 @@
                     <div class="filter-panel-title">
                         <i data-lucide="filter"></i> Filter Benefit History
                     </div>
-                    @if(request()->hasAny(['search', 'interval', 'status', 'from_date', 'to_date', 'barangay']))
-                        <a href="{{ route('admin.senior.in-between.history') }}" class="text-xs font-semibold text-red-600 hover:text-red-800 flex items-center gap-1" style="text-decoration:none;">
-                            <i data-lucide="x" style="width:14px;height:14px;"></i> Clear All Filters
-                        </a>
-                    @endif
                 </div>
                 <form method="GET" action="{{ route('admin.senior.in-between.history') }}" id="historyFilterForm">
                     <div class="filter-grid">
@@ -1119,15 +1117,14 @@
                                 <th class="col-check" style="width:4%; text-align:center;">
                                     <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" title="Select All" style="cursor:pointer; width:16px; height:16px; accent-color:var(--primary);">
                                 </th>
-                                <th class="col-control" style="width:12%;">Control Number</th>
-                                <th class="col-senior" style="width:14%;">Senior Citizen</th>
-                                <th class="col-barangay" style="width:10%;">Barangay</th>
-                                <th class="col-age" style="width:4%; text-align:center;">Age</th>
-                                <th class="col-amount" style="width:8%; text-align:right;">Amount</th>
-                                <th class="col-status" style="width:8%; text-align:center;">Status</th>
-                                <th class="col-date" style="width:8%; text-align:center;">Date Applied</th>
-                                <th class="col-eligible" style="width:10%; text-align:center;">Next Eligible</th>
-                                <th class="col-action" style="width:8%; text-align:center;">Action</th>
+                                <th class="col-control" style="width:14%;">Control Number</th>
+                                <th class="col-senior" style="width:16%;">Senior Citizen</th>
+                                <th class="col-barangay" style="width:12%;">Barangay</th>
+                                <th class="col-age" style="width:5%; text-align:center;">Age</th>
+                                <th class="col-amount" style="width:9%; text-align:right;">Amount</th>
+                                <th class="col-status" style="width:9%; text-align:center;">Status</th>
+                                <th class="col-date" style="width:10%; text-align:center;">Date Applied</th>
+                                <th class="col-eligible" style="width:12%; text-align:center;">Next Eligible</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1165,34 +1162,15 @@
                                     </td>
                                     <td class="col-eligible" data-label="Next Eligible" style="text-align:center; color:#475569; white-space:nowrap;">
                                         @if($benefit->payout_date)
-                                            {{ $benefit->payout_date->addYears(6)->format('M d, Y') }}
+                                            {{ $benefit->payout_date->copy()->addYears(6)->format('M d, Y') }}
                                         @else
                                             <span style="color:#94A3B8; font-style:italic;">Pending payout</span>
                                         @endif
                                     </td>
-                                    <td class="col-action" data-label="Action" style="text-align:center;">
-                                        <button type="button" class="btn-icon btn-view-details" title="View Transaction Details"
-                                            data-reference="{{ $benefit->reference_number }}"
-                                            data-name="{{ $benefit->full_name }}"
-                                            data-senior-id="{{ $benefit->senior->control_number ?? $benefit->senior->senior_id_number ?? ('#' . $benefit->senior_id) }}"
-                                            data-barangay="{{ $benefit->senior->barangay ?? 'N/A' }}"
-                                            data-age="{{ $benefit->current_age }}"
-                                            data-interval="{{ $benefit->eligibility_interval }}"
-                                            data-amount="₱{{ number_format($benefit->amount, 2) }}"
-                                            data-status="{{ ucfirst($benefit->status) }}"
-                                            data-status-raw="{{ $benefit->status }}"
-                                            data-application-date="{{ $benefit->application_date ? $benefit->application_date->format('F d, Y') : 'N/A' }}"
-                                            data-payout-date="{{ $benefit->payout_date ? $benefit->payout_date->format('F d, Y') : 'Pending release' }}"
-                                            data-processed-by="{{ $benefit->processedBy->name ?? 'Admin' }}"
-                                            data-approved-by="{{ $benefit->approvedBy->name ?? 'Admin' }}"
-                                            data-remarks="{{ $benefit->remarks ?? 'None' }}">
-                                            <i data-lucide="eye"></i>
-                                        </button>
-                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" style="padding:56px 20px; text-align:center;">
+                                    <td colspan="9" style="padding:56px 20px; text-align:center;">
                                         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;">
                                             <div style="width:60px; height:60px; border-radius:50%; background:#F1F5F9; display:flex; align-items:center; justify-content:center; color:#94A3B8;">
                                                 <i data-lucide="receipt-text" style="width:28px; height:28px;"></i>

@@ -270,7 +270,7 @@ class DashboardController extends Controller
         if (class_exists(\App\Models\SocialCase\SocialCaseStudy::class)) {
             $socialCases = \App\Models\SocialCase\SocialCaseStudy::with('client', 'officer')
                 ->latest('updated_at')
-                ->take(5)
+                ->take(10)
                 ->get()
                 ->map(function ($case) {
                     $officerName = 'Not assigned';
@@ -286,6 +286,7 @@ class DashboardController extends Controller
                         'officer' => $officerName,
                         'status' => ucfirst($case->status ?? 'Pending'),
                         'updated' => $case->updated_at ? $case->updated_at->format('M d, Y') : 'N/A',
+                        'raw_updated_at' => $case->updated_at ?? $case->created_at,
                         'url' => route('admin.social-case.cases'),
                     ];
                 });
@@ -296,7 +297,7 @@ class DashboardController extends Controller
         if (class_exists(\App\Models\SocialCase\BeneficiaryIntake::class)) {
             $financialCases = \App\Models\SocialCase\BeneficiaryIntake::with('socialCaseStudy.officer')
                 ->latest('updated_at')
-                ->take(5)
+                ->take(10)
                 ->get()
                 ->map(function ($intake) {
                     $status = 'Pending';
@@ -309,13 +310,20 @@ class DashboardController extends Controller
                             $officerName = $intake->socialCaseStudy->social_worker_name;
                         }
                     }
+                    $clientName = $intake->beneficiary_full_name;
+                    if (!$clientName || $clientName === 'N/A') {
+                        $clientName = $intake->client?->full_name 
+                            ?? ($intake->socialCaseStudy?->client?->full_name 
+                            ?? ($intake->client_name ?? 'Unknown'));
+                    }
                     return [
                         'id' => $intake->id,
-                        'client' => $intake->client_name ?? 'Unknown',
+                        'client' => $clientName,
                         'service' => 'Financial Assistance',
                         'officer' => $officerName,
                         'status' => $status,
                         'updated' => $intake->updated_at ? $intake->updated_at->format('M d, Y') : 'N/A',
+                        'raw_updated_at' => $intake->updated_at ?? $intake->created_at,
                         'url' => url('/admin/financial/dashboard'),
                     ];
                 });
@@ -326,7 +334,7 @@ class DashboardController extends Controller
         if (class_exists(\App\Models\Senior\SeniorCitizenRecord::class)) {
             $seniorCases = \App\Models\Senior\SeniorCitizenRecord::with('createdBy')
                 ->latest('updated_at')
-                ->take(5)
+                ->take(10)
                 ->get()
                 ->map(function ($senior) {
                     $officerName = 'N/A';
@@ -342,13 +350,26 @@ class DashboardController extends Controller
                             ? $senior->status->label()
                             : ucfirst((string) ($senior->status ?? 'Active')),
                         'updated' => $senior->updated_at ? $senior->updated_at->format('M d, Y') : 'N/A',
+                        'raw_updated_at' => $senior->updated_at ?? $senior->created_at,
                         'url' => route('admin.senior'),
                     ];
                 });
             $recentCases = $recentCases->concat($seniorCases);
         }
 
-        return $recentCases->take(10);
+        return $recentCases
+            ->sortByDesc(function ($item) {
+                if (!isset($item['raw_updated_at']) || !$item['raw_updated_at']) {
+                    return 0;
+                }
+                return is_numeric($item['raw_updated_at'])
+                    ? (int) $item['raw_updated_at']
+                    : ($item['raw_updated_at'] instanceof \DateTimeInterface
+                        ? $item['raw_updated_at']->getTimestamp()
+                        : strtotime((string) $item['raw_updated_at']));
+            })
+            ->values()
+            ->take(10);
     }
 
     private function getMonthlySocialCases()

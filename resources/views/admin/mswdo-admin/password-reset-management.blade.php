@@ -109,9 +109,9 @@ $initials = count($words) >= 2
         flex-shrink: 0;
     }
     .kpi-icon-box svg { width: 24px; height: 24px; }
-    .card-kpi-indigo .kpi-icon-box { background: #EEF2FF; color: #4338CA; }
+    .card-kpi-indigo .kpi-icon-box { background: #FEF2F2; color: #b11116; }
     .card-kpi-amber .kpi-icon-box  { background: #FEF3C7; color: #D97706; }
-    .card-kpi-sky .kpi-icon-box    { background: #E0F2FE; color: #0284C7; }
+    .card-kpi-sky .kpi-icon-box    { background: #FFF1F2; color: #BE123C; }
     .card-kpi-emerald .kpi-icon-box{ background: #ECFDF5; color: #059669; }
 
     /* ── Content Shell ── */
@@ -191,15 +191,15 @@ $initials = count($words) >= 2
     }
     .filter-search-wrap .form-control:focus {
         background: #FFFFFF;
-        border-color: #1A237E;
-        box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.12);
+        border-color: #b11116;
+        box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.12);
     }
     .filter-search-btn {
         height: 40px !important;
         padding: 0 16px;
-        border: 1px solid #1E3A8A;
+        border: 1px solid #b11116;
         border-radius: 0 8px 8px 0;
-        background: #1E3A8A;
+        background: #b11116;
         color: #FFFFFF;
         cursor: pointer;
         display: inline-flex;
@@ -211,7 +211,7 @@ $initials = count($words) >= 2
         margin: 0 !important;
     }
     .filter-search-btn:hover {
-        background: #1E40AF;
+        background: #8A0D11;
     }
     .filter-search-btn svg {
         width: 16px;
@@ -243,12 +243,12 @@ $initials = count($words) >= 2
         user-select: none;
     }
     .filter-select-btn:hover {
-        border-color: #1E3A8A;
+        border-color: #b11116;
         background: #FFFFFF;
     }
     .filter-select-btn.active {
-        border-color: #1E3A8A;
-        background: #EFF6FF;
+        border-color: #b11116;
+        background: #FEF2F2;
     }
     .filter-select-label {
         flex: 1;
@@ -285,12 +285,12 @@ $initials = count($words) >= 2
         justify-content: space-between;
     }
     .status-opt:hover {
-        background: #EFF6FF;
-        color: #1E3A8A;
+        background: #FEF2F2;
+        color: #b11116;
     }
     .status-opt.selected {
-        background: #EFF6FF;
-        color: #1E3A8A;
+        background: #FEF2F2;
+        color: #b11116;
         font-weight: 600;
     }
 
@@ -363,15 +363,15 @@ $initials = count($words) >= 2
         width: 38px;
         height: 38px;
         border-radius: 10px;
-        background: #EEF2FF;
-        color: #4338CA;
+        background: #FEF2F2;
+        color: #b11116;
         font-weight: 700;
         font-size: 0.825rem;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        border: 1px solid #C7D2FE;
+        border: 1px solid #FECACA;
     }
 
     /* Status Pills */
@@ -711,18 +711,18 @@ $initials = count($words) >= 2
         flex-shrink: 0;
     }
     .sc-page-btn:hover:not(:disabled):not(.active) {
-        background: #EEF2FF;
-        border-color: #A5B4FC;
-        color: #1A237E;
+        background: #FEF2F2;
+        border-color: #FECACA;
+        color: #b11116;
         transform: translateY(-1px);
-        box-shadow: 0 2px 5px rgba(26, 35, 126, 0.12);
+        box-shadow: 0 2px 5px rgba(177, 17, 22, 0.12);
     }
     .sc-page-btn.active {
-        background: #1A237E;
+        background: #b11116;
         color: #FFFFFF;
-        border-color: #1A237E;
+        border-color: #b11116;
         font-weight: 700;
-        box-shadow: 0 2px 6px rgba(26, 35, 126, 0.25);
+        box-shadow: 0 2px 6px rgba(177, 17, 22, 0.25);
         cursor: default;
     }
     .sc-page-btn:disabled {
@@ -893,7 +893,7 @@ $initials = count($words) >= 2
                         <div class="status-opt {{ $curStatus === $val ? 'selected' : '' }}" data-value="{{ $val }}" onclick="selectStatus('{{ $val }}', '{{ $lbl }}')">
                             <span>{{ $lbl }}</span>
                             @if($curStatus === $val)
-                                <i data-lucide="check" style="width:14px;height:14px;color:#1E3A8A;"></i>
+                                <i data-lucide="check" style="width:14px;height:14px;color:#b11116;"></i>
                             @endif
                         </div>
                     @endforeach
@@ -924,7 +924,6 @@ $initials = count($words) >= 2
                     <th>Email Address</th>
                     <th>Request Status</th>
                     <th>Submitted At</th>
-                    <th>Expires At</th>
                     <th>Processed By</th>
                     <th style="text-align:right;">Actions</th>
                 </tr>
@@ -970,18 +969,6 @@ $initials = count($words) >= 2
                         <div class="text-[11px] text-slate-400">{{ $req->requested_at ? $req->requested_at->format('h:i A') : '' }}</div>
                     </td>
                     <td>
-                        @if($req->expires_at)
-                            <div class="text-sm {{ $req->isExpired() ? 'text-rose-600 font-medium' : 'text-slate-700' }}">
-                                {{ $req->expires_at->format('M d, Y') }}
-                            </div>
-                            <div class="text-[11px] {{ $req->isExpired() ? 'text-rose-500 font-bold' : 'text-slate-400' }}">
-                                {{ $req->isExpired() ? 'Expired' : $req->expires_at->format('h:i A') }}
-                            </div>
-                        @else
-                            <span class="text-slate-400">-</span>
-                        @endif
-                    </td>
-                    <td>
                         <span class="text-sm text-slate-600">{{ $req->processedBy ? $req->processedBy->name : 'Pending Action' }}</span>
                     </td>
                     <td style="text-align:right;">
@@ -1008,7 +995,7 @@ $initials = count($words) >= 2
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center py-12 text-slate-400">
+                    <td colspan="6" class="text-center py-12 text-slate-400">
                         <i data-lucide="shield-check" class="w-10 h-10 mx-auto mb-2 text-slate-300"></i>
                         <div class="font-semibold text-slate-600">No password reset requests found.</div>
                         <div class="text-xs text-slate-400 mt-1">Pending password recovery submissions from staff will appear here.</div>
@@ -1050,12 +1037,6 @@ $initials = count($words) >= 2
                 <div class="flex justify-between items-center text-xs gap-2">
                     <span class="text-slate-500 flex-shrink-0">Requested:</span>
                     <span class="font-medium text-slate-700 text-right truncate">{{ $req->requested_at ? $req->requested_at->format('M d, Y h:i A') : '-' }}</span>
-                </div>
-                <div class="flex justify-between items-center text-xs gap-2">
-                    <span class="text-slate-500 flex-shrink-0">Expires:</span>
-                    <span class="font-medium text-right truncate {{ $req->isExpired() ? 'text-rose-600 font-bold' : 'text-slate-700' }}">
-                        {{ $req->expires_at ? ($req->isExpired() ? 'Expired' : $req->expires_at->format('M d, Y h:i A')) : '-' }}
-                    </span>
                 </div>
                 <div class="flex justify-between items-center text-xs gap-2">
                     <span class="text-slate-500 flex-shrink-0">Processed By:</span>

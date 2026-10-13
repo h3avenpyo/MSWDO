@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Senior\InBetweenBenefitConfiguration;
 use App\Models\Senior\InBetweenBenefitHistory;
 use App\Models\Senior\SeniorCitizenRecord;
+use App\Models\Senior\SeniorActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -372,6 +373,9 @@ class InBetweenBenefitController extends Controller
             $benefit->addAuditTrail('CREATED', 'Benefit claim created and released', $adminId);
             $benefit->addAuditTrail('RELEASED', 'Benefit released by ' . $adminName, $adminId);
 
+            // Log activity to senior activity logs
+            SeniorActivityLog::log('released in-between birthday benefit', $senior->full_name, $senior->control_number ?? ('#' . $senior->id), $adminName);
+
             DB::commit();
 
             return response()->json([
@@ -525,6 +529,9 @@ class InBetweenBenefitController extends Controller
                 $benefit->addAuditTrail('CREATED', 'Benefit claim created and released via bulk processing', $adminId);
                 $benefit->addAuditTrail('RELEASED', 'Benefit released by ' . $adminName, $adminId);
 
+                // Log activity to senior activity logs
+                SeniorActivityLog::log('released in-between birthday benefit', $senior->full_name, $senior->control_number ?? ('#' . $senior->id), $adminName);
+
                 DB::commit();
                 $processedCount++;
             } catch (\Exception $e) {
@@ -605,7 +612,7 @@ class InBetweenBenefitController extends Controller
             'totalAmount',
             'approvedCount',
             'releasedCount'
-        ))->with('totalAllRecords', $totalRecords);
+        ));
     }
 
     public function markExported(Request $request)
