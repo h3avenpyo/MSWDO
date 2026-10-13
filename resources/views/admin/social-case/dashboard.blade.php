@@ -30,6 +30,13 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             @endif
         </div>
     </div>
+    <div class="mobile-header-actions">
+        <button type="button" id="mobileNotifBellBtn" class="mobile-header-notif-btn notif-bell-btn-trigger" title="Notifications" onclick="toggleNotificationDropdown(event)">
+            <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+            <span class="notif-badge" style="display: none;">0</span>
+            <span class="notif-ping" style="display: none;"></span>
+        </button>
+    </div>
 </div>
 
 <style>
@@ -43,16 +50,48 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         }
     }
 
-    /* Mobile welcome message */
+    /* Mobile header actions & welcome message */
+    .mobile-header-actions {
+        display: none;
+    }
     .mobile-welcome-message {
         display: none;
     }
     @media (max-width: 767.98px) {
+        .mobile-header-actions {
+            display: flex;
+            align-items: center;
+            margin-left: 8px;
+            flex-shrink: 0;
+        }
+        .mobile-header-notif-btn {
+            position: relative;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0;
+            outline: none;
+        }
+        .mobile-header-notif-btn:hover,
+        .mobile-header-notif-btn:active,
+        .mobile-header-notif-btn.active {
+            background: #FFFFFF;
+            color: #B11116;
+            border-color: #FFFFFF;
+        }
         .mobile-welcome-message {
             display: block;
             padding: 16px;
             background: #F5F7FB;
-            margin: 0 -16px 16px -16px;
+            margin: 0 -12px 16px -12px;
             text-align: center;
         }
         .mobile-welcome-title {
@@ -181,18 +220,57 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         animation: notif-wiggle 0.7s ease-in-out;
     }
 
-    .notif-dropdown {
-        position: absolute;
-        top: calc(100% + 12px);
+    /* Mobile backdrop */
+    .notif-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
         right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        z-index: 99998;
+    }
+    @media (min-width: 768px) {
+        .notif-backdrop {
+            display: none !important;
+        }
+    }
+
+    .notif-dropdown {
+        position: fixed;
         width: 390px;
         max-width: 92vw;
         background: #FFFFFF;
         border-radius: 16px;
         box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.08);
-        z-index: 9999;
+        z-index: 99999;
         overflow: hidden;
         animation: notif-pop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @media (max-width: 767.98px) {
+        .notif-dropdown {
+            position: fixed !important;
+            top: 66px !important;
+            left: 12px !important;
+            right: 12px !important;
+            width: auto !important;
+            max-width: calc(100vw - 24px) !important;
+            max-height: calc(100vh - 80px) !important;
+            z-index: 99999 !important;
+            border-radius: 14px !important;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35) !important;
+        }
+        .notif-dropdown.is-open {
+            display: flex !important;
+        }
+        .notif-list-container {
+            max-height: calc(100vh - 225px) !important;
+        }
     }
     @keyframes notif-pop {
         from {
@@ -490,44 +568,45 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <img src="{{ asset('images/IserveIcon.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-right:8px;" alt="iSERVE">
-        <span style="white-space:nowrap;">Social Case Study</span>
+        <div class="sidebar-brand-content" onclick="handleBrandClick()" title="Social Case Study">
+            <img src="{{ asset('images/IserveIcon.png') }}" class="sidebar-brand-logo" alt="iSERVE">
+            <span class="sidebar-brand-text">Social Case Study</span>
+        </div>
+        <button type="button" class="sidebar-toggle-btn" id="sidebarCollapseBtn" onclick="toggleSidebarCollapse()" aria-label="Collapse sidebar" title="Collapse sidebar">
+            <svg class="toggle-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
     </div>
     <ul class="sidebar-menu">
-        <li><a href="/admin/social-case/dashboard" class="active"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
+        <li><a href="/admin/social-case/dashboard" class="active" title="Dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
         @if((string) session('admin_user_role') !== 'social_worker')
-        <li><a href="/admin/social-case/new"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>Client Eligibility</span></a></li>
+        <li><a href="/admin/social-case/new" title="Client Eligibility"><i data-lucide="user-plus" style="width:20px;height:20px"></i><span>Client Eligibility</span></a></li>
         @endif
         @if((string) session('admin_user_role') !== 'eligibility_checker')
-        <li><a href="/admin/social-case/submitted"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
-        <li><a href="/admin/social-case/cases"><i data-lucide="list" style="width:20px;height:20px"></i><span>All cases</span></a></li>
-        <li><a href="/admin/social-case/archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
+        <li><a href="/admin/social-case/submitted" title="Submitted Cases"><i data-lucide="send" style="width:20px;height:20px"></i><span>Submitted Cases</span></a></li>
+        <li><a href="/admin/social-case/cases" title="All cases"><i data-lucide="list" style="width:20px;height:20px"></i><span>All cases</span></a></li>
+        <li><a href="/admin/social-case/archive" title="Archive"><i data-lucide="archive" style="width:20px;height:20px"></i><span>Archive</span></a></li>
         @endif
         @if((string) session('admin_user_role') === 'eligibility_checker')
         <li class="sidebar-dropdown" id="onlineRequestsDropdown">
-            <a href="#" class="sidebar-dropdown-toggle" onclick="toggleDropdown('onlineRequestsDropdown'); return false;">
+            <a href="#" class="sidebar-dropdown-toggle" onclick="toggleDropdown('onlineRequestsDropdown'); return false;" title="Online Requests">
                 <i data-lucide="file-text" style="width:20px;height:20px"></i>
                 <span>Online Requests</span>
                 <i data-lucide="chevron-down" class="dropdown-chevron" style="width:16px;height:16px;margin-left:auto;"></i>
             </a>
             <ul class="sidebar-dropdown-menu">
-                <li><a href="/admin/social-case/online-requests"><i data-lucide="clock" style="width:18px;height:18px"></i><span>Pending Requests</span><span class="badge-count badge-pending" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#F59E0B;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['pending'] ?? 0 }}</span></a></li>
-                <li><a href="/admin/social-case/online-requests/accepted"><i data-lucide="check-circle" style="width:18px;height:18px"></i><span>Accepted Requests</span><span class="badge-count badge-accepted" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#10B981;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['accepted'] ?? 0 }}</span></a></li>
-                <li><a href="/admin/social-case/online-requests/rejected"><i data-lucide="x-circle" style="width:18px;height:18px"></i><span>Rejected Requests</span><span class="badge-count badge-rejected" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#EF4444;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['rejected'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests" title="Pending Requests"><i data-lucide="clock" style="width:18px;height:18px"></i><span>Pending Requests</span><span class="badge-count badge-pending" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#F59E0B;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['pending'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/accepted" title="Accepted Requests"><i data-lucide="check-circle" style="width:18px;height:18px"></i><span>Accepted Requests</span><span class="badge-count badge-accepted" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#10B981;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['accepted'] ?? 0 }}</span></a></li>
+                <li><a href="/admin/social-case/online-requests/rejected" title="Rejected Requests"><i data-lucide="x-circle" style="width:18px;height:18px"></i><span>Rejected Requests</span><span class="badge-count badge-rejected" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#EF4444;color:#fff;font-size:0.7rem;font-weight:700;margin-left:auto;">{{ $onlineRequestCounts['rejected'] ?? 0 }}</span></a></li>
             </ul>
         </li>
         @endif
-        <li><a href="#" onclick="confirmLogout(event)"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a></li>
+        <li><a href="#" onclick="confirmLogout(event)" title="Logout"><i data-lucide="log-out" style="width:20px;height:20px"></i><span>Logout</span></a></li>
     </ul>
 </div>
 
 <div class="main">
-    <!-- Mobile Welcome Message -->
-    <div class="mobile-welcome-message">
-        <h2 class="mobile-welcome-title">Welcome, {{ session('admin_user_name') ?? 'Social Case Study Officer' }}</h2>
-    </div>
-
-    <!-- Modern Page Header -->
     @php
         $userName = session('admin_user_name') ?? 'Social Case Study Officer';
         $words = explode(' ', $userName);
@@ -538,76 +617,25 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             $initials = strtoupper(substr($userName, 0, 2));
         }
     @endphp
+
+    <!-- Mobile Welcome Message -->
+    <div class="mobile-welcome-message">
+        <h2 class="mobile-welcome-title">Welcome, {{ $userName }}</h2>
+    </div>
+
+    <!-- Modern Page Header -->
     <header class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0 select-none mb-4 lg:mb-2">
         <h1 class="font-['Public_Sans'] text-[24px] md:text-[28px] lg:text-[32px] font-bold text-[#111827] leading-none m-0">Welcome, {{ $userName }}</h1>
         <div class="flex items-center gap-4 sm:gap-4 lg:gap-5 w-full sm:w-auto justify-between sm:justify-end">
             <div class="font-['Public_Sans'] text-[13px] md:text-[14px] lg:text-[15px] font-medium text-[#6B7280]" id="currentDateTime">Thursday, July 16, 2026 at 01:51 PM</div>
 
-            <!-- Notification Bell & Dropdown Wrapper -->
+            <!-- Notification Bell Wrapper -->
             <div class="notification-wrapper" style="position: relative;">
-                <button type="button" id="notifBellBtn" class="notif-bell-btn" title="Notifications" onclick="toggleNotificationDropdown(event)">
+                <button type="button" id="notifBellBtn" class="notif-bell-btn notif-bell-btn-trigger" title="Notifications" onclick="toggleNotificationDropdown(event)">
                     <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
                     <span id="notifBadge" class="notif-badge" style="display: none;">0</span>
                     <span id="notifPing" class="notif-ping" style="display: none;"></span>
                 </button>
-
-                <!-- Notification Dropdown Panel -->
-                <div id="notifDropdown" class="notif-dropdown" style="display: none;">
-                    <!-- Dropdown Header -->
-                    <div class="notif-dropdown-header">
-                        <div class="notif-header-left">
-                            <i data-lucide="bell" style="width: 17px; height: 17px; color: #818CF8;"></i>
-                            <span class="notif-header-title">Notifications</span>
-                            <span id="notifHeaderCountBadge" class="notif-count-pill" style="display: none;">0 New</span>
-                        </div>
-                        <button type="button" id="markAllReadBtn" class="notif-mark-read-btn" onclick="markAllNotificationsRead(event)">
-                            <i data-lucide="check-check" style="width: 14px; height: 14px;"></i>
-                            Mark all read
-                        </button>
-                    </div>
-
-                    <!-- Category Tabs -->
-                    <div class="notif-tabs">
-                        <button type="button" class="notif-tab active" data-filter="all" onclick="filterNotifications('all', event)">
-                            All <span id="countAll" class="notif-tab-num">(0)</span>
-                        </button>
-                        @if((string) session('admin_user_role') === 'eligibility_checker')
-                        <button type="button" class="notif-tab" data-filter="pending_online_request" onclick="filterNotifications('pending_online_request', event)">
-                            New Online <span id="countPending" class="notif-tab-num">(0)</span>
-                        </button>
-                        @else
-                        <button type="button" class="notif-tab" data-filter="client_eligibility" onclick="filterNotifications('client_eligibility', event)">
-                            Walk-in <span id="countWalkin" class="notif-tab-num">(0)</span>
-                        </button>
-                        <button type="button" class="notif-tab" data-filter="online_request" onclick="filterNotifications('online_request', event)">
-                            Online <span id="countOnline" class="notif-tab-num">(0)</span>
-                        </button>
-                        @endif
-                    </div>
-
-                    <!-- Scrollable Notification List -->
-                    <div id="notifListContainer" class="notif-list-container">
-                        <div class="notif-loading">
-                            <div class="notif-spinner"></div>
-                            <span>Checking notifications...</span>
-                        </div>
-                    </div>
-
-                    <!-- Dropdown Footer -->
-                    <div class="notif-dropdown-footer">
-                        @if((string) session('admin_user_role') === 'eligibility_checker')
-                        <a href="{{ route('admin.social-case.online-requests') }}" class="notif-footer-link">
-                            <span>Open Pending Online Requests</span>
-                            <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
-                        </a>
-                        @else
-                        <a href="{{ route('admin.social-case.submitted') }}" class="notif-footer-link">
-                            <span>Open Submitted Cases Queue</span>
-                            <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
-                        </a>
-                        @endif
-                    </div>
-                </div>
             </div>
 
             <div class="w-11 h-11 rounded-full bg-[#B11116] text-white font-bold text-base flex items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,56,202,0.3)] hover:scale-105 select-none" title="User Profile: {{ $userName }}">
@@ -615,6 +643,67 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             </div>
         </div>
     </header>
+
+    <!-- Global Notification Backdrop (for mobile) -->
+    <div id="notifBackdrop" class="notif-backdrop" onclick="closeNotificationDropdown()" style="display: none;"></div>
+
+    <!-- Notification Dropdown Panel (placed outside <header> so it's fully visible and functional on mobile, tablet, and desktop) -->
+    <div id="notifDropdown" class="notif-dropdown" style="display: none;">
+        <!-- Dropdown Header -->
+        <div class="notif-dropdown-header">
+            <div class="notif-header-left">
+                <i data-lucide="bell" style="width: 17px; height: 17px; color: #818CF8;"></i>
+                <span class="notif-header-title">Notifications</span>
+                <span id="notifHeaderCountBadge" class="notif-count-pill" style="display: none;">0 New</span>
+            </div>
+            <button type="button" id="markAllReadBtn" class="notif-mark-read-btn" onclick="markAllNotificationsRead(event)">
+                <i data-lucide="check-check" style="width: 14px; height: 14px;"></i>
+                Mark all read
+            </button>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="notif-tabs">
+            <button type="button" class="notif-tab active" data-filter="all" onclick="filterNotifications('all', event)">
+                All <span id="countAll" class="notif-tab-num">(0)</span>
+            </button>
+            @if((string) session('admin_user_role') === 'eligibility_checker')
+            <button type="button" class="notif-tab" data-filter="pending_online_request" onclick="filterNotifications('pending_online_request', event)">
+                New Online <span id="countPending" class="notif-tab-num">(0)</span>
+            </button>
+            @else
+            <button type="button" class="notif-tab" data-filter="client_eligibility" onclick="filterNotifications('client_eligibility', event)">
+                Walk-in <span id="countWalkin" class="notif-tab-num">(0)</span>
+            </button>
+            <button type="button" class="notif-tab" data-filter="online_request" onclick="filterNotifications('online_request', event)">
+                Online <span id="countOnline" class="notif-tab-num">(0)</span>
+            </button>
+            @endif
+        </div>
+
+        <!-- Scrollable Notification List -->
+        <div id="notifListContainer" class="notif-list-container">
+            <div class="notif-loading">
+                <div class="notif-spinner"></div>
+                <span>Checking notifications...</span>
+            </div>
+        </div>
+
+        <!-- Dropdown Footer -->
+        <div class="notif-dropdown-footer">
+            @if((string) session('admin_user_role') === 'eligibility_checker')
+            <a href="{{ route('admin.social-case.online-requests') }}" class="notif-footer-link">
+                <span>Open Pending Online Requests</span>
+                <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+            </a>
+            @else
+            <a href="{{ route('admin.social-case.submitted') }}" class="notif-footer-link">
+                <span>Open Submitted Cases Queue</span>
+                <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+            </a>
+            @endif
+        </div>
+    </div>
 
     @php
         $dashRole = (string) session('admin_user_role');
@@ -775,34 +864,75 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         });
     }
 
-    function toggleNotificationDropdown(e) {
-        if (e) e.stopPropagation();
+    function positionDropdown(triggerBtn) {
         const dropdown = document.getElementById('notifDropdown');
-        const bellBtn = document.getElementById('notifBellBtn');
+        if (!dropdown) return;
+        if (window.innerWidth >= 768) {
+            const btn = triggerBtn || document.getElementById('notifBellBtn');
+            if (btn) {
+                const rect = btn.getBoundingClientRect();
+                dropdown.style.top = (rect.bottom + 8) + 'px';
+                dropdown.style.right = Math.max(16, (window.innerWidth - rect.right)) + 'px';
+                dropdown.style.left = 'auto';
+                dropdown.style.width = '390px';
+            }
+        } else {
+            dropdown.style.top = '';
+            dropdown.style.right = '';
+            dropdown.style.left = '';
+            dropdown.style.width = '';
+        }
+    }
+
+    function toggleNotificationDropdown(e) {
+        if (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        const dropdown = document.getElementById('notifDropdown');
+        const backdrop = document.getElementById('notifBackdrop');
+        const bellBtns = document.querySelectorAll('.notif-bell-btn-trigger, .notif-bell-btn');
         if (!dropdown) return;
 
-        const isOpen = dropdown.style.display === 'block';
+        const isOpen = dropdown.style.display === 'block' || dropdown.classList.contains('is-open');
         if (isOpen) {
             closeNotificationDropdown();
         } else {
+            const triggerBtn = (e && e.currentTarget) ? e.currentTarget : document.getElementById('notifBellBtn');
+            positionDropdown(triggerBtn);
             dropdown.style.display = 'block';
-            if (bellBtn) bellBtn.classList.add('active');
+            dropdown.classList.add('is-open');
+            bellBtns.forEach(btn => btn.classList.add('active'));
+            if (backdrop && window.innerWidth < 768) {
+                backdrop.style.display = 'block';
+            }
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
     }
 
     function closeNotificationDropdown() {
         const dropdown = document.getElementById('notifDropdown');
-        const bellBtn = document.getElementById('notifBellBtn');
-        if (dropdown) dropdown.style.display = 'none';
-        if (bellBtn) bellBtn.classList.remove('active');
+        const backdrop = document.getElementById('notifBackdrop');
+        const bellBtns = document.querySelectorAll('.notif-bell-btn-trigger, .notif-bell-btn');
+        if (dropdown) {
+            dropdown.style.display = 'none';
+            dropdown.classList.remove('is-open');
+        }
+        if (backdrop) {
+            backdrop.style.display = 'none';
+        }
+        bellBtns.forEach(btn => btn.classList.remove('active'));
     }
 
     document.addEventListener('click', function(e) {
-        const wrapper = document.querySelector('.notification-wrapper');
-        if (wrapper && !wrapper.contains(e.target)) {
-            closeNotificationDropdown();
+        const dropdown = document.getElementById('notifDropdown');
+        if (!dropdown || (dropdown.style.display !== 'block' && !dropdown.classList.contains('is-open'))) {
+            return;
         }
+        if (dropdown.contains(e.target) || e.target.closest('.notif-bell-btn-trigger') || e.target.closest('#notifBellBtn')) {
+            return;
+        }
+        closeNotificationDropdown();
     });
 
     document.addEventListener('keydown', function(e) {
@@ -810,6 +940,22 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             closeNotificationDropdown();
         }
     });
+
+    window.addEventListener('resize', function() {
+        const dropdown = document.getElementById('notifDropdown');
+        if (dropdown && (dropdown.style.display === 'block' || dropdown.classList.contains('is-open'))) {
+            const activeBtn = document.querySelector('.notif-bell-btn-trigger.active') || document.getElementById('notifBellBtn');
+            positionDropdown(activeBtn);
+        }
+    });
+
+    window.addEventListener('scroll', function() {
+        const dropdown = document.getElementById('notifDropdown');
+        if (dropdown && dropdown.style.display === 'block' && window.innerWidth >= 768) {
+            const activeBtn = document.getElementById('notifBellBtn');
+            if (activeBtn) positionDropdown(activeBtn);
+        }
+    }, { passive: true });
 
     async function fetchNotifications(isPoll = false) {
         try {
@@ -831,9 +977,9 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     }
 
     function updateNotificationUI(unreadCount, isPoll) {
-        const badge = document.getElementById('notifBadge');
-        const ping = document.getElementById('notifPing');
-        const bellBtn = document.getElementById('notifBellBtn');
+        const badges = document.querySelectorAll('.notif-badge');
+        const pings = document.querySelectorAll('.notif-ping');
+        const bellBtns = document.querySelectorAll('.notif-bell-btn-trigger, .notif-bell-btn');
         const headerCount = document.getElementById('notifHeaderCountBadge');
 
         const pendingCount = allNotifications.filter(n => n.type === 'pending_online_request').length;
@@ -850,25 +996,31 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         if (countWalkinEl) countWalkinEl.textContent = `(${walkinCount})`;
         if (countOnlineEl) countOnlineEl.textContent = `(${onlineCount})`;
 
+        const badgeText = unreadCount > 99 ? '99+' : String(unreadCount);
+
         if (unreadCount > 0) {
-            if (badge) {
-                badge.style.display = 'flex';
-                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
-            }
-            if (ping) ping.style.display = 'block';
+            badges.forEach(b => {
+                b.style.display = 'flex';
+                b.textContent = badgeText;
+            });
+            pings.forEach(p => {
+                p.style.display = 'block';
+            });
             if (headerCount) {
                 headerCount.style.display = 'inline-block';
                 headerCount.textContent = `${unreadCount} New`;
             }
 
-            if (isPoll && unreadCount > previousUnreadCount && bellBtn) {
-                bellBtn.classList.remove('wiggle-bell');
-                void bellBtn.offsetWidth;
-                bellBtn.classList.add('wiggle-bell');
+            if (isPoll && unreadCount > previousUnreadCount) {
+                bellBtns.forEach(btn => {
+                    btn.classList.remove('wiggle-bell');
+                    void btn.offsetWidth;
+                    btn.classList.add('wiggle-bell');
+                });
             }
         } else {
-            if (badge) badge.style.display = 'none';
-            if (ping) ping.style.display = 'none';
+            badges.forEach(b => { b.style.display = 'none'; });
+            pings.forEach(p => { p.style.display = 'none'; });
             if (headerCount) headerCount.style.display = 'none';
         }
 
@@ -1038,7 +1190,10 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                 hour12: true
             };
             const dateTimeStr = now.toLocaleDateString('en-US', options).replace(',', '') + ' at';
-            document.getElementById('currentDateTime').textContent = dateTimeStr;
+            const dtEl = document.getElementById('currentDateTime');
+            if (dtEl) dtEl.textContent = dateTimeStr;
+            const mDtEl = document.getElementById('mobileCurrentDateTime');
+            if (mDtEl) mDtEl.textContent = dateTimeStr;
         }
         updateDateTime();
         setInterval(updateDateTime, 60000); // Update every minute

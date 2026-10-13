@@ -226,7 +226,7 @@ class SocialCaseController extends Controller
      */
     public function getEncoders()
     {
-        $encoders = User::where('role', 'social_worker')
+        $encoders = User::whereIn('role', ['social_worker', 'admin'])
             ->where('status', 'active')
             ->orderBy('name')
             ->get(['id', 'name', 'email', 'role', 'position'])

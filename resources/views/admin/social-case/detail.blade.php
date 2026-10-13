@@ -34,8 +34,15 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <img src="{{ asset('images/IserveIcon.png') }}" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;" alt="iSERVE">
-        <span>Social Case Study</span>
+        <div class="sidebar-brand-content" onclick="handleBrandClick()" title="Social Case Study">
+            <img src="{{ asset('images/IserveIcon.png') }}" class="sidebar-brand-logo" alt="iSERVE">
+            <span class="sidebar-brand-text">Social Case Study</span>
+        </div>
+        <button type="button" class="sidebar-toggle-btn" id="sidebarCollapseBtn" onclick="toggleSidebarCollapse()" aria-label="Collapse sidebar" title="Collapse sidebar">
+            <svg class="toggle-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
     </div>
     <ul class="sidebar-menu">
         <li><a href="/admin/social-case/dashboard"><i data-lucide="layout-dashboard" style="width:20px;height:20px"></i><span>Dashboard</span></a></li>
