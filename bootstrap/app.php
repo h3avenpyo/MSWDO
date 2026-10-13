@@ -15,14 +15,22 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('web')->group(base_path('routes/social-case.php'));
             Route::middleware('web')->group(base_path('routes/financial.php'));
             Route::middleware('web')->group(base_path('routes/senior.php'));
+            Route::middleware('web')->group(base_path('routes/wcpu.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->redirectTo(
+            guests: '/admin',
+            users: '/admin/dashboard'
+        );
         $middleware->alias([
             'admin.auth' => \App\Http\Middleware\EnsureAdminAuthenticated::class,
             'role' => \App\Http\Middleware\EnsureRole::class,
             'check.account.status' => \App\Http\Middleware\CheckAccountStatus::class,
             'financial.step2.auth' => \App\Http\Middleware\Financial\EnsureFinancialStep2Access::class,
+            'position' => \App\Http\Middleware\Wcpu\CheckPosition::class,
+            'inactivity.timeout' => \App\Http\Middleware\Wcpu\EnforceInactivityTimeout::class,
+            'wcpu.guard' => \App\Http\Middleware\Wcpu\EnsureWcpuGuard::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

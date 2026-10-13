@@ -88,6 +88,19 @@ class DashboardController extends Controller
             $generatedReports = \App\Models\SocialCase\SocialCaseStudy::whereNotNull('released_at')->count();
         }
 
+        if (class_exists(\App\Models\Wcpu\CaseModel::class)) {
+            try {
+                $casesThisMonth += \App\Models\Wcpu\CaseModel::whereMonth('created_at', now()->month)
+                    ->whereYear('created_at', now()->year)
+                    ->count();
+                $closedThisMonth += \App\Models\Wcpu\CaseModel::whereNotNull('closed_at')
+                    ->whereMonth('closed_at', now()->month)
+                    ->whereYear('closed_at', now()->year)
+                    ->count();
+                $pendingCases += \App\Models\Wcpu\CaseModel::whereNull('closed_at')->count();
+            } catch (\Throwable $e) {}
+        }
+
         if (class_exists(\App\Models\SocialCase\BeneficiaryIntake::class)) {
             $financialReleased += (float) (\App\Models\SocialCase\BeneficiaryIntake::whereNotNull('recommended_amount')->sum('recommended_amount') ?? 0);
         }
@@ -221,41 +234,69 @@ class DashboardController extends Controller
             ];
         }
 
-        // VAWC (Violence Against Women and Children)
+        // VAWC (Violence Against Women and Children - WCPU)
+        $vawcTotal = 0; $vawcActive = 0; $vawcPending = 0; $vawcResolved = 0;
+        if (class_exists(\App\Models\Wcpu\CaseModel::class)) {
+            try {
+                $vawcTotal = \App\Models\Wcpu\CaseModel::where(function($q) {
+                    $q->where('type', 'VAWC')->orWhereNull('type');
+                })->count();
+                $vawcActive = \App\Models\Wcpu\CaseModel::where(function($q) {
+                    $q->where('type', 'VAWC')->orWhereNull('type');
+                })->whereNull('closed_at')->count();
+                $vawcPending = \App\Models\Wcpu\CaseModel::where(function($q) {
+                    $q->where('type', 'VAWC')->orWhereNull('type');
+                })->where('status', 'like', '%pending%')->count();
+                $vawcResolved = \App\Models\Wcpu\CaseModel::where(function($q) {
+                    $q->where('type', 'VAWC')->orWhereNull('type');
+                })->whereNotNull('closed_at')->count();
+            } catch (\Throwable $e) {}
+        }
+
         $services['VAWC'] = [
-            'active' => 0,
-            'pending' => 0,
+            'active' => $vawcActive,
+            'pending' => $vawcPending,
             'overdue' => 0,
-            'completed' => 0,
-            'total' => 0,
+            'completed' => $vawcResolved,
+            'total' => $vawcTotal,
             'icon' => 'shield-alert',
             'color' => 'rose',
-            'status' => 'standby',
-            'route' => '#',
+            'route' => route('admin-dashboard'),
             'metrics' => [
-                ['label' => 'Total Cases', 'val' => 0, 'badge' => 'neutral'],
-                ['label' => 'Active Cases', 'val' => 0, 'badge' => 'info'],
-                ['label' => 'Pending Action', 'val' => 0, 'badge' => 'warning'],
-                ['label' => 'Resolved', 'val' => 0, 'badge' => 'success'],
+                ['label' => 'Total Cases', 'val' => number_format($vawcTotal), 'badge' => 'neutral'],
+                ['label' => 'Active Cases', 'val' => number_format($vawcActive), 'badge' => 'info'],
+                ['label' => 'Pending Action', 'val' => number_format($vawcPending), 'badge' => 'warning'],
+                ['label' => 'Resolved', 'val' => number_format($vawcResolved), 'badge' => 'success'],
             ],
         ];
 
-        // BCPC (Barangay Council for the Protection of Children)
+        // BCPC (Barangay Council for the Protection of Children - WCPU)
+        $bcpcTotal = 0; $bcpcActive = 0; $bcpcMonitoring = 0; $bcpcResolved = 0;
+        if (class_exists(\App\Models\Wcpu\CaseModel::class)) {
+            try {
+                $bcpcTotal = \App\Models\Wcpu\CaseModel::where('type', 'BCPC')->count();
+                $bcpcActive = \App\Models\Wcpu\CaseModel::where('type', 'BCPC')->whereNull('closed_at')->count();
+                $bcpcMonitoring = class_exists(\App\Models\Wcpu\BcpcCaseMonitoring::class)
+                    ? \App\Models\Wcpu\BcpcCaseMonitoring::count()
+                    : 0;
+                $bcpcResolved = \App\Models\Wcpu\CaseModel::where('type', 'BCPC')->whereNotNull('closed_at')->count();
+            } catch (\Throwable $e) {}
+        }
+
         $services['BCPC'] = [
-            'active' => 0,
-            'pending' => 0,
+            'active' => $bcpcActive,
+            'pending' => $bcpcMonitoring,
             'overdue' => 0,
-            'completed' => 0,
-            'total' => 0,
+            'completed' => $bcpcResolved,
+            'total' => $bcpcTotal,
             'icon' => 'smile',
             'color' => 'cyan',
-            'status' => 'standby',
-            'route' => '#',
+            'route' => route('admin.bcpc-case-monitoring.edit'),
             'metrics' => [
-                ['label' => 'Total Cases', 'val' => 0, 'badge' => 'neutral'],
-                ['label' => 'Active Cases', 'val' => 0, 'badge' => 'info'],
-                ['label' => 'Overdue', 'val' => 0, 'badge' => 'danger'],
-                ['label' => 'Resolved', 'val' => 0, 'badge' => 'success'],
+                ['label' => 'Total Cases', 'val' => number_format($bcpcTotal), 'badge' => 'neutral'],
+                ['label' => 'Active Cases', 'val' => number_format($bcpcActive), 'badge' => 'info'],
+                ['label' => 'Monitorings', 'val' => number_format($bcpcMonitoring), 'badge' => 'warning'],
+                ['label' => 'Resolved', 'val' => number_format($bcpcResolved), 'badge' => 'success'],
             ],
         ];
 

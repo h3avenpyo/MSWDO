@@ -1,0 +1,27 @@
+@media screen {
+    .portal-ui #mainContent .portal-table-scroll > table {
+        table-layout: auto !important;
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+    .portal-ui #mainContent .portal-table-scroll > table > colgroup > col { width: auto !important; }
+    .portal-ui #mainContent .portal-table-scroll > table > thead > tr > th {
+        white-space: nowrap !important;
+        vertical-align: middle !important;
+    }
+    .portal-ui #mainContent .portal-table-scroll > table > tbody > tr > td {
+        min-width: 3rem;
+        max-width: 22rem;
+        white-space: normal;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+        vertical-align: middle !important;
+        line-height: 1.5;
+    }
+    .portal-ui #mainContent .portal-table-scroll > table .table-action-cell {
+        width: 1% !important;
+        max-width: none !important;
+        white-space: nowrap !important;
+    }
+    .portal-ui #mainContent .portal-table-scroll > table td[colspan] { max-width: none; }
+}

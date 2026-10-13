@@ -1,0 +1,157 @@
+/* Header Styles */
+.top-header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: var(--sidebar-width);
+    height: var(--header-height);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    z-index: 100;
+    transition: all 0.3s ease, left 0.3s ease;
+    transform: translateY(0);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.sidebar.collapsed + .main-content .top-header {
+    left: var(--sidebar-collapsed-width);
+}
+
+.top-header.hidden {
+    transform: translateY(-100%);
+    box-shadow: none;
+}
+
+.header-left h2 {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.25rem;
+    color: var(--primary-admin);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 25px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.user-role {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
+    color: #6a1b9a;
+    background: #f0e6ff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Page Title Styles */
+.page-title-mobile {
+    display: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin: 1.5rem 0 1rem;
+    letter-spacing: 0.3px;
+}
+
+.dashboard-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1rem;
+    color: #6a1b9a;
+    margin: 0.5rem 0 1.5rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+/* Main Content Container */
+.main-content {
+    position: relative;
+    min-height: 100vh;
+    padding: calc(var(--header-height) + 1rem) 2rem 2rem;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* When sidebar is present and not collapsed */
+.sidebar:not(.collapsed) + .main-content {
+    width: calc(100% - var(--sidebar-width));
+    margin-left: var(--sidebar-width);
+}
+
+/* When sidebar is collapsed */
+.sidebar.collapsed + .main-content {
+    width: calc(100% - var(--sidebar-collapsed-width));
+    margin-left: var(--sidebar-collapsed-width);
+}
+
+/* Responsive Styles */
+@media (max-width: 1366px) {
+    .main-content {
+        width: 100% !important;
+        margin-left: 0 !important;
+        padding: 1rem !important;
+        padding-top: calc(var(--header-height) + 1rem) !important;
+    }
+    
+    .top-header {
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        padding: 0 1.5rem 0 4.5rem !important;
+        border-radius: 0 !important;
+    }
+    
+    .page-title-mobile {
+        display: block;
+    }
+    
+    .dashboard-title {
+        display: none;
+    }
+    
+    /* Reset sidebar-adjacent styles for mobile */
+    .sidebar:not(.collapsed) + .main-content,
+    .sidebar.collapsed + .main-content {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+}
+
+/* Scroll Behavior */
+.main-content {
+    /* Padding is handled in main.css */
+    transition: padding 0.3s ease;
+}
+
+/* Animation for header show/hide */
+@keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(0); }
+    to { transform: translateY(-100%); }
+}

@@ -860,6 +860,33 @@
                     <span class="menu-text">Financial Intake</span>
                 </a>
             </li>
+            <li class="sidebar-menu-header" style="border-top:1px solid rgba(255,255,255,.18);margin-top:.75rem;padding-top:.75rem;padding-left:1.5rem;padding-right:1.5rem;font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:rgba(255,255,255,0.85);">
+                WCPU / Protection Unit
+            </li>
+            <li>
+                <a href="{{ route('admin-dashboard') }}" class="{{ request()->routeIs('admin-dashboard*') ? 'active' : '' }}" data-tooltip="WCPU Dashboard" title="WCPU Dashboard">
+                    <i data-lucide="shield-alert"></i>
+                    <span class="menu-text">WCPU Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('case-profiles.index') }}" class="{{ request()->routeIs('case-profiles*') ? 'active' : '' }}" data-tooltip="Case Profiles" title="Case Profiles">
+                    <i data-lucide="folder-heart"></i>
+                    <span class="menu-text">Case Profiles</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.bcpc-case-monitoring.edit') }}" class="{{ request()->routeIs('admin.bcpc-case-monitoring*') ? 'active' : '' }}" data-tooltip="BCPC Monitoring" title="BCPC Monitoring">
+                    <i data-lucide="smile"></i>
+                    <span class="menu-text">BCPC Monitoring</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('wcpu.login') }}" target="_blank" data-tooltip="Desk Officer Portal" title="Desk Officer Portal">
+                    <i data-lucide="external-link"></i>
+                    <span class="menu-text">Desk Officer Portal</span>
+                </a>
+            </li>
             <li style="border-top:1px solid rgba(255,255,255,.1);margin-top:.5rem;padding-top:.5rem;">
                 <a href="#" onclick="confirmLogout(event)" data-tooltip="Logout" title="Logout">
                     <i data-lucide="log-out"></i>

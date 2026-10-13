@@ -42,6 +42,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'wcpu' => [
+            'driver' => 'session',
+            'provider' => 'wcpu_users',
+        ],
     ],
 
     /*
@@ -65,6 +69,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', User::class),
+        ],
+        'wcpu_users' => [
+            'driver' => 'eloquent',
+            'model' => \App\Models\Wcpu\User::class,
         ],
 
         // 'users' => [

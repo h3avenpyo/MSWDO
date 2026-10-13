@@ -1,0 +1,11 @@
+#mainContent table:not(#calendar table) { width: 100%; border-collapse: collapse; }
+#mainContent table:not(#calendar table) thead { background: linear-gradient(to right, #7e22ce, #9333ea); }
+#mainContent table:not(#calendar table) thead th { background: transparent; color: white; font-size: .875rem; font-weight: 600; padding: 1rem 1.5rem; text-transform: none; letter-spacing: normal; }
+#mainContent table:not(#calendar table) tbody td { padding: 1rem 1.5rem; border-bottom: 1px solid #f3f4f6; }
+#mainContent table:not(#calendar table) tbody tr:hover { background-color: #faf5ff80; }
+#mainContent .card:has(table) { background: white; border: 1px solid #f3f4f6; border-radius: .75rem; box-shadow: 0 10px 15px -3px rgb(0 0 0 / .1); overflow: hidden; }
+#mainContent table .btn { border-radius: .5rem; padding: .375rem .75rem; font-size: .75rem; }
+#mainContent table .btn-outline-primary { background: #2563eb; color: #fff; border-color: #2563eb; }
+#mainContent table .btn-outline-success { background: #7e22ce; color: #fff; border-color: #7e22ce; }
+#mainContent table .btn-outline-secondary { background: #16a34a; color: #fff; border-color: #16a34a; }
+#mainContent table .btn-outline-danger { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
