@@ -4358,8 +4358,8 @@ async function loadDocumentPreview(caseId){
   const preparedName = escapeHtml(c.signers?.preparedByName || c.officer?.name || "") || notProvided;
   const preparedTitle = escapeHtml(c.signers?.preparedByTitle || c.officer?.position || "");
   const notedName = escapeHtml(c.signers?.notedByName || c.encoder?.name || "") || notProvided;
-  const notedTitle = escapeHtml(c.signers?.notedByTitle || c.encoder?.position || "");
-  const notedLicense = escapeHtml(c.signers?.notedByLicense || "");
+  const notedTitle = escapeHtml('MSWDO Officer');
+  const notedLicense = escapeHtml('0038516');
 
   try {
     console.log('Fetching template...');
