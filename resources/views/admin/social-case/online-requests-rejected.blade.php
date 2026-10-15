@@ -738,16 +738,29 @@
         }
     }
 
-    /* ── REDESIGNED ONLINE REQUEST VIEW MODAL STYLES ── */
+        /* ── REDESIGNED ONLINE REQUEST VIEW MODAL STYLES ── */
     .or-modal-popup.swal2-popup {
-        width: 780px !important;
+        width: 740px !important;
         max-width: 95vw !important;
-        border-radius: 20px !important;
+        border-radius: 18px !important;
         padding: 0 !important;
         overflow: hidden !important;
-        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.06) !important;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.08) !important;
         font-family: inherit !important;
         border: none !important;
+    }
+    .or-modal-popup .swal2-header,
+    .or-modal-popup .swal2-title,
+    .or-modal-popup .swal2-icon,
+    .or-modal-popup .swal2-close {
+        display: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        max-height: 0 !important;
+        border: none !important;
+        outline: none !important;
     }
     .or-modal-popup .swal2-html-container {
         margin: 0 !important;
@@ -755,31 +768,20 @@
         text-align: left !important;
         max-height: 84vh !important;
         overflow-y: auto !important;
+        grid-row: 1 !important;
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
     }
-    .or-modal-popup .swal2-close {
-        color: #FFFFFF !important;
-        top: 16px !important;
-        right: 18px !important;
-        font-size: 24px !important;
-        width: 32px !important;
-        height: 32px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        border-radius: 8px !important;
-        background: rgba(255, 255, 255, 0.15) !important;
-        transition: all 0.2s ease !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }
-    .or-modal-popup .swal2-close:hover {
-        background: rgba(255, 255, 255, 0.3) !important;
-        color: #FFFFFF !important;
+    .or-modal-popup .swal2-html-container::-webkit-scrollbar,
+    .or-modal-popup::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
     }
     .or-modal-popup .swal2-actions {
         margin: 0 !important;
         padding: 16px 24px !important;
-        background: #F8FAFC !important;
+        background: #FFFFFF !important;
         border-top: 1px solid #E2E8F0 !important;
         display: flex !important;
         justify-content: flex-end !important;
@@ -789,7 +791,7 @@
     }
     .or-modal-popup .swal2-actions button {
         margin: 0 !important;
-        border-radius: 10px !important;
+        border-radius: 8px !important;
         font-weight: 600 !important;
         font-size: 13.5px !important;
         padding: 10px 20px !important;
@@ -797,8 +799,9 @@
         justify-content: center !important;
         gap: 8px !important;
         cursor: pointer !important;
-        transition: all 0.2s ease !important;
+        transition: all 0.15s ease !important;
         font-family: inherit !important;
+        line-height: 1.25 !important;
     }
     .or-modal-popup .swal2-actions .swal2-confirm {
         display: inline-flex !important;
@@ -820,12 +823,12 @@
         margin: 0 !important;
     }
     .or-btn-close {
-        background: #FFFFFF !important;
+        background: #F8FAFC !important;
         color: #475569 !important;
         border: 1px solid #CBD5E1 !important;
     }
     .or-btn-close:hover {
-        background: #F1F5F9 !important;
+        background: #E2E8F0 !important;
         color: #0F172A !important;
         border-color: #94A3B8 !important;
     }
@@ -834,36 +837,39 @@
     .or-modal-header {
         background: linear-gradient(135deg, #B11116 0%, #8A0D11 100%);
         color: #FFFFFF;
-        padding: 22px 26px;
+        padding: 20px 24px;
         position: relative;
+        margin-top: 0 !important;
+        border-top-left-radius: 18px;
+        border-top-right-radius: 18px;
     }
     .or-modal-header-top {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin-bottom: 8px;
-        padding-right: 36px;
+        margin-bottom: 10px;
+        padding-right: 0 !important;
     }
     .or-modal-ref-pill {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        background: rgba(255, 255, 255, 0.15);
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.16);
         backdrop-filter: blur(4px);
-        padding: 4px 10px;
+        padding: 4px 11px;
         border-radius: 20px;
         font-size: 11.5px;
         font-weight: 700;
         letter-spacing: 0.05em;
         text-transform: uppercase;
-        color: #FDF2F2;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #FFFFFF;
+        border: 1px solid rgba(255, 255, 255, 0.24);
     }
     .or-modal-title {
         margin: 0;
-        font-size: 20px;
-        font-weight: 800;
+        font-size: 19px;
+        font-weight: 700;
         color: #FFFFFF;
         display: flex;
         align-items: center;
@@ -873,7 +879,7 @@
     .or-modal-subtitle {
         margin: 5px 0 0 0;
         font-size: 12.5px;
-        color: #F8C9C9;
+        color: rgba(255, 255, 255, 0.85);
         display: flex;
         align-items: center;
         gap: 6px;
@@ -881,11 +887,11 @@
 
     /* Modal Body Container */
     .or-modal-body {
-        padding: 22px 24px;
+        padding: 20px 24px;
         background: #F8FAFC;
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 14px;
     }
 
     /* Alert Banners */
@@ -903,6 +909,11 @@
         border: 1px solid #FCD34D;
         color: #92400E;
     }
+    .or-alert-banner.danger {
+        background: #FEE2E2;
+        border: 1px solid #FCA5A5;
+        color: #991B1B;
+    }
     .or-alert-banner.info {
         background: #EFF6FF;
         border: 1px solid #BFDBFE;
@@ -912,7 +923,7 @@
     /* Content Cards */
     .or-card {
         background: #FFFFFF;
-        border-radius: 14px;
+        border-radius: 12px;
         border: 1px solid #E2E8F0;
         padding: 16px 18px;
         box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
@@ -927,10 +938,10 @@
     }
     .or-card-title {
         margin: 0;
-        font-size: 12px;
+        font-size: 11.5px;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.05em;
         color: #B11116;
         display: flex;
         align-items: center;
@@ -941,18 +952,20 @@
         font-weight: 600;
         padding: 3px 10px;
         border-radius: 20px;
-        background: #FDF2F2;
+        background: #FEF2F2;
         color: #B11116;
-        border: 1px solid #F8C9C9;
+        border: 1px solid #FECACA;
     }
 
     /* Grid Elements */
     .or-grid-2 {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 12px 16px;
+        gap: 12px 18px;
     }
-
+    .or-grid-full {
+        grid-column: 1 / -1;
+    }
     .or-field-label {
         font-size: 11px;
         font-weight: 600;
@@ -971,55 +984,54 @@
         word-break: break-word;
     }
     .or-field-val a {
-        color: #B11116;
+        color: #0F172A;
         text-decoration: none;
         transition: color 0.15s;
     }
     .or-field-val a:hover {
-        color: #2563EB;
+        color: #B11116;
         text-decoration: underline;
     }
 
     /* Situation Block */
     .or-situation-box {
         background: #F8FAFC;
+        border: 1px solid #E2E8F0;
         border-left: 4px solid #B11116;
-        border-radius: 0 10px 10px 0;
+        border-radius: 8px;
         padding: 14px 16px;
         font-size: 13.5px;
         line-height: 1.6;
         color: #1E293B;
         white-space: pre-wrap;
+        word-break: break-word;
     }
 
-    /* Attachments Grid */
-    .or-attachments-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-        gap: 10px;
+    /* Attachments List - Clean File Card */
+    .or-attachment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
         margin-top: 4px;
     }
-    .or-attachment-card {
+    .or-attachment-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
         background: #F8FAFC;
         border: 1px solid #E2E8F0;
         border-radius: 10px;
-        padding: 10px 12px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        transition: all 0.2s ease;
-        text-decoration: none !important;
-        color: inherit !important;
+        transition: all 0.15s ease;
     }
-    .or-attachment-card:hover {
+    .or-attachment-item:hover {
         background: #FFFFFF;
-        border-color: #B11116;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(26, 35, 126, 0.08);
+        border-color: #CBD5E1;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
     }
     .or-attachment-icon {
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         border-radius: 8px;
         display: flex;
         align-items: center;
@@ -1031,19 +1043,19 @@
         color: #DC2626;
     }
     .or-attachment-icon.img {
-        background: #FDF2F2;
-        color: #B11116;
+        background: #EFF6FF;
+        color: #2563EB;
     }
     .or-attachment-icon.doc {
-        background: #DBEAFE;
-        color: #1D4ED8;
+        background: #F0FDF4;
+        color: #16A34A;
     }
-    .or-attachment-info {
+    .or-attachment-details {
         flex: 1;
         min-width: 0;
     }
-    .or-attachment-name {
-        font-size: 12.5px;
+    .or-attachment-filename {
+        font-size: 13px;
         font-weight: 600;
         color: #0F172A;
         white-space: nowrap;
@@ -1051,12 +1063,43 @@
         text-overflow: ellipsis;
     }
     .or-attachment-meta {
-        font-size: 11px;
+        font-size: 11.5px;
         color: #64748B;
         margin-top: 2px;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
+    }
+    .or-file-badge {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 1px 6px;
+        border-radius: 4px;
+        letter-spacing: 0.04em;
+    }
+    .or-file-badge.pdf { background: #FEE2E2; color: #B91C1C; }
+    .or-file-badge.img { background: #DBEAFE; color: #1D4ED8; }
+    .or-file-badge.doc { background: #DCFCE7; color: #15803D; }
+    .or-attachment-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 14px;
+        background: #FFFFFF;
+        border: 1px solid #CBD5E1;
+        border-radius: 6px;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none !important;
+        transition: all 0.15s ease;
+        flex-shrink: 0;
+    }
+    .or-attachment-btn:hover {
+        background: #B11116;
+        border-color: #B11116;
+        color: #FFFFFF !important;
+        box-shadow: 0 2px 6px rgba(177, 17, 22, 0.25);
     }
 
     /* Status Pills */
@@ -1066,9 +1109,10 @@
         gap: 6px;
         padding: 4px 12px;
         border-radius: 20px;
-        font-size: 12px;
+        font-size: 11.5px;
         font-weight: 700;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
     }
     .or-status-badge.pending {
         background: #FEF3C7;
@@ -1085,25 +1129,50 @@
         color: #DC2626;
         border: 1px solid #FCA5A5;
     }
+    .or-status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .or-status-dot.pending {
+        background: #D97706;
+        box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.25);
+    }
+    .or-status-dot.approved {
+        background: #16A34A;
+        box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.25);
+    }
+    .or-status-dot.rejected {
+        background: #DC2626;
+        box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.25);
+    }
 
     @media (max-width: 640px) {
         .or-grid-2 {
             grid-template-columns: 1fr !important;
             gap: 12px !important;
         }
-        .or-attachments-grid {
-            grid-template-columns: 1fr !important;
+        .or-attachment-item {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+        }
+        .or-attachment-btn {
+            width: 100% !important;
+            justify-content: center !important;
         }
         .or-modal-header {
             padding: 16px 18px !important;
         }
         .or-modal-body {
-            padding: 16px !important;
-            gap: 14px !important;
+            padding: 14px !important;
+            gap: 12px !important;
         }
         .or-modal-popup .swal2-actions {
             flex-direction: column !important;
             padding: 14px 16px !important;
+            gap: 8px !important;
         }
         .or-modal-popup .swal2-actions button {
             width: 100% !important;
@@ -1500,9 +1569,16 @@ function viewOnlineRequest(id) {
     fetch(`/admin/social-case/online-requests/${id}`)
         .then(response => response.json())
         .then(data => {
-            const statusLower = (data.raw_status || data.status || 'rejected').toLowerCase();
-            let statusClass = 'rejected';
-            let statusIcon = 'x-circle';
+            const statusLower = (data.raw_status || data.status || 'pending').toLowerCase();
+            let statusClass = 'pending';
+            let statusIcon = 'clock';
+            if (statusLower === 'approved' || statusLower === 'accepted') {
+                statusClass = 'approved';
+                statusIcon = 'check-circle';
+            } else if (statusLower === 'rejected' || statusLower === 'declined') {
+                statusClass = 'rejected';
+                statusIcon = 'x-circle';
+            }
 
             // Warning Banner
             let warningBannerHtml = '';
@@ -1511,9 +1587,21 @@ function viewOnlineRequest(id) {
                     <div class="or-alert-banner warning">
                         <i data-lucide="alert-triangle" style="width: 22px; height: 22px; color: #D97706; flex-shrink: 0; margin-top: 2px;"></i>
                         <div>
-                            <div style="font-weight: 700; color: #92400E; margin-bottom: 2px;">Recent Assistance Record (6-Month Rule)</div>
+                            <div style="font-weight: 700; color: #92400E; margin-bottom: 2px;">Recent Assistance Record Found (6-Month Rule)</div>
                             <div style="color: #78350F; font-size: 12.5px; line-height: 1.5;">
-                                <strong>${escapeHtml(data.first_name)} ${escapeHtml(data.last_name)}</strong> has a case study or assistance record within the 6-month period.
+                                <strong>${escapeHtml(data.first_name)} ${escapeHtml(data.last_name)}</strong> has an existing social case study or financial assistance record within the <strong>past 6 months</strong>. Review prior case files carefully before accepting.
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (data.warning_existing) {
+                warningBannerHtml = `
+                    <div class="or-alert-banner info">
+                        <i data-lucide="info" style="width: 22px; height: 22px; color: #2563EB; flex-shrink: 0; margin-top: 2px;"></i>
+                        <div>
+                            <div style="font-weight: 700; color: #1E40AF; margin-bottom: 2px;">Existing Client Profile Match</div>
+                            <div style="color: #1E3A8A; font-size: 12.5px; line-height: 1.5;">
+                                A registered client with the name <strong>${escapeHtml(data.first_name)} ${escapeHtml(data.last_name)}</strong> already exists in the MSWDO records database.
                             </div>
                         </div>
                     </div>
@@ -1526,25 +1614,29 @@ function viewOnlineRequest(id) {
                 const cards = data.attachments.map(att => {
                     const iconClass = att.is_pdf ? 'pdf' : (att.is_image ? 'img' : 'doc');
                     const iconLucide = att.is_pdf ? 'file-text' : (att.is_image ? 'image' : 'file');
+                    const extBadge = (att.extension || 'FILE').toUpperCase();
                     return `
-                        <a href="${att.file_url}" target="_blank" rel="noopener noreferrer" class="or-attachment-card" title="Click to open ${escapeHtml(att.file_name)}">
+                        <div class="or-attachment-item">
                             <div class="or-attachment-icon ${iconClass}">
-                                <i data-lucide="${iconLucide}" style="width:18px;height:18px;"></i>
+                                <i data-lucide="${iconLucide}" style="width:20px;height:20px;"></i>
                             </div>
-                            <div class="or-attachment-info">
-                                <div class="or-attachment-name" title="${escapeHtml(att.file_name)}">${escapeHtml(att.file_name)}</div>
+                            <div class="or-attachment-details">
+                                <div class="or-attachment-filename" title="${escapeHtml(att.file_name)}">
+                                    ${escapeHtml(att.file_name)}
+                                </div>
                                 <div class="or-attachment-meta">
+                                    <span class="or-file-badge ${iconClass}">${escapeHtml(extBadge)}</span>
                                     <span>${escapeHtml(att.file_size)}</span>
-                                    <span>•</span>
-                                    <span style="color:#B11116;font-weight:600;display:inline-flex;align-items:center;gap:3px;">
-                                        Open <i data-lucide="external-link" style="width:10px;height:10px;"></i>
-                                    </span>
                                 </div>
                             </div>
-                        </a>
+                            <a href="${att.file_url}" target="_blank" rel="noopener noreferrer" class="or-attachment-btn" title="Open file in new tab">
+                                <span>Open File</span>
+                                <i data-lucide="external-link" style="width:12px;height:12px;"></i>
+                            </a>
+                        </div>
                     `;
                 }).join('');
-                attachmentsContent = `<div class="or-attachments-grid">${cards}</div>`;
+                attachmentsContent = `<div class="or-attachment-list">${cards}</div>`;
             } else if (data.attachments_html && data.attachments_html.indexOf('<li') !== -1) {
                 attachmentsContent = data.attachments_html;
             } else {
@@ -1556,6 +1648,7 @@ function viewOnlineRequest(id) {
                 `;
             }
 
+            
             // Reason for Decline / Notes Block
             let notesBlock = '';
             if (data.notes && data.notes.trim() !== '' && data.notes.trim() !== 'N/A') {
@@ -1571,6 +1664,17 @@ function viewOnlineRequest(id) {
                     </div>
                 `;
             }
+    
+
+            // Format Service Type & Assistance Type Labels cleanly
+            let serviceTypeLabel = escapeHtml(data.service_type || 'Social Case Study');
+            if (serviceTypeLabel.toLowerCase().includes('social_case') || serviceTypeLabel.toLowerCase().includes('social case')) {
+                serviceTypeLabel = 'Social Case Study Report (SCSR)';
+            }
+            let assistanceTypeLabel = escapeHtml(data.assistance_type || 'General Assistance');
+            if (!assistanceTypeLabel.toLowerCase().endsWith('assistance')) {
+                assistanceTypeLabel = assistanceTypeLabel + ' Assistance';
+            }
 
             const modalHtml = `
                 <div class="or-modal-header">
@@ -1580,12 +1684,13 @@ function viewOnlineRequest(id) {
                             <span>${escapeHtml(data.reference_no || ('REQ-' + data.id))}</span>
                         </div>
                         <span class="or-status-badge ${statusClass}">
+                            <span class="or-status-dot ${statusClass}"></span>
                             <i data-lucide="${statusIcon}" style="width:13px;height:13px;"></i>
                             <span>${escapeHtml(data.status)}</span>
                         </span>
                     </div>
                     <h3 class="or-modal-title">
-                        <i data-lucide="file-text" style="width:22px;height:22px;color:#93C5FD;"></i>
+                        <i data-lucide="file-text" style="width:20px;height:20px;color:#FFFFFF;"></i>
                         <span>Online Service Request Details</span>
                     </h3>
                     <div class="or-modal-subtitle">
@@ -1604,7 +1709,7 @@ function viewOnlineRequest(id) {
                                 <i data-lucide="user" style="width:15px;height:15px;"></i>
                                 <span>Beneficiary & Applicant Information</span>
                             </h4>
-                            <span class="or-card-tag">${escapeHtml(data.request_for || 'Self')}</span>
+                            <span class="or-card-tag">${escapeHtml(data.request_for || 'Myself (Ako)')}</span>
                         </div>
                         <div class="or-grid-2">
                             <div>
@@ -1617,7 +1722,7 @@ function viewOnlineRequest(id) {
                                 <div class="or-field-label"><i data-lucide="calendar" style="width:12px;height:12px;"></i> Date of Birth & Age</div>
                                 <div class="or-field-val">
                                     ${data.dob ? `${escapeHtml(data.dob)}` : '<span style="color:#94A3B8;font-weight:normal;">Not provided</span>'}
-                                    ${data.age !== null && data.age !== undefined ? `<span style="color:#64748B;font-weight:normal;"> (${data.age} yrs old)</span>` : ''}
+                                    ${data.age !== null && data.age !== undefined ? `<span style="color:#64748B;font-weight:500;"> • ${data.age} yrs old</span>` : ''}
                                 </div>
                             </div>
                             <div>
@@ -1636,7 +1741,7 @@ function viewOnlineRequest(id) {
                                 <div class="or-field-label"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> Barangay</div>
                                 <div class="or-field-val" style="color:#0F172A;">${escapeHtml(data.barangay || 'N/A')}</div>
                             </div>
-                            <div>
+                            <div class="or-grid-full">
                                 <div class="or-field-label"><i data-lucide="home" style="width:12px;height:12px;"></i> Street / Home Address</div>
                                 <div class="or-field-val" style="font-weight:500;">
                                     ${escapeHtml(data.address || 'No specific street address provided')}
@@ -1657,16 +1762,18 @@ function viewOnlineRequest(id) {
                             <div>
                                 <div class="or-field-label"><i data-lucide="briefcase" style="width:12px;height:12px;"></i> Program Category</div>
                                 <div class="or-field-val">
-                                    <span style="display:inline-block;background:#FDF2F2;color:#1E3A8A;padding:4px 10px;border-radius:6px;font-size:12.5px;font-weight:700;border:1px solid #F8C9C9;">
-                                        ${escapeHtml(data.service_type)}
+                                    <span style="display:inline-flex;align-items:center;gap:6px;background:#EFF6FF;color:#1D4ED8;padding:5px 12px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #BFDBFE;">
+                                        <i data-lucide="file-check" style="width:13px;height:13px;"></i>
+                                        ${serviceTypeLabel}
                                     </span>
                                 </div>
                             </div>
                             <div>
                                 <div class="or-field-label"><i data-lucide="heart-handshake" style="width:12px;height:12px;"></i> Assistance Type</div>
                                 <div class="or-field-val">
-                                    <span style="display:inline-block;background:#F0FDF4;color:#166534;padding:4px 10px;border-radius:6px;font-size:12.5px;font-weight:700;border:1px solid #BBF7D0;">
-                                        ${escapeHtml(data.assistance_type)}
+                                    <span style="display:inline-flex;align-items:center;gap:6px;background:#F0FDF4;color:#15803D;padding:5px 12px;border-radius:6px;font-size:12.5px;font-weight:600;border:1px solid #BBF7D0;">
+                                        <i data-lucide="badge-check" style="width:13px;height:13px;"></i>
+                                        ${assistanceTypeLabel}
                                     </span>
                                 </div>
                             </div>
@@ -1701,26 +1808,19 @@ function viewOnlineRequest(id) {
 
             Swal.fire({
                 html: modalHtml,
-                showCloseButton: true,
+                showCloseButton: false,
                 showConfirmButton: true,
                 showDenyButton: false,
                 showCancelButton: false,
-                confirmButtonText: 'Close',
+                confirmButtonText: '<i data-lucide="x-circle" style="width:15px;height:15px;"></i> Close',
                 customClass: {
                     popup: 'or-modal-popup',
                     actions: 'or-modal-actions',
                     confirmButton: 'or-btn-close'
                 },
                 buttonsStyling: false,
-                didOpen: (modal) => {
+                didOpen: () => {
                     if (typeof lucide !== 'undefined') lucide.createIcons();
-                    const popupEl = modal || Swal.getPopup();
-                    if (popupEl) {
-                        const denyBtn = popupEl.querySelector('.swal2-deny');
-                        const cancelBtn = popupEl.querySelector('.swal2-cancel');
-                        if (denyBtn) denyBtn.style.setProperty('display', 'none', 'important');
-                        if (cancelBtn) cancelBtn.style.setProperty('display', 'none', 'important');
-                    }
                 },
             });
         })

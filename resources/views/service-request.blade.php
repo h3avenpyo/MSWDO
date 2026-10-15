@@ -359,8 +359,8 @@
                                         Uri ng Kahilingan <span class="label-sub">(Service Type)</span>
                                     </label>
                                 </div>
-                                <div class="form-input-custom bg-slate-50 flex items-center gap-2 text-slate-700 font-semibold cursor-not-allowed">
-                                    <i data-lucide="file-check-2" class="w-4 h-4 text-[#b11116] shrink-0"></i>
+                                <div class="form-input-custom bg-slate-50 flex items-center gap-2 text-slate-700 font-semibold cursor-not-allowed" style="display:flex;">
+                                    <i data-lucide="file-check" class="w-4 h-4 text-[#b11116] shrink-0"></i>
                                     <span class="text-sm">Social Case Study Report (SCSR)</span>
                                 </div>
                                 <input type="hidden" id="serviceType" name="service_type" value="social_case_study">
