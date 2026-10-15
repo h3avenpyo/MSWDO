@@ -18,7 +18,7 @@ class CaseReportMailController extends Controller
 
     public function __construct()
     {
-        $useDb = filter_var(env('USE_DB_RECIPIENTS', false), FILTER_VALIDATE_BOOL);
+        $useDb = (bool) config('wcpu.recipients.use_db', env('USE_DB_RECIPIENTS', false));
 
         if ($useDb) {
             $this->recipients = ReportRecipient::active()
@@ -30,7 +30,7 @@ class CaseReportMailController extends Controller
         }
 
         if (empty($this->recipients)) {
-            $fallbackList = env('CASE_REPORT_RECIPIENTS'); // optional CSV
+            $fallbackList = config('wcpu.recipients.fallback_list', env('CASE_REPORT_RECIPIENTS')); // optional CSV
             if ($fallbackList) {
                 $this->recipients = collect(explode(',', $fallbackList))
                     ->map(fn($e) => trim($e))
@@ -41,7 +41,7 @@ class CaseReportMailController extends Controller
         }
 
         if (empty($this->recipients)) {
-            $single = env('CASE_REPORT_FALLBACK');
+            $single = config('wcpu.recipients.fallback_single', env('CASE_REPORT_FALLBACK'));
             if (filter_var($single, FILTER_VALIDATE_EMAIL)) {
                 $this->recipients = [$single];
             }
@@ -99,9 +99,9 @@ class CaseReportMailController extends Controller
             Log::error('PDF generation failed', ['case_id' => $case->id, 'error' => $e->getMessage()]);
         }
 
-        $mailer      = config('mail.default');
-        $fromAddress = config('mail.from.address') ?: env('MAIL_FROM_ADDRESS');
-        $fromName    = config('mail.from.name') ?: env('MAIL_FROM_NAME', 'Case Report System');
+        $mailer      = config('wcpu.mail.mailer') ?: config('mail.default');
+        $fromAddress = config('wcpu.mail.from_address') ?: (config('mail.from.address') ?: env('MAIL_FROM_ADDRESS'));
+        $fromName    = config('wcpu.mail.from_name') ?: (config('mail.from.name') ?: env('MAIL_FROM_NAME', 'Case Report System'));
 
         if (!$fromAddress) {
             Log::warning('Mail send aborted: missing from address.');

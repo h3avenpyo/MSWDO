@@ -49,6 +49,18 @@ return [
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
+        'wcpu' => [
+            'transport' => 'smtp',
+            'scheme' => env('WCPU_MAIL_SCHEME', env('MAIL_SCHEME')),
+            'url' => env('WCPU_MAIL_URL', env('MAIL_URL')),
+            'host' => env('WCPU_MAIL_HOST', env('MAIL_HOST', '127.0.0.1')),
+            'port' => env('WCPU_MAIL_PORT', env('MAIL_PORT', 587)),
+            'username' => env('WCPU_MAIL_USERNAME', env('MAIL_USERNAME')),
+            'password' => env('WCPU_MAIL_PASSWORD', env('MAIL_PASSWORD')),
+            'timeout' => null,
+            'local_domain' => env('WCPU_MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],

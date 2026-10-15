@@ -150,7 +150,7 @@
 @section('content')
 @php
     // Resolve refer recipients (DB list or env CSV, same as admin)
-    $useDb = filter_var(env('USE_DB_RECIPIENTS', false), FILTER_VALIDATE_BOOL);
+    $useDb = (bool) config('wcpu.recipients.use_db', env('USE_DB_RECIPIENTS', false));
     $referRecipients = [];
     if($useDb){
         $referRecipients = \App\Models\Wcpu\ReportRecipient::active()
@@ -160,13 +160,13 @@
             ->values()
             ->all();
     } else {
-        $raw = env('CASE_REPORT_RECIPIENTS','');
+        $raw = config('wcpu.recipients.fallback_list', env('CASE_REPORT_RECIPIENTS',''));
         $referRecipients = $raw
             ? collect(explode(',',$raw))->map(fn($e)=>trim($e))
                 ->filter(fn($e)=>filter_var($e,FILTER_VALIDATE_EMAIL))->values()->all()
             : [];
         if(empty($referRecipients)){
-            $single = env('CASE_REPORT_FALLBACK');
+            $single = config('wcpu.recipients.fallback_single', env('CASE_REPORT_FALLBACK'));
             if(filter_var($single,FILTER_VALIDATE_EMAIL)) $referRecipients = [$single];
         }
     }
