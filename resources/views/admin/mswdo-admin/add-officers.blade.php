@@ -507,29 +507,6 @@ $initials = count($words) >= 2
             </div>
         </div>
 
-        {{-- Section 4: Signature & Authorization (Optional) --}}
-        <div class="form-section-title">
-            <i data-lucide="award"></i>
-            <span>Signature &amp; ID Card Authorization (Optional)</span>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-            <div class="field-group md:col-span-2">
-                <label class="field-label">Official Signature Position</label>
-                <div class="input-wrap">
-                    <i data-lucide="award" class="input-icon"></i>
-                    <select class="form-select-custom" name="signature_position">
-                        <option value="">None (Standard Staff)</option>
-                        <option value="osca_head" {{ old('signature_position') == 'osca_head' ? 'selected' : '' }}>OSCA Head / Signatory</option>
-                        <option value="mswdo_officer" {{ old('signature_position') == 'mswdo_officer' ? 'selected' : '' }}>MSWDO Department Officer</option>
-                        <option value="mswdo_staff" {{ old('signature_position') == 'mswdo_staff' ? 'selected' : '' }}>MSWDO Authorized Staff</option>
-                    </select>
-                </div>
-                <div class="text-[11px] text-slate-500 mt-1">
-                    Designate whether this officer's digital signature will be embedded in senior IDs and certifications.
-                </div>
-            </div>
-        </div>
-
         {{-- Form Actions Rail --}}
         <div class="pt-5 border-t border-slate-100 flex items-center justify-end gap-3 flex-wrap">
             <a href="{{ route('admin.officers-directory') }}" class="btn-action-secondary">

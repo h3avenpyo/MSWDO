@@ -1017,7 +1017,6 @@ $initials = count($words) >= 2
                     <th>Service Division</th>
                     <th>Assigned Worker</th>
                     <th>Last Updated</th>
-                    <th style="text-align:right;">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -1046,17 +1045,11 @@ $initials = count($words) >= 2
                         <td>
                             <span class="text-xs text-slate-500 font-medium">{{ $case['updated'] }}</span>
                         </td>
-                        <td style="text-align:right;">
-                            <a href="{{ $case['url'] ?? '#' }}" class="table-action-btn">
-                                <span>View</span>
-                                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
-                            </a>
-                        </td>
                     </tr>
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="5" style="padding:2.5rem; text-align:center; color:#94A3B8;">
+                        <td colspan="4" style="padding:2.5rem; text-align:center; color:#94A3B8;">
                             <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
                             <div>No recent casework activity recorded yet.</div>
                         </td>
@@ -1283,12 +1276,11 @@ $initials = count($words) >= 2
                             <th style="width: 18%;">Barangay</th>
                             <th style="width: 20%;">Category / Service</th>
                             <th style="width: 10%;">Status</th>
-                            <th style="width: 10%; text-align:right;">Amount</th>
                         </tr>
                     </thead>
                     <tbody id="reportRecordsTbody">
                         <tr>
-                            <td colspan="6" class="text-center py-6 text-slate-400">
+                            <td colspan="5" class="text-center py-6 text-slate-400">
                                 Click "Generate Report" to populate records.
                             </td>
                         </tr>
@@ -1618,7 +1610,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Report Generation Error:', err);
             const tbody = document.getElementById('reportRecordsTbody');
             if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-rose-500 font-semibold">Unable to aggregate report records. Please try again.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-rose-500 font-semibold">Unable to aggregate report records. Please try again.</td></tr>';
             }
         })
         .finally(() => {
@@ -1731,11 +1723,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (tbody) {
             if (records.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-slate-400">No casework records found matching this timeframe.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-slate-400">No casework records found matching this timeframe.</td></tr>';
             } else {
                 let rows = '';
                 records.forEach(r => {
-                    const amtStr = r.amount > 0 ? ('₱' + Number(r.amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})) : '—';
                     let stBadge = 'bg-slate-100 text-slate-700';
                     const stLower = (r.status || '').toLowerCase();
                     if (stLower.includes('active') || stLower.includes('approved') || stLower.includes('ready')) {
@@ -1753,7 +1744,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             <td class="text-slate-600 text-xs">${r.barangay || 'N/A'}</td>
                             <td class="text-slate-600 text-xs">${r.category || 'General'}</td>
                             <td><span class="px-2 py-0.5 rounded-full text-[11px] font-semibold ${stBadge}">${r.status || 'Active'}</span></td>
-                            <td class="text-right font-semibold text-slate-800 text-xs">${amtStr}</td>
                         </tr>
                     `;
                 });
