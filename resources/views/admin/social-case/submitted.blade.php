@@ -1277,6 +1277,60 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         if(typeof lucide !== 'undefined') lucide.createIcons();
         renderSubmitted();
         renderAccepted();
+        handleNotificationDeepLink();
     });
+
+    // Deep link used by the dashboard notification "View in Queue" button:
+    // /admin/social-case/submitted?view=online&req=<online_request_id>
+    function handleNotificationDeepLink() {
+        try {
+            var params = new URLSearchParams(window.location.search);
+            var targetView = params.get('view');
+            var reqId = params.get('req');
+            if (targetView !== 'online' && !reqId) return;
+
+            toggleView('online');
+            if (!reqId) return;
+
+            var rows = getAcceptedRows();
+            var target = null;
+            var targetIndex = -1;
+            rows.forEach(function (row, i) {
+                try {
+                    var details = JSON.parse(row.getAttribute('data-details') || '{}');
+                    if (String(details.id) === String(reqId)) {
+                        target = row;
+                        targetIndex = i;
+                    }
+                } catch (e) {}
+            });
+            if (!target) return;
+
+            // Show the pagination page that contains the matched row
+            if (targetIndex >= 0) {
+                _acceptedPage = Math.floor(targetIndex / _acceptedPageSize) + 1;
+            }
+            renderAccepted();
+
+            // Briefly highlight the row
+            target.style.transition = 'background .3s ease, box-shadow .3s ease';
+            target.style.background = '#FFF7F7';
+            target.style.boxShadow = '0 0 0 2px rgba(177, 17, 22, 0.35)';
+            setTimeout(function () {
+                target.style.background = '';
+                target.style.boxShadow = '';
+            }, 3000);
+
+            target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+
+            // Open the Accepted Online Request modal for this request
+            setTimeout(function () {
+                var btn = target.querySelector('button[onclick*="viewAcceptedOnlineRequest"]');
+                if (btn) viewAcceptedOnlineRequest(btn);
+            }, 450);
+        } catch (e) {
+            console.error('Notification deep link failed:', e);
+        }
+    }
 </script>
 @endpush

@@ -1264,7 +1264,7 @@ class SocialCaseController extends Controller
                     'formatted_date' => $carbonTime->format('M d, Y g:i A'),
                     'time_ago'       => $carbonTime->diffForHumans(),
                     'is_unread'      => $isUnread,
-                    'url'            => route('admin.social-case.submitted'),
+                    'url'            => route('admin.social-case.submitted') . '?view=online&req=' . $req->id,
                     'timestamp_raw'  => $carbonTime->timestamp,
                 ];
             }

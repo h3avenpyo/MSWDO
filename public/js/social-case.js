@@ -3179,7 +3179,7 @@ function renderCaseList(){
               </button>
             ` : ''}
             ${CAN_ENCODE && c.status !== 'Archived' ? `
-              <button style="background-color: #dc3545; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onclick="event.stopPropagation(); deleteCase('${c.id}', true)" title="Archive">
+              <button style="background-color: #475569; border: none; border-radius: 6px; padding: 6px 10px; cursor:pointer;" onmouseover="this.style.backgroundColor='#334155'" onmouseout="this.style.backgroundColor='#475569'" onclick="event.stopPropagation(); deleteCase('${c.id}', true)" title="Archive">
                 <i data-lucide="archive" style="width:16px;height:16px; color:#ffffff;"></i>
               </button>
             ` : ''}
