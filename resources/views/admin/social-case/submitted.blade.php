@@ -338,6 +338,338 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .badge-rejected {
         background: #EF4444;
     }
+
+    /* ── Accepted Online Request view modal ── */
+    .aor-modal-popup.swal2-popup {
+        width: 720px !important;
+        max-width: 95vw !important;
+        border-radius: 18px !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.08) !important;
+        font-family: inherit !important;
+        border: none !important;
+    }
+    .aor-modal-popup .swal2-header,
+    .aor-modal-popup .swal2-title,
+    .aor-modal-popup .swal2-icon,
+    .aor-modal-popup .swal2-close {
+        display: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        max-height: 0 !important;
+        border: none !important;
+    }
+    .aor-modal-popup .swal2-html-container {
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: left !important;
+        max-height: 84vh !important;
+        overflow-y: auto !important;
+        grid-row: 1 !important;
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
+    }
+    .aor-modal-popup .swal2-html-container::-webkit-scrollbar,
+    .aor-modal-popup::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+    .aor-modal-popup .swal2-actions {
+        margin: 0 !important;
+        padding: 16px 24px !important;
+        background: #FFFFFF !important;
+        border-top: 1px solid #E2E8F0 !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+        gap: 10px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .aor-modal-popup .swal2-actions button {
+        margin: 0 !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        font-size: 13.5px !important;
+        padding: 10px 20px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        cursor: pointer !important;
+        transition: all 0.15s ease !important;
+        font-family: inherit !important;
+        line-height: 1.25 !important;
+    }
+    .aor-modal-popup .swal2-actions button.swal2-confirm,
+    .aor-modal-popup .swal2-actions button.swal2-deny {
+        display: inline-flex !important;
+    }
+    .aor-modal-popup .swal2-actions button.swal2-cancel,
+    .aor-modal-popup .swal2-actions button[style*="display: none"] {
+        display: none !important;
+    }
+    .aor-modal-popup .swal2-deny {
+        order: 2;
+        background: #B11116 !important;
+        color: #FFFFFF !important;
+        border: 1px solid #B11116 !important;
+    }
+    .aor-modal-popup .swal2-deny:hover {
+        background: #8A0D11 !important;
+        border-color: #8A0D11 !important;
+        box-shadow: 0 2px 8px rgba(177, 17, 22, 0.3) !important;
+    }
+    .aor-modal-popup .swal2-confirm {
+        order: 1;
+        background: #F8FAFC !important;
+        color: #475569 !important;
+        border: 1px solid #CBD5E1 !important;
+    }
+    .aor-modal-popup .swal2-confirm:hover {
+        background: #E2E8F0 !important;
+        color: #0F172A !important;
+        border-color: #94A3B8 !important;
+    }
+
+    /* Modal header */
+    .aor-modal-header {
+        background: linear-gradient(135deg, #B11116 0%, #8A0D11 100%);
+        color: #FFFFFF;
+        padding: 20px 24px;
+        border-top-left-radius: 18px;
+        border-top-right-radius: 18px;
+    }
+    .aor-modal-header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+    .aor-modal-ref-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.16);
+        padding: 4px 11px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #FFFFFF;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+    }
+    .aor-modal-title {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 700;
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        letter-spacing: -0.01em;
+    }
+    .aor-modal-subtitle {
+        margin: 5px 0 0 0;
+        font-size: 12.5px;
+        color: rgba(255, 255, 255, 0.85);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Modal body */
+    .aor-modal-body {
+        padding: 20px 24px;
+        background: #F8FAFC;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .aor-card {
+        background: #FFFFFF;
+        border-radius: 12px;
+        border: 1px solid #E2E8F0;
+        padding: 16px 18px;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+    .aor-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #F1F5F9;
+    }
+    .aor-card-title {
+        margin: 0;
+        font-size: 11.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #B11116;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+    .aor-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px 18px;
+    }
+    .aor-grid-full {
+        grid-column: 1 / -1;
+    }
+    .aor-field-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 3px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .aor-field-val {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #0F172A;
+        word-break: break-word;
+    }
+    .aor-field-val a {
+        color: #0F172A;
+        text-decoration: none;
+        transition: color 0.15s;
+    }
+    .aor-field-val a:hover {
+        color: #B11116;
+        text-decoration: underline;
+    }
+    .aor-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 12.5px;
+        font-weight: 600;
+    }
+    .aor-pill.blue { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
+    .aor-pill.green { background: #F0FDF4; color: #15803D; border: 1px solid #BBF7D0; }
+    .aor-situation-box {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-left: 4px solid #B11116;
+        border-radius: 8px;
+        padding: 14px 16px;
+        font-size: 13.5px;
+        line-height: 1.6;
+        color: #1E293B;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+    .aor-attachment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 4px;
+    }
+    .aor-attachment-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        transition: all 0.15s ease;
+    }
+    .aor-attachment-item:hover {
+        background: #FFFFFF;
+        border-color: #CBD5E1;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+    .aor-attachment-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .aor-attachment-icon.pdf { background: #FEE2E2; color: #DC2626; }
+    .aor-attachment-icon.img { background: #EFF6FF; color: #2563EB; }
+    .aor-attachment-icon.doc { background: #F0FDF4; color: #16A34A; }
+    .aor-attachment-details {
+        flex: 1;
+        min-width: 0;
+    }
+    .aor-attachment-filename {
+        font-size: 13px;
+        font-weight: 600;
+        color: #0F172A;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .aor-attachment-meta {
+        margin-top: 3px;
+    }
+    .aor-file-badge {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 1px 6px;
+        border-radius: 4px;
+        letter-spacing: 0.04em;
+    }
+    .aor-file-badge.pdf { background: #FEE2E2; color: #B91C1C; }
+    .aor-file-badge.img { background: #DBEAFE; color: #1D4ED8; }
+    .aor-file-badge.doc { background: #DCFCE7; color: #15803D; }
+    .aor-attachment-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 14px;
+        background: #FFFFFF;
+        border: 1px solid #CBD5E1;
+        border-radius: 6px;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none !important;
+        transition: all 0.15s ease;
+        flex-shrink: 0;
+    }
+    .aor-attachment-btn:hover {
+        background: #B11116;
+        border-color: #B11116;
+        color: #FFFFFF !important;
+        box-shadow: 0 2px 6px rgba(177, 17, 22, 0.25);
+    }
+    .aor-empty-files {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #94A3B8;
+        font-size: 13px;
+        padding: 6px 0;
+    }
+
+    @media (max-width: 640px) {
+        .aor-grid-2 { grid-template-columns: 1fr !important; gap: 12px !important; }
+        .aor-attachment-item { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
+        .aor-attachment-btn { width: 100% !important; justify-content: center !important; }
+        .aor-modal-header { padding: 16px 18px !important; }
+        .aor-modal-body { padding: 14px !important; gap: 12px !important; }
+        .aor-modal-popup .swal2-actions { padding: 14px 16px !important; gap: 8px !important; }
+        .aor-modal-popup .swal2-actions button { flex: 1 1 0 !important; }
+    }
 </style>
 
 <div class="sidebar" id="sidebar">
@@ -809,50 +1141,79 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         if (!row) return;
         var details = {};
         try { details = JSON.parse(row.getAttribute('data-details') || '{}'); } catch (e) {}
+        var esc = (typeof escapeHtml === 'function') ? escapeHtml : function (v) { return v == null ? '' : String(v); };
 
-        var attachmentsHtml = '';
-        if (details.attachments && details.attachments.length > 0) {
-            var items = details.attachments.map(function (a) {
-                return '<li style="margin-bottom:4px;"><a href="' + a.file_url + '" target="_blank" style="color:#B11116;text-decoration:underline;">' + a.file_name + '</a></li>';
+        var fullName = ((details.first_name || '') + ' ' + (details.last_name || '')).trim();
+
+        var attachments = (details.attachments && details.attachments.length) ? details.attachments : [];
+        var attachmentsHtml;
+        if (attachments.length > 0) {
+            var items = attachments.map(function (a) {
+                var ext = String(a.file_name || '').split('.').pop().toLowerCase();
+                var kind = ext === 'pdf' ? 'pdf' : (['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp'].indexOf(ext) >= 0 ? 'img' : 'doc');
+                var icon = kind === 'pdf' ? 'file-text' : (kind === 'img' ? 'image' : 'file');
+                return '<div class="aor-attachment-item">' +
+                    '<div class="aor-attachment-icon ' + kind + '"><i data-lucide="' + icon + '" style="width:18px;height:18px;"></i></div>' +
+                    '<div class="aor-attachment-details">' +
+                        '<div class="aor-attachment-filename">' + esc(a.file_name) + '</div>' +
+                        '<div class="aor-attachment-meta"><span class="aor-file-badge ' + kind + '">' + esc(ext.toUpperCase() || 'FILE') + '</span></div>' +
+                    '</div>' +
+                    '<a class="aor-attachment-btn" href="' + esc(a.file_url) + '" target="_blank" rel="noopener">' +
+                        '<i data-lucide="external-link" style="width:13px;height:13px;"></i> View' +
+                    '</a>' +
+                '</div>';
             }).join('');
-            attachmentsHtml = '<div style="margin-top:12px;"><h4 style="margin:0 0 8px 0;color:#B11116;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Attached Files</h4><ul style="margin:0;padding-left:20px;">' + items + '</ul></div>';
+            attachmentsHtml = '<div class="aor-attachment-list">' + items + '</div>';
         } else {
-            attachmentsHtml = '<div style="margin-top:12px;"><p style="margin:0;font-size:14px;color:#6B7280;">No files attached</p></div>';
+            attachmentsHtml = '<div class="aor-empty-files"><i data-lucide="paperclip" style="width:16px;height:16px;"></i> No files attached</div>';
         }
 
+        var modalHtml =
+            '<div class="aor-modal-header">' +
+                '<div class="aor-modal-header-top">' +
+                    '<div class="aor-modal-ref-pill"><i data-lucide="check-circle" style="width:12px;height:12px;"></i><span>Accepted</span></div>' +
+                '</div>' +
+                '<h3 class="aor-modal-title"><i data-lucide="file-text" style="width:20px;height:20px;color:#FFFFFF;"></i><span>Accepted Online Request</span></h3>' +
+                '<div class="aor-modal-subtitle"><i data-lucide="clock" style="width:13px;height:13px;"></i><span>Submitted on ' + esc(details.created_at || 'N/A') + '</span></div>' +
+            '</div>' +
+            '<div class="aor-modal-body">' +
+                '<div class="aor-card">' +
+                    '<div class="aor-card-header"><h4 class="aor-card-title"><i data-lucide="user" style="width:15px;height:15px;"></i><span>Personal Information</span></h4></div>' +
+                    '<div class="aor-grid-2">' +
+                        '<div class="aor-grid-full"><div class="aor-field-label"><i data-lucide="user-check" style="width:12px;height:12px;"></i> Full Name</div><div class="aor-field-val" style="font-size:15px;color:#B11116;font-weight:700;">' + esc(fullName || 'N/A') + '</div></div>' +
+                        '<div><div class="aor-field-label"><i data-lucide="mail" style="width:12px;height:12px;"></i> Email</div><div class="aor-field-val"><a href="mailto:' + esc(details.email) + '">' + esc(details.email || 'N/A') + '</a></div></div>' +
+                        '<div><div class="aor-field-label"><i data-lucide="phone" style="width:12px;height:12px;"></i> Contact Number</div><div class="aor-field-val"><a href="tel:' + esc(details.contact_number) + '">' + esc(details.contact_number || 'N/A') + '</a></div></div>' +
+                        '<div><div class="aor-field-label"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> Barangay</div><div class="aor-field-val">' + esc(details.barangay || 'N/A') + '</div></div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="aor-card">' +
+                    '<div class="aor-card-header"><h4 class="aor-card-title"><i data-lucide="layers" style="width:15px;height:15px;"></i><span>Service Information</span></h4></div>' +
+                    '<div class="aor-grid-2">' +
+                        '<div><div class="aor-field-label"><i data-lucide="briefcase" style="width:12px;height:12px;"></i> Service Type</div><div class="aor-field-val"><span class="aor-pill blue"><i data-lucide="file-check" style="width:13px;height:13px;"></i>' + esc(details.service_type || 'N/A') + '</span></div></div>' +
+                        '<div><div class="aor-field-label"><i data-lucide="heart-handshake" style="width:12px;height:12px;"></i> Assistance Type</div><div class="aor-field-val"><span class="aor-pill green"><i data-lucide="badge-check" style="width:13px;height:13px;"></i>' + esc(details.assistance_type || 'N/A') + '</span></div></div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="aor-card">' +
+                    '<div class="aor-card-header"><h4 class="aor-card-title"><i data-lucide="file-text" style="width:15px;height:15px;"></i><span>Request Details</span></h4></div>' +
+                    '<div class="aor-grid-2">' +
+                        '<div><div class="aor-field-label"><i data-lucide="calendar" style="width:12px;height:12px;"></i> Date Submitted</div><div class="aor-field-val">' + esc(details.created_at || 'N/A') + '</div></div>' +
+                    '</div>' +
+                    '<div class="aor-grid-full" style="margin-top:12px;"><div class="aor-field-label"><i data-lucide="message-square" style="width:12px;height:12px;"></i> Situation</div><div class="aor-situation-box">' + esc(details.situation || 'N/A') + '</div></div>' +
+                    '<div class="aor-grid-full" style="margin-top:12px;"><div class="aor-field-label"><i data-lucide="paperclip" style="width:12px;height:12px;"></i> Attached Files (' + attachments.length + ')</div>' + attachmentsHtml + '</div>' +
+                '</div>' +
+            '</div>';
+
         Swal.fire({
-            title: '<div style="display: flex; align-items: center; gap: 10px;"><i data-lucide="file-text" style="width: 24px; height: 24px; color: #B11116;"></i><span>Accepted Online Request</span></div>',
-            html: '<div style="text-align: left; padding: 10px;">' +
-                '<div style="background: #F8FAFC; border-radius: 8px; padding: 16px; margin-bottom: 16px;">' +
-                    '<h4 style="margin: 0 0 12px 0; color: #B11116; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Personal Information</h4>' +
-                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">' +
-                        '<div><span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Full Name</span><span style="font-size: 14px; color: #1F2937; font-weight: 500;">' + details.first_name + ' ' + details.last_name + '</span></div>' +
-                        '<div><span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Email</span><span style="font-size: 14px; color: #1F2937;">' + details.email + '</span></div>' +
-                        '<div><span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Contact Number</span><span style="font-size: 14px; color: #1F2937;">' + details.contact_number + '</span></div>' +
-                        '<div><span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Barangay</span><span style="font-size: 14px; color: #1F2937;">' + details.barangay + '</span></div>' +
-                    '</div>' +
-                '</div>' +
-                '<div style="background: #F8FAFC; border-radius: 8px; padding: 16px; margin-bottom: 16px;">' +
-                    '<h4 style="margin: 0 0 12px 0; color: #B11116; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Service Information</h4>' +
-                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">' +
-                        '<div><span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Service Type</span><span style="font-size: 14px; color: #1F2937;">' + details.service_type + '</span></div>' +
-                        '<div><span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Assistance Type</span><span style="font-size: 14px; color: #1F2937;">' + details.assistance_type + '</span></div>' +
-                    '</div>' +
-                '</div>' +
-                '<div style="background: #F8FAFC; border-radius: 8px; padding: 16px;">' +
-                    '<h4 style="margin: 0 0 12px 0; color: #B11116; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Request Details</h4>' +
-                    '<div style="margin-bottom: 12px;"><span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Date Submitted</span><span style="font-size: 14px; color: #1F2937;">' + details.created_at + '</span></div>' +
-                    '<div style="margin-bottom: 12px;"><span style="display: block; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Situation</span><p style="margin: 0; font-size: 14px; color: #1F2937; line-height: 1.5;">' + details.situation + '</p></div>' +
-                    attachmentsHtml +
-                '</div>' +
-            '</div>',
-            icon: false,
+            html: modalHtml,
+            showConfirmButton: true,
             showDenyButton: true,
-            denyButtonText: 'Encode',
-            denyButtonColor: '#B11116',
-            confirmButtonText: 'Close',
-            confirmButtonColor: '#6B7280',
-            width: '600px',
+            showCancelButton: false,
+            confirmButtonText: '<i data-lucide="x" style="width:15px;height:15px;"></i> Close',
+            denyButtonText: '<i data-lucide="pen-line" style="width:15px;height:15px;"></i> Encode',
+            customClass: {
+                popup: 'aor-modal-popup'
+            },
+            buttonsStyling: false,
             didOpen: function () {
                 if (typeof lucide !== 'undefined') lucide.createIcons();
             }

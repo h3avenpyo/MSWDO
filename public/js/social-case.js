@@ -264,141 +264,94 @@ function showCaseDetailsModal(caseId){
   modal.innerHTML = `
     <style>
       #caseDetailsModal *{box-sizing:border-box}
-      #caseDetailsModal .cs-modal-box{
+      #caseDetailsModal .cd-box{
+        background:#FFFFFF;border-radius:18px;width:100%;max-width:720px;max-height:84vh;
+        display:flex;flex-direction:column;overflow:hidden;
+        box-shadow:0 25px 50px -12px rgba(15,23,42,.3),0 0 0 1px rgba(15,23,42,.06);
         animation:csSlideUp .25s ease;
-        border-radius:16px !important;
-        overflow:hidden !important;
       }
-      #caseDetailsModal .cs-modal-header{
-        border-top-left-radius:16px !important;
-        border-top-right-radius:16px !important;
+      #caseDetailsModal .cd-header{
+        background:linear-gradient(135deg,#B11116 0%,#8A0D11 100%);color:#FFF;padding:20px 24px;flex-shrink:0;
       }
-      #caseDetailsModal .cs-modal-footer{
-        border-bottom-left-radius:16px !important;
-        border-bottom-right-radius:16px !important;
+      #caseDetailsModal .cd-header-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;}
+      #caseDetailsModal .cd-ref-pill{
+        display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.16);
+        padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;letter-spacing:.05em;
+        text-transform:uppercase;color:#FFF;border:1px solid rgba(255,255,255,.24);
       }
+      #caseDetailsModal .cd-title{margin:0;font-size:19px;font-weight:700;color:#FFF;display:flex;align-items:center;gap:10px;letter-spacing:-.01em;}
+      #caseDetailsModal .cd-subtitle{margin:5px 0 0;font-size:12.5px;color:rgba(255,255,255,.85);display:flex;align-items:center;gap:6px;}
+      #caseDetailsModal .cd-body{padding:20px 24px;background:#F8FAFC;display:flex;flex-direction:column;gap:14px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;}
+      #caseDetailsModal .cd-card{background:#FFF;border-radius:12px;border:1px solid #E2E8F0;padding:16px 18px;box-shadow:0 1px 3px rgba(15,23,42,.04);}
+      #caseDetailsModal .cd-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #F1F5F9;}
+      #caseDetailsModal .cd-card-title{margin:0;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#B11116;display:flex;align-items:center;gap:7px;}
+      #caseDetailsModal .cd-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 18px;}
+      #caseDetailsModal .cd-grid-full{grid-column:1/-1;}
+      #caseDetailsModal .cd-field-label{font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;display:flex;align-items:center;gap:5px;}
+      #caseDetailsModal .cd-field-val{font-size:13.5px;font-weight:600;color:#0F172A;word-break:break-word;}
+      #caseDetailsModal .cd-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:6px;font-size:12.5px;font-weight:600;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;}
+      #caseDetailsModal .cd-situation-box{background:#F8FAFC;border:1px solid #E2E8F0;border-left:4px solid #B11116;border-radius:8px;padding:14px 16px;font-size:13.5px;line-height:1.6;color:#1E293B;white-space:pre-wrap;word-break:break-word;}
+      #caseDetailsModal .cd-status{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:11.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;background:rgba(255,255,255,.16);color:#FFF;border:1px solid rgba(255,255,255,.3);}
+      #caseDetailsModal .cd-status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:#FFF;}
+      #caseDetailsModal .cd-footer{padding:16px 24px;border-top:1px solid #E2E8F0;background:#FFF;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;}
+      #caseDetailsModal .cd-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;font-weight:600;font-size:13.5px;padding:10px 20px;cursor:pointer;transition:all .15s ease;line-height:1.25;font-family:inherit;white-space:nowrap;}
+      #caseDetailsModal .cd-btn-close{background:#F8FAFC;color:#475569;border:1px solid #CBD5E1;}
+      #caseDetailsModal .cd-btn-close:hover{background:#E2E8F0;color:#0F172A;border-color:#94A3B8;}
+      #caseDetailsModal .cd-btn-primary{background:#B11116;color:#FFF;border:1px solid #B11116;}
+      #caseDetailsModal .cd-btn-primary:hover{background:#8A0D11;border-color:#8A0D11;box-shadow:0 2px 8px rgba(177,17,22,.3);}
       @keyframes csSlideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-      @media(max-width:768px){
+      @media(max-width:640px){
         #caseDetailsModal{padding:12px!important}
-        #caseDetailsModal .cs-modal-box{
-          max-height:85vh!important;
-          border-radius:14px!important;
-          height:auto!important;
-          max-width:100%!important;
-          width:100%!important;
-          overflow:hidden!important;
-        }
-        #caseDetailsModal .cs-modal-header{
-          padding:12px 16px!important;
-          border-top-left-radius:14px!important;
-          border-top-right-radius:14px!important;
-        }
-        #caseDetailsModal .cs-modal-header h5{font-size:.95rem!important}
-        #caseDetailsModal .cs-modal-body{padding:16px!important}
-        #caseDetailsModal .cs-grid{grid-template-columns:1fr!important;gap:12px!important}
-        #caseDetailsModal .cs-modal-footer{
-          flex-direction:row!important;
-          gap:10px!important;
-          padding:12px 16px!important;
-          border-bottom-left-radius:14px!important;
-          border-bottom-right-radius:14px!important;
-          justify-content:flex-end!important;
-        }
-        #caseDetailsModal .cs-footer-btns{width:auto!important;justify-content:flex-end!important}
-        #caseDetailsModal .cs-footer-btns button{flex:unset!important;justify-content:center!important}
-      }
-      @media(max-width:480px){
-        #caseDetailsModal{padding:8px!important}
-        #caseDetailsModal .cs-modal-box{
-          max-height:88vh!important;
-          border-radius:12px!important;
-        }
-        #caseDetailsModal .cs-modal-header{
-          padding:10px 14px!important;
-          border-top-left-radius:12px!important;
-          border-top-right-radius:12px!important;
-        }
-        #caseDetailsModal .cs-modal-header h5{font-size:.85rem!important}
-        #caseDetailsModal .cs-modal-body{padding:12px!important}
-        #caseDetailsModal .cs-modal-footer{
-          border-bottom-left-radius:12px!important;
-          border-bottom-right-radius:12px!important;
-        }
+        #caseDetailsModal .cd-box{max-width:100%!important;max-height:88vh!important;border-radius:14px!important;}
+        #caseDetailsModal .cd-header{padding:16px 18px!important;}
+        #caseDetailsModal .cd-body{padding:14px!important;gap:12px!important;}
+        #caseDetailsModal .cd-grid-2{grid-template-columns:1fr!important;}
+        #caseDetailsModal .cd-footer{padding:14px 16px!important;}
+        #caseDetailsModal .cd-btn{flex:1 1 0;}
       }
     </style>
-    <div class="cs-modal-box" style="background:var(--background);border-radius:16px;width:100%;max-width:780px;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.15);overflow:hidden;">
-      <!-- Header -->
-      <div class="cs-modal-header" style="background:#B11116;color:white;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
-        <h5 style="margin:0;font-size:1.05rem;font-weight:600;display:flex;align-items:center;gap:8px;">
-          <i data-lucide="user-circle" style="width:20px;height:20px;"></i>
-          Social Case Study Details
-        </h5>
-        <button onclick="document.getElementById('caseDetailsModal').remove()" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.15);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;color:white;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
-          <i data-lucide="x" style="width:18px;height:18px;"></i>
+    <div class="cd-box">
+      <div class="cd-header">
+        <div class="cd-header-top">
+          <div class="cd-ref-pill"><i data-lucide="hash" style="width:12px;height:12px;"></i><span>${escapeHtml(caseRec.controlNo)||"—"}</span></div>
+          <span class="cd-status"><span class="cd-status-dot"></span>${escapeHtml(caseRec.status)||"—"}</span>
+        </div>
+        <h3 class="cd-title"><i data-lucide="user-circle" style="width:20px;height:20px;color:#FFFFFF;"></i><span>Social Case Study Details</span></h3>
+        <div class="cd-subtitle"><i data-lucide="calendar" style="width:13px;height:13px;"></i><span>Created on ${fmtDate(caseRec.createdAt)}</span></div>
+      </div>
+      <div class="cd-body">
+        <div class="cd-card">
+          <div class="cd-card-header"><h4 class="cd-card-title"><i data-lucide="folder" style="width:15px;height:15px;"></i><span>Case Information</span></h4></div>
+          <div class="cd-grid-2">
+            <div><div class="cd-field-label"><i data-lucide="hash" style="width:12px;height:12px;"></i> Control Number</div><div class="cd-field-val">${escapeHtml(caseRec.controlNo)||"—"}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="calendar" style="width:12px;height:12px;"></i> Date Created</div><div class="cd-field-val">${fmtDate(caseRec.createdAt)}</div></div>
+          </div>
+        </div>
+        <div class="cd-card">
+          <div class="cd-card-header"><h4 class="cd-card-title"><i data-lucide="user" style="width:15px;height:15px;"></i><span>Client Information</span></h4></div>
+          <div class="cd-grid-2">
+            <div class="cd-grid-full"><div class="cd-field-label"><i data-lucide="user-check" style="width:12px;height:12px;"></i> Client Name</div><div class="cd-field-val" style="font-size:15px;color:#B11116;font-weight:700;">${escapeHtml(caseRec.client?.name)||"—"}</div></div>
+            <div class="cd-grid-full"><div class="cd-field-label"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> Address</div><div class="cd-field-val">${escapeHtml(caseRec.client?.address)||"—"}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="cake" style="width:12px;height:12px;"></i> Age</div><div class="cd-field-val">${escapeHtml(caseRec.client?.age)||"—"}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="heart" style="width:12px;height:12px;"></i> Civil Status</div><div class="cd-field-val">${escapeHtml(caseRec.client?.civilStatus)||"—"}</div></div>
+          </div>
+        </div>
+        <div class="cd-card">
+          <div class="cd-card-header"><h4 class="cd-card-title"><i data-lucide="briefcase" style="width:15px;height:15px;"></i><span>Assistance Requested</span></h4></div>
+          <div class="cd-field-val"><span class="cd-pill"><i data-lucide="file-check" style="width:13px;height:13px;"></i>${escapeHtml(caseRec.purpose)||"—"}</span></div>
+        </div>
+        <div class="cd-card">
+          <div class="cd-card-header"><h4 class="cd-card-title"><i data-lucide="message-square" style="width:15px;height:15px;"></i><span>Problem Presented</span></h4></div>
+          <div class="cd-situation-box">${escapeHtml(caseRec.interview?.interviewSituation || caseRec.interview?.problemPresented || caseRec.summary || "")||"—"}</div>
+        </div>
+      </div>
+      <div class="cd-footer">
+        <button class="cd-btn cd-btn-close" onclick="document.getElementById('caseDetailsModal').remove()">Close</button>
+        ${(caseRec.status || '').toLowerCase() !== 'archived' && !window.location.pathname.includes('/archive') ? `
+        <button class="cd-btn cd-btn-primary" onclick="window.location.href='/admin/social-case/detail/${caseRec.id}'">
+          <i data-lucide="edit" style="width:15px;height:15px;"></i> Full Details / Edit
         </button>
-      </div>
-      
-      <!-- Body -->
-      <div class="cs-modal-body" style="padding:20px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;">
-        <div class="cs-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;margin-bottom:16px;">
-          
-          <div style="margin-bottom:8px;">
-            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Control Number</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.controlNo)||"—"}</div>
-          </div>
-          
-          <div style="margin-bottom:8px;">
-            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Date Created</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${fmtDate(caseRec.createdAt)}</div>
-          </div>
-
-          <div style="margin-bottom:8px;">
-            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Status</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);"><span class="badge ${STATUS_CLASS[caseRec.status]}">${caseRec.status}</span></div>
-          </div>
-
-          <div style="margin-bottom:8px;grid-column:1/-1;">
-            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Client Name</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client?.name)||"—"}</div>
-          </div>
-          
-          <div style="margin-bottom:8px;grid-column:1/-1;">
-            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Address</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client?.address)||"—"}</div>
-          </div>
-          
-          <div style="margin-bottom:8px;">
-            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Assistance Type</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.purpose)||"—"}</div>
-          </div>
-          
-          <div style="margin-bottom:8px;">
-            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Age</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client?.age)||"—"}</div>
-          </div>
-          
-          <div style="margin-bottom:8px;">
-            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Civil Status</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);">${escapeHtml(caseRec.client?.civilStatus)||"—"}</div>
-          </div>
-
-          <div style="margin-bottom:8px;grid-column:1/-1;">
-            <label style="font-weight:600;color:var(--text-muted);font-size:0.8rem;display:block;margin-bottom:4px;">Problem Presented</label>
-            <div style="background:var(--surface);padding:8px 12px;border-radius:6px;font-weight:500;border:1px solid var(--border);white-space:pre-wrap;">${escapeHtml(caseRec.interview?.interviewSituation || caseRec.interview?.problemPresented || caseRec.summary || "")||"—"}</div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Footer -->
-      <div class="cs-modal-footer" style="padding:16px 24px;border-top:1px solid var(--border);background:var(--surface);display:flex;justify-content:flex-end;gap:12px;flex-shrink:0;">
-        <div class="cs-footer-btns" style="display:flex;gap:12px;justify-content:flex-end;">
-          <button onclick="document.getElementById('caseDetailsModal').remove()" style="padding:8px 16px;background:var(--background);border:1px solid var(--border);border-radius:6px;font-weight:500;color:var(--text-primary);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='var(--background)'">Close</button>
-          ${(caseRec.status || '').toLowerCase() !== 'archived' && !window.location.pathname.includes('/archive') ? `
-          <button onclick="window.location.href='/admin/social-case/detail/${caseRec.id}'" style="padding:8px 16px;background:var(--primary);border:none;border-radius:6px;font-weight:500;color:white;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.2s;" onmouseover="this.style.background='#B11116'" onmouseout="this.style.background='var(--primary)'">
-            <i data-lucide="edit" style="width:16px;height:16px;"></i> Full Details / Edit
-          </button>
-          ` : ''}
-        </div>
+        ` : ''}
       </div>
     </div>
   `;
@@ -2957,128 +2910,119 @@ function showIntakeSummaryModal(){
 
   const modal = document.createElement('div');
   modal.id = 'intakeSummaryModal';
-  modal.className = 'custom-modal-backdrop active';
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9999;animation:fadeIn 0.2s ease;backdrop-filter:blur(4px);';
   modal.innerHTML = `
-    <div class="custom-modal-dialog">
-      <div class="custom-modal-header">
-        <h3 class="custom-modal-title">
-          <i data-lucide="file-check" style="width:18px;height:18px;"></i>
-          Confirm Case Study Record
-        </h3>
-        <button type="button" class="custom-modal-close" onclick="closeIntakeSummaryModal()">&times;</button>
+    <style>
+      #intakeSummaryModal *{box-sizing:border-box}
+      #intakeSummaryModal .cd-box{
+        background:#FFFFFF;border-radius:18px;width:100%;max-width:720px;max-height:84vh;
+        display:flex;flex-direction:column;overflow:hidden;
+        box-shadow:0 25px 50px -12px rgba(15,23,42,.3),0 0 0 1px rgba(15,23,42,.06);
+        animation:csSlideUp .25s ease;
+      }
+      #intakeSummaryModal .cd-header{
+        background:linear-gradient(135deg,#B11116 0%,#8A0D11 100%);color:#FFF;padding:20px 24px;flex-shrink:0;
+      }
+      #intakeSummaryModal .cd-header-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;}
+      #intakeSummaryModal .cd-ref-pill{
+        display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.16);
+        padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;letter-spacing:.05em;
+        text-transform:uppercase;color:#FFF;border:1px solid rgba(255,255,255,.24);
+      }
+      #intakeSummaryModal .cd-title{margin:0;font-size:19px;font-weight:700;color:#FFF;display:flex;align-items:center;gap:10px;letter-spacing:-.01em;}
+      #intakeSummaryModal .cd-subtitle{margin:5px 0 0;font-size:12.5px;color:rgba(255,255,255,.85);display:flex;align-items:center;gap:6px;}
+      #intakeSummaryModal .cd-body{padding:20px 24px;background:#F8FAFC;display:flex;flex-direction:column;gap:14px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;}
+      #intakeSummaryModal .cd-card{background:#FFF;border-radius:12px;border:1px solid #E2E8F0;padding:16px 18px;box-shadow:0 1px 3px rgba(15,23,42,.04);}
+      #intakeSummaryModal .cd-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #F1F5F9;}
+      #intakeSummaryModal .cd-card-title{margin:0;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#B11116;display:flex;align-items:center;gap:7px;}
+      #intakeSummaryModal .cd-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 18px;}
+      #intakeSummaryModal .cd-grid-full{grid-column:1/-1;}
+      #intakeSummaryModal .cd-field-label{font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;display:flex;align-items:center;gap:5px;}
+      #intakeSummaryModal .cd-field-val{font-size:13.5px;font-weight:600;color:#0F172A;word-break:break-word;}
+      #intakeSummaryModal .cd-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:6px;font-size:12.5px;font-weight:600;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;}
+      #intakeSummaryModal .cd-pill-red{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;background:#FDF2F2;color:#B11116;border:1px solid #F8C9C9;}
+      #intakeSummaryModal .cd-situation-box{background:#F8FAFC;border:1px solid #E2E8F0;border-left:4px solid #B11116;border-radius:8px;padding:14px 16px;font-size:13.5px;line-height:1.6;color:#1E293B;white-space:pre-wrap;word-break:break-word;}
+      #intakeSummaryModal .cd-status{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:11.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;background:rgba(255,255,255,.16);color:#FFF;border:1px solid rgba(255,255,255,.3);}
+      #intakeSummaryModal .cd-status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:#FCD34D;}
+      #intakeSummaryModal .cd-table{width:100%;border-collapse:collapse;font-size:12.5px;border:1px solid #E2E8F0;border-radius:8px;overflow:hidden;}
+      #intakeSummaryModal .cd-table thead tr{background:#F8FAFC;}
+      #intakeSummaryModal .cd-table th{padding:9px 11px;font-size:10.5px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.04em;text-align:left;border-bottom:1px solid #E2E8F0;}
+      #intakeSummaryModal .cd-table td{padding:9px 11px;color:#334155;border-bottom:1px solid #F1F5F9;}
+      #intakeSummaryModal .cd-table tbody tr:last-child td{border-bottom:none;}
+      #intakeSummaryModal .cd-req{display:flex;align-items:center;gap:8px;font-size:12.5px;}
+      #intakeSummaryModal .cd-req-badge{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;color:#fff;font-size:10px;font-weight:700;flex-shrink:0;}
+      #intakeSummaryModal .cd-footer{padding:16px 24px;border-top:1px solid #E2E8F0;background:#FFF;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;}
+      #intakeSummaryModal .cd-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;font-weight:600;font-size:13.5px;padding:10px 20px;cursor:pointer;transition:all .15s ease;line-height:1.25;font-family:inherit;white-space:nowrap;}
+      #intakeSummaryModal .cd-btn-close{background:#F8FAFC;color:#475569;border:1px solid #CBD5E1;}
+      #intakeSummaryModal .cd-btn-close:hover{background:#E2E8F0;color:#0F172A;border-color:#94A3B8;}
+      #intakeSummaryModal .cd-btn-primary{background:#B11116;color:#FFF;border:1px solid #B11116;}
+      #intakeSummaryModal .cd-btn-primary:hover{background:#8A0D11;border-color:#8A0D11;box-shadow:0 2px 8px rgba(177,17,22,.3);}
+      @keyframes csSlideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+      @media(max-width:640px){
+        #intakeSummaryModal{padding:12px!important}
+        #intakeSummaryModal .cd-box{max-width:100%!important;max-height:88vh!important;border-radius:14px!important;}
+        #intakeSummaryModal .cd-header{padding:16px 18px!important;}
+        #intakeSummaryModal .cd-body{padding:14px!important;gap:12px!important;}
+        #intakeSummaryModal .cd-grid-2{grid-template-columns:1fr!important;}
+        #intakeSummaryModal .cd-footer{padding:14px 16px!important;}
+        #intakeSummaryModal .cd-btn{flex:1 1 0;}
+      }
+    </style>
+    <div class="cd-box">
+      <div class="cd-header">
+        <div class="cd-header-top">
+          <div class="cd-ref-pill"><i data-lucide="hash" style="width:12px;height:12px;"></i><span>${val(d.controlNo)}</span></div>
+          <span class="cd-status"><span class="cd-status-dot"></span>For Confirmation</span>
+        </div>
+        <h3 class="cd-title"><i data-lucide="file-check" style="width:20px;height:20px;color:#FFFFFF;"></i><span>Confirm Case Study Record</span></h3>
+        <div class="cd-subtitle"><i data-lucide="info" style="width:13px;height:13px;"></i><span>Review all details below before saving this record</span></div>
       </div>
-      <div class="custom-modal-body">
-        <!-- Identification & Report Info -->
-        <div class="custom-modal-section">
-          <div class="custom-modal-section-title">
-            <i data-lucide="clipboard-list" style="width:16px;height:16px;"></i>
-            Report Details & Control Information
-          </div>
-          <div class="custom-modal-grid">
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Control Number</label>
-              <div class="custom-modal-value font-mono font-bold" style="color:var(--primary)">${val(d.controlNo)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Report Date</label>
-              <div class="custom-modal-value">${fmtDateLocal(d.interview.reportDate)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Purpose / Assistance</label>
-              <div class="custom-modal-value">${val(d.purpose)}</div>
-            </div>
+      <div class="cd-body">
+        <!-- Report Details & Control Information -->
+        <div class="cd-card">
+          <div class="cd-card-header"><h4 class="cd-card-title"><i data-lucide="clipboard-list" style="width:15px;height:15px;"></i><span>Report Details &amp; Control Information</span></h4></div>
+          <div class="cd-grid-2">
+            <div><div class="cd-field-label"><i data-lucide="hash" style="width:12px;height:12px;"></i> Control Number</div><div class="cd-field-val" style="color:#B11116;font-weight:700;">${val(d.controlNo)}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="calendar" style="width:12px;height:12px;"></i> Report Date</div><div class="cd-field-val">${fmtDateLocal(d.interview.reportDate)}</div></div>
+            <div class="cd-grid-full"><div class="cd-field-label"><i data-lucide="target" style="width:12px;height:12px;"></i> Purpose / Assistance</div><div class="cd-field-val"><span class="cd-pill"><i data-lucide="file-check" style="width:13px;height:13px;"></i>${val(d.purpose)}</span></div></div>
           </div>
         </div>
 
-        <!-- Personal Information Section -->
-        <div class="custom-modal-section">
-          <div class="custom-modal-section-title">
-            <i data-lucide="user" style="width:16px;height:16px;"></i>
-            Personal Information
-          </div>
-          <div class="custom-modal-grid">
-            <div class="custom-modal-field custom-modal-col-span2">
-              <label class="custom-modal-label">Full Name</label>
-              <div class="custom-modal-value font-bold">${val(d.client.name)}${d.client.suffix ? ' ' + escapeHtml(d.client.suffix) : ''}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Sex</label>
-              <div class="custom-modal-value">${val(d.client.sex)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Birth Date</label>
-              <div class="custom-modal-value">${fmtDateLocal(d.client.birthdate)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Month</label>
-              <div class="custom-modal-value">${val(d.client.month)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Age</label>
-              <div class="custom-modal-value">${val(d.client.age)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Barangay (Address)</label>
-              <div class="custom-modal-value">${val(d.client.address)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Birthplace</label>
-              <div class="custom-modal-value">${val(d.client.birthplace)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Civil Status</label>
-              <div class="custom-modal-value">${val(d.client.civilStatus)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Religion</label>
-              <div class="custom-modal-value">${val(d.client.religion)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Educational Attainment</label>
-              <div class="custom-modal-value">${val(d.client.education)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Occupation</label>
-              <div class="custom-modal-value">${val(d.client.occupation)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Monthly Income</label>
-              <div class="custom-modal-value">${val(d.client.income)}</div>
-            </div>
-            <div class="custom-modal-field custom-modal-col-span2">
-              <label class="custom-modal-label">Contact Number</label>
-              <div class="custom-modal-value">${val(d.client.contact)}</div>
-            </div>
+        <!-- Personal Information -->
+        <div class="cd-card">
+          <div class="cd-card-header"><h4 class="cd-card-title"><i data-lucide="user" style="width:15px;height:15px;"></i><span>Personal Information</span></h4></div>
+          <div class="cd-grid-2">
+            <div class="cd-grid-full"><div class="cd-field-label"><i data-lucide="user-check" style="width:12px;height:12px;"></i> Full Name</div><div class="cd-field-val" style="font-size:15px;color:#B11116;font-weight:700;">${val(d.client.name)}${d.client.suffix ? ' ' + escapeHtml(d.client.suffix) : ''}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="users" style="width:12px;height:12px;"></i> Sex</div><div class="cd-field-val">${val(d.client.sex)}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="calendar" style="width:12px;height:12px;"></i> Birth Date</div><div class="cd-field-val">${fmtDateLocal(d.client.birthdate)}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="clock" style="width:12px;height:12px;"></i> Month</div><div class="cd-field-val">${val(d.client.month)}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="cake" style="width:12px;height:12px;"></i> Age</div><div class="cd-field-val">${val(d.client.age)}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> Barangay (Address)</div><div class="cd-field-val">${val(d.client.address)}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> Birthplace</div><div class="cd-field-val">${val(d.client.birthplace)}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="heart" style="width:12px;height:12px;"></i> Civil Status</div><div class="cd-field-val">${val(d.client.civilStatus)}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="church" style="width:12px;height:12px;"></i> Religion</div><div class="cd-field-val">${val(d.client.religion)}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="graduation-cap" style="width:12px;height:12px;"></i> Educational Attainment</div><div class="cd-field-val">${val(d.client.education)}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="briefcase" style="width:12px;height:12px;"></i> Occupation</div><div class="cd-field-val">${val(d.client.occupation)}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="wallet" style="width:12px;height:12px;"></i> Monthly Income</div><div class="cd-field-val">${val(d.client.income)}</div></div>
+            <div class="cd-grid-full"><div class="cd-field-label"><i data-lucide="phone" style="width:12px;height:12px;"></i> Contact Number</div><div class="cd-field-val">${val(d.client.contact)}</div></div>
           </div>
         </div>
 
-        <!-- Family Composition Section -->
-        <div class="custom-modal-section">
-          <div class="custom-modal-section-title">
-            <i data-lucide="users" style="width:16px;height:16px;"></i>
-            Family Composition (${d.household.length})
-          </div>
-          <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface);">
-            <table style="width:100%;border-collapse:collapse;font-size:12px;">
-              <thead>
-                <tr style="background:#F9FAFB;border-bottom:1px solid var(--border);text-align:left;">
-                  <th style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Name</th>
-                  <th style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Relationship</th>
-                  <th style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Age</th>
-                  <th style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Education</th>
-                  <th style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Occupation</th>
-                  <th style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Income</th>
-                </tr>
-              </thead>
+        <!-- Family Composition -->
+        <div class="cd-card">
+          <div class="cd-card-header"><h4 class="cd-card-title"><i data-lucide="users" style="width:15px;height:15px;"></i><span>Family Composition (${d.household.length})</span></h4></div>
+          <div style="overflow-x:auto;">
+            <table class="cd-table">
+              <thead><tr><th>Name</th><th>Relationship</th><th>Age</th><th>Education</th><th>Occupation</th><th>Income</th></tr></thead>
               <tbody>
                 ${d.household.map(m => `
-                  <tr style="border-bottom:1px solid var(--border);">
-                    <td style="padding:8px 10px;font-weight:600;">${val(m.name)}</td>
-                    <td style="padding:8px 10px;">${val(m.relationship)}</td>
-                    <td style="padding:8px 10px;">${val(m.age)}</td>
-                    <td style="padding:8px 10px;">${val(m.education)}</td>
-                    <td style="padding:8px 10px;">${val(m.occupation)}</td>
-                    <td style="padding:8px 10px;">${val(m.income)}</td>
+                  <tr>
+                    <td style="font-weight:600;color:#0F172A;">${val(m.name)}</td>
+                    <td>${val(m.relationship)}</td>
+                    <td>${val(m.age)}</td>
+                    <td>${val(m.education)}</td>
+                    <td>${val(m.occupation)}</td>
+                    <td>${val(m.income)}</td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -3086,39 +3030,29 @@ function showIntakeSummaryModal(){
           </div>
         </div>
 
-        <!-- Problem Presented Section -->
-        <div class="custom-modal-section">
-          <div class="custom-modal-section-title">
-            <i data-lucide="file-text" style="width:16px;height:16px;"></i>
-            Problem Presented
-          </div>
-          <div class="custom-modal-grid">
-            <div class="custom-modal-field custom-modal-col-full">
-              <div class="custom-modal-value" style="white-space:pre-wrap;min-height:50px;line-height:1.5;">${val(d.interview.problemPresented)}</div>
-            </div>
-          </div>
+        <!-- Problem Presented -->
+        <div class="cd-card">
+          <div class="cd-card-header"><h4 class="cd-card-title"><i data-lucide="message-square" style="width:15px;height:15px;"></i><span>Problem Presented</span></h4></div>
+          <div class="cd-situation-box">${val(d.interview.problemPresented)}</div>
         </div>
 
-        <!-- Agencies & Requirements Section -->
-        <div class="custom-modal-section">
-          <div class="custom-modal-section-title">
-            <i data-lucide="building-2" style="width:16px;height:16px;"></i>
-            Agencies & Requirements
-          </div>
-          <div class="custom-modal-grid">
-            <div class="custom-modal-field custom-modal-col-full">
-              <label class="custom-modal-label">Assistance Agencies</label>
-              <div class="custom-modal-value" style="flex-wrap:wrap;gap:6px;padding:8px 10px;">
-                ${selectedAgencies.length ? selectedAgencies.map(a => `<span style="display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;background:#FDF2F2;color:var(--primary);font-size:12px;font-weight:600;border:1px solid #F8C9C9;">${a.key === 'OP' ? 'Office of the President' : `${escapeHtml(a.key)} - ${escapeHtml(a.name)}`}</span>`).join('') : '<span style="color:#9CA3AF;font-style:italic">None selected</span>'}
+        <!-- Agencies & Requirements -->
+        <div class="cd-card">
+          <div class="cd-card-header"><h4 class="cd-card-title"><i data-lucide="building-2" style="width:15px;height:15px;"></i><span>Agencies &amp; Requirements</span></h4></div>
+          <div class="cd-grid-2">
+            <div class="cd-grid-full">
+              <div class="cd-field-label"><i data-lucide="landmark" style="width:12px;height:12px;"></i> Assistance Agencies</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">
+                ${selectedAgencies.length ? selectedAgencies.map(a => `<span class="cd-pill-red"><i data-lucide="building-2" style="width:12px;height:12px;"></i>${a.key === 'OP' ? 'Office of the President' : `${escapeHtml(a.key)} - ${escapeHtml(a.name)}`}</span>`).join('') : '<span style="color:#9CA3AF;font-style:italic">None selected</span>'}
               </div>
             </div>
-            <div class="custom-modal-field custom-modal-col-full">
-              <label class="custom-modal-label">Verified Requirements</label>
-              <div class="custom-modal-value" style="flex-direction:column;align-items:flex-start;gap:6px;padding:8px 10px;">
+            <div class="cd-grid-full" style="margin-top:4px;">
+              <div class="cd-field-label"><i data-lucide="list-checks" style="width:12px;height:12px;"></i> Verified Requirements</div>
+              <div style="display:flex;flex-direction:column;gap:7px;margin-top:4px;">
                 ${d.requirements.map(r => `
-                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;">
-                    <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:${r.submitted ? '#16A34A' : '#EF4444'};color:#fff;font-size:10px;font-weight:bold;">${r.submitted ? '✓' : '✕'}</span>
-                    <span style="color:${r.submitted ? 'var(--text-primary)' : 'var(--text-muted)'}">${escapeHtml(r.name)}</span>
+                  <div class="cd-req">
+                    <span class="cd-req-badge" style="background:${r.submitted ? '#16A34A' : '#EF4444'};">${r.submitted ? '✓' : '✕'}</span>
+                    <span style="color:${r.submitted ? '#0F172A' : '#94A3B8'}">${escapeHtml(r.name)}</span>
                   </div>
                 `).join('')}
               </div>
@@ -3126,37 +3060,22 @@ function showIntakeSummaryModal(){
           </div>
         </div>
 
-        <!-- Signatories Section -->
-        <div class="custom-modal-section">
-          <div class="custom-modal-section-title">
-            <i data-lucide="pen-tool" style="width:16px;height:16px;"></i>
-            Signatories
-          </div>
-          <div class="custom-modal-grid">
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Prepared By (Name)</label>
-              <div class="custom-modal-value">${val(d.signers.preparedByName)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Prepared By (Title)</label>
-              <div class="custom-modal-value">${val(d.signers.preparedByTitle)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Noted By (Name)</label>
-              <div class="custom-modal-value">${val(d.signers.notedByName)}</div>
-            </div>
-            <div class="custom-modal-field">
-              <label class="custom-modal-label">Noted By (Title)</label>
-              <div class="custom-modal-value">${val(d.signers.notedByTitle)}</div>
-            </div>
+        <!-- Signatories -->
+        <div class="cd-card">
+          <div class="cd-card-header"><h4 class="cd-card-title"><i data-lucide="pen-tool" style="width:15px;height:15px;"></i><span>Signatories</span></h4></div>
+          <div class="cd-grid-2">
+            <div><div class="cd-field-label"><i data-lucide="user" style="width:12px;height:12px;"></i> Prepared By (Name)</div><div class="cd-field-val">${val(d.signers.preparedByName)}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="briefcase" style="width:12px;height:12px;"></i> Prepared By (Title)</div><div class="cd-field-val">${val(d.signers.preparedByTitle)}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="user" style="width:12px;height:12px;"></i> Noted By (Name)</div><div class="cd-field-val">${val(d.signers.notedByName)}</div></div>
+            <div><div class="cd-field-label"><i data-lucide="briefcase" style="width:12px;height:12px;"></i> Noted By (Title)</div><div class="cd-field-val">${val(d.signers.notedByTitle)}</div></div>
           </div>
         </div>
       </div>
 
-      <div class="custom-modal-footer">
-        <button type="button" class="btn" onclick="closeIntakeSummaryModal()">Go Back</button>
-        <button type="button" class="btn primary" onclick="closeIntakeSummaryModal(); saveNewCase();">
-          <i data-lucide="check-circle" style="width:16px;height:16px"></i> Confirm & Save Case
+      <div class="cd-footer">
+        <button type="button" class="cd-btn cd-btn-close" onclick="closeIntakeSummaryModal()">Go Back</button>
+        <button type="button" class="cd-btn cd-btn-primary" onclick="closeIntakeSummaryModal(); saveNewCase();">
+          <i data-lucide="check-circle" style="width:16px;height:16px"></i> Confirm &amp; Save Case
         </button>
       </div>
     </div>
