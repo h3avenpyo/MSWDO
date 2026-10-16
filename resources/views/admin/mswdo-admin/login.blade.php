@@ -63,6 +63,42 @@
             }
         }
 
+        /* Municipal Hall Semi-Transparent Silhouette Background / Watermark */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("{{ asset('images/muni.png') }}");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+            filter: grayscale(100%) contrast(135%) brightness(0.96);
+            opacity: 0.30;
+            mix-blend-mode: multiply;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Soft edge feathering ensuring crisp contrast for the login card */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 45%, rgba(255, 255, 255, 0.25) 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @media (min-width: 1024px) {
+            body::before {
+                background-position: center 38%;
+            }
+        }
+
         /* Soft radial blur floating behind the card */
         .bg-blur {
             position: fixed;

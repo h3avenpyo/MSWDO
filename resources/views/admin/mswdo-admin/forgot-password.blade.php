@@ -28,7 +28,45 @@
             align-items: center;
             justify-content: center;
             padding: 2rem 1rem;
-            background: linear-gradient(160deg, #F0F7FF 0%, #E3EEFA 55%, #DCE9F7 100%);
+            background: #FFFFFF;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Municipal Hall Semi-Transparent Silhouette Background / Watermark */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("{{ asset('images/muni.png') }}");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+            filter: grayscale(100%) contrast(135%) brightness(0.96);
+            opacity: 0.30;
+            mix-blend-mode: multiply;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Soft edge feathering ensuring crisp contrast for the auth card */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 45%, rgba(255, 255, 255, 0.25) 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @media (min-width: 1024px) {
+            body::before {
+                background-position: center 38%;
+            }
         }
 
         .bg-blur {
