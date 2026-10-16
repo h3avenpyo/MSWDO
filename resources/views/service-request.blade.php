@@ -15,6 +15,95 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="{{ asset('css/financial-assistance.css') }}">
+    <style>
+        /* SweetAlert2 modal */
+        .swal2-popup {
+            border-radius: 20px !important;
+            padding: 1.75rem 1.5rem 1.5rem !important;
+            font-family: inherit !important;
+            box-shadow: 0 30px 60px rgba(15, 23, 42, .18) !important;
+            background: #FFFFFF !important;
+        }
+        .swal2-title {
+            color: #0F172A !important;
+            font-weight: 700 !important;
+            font-size: 1.3rem !important;
+            padding: 0 !important;
+        }
+        .swal2-html-container {
+            font-size: .9375rem !important;
+            color: #64748B !important;
+            line-height: 1.6 !important;
+            margin: .5rem 0 0 !important;
+        }
+        .swal2-icon {
+            margin: .5rem auto 1rem !important;
+        }
+        .swal2-confirm {
+            border-radius: 12px !important;
+            font-weight: 600 !important;
+            font-family: inherit !important;
+            font-size: .875rem !important;
+            padding: 12px 28px !important;
+            transition: transform .2s ease, filter .2s ease !important;
+        }
+        .swal2-confirm:hover {
+            filter: brightness(1.06) !important;
+            transform: translateY(-1px) !important;
+        }
+        .swal2-actions {
+            margin-top: 1.25rem !important;
+        }
+        .swal-err-intro {
+            font-size: .9375rem;
+            color: #64748B;
+            margin: 0 0 .85rem;
+            line-height: 1.5;
+        }
+        .swal-err-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: .4rem;
+            text-align: left;
+        }
+        .swal-err-list li {
+            position: relative;
+            padding: .55rem .75rem .55rem 2.1rem;
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            border-radius: 10px;
+            font-size: .8125rem;
+            font-weight: 500;
+            color: #991B1B;
+            line-height: 1.35;
+        }
+        .swal-err-list li::before {
+            content: '';
+            position: absolute;
+            left: .85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 9999px;
+            background: #DC2626;
+        }
+        @media (max-width: 575.98px) {
+            .swal2-popup {
+                padding: 1.25rem 1rem 1rem !important;
+                border-radius: 16px !important;
+            }
+            .swal2-title {
+                font-size: 1.1rem !important;
+            }
+            .swal2-confirm {
+                width: 100% !important;
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-[#F1F5F9] text-[#1E293B] antialiased min-h-screen flex flex-col justify-between">
@@ -468,9 +557,75 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 px-4 mt-8">
-        <p>© {{ date('Y') }} Tanggapan ng Kagalingang Panlipunan at Pagpapaunlad (MSWDO) &bull; Bayan ng Silang, Cavite.</p>
+    <footer style="background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);"
+        class="py-6 text-center text-xs px-4 mt-8 text-white">
+        <p>© {{ date('Y') }} Municipal Social Welfare and Development Office (MSWDO) &bull; Municipality of Silang, Cavite.</p>
     </footer>
+
+    <!-- ===================================== -->
+    <!-- MAHALAGANG PAUNAWA ADVISORY MODAL -->
+    <!-- ===================================== -->
+    <div id="applicantAdvisoryModal" class="advisory-modal" role="dialog" aria-modal="true"
+        aria-labelledby="advisoryModalTitle">
+        <div class="advisory-modal-content">
+            <!-- Modal Header -->
+            <div class="advisory-modal-header">
+                <h3 id="advisoryModalTitle" class="advisory-modal-title">
+                    PAUNAWA
+                </h3>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="advisory-modal-body space-y-3 sm:space-y-3.5">
+                <p>
+                    1. Punan nang wasto at kumpleto ang lahat ng kinakailangang impormasyon na may <span
+                        class="text-rose-600 font-bold">pulang asterisk (*)</span>.
+                </p>
+                <p>
+                    2. <strong class="text-amber-600 font-bold">6-Month Policy Restriction:</strong> Ang tulong
+                    pinansyal ay may <strong class="text-amber-600 font-bold">6-month validity period</strong> bawat
+                    benepisyaryo alinsunod sa patakaran ng MSWDO Silang.
+                </p>
+                <p>
+                    3. Ihanda ang mga <strong class="text-amber-600 font-bold">sumusuportang dokumento</strong> (Valid
+                    ID, Barangay Certificate of Indigency, Medical Abstract/Certificate o Hospital Bill) kapag pupunta
+                    sa tanggapan.
+                </p>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="advisory-modal-footer">
+                <button type="button" onclick="closeAdvisoryModal()"
+                    class="advisory-btn-close w-full sm:w-auto text-center">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const modal = document.getElementById('applicantAdvisoryModal');
+            if (!modal) return;
+
+            window.closeAdvisoryModal = function () {
+                modal.classList.remove('active');
+                document.body.classList.remove('modal-open');
+            };
+
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) window.closeAdvisoryModal();
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') window.closeAdvisoryModal();
+            });
+
+            modal.classList.add('active');
+            document.body.classList.add('modal-open');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        })();
+    </script>
 
     <!-- Scripts -->
     <script>
@@ -740,14 +895,48 @@
                         window.location.href = '/';
                     });
                 } else {
-                    const message = (data && data.message) ? data.message : 'Nagkaroon ng problema sa pagsumite ng inyong aplikasyon. Pakisubukang muli.';
-                    Swal.fire({
-                        title: 'Hindi Naisumite',
-                        text: message,
-                        icon: 'error',
-                        confirmButtonColor: '#DC2626',
-                        confirmButtonText: 'Subukang Muli'
-                    });
+                    const fieldLabels = {
+                        request_for: 'Para kanino ang kahilingan',
+                        first_name: 'Pangalan',
+                        last_name: 'Apelyido',
+                        dob: 'Petsa ng kapanganakan',
+                        barangay: 'Barangay',
+                        contact_number: 'Numero ng telepono',
+                        email: 'Email',
+                        address: 'Tirahan',
+                        service_type: 'Uri ng serbisyo',
+                        assistance_type: 'Uri ng tulong',
+                        situation: 'Paglalahad ng sitwasyon',
+                        documents: 'Mga dokumento'
+                    };
+                    let errorHtml = '';
+                    if (data && data.errors && typeof data.errors === 'object') {
+                        const items = Object.keys(data.errors).map(key => {
+                            const label = fieldLabels[key] || key.replace(/_/g, ' ');
+                            return `<li>${label}</li>`;
+                        });
+                        if (items.length) {
+                            errorHtml = `<p class="swal-err-intro">Pakipunan ang mga sumusunod na kinakailangang impormasyon:</p><ul class="swal-err-list">${items.join('')}</ul>`;
+                        }
+                    }
+                    if (errorHtml) {
+                        Swal.fire({
+                            title: 'Hindi Naisumite',
+                            html: errorHtml,
+                            icon: 'error',
+                            confirmButtonColor: '#DC2626',
+                            confirmButtonText: 'Subukang Muli'
+                        });
+                    } else {
+                        const message = (data && data.message) ? data.message : 'Nagkaroon ng problema sa pagsumite ng inyong aplikasyon. Pakisubukang muli.';
+                        Swal.fire({
+                            title: 'Hindi Naisumite',
+                            text: message,
+                            icon: 'error',
+                            confirmButtonColor: '#DC2626',
+                            confirmButtonText: 'Subukang Muli'
+                        });
+                    }
                 }
             })
             .catch(error => {

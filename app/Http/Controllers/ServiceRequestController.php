@@ -75,10 +75,9 @@ class ServiceRequestController extends Controller
                 'message' => 'Service request submitted successfully'
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            $errorMessages = collect($e->errors())->flatten()->all();
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed: ' . implode(', ', $errorMessages),
+                'message' => 'Pakipunan ang lahat ng kinakailangang impormasyon at subukang muli.',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {

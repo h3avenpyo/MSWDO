@@ -885,15 +885,61 @@ function initFinancialIntakeForm() {
                                 confirmButtonColor: '#b11116'
                             });
                         } else {
-                            let errorMsg = err.message || 'There was an error submitting your intake. Please check your form.';
-                            if (err.errors) {
-                                errorMsg = Object.values(err.errors).flat().join('<br>');
+                            const intakeLabels = {
+                                beneficiary_last_name: 'Apelyido ng Benepisyaryo',
+                                beneficiary_first_name: 'Pangalan ng Benepisyaryo',
+                                beneficiary_middle_name: 'Gitnang Pangalan',
+                                beneficiary_street_address: 'Tirahan / Street Address',
+                                beneficiary_birthday: 'Petsa ng Kapanganakan',
+                                beneficiary_barangay: 'Barangay',
+                                beneficiary_city: 'Munisipalidad',
+                                beneficiary_province: 'Probinsya',
+                                beneficiary_region: 'Rehiyon',
+                                beneficiary_contact_number: 'Numero ng Telepono',
+                                beneficiary_age: 'Edad',
+                                beneficiary_sex: 'Kasarian',
+                                beneficiary_civil_status: 'Katayuang Sibil',
+                                beneficiary_occupation: 'Trabaho',
+                                beneficiary_monthly_salary: 'Buwanang Sahod',
+                                beneficiary_category: 'Kategorya',
+                                rep_last_name: 'Apelyido ng Kinatawan',
+                                rep_first_name: 'Pangalan ng Kinatawan',
+                                rep_middle_name: 'Gitnang Pangalan ng Kinatawan',
+                                rep_birthday: 'Petsa ng Kapanganakan ng Kinatawan',
+                                rep_contact_number: 'Numero ng Telepono ng Kinatawan',
+                                rep_relationship: 'Relasyon sa Benepisyaryo',
+                                rep_sex: 'Kasarian ng Kinatawan',
+                                rep_civil_status: 'Katayuang Sibil ng Kinatawan',
+                                rep_age: 'Edad ng Kinatawan',
+                                client_type: 'Uri ng Kliyente',
+                                assistance_purpose: 'Layunin ng Tulong',
+                                purpose: 'Layunin',
+                                documents: 'Mga Dokumento'
+                            };
+                            const prettify = (key) => key
+                                .replace(/^beneficiary_/, '')
+                                .replace(/^rep_/, '')
+                                .replace(/_/g, ' ')
+                                .replace(/\b\w/g, ch => ch.toUpperCase());
+
+                            let errorHtml = '';
+                            if (err.errors && typeof err.errors === 'object') {
+                                const items = Object.keys(err.errors).map(key => {
+                                    const label = intakeLabels[key] || prettify(key);
+                                    return `<li>${label}</li>`;
+                                });
+                                if (items.length) {
+                                    errorHtml = `<p class="swal-err-intro">Pakipunan o itama ang mga sumusunod:</p><ul class="swal-err-list">${items.join('')}</ul>`;
+                                }
                             }
+
+                            const fallbackMsg = (err && err.message) ? err.message : 'Nagkaroon ng problema sa pagsumite ng inyong aplikasyon. Pakisubukang muli.';
                             Swal.fire({
-                                title: 'Submission Error',
-                                html: `<div class="text-left text-sm text-rose-700">${errorMsg}</div>`,
+                                title: 'Hindi Naisumite',
+                                html: errorHtml || `<p class="swal-err-intro">${fallbackMsg}</p>`,
                                 icon: 'error',
-                                confirmButtonColor: '#DC2626'
+                                confirmButtonColor: '#DC2626',
+                                confirmButtonText: 'Subukang Muli'
                             });
                         }
                     });

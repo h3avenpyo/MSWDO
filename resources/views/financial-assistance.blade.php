@@ -899,8 +899,9 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 px-4 mt-8">
-        <p>© {{ date('Y') }} Tanggapan ng Kagalingang Panlipunan at Pagpapaunlad (MSWDO) &bull; Bayan ng Silang, Cavite.
+    <footer style="background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);"
+        class="py-6 text-center text-xs px-4 mt-8 text-white">
+        <p>© {{ date('Y') }} Municipal Social Welfare and Development Office (MSWDO) &bull; Municipality of Silang, Cavite.
         </p>
     </footer>
 
