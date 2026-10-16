@@ -24,18 +24,18 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             <h1 class="mobile-brand-title">iSERVE SILANG</h1>
             <p class="mobile-brand-subtitle">Social Case Study Dashboard</p>
         </div>
+        <div class="mobile-header-actions">
+            <button type="button" id="mobileNotifBellBtn" class="mobile-header-notif-btn notif-bell-btn-trigger" title="Notifications" onclick="toggleNotificationDropdown(event)">
+                <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+                <span class="notif-badge" style="display: none;">0</span>
+                <span class="notif-ping" style="display: none;"></span>
+            </button>
+        </div>
         <div class="mobile-logo">
             @if($logo)
             <img src="{{ asset('images/'.$logo) }}" class="mobile-logo-img">
             @endif
         </div>
-    </div>
-    <div class="mobile-header-actions">
-        <button type="button" id="mobileNotifBellBtn" class="mobile-header-notif-btn notif-bell-btn-trigger" title="Notifications" onclick="toggleNotificationDropdown(event)">
-            <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
-            <span class="notif-badge" style="display: none;">0</span>
-            <span class="notif-ping" style="display: none;"></span>
-        </button>
     </div>
 </div>
 
@@ -61,8 +61,11 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         .mobile-header-actions {
             display: flex;
             align-items: center;
-            margin-left: 8px;
+            margin-left: 0;
             flex-shrink: 0;
+        }
+        .mobile-header-brand {
+            gap: 8px;
         }
         .mobile-header-notif-btn {
             position: relative;
@@ -99,6 +102,25 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             font-weight: 600;
             color: #111827;
             margin: 0;
+        }
+    }
+    @media (max-width: 360px) {
+        .mobile-header-brand {
+            gap: 6px;
+        }
+        .mobile-brand-title {
+            font-size: 14px;
+        }
+        .mobile-brand-subtitle {
+            font-size: 10px;
+        }
+        .mobile-header-notif-btn {
+            width: 34px;
+            height: 34px;
+        }
+        .mobile-logo {
+            width: 38px;
+            height: 38px;
         }
     }
     .main > header {
