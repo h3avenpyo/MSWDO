@@ -588,6 +588,18 @@
         restrictToDigits(philsysNumberInput, 12);
         restrictToDigits(rrnNumberInput, 29);
 
+        const restrictToName = (input) => {
+            if (!input) return;
+            const sanitize = () => {
+                input.value = input.value.replace(/[^\p{L}\s.]/gu, '');
+            };
+            input.addEventListener('input', sanitize);
+            sanitize();
+        };
+
+        restrictToName(document.querySelector('input[name="full_name"]'));
+        restrictToName(document.querySelector('input[name="emergency_contact_name"]'));
+
         if (document.getElementById('birthDate') && document.getElementById('birthDate').value) {
             calculateAge();
         }

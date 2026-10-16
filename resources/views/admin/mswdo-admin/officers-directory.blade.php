@@ -434,14 +434,14 @@ $initials = count($words) >= 2
     }
     .btn-action-icon svg { width: 16px; height: 16px; }
     .btn-action-icon.act-edit {
-        color: #b11116;
-        background: #FEF2F2;
-        border-color: #FECACA;
+        color: #1D4ED8;
+        background: #EFF6FF;
+        border-color: #BFDBFE;
     }
     .btn-action-icon.act-edit:hover {
-        background: #b11116;
+        background: #1D4ED8;
         color: #FFFFFF;
-        border-color: #b11116;
+        border-color: #1D4ED8;
     }
     .btn-action-icon.act-deactivate {
         color: #DC2626;
@@ -973,6 +973,14 @@ $initials = count($words) >= 2
 
                     $statusVal = is_object($officer->status) ? $officer->status->value : $officer->status;
                     $isActive = ($statusVal === 'active' || empty($statusVal));
+
+                    $isExternal = ($officer->source ?? 'mswdo') === 'wcpu';
+                    if ($isExternal) {
+                        $roleLabel = ($officer->portal ?? 'WCPU') . ' Administrator';
+                    }
+                    $editUrl = $isExternal ? route('admin.wcpu-officers.edit', $officer->raw_id) : route('admin.officers.edit', $officer->id);
+                    $deactivateUrl = $isExternal ? route('admin.wcpu-officers.deactivate', $officer->raw_id) : route('admin.officers.deactivate', $officer->id);
+                    $activateUrl = $isExternal ? route('admin.wcpu-officers.activate', $officer->raw_id) : route('admin.officers.activate', $officer->id);
                 @endphp
                 <tr>
                     <td class="overflow-hidden">
@@ -1005,16 +1013,16 @@ $initials = count($words) >= 2
                     </td>
                     <td style="text-align:right; white-space: nowrap;">
                         <div class="action-rail justify-end">
-                            <a href="{{ route('admin.officers.edit', $officer->id) }}" class="btn-action-icon act-edit" title="Edit Officer Details">
-                                <i data-lucide="pencil"></i>
+                            <a href="{{ $editUrl }}" class="btn-action-icon act-edit" title="Edit Officer Details">
+                                <i data-lucide="square-pen"></i>
                             </a>
                             @if($isActive)
-                                <button type="button" class="btn-action-icon act-deactivate" title="Deactivate Officer Account" onclick="deactivateOfficer({{ $officer->id }}, '{{ addslashes($officer->name) }}')">
-                                    <i data-lucide="user-x"></i>
+                                <button type="button" class="btn-action-icon act-deactivate" title="Deactivate Officer Account" onclick="deactivateOfficer('{{ $deactivateUrl }}', '{{ addslashes($officer->name) }}')">
+                                    <i data-lucide="circle-x"></i>
                                 </button>
                             @else
-                                <button type="button" class="btn-action-icon act-activate" title="Activate Officer Account" onclick="activateOfficer({{ $officer->id }}, '{{ addslashes($officer->name) }}')">
-                                    <i data-lucide="user-check"></i>
+                                <button type="button" class="btn-action-icon act-activate" title="Activate Officer Account" onclick="activateOfficer('{{ $activateUrl }}', '{{ addslashes($officer->name) }}')">
+                                    <i data-lucide="circle-check"></i>
                                 </button>
                             @endif
                         </div>
@@ -1053,6 +1061,14 @@ $initials = count($words) >= 2
 
             $statusVal = is_object($officer->status) ? $officer->status->value : $officer->status;
             $isActive = ($statusVal === 'active' || empty($statusVal));
+
+            $isExternal = ($officer->source ?? 'mswdo') === 'wcpu';
+            if ($isExternal) {
+                $roleLabel = ($officer->portal ?? 'WCPU') . ' Administrator';
+            }
+            $editUrl = $isExternal ? route('admin.wcpu-officers.edit', $officer->raw_id) : route('admin.officers.edit', $officer->id);
+            $deactivateUrl = $isExternal ? route('admin.wcpu-officers.deactivate', $officer->raw_id) : route('admin.officers.deactivate', $officer->id);
+            $activateUrl = $isExternal ? route('admin.wcpu-officers.activate', $officer->raw_id) : route('admin.officers.activate', $officer->id);
         @endphp
         <div class="mobile-officer-card">
             <div class="mobile-officer-head">
@@ -1084,16 +1100,16 @@ $initials = count($words) >= 2
             <div class="mobile-officer-actions">
                 <span class="text-[11px] text-slate-400">{{ $officer->created_at ? $officer->created_at->format('M d, Y') : '' }}</span>
                 <div class="action-rail">
-                    <a href="{{ route('admin.officers.edit', $officer->id) }}" class="btn-action-icon act-edit" title="Edit Officer">
-                        <i data-lucide="pencil"></i>
+                    <a href="{{ $editUrl }}" class="btn-action-icon act-edit" title="Edit Officer">
+                        <i data-lucide="square-pen"></i>
                     </a>
                     @if($isActive)
-                        <button type="button" class="btn-action-icon act-deactivate" title="Deactivate Officer" onclick="deactivateOfficer({{ $officer->id }}, '{{ addslashes($officer->name) }}')">
-                            <i data-lucide="user-x"></i>
+                        <button type="button" class="btn-action-icon act-deactivate" title="Deactivate Officer" onclick="deactivateOfficer('{{ $deactivateUrl }}', '{{ addslashes($officer->name) }}')">
+                            <i data-lucide="circle-x"></i>
                         </button>
                     @else
-                        <button type="button" class="btn-action-icon act-activate" title="Activate Officer" onclick="activateOfficer({{ $officer->id }}, '{{ addslashes($officer->name) }}')">
-                            <i data-lucide="user-check"></i>
+                        <button type="button" class="btn-action-icon act-activate" title="Activate Officer" onclick="activateOfficer('{{ $activateUrl }}', '{{ addslashes($officer->name) }}')">
+                            <i data-lucide="circle-check"></i>
                         </button>
                     @endif
                 </div>
@@ -1388,10 +1404,10 @@ function attachPaginationListeners() {
 }
 
 // Deactivate confirmation with SweetAlert2
-function deactivateOfficer(id, name) {
+function deactivateOfficer(url, name) {
     Swal.fire({
         title: 'Deactivate Account?',
-        text: `Are you sure you want to deactivate ${name}? This officer will lose access to the MSWDO portal.`,
+        text: `Are you sure you want to deactivate ${name}? This officer will no longer be able to log in.`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#DC2626',
@@ -1402,7 +1418,7 @@ function deactivateOfficer(id, name) {
         if (res.isConfirmed) {
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = `/admin/officers/${id}/deactivate`;
+            form.action = url;
             const token = document.querySelector('meta[name="csrf-token"]').content;
             form.innerHTML = `<input type="hidden" name="_token" value="${token}">`;
             document.body.appendChild(form);
@@ -1412,7 +1428,7 @@ function deactivateOfficer(id, name) {
 }
 
 // Activate confirmation with SweetAlert2
-function activateOfficer(id, name) {
+function activateOfficer(url, name) {
     Swal.fire({
         title: 'Activate Account?',
         text: `Are you sure you want to activate ${name}? This officer will be able to log in immediately.`,
@@ -1426,7 +1442,7 @@ function activateOfficer(id, name) {
         if (res.isConfirmed) {
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = `/admin/officers/${id}/activate`;
+            form.action = url;
             const token = document.querySelector('meta[name="csrf-token"]').content;
             form.innerHTML = `<input type="hidden" name="_token" value="${token}">`;
             document.body.appendChild(form);

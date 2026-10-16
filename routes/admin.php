@@ -40,6 +40,12 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::post('/admin/officers/{id}/deactivate', [OfficerController::class, 'deactivateOfficer'])->name('admin.officers.deactivate');
     Route::post('/admin/officers/{id}/activate', [OfficerController::class, 'activateOfficer'])->name('admin.officers.activate');
 
+    // WCPU (BCPC / SWD) Officer Management
+    Route::get('/admin/wcpu-officers/{id}/edit', [OfficerController::class, 'wcpuEditOfficer'])->name('admin.wcpu-officers.edit');
+    Route::put('/admin/wcpu-officers/{id}', [OfficerController::class, 'wcpuUpdateOfficer'])->name('admin.wcpu-officers.update');
+    Route::post('/admin/wcpu-officers/{id}/deactivate', [OfficerController::class, 'wcpuDeactivateOfficer'])->name('admin.wcpu-officers.deactivate');
+    Route::post('/admin/wcpu-officers/{id}/activate', [OfficerController::class, 'wcpuActivateOfficer'])->name('admin.wcpu-officers.activate');
+
     // Password Reset Management
     Route::get('/admin/password-reset-management', [PasswordResetManagementController::class, 'index'])->name('admin.password-reset-management');
     Route::post('/admin/password-reset/{id}/approve', [PasswordResetManagementController::class, 'approve'])->name('admin.password-reset.approve');

@@ -986,6 +986,23 @@
             }
         })();
 
+        // =====================================
+        // NAME INPUT VALIDATION (letters & spaces only)
+        // =====================================
+        (function () {
+            ['beneficiary_first_name', 'beneficiary_middle_name', 'beneficiary_last_name',
+                'rep_first_name', 'rep_middle_name', 'rep_last_name'].forEach(function (id) {
+                    const input = document.getElementById(id);
+                    if (!input) return;
+
+                    function sanitize() {
+                        input.value = input.value.replace(/[^\p{L}\s]/gu, '');
+                    }
+                    input.addEventListener('input', sanitize);
+                    sanitize();
+                });
+        })();
+
         document.addEventListener('DOMContentLoaded', function () {
             const msgEl = document.getElementById('duplicateAlertMessage');
             const dateEl = document.getElementById('duplicateEligibleDate');
