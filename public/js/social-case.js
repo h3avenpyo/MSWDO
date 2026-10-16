@@ -1,6 +1,7 @@
 /* ---------------- Constants ---------------- */
 const STATUSES = ["Draft","Review","Approved","Released","Archived"];
 const STATUS_CLASS = {Draft:"b-draft",Review:"b-review",Approved:"b-approved",Released:"b-released",Archived:"b-archived"};
+const DEFAULT_NOTED_BY_LICENSE_NUMBER = '0038516';
 const PURPOSES = ["Medical Assistance","Burial Assistance","Educational Assistance","Financial Assistance","Food / Relief Assistance","Livelihood Assistance","Other"];
 const RELATIONSHIPS = ["Spouse","Wife","Husband","Son","Daughter","Father","Mother","Brother","Sister","Grandparent","Grandchild","Uncle","Aunt","Nephew","Niece","Cousin","Father-in-law","Mother-in-law","Brother-in-law","Sister-in-law","Stepfather","Stepmother","Stepchild","Adopted Child","Foster Parent","Legal Guardian","Boarder","Live-in Partner","Other"];
 const BARANGAYS = [
@@ -3511,7 +3512,7 @@ async function printDocument(){
     const preparedTitle = escapeHtml(c.signers?.preparedByTitle || c.officer?.position || "");
     const notedName = escapeHtml(c.signers?.notedByName || c.encoder?.name || "") || notProvided;
     const notedTitle = escapeHtml(c.signers?.notedByTitle || c.encoder?.position || "");
-    const notedLicense = escapeHtml(c.signers?.notedByLicense || "");
+    const notedLicense = escapeHtml(c.signers?.notedByLicense || DEFAULT_NOTED_BY_LICENSE_NUMBER);
 
     const familyTable = famRows.length ? `
       <table style="border-radius: 0; ${famRows.length > 1 ? 'font-size: 11px;' : ''}">
@@ -4518,7 +4519,7 @@ async function loadDocumentPreview(caseId){
   const preparedTitle = escapeHtml(c.signers?.preparedByTitle || c.officer?.position || "");
   const notedName = escapeHtml(c.signers?.notedByName || c.encoder?.name || "") || notProvided;
   const notedTitle = escapeHtml('MSWDO Officer');
-  const notedLicense = escapeHtml('0038516');
+  const notedLicense = escapeHtml(c.signers?.notedByLicense || DEFAULT_NOTED_BY_LICENSE_NUMBER);
 
   try {
     console.log('Fetching template...');
@@ -4949,7 +4950,7 @@ async function renderDocument(){
   const preparedTitle = escapeHtml(c.signers?.preparedByTitle || c.officer?.position || "");
   const notedName = escapeHtml(c.signers?.notedByName || c.encoder?.name || "") || notProvided;
   const notedTitle = escapeHtml(c.signers?.notedByTitle || c.encoder?.position || "");
-  const notedLicense = escapeHtml(c.signers?.notedByLicense || "");
+  const notedLicense = escapeHtml(c.signers?.notedByLicense || DEFAULT_NOTED_BY_LICENSE_NUMBER);
 
   const toolbarHtml = `
   <style>

@@ -36,13 +36,13 @@
         .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);}
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 
-        /* ── Custom Modal Styles ── */
+        /* ── Registration Confirmation Modal ── */
         .custom-modal-backdrop {
             position: fixed;
-            top: 0;
-            left: 0;
+            inset: 0;
             width: 100%;
-            height: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
             background: rgba(0, 0, 0, 0.5);
             display: none;
             align-items: center;
@@ -50,80 +50,132 @@
             padding: 16px;
             z-index: 99999;
             backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
             transition: opacity 0.2s ease;
         }
         .custom-modal-backdrop.active {
             display: flex;
         }
-        .custom-modal-dialog {
-            background: var(--background);
-            border-radius: 14px;
-            width: 100%;
-            max-width: 780px;
-            max-height: 85vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        body.confirm-modal-open {
             overflow: hidden;
         }
+        .custom-modal-dialog {
+            background: #FFFFFF;
+            border-radius: 18px;
+            width: 100%;
+            max-width: 720px;
+            max-height: 84vh;
+            max-height: 84dvh;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.3), 0 0 0 1px rgba(15, 23, 42, 0.06);
+            overflow: hidden;
+            animation: confirmModalEnter 0.18s ease-out;
+        }
+        @keyframes confirmModalEnter {
+            from { opacity: 0; transform: translateY(10px) scale(0.99); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
         .custom-modal-header {
-            background: #B11116;
-            color: #ffffff;
-            padding: 12px 20px;
+            background: linear-gradient(135deg, #B11116 0%, #8A0D11 100%);
+            color: #FFFFFF;
+            padding: 20px 24px;
+            flex-shrink: 0;
+        }
+        .custom-modal-header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-shrink: 0;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .custom-modal-ref-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.16);
+            padding: 4px 11px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #FFFFFF;
+            border: 1px solid rgba(255, 255, 255, 0.24);
         }
         .custom-modal-title {
             margin: 0;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 19px;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: #ffffff;
+            gap: 10px;
+            color: #FFFFFF;
+            letter-spacing: -0.01em;
+        }
+        .custom-modal-subtitle {
+            margin: 5px 0 0;
+            font-size: 12.5px;
+            color: rgba(255, 255, 255, 0.85);
         }
         .custom-modal-close {
-            background: none;
+            width: 36px;
+            height: 36px;
+            flex: 0 0 36px;
+            background: rgba(255, 255, 255, 0.16);
             border: none;
-            color: white;
+            color: #FFFFFF;
             cursor: pointer;
-            opacity: 0.8;
-            transition: opacity 0.2s;
+            border-radius: 8px;
+            transition: background 0.15s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2px;
+            padding: 0;
         }
-        .custom-modal-close:hover { opacity: 1; }
+        .custom-modal-close:hover,
+        .custom-modal-close:focus-visible {
+            background: rgba(255, 255, 255, 0.28);
+        }
         .custom-modal-body {
-            padding: 16px 20px;
+            padding: 20px 24px;
+            background: #F8FAFC;
             overflow-y: auto;
+            min-height: 0;
             flex: 1;
             -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
         }
         .custom-modal-section {
-            margin-bottom: 16px;
-        }
-        .custom-modal-section:last-child {
-            margin-bottom: 0;
+            background: #FFFFFF;
+            border-radius: 12px;
+            border: 1px solid #E2E8F0;
+            padding: 16px 18px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
         }
         .custom-modal-section-title {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--primary);
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 6px;
-            margin-bottom: 10px;
+            margin: 0 0 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #F1F5F9;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #B11116;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 7px;
         }
         .custom-modal-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px 18px;
         }
         .custom-modal-col-full {
             grid-column: 1 / -1;
@@ -133,84 +185,116 @@
         }
         .custom-modal-field {
             margin-bottom: 0;
+            min-width: 0;
         }
         .custom-modal-label {
             font-weight: 600;
-            color: var(--text-muted);
-            font-size: 0.72rem;
-            display: block;
-            margin-bottom: 2px;
+            color: #64748B;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 3px;
             text-transform: uppercase;
             letter-spacing: 0.04em;
         }
         .custom-modal-value {
-            background: var(--surface);
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-weight: 500;
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            font-size: 0.85rem;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #0F172A;
             overflow-wrap: anywhere;
-            min-height: 32px;
-            display: flex;
-            align-items: center;
         }
         .custom-modal-footer {
-            padding: 10px 20px;
-            border-top: 1px solid var(--border);
-            background: var(--surface);
+            padding: 16px 24px;
+            border-top: 1px solid #E2E8F0;
+            background: #FFFFFF;
             display: flex;
             justify-content: flex-end;
             gap: 10px;
             flex-shrink: 0;
         }
+        .custom-modal-footer .btn {
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13.5px;
+            padding: 10px 20px;
+            min-height: 42px;
+            line-height: 1.25;
+            white-space: nowrap;
+        }
+        .custom-modal-footer .btn:not(.primary) {
+            background: #F8FAFC;
+            color: #475569;
+            border: 1px solid #CBD5E1;
+        }
+        .custom-modal-footer .btn:not(.primary):hover {
+            background: #E2E8F0;
+            color: #0F172A;
+            border-color: #94A3B8;
+        }
+        .custom-modal-footer .btn.primary {
+            background: #B11116;
+            color: #FFFFFF;
+            border: 1px solid #B11116;
+        }
+        .custom-modal-footer .btn.primary:hover {
+            background: #8A0D11;
+            border-color: #8A0D11;
+            box-shadow: 0 2px 8px rgba(177, 17, 22, 0.3);
+        }
 
         /* Modal Responsive Breakpoints */
         @media (max-width: 991.98px) {
-            .custom-modal-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
             .custom-modal-col-span2 {
                 grid-column: 1 / -1;
             }
         }
-        @media (max-width: 575.98px) {
+        @media (max-width: 640px) {
             .custom-modal-backdrop {
+                padding: 12px;
+            }
+            .custom-modal-dialog {
+                max-width: 100%;
+                max-height: 88vh;
+                max-height: 88dvh;
+                border-radius: 14px;
+            }
+            .custom-modal-header {
+                padding: 16px 18px;
+            }
+            .custom-modal-title {
+                font-size: 17px;
+            }
+            .custom-modal-body {
+                padding: 14px;
+                gap: 12px;
+            }
+            .custom-modal-grid {
+                grid-template-columns: 1fr;
+            }
+            .custom-modal-section {
+                padding: 14px;
+            }
+            .custom-modal-footer {
+                padding: 14px 16px;
+            }
+            .custom-modal-footer .btn {
+                flex: 1 1 0;
+            }
+        }
+        @media (max-height: 520px) and (min-width: 576px) {
+            .custom-modal-backdrop {
+                align-items: flex-start;
                 padding: 8px;
             }
             .custom-modal-dialog {
-                max-height: 90vh;
-                border-radius: 12px;
+                max-height: calc(100vh - 16px);
+                max-height: calc(100dvh - 16px);
             }
-            .custom-modal-header {
-                padding: 10px 14px;
-            }
-            .custom-modal-title {
-                font-size: 0.9rem;
-            }
-            .custom-modal-body {
-                padding: 12px 12px;
-            }
-            .custom-modal-grid {
-                grid-template-columns: 1fr !important;
-                gap: 8px;
-            }
-            .custom-modal-col-full,
-            .custom-modal-col-span2 {
-                grid-column: 1 / -1 !important;
-            }
-            .custom-modal-label {
-                font-size: 0.7rem;
-            }
-            .custom-modal-value {
-                padding: 5px 8px;
-                font-size: 0.8rem;
-                min-height: 30px;
-            }
-            .custom-modal-footer {
-                padding: 8px 12px;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .custom-modal-dialog {
+                animation: none;
             }
         }
 
@@ -427,16 +511,23 @@
 </div>
 
 <!-- Custom Confirmation Modal -->
-<div id="confirmModal" class="custom-modal-backdrop">
-    <div class="custom-modal-dialog">
+<div id="confirmModal" class="custom-modal-backdrop" role="presentation">
+    <div class="custom-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
         <div class="custom-modal-header">
-            <h5 class="custom-modal-title">
-                <i data-lucide="clipboard-check" style="width:20px;height:20px;"></i>
+            <div class="custom-modal-header-top">
+                <div class="custom-modal-ref-pill">
+                    <i data-lucide="clipboard-check" style="width:12px;height:12px;"></i>
+                    Registration Review
+                </div>
+                <button onclick="closeConfirmModal()" class="custom-modal-close" aria-label="Close modal">
+                    <i data-lucide="x" style="width:20px;height:20px;"></i>
+                </button>
+            </div>
+            <h5 class="custom-modal-title" id="confirmModalTitle">
+                <i data-lucide="user-check" style="width:20px;height:20px;"></i>
                 Confirm Registration
             </h5>
-            <button onclick="closeConfirmModal()" class="custom-modal-close" aria-label="Close modal">
-                <i data-lucide="x" style="width:24px;height:24px;"></i>
-            </button>
+            <p class="custom-modal-subtitle">Review the senior citizen's details before submitting.</p>
         </div>
         <div class="custom-modal-body">
             <!-- Personal Information Section -->
@@ -663,6 +754,8 @@
         // Show custom modal
         const modal=document.getElementById('confirmModal');
         modal.classList.add('active');
+        document.body.classList.add('confirm-modal-open');
+        modal.querySelector('.custom-modal-close').focus();
         // Recreate icons after modal becomes visible
         setTimeout(()=>{lucide.createIcons();},50);
         return false;
@@ -670,7 +763,16 @@
 
     function closeConfirmModal(){
         document.getElementById('confirmModal').classList.remove('active');
+        document.body.classList.remove('confirm-modal-open');
     }
+
+    document.getElementById('confirmModal').addEventListener('click', function(event){
+        if(event.target === this) closeConfirmModal();
+    });
+    document.addEventListener('keydown', function(event){
+        const modal=document.getElementById('confirmModal');
+        if(event.key === 'Escape' && modal.classList.contains('active')) closeConfirmModal();
+    });
 
     function confirmRegistration(){
         document.getElementById('registrationForm').submit();
@@ -705,6 +807,3 @@
 </script>
 </body>
 </html>
-
-
-
