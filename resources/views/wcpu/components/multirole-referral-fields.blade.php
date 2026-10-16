@@ -1,6 +1,6 @@
 @php
     $isMultiroleReferral = $isMultiroleReferral ?? (auth()->user()?->position === 'Desk Officer' && auth()->user()?->isMultiCaseDepartment());
-    $lockedReferralFields = $isMultiroleReferral ? \App\Services\MultiroleReferralFields::forCase(auth()->user(), $case) : [];
+    $lockedReferralFields = $isMultiroleReferral ? \App\Services\Wcpu\MultiroleReferralFields::forCase(auth()->user(), $case) : [];
 @endphp
 @if($isMultiroleReferral)
 <script>

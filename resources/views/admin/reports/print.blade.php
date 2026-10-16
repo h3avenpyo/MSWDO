@@ -450,14 +450,17 @@
                 border: none !important;
                 box-shadow: none !important;
                 border-radius: 0 !important;
-                padding: 0 !important;
+                padding: 14mm 14mm !important;
                 width: 100% !important;
                 max-width: 100% !important;
             }
 
+            /* Zero page margins suppress the browser-generated print
+               header/footer (date, page title, URL, page numbers). The
+               visual spacing is restored via the document padding above. */
             @page {
                 size: A4 portrait;
-                margin: 10mm 12mm 10mm 12mm;
+                margin: 0;
             }
 
             .report-section {
@@ -492,6 +495,8 @@
         $totalVol = (int) ($stats['totalVolume'] ?? 0);
         $totalAmt = (float) ($stats['totalAmount'] ?? 0);
         $serviceKey = $service ?? 'all';
+        // Monetary amount column is only relevant to services that disburse funds.
+        $showAmountColumn = !in_array($serviceKey, ['social_case', 'bcpc', 'vawc'], true);
 
         if ($serviceKey === 'social_case') {
             $metric1Title = 'Total Case Volume';
@@ -564,6 +569,54 @@
             $section1Title = '1. Financial Assistance Type Classification';
             $section1Sub = 'Categorical distribution of evaluated requests for financial, medical, burial, and educational aid.';
             $catColHeader = 'Assistance Category / Type';
+
+        } elseif ($serviceKey === 'bcpc') {
+            $metric1Title = 'Total BCPC Cases';
+            $metric1Val = number_format($totalVol);
+            $metric1Sub = 'Child Protection Caseload';
+
+            $metric2Title = 'Active / Open Cases';
+            $metric2Val = number_format($stats['pendingVolume'] ?? 0);
+            $metric2Color = '#B45309';
+            $metric2Sub = 'Ongoing Monitoring';
+
+            $metric3Title = 'Resolved / Closed';
+            $metric3Val = number_format($stats['completedVolume'] ?? 0);
+            $metric3Color = '#166534';
+            $metric3Sub = 'Cases Concluded';
+
+            $metric4Title = 'Cases Recorded';
+            $metric4Val = number_format($totalVol);
+            $metric4Color = '#1A237E';
+            $metric4Sub = 'Non-Monetary Service';
+
+            $section1Title = '1. Child Case Type Classification';
+            $section1Sub = 'Categorical distribution of Barangay Council for the Protection of Children (BCPC) cases by recorded case or abuse type.';
+            $catColHeader = 'Case Type / Abuse Classification';
+
+        } elseif ($serviceKey === 'vawc') {
+            $metric1Title = 'Total VAWC Cases';
+            $metric1Val = number_format($totalVol);
+            $metric1Sub = 'Women & Children Caseload';
+
+            $metric2Title = 'Active / Open Cases';
+            $metric2Val = number_format($stats['pendingVolume'] ?? 0);
+            $metric2Color = '#B45309';
+            $metric2Sub = 'Ongoing Intervention';
+
+            $metric3Title = 'Resolved / Closed';
+            $metric3Val = number_format($stats['completedVolume'] ?? 0);
+            $metric3Color = '#166534';
+            $metric3Sub = 'Cases Concluded';
+
+            $metric4Title = 'Cases Recorded';
+            $metric4Val = number_format($totalVol);
+            $metric4Color = '#1A237E';
+            $metric4Sub = 'Non-Monetary Service';
+
+            $section1Title = '1. Violence Type Classification';
+            $section1Sub = 'Categorical distribution of Violence Against Women and Children (VAWC) cases by recorded abuse type.';
+            $catColHeader = 'Abuse Type / Classification';
 
         } else {
             // Consolidated (All Services)
@@ -819,12 +872,14 @@
                 <table class="report-table">
                     <thead>
                         <tr>
-                            <th style="width: 14%;">Ref / Case No.</th>
-                            <th style="width: 24%;">Beneficiary / Client Name</th>
-                            <th style="width: 18%;">Barangay</th>
-                            <th style="width: 20%;">Program / Purpose</th>
-                            <th style="width: 12%;">Status</th>
+                            <th style="width: {{ $showAmountColumn ? '14%' : '16%' }};">Ref / Case No.</th>
+                            <th style="width: {{ $showAmountColumn ? '24%' : '28%' }};">Beneficiary / Client Name</th>
+                            <th style="width: {{ $showAmountColumn ? '18%' : '20%' }};">Barangay</th>
+                            <th style="width: {{ $showAmountColumn ? '20%' : '24%' }};">Program / Purpose</th>
+                            <th style="width: {{ $showAmountColumn ? '12%' : '12%' }};">Status</th>
+                            @if($showAmountColumn)
                             <th style="width: 12%; text-align: right;">Amount</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -839,13 +894,15 @@
                                     {{ $rec['status'] }}
                                 </span>
                             </td>
+                            @if($showAmountColumn)
                             <td style="text-align: right; font-weight: 700; color: {{ ($rec['amount'] ?? 0) > 0 ? '#166534' : '#64748B' }};">
                                 {{ ($rec['amount'] ?? 0) > 0 ? '₱' . number_format($rec['amount'], 2) : '—' }}
                             </td>
+                            @endif
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" style="text-align: center; color: #64748B; padding: 12px;">
+                            <td colspan="{{ $showAmountColumn ? 6 : 5 }}" style="text-align: center; color: #64748B; padding: 12px;">
                                 No individual client records found for this period.
                             </td>
                         </tr>
@@ -854,12 +911,14 @@
                     @if($recordsCount > 0)
                     <tfoot>
                         <tr class="report-table-total-row">
-                            <td colspan="5" style="font-weight: 700;">
+                            <td colspan="{{ $showAmountColumn ? 5 : 4 }}" style="font-weight: 700;">
                                 Total Roster Records Evaluated ({{ number_format($recordsCount) }} Clients)
                             </td>
+                            @if($showAmountColumn)
                             <td style="text-align: right; font-weight: 800; color: {{ $recordsTotalAmount > 0 ? '#166534' : '#0F172A' }};">
                                 {{ $recordsTotalAmount > 0 ? '₱' . number_format($recordsTotalAmount, 2) : '—' }}
                             </td>
+                            @endif
                         </tr>
                     </tfoot>
                     @endif

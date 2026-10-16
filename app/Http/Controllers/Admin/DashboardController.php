@@ -157,13 +157,13 @@ class DashboardController extends Controller
                 'completed' => $totalReleased,
                 'total' => $totalClients,
                 'icon' => 'folder-heart',
-                'color' => 'indigo',
+                'color' => 'red',
                 'route' => route('admin.social-case.dashboard'),
                 'metrics' => [
                     ['label' => 'Total Clients', 'val' => number_format($totalClients), 'badge' => 'neutral'],
-                    ['label' => 'Cases This Month', 'val' => number_format($casesThisMonth), 'badge' => 'info'],
-                    ['label' => 'Released Today', 'val' => number_format($releasedToday), 'badge' => 'success'],
-                    ['label' => 'Total Released', 'val' => number_format($totalReleased), 'badge' => 'success'],
+                    ['label' => 'Cases This Month', 'val' => number_format($casesThisMonth), 'badge' => 'neutral'],
+                    ['label' => 'Released Today', 'val' => number_format($releasedToday), 'badge' => 'neutral'],
+                    ['label' => 'Total Released', 'val' => number_format($totalReleased), 'badge' => 'neutral'],
                 ],
             ];
         }
@@ -191,13 +191,13 @@ class DashboardController extends Controller
                 'completed' => $readyForStep2,
                 'total' => $totalIntakes,
                 'icon' => 'banknote',
-                'color' => 'emerald',
+                'color' => 'red',
                 'route' => url('/admin/financial/dashboard'),
                 'metrics' => [
                     ['label' => 'Total Intakes', 'val' => number_format($totalIntakes), 'badge' => 'neutral'],
-                    ['label' => 'Pending Review', 'val' => number_format($pendingAssessments), 'badge' => 'warning'],
-                    ['label' => 'Step 1 Approved', 'val' => number_format($step1Approved), 'badge' => 'info'],
-                    ['label' => 'Ready Step 2', 'val' => number_format($readyForStep2), 'badge' => 'success'],
+                    ['label' => 'Pending Review', 'val' => number_format($pendingAssessments), 'badge' => 'neutral'],
+                    ['label' => 'Step 1 Approved', 'val' => number_format($step1Approved), 'badge' => 'neutral'],
+                    ['label' => 'Ready Step 2', 'val' => number_format($readyForStep2), 'badge' => 'neutral'],
                 ],
             ];
         }
@@ -223,19 +223,20 @@ class DashboardController extends Controller
                 'completed' => $totalPayout,
                 'total' => $totalSeniors,
                 'icon' => 'heart-handshake',
-                'color' => 'amber',
+                'color' => 'red',
                 'route' => route('admin.senior'),
                 'metrics' => [
                     ['label' => 'Total Seniors', 'val' => number_format($totalSeniors), 'badge' => 'neutral'],
-                    ['label' => 'Active Seniors', 'val' => number_format($activeSeniors), 'badge' => 'success'],
+                    ['label' => 'Active Seniors', 'val' => number_format($activeSeniors), 'badge' => 'neutral'],
                     ['label' => 'Archived', 'val' => number_format($archived), 'badge' => 'neutral'],
-                    ['label' => 'Total Payout', 'val' => '₱' . number_format($totalPayout, 2), 'badge' => 'amber'],
+                    ['label' => 'Total Payout', 'val' => '₱' . number_format($totalPayout, 2), 'badge' => 'neutral'],
                 ],
             ];
         }
 
         // VAWC (Violence Against Women and Children - WCPU)
         $vawcTotal = 0; $vawcActive = 0; $vawcPending = 0; $vawcResolved = 0;
+        $vawcCategories = [];
         if (class_exists(\App\Models\Wcpu\CaseModel::class)) {
             try {
                 $vawcTotal = \App\Models\Wcpu\CaseModel::where(function($q) {
@@ -250,6 +251,15 @@ class DashboardController extends Controller
                 $vawcResolved = \App\Models\Wcpu\CaseModel::where(function($q) {
                     $q->where('type', 'VAWC')->orWhereNull('type');
                 })->whereNotNull('closed_at')->count();
+
+                // Get category breakdown by abuse_type
+                $vawcCategories = \App\Models\Wcpu\CaseModel::where(function($q) {
+                    $q->where('type', 'VAWC')->orWhereNull('type');
+                })->selectRaw("COALESCE(NULLIF(abuse_type, ''), 'Unknown') as category, count(*) as count")
+                    ->groupBy('category')
+                    ->orderByDesc('count')
+                    ->pluck('count', 'category')
+                    ->toArray();
             } catch (\Throwable $e) {}
         }
 
@@ -260,18 +270,20 @@ class DashboardController extends Controller
             'completed' => $vawcResolved,
             'total' => $vawcTotal,
             'icon' => 'shield-alert',
-            'color' => 'rose',
+            'color' => 'red',
             'route' => route('admin-dashboard'),
             'metrics' => [
                 ['label' => 'Total Cases', 'val' => number_format($vawcTotal), 'badge' => 'neutral'],
-                ['label' => 'Active Cases', 'val' => number_format($vawcActive), 'badge' => 'info'],
-                ['label' => 'Pending Action', 'val' => number_format($vawcPending), 'badge' => 'warning'],
-                ['label' => 'Resolved', 'val' => number_format($vawcResolved), 'badge' => 'success'],
+                ['label' => 'Active Cases', 'val' => number_format($vawcActive), 'badge' => 'neutral'],
+                ['label' => 'Pending Action', 'val' => number_format($vawcPending), 'badge' => 'neutral'],
+                ['label' => 'Resolved', 'val' => number_format($vawcResolved), 'badge' => 'neutral'],
             ],
+            'categories' => $vawcCategories,
         ];
 
         // BCPC (Barangay Council for the Protection of Children - WCPU)
         $bcpcTotal = 0; $bcpcActive = 0; $bcpcMonitoring = 0; $bcpcResolved = 0;
+        $bcpcCategories = [];
         if (class_exists(\App\Models\Wcpu\CaseModel::class)) {
             try {
                 $bcpcTotal = \App\Models\Wcpu\CaseModel::where('type', 'BCPC')->count();
@@ -280,6 +292,14 @@ class DashboardController extends Controller
                     ? \App\Models\Wcpu\BcpcCaseMonitoring::count()
                     : 0;
                 $bcpcResolved = \App\Models\Wcpu\CaseModel::where('type', 'BCPC')->whereNotNull('closed_at')->count();
+
+                // Get category breakdown by abuse_type
+                $bcpcCategories = \App\Models\Wcpu\CaseModel::where('type', 'BCPC')
+                    ->selectRaw("COALESCE(NULLIF(abuse_type, ''), 'Unknown') as category, count(*) as count")
+                    ->groupBy('category')
+                    ->orderByDesc('count')
+                    ->pluck('count', 'category')
+                    ->toArray();
             } catch (\Throwable $e) {}
         }
 
@@ -290,14 +310,15 @@ class DashboardController extends Controller
             'completed' => $bcpcResolved,
             'total' => $bcpcTotal,
             'icon' => 'smile',
-            'color' => 'cyan',
+            'color' => 'red',
             'route' => route('admin.bcpc-case-monitoring.edit'),
             'metrics' => [
                 ['label' => 'Total Cases', 'val' => number_format($bcpcTotal), 'badge' => 'neutral'],
-                ['label' => 'Active Cases', 'val' => number_format($bcpcActive), 'badge' => 'info'],
-                ['label' => 'Monitorings', 'val' => number_format($bcpcMonitoring), 'badge' => 'warning'],
-                ['label' => 'Resolved', 'val' => number_format($bcpcResolved), 'badge' => 'success'],
+                ['label' => 'Active Cases', 'val' => number_format($bcpcActive), 'badge' => 'neutral'],
+                ['label' => 'Monitorings', 'val' => number_format($bcpcMonitoring), 'badge' => 'neutral'],
+                ['label' => 'Resolved', 'val' => number_format($bcpcResolved), 'badge' => 'neutral'],
             ],
+            'categories' => $bcpcCategories,
         ];
 
         return $services;

@@ -710,8 +710,9 @@ class AdminController extends Controller
     public function create()
     {
         $roles = \App\Models\Wcpu\Role::orderBy('name')->get();
+        $barangays = \App\Models\Wcpu\Barangay::orderBy('name')->get(['id', 'name']);
         
-        return view('admin-tailwind.register-user', compact('roles'));
+        return view('admin-tailwind.register-user', compact('roles', 'barangays'));
     }
 
 
@@ -2002,7 +2003,12 @@ class AdminController extends Controller
     public function archivedReferrals()
     {
         abort_unless(Auth::user()->isDepartmentAdmin(), 403);
-        $referrals = \App\Models\Wcpu\CaseReferral::onlyTrashed()->latest('deleted_at')->paginate(5, ['*'], 'referrals_page')->withQueryString();
+        $department = Auth::user()->defaultCaseDepartment();
+        $referrals = \App\Models\Wcpu\CaseReferral::onlyTrashed()
+            ->whereHas('case', fn ($query) => $query->where('type', $department))
+            ->latest('deleted_at')
+            ->paginate(5, ['*'], 'referrals_page')
+            ->withQueryString();
         $recipients = \App\Models\Wcpu\ReportRecipient::onlyTrashed()->latest('deleted_at')->paginate(5, ['*'], 'info_page')->withQueryString();
         return view('admin-tailwind.archived-referrals', compact('referrals', 'recipients'));
     }
@@ -2026,7 +2032,13 @@ class AdminController extends Controller
         abort_unless(Auth::user()->isDepartmentAdmin(), 403);
         abort_unless(in_array($type, ['referral', 'info'], true), 404);
         $model = $type === 'referral' ? \App\Models\Wcpu\CaseReferral::class : \App\Models\Wcpu\ReportRecipient::class;
-        return $model::onlyTrashed()->findOrFail($id);
+        $query = $model::onlyTrashed();
+        if ($type === 'referral') {
+            $department = Auth::user()->defaultCaseDepartment();
+            $query->whereHas('case', fn ($caseQuery) => $caseQuery->where('type', $department));
+        }
+
+        return $query->findOrFail($id);
     }
 
     /**

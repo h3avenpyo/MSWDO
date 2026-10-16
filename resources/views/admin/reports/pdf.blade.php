@@ -233,6 +233,8 @@
         }
     </style>
 </head>
+    <?php $showAmountColumn = !in_array($service, ['social_case', 'bcpc', 'vawc'], true); ?>
+    <?php $showAmountColumn = !in_array($service, ['social_case', 'bcpc', 'vawc'], true); ?>
 <body>
     <div class="header">
         <div class="republic">Republic of the Philippines &bull; Province of Cavite &bull; Municipality of Silang</div>
