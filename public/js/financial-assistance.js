@@ -274,6 +274,19 @@ function togglePurposeOther() {
     }
 }
 
+function toggleAssistanceTypeOther() {
+    const typeSelect = document.getElementById('assistance_type');
+    const typeOtherInput = document.getElementById('assistance_type_other_input');
+    if (!typeSelect || !typeOtherInput) return;
+    if (typeSelect.value === 'Other Assistance Purpose') {
+        typeOtherInput.classList.remove('hidden');
+        typeOtherInput.focus();
+    } else {
+        typeOtherInput.classList.add('hidden');
+        typeOtherInput.value = '';
+    }
+}
+
 // =====================================
 // REAL-TIME 6-MONTH DUPLICATE CHECK
 // =====================================
@@ -506,6 +519,8 @@ function initFinancialIntakeForm() {
     // Set up modal listeners & automatically display popup upon entering / redirecting
     setupAdvisoryModalListeners();
     showAdvisoryModal();
+    togglePurposeOther();
+    toggleAssistanceTypeOther();
 
     // Contact number watchers
     setupContactInput('beneficiary_contact_number', 'beneficiary_contact_counter', 'beneficiary_contact_error');
@@ -704,6 +719,7 @@ window.addFamilyRow = addFamilyRow;
 window.removeFamilyRow = removeFamilyRow;
 window.toggleCategoryOther = toggleCategoryOther;
 window.togglePurposeOther = togglePurposeOther;
+window.toggleAssistanceTypeOther = toggleAssistanceTypeOther;
 window.triggerDuplicateCheck = triggerDuplicateCheck;
 window.closeAdvisoryModal = closeAdvisoryModal;
 window.formatNumberWithCommas = formatNumberWithCommas;

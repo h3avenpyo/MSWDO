@@ -182,25 +182,25 @@ $userName = session('admin_user_name') ?? 'Officer';
                                         $intake->control_number }}</span>
                                 </td>
                                 <td>
-                                    <div class="fw-semibold text-dark">{{ $intake->beneficiary_full_name }}</div>
+                                    <div class="fw-semibold text-dark text-uppercase">{{ $intake->beneficiary_full_name }}</div>
                                     @if($intake->has_representative)
-                                    <div class="text-muted small"><i class="fas fa-user-friends me-1"></i>Rep: {{
+                                    <div class="text-muted small text-uppercase"><i class="fas fa-user-friends me-1"></i>Rep: {{
                                         $intake->representative_full_name }}</div>
                                     @endif
                                 </td>
                                 <td>{{ $intake->date_processed ? $intake->date_processed->format('M d, Y') : 'N/A' }}
                                 </td>
                                 <td>
-                                    <div><span class="badge bg-light text-dark border px-2 py-0.5 rounded-pill">{{
+                                    <div><span class="badge bg-light text-dark border px-2 py-0.5 rounded-pill text-uppercase">{{
                                             $intake->display_category }}</span></div>
-                                    <div class="text-muted small">{{ $intake->beneficiary_barangay ?? 'Silang' }}</div>
+                                    <div class="text-muted small text-uppercase">{{ $intake->beneficiary_barangay ?? 'Silang' }}</div>
                                 </td>
                                 <td>
-                                    <div class="fw-semibold text-dark" style="font-size: 0.85rem;">
+                                    <div class="fw-semibold text-dark text-uppercase" style="font-size: 0.85rem;">
                                         {{ $intake->recommended_assistance_type ?: ($intake->service_provided ?:
                                         'General Assistance') }}
                                     </div>
-                                    <div class="text-muted small">{{ $intake->display_assistance_purpose }}</div>
+                                    <div class="text-muted small text-uppercase">{{ $intake->display_assistance_purpose }}</div>
                                 </td>
                                 <td>
                                     <span

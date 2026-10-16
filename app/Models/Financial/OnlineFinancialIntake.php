@@ -89,6 +89,82 @@ class OnlineFinancialIntake extends Model
         'rep_monthly_salary' => 'decimal:2',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (OnlineFinancialIntake $intake) {
+            $upperFields = [
+                'client_type',
+                'beneficiary_last_name',
+                'beneficiary_first_name',
+                'beneficiary_middle_name',
+                'beneficiary_extension_name',
+                'beneficiary_street_address',
+                'beneficiary_barangay',
+                'beneficiary_city',
+                'beneficiary_province',
+                'beneficiary_region',
+                'beneficiary_sex',
+                'beneficiary_civil_status',
+                'beneficiary_occupation',
+                'beneficiary_category',
+                'beneficiary_category_other',
+                'beneficiary_relationship',
+                'rep_last_name',
+                'rep_first_name',
+                'rep_middle_name',
+                'rep_extension_name',
+                'rep_street_address',
+                'rep_barangay',
+                'rep_city',
+                'rep_province',
+                'rep_region',
+                'rep_sex',
+                'rep_civil_status',
+                'rep_occupation',
+                'rep_relationship',
+                'assistance_purpose',
+                'assistance_type',
+                'service_provided',
+                'purpose',
+                'purpose_other',
+                'medical_condition_other',
+                'submitted_to',
+            ];
+
+            foreach ($upperFields as $field) {
+                if (!empty($intake->{$field}) && is_string($intake->{$field})) {
+                    $intake->{$field} = mb_strtoupper(trim($intake->{$field}), 'UTF-8');
+                }
+            }
+
+            if (is_array($intake->beneficiary_categories)) {
+                $intake->beneficiary_categories = array_map(function ($item) {
+                    return is_string($item) ? mb_strtoupper(trim($item), 'UTF-8') : $item;
+                }, $intake->beneficiary_categories);
+            }
+
+            if (is_array($intake->medical_conditions)) {
+                $intake->medical_conditions = array_map(function ($item) {
+                    return is_string($item) ? mb_strtoupper(trim($item), 'UTF-8') : $item;
+                }, $intake->medical_conditions);
+            }
+
+            if (is_array($intake->family_composition)) {
+                $intake->family_composition = array_map(function ($member) {
+                    if (!is_array($member)) {
+                        return $member;
+                    }
+                    foreach (['name', 'relationship', 'occupation', 'civil_status', 'educational_attainment'] as $field) {
+                        if (isset($member[$field]) && is_string($member[$field])) {
+                            $member[$field] = mb_strtoupper(trim($member[$field]), 'UTF-8');
+                        }
+                    }
+                    return $member;
+                }, $intake->family_composition);
+            }
+        });
+    }
+
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by');
@@ -107,7 +183,7 @@ class OnlineFinancialIntake extends Model
             $this->beneficiary_last_name,
             $this->beneficiary_extension_name,
         ]);
-        return implode(' ', $parts);
+        return mb_strtoupper(implode(' ', $parts), 'UTF-8');
     }
 
     public function getRepFullNameAttribute(): ?string
@@ -122,7 +198,7 @@ class OnlineFinancialIntake extends Model
             $this->rep_last_name,
             $this->rep_extension_name,
         ]);
-        return implode(' ', $parts);
+        return mb_strtoupper(implode(' ', $parts), 'UTF-8');
     }
 
     public function getStatusBadgeClassAttribute(): string
@@ -142,13 +218,13 @@ class OnlineFinancialIntake extends Model
     public function getDisplayAssistancePurposeAttribute(): string
     {
         if (! empty($this->assistance_type)) {
-            return $this->assistance_type;
+            return mb_strtoupper($this->assistance_type, 'UTF-8');
         }
 
         if (($this->assistance_purpose === 'Other Medical Conditions' || $this->assistance_purpose === 'Others' || $this->assistance_purpose === 'Other' || $this->assistance_purpose === 'ASSISTANCE PURPOSE') && ! empty($this->purpose_other)) {
-            return $this->purpose_other;
+            return mb_strtoupper($this->purpose_other, 'UTF-8');
         }
-        return $this->assistance_purpose ?? 'N/A';
+        return mb_strtoupper($this->assistance_purpose ?? 'N/A', 'UTF-8');
     }
 
     public function getUriNgAssistanceAttribute(): ?string

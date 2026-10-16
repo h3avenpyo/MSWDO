@@ -686,14 +686,19 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Assistance Purpose / Uri ng Assistance</label>
-                        <select name="assistance_type" id="assistance_type_select" class="form-select">
+                        <select name="assistance_type" id="assistance_type_select" class="form-select"
+                            onchange="toggleAssistanceTypeOtherInput()">
                             <option value="">Select Assistance Purpose / Uri ng Assistance</option>
                             <option value="Medicine/Gamot" {{ old('assistance_type') == 'Medicine/Gamot' ? 'selected' : '' }}>Medicine/Gamot</option>
                             <option value="Laboratory Test" {{ old('assistance_type') == 'Laboratory Test' ? 'selected' : '' }}>Laboratory Test</option>
                             <option value="Therapy" {{ old('assistance_type') == 'Therapy' ? 'selected' : '' }}>Therapy</option>
                             <option value="Checkup/Consultation" {{ old('assistance_type') == 'Checkup/Consultation' ? 'selected' : '' }}>Checkup/Consultation</option>
                             <option value="Hospital Bill" {{ old('assistance_type') == 'Hospital Bill' ? 'selected' : '' }}>Hospital Bill</option>
+                            <option value="Other Assistance Purpose" {{ old('assistance_type') == 'Other Assistance Purpose' ? 'selected' : '' }}>Other Assistance Purpose</option>
                         </select>
+                        <input type="text" name="assistance_type_other" id="assistance_type_other_input"
+                            class="form-control mt-2 {{ old('assistance_type') == 'Other Assistance Purpose' ? '' : 'd-none' }}"
+                            value="{{ old('assistance_type_other') }}" placeholder="Specify other assistance purpose...">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Interviewed by <span class="text-muted">(MSWD Personnel / Social
