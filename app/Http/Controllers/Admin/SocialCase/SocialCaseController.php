@@ -28,10 +28,25 @@ class SocialCaseController extends Controller
             session()->forget('admin_just_logged_in');
         }
 
-        $role = (string) session('admin_user_role');
-        $isEligibilityChecker = in_array($role, ['eligibility_checker'], true);
+        $stats = $this->socialCaseDashboardStats();
 
-        // Calculate dashboard stats from database
+        // Get online request counts for badge
+        $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
+        $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
+        $rejectedCount = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
+
+        $onlineRequestCounts = [
+            'pending' => $pendingCount,
+            'accepted' => $acceptedCount,
+            'rejected' => $rejectedCount,
+        ];
+
+        return view('admin.social-case.dashboard', compact('justLoggedIn', 'stats', 'onlineRequestCounts'));
+    }
+
+    private function socialCaseDashboardStats(): array
+    {
+        $isEligibilityChecker = (string) session('admin_user_role') === 'eligibility_checker';
         $stats = [
             'pending_eligibility' => 0,
             'eligible_clients' => 0,
@@ -65,18 +80,7 @@ class SocialCaseController extends Controller
             $stats['total_released'] = SocialCaseStudy::whereIn('status', ['Printed', 'Released'])->count();
         }
 
-        // Get online request counts for badge
-        $pendingCount = OnlineRequest::where('status', 'pending')->whereNull('case_id')->count();
-        $acceptedCount = OnlineRequest::where('status', 'approved')->whereNull('case_id')->count();
-        $rejectedCount = OnlineRequest::where('status', 'rejected')->whereNull('case_id')->count();
-
-        $onlineRequestCounts = [
-            'pending' => $pendingCount,
-            'accepted' => $acceptedCount,
-            'rejected' => $rejectedCount,
-        ];
-
-        return view('admin.social-case.dashboard', compact('justLoggedIn', 'stats', 'onlineRequestCounts'));
+        return $stats;
     }
 
     public function socialCaseNew()
@@ -203,6 +207,32 @@ class SocialCaseController extends Controller
         });
 
         return response()->json($cases);
+    }
+
+    public function getDashboardData()
+    {
+        $purposeCounts = SocialCaseStudy::query()
+            ->whereIn('status', ['Printed', 'Released'])
+            ->whereNotNull('purpose')
+            ->whereRaw("TRIM(purpose) <> ''")
+            ->whereRaw("LOWER(TRIM(purpose)) <> 'null'")
+            ->select('purpose')
+            ->selectRaw('COUNT(*) as total')
+            ->groupBy('purpose')
+            ->orderBy('purpose')
+            ->pluck('total', 'purpose');
+
+        $activities = SocialCaseActivityLog::query()
+            ->select(['id', 'action', 'details', 'case_info', 'created_at'])
+            ->orderByDesc('created_at')
+            ->limit(50)
+            ->get();
+
+        return response()->json([
+            'stats' => $this->socialCaseDashboardStats(),
+            'purpose_counts' => $purposeCounts,
+            'activities' => $activities,
+        ])->header('Cache-Control', 'no-store, private');
     }
 
     public function getEligibilityData()

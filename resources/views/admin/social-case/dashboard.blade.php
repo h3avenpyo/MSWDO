@@ -734,7 +734,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="stat-card stat-card-blue">
             <div class="stat-card-content">
                 <div class="stat-card-label">PENDING ELIGIBILITY CHECKS</div>
-                <div class="stat-card-value">{{ $stats['pending_eligibility'] ?? 0 }}</div>
+                <div class="stat-card-value" data-dashboard-stat="pending_eligibility">{{ $stats['pending_eligibility'] ?? 0 }}</div>
             </div>
             <div class="stat-card-icon">
                 <i data-lucide="clock"></i>
@@ -743,7 +743,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="stat-card stat-card-green">
             <div class="stat-card-content">
                 <div class="stat-card-label">ELIGIBLE CLIENTS</div>
-                <div class="stat-card-value">{{ $stats['eligible_clients'] ?? 0 }}</div>
+                <div class="stat-card-value" data-dashboard-stat="eligible_clients">{{ $stats['eligible_clients'] ?? 0 }}</div>
             </div>
             <div class="stat-card-icon">
                 <i data-lucide="check-circle"></i>
@@ -752,7 +752,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="stat-card stat-card-purple">
             <div class="stat-card-content">
                 <div class="stat-card-label">FORWARDED TO ENCODER</div>
-                <div class="stat-card-value">{{ $stats['forwarded_to_encoder'] ?? 0 }}</div>
+                <div class="stat-card-value" data-dashboard-stat="forwarded_to_encoder">{{ $stats['forwarded_to_encoder'] ?? 0 }}</div>
             </div>
             <div class="stat-card-icon">
                 <i data-lucide="send"></i>
@@ -761,7 +761,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="stat-card stat-card-teal">
             <div class="stat-card-content">
                 <div class="stat-card-label">REJECTED</div>
-                <div class="stat-card-value">{{ $stats['rejected_clients'] ?? 0 }}</div>
+                <div class="stat-card-value" data-dashboard-stat="rejected_clients">{{ $stats['rejected_clients'] ?? 0 }}</div>
             </div>
             <div class="stat-card-icon">
                 <i data-lucide="x-circle"></i>
@@ -774,7 +774,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="stat-card stat-card-blue">
             <div class="stat-card-content">
                 <div class="stat-card-label">TOTAL CLIENTS</div>
-                <div class="stat-card-value">{{ $stats['total_clients'] ?? 0 }}</div>
+                <div class="stat-card-value" data-dashboard-stat="total_clients">{{ $stats['total_clients'] ?? 0 }}</div>
             </div>
             <div class="stat-card-icon">
                 <i data-lucide="users"></i>
@@ -783,7 +783,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="stat-card stat-card-green">
             <div class="stat-card-content">
                 <div class="stat-card-label">Forwarded to me</div>
-                <div class="stat-card-value">{{ $stats['forwarded_to_me'] ?? 0 }}</div>
+                <div class="stat-card-value" data-dashboard-stat="forwarded_to_me">{{ $stats['forwarded_to_me'] ?? 0 }}</div>
             </div>
             <div class="stat-card-icon">
                 <i data-lucide="calendar"></i>
@@ -792,7 +792,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="stat-card stat-card-purple">
             <div class="stat-card-content">
                 <div class="stat-card-label">RELEASED TODAY</div>
-                <div class="stat-card-value">{{ $stats['released_today'] ?? 0 }}</div>
+                <div class="stat-card-value" data-dashboard-stat="released_today">{{ $stats['released_today'] ?? 0 }}</div>
             </div>
             <div class="stat-card-icon">
                 <i data-lucide="check-circle"></i>
@@ -801,7 +801,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         <div class="stat-card stat-card-teal">
             <div class="stat-card-content">
                 <div class="stat-card-label">TOTAL RELEASED</div>
-                <div class="stat-card-value">{{ $stats['total_released'] ?? 0 }}</div>
+                <div class="stat-card-value" data-dashboard-stat="total_released">{{ $stats['total_released'] ?? 0 }}</div>
             </div>
             <div class="stat-card-icon">
                 <i data-lucide="send"></i>
@@ -1198,7 +1198,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         setInterval(updateDateTime, 60000); // Update every minute
         
         lucide.createIcons();
-        loadDashboard();
+        loadDashboard().finally(startDashboardAutoRefresh);
 
         // Load notifications and poll every 30 seconds
         fetchNotifications();

@@ -119,6 +119,10 @@ let cases = [];
 let view = {tab:"dashboard", caseId:null, docAgency:null, newCaseStep:"search", eligClientName:"", eligOverride:false, eligMatch:null, caseListPage:1, archivePage:1, archiveSearch:"", archiveFilter:"", archiveBarangay:""};
 let selectedAgency = "PCSO";
 let draftIntake = null;
+let assistanceChart = null;
+let dashboardActivitySignature = null;
+let dashboardRefreshTimer = null;
+let dashboardRefreshErrorLogged = false;
 
 const CURRENT_USER_ID = (document.querySelector('meta[name="user-id"]')?.content || '').trim();
 const CURRENT_USER_ROLE = (document.querySelector('meta[name="user-role"]')?.content || '').toLowerCase();
@@ -1467,9 +1471,10 @@ function renderTodayActivities(byStatus){
     </div>`).join("");
 }
 
-async function renderActivityFeed(recent = null){
+async function renderActivityFeed(recent = null, storedActivities = null){
   const container = document.getElementById('activityFeed');
-  const activities = recent ? recent : await getActivities();
+  if (!container) return;
+  const activities = storedActivities || (recent ? recent : await getActivities());
   
   if(!activities.length){
     container.innerHTML = `<div style="text-align:center;padding:32px 20px;color:var(--text-muted)">
@@ -1637,7 +1642,7 @@ function initCharts(){
     // Government color palette
     const colors = ['#1E3A8A', '#3B82F6', '#16A34A', '#F59E0B', '#DC2626'];
     
-    new Chart(assistanceCtx, {
+    assistanceChart = new Chart(assistanceCtx, {
       type: 'doughnut',
       data: {
         labels: labels,
@@ -1666,24 +1671,7 @@ function initCharts(){
       }
     });
     
-    // Render custom legend
-    const legendContainer = document.getElementById('chartLegend');
-    if(legendContainer){
-      legendContainer.innerHTML = labels.map((label, i) => {
-        const count = data[i];
-        const percent = total > 0 ? Math.round((count / total) * 100) : 0;
-        return `
-          <div class="legend-item">
-            <div class="legend-color" style="background:${colors[i]}"></div>
-            <div class="legend-info">
-              <div class="legend-name">${label}</div>
-              <div class="legend-count">${count} cases</div>
-            </div>
-            <div class="legend-percent">${percent}%</div>
-          </div>
-        `;
-      }).join('');
-    }
+    renderAssistanceLegend(labels, data, colors, total);
   }
 
   // Barangay Chart
@@ -1712,6 +1700,97 @@ function initCharts(){
       }
     });
   }
+}
+
+function renderAssistanceLegend(labels, data, colors, total){
+  const legendContainer = document.getElementById('chartLegend');
+  if (!legendContainer) return;
+
+  legendContainer.innerHTML = labels.map((label, index) => {
+    const count = data[index];
+    const percent = total > 0 ? Math.round((count / total) * 100) : 0;
+    return `
+      <div class="legend-item">
+        <div class="legend-color" style="background:${colors[index % colors.length]}"></div>
+        <div class="legend-info">
+          <div class="legend-name">${escapeHtml(label)}</div>
+          <div class="legend-count">${count} cases</div>
+        </div>
+        <div class="legend-percent">${percent}%</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateDashboardLiveData(data){
+  Object.entries(data.stats || {}).forEach(([key, value]) => {
+    const element = document.querySelector(`[data-dashboard-stat="${key}"]`);
+    if (element) element.textContent = Number(value).toLocaleString('en-US');
+  });
+
+  const purposeCounts = data.purpose_counts || {};
+  const labels = Object.keys(purposeCounts);
+  const counts = labels.map(label => Number(purposeCounts[label]));
+  const colors = ['#1E3A8A', '#3B82F6', '#16A34A', '#F59E0B', '#DC2626'];
+  const total = counts.reduce((sum, count) => sum + count, 0);
+
+  if (assistanceChart) {
+    assistanceChart.data.labels = labels;
+    assistanceChart.data.datasets[0].data = counts;
+    assistanceChart.data.datasets[0].backgroundColor = labels.map((_, index) => colors[index % colors.length]);
+    assistanceChart.update('none');
+    renderAssistanceLegend(labels, counts, colors, total);
+  }
+
+  const activities = (data.activities || []).map(activity => ({
+    id: activity.id,
+    action: activity.action,
+    details: activity.details,
+    caseInfo: activity.case_info,
+    timestamp: activity.created_at
+  }));
+  const signature = JSON.stringify(activities);
+  if (signature !== dashboardActivitySignature) {
+    dashboardActivitySignature = signature;
+    renderActivityFeed(null, activities);
+  }
+}
+
+function startDashboardAutoRefresh(){
+  const chart = document.getElementById('assistanceChart');
+  if (!chart || dashboardRefreshTimer) return;
+
+  const refresh = async () => {
+    if (!chart.isConnected) {
+      dashboardRefreshTimer = null;
+      return;
+    }
+
+    try {
+      if (!document.hidden) {
+        const response = await fetch('/admin/social-case/api/dashboard-data', {
+          cache: 'no-store',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+          }
+        });
+        if (!response.ok) throw new Error(`Dashboard refresh failed with status ${response.status}`);
+        updateDashboardLiveData(await response.json());
+        dashboardRefreshErrorLogged = false;
+      }
+    } catch (error) {
+      if (!dashboardRefreshErrorLogged) {
+        console.error('Unable to refresh Social Case dashboard data:', error);
+        dashboardRefreshErrorLogged = true;
+      }
+    } finally {
+      if (chart.isConnected) dashboardRefreshTimer = window.setTimeout(refresh, 1000);
+      else dashboardRefreshTimer = null;
+    }
+  };
+
+  refresh();
 }
 
 /* ---------------- Rendering: New case ---------------- */

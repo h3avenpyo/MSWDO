@@ -17,6 +17,7 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::get('/document/{caseId}/{agency}', [SocialCaseController::class, 'socialCaseDocument'])->name('document');
 
         // Read-only API (shared)
+        Route::get('/api/dashboard-data', [SocialCaseController::class, 'getDashboardData'])->name('api.dashboard-data');
         Route::get('/api/cases', [SocialCaseController::class, 'getCases'])->name('api.cases');
         Route::get('/api/cases/{id}', [SocialCaseController::class, 'getCase'])->name('api.show');
         Route::get('/api/cases/{id}/document-data', [SocialCaseController::class, 'getDocumentData'])->name('api.document-data');

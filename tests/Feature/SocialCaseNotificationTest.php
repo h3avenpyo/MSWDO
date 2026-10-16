@@ -48,6 +48,34 @@ class SocialCaseNotificationTest extends TestCase
         return $user;
     }
 
+    public function test_social_case_dashboard_data_endpoint_returns_live_dashboard_values(): void
+    {
+        $encoder = $this->createUser('social_worker');
+
+        $response = $this->withSession([
+            'admin_user_id' => $encoder->id,
+            'admin_user_name' => $encoder->name,
+            'admin_user_role' => 'social_worker',
+        ])->getJson('/admin/social-case/api/dashboard-data');
+
+        $response->assertOk()
+            ->assertHeader('Cache-Control', 'no-store, private')
+            ->assertJsonStructure([
+                'stats' => [
+                    'pending_eligibility',
+                    'eligible_clients',
+                    'forwarded_to_encoder',
+                    'rejected_clients',
+                    'total_clients',
+                    'forwarded_to_me',
+                    'released_today',
+                    'total_released',
+                ],
+                'purpose_counts',
+                'activities',
+            ]);
+    }
+
     public function test_can_fetch_notifications_for_forwarded_walkin_and_online_requests(): void
     {
         $checker = $this->createUser('eligibility_checker');
