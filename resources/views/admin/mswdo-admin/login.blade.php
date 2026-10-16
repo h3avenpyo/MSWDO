@@ -386,10 +386,16 @@
             transition: background-color .2s ease, color .2s ease, box-shadow .2s ease;
         }
 
-        .mode-btn.active {
-            background: #FFFFFF;
-            color: var(--brand-800);
-            box-shadow: 0 2px 8px rgba(var(--brand-rgb), .15);
+        .mode-btn:hover {
+            background: rgba(var(--brand-rgb), .08);
+            color: var(--brand);
+        }
+
+        .mode-btn.active,
+        .mode-btn.active:hover {
+            background: var(--brand);
+            color: #FFFFFF;
+            box-shadow: 0 6px 16px rgba(var(--brand-rgb), .30);
         }
 
         .mode-btn:focus-visible {

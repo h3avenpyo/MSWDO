@@ -119,6 +119,8 @@
                         <span>Contact</span>
                     </a>
                 </li>
+                {{-- Login hidden on mobile/tablet; available in the desktop navbar --}}
+                {{--
                 <li>
                     <hr class="mobile-menu-divider">
                 </li>
@@ -128,6 +130,7 @@
                         <span>Login</span>
                     </a>
                 </li>
+                --}}
             </ul>
         </div>
     </header>
@@ -215,14 +218,14 @@
                 class="relative bg-white rounded-2xl sm:rounded-3xl lg:rounded-[2.5rem] shadow-[0_20px_50px_rgba(177,17,22,0.06)] p-6 sm:p-8 lg:p-12 border border-slate-100 -mt-16 sm:-mt-20 lg:-mt-16 xl:-mt-24 mb-16">
                 <div class="text-center mb-8 sm:mb-12">
 
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-[#b11116] mt-2">Get Started with Our Online
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-[#b11116] mt-2">Get Started with Our
                         Services</h2>
                     <p class="text-slate-500 mt-2 text-xs sm:text-sm max-w-md mx-auto">Providing quality welfare
                         services and
                         assistance programs for every Silangueño.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-8 max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-8 max-w-6xl mx-auto">
                     <!-- Service 1: Financial Assistance -->
                     <div
                         class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
@@ -241,15 +244,6 @@
                                 families in crisis.
                             </p>
                         </div>
-                        <a href="/financial-assistance"
-                            class="mt-6 flex items-center text-warm-gold font-bold text-[10px] sm:text-xs uppercase tracking-wider gap-1.5 group-hover:translate-x-1 transition duration-200 cursor-pointer">
-                            Apply & Details
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                                stroke="currentColor" class="w-3.5 h-3.5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                            </svg>
-                        </a>
                     </div>
                     <!-- Service 2: Social Case Study -->
                     <div
@@ -269,15 +263,6 @@
                                 government benefits support.
                             </p>
                         </div>
-                        <a href="/service-request"
-                            class="mt-6 flex items-center text-warm-gold font-bold text-[10px] sm:text-xs uppercase tracking-wider gap-1.5 group-hover:translate-x-1 transition duration-200 cursor-pointer">
-                            Request Report
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                                stroke="currentColor" class="w-3.5 h-3.5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                            </svg>
-                        </a>
                     </div>
                     <!-- Service 3: Women & Children Protection (WCPU) -->
                     <div
@@ -296,14 +281,44 @@
                                 Protection services, incident reporting, VAWC and BCPC child monitoring, case management, and crisis intervention.
                             </p>
                         </div>
-                        <a href="/wcpu"
-                            class="mt-6 flex items-center text-warm-gold font-bold text-[10px] sm:text-xs uppercase tracking-wider gap-1.5 group-hover:translate-x-1 transition duration-200 cursor-pointer">
-                            Learn More & Access
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                                stroke="currentColor" class="w-3.5 h-3.5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                            </svg>
+                    </div>
+                    <!-- Service 4: Senior Citizens -->
+                    <div
+                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                        <div>
+                            <div
+                                class="w-12 h-12 rounded-xl bg-warm-gold/10 text-warm-gold flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
+                                </svg>
+                            </div>
+                            <h3 class="font-bold text-lg sm:text-xl text-[#b11116]">Senior Citizens</h3>
+                            <p class="text-slate-600 text-xs sm:text-sm mt-3 leading-relaxed">
+                                Senior citizen registration, ID card issuance, and birthday cash gift benefits and payouts for eligible Silangueño senior citizens.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 sm:mt-12 rounded-2xl p-6 sm:p-10 text-center"
+                    style="background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">Need Social Assistance?</h2>
+                    <p class="text-white/90 mt-3 sm:mt-4 text-sm sm:text-base max-w-2xl mx-auto">
+                        Our dedicated team is ready to assist you with your concerns. Select your required social service
+                        below to proceed.
+                    </p>
+                    <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+                        <a href="/financial-assistance"
+                            class="w-full sm:w-auto bg-warm-gold text-slate-900 px-8 sm:px-10 py-4 rounded-xl font-bold hover:scale-105 hover:bg-[#F9A825] transition shadow-lg inline-flex items-center justify-center text-base sm:text-lg gap-2.5">
+                            <i data-lucide="hand-coins" class="w-5 h-5"></i>
+                            <span>Financial Assistance</span>
+                        </a>
+                        <a href="/service-request"
+                            class="w-full sm:w-auto bg-warm-gold text-slate-900 px-8 sm:px-10 py-4 rounded-xl font-bold hover:scale-105 hover:bg-[#F9A825] transition shadow-lg inline-flex items-center justify-center text-base sm:text-lg gap-2.5">
+                            <i data-lucide="file-text" class="w-5 h-5"></i>
+                            <span>Social Case Study</span>
                         </a>
                     </div>
                 </div>
@@ -562,33 +577,6 @@
     </section>
 
     <!-- ===================================== -->
-    <!-- CALL TO ACTION -->
-    <!-- ===================================== -->
-    <section class="py-16 sm:py-20 relative overflow-hidden"
-        style="background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);">
-        <div class="max-w-5xl mx-auto text-center px-4 sm:px-6 relative z-10">
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl sm:text-5xl font-bold text-white">
-                Need Social Assistance?
-            </h2>
-            <p class="text-white/90 mt-4 sm:mt-6 text-base sm:text-lg sm:text-xl max-w-2xl mx-auto">
-                Our dedicated team is ready to assist you with your concerns. Select your required social service below
-                to proceed.
-            </p>
-            <div class="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-                <a href="/financial-assistance"
-                    class="bg-warm-gold text-slate-900 px-8 sm:px-10 py-4 rounded-xl font-bold hover:scale-105 hover:bg-[#F9A825] transition shadow-lg inline-flex items-center justify-center text-base sm:text-lg gap-2.5">
-                    <i data-lucide="hand-coins" class="w-5 h-5"></i>
-                    <span>Financial Assistance</span>
-                </a>
-                <a href="/service-request"
-                    class="bg-warm-gold text-slate-900 px-8 sm:px-10 py-4 rounded-xl font-bold hover:scale-105 hover:bg-[#F9A825] transition shadow-lg inline-flex items-center justify-center text-base sm:text-lg gap-2.5">
-                    <i data-lucide="file-text" class="w-5 h-5"></i>
-                    <span>Social Case Study</span>
-                </a>
-            </div>
-        </div>
-    </section>
-    <!-- ===================================== -->
     <!-- CONTACT SECTION -->
     <!-- ===================================== -->
     <section id="contact" class="contact-section">
@@ -677,55 +665,55 @@
                     <div id="emergencyGrid" class="emergency-grid">
                         <div class="hotline-item">
                             <span class="hotline-label text-warm-gold font-bold">Nationwide Emergency Hotline:</span>
-                            <a href="tel:911" class="hotline-value font-bold text-base">911</a>
+                            <span class="hotline-value font-bold text-base">911</span>
                         </div>
                         <div class="hotline-item">
                             <span class="hotline-label">MDRRMO:</span>
-                            <a href="tel:09356016738" class="hotline-value">0935-601-6738</a>
+                            <span class="hotline-value">0935-601-6738</span>
                         </div>
                         <div class="hotline-item">
                             <span class="hotline-label">MDRRMO:</span>
-                            <a href="tel:09223846130" class="hotline-value">0922-384-6130</a>
+                            <span class="hotline-value">0922-384-6130</span>
                         </div>
                         <div class="hotline-item">
                             <span class="hotline-label">MDRRMO:</span>
-                            <a href="tel:0464143776" class="hotline-value">(046) 414-3776</a>
+                            <span class="hotline-value">(046) 414-3776</span>
                         </div>
                         <div class="hotline-item hidden-mobile">
                             <span class="hotline-label">PNP:</span>
-                            <a href="tel:09959878996" class="hotline-value">0995-987-8996</a>
+                            <span class="hotline-value">0995-987-8996</span>
                         </div>
                         <div class="hotline-item hidden-mobile">
                             <span class="hotline-label">PNP:</span>
-                            <a href="tel:09985985622" class="hotline-value">0998-598-5622</a>
+                            <span class="hotline-value">0998-598-5622</span>
                         </div>
                         <div class="hotline-item hidden-mobile">
                             <span class="hotline-label">PNP:</span>
-                            <a href="tel:0464140204" class="hotline-value">(046) 414-0204</a>
+                            <span class="hotline-value">(046) 414-0204</span>
                         </div>
                         <div class="hotline-item hidden-mobile">
                             <span class="hotline-label">Central BFP:</span>
-                            <a href="tel:09455595557" class="hotline-value">0945-559-5557</a>
+                            <span class="hotline-value">0945-559-5557</span>
                         </div>
                         <div class="hotline-item hidden-mobile">
                             <span class="hotline-label">Central BFP:</span>
-                            <a href="tel:0464140484" class="hotline-value">(046) 414-0484</a>
+                            <span class="hotline-value">(046) 414-0484</span>
                         </div>
                         <div class="hotline-item hidden-mobile">
                             <span class="hotline-label">Bulihan BFP Sub-Station:</span>
-                            <a href="tel:09304308892" class="hotline-value">0930-430-8892</a>
+                            <span class="hotline-value">0930-430-8892</span>
                         </div>
                         <div class="hotline-item hidden-mobile">
                             <span class="hotline-label">Bulihan BFP Sub-Station:</span>
-                            <a href="tel:0464439457" class="hotline-value">(046) 443-9457</a>
+                            <span class="hotline-value">(046) 443-9457</span>
                         </div>
                         <div class="hotline-item hidden-mobile">
                             <span class="hotline-label">Inchican BFP Sub-Station:</span>
-                            <a href="tel:09563992123" class="hotline-value">0956-399-2123</a>
+                            <span class="hotline-value">0956-399-2123</span>
                         </div>
                         <div class="hotline-item hidden-mobile">
                             <span class="hotline-label">Inchican BFP Sub-Station:</span>
-                            <a href="tel:0464209989" class="hotline-value">(046) 420-9989</a>
+                            <span class="hotline-value">(046) 420-9989</span>
                         </div>
                     </div>
                     <button id="showAllHotlines"

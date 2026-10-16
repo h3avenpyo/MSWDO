@@ -610,7 +610,7 @@ $initials = count($words) >= 2
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
     }
     .btn-report-action {
         display: inline-flex;
@@ -703,7 +703,7 @@ $initials = count($words) >= 2
     @media (max-width: 767.98px) {
         .report-breakdown-grid { grid-template-columns: 1fr; }
         .report-controls-bar { grid-template-columns: 1fr; }
-        .report-actions-wrap { width: 100%; }
+        .report-actions-wrap { width: 100%; flex-wrap: wrap; }
         .btn-report-action { width: 100%; }
     }
 
@@ -973,18 +973,6 @@ $initials = count($words) >= 2
         </div>
     </div>
 
-    <!-- Chart 4: Overall Service Distribution -->
-    <div class="chart-panel">
-        <div class="chart-panel-header">
-            <h4 class="chart-panel-title">
-                <i data-lucide="layers"></i> Total Services Distribution
-            </h4>
-        </div>
-        <div class="chart-canvas-box">
-            <canvas id="distributionChart"></canvas>
-        </div>
-    </div>
-
     <!-- Chart 5: VAWC Category Distribution -->
     <div class="chart-panel">
         <div class="chart-panel-header">
@@ -1006,6 +994,18 @@ $initials = count($words) >= 2
         </div>
         <div class="chart-canvas-box">
             <canvas id="bcpcChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart 4: Overall Service Distribution -->
+    <div class="chart-panel">
+        <div class="chart-panel-header">
+            <h4 class="chart-panel-title">
+                <i data-lucide="layers"></i> Total Services Distribution
+            </h4>
+        </div>
+        <div class="chart-canvas-box">
+            <canvas id="distributionChart"></canvas>
         </div>
     </div>
 </div>

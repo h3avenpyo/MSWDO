@@ -390,53 +390,28 @@ $initials = count($words) >= 2
     .tag-completed { background: #ECFDF5; color: #047857; }
     .tag-rejected  { background: #FEF2F2; color: #BE123C; }
 
-    /* Action Buttons */
-    .btn-approve {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.4rem 0.85rem;
-        border-radius: 8px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #FFFFFF;
-        background: #059669;
-        border: none;
-        cursor: pointer;
-        transition: all 0.15s ease;
-    }
-    .btn-approve:hover { background: #047857; }
-
-    .btn-reject {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.4rem 0.85rem;
-        border-radius: 8px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #DC2626;
-        background: #FEF2F2;
-        border: 1px solid #FECACA;
-        cursor: pointer;
-        transition: all 0.15s ease;
-    }
-    .btn-reject:hover { background: #FEE2E2; }
-
+    /* Action Buttons (icon-only) */
+    .btn-approve,
+    .btn-reject,
     .btn-delete-record {
         display: inline-flex;
         align-items: center;
-        gap: 0.35rem;
-        padding: 0.4rem 0.8rem;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        border: none;
         border-radius: 8px;
-        font-size: 0.775rem;
-        font-weight: 600;
-        color: #64748B;
-        background: #F1F5F9;
-        border: 1px solid #E2E8F0;
         cursor: pointer;
         transition: all 0.15s ease;
     }
+    .btn-approve { color: #FFFFFF; background: #059669; }
+    .btn-approve:hover { background: #047857; }
+
+    .btn-reject { color: #DC2626; background: #FEF2F2; border: 1px solid #FECACA; }
+    .btn-reject:hover { background: #FEE2E2; }
+
+    .btn-delete-record { color: #64748B; background: #F1F5F9; border: 1px solid #E2E8F0; }
     .btn-delete-record:hover {
         background: #FEF2F2;
         color: #DC2626;
@@ -601,27 +576,18 @@ $initials = count($words) >= 2
             width: 100%;
         }
         .mobile-req-actions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            display: flex;
+            justify-content: flex-end;
             gap: 0.5rem;
             width: 100%;
             min-width: 0;
         }
         .mobile-req-actions .btn-reject,
-        .mobile-req-actions .btn-approve {
-            width: 100%;
-            justify-content: center;
-            padding: 0.55rem 0.75rem;
-            font-size: 0.8rem;
-            border-radius: 10px;
-            box-sizing: border-box;
-        }
+        .mobile-req-actions .btn-approve,
         .mobile-req-actions .btn-delete-record {
-            grid-column: span 2;
-            width: 100%;
-            justify-content: center;
-            padding: 0.55rem 0.75rem;
-            font-size: 0.8rem;
+            width: 40px;
+            height: 40px;
+            padding: 0;
             border-radius: 10px;
             box-sizing: border-box;
         }
@@ -925,7 +891,7 @@ $initials = count($words) >= 2
                     <th>Request Status</th>
                     <th>Submitted At</th>
                     <th>Processed By</th>
-                    <th style="text-align:right;">Actions</th>
+                    <th style="text-align:right; padding-right:2rem;">Actions</th>
                 </tr>
             </thead>
             <tbody id="resetTableBody">
@@ -948,7 +914,7 @@ $initials = count($words) >= 2
                             <div class="officer-avatar">{{ $init }}</div>
                             <div>
                                 <div class="font-bold text-slate-900">{{ $userName }}</div>
-                                <div class="text-[11px] text-slate-400">{{ $req->user ? ucfirst(str_replace('_', ' ', $req->user->role ?? 'Staff')) : 'External Request' }}</div>
+                                <div class="text-[11px] text-slate-400">{{ $req->user ? ucfirst(str_replace('_', ' ', $req->user->role instanceof \App\Enums\UserRole ? $req->user->role->value : ($req->user->role ?? 'Staff'))) : 'External Request' }}</div>
                             </div>
                         </div>
                     </td>
@@ -974,20 +940,17 @@ $initials = count($words) >= 2
                     <td style="text-align:right;">
                         @if($req->status === 'pending')
                             <div class="flex items-center justify-end gap-2">
-                                <button type="button" class="btn-approve" onclick="confirmApprove({{ $req->id }}, '{{ addslashes($userName) }}')">
-                                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                                    <span>Approve</span>
+                                <button type="button" class="btn-approve" title="Approve" onclick="confirmApprove({{ $req->id }}, '{{ addslashes($userName) }}')">
+                                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
                                 </button>
-                                <button type="button" class="btn-reject" onclick="confirmReject({{ $req->id }}, '{{ addslashes($userName) }}')">
-                                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                                    <span>Reject</span>
+                                <button type="button" class="btn-reject" title="Reject" onclick="confirmReject({{ $req->id }}, '{{ addslashes($userName) }}')">
+                                    <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
                                 </button>
                             </div>
                         @else
-                            <div class="flex items-center justify-end">
-                                <button type="button" class="btn-delete-record" onclick="confirmDelete({{ $req->id }}, '{{ addslashes($userName) }}')">
+                            <div class="flex items-center justify-center">
+                                <button type="button" class="btn-delete-record" title="Delete" onclick="confirmDelete({{ $req->id }}, '{{ addslashes($userName) }}')">
                                     <i data-lucide="trash-2" class="w-3.5 h-3.5 text-slate-400"></i>
-                                    <span>Delete</span>
                                 </button>
                             </div>
                         @endif
@@ -1046,18 +1009,15 @@ $initials = count($words) >= 2
 
             <div class="mobile-req-actions">
                 @if($req->status === 'pending')
-                    <button type="button" class="btn-reject" onclick="confirmReject({{ $req->id }}, '{{ addslashes($userName) }}')">
-                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                        <span>Reject</span>
+                    <button type="button" class="btn-reject" title="Reject" onclick="confirmReject({{ $req->id }}, '{{ addslashes($userName) }}')">
+                        <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
                     </button>
-                    <button type="button" class="btn-approve" onclick="confirmApprove({{ $req->id }}, '{{ addslashes($userName) }}')">
-                        <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                        <span>Approve Reset</span>
+                    <button type="button" class="btn-approve" title="Approve" onclick="confirmApprove({{ $req->id }}, '{{ addslashes($userName) }}')">
+                        <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
                     </button>
                 @else
-                    <button type="button" class="btn-delete-record" onclick="confirmDelete({{ $req->id }}, '{{ addslashes($userName) }}')">
+                    <button type="button" class="btn-delete-record" title="Delete" onclick="confirmDelete({{ $req->id }}, '{{ addslashes($userName) }}')">
                         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        <span>Delete Record</span>
                     </button>
                 @endif
             </div>

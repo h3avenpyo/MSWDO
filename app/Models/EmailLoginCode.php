@@ -8,6 +8,7 @@ class EmailLoginCode extends Model
 {
     protected $fillable = [
         'user_id',
+        'auth_source',
         'email',
         'code',
         'expires_at',

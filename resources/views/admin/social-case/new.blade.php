@@ -251,6 +251,16 @@ function toggleDropdown(id) {
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
         loadNewCase();
+
+        // Search Client input: letters, spaces, and periods only
+        const nameInput = document.getElementById('elig-name');
+        if (nameInput) {
+            const sanitize = function () {
+                nameInput.value = nameInput.value.replace(/[^\p{L}\s.]/gu, '');
+            };
+            nameInput.addEventListener('input', sanitize);
+            sanitize();
+        }
     });
 </script>
 @endpush

@@ -830,7 +830,6 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             <div class="activity-card">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
                     <h3 style="margin:0"><i data-lucide="activity" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px;color:var(--icon-blue)"></i>Recent Activities</h3>
-                    <button class="text-xs font-semibold px-3 py-1 rounded-lg" style="background:var(--danger-bg);color:var(--danger);border:none;cursor:pointer" onclick="confirmClearActivities()">Clear</button>
                 </div>
                 <div class="activity-feed" id="activityFeed"></div>
             </div>

@@ -550,6 +550,24 @@
         })();
 
         // =====================================
+        // NAME VALIDATION (letters & spaces only)
+        // =====================================
+        (function () {
+            function attach(id) {
+                const input = document.getElementById(id);
+                if (!input) return;
+
+                function sanitize() {
+                    input.value = input.value.replace(/[^\p{L}\s]/gu, '');
+                }
+                input.addEventListener('input', sanitize);
+                sanitize();
+            }
+            attach('firstName');
+            attach('lastName');
+        })();
+
+        // =====================================
         // SITUATION COUNTER
         // =====================================
         (function () {

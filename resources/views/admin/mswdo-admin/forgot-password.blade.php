@@ -166,8 +166,8 @@
             letter-spacing: .03em;
             text-transform: uppercase;
             color: #FFFFFF;
-            background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 100%);
-            box-shadow: 0 10px 20px rgba(29, 78, 216, .25);
+            background: linear-gradient(135deg, #9E0E13 0%, #B11116 100%);
+            box-shadow: 0 10px 20px rgba(177, 17, 22, .25);
             cursor: pointer;
             transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
             margin-top: 1rem;
@@ -175,7 +175,7 @@
 
         .submit-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 16px 28px rgba(29, 78, 216, .32);
+            box-shadow: 0 16px 28px rgba(177, 17, 22, .32);
             filter: brightness(1.06);
         }
 
@@ -211,6 +211,64 @@
             padding: .75rem 1rem;
             margin-bottom: 1.25rem;
             font-size: .8438rem;
+        }
+        /* SweetAlert2 modal */
+        .swal2-popup {
+            border-radius: 20px !important;
+            padding: 1.75rem 1.5rem 1.5rem !important;
+            font-family: 'Poppins', sans-serif !important;
+            box-shadow: 0 30px 60px rgba(15, 23, 42, .18) !important;
+            background: #FFFFFF !important;
+        }
+
+        .swal2-title {
+            color: #0F172A !important;
+            font-weight: 700 !important;
+            font-size: 1.3rem !important;
+            padding: 0 !important;
+        }
+
+        .swal2-html-container {
+            font-size: .9375rem !important;
+            color: #64748B !important;
+            line-height: 1.6 !important;
+            margin: .5rem 0 0 !important;
+        }
+
+        .swal2-icon {
+            margin: .5rem auto 1rem !important;
+        }
+
+        .swal2-confirm {
+            border-radius: 12px !important;
+            font-weight: 600 !important;
+            font-family: 'Poppins', sans-serif !important;
+            font-size: .875rem !important;
+            letter-spacing: .02em !important;
+            padding: 12px 28px !important;
+            transition: transform .2s ease, filter .2s ease, box-shadow .2s ease !important;
+        }
+
+        .swal2-confirm:hover {
+            filter: brightness(1.06) !important;
+            transform: translateY(-1px) !important;
+        }
+
+        .swal2-actions {
+            margin-top: 1.25rem !important;
+        }
+
+        @media (max-width: 575.98px) {
+            .swal2-popup {
+                padding: 1.25rem 1rem 1rem !important;
+                border-radius: 16px !important;
+            }
+            .swal2-title {
+                font-size: 1.1rem !important;
+            }
+            .swal2-confirm {
+                width: 100% !important;
+            }
         }
     </style>
 </head>
@@ -271,7 +329,7 @@
                 title: 'Error',
                 text: '{{ session('error') }}',
                 icon: 'error',
-                confirmButtonColor: '#DC2626',
+                confirmButtonColor: '#B11116',
                 confirmButtonText: 'OK',
                 background: '#ffffff',
                 customClass: { popup: 'rounded-4 shadow-lg' }
@@ -283,7 +341,7 @@
                 title: 'Success',
                 text: '{{ session('success') }}',
                 icon: 'success',
-                confirmButtonColor: '#16A34A',
+                confirmButtonColor: '#B11116',
                 confirmButtonText: 'OK',
                 background: '#ffffff',
                 customClass: { popup: 'rounded-4 shadow-lg' }
@@ -295,7 +353,7 @@
                 title: 'Information',
                 text: '{{ session('info') }}',
                 icon: 'info',
-                confirmButtonColor: '#1D4ED8',
+                confirmButtonColor: '#B11116',
                 confirmButtonText: 'OK',
                 background: '#ffffff',
                 customClass: { popup: 'rounded-4 shadow-lg' }

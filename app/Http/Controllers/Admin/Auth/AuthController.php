@@ -185,17 +185,7 @@ class AuthController extends Controller
      */
     protected function resolveWcpuRedirect(WcpuUser $user): string
     {
-        if ($user->position === 'Desk Officer') {
-            $defaultDept = $user->defaultCaseDepartment();
-            if ($defaultDept === 'BCPC' && ! $user->isMultiCaseDepartment()) {
-                return route('desk-officer.bcpc.dashboard');
-            }
-
-            return route('desk-officer.dashboard');
-        }
-
-        // Administrator (SWD Admin and BCPC Admin)
-        return route('admin-dashboard');
+        return DashboardRedirector::wcpuRouteFor($user);
     }
 
     /**

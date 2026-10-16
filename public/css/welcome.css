@@ -315,7 +315,7 @@
 /* Responsive Grid: Laptop-first proportional structure */
 .contact-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
     align-items: stretch;
 }
@@ -323,7 +323,7 @@
 /* Laptops (1024px to 1365px): Dedicated 350px for Office Info, remaining flex for Hotlines */
 @media (min-width: 1024px) {
     .contact-grid {
-        grid-template-columns: 350px 1fr;
+        grid-template-columns: 350px minmax(0, 1fr);
         gap: 1.75rem;
     }
 }
@@ -331,7 +331,7 @@
 /* Wide Laptops & Desktop (1366px+): 380px for Office Info */
 @media (min-width: 1366px) {
     .contact-grid {
-        grid-template-columns: 380px 1fr;
+        grid-template-columns: 380px minmax(0, 1fr);
         gap: 2rem;
     }
 }
@@ -520,14 +520,14 @@
 /* Emergency Grid: Clean 2 columns on laptops, 3 columns on wide desktop */
 .emergency-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.6rem;
     flex: 1;
 }
 
 @media (min-width: 640px) {
     .emergency-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 0.65rem 1.5rem;
     }
 }
@@ -535,7 +535,7 @@
 /* Laptops (1024px to 1365px): Clean 2-column layout prevents crunched labels */
 @media (min-width: 1024px) {
     .emergency-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 0.7rem 2rem;
     }
 }
@@ -543,7 +543,7 @@
 /* Wide Laptops & Desktop (1366px+): 3 columns have ample space */
 @media (min-width: 1366px) {
     .emergency-grid {
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 0.7rem 1.75rem;
     }
 }
@@ -557,6 +557,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 0.75rem;
+    min-width: 0;
     border-radius: 0.25rem;
     transition: background-color 0.15s ease;
 }
@@ -575,9 +576,8 @@
 .hotline-label {
     color: #FFFFFF;
     font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    min-width: 0;
+    overflow-wrap: break-word;
 }
 
 .hotline-value {

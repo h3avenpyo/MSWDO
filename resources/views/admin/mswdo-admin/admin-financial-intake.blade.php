@@ -17,6 +17,20 @@
         text-transform: none !important;
     }
 
+    .btn-save-intake {
+        background: #B11116 !important;
+        border: 1px solid #B11116 !important;
+        color: #FFFFFF !important;
+    }
+
+    .btn-save-intake:hover,
+    .btn-save-intake:focus,
+    .btn-save-intake:active {
+        background: #8A0D11 !important;
+        border-color: #8A0D11 !important;
+        color: #FFFFFF !important;
+    }
+
     .historical-badge {
         background: #FEF3C7;
         color: #92400E;
@@ -825,8 +839,7 @@
             <a href="{{ route('admin.dashboard') }}" class="btn btn-light border px-4 py-2 rounded-3 fw-semibold">
                 Cancel
             </a>
-            <button type="submit" class="btn btn-primary px-5 py-2.5 fw-bold rounded-3 shadow"
-                style="background: #1A237E; border: none;">
+            <button type="submit" class="btn btn-save-intake px-5 py-2.5 fw-bold rounded-3 shadow">
                 <i class="fas fa-save me-2"></i> Save Financial Intake
             </button>
         </div>

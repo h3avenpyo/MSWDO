@@ -411,7 +411,7 @@ $initials = count($words) >= 2
                 <label class="field-label">Contact Number</label>
                 <div class="input-wrap">
                     <i data-lucide="phone" class="input-icon"></i>
-                    <input type="text" name="phone" class="form-input" placeholder="e.g. 09171234567" value="{{ old('phone') }}" maxlength="20">
+                    <input type="text" name="phone" class="form-input" placeholder="e.g. 09171234567" value="{{ old('phone') }}" maxlength="11">
                 </div>
             </div>
 
@@ -453,9 +453,7 @@ $initials = count($words) >= 2
                         <option value="financialstep2" {{ old('role') == 'financialstep2' ? 'selected' : '' }}>Financial Assistance Step 2 (Approval &amp; Voucher)</option>
                         <option value="eligibility_checker" {{ old('role') == 'eligibility_checker' ? 'selected' : '' }}>Social Case Worker — Eligibility Checker</option>
                         <option value="social_worker" {{ old('role') == 'social_worker' ? 'selected' : '' }}>Social Case Worker — Case Encoder</option>
-                        <option value="encoder" {{ old('role') == 'encoder' ? 'selected' : '' }}>General System Encoder</option>
-                        <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Departmental Staff</option>
-                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>System Administrator (Full Management)</option>
+                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>System Administrator</option>
                     </select>
                 </div>
                 <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
@@ -526,6 +524,26 @@ $initials = count($words) >= 2
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // Full Name: letters, spaces, and periods only
+    const nameInput = document.querySelector('input[name="name"]');
+    if (nameInput) {
+        const sanitizeName = () => {
+            nameInput.value = nameInput.value.replace(/[^\p{L}\s.]/gu, '');
+        };
+        nameInput.addEventListener('input', sanitizeName);
+        sanitizeName();
+    }
+
+    // Contact Number: digits only, exactly up to 11 digits
+    const phoneInput = document.querySelector('input[name="phone"]');
+    if (phoneInput) {
+        const sanitizePhone = () => {
+            phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 11);
+        };
+        phoneInput.addEventListener('input', sanitizePhone);
+        sanitizePhone();
+    }
 
     // Live Clock with Philippine formatting
     function updateLiveClock() {
