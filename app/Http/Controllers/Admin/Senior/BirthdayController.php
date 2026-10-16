@@ -13,6 +13,8 @@ use Carbon\Carbon;
 
 class BirthdayController extends Controller
 {
+    private const BIRTHDAY_PAYOUT_AMOUNT = 1000.00;
+
     public function index(Request $request)
     {
         $today = now();
@@ -74,7 +76,7 @@ class BirthdayController extends Controller
         $selectedMonth = (int) $request->get('month', now()->format('n'));
         $selectedYear = $request->get('year', now()->year);
         $selectedBarangay = $request->get('barangay', '');
-        $payoutAmount = 500.00;
+        $payoutAmount = self::BIRTHDAY_PAYOUT_AMOUNT;
 
         $barangayBreakdown = SeniorCitizenRecord::where('status', 'active')
             ->whereNotNull('birth_date')
@@ -477,7 +479,7 @@ class BirthdayController extends Controller
         $month = $request->month;
         $year = $request->year;
         $barangay = $request->barangay;
-        $payoutAmount = 500.00;
+        $payoutAmount = self::BIRTHDAY_PAYOUT_AMOUNT;
 
         $monthNumber = date('m', strtotime($month));
 
@@ -725,7 +727,7 @@ class BirthdayController extends Controller
 
         $selectedMonth = (int) $request->get('month', now()->format('n'));
         $selectedYear = $request->get('year', now()->year);
-        $payoutAmount = 500.00;
+        $payoutAmount = self::BIRTHDAY_PAYOUT_AMOUNT;
         $currentMonthName = date('F', mktime(0, 0, 0, $selectedMonth, 1));
 
         $seniors = SeniorCitizenRecord::query()
@@ -791,7 +793,7 @@ class BirthdayController extends Controller
 
         $selectedMonth = (int) $request->get('month', now()->format('n'));
         $selectedYear = $request->get('year', now()->year);
-        $payoutAmount = 500.00;
+        $payoutAmount = self::BIRTHDAY_PAYOUT_AMOUNT;
 
         // Auto-generate payouts if none exist for the selected month/year
         $seniors = SeniorCitizenRecord::where('status', 'active')
@@ -881,7 +883,7 @@ class BirthdayController extends Controller
         $barangay = $request->barangay;
         $selectedMonth = (int) $request->get('month', now()->format('n'));
         $selectedYear = $request->get('year', now()->year);
-        $payoutAmount = 500.00;
+        $payoutAmount = self::BIRTHDAY_PAYOUT_AMOUNT;
         $currentMonthName = date('F', mktime(0, 0, 0, $selectedMonth, 1));
 
         $seniors = SeniorCitizenRecord::query()
@@ -950,7 +952,7 @@ class BirthdayController extends Controller
         $barangay = $request->barangay;
         $selectedMonth = (int) $request->get('month', now()->format('n'));
         $selectedYear = $request->get('year', now()->year);
-        $payoutAmount = 500.00;
+        $payoutAmount = self::BIRTHDAY_PAYOUT_AMOUNT;
 
         // Auto-generate payouts for this barangay if none exist
         $seniors = SeniorCitizenRecord::where('status', 'active')
