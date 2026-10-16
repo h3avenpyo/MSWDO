@@ -160,7 +160,7 @@
                     <!-- Message Textarea -->
                     <div class="mb-2">
                         <textarea class="form-control rounded-3 border" id="smsMessageBody" name="message" rows="4" 
-                            placeholder="Write message to beneficiary..." style="resize: vertical; font-size: 0.92rem;"></textarea>
+                            maxlength="1000" placeholder="Write message to beneficiary..." style="resize: vertical; font-size: 0.92rem;"></textarea>
                     </div>
 
                     <!-- Character and Segment Counter -->

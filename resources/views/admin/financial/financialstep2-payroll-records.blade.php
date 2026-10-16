@@ -179,7 +179,7 @@
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search
                     Beneficiary, Rep, Control No.</label>
                 <input type="text" id="recordsSearchInput" name="search" class="form-control form-control-sm rounded-3"
-                    placeholder="Control No, Beneficiary, Rep..." value="{{ request('search') }}" autocomplete="off">
+                    placeholder="Control No, Beneficiary, Rep..." value="{{ request('search') }}" autocomplete="off" maxlength="150">
             </div>
             <div class="col-md-2 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i>
@@ -678,13 +678,14 @@
                     Records</label>
                 <input type="text" id="recordsSearchInput" name="search" class="form-control form-control-sm rounded-3"
                     placeholder="Beneficiary, Rep, Control #, Payroll #..." value="{{ request('search') }}"
-                    autocomplete="off">
+                    autocomplete="off" maxlength="150">
             </div>
             <div class="col-md-3 col-lg-3">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-day me-1"></i> Filter
                     by Date</label>
                 <input type="date" name="filter_date" class="form-control form-control-sm rounded-3"
                     value="{{ request('filter_date') ?? (request('view') === 'directory' ? request('date') : '') }}"
+                    max="{{ date('Y-m-d') }}"
                     onchange="this.form.submit()" title="Filter by Date">
             </div>
             <div class="col-md-2 col-lg-2">
@@ -1014,7 +1015,10 @@
                 html: `Are you sure you want to archive the financial assistance record for <strong>${name}</strong> (<span class="text-primary font-monospace">${controlNumber}</span>)?<br><br><small class="text-muted">The record will be safely removed from active processing but will remain available in the Step 2 Archive.</small>`,
                 icon: 'warning',
                 input: 'text',
-                inputPlaceholder: 'Reason for archiving (optional)',
+                inputPlaceholder: 'Reason for archiving (optional, max 500 characters)',
+                inputAttributes: {
+                    maxlength: '500'
+                },
                 showCancelButton: true,
                 confirmButtonColor: '#DC2626',
                 cancelButtonColor: '#6B7280',

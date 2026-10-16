@@ -100,7 +100,7 @@
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i>
                     Search</label>
                 <input type="text" name="search" class="form-control form-control-sm rounded-3"
-                    placeholder="Search by Control No, Name, Rep, Payroll No..." value="{{ request('search') }}">
+                    placeholder="Search by Control No, Name, Rep, Payroll No..." value="{{ request('search') }}" maxlength="150">
             </div>
             <div class="col-md-3 col-lg-3">
                 <label class="form-label small fw-bold text-muted mb-1">Barangay</label>
@@ -123,7 +123,7 @@
             <div class="col-md-2 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1">Month &amp; Year</label>
                 <input type="month" name="month" class="form-control form-control-sm rounded-3"
-                    value="{{ request('month') }}" onchange="this.form.submit()">
+                    value="{{ request('month') }}" max="{{ date('Y-m') }}" onchange="this.form.submit()">
             </div>
             <div class="col-md-1 col-lg-1 d-flex gap-1">
                 @if(request()->hasAny(['search', 'barangay', 'claim_status', 'month']))

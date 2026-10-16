@@ -2872,6 +2872,10 @@ class FinancialDashboardController extends Controller
      */
     public function archiveStep1(Request $request, $id)
     {
+        $request->validate([
+            'reason' => ['nullable', 'string', 'max:500'],
+        ]);
+
         $intake = BeneficiaryIntake::findOrFail($id);
 
         if ($intake->is_archived) {
@@ -3040,6 +3044,10 @@ class FinancialDashboardController extends Controller
      */
     public function archiveStep2(Request $request, $id)
     {
+        $request->validate([
+            'reason' => ['nullable', 'string', 'max:500'],
+        ]);
+
         $intake = BeneficiaryIntake::findOrFail($id);
 
         if ($intake->is_archived) {

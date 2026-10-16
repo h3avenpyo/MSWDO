@@ -19,18 +19,41 @@ function calculateAge(birthdayStr) {
     if (isNaN(birthDate.getTime())) return '';
 
     const today = new Date();
+    // Reject future birthdates
+    if (birthDate > today) return '';
+
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
 
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
         age--;
     }
-    return age >= 0 ? age : 0;
+    return (age >= 0 && age <= 125) ? age : '';
 }
 
 function handleBirthdayChange(inputEl, targetAgeId) {
     const ageEl = document.getElementById(targetAgeId);
     if (!ageEl) return;
+
+    if (inputEl.value) {
+        const inputDate = new Date(inputEl.value);
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+        if (inputDate > today) {
+            inputEl.value = '';
+            ageEl.value = '';
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Bawal ang Petsa sa Hinaharap',
+                    text: 'Hindi maaaring pumili ng petsa ng kapanganakan sa hinaharap (future date).',
+                    icon: 'warning',
+                    confirmButtonColor: '#b11116'
+                });
+            }
+            return;
+        }
+    }
+
     const age = calculateAge(inputEl.value);
     ageEl.value = age !== '' ? age : '';
 }
@@ -45,18 +68,35 @@ function setupContactInput(inputId, counterId, errorId) {
     if (!input) return;
 
     function update() {
-        // Strip non-digits
-        input.value = input.value.replace(/[^0-9]/g, '').slice(0, 11);
+        let val = input.value.trim();
+        // Allow user to paste +639XXXXXXXXX or 639XXXXXXXXX and auto-normalize to 09XXXXXXXXX
+        if (val.startsWith('+639')) {
+            val = '09' + val.substring(4);
+        } else if (val.startsWith('+63')) {
+            val = '0' + val.substring(3);
+        } else if (val.startsWith('639') && val.length >= 12) {
+            val = '09' + val.substring(3);
+        }
+        val = val.replace(/\D/g, '').slice(0, 11);
+        input.value = val;
         const len = input.value.length;
+        const startsWith09 = input.value.startsWith('09');
 
         if (counter) {
             counter.textContent = `${len}/11 digits`;
-            if (len === 11) {
+            if (len === 11 && startsWith09) {
                 counter.className = 'digit-counter valid';
                 if (error) error.classList.add('hidden');
             } else if (len > 0) {
                 counter.className = 'digit-counter invalid';
-                if (error) error.classList.remove('hidden');
+                if (error) {
+                    error.classList.remove('hidden');
+                    if (len === 11 && !startsWith09) {
+                        error.textContent = 'Dapat magsimula sa 09 ang numero ng telepono.';
+                    } else {
+                        error.textContent = 'Kinakailangan ang 11-digit na numero (09XXXXXXXXX).';
+                    }
+                }
             } else {
                 counter.className = 'digit-counter text-slate-400';
                 if (error) error.classList.add('hidden');
@@ -65,6 +105,7 @@ function setupContactInput(inputId, counterId, errorId) {
     }
 
     input.addEventListener('input', update);
+    input.addEventListener('paste', () => setTimeout(update, 50));
     update();
 }
 
@@ -164,7 +205,7 @@ function addFamilyMember() {
                             Buong Pangalan <span class="label-sub">(Full Name)</span>
                         </label>
                     </div>
-                    <input type="text" name="family_composition[${familyMemberIndex}][name]" placeholder="Hal. Juan Dela Cruz Jr." class="form-input-custom uppercase">
+                    <input type="text" maxlength="150" name="family_composition[${familyMemberIndex}][name]" placeholder="Hal. Juan Dela Cruz Jr." class="form-input-custom uppercase text-only-input" data-text-only="true">
                 </div>
             </div>
 
@@ -175,7 +216,7 @@ function addFamilyMember() {
                             Relasyon sa Benepisyaryo <span class="label-sub">(Relationship)</span>
                         </label>
                     </div>
-                    <input type="text" name="family_composition[${familyMemberIndex}][relationship]" placeholder="Hal. Asawa, Anak, Magulang" class="form-input-custom">
+                    <input type="text" maxlength="100" name="family_composition[${familyMemberIndex}][relationship]" placeholder="Hal. Asawa, Anak, Magulang" class="form-input-custom text-only-input" data-text-only="true">
                 </div>
             </div>
 
@@ -186,7 +227,7 @@ function addFamilyMember() {
                             Edad <span class="label-sub">(Age)</span>
                         </label>
                     </div>
-                    <input type="number" min="0" max="120" name="family_composition[${familyMemberIndex}][age]" placeholder="Edad" class="form-input-custom text-center">
+                    <input type="number" min="0" max="125" step="1" inputmode="numeric" name="family_composition[${familyMemberIndex}][age]" placeholder="Edad" class="form-input-custom text-center">
                 </div>
             </div>
 
@@ -197,7 +238,7 @@ function addFamilyMember() {
                             Trabaho <span class="label-sub">(Occupation)</span>
                         </label>
                     </div>
-                    <input type="text" name="family_composition[${familyMemberIndex}][occupation]" placeholder="Hal. Magsasaka, Vendor, Wala" class="form-input-custom">
+                    <input type="text" maxlength="150" name="family_composition[${familyMemberIndex}][occupation]" placeholder="Hal. Magsasaka, Vendor, Wala" class="form-input-custom text-only-input" data-text-only="true">
                 </div>
             </div>
 
@@ -208,7 +249,7 @@ function addFamilyMember() {
                             Buwanang Kita <span class="label-sub">(Monthly Income)</span>
                         </label>
                     </div>
-                    <input type="text" inputmode="decimal" name="family_composition[${familyMemberIndex}][salary]" placeholder="0.00" class="form-input-custom salary-comma-input" oninput="handleSalaryInput(this)">
+                    <input type="text" inputmode="decimal" maxlength="15" name="family_composition[${familyMemberIndex}][salary]" placeholder="0.00" class="form-input-custom salary-comma-input" oninput="handleSalaryInput(this)">
                 </div>
             </div>
         </div>
@@ -554,6 +595,72 @@ function initFinancialIntakeForm() {
         }
     });
 
+    // Real-time restriction: prevent numeric digits in name fields while preserving Filipino characters, spaces, hyphens, and apostrophes
+    const nameInputIds = [
+        'beneficiary_first_name',
+        'beneficiary_last_name',
+        'beneficiary_middle_name',
+        'beneficiary_extension_name',
+        'rep_first_name',
+        'rep_last_name',
+        'rep_middle_name',
+        'rep_extension_name'
+    ];
+    nameInputIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', function () {
+                if (/[0-9]/.test(this.value)) {
+                    this.value = this.value.replace(/[0-9]/g, '');
+                }
+            });
+        }
+    });
+
+    // Helper to identify text-only fields (Trabaho and Komposisyon ng Pamilya)
+    function isTextOnlyField(el) {
+        if (!el || !el.matches) return false;
+        if (el.matches('.text-only-input, [data-text-only="true"]')) return true;
+        const name = el.getAttribute('name') || '';
+        if (name === 'beneficiary_occupation' || name === 'rep_occupation') return true;
+        if (/^family_composition\[\d+\]\[(name|relationship|occupation)\]$/.test(name)) return true;
+        return false;
+    }
+
+    // Prevent typing digits 0-9 into text-only fields
+    document.addEventListener('keypress', function (e) {
+        if (isTextOnlyField(e.target) && /[0-9]/.test(e.key)) {
+            e.preventDefault();
+        }
+    });
+
+    // Strip pasted numbers on paste for text-only fields
+    document.addEventListener('paste', function (e) {
+        const el = e.target;
+        if (isTextOnlyField(el)) {
+            setTimeout(() => {
+                if (el && /[0-9]/.test(el.value)) {
+                    el.value = el.value.replace(/[0-9]/g, '');
+                }
+            }, 10);
+        }
+    });
+
+    // Strip numbers on input for text-only fields
+    document.addEventListener('input', function (e) {
+        const el = e.target;
+        if (isTextOnlyField(el) && /[0-9]/.test(el.value)) {
+            const s = el.selectionStart;
+            const originalLen = el.value.length;
+            el.value = el.value.replace(/[0-9]/g, '');
+            const diff = originalLen - el.value.length;
+            if (s !== null) {
+                const newPos = Math.max(0, s - diff);
+                el.setSelectionRange?.(newPos, newPos);
+            }
+        }
+    });
+
     // Form submit handler
     const form = document.getElementById('financialIntakeForm');
     const submitBtn = document.getElementById('submitBtn');
@@ -563,11 +670,11 @@ function initFinancialIntakeForm() {
             e.preventDefault();
 
             // Validate contact numbers
-            const benContact = document.getElementById('beneficiary_contact_number')?.value || '';
-            if (benContact.length !== 11) {
+            const benContact = (document.getElementById('beneficiary_contact_number')?.value || '').trim();
+            if (!/^09\d{9}$/.test(benContact)) {
                 Swal.fire({
                     title: 'Invalid Contact Number',
-                    text: 'Numero ng Telepono ng Benepisyaryo must be strictly 11 digits (e.g., 09XXXXXXXXX).',
+                    text: 'Numero ng Telepono ng Benepisyaryo must be strictly 11 digits starting with 09 (e.g., 09XXXXXXXXX).',
                     icon: 'warning',
                     confirmButtonColor: '#b11116'
                 });
@@ -576,16 +683,100 @@ function initFinancialIntakeForm() {
 
             const hasRep = document.getElementById('has_representative')?.checked;
             if (hasRep) {
-                const repContact = document.getElementById('rep_contact_number')?.value || '';
-                if (repContact.length !== 11) {
+                const repContact = (document.getElementById('rep_contact_number')?.value || '').trim();
+                if (!/^09\d{9}$/.test(repContact)) {
                     Swal.fire({
                         title: 'Invalid Representative Contact',
-                        text: 'Numero ng Telepono ng Kinatawan must be strictly 11 digits (e.g., 09XXXXXXXXX).',
+                        text: 'Numero ng Telepono ng Kinatawan must be strictly 11 digits starting with 09 (e.g., 09XXXXXXXXX).',
                         icon: 'warning',
                         confirmButtonColor: '#b11116'
                     });
                     return;
                 }
+            }
+
+            // Ensure name fields contain legitimate letters (reject numeric or punctuation-only entries)
+            const nameChecks = [
+                { id: 'beneficiary_first_name', label: 'Unang Pangalan ng Benepisyaryo' },
+                { id: 'beneficiary_last_name', label: 'Apelyido ng Benepisyaryo' },
+            ];
+            if (hasRep) {
+                nameChecks.push(
+                    { id: 'rep_first_name', label: 'Unang Pangalan ng Kinatawan' },
+                    { id: 'rep_last_name', label: 'Apelyido ng Kinatawan' }
+                );
+            }
+            for (const chk of nameChecks) {
+                const val = (document.getElementById(chk.id)?.value || '').trim();
+                if (val && !/[\p{L}]/u.test(val)) {
+                    Swal.fire({
+                        title: 'Di-wastong Pangalan',
+                        text: `Ang "${chk.label}" ay dapat maglaman ng wastong mga titik (letters).`,
+                        icon: 'warning',
+                        confirmButtonColor: '#b11116'
+                    });
+                    return;
+                }
+            }
+
+            // Validation for text-only fields: Trabaho and Komposisyon ng Pamilya
+            const textOnlyErrors = [];
+            const checkFieldTextOnly = (inputEl, label) => {
+                if (!inputEl) return;
+                const val = (inputEl.value || '').trim();
+                if (!val) return;
+                if (/[0-9]/.test(val)) {
+                    textOnlyErrors.push({
+                        element: inputEl,
+                        message: `Ang "${label}" ay dapat teksto lamang. Hindi pinapayagan ang mga numero.`
+                    });
+                    inputEl.classList.add('border-rose-500');
+                } else if (!/[\p{L}]/u.test(val)) {
+                    textOnlyErrors.push({
+                        element: inputEl,
+                        message: `Ang "${label}" ay dapat maglaman ng wastong mga titik (letters).`
+                    });
+                    inputEl.classList.add('border-rose-500');
+                } else {
+                    inputEl.classList.remove('border-rose-500');
+                }
+            };
+
+            const benOcc = document.getElementById('beneficiary_occupation');
+            checkFieldTextOnly(benOcc, 'Trabaho ng Benepisyaryo');
+
+            if (hasRep) {
+                const repOcc = document.getElementById('rep_occupation');
+                checkFieldTextOnly(repOcc, 'Trabaho ng Kinatawan');
+            }
+
+            const familyCards = document.querySelectorAll('#familyMembersContainer .family-member-card');
+            familyCards.forEach((card, idx) => {
+                const nameInput = card.querySelector('input[name*="[name]"]');
+                const relInput = card.querySelector('input[name*="[relationship]"]');
+                const occInput = card.querySelector('input[name*="[occupation]"]');
+
+                if (nameInput && nameInput.value.trim()) {
+                    checkFieldTextOnly(nameInput, `Pangalan sa Miyembro #${idx + 1}`);
+                }
+                if (relInput && relInput.value.trim()) {
+                    checkFieldTextOnly(relInput, `Relasyon sa Miyembro #${idx + 1}`);
+                }
+                if (occInput && occInput.value.trim()) {
+                    checkFieldTextOnly(occInput, `Trabaho sa Miyembro #${idx + 1}`);
+                }
+            });
+
+            if (textOnlyErrors.length > 0) {
+                const firstErr = textOnlyErrors[0];
+                firstErr.element.focus();
+                Swal.fire({
+                    title: 'Maling Uri ng Impormasyon',
+                    text: firstErr.message,
+                    icon: 'warning',
+                    confirmButtonColor: '#b11116'
+                });
+                return;
             }
 
             // Confirm submission

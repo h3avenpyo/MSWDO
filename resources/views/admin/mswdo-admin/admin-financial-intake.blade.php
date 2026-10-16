@@ -390,25 +390,26 @@
                         <label class="form-label" for="beneficiary_last_name">Apelyido (Last Name) <span
                                 class="required-star">*</span></label>
                         <input type="text" name="beneficiary_last_name" id="beneficiary_last_name" class="form-control"
-                            value="{{ old('beneficiary_last_name') }}" placeholder="Dela Cruz" required>
+                            value="{{ old('beneficiary_last_name') }}" placeholder="Dela Cruz" maxlength="100" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label" for="beneficiary_first_name">Unang Pangalan (First Name) <span
                                 class="required-star">*</span></label>
                         <input type="text" name="beneficiary_first_name" id="beneficiary_first_name"
                             class="form-control" value="{{ old('beneficiary_first_name') }}" placeholder="Juan"
-                            required>
+                            maxlength="100" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label" for="beneficiary_middle_name">Gitnang Pangalan (Middle Name)</label>
                         <input type="text" name="beneficiary_middle_name" id="beneficiary_middle_name"
-                            class="form-control" value="{{ old('beneficiary_middle_name') }}" placeholder="Reyes">
+                            class="form-control" value="{{ old('beneficiary_middle_name') }}" placeholder="Reyes"
+                            maxlength="100">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label" for="beneficiary_extension_name">Extension Name</label>
                         <input type="text" name="beneficiary_extension_name" id="beneficiary_extension_name"
                             class="form-control" value="{{ old('beneficiary_extension_name') }}"
-                            placeholder="Jr., Sr., III">
+                            placeholder="Jr., Sr., III" maxlength="50">
                     </div>
                 </div>
 
@@ -418,7 +419,7 @@
                             <span class="required-star">*</span></label>
                         <input type="text" name="beneficiary_street_address" id="beneficiary_street_address"
                             class="form-control" value="{{ old('beneficiary_street_address') }}"
-                            placeholder="e.g. 123 Purok 2" required>
+                            placeholder="e.g. 123 Purok 2" maxlength="255" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label" for="beneficiary_barangay">Barangay <span
@@ -461,11 +462,10 @@
                         <label class="form-label" for="beneficiary_contact_number">
                             Numero ng Telepono <span class="required-star">*</span>
                         </label>
-                        <input type="text" name="beneficiary_contact_number" id="beneficiary_contact_number"
-                            class="form-control" value="{{ old('beneficiary_contact_number') }}"
-                            placeholder="09XXXXXXXXX (11 digits)" maxlength="11" pattern="[0-9]{11}" required>
-                        <small class="text-muted" style="font-size: 0.72rem;">Exact 11 numeric digits (e.g.
-                            09123456789).</small>
+                        <input type="tel" name="beneficiary_contact_number" id="beneficiary_contact_number"
+                            class="form-control contact-number-input" value="{{ old('beneficiary_contact_number') }}"
+                            placeholder="09XXXXXXXXX o +639XXXXXXXXX" inputmode="tel" maxlength="13" required>
+                        <small class="text-muted" style="font-size: 0.72rem;">Exact 11 numeric digits starting with 09 (e.g. 09XXXXXXXXX).</small>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label" for="beneficiary_birthday">
@@ -478,8 +478,8 @@
                     <div class="col-md-2">
                         <label class="form-label" for="beneficiary_age">Edad (Age) <span
                                 class="required-star">*</span></label>
-                        <input type="number" name="beneficiary_age" id="beneficiary_age" class="form-control"
-                            value="{{ old('beneficiary_age') }}" min="0" max="150" required>
+                        <input type="number" min="0" max="125" step="1" inputmode="numeric" name="beneficiary_age" id="beneficiary_age" class="form-control"
+                            value="{{ old('beneficiary_age') }}" required>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label" for="beneficiary_sex">Kasarian (Sex) <span
@@ -516,13 +516,13 @@
                     <div class="col-md-6">
                         <label class="form-label" for="beneficiary_occupation">Trabaho (Occupation)</label>
                         <input type="text" name="beneficiary_occupation" id="beneficiary_occupation"
-                            class="form-control" value="{{ old('beneficiary_occupation') }}"
-                            placeholder="e.g. Magsasaka, Vendor, None">
+                            class="form-control text-only-input" value="{{ old('beneficiary_occupation') }}"
+                            placeholder="e.g. Magsasaka, Vendor, None" maxlength="150" data-text-only="true">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label" for="beneficiary_monthly_salary">Buwanang Kita (Monthly
                             Salary)</label>
-                        <input type="text" inputmode="decimal" name="beneficiary_monthly_salary"
+                        <input type="text" inputmode="decimal" maxlength="15" name="beneficiary_monthly_salary"
                             id="beneficiary_monthly_salary" class="form-control salary-comma-input"
                             value="{{ old('beneficiary_monthly_salary') }}" placeholder="0.00"
                             oninput="handleSalaryInput(this)">
@@ -554,25 +554,25 @@
                             <label class="form-label" for="rep_last_name">Apelyido <span
                                     class="required-star rep-star">*</span></label>
                             <input type="text" name="rep_last_name" id="rep_last_name" class="form-control rep-input"
-                                value="{{ old('rep_last_name') }}" placeholder="Apelyido">
+                                value="{{ old('rep_last_name') }}" placeholder="Apelyido" maxlength="100">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label" for="rep_first_name">Unang Pangalan <span
                                     class="required-star rep-star">*</span></label>
                             <input type="text" name="rep_first_name" id="rep_first_name" class="form-control rep-input"
-                                value="{{ old('rep_first_name') }}" placeholder="Pangalan">
+                                value="{{ old('rep_first_name') }}" placeholder="Pangalan" maxlength="100">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label" for="rep_middle_name">Gitnang Pangalan</label>
                             <input type="text" name="rep_middle_name" id="rep_middle_name"
                                 class="form-control rep-input" value="{{ old('rep_middle_name') }}"
-                                placeholder="Gitnang Pangalan">
+                                placeholder="Gitnang Pangalan" maxlength="100">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label" for="rep_extension_name">Extension Name</label>
                             <input type="text" name="rep_extension_name" id="rep_extension_name"
                                 class="form-control rep-input" value="{{ old('rep_extension_name') }}"
-                                placeholder="Jr., Sr.">
+                                placeholder="Jr., Sr." maxlength="50">
                         </div>
                     </div>
 
@@ -582,7 +582,7 @@
                                     class="required-star rep-star">*</span></label>
                             <input type="text" name="rep_street_address" id="rep_street_address"
                                 class="form-control rep-input" value="{{ old('rep_street_address') }}"
-                                placeholder="House No., Street">
+                                placeholder="House No., Street" maxlength="255">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="rep_barangay">Barangay <span
@@ -601,9 +601,9 @@
                         <div class="col-md-3">
                             <label class="form-label" for="rep_contact_number">Telepono <span
                                     class="required-star rep-star">*</span></label>
-                            <input type="text" name="rep_contact_number" id="rep_contact_number"
-                                class="form-control rep-input" value="{{ old('rep_contact_number') }}"
-                                placeholder="09XXXXXXXXX" maxlength="11">
+                            <input type="tel" name="rep_contact_number" id="rep_contact_number"
+                                class="form-control rep-input contact-number-input" value="{{ old('rep_contact_number') }}"
+                                placeholder="09XXXXXXXXX o +639XXXXXXXXX" inputmode="tel" maxlength="13">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label" for="rep_birthday">Araw ng Kapanganakan <span
@@ -615,8 +615,8 @@
                         <div class="col-md-2">
                             <label class="form-label" for="rep_age">Edad <span
                                     class="required-star rep-star">*</span></label>
-                            <input type="number" name="rep_age" id="rep_age" class="form-control rep-input"
-                                value="{{ old('rep_age') }}" min="0" max="150">
+                            <input type="number" min="18" max="125" step="1" inputmode="numeric" name="rep_age" id="rep_age" class="form-control rep-input"
+                                value="{{ old('rep_age') }}">
                         </div>
                         <div class="col-md-2">
                             <label class="form-label" for="rep_sex">Kasarian <span
@@ -739,27 +739,27 @@
                             @foreach($oldFam as $index => $fam)
                             <tr>
                                 <td>
-                                    <input type="text" name="family_composition[{{ $index }}][name]"
-                                        class="form-control form-control-sm" value="{{ $fam['name'] ?? '' }}"
-                                        placeholder="Full Name">
+                                    <input type="text" maxlength="150" name="family_composition[{{ $index }}][name]"
+                                        class="form-control form-control-sm text-only-input" value="{{ $fam['name'] ?? '' }}"
+                                        placeholder="Full Name" data-text-only="true">
                                 </td>
                                 <td>
-                                    <input type="text" name="family_composition[{{ $index }}][relationship]"
-                                        class="form-control form-control-sm" value="{{ $fam['relationship'] ?? '' }}"
-                                        placeholder="e.g. Asawa, Anak">
+                                    <input type="text" maxlength="100" name="family_composition[{{ $index }}][relationship]"
+                                        class="form-control form-control-sm text-only-input" value="{{ $fam['relationship'] ?? '' }}"
+                                        placeholder="e.g. Asawa, Anak" data-text-only="true">
                                 </td>
                                 <td>
-                                    <input type="number" min="0" name="family_composition[{{ $index }}][age]"
+                                    <input type="number" min="0" max="125" step="1" inputmode="numeric" name="family_composition[{{ $index }}][age]"
                                         class="form-control form-control-sm" value="{{ $fam['age'] ?? '' }}"
                                         placeholder="Edad">
                                 </td>
                                 <td>
-                                    <input type="text" name="family_composition[{{ $index }}][occupation]"
-                                        class="form-control form-control-sm" value="{{ $fam['occupation'] ?? '' }}"
-                                        placeholder="Trabaho">
+                                    <input type="text" maxlength="150" name="family_composition[{{ $index }}][occupation]"
+                                        class="form-control form-control-sm text-only-input" value="{{ $fam['occupation'] ?? '' }}"
+                                        placeholder="Trabaho" data-text-only="true">
                                 </td>
                                 <td>
-                                    <input type="text" inputmode="decimal"
+                                    <input type="text" inputmode="decimal" maxlength="15"
                                         name="family_composition[{{ $index }}][salary]"
                                         class="form-control form-control-sm salary-comma-input"
                                         value="{{ $fam['salary'] ?? '' }}" placeholder="0.00"
@@ -936,13 +936,20 @@
         const birthDate = new Date(bdayInput);
         const refDate = intakeDateInput ? new Date(intakeDateInput) : new Date();
 
+        if (birthDate > refDate) {
+            ageInput.value = '';
+            return;
+        }
+
         let age = refDate.getFullYear() - birthDate.getFullYear();
         const m = refDate.getMonth() - birthDate.getMonth();
         if (m < 0 || (m === 0 && refDate.getDate() < birthDate.getDate())) {
             age--;
         }
-        if (age >= 0 && !isNaN(age)) {
+        if (age >= 0 && age <= 125 && !isNaN(age)) {
             ageInput.value = age;
+        } else {
+            ageInput.value = '';
         }
 
         // Trigger duplicate check when relevant fields are updated
@@ -960,13 +967,20 @@
         const birthDate = new Date(bdayInput);
         const refDate = intakeDateInput ? new Date(intakeDateInput) : new Date();
 
+        if (birthDate > refDate) {
+            ageInput.value = '';
+            return;
+        }
+
         let age = refDate.getFullYear() - birthDate.getFullYear();
         const m = refDate.getMonth() - birthDate.getMonth();
         if (m < 0 || (m === 0 && refDate.getDate() < birthDate.getDate())) {
             age--;
         }
-        if (age >= 0 && !isNaN(age)) {
+        if (age >= 18 && age <= 125 && !isNaN(age)) {
             ageInput.value = age;
+        } else {
+            ageInput.value = '';
         }
     }
 
@@ -1033,11 +1047,11 @@
         if (!tbody) return;
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><input type="text" name="family_composition[${famRowIdx}][name]" class="form-control form-control-sm" placeholder="Full Name"></td>
-            <td><input type="text" name="family_composition[${famRowIdx}][relationship]" class="form-control form-control-sm" placeholder="e.g. Asawa, Anak"></td>
-            <td><input type="number" min="0" name="family_composition[${famRowIdx}][age]" class="form-control form-control-sm" placeholder="Edad"></td>
-            <td><input type="text" name="family_composition[${famRowIdx}][occupation]" class="form-control form-control-sm" placeholder="Trabaho"></td>
-            <td><input type="text" inputmode="decimal" name="family_composition[${famRowIdx}][salary]" class="form-control form-control-sm salary-comma-input" placeholder="0.00" oninput="handleSalaryInput(this)"></td>
+            <td><input type="text" maxlength="150" name="family_composition[${famRowIdx}][name]" class="form-control form-control-sm text-only-input" placeholder="Full Name" data-text-only="true"></td>
+            <td><input type="text" maxlength="100" name="family_composition[${famRowIdx}][relationship]" class="form-control form-control-sm text-only-input" placeholder="e.g. Asawa, Anak" data-text-only="true"></td>
+            <td><input type="number" min="0" max="125" step="1" inputmode="numeric" name="family_composition[${famRowIdx}][age]" class="form-control form-control-sm" placeholder="Edad"></td>
+            <td><input type="text" maxlength="150" name="family_composition[${famRowIdx}][occupation]" class="form-control form-control-sm text-only-input" placeholder="Trabaho" data-text-only="true"></td>
+            <td><input type="text" inputmode="decimal" maxlength="15" name="family_composition[${famRowIdx}][salary]" class="form-control form-control-sm salary-comma-input" placeholder="0.00" oninput="handleSalaryInput(this)"></td>
             <td class="text-center"><button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeFamilyRow(this)"><i class="fas fa-trash"></i></button></td>
         `;
         tbody.appendChild(tr);
@@ -1127,8 +1141,49 @@
         triggerDuplicateCheck();
     });
 
-    // Strip commas from beneficiary_monthly_salary and family salary inputs before submission
-    document.getElementById('historicalIntakeForm')?.addEventListener('submit', function () {
+    // Strip commas from beneficiary_monthly_salary and family salary inputs before submission & validate inputs
+    document.getElementById('historicalIntakeForm')?.addEventListener('submit', function (e) {
+        // Contact number checks
+        const benContact = (document.getElementById('beneficiary_contact_number')?.value || '').trim();
+        if (!/^09\d{9}$/.test(benContact)) {
+            e.preventDefault();
+            alert('Numero ng telepono ng benepisyaryo must be strictly 11 digits starting with 09 (e.g., 09XXXXXXXXX).');
+            document.getElementById('beneficiary_contact_number')?.focus();
+            return;
+        }
+
+        const hasRep = document.getElementById('has_representative')?.checked;
+        if (hasRep) {
+            const repContact = (document.getElementById('rep_contact_number')?.value || '').trim();
+            if (!/^09\d{9}$/.test(repContact)) {
+                e.preventDefault();
+                alert('Numero ng telepono ng kinatawan must be strictly 11 digits starting with 09 (e.g., 09XXXXXXXXX).');
+                document.getElementById('rep_contact_number')?.focus();
+                return;
+            }
+        }
+
+        // Validate names contain letters
+        const nameFields = [
+            { id: 'beneficiary_first_name', label: 'Unang Pangalan ng Benepisyaryo' },
+            { id: 'beneficiary_last_name', label: 'Apelyido ng Benepisyaryo' },
+        ];
+        if (hasRep) {
+            nameFields.push(
+                { id: 'rep_first_name', label: 'Unang Pangalan ng Kinatawan' },
+                { id: 'rep_last_name', label: 'Apelyido ng Kinatawan' }
+            );
+        }
+        for (const item of nameFields) {
+            const val = (document.getElementById(item.id)?.value || '').trim();
+            if (val && !/[\p{L}]/u.test(val)) {
+                e.preventDefault();
+                alert(`${item.label} must contain valid letters and cannot be purely numbers or symbols.`);
+                document.getElementById(item.id)?.focus();
+                return;
+            }
+        }
+
         document.querySelectorAll('#historicalIntakeForm .salary-comma-input, #historicalIntakeForm input[name*="[salary]"]').forEach(input => {
             if (input && input.value) {
                 input.value = input.value.replace(/,/g, '');
@@ -1136,11 +1191,79 @@
         });
     });
 
-    // Initialize formatting on page load if old value exists
+    // Initialize formatting and restrictions on page load
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('#historicalIntakeForm .salary-comma-input, #historicalIntakeForm input[name*="[salary]"]').forEach(input => {
             if (input && input.value) {
                 input.value = formatNumberWithCommas(input.value);
+            }
+        });
+
+        // Normalize phone numbers on input
+        document.querySelectorAll('.contact-number-input').forEach(input => {
+            input.addEventListener('input', function () {
+                let val = this.value.trim();
+                if (val.startsWith('+639')) {
+                    val = '09' + val.slice(4);
+                } else if (val.startsWith('+63')) {
+                    val = '0' + val.slice(3);
+                } else if (val.startsWith('639') && val.length >= 12) {
+                    val = '09' + val.slice(3);
+                }
+                this.value = val.replace(/\D/g, '').slice(0, 11);
+            });
+        });
+
+        // Disallow numeric digits in name fields while preserving Filipino characters
+        ['beneficiary_first_name', 'beneficiary_last_name', 'beneficiary_middle_name', 'beneficiary_extension_name', 'rep_first_name', 'rep_last_name', 'rep_middle_name', 'rep_extension_name'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', function () {
+                    if (/[0-9]/.test(this.value)) {
+                        this.value = this.value.replace(/[0-9]/g, '');
+                    }
+                });
+            }
+        });
+
+        // Text-only field restrictions for Trabaho and Komposisyon ng Pamilya
+        function isTextOnlyInput(el) {
+            if (!el || !el.matches) return false;
+            if (el.matches('.text-only-input, [data-text-only="true"]')) return true;
+            const name = el.getAttribute('name') || '';
+            if (name === 'beneficiary_occupation' || name === 'rep_occupation') return true;
+            if (/^family_composition\[\d+\]\[(name|relationship|occupation)\]$/.test(name)) return true;
+            return false;
+        }
+
+        document.addEventListener('keypress', function (e) {
+            if (isTextOnlyInput(e.target) && /[0-9]/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('paste', function (e) {
+            const el = e.target;
+            if (isTextOnlyInput(el)) {
+                setTimeout(() => {
+                    if (el && /[0-9]/.test(el.value)) {
+                        el.value = el.value.replace(/[0-9]/g, '');
+                    }
+                }, 10);
+            }
+        });
+
+        document.addEventListener('input', function (e) {
+            const el = e.target;
+            if (isTextOnlyInput(el) && /[0-9]/.test(el.value)) {
+                const s = el.selectionStart;
+                const originalLen = el.value.length;
+                el.value = el.value.replace(/[0-9]/g, '');
+                const diff = originalLen - el.value.length;
+                if (s !== null) {
+                    const newPos = Math.max(0, s - diff);
+                    el.setSelectionRange?.(newPos, newPos);
+                }
             }
         });
     });

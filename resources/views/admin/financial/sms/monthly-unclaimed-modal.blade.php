@@ -48,7 +48,7 @@
                         <div class="position-relative">
                             <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-2.5 text-muted small" style="pointer-events: none;"></i>
                             <input type="text" class="form-control form-control-sm rounded-3 ps-4" id="monthlySearchInput"
-                                placeholder="Filter by beneficiary name, representative, barangay, or contact number...">
+                                placeholder="Filter by beneficiary name, representative, barangay, or contact number..." maxlength="150">
                         </div>
                     </div>
                 </div>
@@ -100,6 +100,7 @@
 
                             <textarea class="form-control rounded-3 border"
                                 id="monthlyBulkMessageBody" rows="4" placeholder="Enter SMS message text..."
+                                maxlength="1000"
                                 style="resize: vertical; font-size: 0.92rem; line-height: 1.45;"></textarea>
 
                             <div class="d-flex justify-content-between align-items-center mt-1.5 text-muted small px-1"

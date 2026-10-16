@@ -190,7 +190,7 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
                             class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-2.5 text-muted text-xs"></i>
                         <input type="text" id="barangaySearchInput"
                             class="form-control form-control-sm rounded-pill ps-4 pe-3 bg-light border-0 text-xs"
-                            placeholder="Search barangay...">
+                            placeholder="Search barangay..." maxlength="100">
                     </div>
 
                     <!-- View Limits (Top 10 / Top 25 / All) -->
@@ -322,7 +322,7 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
                                     class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-2.5 text-muted text-xs"></i>
                                 <input type="text" id="sectorSearchInput"
                                     class="form-control form-control-sm rounded-pill ps-4 pe-3 bg-light border-0 text-xs"
-                                    placeholder="Search sector...">
+                                    placeholder="Search sector..." maxlength="100">
                             </div>
 
                             <!-- Metric Switcher (Cases vs Amount) -->

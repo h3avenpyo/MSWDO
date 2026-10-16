@@ -235,7 +235,9 @@
                                     </label>
                                 </div>
                                 <input type="text" id="beneficiary_last_name" name="beneficiary_last_name" required
-                                    placeholder="Hal. DELA CRUZ" class="form-input-custom uppercase">
+                                    placeholder="Hal. DELA CRUZ" maxlength="100" autocomplete="family-name"
+                                    title="Maaari lamang maglaman ng mga titik, espasyo, gitling (-), kudlit ('), at tuldok (.). Hindi pinapayagan ang numero."
+                                    class="form-input-custom uppercase">
                             </div>
                         </div>
                         <div class="sm:col-span-6 lg:col-span-3">
@@ -247,7 +249,9 @@
                                     </label>
                                 </div>
                                 <input type="text" id="beneficiary_first_name" name="beneficiary_first_name" required
-                                    placeholder="Hal. JUAN" class="form-input-custom uppercase">
+                                    placeholder="Hal. JUAN" maxlength="100" autocomplete="given-name"
+                                    title="Maaari lamang maglaman ng mga titik, espasyo, gitling (-), kudlit ('), at tuldok (.). Hindi pinapayagan ang numero."
+                                    class="form-input-custom uppercase">
                             </div>
                         </div>
                         <div class="sm:col-span-6 lg:col-span-3">
@@ -258,7 +262,9 @@
                                     </label>
                                 </div>
                                 <input type="text" id="beneficiary_middle_name" name="beneficiary_middle_name"
-                                    placeholder="Hal. SANTOS" class="form-input-custom uppercase">
+                                    placeholder="Hal. SANTOS" maxlength="100" autocomplete="additional-name"
+                                    title="Maaari lamang maglaman ng mga titik, espasyo, gitling (-), kudlit ('), at tuldok (.). Hindi pinapayagan ang numero."
+                                    class="form-input-custom uppercase">
                             </div>
                         </div>
                         <div class="sm:col-span-6 lg:col-span-3">
@@ -292,7 +298,7 @@
                                     </label>
                                 </div>
                                 <input type="text" id="beneficiary_street_address" name="beneficiary_street_address"
-                                    required placeholder="Hal. Blk 2 Lot 5, Purok 3" class="form-input-custom">
+                                    required placeholder="Hal. Blk 2 Lot 5, Purok 3" maxlength="255" class="form-input-custom">
                             </div>
                         </div>
                         <div class="sm:col-span-6 lg:col-span-6">
@@ -326,10 +332,10 @@
                                         digits</span>
                                 </div>
                                 <input type="tel" id="beneficiary_contact_number" name="beneficiary_contact_number"
-                                    required placeholder="09XXXXXXXXX" maxlength="11" class="form-input-custom">
+                                    required placeholder="09XXXXXXXXX" maxlength="13" inputmode="tel"
+                                    autocomplete="tel" class="form-input-custom">
                                 <span id="beneficiary_contact_error"
-                                    class="hidden text-xs text-rose-600 mt-1 block">Dapat eksaktong 11 digits
-                                    (09XXXXXXXXX).</span>
+                                    class="hidden text-xs text-rose-600 mt-1 block">Dapat ay wastong Philippine mobile number (09XXXXXXXXX o +639XXXXXXXXX).</span>
                             </div>
                         </div>
 
@@ -342,7 +348,7 @@
                                     </label>
                                 </div>
                                 <input type="date" id="beneficiary_birthday" name="beneficiary_birthday" required
-                                    class="form-input-custom">
+                                    max="{{ date('Y-m-d') }}" class="form-input-custom">
                             </div>
                         </div>
 
@@ -354,6 +360,7 @@
                                     </label>
                                 </div>
                                 <input type="number" id="beneficiary_age" name="beneficiary_age" readonly required
+                                    min="0" max="125" step="1" inputmode="numeric"
                                     placeholder="Edad" class="form-input-custom bg-slate-50 text-center font-bold">
                             </div>
                         </div>
@@ -404,7 +411,7 @@
                                     </label>
                                 </div>
                                 <input type="text" id="beneficiary_occupation" name="beneficiary_occupation"
-                                    placeholder="Hal. Vendor, Magsasaka, N/A" class="form-input-custom">
+                                    placeholder="Hal. Vendor, Magsasaka, N/A" maxlength="150" class="form-input-custom text-only-input" data-text-only="true">
                             </div>
                         </div>
                         <div class="sm:col-span-4 lg:col-span-4">
@@ -415,7 +422,7 @@
                                     </label>
                                 </div>
                                 <input type="text" inputmode="decimal" id="beneficiary_monthly_salary"
-                                    name="beneficiary_monthly_salary" placeholder="0.00"
+                                    name="beneficiary_monthly_salary" placeholder="0.00" maxlength="15"
                                     class="form-input-custom salary-comma-input"
                                     value="{{ old('beneficiary_monthly_salary') }}" oninput="handleSalaryInput(this)">
                             </div>
@@ -478,7 +485,9 @@
                                         </label>
                                     </div>
                                     <input type="text" id="rep_last_name" name="rep_last_name"
-                                        placeholder="Hal. DELA CRUZ" class="form-input-custom rep-field uppercase"
+                                        placeholder="Hal. DELA CRUZ" maxlength="100" autocomplete="family-name"
+                                        title="Maaari lamang maglaman ng mga titik, espasyo, gitling (-), kudlit ('), at tuldok (.). Hindi pinapayagan ang numero."
+                                        class="form-input-custom rep-field uppercase"
                                         data-required-if-rep="true">
                                 </div>
                             </div>
@@ -491,7 +500,9 @@
                                         </label>
                                     </div>
                                     <input type="text" id="rep_first_name" name="rep_first_name"
-                                        placeholder="Hal. MARIA" class="form-input-custom rep-field uppercase"
+                                        placeholder="Hal. MARIA" maxlength="100" autocomplete="given-name"
+                                        title="Maaari lamang maglaman ng mga titik, espasyo, gitling (-), kudlit ('), at tuldok (.). Hindi pinapayagan ang numero."
+                                        class="form-input-custom rep-field uppercase"
                                         data-required-if-rep="true">
                                 </div>
                             </div>
@@ -503,7 +514,9 @@
                                         </label>
                                     </div>
                                     <input type="text" id="rep_middle_name" name="rep_middle_name"
-                                        placeholder="Hal. REYES" class="form-input-custom rep-field uppercase">
+                                        placeholder="Hal. REYES" maxlength="100" autocomplete="additional-name"
+                                        title="Maaari lamang maglaman ng mga titik, espasyo, gitling (-), kudlit ('), at tuldok (.). Hindi pinapayagan ang numero."
+                                        class="form-input-custom rep-field uppercase">
                                 </div>
                             </div>
                             <div class="sm:col-span-6 lg:col-span-3">
@@ -536,7 +549,7 @@
                                         </label>
                                     </div>
                                     <input type="text" id="rep_street_address" name="rep_street_address"
-                                        placeholder="Hal. Purok 4" class="form-input-custom rep-field"
+                                        placeholder="Hal. Purok 4" maxlength="255" class="form-input-custom rep-field"
                                         data-required-if-rep="true">
                                 </div>
                             </div>
@@ -571,10 +584,11 @@
                                             digits</span>
                                     </div>
                                     <input type="tel" id="rep_contact_number" name="rep_contact_number"
-                                        placeholder="09XXXXXXXXX" maxlength="11" class="form-input-custom rep-field"
+                                        placeholder="09XXXXXXXXX" maxlength="13" inputmode="tel"
+                                        autocomplete="tel" class="form-input-custom rep-field"
                                         data-required-if-rep="true">
                                     <span id="rep_contact_error" class="hidden text-xs text-rose-600 mt-1 block">Dapat
-                                        eksaktong 11 digits (09XXXXXXXXX).</span>
+                                        ay wastong Philippine mobile number (09XXXXXXXXX o +639XXXXXXXXX).</span>
                                 </div>
                             </div>
                             <div class="sm:col-span-6 lg:col-span-3">
@@ -586,7 +600,8 @@
                                         </label>
                                     </div>
                                     <input type="date" id="rep_birthday" name="rep_birthday"
-                                        class="form-input-custom rep-field" data-required-if-rep="true">
+                                        max="{{ date('Y-m-d') }}" class="form-input-custom rep-field"
+                                        data-required-if-rep="true">
                                 </div>
                             </div>
                             <div class="sm:col-span-4 lg:col-span-2">
@@ -598,6 +613,7 @@
                                         </label>
                                     </div>
                                     <input type="number" id="rep_age" name="rep_age" readonly placeholder="Edad"
+                                        min="18" max="125" step="1" inputmode="numeric"
                                         class="form-input-custom rep-field bg-slate-50 text-center font-bold"
                                         data-required-if-rep="true">
                                 </div>
@@ -648,7 +664,7 @@
                                         </label>
                                     </div>
                                     <input type="text" id="rep_occupation" name="rep_occupation"
-                                        placeholder="Trabaho ng Kinatawan" class="form-input-custom rep-field">
+                                        placeholder="Trabaho ng Kinatawan" maxlength="150" class="form-input-custom rep-field text-only-input" data-text-only="true">
                                 </div>
                             </div>
                             <div class="sm:col-span-4 lg:col-span-4">
@@ -659,7 +675,7 @@
                                         </label>
                                     </div>
                                     <input type="text" inputmode="decimal" id="rep_monthly_salary"
-                                        name="rep_monthly_salary" placeholder="0.00"
+                                        name="rep_monthly_salary" placeholder="0.00" maxlength="15"
                                         class="form-input-custom rep-field salary-comma-input"
                                         value="{{ old('rep_monthly_salary') }}" oninput="handleSalaryInput(this)">
                                 </div>
@@ -719,8 +735,8 @@
                                                 Buong Pangalan <span class="label-sub">(Full Name)</span>
                                             </label>
                                         </div>
-                                        <input type="text" name="family_composition[0][name]"
-                                            placeholder="Hal. Juan Dela Cruz Jr." class="form-input-custom uppercase">
+                                        <input type="text" maxlength="150" name="family_composition[0][name]"
+                                            placeholder="Hal. Juan Dela Cruz Jr." class="form-input-custom uppercase text-only-input" data-text-only="true">
                                     </div>
                                 </div>
 
@@ -732,8 +748,8 @@
                                                 Relasyon sa Benepisyaryo <span class="label-sub">(Relationship)</span>
                                             </label>
                                         </div>
-                                        <input type="text" name="family_composition[0][relationship]"
-                                            placeholder="Hal. Asawa, Anak, Magulang" class="form-input-custom">
+                                        <input type="text" maxlength="100" name="family_composition[0][relationship]"
+                                            placeholder="Hal. Asawa, Anak, Magulang" class="form-input-custom text-only-input" data-text-only="true">
                                     </div>
                                 </div>
 
@@ -758,8 +774,8 @@
                                                 Trabaho <span class="label-sub">(Occupation)</span>
                                             </label>
                                         </div>
-                                        <input type="text" name="family_composition[0][occupation]"
-                                            placeholder="Hal. Magsasaka, Vendor, Wala" class="form-input-custom">
+                                        <input type="text" maxlength="150" name="family_composition[0][occupation]"
+                                            placeholder="Hal. Magsasaka, Vendor, Wala" class="form-input-custom text-only-input" data-text-only="true">
                                     </div>
                                 </div>
 

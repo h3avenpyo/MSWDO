@@ -27,12 +27,19 @@ function formatAndCalculateAge(inputEl, ageInputId) {
         if (!isNaN(month) && !isNaN(day) && !isNaN(year) && year > 1900 && month >= 0 && month <= 11 && day >= 1 && day <= 31) {
             const birthDate = new Date(year, month, day);
             const today = new Date();
+            // Reject future birth dates
+            if (birthDate > today) {
+                ageEl.value = '';
+                inputEl.classList.add('is-invalid');
+                return;
+            }
+            inputEl.classList.remove('is-invalid');
             let age = today.getFullYear() - birthDate.getFullYear();
             const m = today.getMonth() - birthDate.getMonth();
             if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
                 age--;
             }
-            ageEl.value = age >= 0 ? age : '';
+            ageEl.value = (age >= 0 && age <= 125) ? age : '';
             return;
         }
     }
@@ -118,11 +125,11 @@ function addFamilyRow() {
     const familyIndex = tbody.children.length;
     const tr = document.createElement('tr');
     tr.innerHTML = `
-        <td><input type="text" name="family_composition[${familyIndex}][name]" class="form-control form-control-sm" placeholder="Full Name"></td>
-        <td><input type="text" name="family_composition[${familyIndex}][relationship]" class="form-control form-control-sm" placeholder="e.g. Spouse, Son"></td>
-        <td><input type="number" min="0" name="family_composition[${familyIndex}][age]" class="form-control form-control-sm" placeholder="Edad"></td>
-        <td><input type="text" name="family_composition[${familyIndex}][occupation]" class="form-control form-control-sm" placeholder="Trabaho"></td>
-        <td><input type="text" inputmode="decimal" name="family_composition[${familyIndex}][salary]" class="form-control form-control-sm salary-comma-input" placeholder="0.00" oninput="handleSalaryInput(this)"></td>
+        <td><input type="text" maxlength="150" name="family_composition[${familyIndex}][name]" class="form-control form-control-sm text-only-input" data-text-only="true" placeholder="Full Name"></td>
+        <td><input type="text" maxlength="100" name="family_composition[${familyIndex}][relationship]" class="form-control form-control-sm text-only-input" data-text-only="true" placeholder="e.g. Spouse, Son"></td>
+        <td><input type="number" min="0" max="125" step="1" inputmode="numeric" name="family_composition[${familyIndex}][age]" class="form-control form-control-sm" placeholder="Edad"></td>
+        <td><input type="text" maxlength="150" name="family_composition[${familyIndex}][occupation]" class="form-control form-control-sm text-only-input" data-text-only="true" placeholder="Trabaho"></td>
+        <td><input type="text" inputmode="decimal" maxlength="15" name="family_composition[${familyIndex}][salary]" class="form-control form-control-sm salary-comma-input" placeholder="0.00" oninput="handleSalaryInput(this)"></td>
         <td class="text-center"><button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeFamilyRow(this)"><i class="fas fa-trash"></i></button></td>
     `;
     tbody.appendChild(tr);
@@ -281,24 +288,33 @@ function initContactNumberValidation() {
         const errorEl = document.getElementById(`${inputId}_error`);
 
         function validateInput(showErrors = false) {
-            // Strip any non-digits and cap at 11 digits
-            let rawVal = input.value;
+            let rawVal = input.value.trim();
+            // Automatically normalize international Philippine prefix (+639 / 639) to 09
+            if (rawVal.startsWith('+639')) {
+                rawVal = '09' + rawVal.slice(4);
+            } else if (rawVal.startsWith('+63')) {
+                rawVal = '0' + rawVal.slice(3);
+            } else if (rawVal.startsWith('639') && rawVal.length >= 12) {
+                rawVal = '09' + rawVal.slice(3);
+            }
             let cleanVal = rawVal.replace(/\D/g, '').slice(0, 11);
-            if (rawVal !== cleanVal) {
+            if (input.value !== cleanVal) {
                 input.value = cleanVal;
             }
 
             const len = cleanVal.length;
+            const startsWith09 = cleanVal.startsWith('09');
             const isRep = input.classList.contains('rep-field');
             const hasRep = document.getElementById('has_representative')?.checked || false;
             const isRequired = input.required || (isRep && hasRep);
 
             // Update live digit counter
             if (counterEl) {
-                if (len === 11) {
+                if (len === 11 && startsWith09) {
                     counterEl.innerHTML = `<span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i>11/11 digits</span>`;
                 } else if (len > 0) {
-                    const remaining = 11 - len;
+                    counterEl.textContent = `${len}/11 digits`;
+                    counterEl.className = 'text-warning small contact-digit-counter';
                 } else {
                     counterEl.textContent = '0/11 digits';
                     counterEl.className = 'text-muted small contact-digit-counter';
@@ -313,8 +329,8 @@ function initContactNumberValidation() {
                 return true;
             }
 
-            // Exactly 11 digits -> Valid
-            if (len === 11) {
+            // Exactly 11 digits starting with 09 -> Valid
+            if (len === 11 && startsWith09) {
                 input.classList.remove('is-invalid');
                 input.classList.add('is-valid');
                 input.setCustomValidity('');
@@ -326,12 +342,16 @@ function initContactNumberValidation() {
                     input.classList.add('is-invalid');
                     if (errorEl) {
                         const fieldName = isRep ? 'Representative contact number' : 'Numero ng telepono (Contact number)';
-                        errorEl.textContent = len === 0
-                            ? `${fieldName} is required and must be exactly 11 digits.`
-                            : `${fieldName} must be exactly 11 digits. Currently: ${len} digit${len > 1 ? 's' : ''}.`;
+                        if (len === 11 && !startsWith09) {
+                            errorEl.textContent = `${fieldName} must start with 09 (e.g., 09XXXXXXXXX).`;
+                        } else {
+                            errorEl.textContent = len === 0
+                                ? `${fieldName} is required and must be exactly 11 digits starting with 09.`
+                                : `${fieldName} must be 11 digits starting with 09. Currently: ${len} digit${len > 1 ? 's' : ''}.`;
+                        }
                         errorEl.style.removeProperty('display');
                     }
-                    input.setCustomValidity('Contact number must be exactly 11 digits (e.g., 09XXXXXXXXX).');
+                    input.setCustomValidity('Contact number must be exactly 11 digits starting with 09 (e.g., 09XXXXXXXXX).');
                 } else {
                     input.classList.remove('is-invalid');
                     input.setCustomValidity(isRequired ? 'Please fill out this field.' : '');
@@ -340,7 +360,7 @@ function initContactNumberValidation() {
             }
         }
 
-        // Prevent non-numeric key typing
+        // Prevent non-numeric key typing (allow + if at beginning)
         input.addEventListener('keydown', function (e) {
             // Allow control and navigation keys
             const allowedKeys = [
@@ -352,6 +372,11 @@ function initContactNumberValidation() {
 
             // Allow Ctrl / Cmd combinations (A, C, V, X, Z)
             if (e.ctrlKey || e.metaKey) return;
+
+            // Allow '+' if input is empty or selection includes start
+            if (e.key === '+' && (input.selectionStart === 0 || input.value.length === 0)) {
+                return;
+            }
 
             // Reject anything that is not a numeric digit 0-9
             if (!/^[0-9]$/.test(e.key)) {
@@ -376,16 +401,20 @@ function initContactNumberValidation() {
         input.addEventListener('paste', function (e) {
             e.preventDefault();
             const pastedText = (e.clipboardData || window.clipboardData).getData('text') || '';
-            let digits = pastedText.replace(/\D/g, '');
-            if (digits.startsWith('63') && digits.length === 12) {
-                digits = '0' + digits.slice(2);
+            let rawPasted = pastedText.trim();
+            if (rawPasted.startsWith('+639')) {
+                rawPasted = '09' + rawPasted.slice(4);
+            } else if (rawPasted.startsWith('+63')) {
+                rawPasted = '0' + rawPasted.slice(3);
+            } else if (rawPasted.startsWith('639') && rawPasted.length >= 12) {
+                rawPasted = '09' + rawPasted.slice(3);
             }
-            digits = digits.slice(0, 11);
+            let digits = rawPasted.replace(/\D/g, '').slice(0, 11);
 
             const start = input.selectionStart;
             const end = input.selectionEnd;
             const currentVal = input.value;
-            const newVal = (currentVal.substring(0, start) + digits + currentVal.substring(end)).replace(/\D/g, '').slice(0, 11);
+            let newVal = (currentVal.substring(0, start) + digits + currentVal.substring(end)).replace(/\D/g, '').slice(0, 11);
             input.value = newVal;
             validateInput(true);
         });
@@ -414,6 +443,28 @@ document.addEventListener('DOMContentLoaded', function () {
     togglePurposeOtherInput();
     toggleAssistanceTypeOtherInput();
     initContactNumberValidation();
+
+    // Disallow numeric digits in name fields while allowing Filipino letters (ñ/Ñ), spaces, hyphens, and apostrophes
+    const nameInputs = [
+        'beneficiary_first_name',
+        'beneficiary_last_name',
+        'beneficiary_middle_name',
+        'beneficiary_extension_name',
+        'rep_first_name',
+        'rep_last_name',
+        'rep_middle_name',
+        'rep_extension_name'
+    ];
+    nameInputs.forEach(fieldName => {
+        const inputEl = document.querySelector(`[name="${fieldName}"]`);
+        if (inputEl) {
+            inputEl.addEventListener('input', function () {
+                if (/[0-9]/.test(this.value)) {
+                    this.value = this.value.replace(/[0-9]/g, '');
+                }
+            });
+        }
+    });
 
     // Check server-side duplicate error state
     const alertCard = document.getElementById('duplicateAlertCard');
@@ -461,23 +512,23 @@ document.addEventListener('DOMContentLoaded', function () {
             const benContact = document.getElementById('beneficiary_contact_number');
             if (benContact) {
                 const benDigits = benContact.value.replace(/\D/g, '');
-                if (benDigits.length !== 11) {
+                if (benDigits.length !== 11 || !benDigits.startsWith('09')) {
                     benContact.classList.add('is-invalid');
                     benContact.focus();
                     const benError = document.getElementById('beneficiary_contact_number_error');
                     if (benError) {
-                        benError.textContent = `Numero ng telepono must be exactly 11 digits. Currently: ${benDigits.length} digits.`;
+                        benError.textContent = `Numero ng telepono must be strictly 11 digits starting with 09 (e.g., 09XXXXXXXXX).`;
                         benError.style.removeProperty('display');
                     }
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             icon: 'warning',
-                            title: 'Incomplete Contact Number',
-                            text: 'Beneficiary contact number must be exactly 11 digits (0–9) without letters, spaces, or symbols (e.g., 09XXXXXXXXX).',
+                            title: 'Invalid Contact Number',
+                            text: 'Beneficiary contact number must be strictly 11 digits starting with 09 (e.g., 09XXXXXXXXX).',
                             confirmButtonColor: '#1A237E'
                         });
                     } else {
-                        alert('Beneficiary contact number must be exactly 11 digits.');
+                        alert('Beneficiary contact number must be strictly 11 digits starting with 09.');
                     }
                     return;
                 }
@@ -487,23 +538,54 @@ document.addEventListener('DOMContentLoaded', function () {
             const repContact = document.getElementById('rep_contact_number');
             if (hasRep && repContact) {
                 const repDigits = repContact.value.replace(/\D/g, '');
-                if (repDigits.length !== 11) {
+                if (repDigits.length !== 11 || !repDigits.startsWith('09')) {
                     repContact.classList.add('is-invalid');
                     repContact.focus();
                     const repError = document.getElementById('rep_contact_number_error');
                     if (repError) {
-                        repError.textContent = `Representative contact number must be exactly 11 digits. Currently: ${repDigits.length} digits.`;
+                        repError.textContent = `Representative contact number must be strictly 11 digits starting with 09 (e.g., 09XXXXXXXXX).`;
                         repError.style.removeProperty('display');
                     }
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             icon: 'warning',
-                            title: 'Incomplete Representative Contact',
-                            text: 'Representative contact number must be exactly 11 digits (0–9) without letters, spaces, or symbols (e.g., 09XXXXXXXXX).',
+                            title: 'Invalid Representative Contact',
+                            text: 'Representative contact number must be strictly 11 digits starting with 09 (e.g., 09XXXXXXXXX).',
                             confirmButtonColor: '#1A237E'
                         });
                     } else {
-                        alert('Representative contact number must be exactly 11 digits.');
+                        alert('Representative contact number must be strictly 11 digits starting with 09.');
+                    }
+                    return;
+                }
+            }
+
+            // Ensure name fields contain legitimate letters (reject numeric or punctuation-only entries)
+            const nameFieldsToCheck = [
+                { name: 'beneficiary_first_name', label: 'Beneficiary First Name' },
+                { name: 'beneficiary_last_name', label: 'Beneficiary Last Name' },
+            ];
+            if (hasRep) {
+                nameFieldsToCheck.push(
+                    { name: 'rep_first_name', label: 'Representative First Name' },
+                    { name: 'rep_last_name', label: 'Representative Last Name' }
+                );
+            }
+            for (const item of nameFieldsToCheck) {
+                const el = document.querySelector(`[name="${item.name}"]`);
+                const val = (el?.value || '').trim();
+                if (val && !/[\p{L}]/u.test(val)) {
+                    el.classList.add('is-invalid');
+                    el.focus();
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Invalid Name',
+                            text: `${item.label} must contain valid letters and cannot be purely numbers or symbols.`,
+                            confirmButtonColor: '#1A237E'
+                        });
+                    } else {
+                        alert(`${item.label} must contain valid letters.`);
                     }
                     return;
                 }
@@ -537,6 +619,70 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (!formEl.checkValidity()) {
                 formEl.reportValidity();
+                return;
+            }
+
+            // Validation for text-only fields: Trabaho and Komposisyon ng Pamilya
+            const textOnlyValidationErrors = [];
+            const checkFieldTextOnly = (inputEl, label) => {
+                if (!inputEl) return;
+                const val = (inputEl.value || '').trim();
+                if (!val) return;
+                if (/[0-9]/.test(val)) {
+                    textOnlyValidationErrors.push({
+                        element: inputEl,
+                        message: `Ang "${label}" ay dapat teksto lamang. Hindi pinapayagan ang mga numero.`
+                    });
+                    inputEl.classList.add('is-invalid');
+                } else if (!/[\p{L}]/u.test(val)) {
+                    textOnlyValidationErrors.push({
+                        element: inputEl,
+                        message: `Ang "${label}" ay dapat maglaman ng wastong mga titik (letters).`
+                    });
+                    inputEl.classList.add('is-invalid');
+                } else {
+                    inputEl.classList.remove('is-invalid');
+                }
+            };
+
+            const benOcc = document.getElementById('beneficiary_occupation');
+            checkFieldTextOnly(benOcc, 'Trabaho ng Benepisyaryo');
+
+            if (hasRep) {
+                const repOcc = document.getElementById('rep_occupation');
+                checkFieldTextOnly(repOcc, 'Trabaho ng Kinatawan');
+            }
+
+            const familyRows = document.querySelectorAll('#familyTableBody tr');
+            familyRows.forEach((row, idx) => {
+                const nameInput = row.querySelector('input[name*="[name]"]');
+                const relInput = row.querySelector('input[name*="[relationship]"]');
+                const occInput = row.querySelector('input[name*="[occupation]"]');
+
+                if (nameInput && nameInput.value.trim()) {
+                    checkFieldTextOnly(nameInput, `Pangalan sa Miyembro #${idx + 1}`);
+                }
+                if (relInput && relInput.value.trim()) {
+                    checkFieldTextOnly(relInput, `Relasyon sa Miyembro #${idx + 1}`);
+                }
+                if (occInput && occInput.value.trim()) {
+                    checkFieldTextOnly(occInput, `Trabaho sa Miyembro #${idx + 1}`);
+                }
+            });
+
+            if (textOnlyValidationErrors.length > 0) {
+                const firstErr = textOnlyValidationErrors[0];
+                firstErr.element.focus();
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Maling Uri ng Impormasyon',
+                        html: `<div class="text-start">${firstErr.message}</div>`,
+                        icon: 'warning',
+                        confirmButtonColor: '#1A237E'
+                    });
+                } else {
+                    alert(firstErr.message);
+                }
                 return;
             }
 
@@ -667,13 +813,54 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Real-time uppercase conversion for editable user inputs (excluding salary fields)
+    // Helper to identify text-only fields (Trabaho and Komposisyon ng Pamilya)
+    function isTextOnlyInput(el) {
+        if (!el || !el.matches) return false;
+        if (el.matches('.text-only-input, [data-text-only="true"]')) return true;
+        const name = el.getAttribute('name') || '';
+        if (name === 'beneficiary_occupation' || name === 'rep_occupation') return true;
+        if (/^family_composition\[\d+\]\[(name|relationship|occupation)\]$/.test(name)) return true;
+        return false;
+    }
+
+    // Prevent typing numbers 0-9 into text-only fields
+    document.addEventListener('keypress', function (e) {
+        if (isTextOnlyInput(e.target) && /[0-9]/.test(e.key)) {
+            e.preventDefault();
+        }
+    });
+
+    // Strip numbers on paste for text-only fields
+    document.addEventListener('paste', function (e) {
+        const el = e.target;
+        if (isTextOnlyInput(el)) {
+            setTimeout(() => {
+                if (el && /[0-9]/.test(el.value)) {
+                    el.value = el.value.replace(/[0-9]/g, '');
+                }
+            }, 10);
+        }
+    });
+
+    // Real-time uppercase conversion for editable user inputs and stripping numbers from text-only fields
     document.addEventListener('input', function (e) {
         const el = e.target;
         if (el.matches?.('.salary-comma-input')) {
             handleSalaryInput(el);
             return;
         }
+
+        if (isTextOnlyInput(el) && /[0-9]/.test(el.value)) {
+            const s = el.selectionStart;
+            const originalLen = el.value.length;
+            el.value = el.value.replace(/[0-9]/g, '');
+            const diff = originalLen - el.value.length;
+            if (s !== null) {
+                const newPos = Math.max(0, s - diff);
+                el.setSelectionRange?.(newPos, newPos);
+            }
+        }
+
         if (el.matches?.(':is(input[type="text"], input:not([type]), textarea):not([readonly])')) {
             const { selectionStart: s, selectionEnd: end, value } = el;
             if (value !== value.toUpperCase()) {
