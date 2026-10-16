@@ -201,6 +201,13 @@
                     <select id="barangay" name="barangay"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white">
                         <option value="">Select Barangay</option>
+<<<<<<< HEAD
+=======
+                        @php
+                            use App\Http\Controllers\BarangayController;
+                            $barangays = BarangayController::getBarangays();
+                        @endphp
+>>>>>>> 93ba7b912d918f581ced5753318a7376a38e8496
                         @foreach($barangays as $barangay)
                             <option value="{{ $barangay->id }}" {{ old('barangay') == $barangay->id ? 'selected' : '' }}>
                                 {{ $barangay->name }}
