@@ -73,8 +73,8 @@
     }
 
     @media (min-width: 48rem) and (max-width: 80rem) {
-        #desk-officer-dashboard-content { padding: clamp(1.25rem, 2vw, 1.5rem) !important; }
-        .dashboard-department-switcher { flex-wrap: wrap; }
+        #desk-officer-dashboard-content { padding-left: 1rem !important; padding-right: 1rem !important; }
+        .dashboard-department-switcher { flex-wrap: wrap; margin-right: 1.5rem !important; }
     }
 
     /* Phone-first dashboard (320px–430px), including compact landscape
@@ -147,6 +147,8 @@
     }
     #mainContent:has([data-swd-dashboard-fit]) > header { flex-shrink: 0; }
     #desk-officer-dashboard-content[data-swd-dashboard-fit] {
+        width: 100%;
+        align-self: stretch;
         flex: 1;
         min-height: 0;
         display: flex;
@@ -177,6 +179,17 @@
     [data-swd-dashboard-fit] .dashboard-distribution-box .h-56 { height: 100%; min-height: 0; }
     [data-swd-dashboard-fit] .dashboard-recent-box { min-height: 0; align-self: start; max-height: 100%; }
     [data-swd-dashboard-fit] .dashboard-recent-box > :last-child { min-height: 0; overflow-y: auto; }
+    [data-swd-dashboard-fit] .dashboard-announcements-row { width: 100%; flex-shrink: 0; }
+    @media (min-width: 48rem) and (max-width: 63.999rem) {
+        [data-swd-dashboard-fit] .dashboard-statistics {
+            grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+            gap: clamp(.75rem, 1.5vw, 1rem) !important;
+        }
+        [data-swd-dashboard-fit] .dashboard-statistics > *:nth-child(-n + 3) { grid-column: span 2 !important; }
+        [data-swd-dashboard-fit] .dashboard-statistics > *:nth-child(n + 4) { grid-column: span 3 !important; }
+        [data-swd-dashboard-fit] .dashboard-statistic-card { padding: clamp(.875rem, 2vw, 1rem) !important; }
+        [data-swd-dashboard-fit] .dashboard-statistic-icon { width: 3rem !important; height: 3rem !important; }
+    }
     @media (max-width: 47.999rem) {
         [data-swd-dashboard-fit] .dashboard-statistics { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
         [data-swd-dashboard-fit] .dashboard-statistic-icon { display: none; }
@@ -403,6 +416,13 @@
                 @endforelse
             </div>
         </div>
+    </div>
+    <div class="dashboard-announcements-row w-full mt-4">
+        @include('components.swd-dashboard-announcements', [
+            'announcementUser' => $dashboardUser,
+            'announcementLimit' => 4,
+            'announcementTwoColumns' => true,
+        ])
     </div>
 </main>
 

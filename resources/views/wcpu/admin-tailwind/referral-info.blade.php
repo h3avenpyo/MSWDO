@@ -267,7 +267,7 @@
             <!-- Modal Header -->
             <div class="bg-[#C41E3A] px-6 py-4 flex items-center justify-between">
                 <h3 id="modalTitle" class="text-lg font-semibold text-white">Add New Recipient</h3>
-                <button id="closeModal" class="text-white/80 hover:text-white transition-colors">
+                <button id="closeModal" class="text-white/80 hover:text-white transition-colors @if(auth()->user()->isBcpcAdmin()) hidden @endif">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -312,10 +312,13 @@
                         <select id="recipientRole" name="role"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white">
                             <option value="">Select role</option>
-                            <option value="BCPC - Staff">BCPC - Staff</option>
+                            @if(auth()->user()->isVawcAdmin())
                             <option value="SWD - Staff">SWD - Staff</option>
                             <option value="SWD - Focal">SWD - Focal</option>
+                            @else
+                            <option value="BCPC - Staff">BCPC - Staff</option>
                             <option value="BCPC - Focal">BCPC - Focal</option>
+                            @endif
                         </select>
                         @else
                         <input type="text" id="recipientRole" name="role"
@@ -349,7 +352,7 @@
                     <i class="fas fa-eye"></i>
                     <span>Recipient Details</span>
                 </h3>
-                <button id="closeViewModal" class="text-white/80 hover:text-white transition-colors">
+                <button id="closeViewModal" class="text-white/80 hover:text-white transition-colors @if(auth()->user()->isBcpcAdmin()) hidden @endif">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>

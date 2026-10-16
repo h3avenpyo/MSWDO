@@ -151,7 +151,7 @@
 
     @if($barangay)
         <!-- Monitoring Data Form -->
-        <form method="POST" action="{{ route('admin.bcpc-case-monitoring.update') }}" class="space-y-6">
+        <form id="bcpc-monitoring-form" method="POST" action="{{ route('admin.bcpc-case-monitoring.update') }}" class="space-y-6">
             @csrf
             @if(auth()->user()->isBcpcAdmin() && $monitoring?->exists)<input type="hidden" name="monitoring_id" value="{{ $monitoring->id }}">@endif
             <input type="hidden" name="barangay_id" value="{{ $barangay->id }}">
@@ -319,6 +319,7 @@
 @endsection
 
 @push('scripts')
+@include('components.bcpc-monitoring-input-restrictions')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     @if(!$isView)

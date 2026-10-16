@@ -81,6 +81,13 @@
                 @empty <div class="rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-500">No archived referrals.</div>@endforelse
             </div>
             @if($referralList->hasPages())@include('components.archived-pagination', ['paginator' => $referralList, 'label' => 'archived referrals'])@endif
+            @if(auth()->user()?->position === 'Desk Officer' && auth()->user()?->isMultiCaseDepartment())
+                @foreach($referralList as $referral)
+                    <template id="archived-referral-details-{{ $referral->id }}">
+                        @include('desk-officer.partials.referral-details', ['referral' => $referral, 'isArchived' => true])
+                    </template>
+                @endforeach
+            @endif
         </section>
     @endforeach
 
@@ -102,6 +109,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    if (@json(auth()->user()?->position === 'Desk Officer' && auth()->user()?->isMultiCaseDepartment())) return;
     const modalElement = document.getElementById('archivedReferralDetailsModal');
     const modal = new bootstrap.Modal(modalElement);
     const content = document.getElementById('archivedReferralDetailsContent');

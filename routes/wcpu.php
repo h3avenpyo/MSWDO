@@ -337,6 +337,8 @@ Route::middleware(['web', 'wcpu.guard', 'inactivity.timeout'])->group(function (
                 Route::post('/{id}/archive', [QuarterlyReportController::class, 'archive'])->name('archive');
                 Route::post('/{id}/restore', [QuarterlyReportController::class, 'restore'])->name('restore');
                 Route::delete('/{id}/force-delete', [QuarterlyReportController::class, 'forceDelete'])->name('force-delete');
+                Route::get('/{id}/edit', [QuarterlyReportController::class, 'edit'])->name('edit');
+                Route::post('/{id}/regenerate', [QuarterlyReportController::class, 'regenerate'])->name('regenerate');
                 Route::get('/{id}', [QuarterlyReportController::class, 'show'])->name('show');
                 Route::get('/{id}/download', [QuarterlyReportController::class, 'download'])->name('download');
             });

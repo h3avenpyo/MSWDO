@@ -9,15 +9,17 @@
         ]);
     $announcementFeed = $calendarItems->sortByDesc('sort')->values();
     $announcementPage = max(1, (int) request('announcements_page', 1));
+    $announcementsPerPage = max(1, (int) ($announcementLimit ?? 3));
+    $announcementsTwoColumns = (bool) ($announcementTwoColumns ?? false);
     $visibleAnnouncements = new \Illuminate\Pagination\LengthAwarePaginator(
-        $announcementFeed->forPage($announcementPage, 3)->values(), $announcementFeed->count(), 3, $announcementPage,
+        $announcementFeed->forPage($announcementPage, $announcementsPerPage)->values(), $announcementFeed->count(), $announcementsPerPage, $announcementPage,
         ['path' => request()->url(), 'pageName' => 'announcements_page']
     );
     $visibleAnnouncements->withQueryString();
 @endphp
 <section class="dashboard-announcements-box w-full bg-white rounded-xl shadow-sm border border-gray-100 p-4" aria-labelledby="swd-announcements-heading">
     <h2 id="swd-announcements-heading" class="text-lg font-semibold text-gray-800 mb-3">Announcements</h2>
-    <div class="dashboard-announcement-list space-y-2 max-h-48 overflow-y-auto">
+    <div class="dashboard-announcement-list {{ $announcementsTwoColumns ? 'grid grid-cols-2 gap-2' : 'space-y-2' }} max-h-48 overflow-y-auto">
         @forelse($visibleAnnouncements as $index => $item)
         <button type="button" onclick="showSwdDashboardAnnouncement({{ $index }})" class="block w-full text-left border border-gray-200 rounded-lg px-3 py-2 hover:bg-purple-50">
             <span class="block font-semibold text-gray-800">{{ $item['title'] }}</span>

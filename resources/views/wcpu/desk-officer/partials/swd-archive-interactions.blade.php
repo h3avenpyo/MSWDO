@@ -13,6 +13,9 @@
 @endif
 <script>
 (() => {
+    const isMultiRoleArchivedReports = @json(auth()->user()?->position === 'Desk Officer' && auth()->user()?->isMultiCaseDepartment() && request()->routeIs('desk-officer.quarterly-reports.archived'));
+    const isMultiRoleArchivedCases = @json(auth()->user()?->position === 'Desk Officer' && auth()->user()?->isMultiCaseDepartment() && request()->routeIs('desk-officer.archived-barangay-cases.index'));
+    const isMultiRoleArchivedReferrals = @json(auth()->user()?->position === 'Desk Officer' && auth()->user()?->isMultiCaseDepartment() && request()->routeIs('desk-officer.referrals.archived'));
     const archiveModalStyles = document.createElement('style');
     archiveModalStyles.textContent = `
         .swal2-popup.desk-archive-view-popup{box-sizing:border-box;max-height:calc(100dvh - 2rem);overflow:hidden;padding:0}
@@ -20,6 +23,12 @@
         .swal2-popup.desk-archive-view-popup .swal2-html-container{box-sizing:border-box;width:100%;max-height:calc(100dvh - 5.5rem);margin:0;padding:0 .875rem .875rem;overflow:auto;overscroll-behavior:contain;text-align:left}
         .swal2-popup.desk-archive-view-popup .desk-archive-view-frame{display:block;width:100%;height:min(70dvh,52rem);border:0}
         @media(max-width:47.9375rem){.swal2-popup.desk-archive-view-popup{width:calc(100vw - 1rem)!important;max-height:calc(100dvh - 1rem)}.swal2-popup.desk-archive-view-popup .swal2-title{padding:1rem 3rem .5rem}.swal2-popup.desk-archive-view-popup .swal2-html-container{max-height:calc(100dvh - 5rem);padding:0 .75rem .75rem}.swal2-popup.desk-archive-view-popup .desk-archive-view-frame{height:calc(100dvh - 8rem);min-height:16rem}}
+        .swal2-popup.multi-role-archived-report-modal{display:flex!important;flex-direction:column;height:min(88vh,60rem);height:min(88dvh,60rem);min-width:0}
+        .swal2-popup.multi-role-archived-report-modal .swal2-close{position:absolute!important;top:0!important;right:0!important;left:auto!important;z-index:1}
+        .swal2-popup.multi-role-archived-report-modal .swal2-title{flex:0 0 auto;margin:0;overflow-wrap:anywhere}
+        .swal2-popup.multi-role-archived-report-modal .swal2-html-container{flex:1 1 auto;min-height:0;max-height:none;overflow:hidden}
+        .swal2-popup.multi-role-archived-report-modal .desk-archive-view-frame{height:100%;min-height:0;max-width:100%}
+        @media(max-width:47.9375rem){.swal2-popup.multi-role-archived-report-modal{height:calc(100vh - 1rem);height:calc(100dvh - 1rem)}}
     `;
     document.head.appendChild(archiveModalStyles);
 
@@ -121,7 +130,7 @@
                         if (Swal.getHtmlContainer()?.querySelector('.swd-archive-detail') !== content) return;
                         const page = new DOMParser().parseFromString(html, 'text/html');
                         page.querySelectorAll('script').forEach(script => script.remove());
-                        if (isReferral) {
+                        if (isReferral && page.querySelector('input:not([type="hidden"]), textarea, select')) {
                             const fields = document.createElement('dl');
                             fields.className = 'swd-referral-fields';
                             page.querySelectorAll('input:not([type="hidden"]), textarea, select').forEach(input => {
@@ -136,6 +145,8 @@
                             });
                             if (!fields.children.length) throw new Error('Unable to load referral details.');
                             content.replaceChildren(fields);
+                        } else if (isReferral) {
+                            content.innerHTML = html;
                         } else if (isCase) {
                             if (page.querySelector('#sidebar, #mainContent')) throw new Error('Unable to load case details.');
                             content.replaceChildren(...Array.from(page.body.childNodes));
@@ -181,22 +192,81 @@
         event.preventDefault();
         event.stopImmediatePropagation();
         const isReferral = view.matches('.archived-view-referral-btn');
+        if (isReferral && isMultiRoleArchivedReferrals) {
+            const details = document.getElementById('archived-referral-details-' + view.dataset.referralId);
+            Swal.fire({
+                title: 'Referral Details',
+                width: 'min(48rem, calc(100vw - 2rem))',
+                html: details ? details.innerHTML : 'Unable to load referral details. Please refresh the page and try again.',
+                showConfirmButton: false,
+                showCloseButton: true,
+                customClass: { popup: 'archive-view-modal-popup desk-archive-view-popup archived-referral-view-popup' },
+            });
+            return;
+        }
         const title = isReferral ? 'Referral Details' : view.title === 'View Case' ? 'Case Details' : view.title === 'View Record' || view.closest('.archived-monitoring-card') ? 'Monitoring Report' : 'Quarterly Report';
+        const isReportPreview = isMultiRoleArchivedReports && ['Quarterly Report', 'Monitoring Report'].includes(title);
+        const isCasePreview = isMultiRoleArchivedCases && title === 'Case Details';
         if (useSwdDetailModal) {
             openSwdDetailModal(view, isReferral, title);
             return;
         }
+        let reportPreviewClosed = false;
+        let reportPreviewFrame = null;
         Swal.fire({
             title, width: isReferral ? 'min(48rem, calc(100vw - 2rem))' : 'min(68rem, 95vw)', showConfirmButton: false, showCloseButton: true,
-            customClass: { popup: `archive-view-modal-popup desk-archive-view-popup${isReferral ? ' archived-referral-view-popup' : ''}` },
+            customClass: { popup: `archive-view-modal-popup desk-archive-view-popup${isReferral ? ' archived-referral-view-popup' : ''}${isReportPreview ? ' multi-role-archived-report-modal' : ''}` },
+            willClose: () => {
+                if (!isReportPreview) return;
+                reportPreviewClosed = true;
+                reportPreviewFrame?.remove();
+            },
             didOpen: async () => {
                 const content = Swal.getHtmlContainer();
                 if (!isReferral) {
                     const frame = document.createElement('iframe');
-                    frame.addEventListener('load', () => makeArchiveFrameReadOnly(frame));
+                    if (isCasePreview || isReportPreview) {
+                        if (isReportPreview) reportPreviewFrame = frame;
+                        // Reserve the preview's space, but do not paint the full page
+                        // while its styles, fonts and read-only cleanup are pending.
+                        frame.style.visibility = 'hidden';
+                        content.setAttribute('aria-busy', 'true');
+                    }
+                    frame.addEventListener('load', async () => {
+                        if (reportPreviewClosed || Swal.getHtmlContainer() !== content) return;
+                        try {
+                            makeArchiveFrameReadOnly(frame);
+                            if (!isCasePreview && !isReportPreview) return;
+                            if (!frame.contentDocument?.querySelector('#mainContent')) throw new Error('Unable to load case details.');
+                            if (isReportPreview) {
+                                frame.contentDocument.documentElement.style.scrollbarGutter = 'stable';
+                                frame.contentDocument.documentElement.style.overscrollBehavior = 'contain';
+                            }
+                            if (frame.contentDocument.fonts) await frame.contentDocument.fonts.ready;
+                            await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                            if (!reportPreviewClosed && Swal.getHtmlContainer() === content) {
+                                if (isReportPreview) {
+                                    frame.contentWindow.scrollTo(0, 0);
+                                    content.scrollTop = 0;
+                                }
+                                frame.style.visibility = 'visible';
+                                content.removeAttribute('aria-busy');
+                            }
+                        } catch (error) {
+                            if ((isCasePreview || isReportPreview) && !reportPreviewClosed && Swal.getHtmlContainer() === content) {
+                                content.removeAttribute('aria-busy');
+                                content.textContent = isReportPreview
+                                    ? 'Unable to load report details. Please close the popup and try again.'
+                                    : 'Unable to load case details. Please close the popup and try again.';
+                            }
+                        }
+                    });
                     frame.title = title;
                     frame.className = 'desk-archive-view-frame';
-                    frame.src = view.href;
+                    const previewUrl = new URL(view.href, window.location.href);
+                    if (isReportPreview) previewUrl.searchParams.set('archive_report_preview', '1');
+                    if (isCasePreview) previewUrl.searchParams.set('archive_case_preview', '1');
+                    frame.src = previewUrl.href;
                     content.appendChild(frame);
                     return;
                 }
@@ -236,24 +306,22 @@
         });
         if (!result.isConfirmed) return;
         if (@json(auth()->user()->defaultCaseDepartment() === 'BCPC' || auth()->user()->isMultiCaseDepartment()) && form.matches('.restore-confirm-form, .restore-monitoring-form')) {
-            Swal.fire({ title: 'Restoring report...', text: 'Please wait.', allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false,
-                didOpen: async () => {
-                    Swal.showLoading();
-                    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-                    try {
-                        const response = await fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin', headers: { Accept: 'application/json' } });
-                        const data = await response.json();
-                        if (!response.ok || !data.success) throw new Error(data.message || 'Unable to restore the report.');
-                        await Swal.fire({ icon: 'success', title: 'Report Restored', text: data.message, confirmButtonText: 'OK' });
-                        location.reload();
-                    } catch (error) {
-                        Swal.fire({ icon: 'error', title: 'Unable to Restore', text: error.message });
-                    }
-                }
-            });
+            try {
+                const response = await fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin', headers: { Accept: 'application/json' } });
+                const data = await response.json();
+                if (!response.ok || !data.success) throw new Error(data.message || 'Unable to restore the report.');
+                await Swal.fire({ icon: 'success', title: 'Report Restored', text: data.message, confirmButtonText: 'OK' });
+                location.reload();
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Unable to Restore', text: error.message });
+            }
             return;
         }
-        Swal.fire({ title: restore ? `Restoring ${kind}...` : 'Processing...', text: 'Please wait.', allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false,
+        if (restore) {
+            HTMLFormElement.prototype.submit.call(form);
+            return;
+        }
+        Swal.fire({ title: 'Processing...', text: 'Please wait.', allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false,
             didOpen: () => { Swal.showLoading(); requestAnimationFrame(() => requestAnimationFrame(() => HTMLFormElement.prototype.submit.call(form))); }
         });
     }, true);

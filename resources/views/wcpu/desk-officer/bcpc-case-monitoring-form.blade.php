@@ -270,11 +270,13 @@
 
             <!-- Action Buttons -->
             <div class="flex flex-wrap items-center justify-end gap-3 pt-4">
+                @unless($isView)
                 <a href="{{ ($fromArchived ?? false) ? route('desk-officer.bcpc-case-monitoring.archived') : route('desk-officer.bcpc-case-monitoring.edit') }}"
                    data-back
                    class="px-5 py-2.5 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
-                    {{ $isView ? 'Back to Monitoring List' : 'Cancel' }}
+                    Cancel
                 </a>
+                @endunless
                 @if(!$isView)
                     <button type="submit" 
                             class="inline-flex items-center gap-2 bg-purple-700 hover:bg-purple-800 text-white px-6 py-2.5 rounded-xl text-sm font-medium shadow-sm transition">
@@ -293,6 +295,7 @@
 </div>
 
 @push('scripts')
+@include('components.bcpc-monitoring-input-restrictions')
 <script>
 @if(session('bcpc_sent_to_admin'))
 document.addEventListener('DOMContentLoaded', () => {

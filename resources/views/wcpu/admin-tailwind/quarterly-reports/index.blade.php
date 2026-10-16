@@ -277,6 +277,11 @@
                                    title="Preview / Print">
                                     <i class="fas fa-print"></i><span class="sr-only">Preview / Print</span>
                                 </a>
+                                <a href="{{ route('admin.quarterly-reports.edit', $report->id) }}"
+                                   class="inline-flex items-center justify-center w-9 h-9 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-medium transition"
+                                   title="Edit report">
+                                    <i class="fas fa-edit"></i><span class="sr-only">Edit</span>
+                                </a>
                                 <button type="button" 
                                         onclick="openArchiveModal({{ $report->id }}, '{{ $report->barangay->name ?? 'Barangay' }} - Q{{ $report->quarter }} {{ $report->year }} ({{ str_replace('VAWC', 'SWD', $report->type ?? 'VAWC') }})')"
                                         class="{{ auth()->user()->isBcpcAdmin() ? 'quarterly-report-archive-button ' : '' }}inline-flex items-center {{ auth()->user()->isDepartmentAdmin() ? 'justify-center w-9 h-9' : 'gap-1.5 px-3 py-1.5' }} bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border border-red-200 rounded-lg text-xs font-medium {{ auth()->user()->isBcpcAdmin() ? '' : 'transition' }}"
@@ -349,6 +354,9 @@
                     </a>
                     <a href="{{ route('admin.quarterly-reports.download', $report->id) }}{{ auth()->user()->isDepartmentAdmin() ? '?preview=1' : '' }}" {!! auth()->user()->isDepartmentAdmin() ? 'target="_blank" rel="noopener"' : '' !!} class="quarterly-report-card-print inline-flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium transition" title="Preview / Print" aria-label="Preview / Print">
                         <i class="fas fa-print"></i><span>Print</span>
+                    </a>
+                    <a href="{{ route('admin.quarterly-reports.edit', $report->id) }}" class="inline-flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-medium transition" title="Edit report">
+                        <i class="fas fa-edit"></i><span>Edit</span>
                     </a>
                     <button type="button" onclick="openArchiveModal({{ $report->id }}, '{{ $report->barangay->name ?? 'Barangay' }} - Q{{ $report->quarter }} {{ $report->year }} ({{ str_replace('VAWC', 'SWD', $report->type ?? 'VAWC') }})')" class="inline-flex items-center gap-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-medium transition" title="Archive report">
                         <i class="fas fa-archive"></i><span class="{{ auth()->user()->isDepartmentAdmin() ? 'sr-only' : '' }}">Archive</span>
@@ -481,7 +489,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 @endif
 
-@if(auth()->user()->isVawcAdmin() && session('archived_quarterly_report'))
+@if(auth()->user()->isDepartmentAdmin() && session('archived_quarterly_report'))
 document.addEventListener('DOMContentLoaded', function () {
     Swal.fire({
         icon: 'success',

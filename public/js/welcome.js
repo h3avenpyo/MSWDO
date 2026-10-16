@@ -273,6 +273,10 @@ function openServiceRequestModal() {
                 Swal.showValidationMessage('Please enter contact number');
                 return false;
             }
+            if (!/^[0-9]{11}$/.test(contactNumber)) {
+                Swal.showValidationMessage('Contact number must contain exactly 11 digits, without spaces or symbols.');
+                return false;
+            }
             if (!email || email.trim() === '') {
                 Swal.showValidationMessage('Please enter email address');
                 return false;

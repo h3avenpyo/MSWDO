@@ -1,4 +1,10 @@
  <!DOCTYPE html>
+@php
+    $persistsAdminSidebar = auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin();
+    $adminSidebarStateKey = auth()->user()?->isBcpcAdmin()
+        ? 'bcpcAdminSidebarCollapsed'
+        : (auth()->user()?->isVawcAdmin() ? 'swdAdminSidebarCollapsed' : 'sidebarCollapsed');
+@endphp
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -27,6 +33,13 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
     
+    @if($persistsAdminSidebar)
+    <script>
+        try {
+            document.documentElement.classList.toggle('admin-sidebar-collapsed', localStorage.getItem(@json($adminSidebarStateKey)) === 'true');
+        } catch (e) {}
+    </script>
+    @endif
     @stack('styles')
     <link rel="stylesheet" href="{{ asset('css/admin-pagination.css') }}">
     <link rel="stylesheet" href="{{ asset('css/table-action-controls.css') }}?v={{ filemtime(public_path('css/table-action-controls.css')) }}">
@@ -174,6 +187,30 @@
         @if(auth()->user()?->isDepartmentAdmin())
         #sidebar [x-show] > a, #sidebar [x-show] > button { font-family: inherit; font-size: .875rem; line-height: 1.25rem; font-weight: 500; }
         #sidebar [x-show] > a > i, #sidebar [x-show] > button > i { font-size: .875rem; width: 1rem; text-align: center; flex-shrink: 0; }
+        @media (min-width: 64rem) {
+            #sidebar.sidebar-collapsed [x-show],
+            #sidebar.sidebar-collapsed-init [x-show] {
+                width: 100% !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            #sidebar.sidebar-collapsed [x-show] > :is(a, button),
+            #sidebar.sidebar-collapsed-init [x-show] > :is(a, button) {
+                justify-content: center !important;
+                gap: 0 !important;
+                width: 100% !important;
+                min-height: 3rem !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            #sidebar.sidebar-collapsed [x-show] > :is(a, button).bg-purple-600,
+            #sidebar.sidebar-collapsed-init [x-show] > :is(a, button).bg-purple-600 {
+                background-color: #C41E3A !important;
+                box-shadow: none !important;
+            }
+        }
         @endif
         @if(auth()->user()?->defaultCaseDepartment() === 'BCPC')
         /* Match the Desk Officer Profile pagination design across BCPC tables. */
@@ -281,6 +318,9 @@
         .sidebar-menu {
             padding-left: 0.5rem !important;
             padding-right: 0.5rem !important;
+        }
+        #sidebar > nav.sidebar-menu {
+            overflow-x: hidden !important;
         }
         
         /* Sidebar collapsed state - desktop only */
@@ -632,8 +672,13 @@
         id="sidebar" 
         class="fixed top-0 left-0 h-screen w-72 bg-[#C41E3A] text-white z-40
                lg:translate-x-0 flex flex-col shadow-2xl
-               rounded-r-3xl lg:rounded-none"
+               rounded-r-3xl lg:rounded-none {{ !$persistsAdminSidebar && auth()->user()?->isDepartmentAdmin() ? 'sidebar-collapsed' : '' }}"
     >
+        @if($persistsAdminSidebar)
+        <script>
+            document.getElementById('sidebar')?.classList.toggle('sidebar-collapsed', document.documentElement.classList.contains('admin-sidebar-collapsed'));
+        </script>
+        @endif
         <!-- Sidebar Header -->
         <div class="sidebar-header py-5 border-b border-white">
             <div class="flex items-center justify-center gap-3">
@@ -880,7 +925,7 @@
                                  ? 'bg-purple-600 text-white shadow-sm font-semibold'
                                  : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"
                        title="Archived Barangay Cases">
-                        <i class="fas fa-folder-open text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <i class="fas fa-map-marked-alt text-[11px] w-4 text-center flex-shrink-0"></i>
                         <span class="sidebar-text whitespace-nowrap overflow-hidden">Archived Barangay Cases</span>
                     </a>
                     @endif
@@ -892,14 +937,14 @@
                                  ? 'bg-purple-600 text-white shadow-sm font-semibold'
                                  : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"
                        title="Archived Barangay Cases">
-                        <i class="fas fa-child text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <i class="fas fa-map-marked-alt text-[11px] w-4 text-center flex-shrink-0"></i>
                         <span class="sidebar-text whitespace-nowrap overflow-hidden">Archived Barangay Cases</span>
                     </a>
                     @endif
 
                     @if(auth()->user()->isDepartmentAdmin())
 <a href="{{ route('admin.referrals.archived') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 {{ request()->routeIs('admin.referrals.archived') ? 'bg-purple-600 text-white shadow-sm font-semibold' : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}" title="Archived Referrals">
-<i class="fas fa-archive text-[11px] w-4 text-center flex-shrink-0"></i><span class="sidebar-text whitespace-nowrap overflow-hidden">Archived Referrals</span>
+<i class="fas fa-paper-plane text-[11px] w-4 text-center flex-shrink-0"></i><span class="sidebar-text whitespace-nowrap overflow-hidden">Archived Referrals</span>
 </a>
 @endif
 <!-- Archived Users Link -->
@@ -909,7 +954,7 @@
                                  ? 'bg-purple-600 text-white shadow-sm font-semibold'
                                  : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"
                        title="Archived Users">
-                        <i class="fas fa-user-slash text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <i class="fas fa-user-lock text-[11px] w-4 text-center flex-shrink-0"></i>
                         <span class="sidebar-text whitespace-nowrap overflow-hidden">Archived Users</span>
                     </a>
 
@@ -920,7 +965,7 @@
                                  ? 'bg-purple-600 text-white shadow-sm font-semibold'
                                  : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"
                        title="Archived Quarterly Reports">
-                        <i class="fas fa-file-alt text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <i class="fas fa-chart-pie text-[11px] w-4 text-center flex-shrink-0"></i>
                         <span class="sidebar-text whitespace-nowrap overflow-hidden">Archived Quarterly Reports</span>
                     </a>
                     @endif
@@ -933,7 +978,7 @@
                                  ? 'bg-purple-600 text-white shadow-sm font-semibold'
                                  : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"
                        title="{{ auth()->user()->isVawcAdmin() ? 'Archived Barangay Cases' : 'Archived BCPC Reports' }}">
-                        <i class="fas fa-child text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <i class="fas fa-clipboard-check text-[11px] w-4 text-center flex-shrink-0"></i>
                         <span class="sidebar-text whitespace-nowrap overflow-hidden">{{ auth()->user()->isVawcAdmin() ? 'Archived Barangay Cases' : 'Archived BCPC Reports' }}</span>
                     </a>
                     @endunless
@@ -945,7 +990,7 @@
         
         <!-- Sidebar Footer -->
         <div class="py-4 border-t border-white sidebar-menu">
-            <form id="logout-form" method="POST" action="{{ route('logout') }}" class="hidden">
+            <form id="logout-form" method="POST" action="{{ route('logout') }}" class="hidden" @if(auth()->user()?->isVawcAdmin() || auth()->user()?->isBcpcAdmin()) data-skip-loading-modal @endif>
                 @csrf
             </form>
             <button 
@@ -1023,18 +1068,25 @@
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+        const sidebarStateKey = @json($adminSidebarStateKey);
         
-        // Always start each visit with the desktop sidebar expanded.
-        localStorage.setItem('sidebarCollapsed', 'false');
+        @if($persistsAdminSidebar)
+        sidebar.classList.toggle('sidebar-collapsed', localStorage.getItem(sidebarStateKey) === 'true');
+        @elseif(auth()->user()?->isDepartmentAdmin())
+        sidebar.classList.add('sidebar-collapsed');
+        localStorage.setItem(sidebarStateKey, 'true');
+        @else
+        localStorage.setItem(sidebarStateKey, 'false');
+        @endif
         
         function collapseSidebar() {
             sidebar.classList.add('sidebar-collapsed');
-            localStorage.setItem('sidebarCollapsed', 'true');
+            localStorage.setItem(sidebarStateKey, 'true');
         }
         
         function expandSidebar() {
             sidebar.classList.remove('sidebar-collapsed');
-            localStorage.setItem('sidebarCollapsed', 'false');
+            localStorage.setItem(sidebarStateKey, 'false');
             // Remove the initial collapsed style if it exists
             const initialStyle = document.getElementById('sidebar-initial-collapsed-style');
             if (initialStyle) {
@@ -1171,5 +1223,6 @@
 @include('components.record-table-columns')
 @include('components.multirole-loading')
 @include('components.inactivity-timeout')
+<script src="{{ asset('js/contact-number-validation.js') }}?v={{ filemtime(public_path('js/contact-number-validation.js')) }}"></script>
 </body>
 </html>

@@ -1,8 +1,14 @@
-@extends('layouts.desk-officer')
+@extends(auth()->user()?->position === 'Desk Officer' ? 'layouts.desk-officer' : 'layouts.admin-tailwind')
 
 @section('title', 'Edit Quarterly Report')
 
 @section('content')
+@php
+    $isAdminEditor = auth()->user()?->position === 'Administrator';
+    $quarterlyIndexRoute = $isAdminEditor ? 'admin.quarterly-reports.index' : 'desk-officer.quarterly-reports.index';
+    $quarterlyShowRoute = $isAdminEditor ? 'admin.quarterly-reports.show' : 'desk-officer.quarterly-reports.show';
+    $quarterlyRegenerateRoute = $isAdminEditor ? 'admin.quarterly-reports.regenerate' : 'desk-officer.quarterly-reports.regenerate';
+@endphp
 @if(auth()->user()?->position === 'Desk Officer' && (auth()->user()?->isMultiCaseDepartment() || in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)))
 <style>
     @media (max-width: 47.9375rem) and (orientation: portrait) {
@@ -38,15 +44,17 @@
     }
 </style>
 @endif
+@unless($isAdminEditor)
 @include('components.desk-officer.bcpc-dashboard-header', [
     'title' => 'Edit Quarterly Report',
     'subtitle' => ($barangay->name ?? 'Barangay') . ' • Period: Q' . $report->quarter . ' ' . $report->year,
 ])
+@endunless
 <div class="max-w-4xl mx-auto py-6 px-4">
     <!-- Breadcrumb / Back -->
     <div class="mb-6">
         <div class="mb-3 flex items-center gap-2">
-            <a href="{{ route('desk-officer.quarterly-reports.index') }}"
+            <a href="{{ route($quarterlyIndexRoute) }}"
                class="inline-flex items-center gap-2 text-purple-600 hover:text-purple-800 font-medium transition">
                 <i class="fas fa-arrow-left"></i> Back to Quarterly Reports
             </a>
@@ -140,29 +148,17 @@
             <!-- Action buttons -->
             <div id="quarterly-report-edit-actions" class="pt-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2">
-                    @if(auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'BCPC')
-                    <a href="{{ route('desk-officer.quarterly-reports.show', $report->id) }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium shadow-sm transition">
+                    <a href="{{ route($quarterlyShowRoute, $report->id) }}" @if($isAdminEditor) target="_blank" @endif class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium shadow-sm transition">
                         <i class="fas fa-file-pdf"></i>
                         <span>View Current PDF</span>
                     </a>
-                    @elseif(auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'VAWC')
-                    <a href="{{ route('desk-officer.quarterly-reports.show', $report->id) }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium shadow-sm transition">
-                        <i class="fas fa-file-pdf"></i>
-                        <span>View Current PDF</span>
-                    </a>
-                    @else
-                    <a href="{{ route('desk-officer.quarterly-reports.show', $report->id) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium shadow-sm transition">
-                        <i class="fas fa-file-pdf"></i>
-                        <span>View Current PDF</span>
-                    </a>
-                    @endif
                 </div>
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('desk-officer.quarterly-reports.index') }}" 
+                    <a href="{{ route($quarterlyIndexRoute) }}"
                        class="px-4 py-2.5 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 font-medium text-sm transition">
                         Cancel
                     </a>
-                    <form id="regenerate-quarterly-report-form" action="{{ route('desk-officer.quarterly-reports.regenerate', $report->id) }}" method="POST">
+                    <form id="regenerate-quarterly-report-form" action="{{ route($quarterlyRegenerateRoute, $report->id) }}" method="POST">
                         @csrf
                         <button type="submit" 
                                 class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-800 hover:to-purple-900 text-white rounded-xl text-sm font-medium shadow-md transition">

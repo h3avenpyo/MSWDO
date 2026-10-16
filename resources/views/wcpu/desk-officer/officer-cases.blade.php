@@ -797,7 +797,7 @@
                 <td class="px-4 py-3">{{ $case->abuse_type }}</td>
                 <td class="px-4 py-3 text-center">
                     @php
-                        $hex = \App\Http\Controllers\DeskOfficerController::getStatusColor($case->status);
+                                        $hex = \App\Http\Controllers\Wcpu\DeskOfficerController::getStatusColor($case->status);
                         $hex = preg_match('/^[0-9a-fA-F]{6}$/', $hex) ? $hex : '6c757d';
                         $bgColor = '#' . $hex;
                         $r = hexdec(substr($hex, 0, 2));
@@ -896,7 +896,7 @@
             <div class="flex items-center justify-between mb-2">
                 <a href="{{ route('desk-officer.cases.show', ['hash' => encrypt($case->id)]) }}" class="text-sm font-bold text-purple-800 hover:text-[#C41E3A] hover:underline">#{{ $case->case_number }}</a>
                 @php
-                    $hex = \App\Http\Controllers\DeskOfficerController::getStatusColor($case->status);
+                                        $hex = \App\Http\Controllers\Wcpu\DeskOfficerController::getStatusColor($case->status);
                     $hex = preg_match('/^[0-9a-fA-F]{6}$/', $hex) ? $hex : '6c757d';
                     $bgColor = '#' . $hex;
                     $r = hexdec(substr($hex, 0, 2));

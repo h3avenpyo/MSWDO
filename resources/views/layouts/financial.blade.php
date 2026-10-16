@@ -84,5 +84,6 @@
     @yield('page-scripts')
 
     @include('admin.partials.account-status')
+<script src="{{ asset('js/contact-number-validation.js') }}?v={{ filemtime(public_path('js/contact-number-validation.js')) }}"></script>
 </body>
 </html>

@@ -23,7 +23,7 @@ class ServiceRequestController extends Controller
                 'last_name' => ['required', 'string', 'max:255'],
                 'dob' => ['required', 'date'],
                 'barangay' => ['required', 'string', 'max:255'],
-                'contact_number' => ['required', 'string', 'max:20'],
+                'contact_number' => ['required', 'string', 'max:20', new \App\Rules\ContactNumber(11)],
                 'email' => ['required', 'email', 'max:255'],
                 'address' => ['nullable', 'string', 'max:500'],
                 'service_type' => ['required', 'in:financial_assistance,social_case_study'],

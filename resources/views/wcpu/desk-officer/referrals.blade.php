@@ -309,28 +309,44 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
     const modal = new bootstrap.Modal(document.getElementById('referralDetailsModal'));
+    const directReferralPopups = @json($isMultiroleDeskOfficer || $isBcpcDeskOfficer || $isSwdDeskOfficer);
+    let referralPopupRequest = 0;
     document.querySelectorAll('.view-referral-btn').forEach(function(btn) {
         btn.addEventListener('click', function(event) {
             event.preventDefault();
             event.stopPropagation();
             const referralId = this.getAttribute('data-id');
             const content = document.getElementById('referralDetailsContent');
+            const requestId = directReferralPopups ? ++referralPopupRequest : null;
+            if (!directReferralPopups) {
             content.innerHTML = `<div class="text-center py-5">
                 <div class="spinner-border text-primary" role="status"></div>
                 <div>Loading...</div>
             </div>`;
             modal.show();
+            }
             const viewHeading = document.getElementById('deskReferralModalHeading');
             const viewIcon = document.getElementById('deskReferralModalIcon');
             if (viewHeading) viewHeading.textContent = 'Referral Details';
             if (viewIcon) viewIcon.className = 'fas fa-file-alt';
-            fetch(`/desk-officer/referrals/${referralId}/details`)
-                .then(response => response.text())
+            fetch(`/desk-officer/referrals/${referralId}/details`, directReferralPopups ? { headers: { 'X-Skip-Loading': '1' } } : undefined)
+                .then(response => {
+                    if (directReferralPopups && (!response.ok || response.redirected)) throw new Error('Unable to load referral details.');
+                    return response.text();
+                })
                 .then(html => {
+                    if (directReferralPopups && requestId !== referralPopupRequest) return;
                     content.innerHTML = html;
+                    if (directReferralPopups) {
+                        if (viewHeading) viewHeading.textContent = 'Referral Details';
+                        if (viewIcon) viewIcon.className = 'fas fa-file-alt';
+                        modal.show();
+                    }
                 })
                 .catch(() => {
+                    if (directReferralPopups && requestId !== referralPopupRequest) return;
                     content.innerHTML = '<div class="alert alert-danger">Failed to load details.</div>';
+                    if (directReferralPopups) modal.show();
                 });
         });
     });
@@ -341,20 +357,28 @@ document.addEventListener('DOMContentLoaded', function () {
             event.stopPropagation();
             const referralId = this.getAttribute('data-id');
             const content = document.getElementById('referralDetailsContent');
+            const requestId = directReferralPopups ? ++referralPopupRequest : null;
+            if (!directReferralPopups) {
             content.innerHTML = `<div class="text-center py-5">
                 <div class="spinner-border text-primary" role="status"></div>
                 <div>Loading...</div>
             </div>`;
             modal.show();
-            fetch(`/desk-officer/referrals/${referralId}/edit`)
-                .then(response => response.text())
+            }
+            fetch(`/desk-officer/referrals/${referralId}/edit`, directReferralPopups ? { headers: { 'X-Skip-Loading': '1' } } : undefined)
+                .then(response => {
+                    if (directReferralPopups && (!response.ok || response.redirected)) throw new Error('Unable to load edit form.');
+                    return response.text();
+                })
                 .then(html => {
+                    if (directReferralPopups && requestId !== referralPopupRequest) return;
                     content.innerHTML = html;
                     // update modal title
                     const editHeading = document.getElementById('deskReferralModalHeading');
                     const editIcon = document.getElementById('deskReferralModalIcon');
                     if (editHeading) editHeading.textContent = 'Edit Referral';
                     if (editIcon) editIcon.className = 'fas fa-edit';
+                    if (directReferralPopups) modal.show();
 
                     const form = content.querySelector('#referralEditForm');
                     if (!form) return;
@@ -393,7 +417,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 })
                 .catch(() => {
+                    if (directReferralPopups && requestId !== referralPopupRequest) return;
                     content.innerHTML = '<div class="alert alert-danger">Failed to load edit form.</div>';
+                    if (directReferralPopups) modal.show();
                 });
         });
     });

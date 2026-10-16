@@ -21,7 +21,7 @@ class StoreClientRequest extends FormRequest
             'birthdate' => ['required', 'date', 'before:today'],
             'gender' => ['required', Rule::in(['Male', 'Female', 'Other'])],
             'address' => ['required', 'string', 'max:500'],
-            'contact_number' => ['nullable', 'string', 'max:20'],
+            'contact_number' => ['nullable', 'string', 'max:20', new \App\Rules\ContactNumber(null, 20)],
         ];
     }
 }

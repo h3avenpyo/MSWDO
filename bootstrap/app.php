@@ -19,6 +19,14 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Preserve raw contact input so validation rejects surrounding spaces too.
+        $middleware->trimStrings(except: [
+            'contact_number', 'phone', 'phone_number', 'mobile', 'mobile_number',
+            'beneficiary_contact_number', 'rep_contact_number', 'emergency_contact_number',
+            'victim_contact', 'guardian_contact', 'guardian_abuser_contact', 'witness_contact',
+            'client_contact', 'recipient_contact', 'referred_by_contact', 'recipient_contact_number',
+            'client.contact', 'bcpc_organizations.*.phone',
+        ]);
         $middleware->redirectTo(
             guests: '/admin',
             users: '/admin/dashboard'

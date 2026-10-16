@@ -17,26 +17,38 @@ use Carbon\Carbon;
 class UserController extends Controller
 {
     /**
+     * Older WCPU installations authenticate by email and do not have a
+     * `username` column. Keep the registration form compatible with both
+     * schemas while migrations are rolled out.
+     */
+    private function hasUsernameColumn(): bool
+    {
+        return Schema::connection('wcpu')->hasColumn('users', 'username');
+    }
+
+    /**
      * Store a newly created user in storage.
      */
     public function store(Request $request)
     {
+        $hasUsernameColumn = $this->hasUsernameColumn();
         $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name'  => 'required|string|max:255',
+            'first_name' => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
+            'last_name'  => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
             'username'   => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('users', 'username')->whereNull('deleted_at'),
-                Rule::unique('users', 'email')->whereNull('deleted_at'),
+                $hasUsernameColumn
+                    ? Rule::unique(User::class, 'username')->whereNull('deleted_at')
+                    : Rule::unique(User::class, 'email')->whereNull('deleted_at'),
             ],
             'email'      => [
                 'nullable',
                 'string',
                 'max:255',
-                Rule::unique('users', 'email')->whereNull('deleted_at'),
-                Rule::unique('users', 'username')->whereNull('deleted_at'),
+                Rule::unique(User::class, 'email')->whereNull('deleted_at'),
+                ...($hasUsernameColumn ? [Rule::unique(User::class, 'username')->whereNull('deleted_at')] : []),
             ],
             'department' => 'required|string|max:255',
             'position'   => ['required', 'string', Rule::in(['Administrator', 'Desk Officer'])],
@@ -88,6 +100,9 @@ class UserController extends Controller
             }
             $username = $validated['username'];
             $email = !empty($validated['email']) ? $validated['email'] : $username;
+            if (!$hasUsernameColumn) {
+                unset($validated['username']);
+            }
 
             $isDeskOfficer = $validated['position'] === 'Desk Officer';
             $assignedDepartments = $isDeskOfficer
@@ -97,7 +112,7 @@ class UserController extends Controller
             $user = User::create([
                 'first_name'     => $validated['first_name'],
                 'last_name'      => $validated['last_name'],
-                'username'       => $username,
+                ...($hasUsernameColumn ? ['username' => $username] : []),
                 'email'          => $email,
                 'position'       => $validated['position'],
                 'department'     => $validated['department'],
@@ -128,7 +143,7 @@ class UserController extends Controller
                 ->with('created_user', [
                     'id'         => $user->id,
                     'name'       => $user->first_name . ' ' . $user->last_name,
-                    'username'   => $user->username ?: $user->email,
+                    'username'   => ($hasUsernameColumn ? $user->username : null) ?: $user->email,
                     'email'      => $user->email,
                     'position'   => $user->position,
                     'department' => $user->department,
@@ -203,23 +218,29 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $this->ensureCanManageDeskOfficer($user);
+        $hasUsernameColumn = $this->hasUsernameColumn();
+
+        if (Auth::user()->isBcpcAdmin() || Auth::user()->isVawcAdmin()) {
+            $request->merge(['position' => $user->position]);
+        }
 
         $validated = $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name'  => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
+            'last_name'  => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
             'username'   => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('users', 'username')->ignore($user->id),
-                Rule::unique('users', 'email')->ignore($user->id),
+                $hasUsernameColumn
+                    ? Rule::unique(User::class, 'username')->ignore($user->id)
+                    : Rule::unique(User::class, 'email')->ignore($user->id),
             ],
             'email'      => [
                 'nullable',
                 'string',
                 'max:255',
-                Rule::unique('users', 'email')->ignore($user->id),
-                Rule::unique('users', 'username')->ignore($user->id),
+                Rule::unique(User::class, 'email')->ignore($user->id),
+                ...($hasUsernameColumn ? [Rule::unique(User::class, 'username')->ignore($user->id)] : []),
             ],
             'position'   => ['nullable', 'string', Rule::in(['Administrator', 'Desk Officer'])],
             'department' => ['nullable', 'string', 'max:255'],
@@ -255,6 +276,10 @@ class UserController extends Controller
 
         if (empty($validated['email'])) {
             $validated['email'] = $validated['username'];
+        }
+
+        if (!$hasUsernameColumn) {
+            unset($validated['username']);
         }
 
         $currentDepartments = $user->configuredCaseDepartments();

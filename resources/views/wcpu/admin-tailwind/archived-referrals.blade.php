@@ -183,7 +183,7 @@
         <div class="archived-recipient-modal-card relative flex w-full max-w-md flex-col overflow-hidden rounded-xl bg-white shadow-xl">
             <div class="shrink-0 flex items-center justify-between bg-[#C41E3A] px-6 py-4">
                 <h3 id="viewArchivedRecipientTitle" class="flex items-center gap-2 text-lg font-semibold text-white"><i class="fas fa-eye"></i><span>Recipient Details</span></h3>
-                <button type="button" class="text-white/80 transition-colors hover:text-white" aria-label="Close" data-close-archived-recipient><i class="fas fa-times text-xl"></i></button>
+                @unless(auth()->user()->isBcpcAdmin())<button type="button" class="text-white/80 transition-colors hover:text-white" aria-label="Close" data-close-archived-recipient><i class="fas fa-times text-xl"></i></button>@endunless
             </div>
             <div id="viewArchivedRecipientContent" class="min-h-0 flex-1 space-y-4 overflow-y-auto p-6"></div>
             <div class="shrink-0 flex justify-end border-t border-gray-100 bg-gray-50 px-6 py-3"><button type="button" class="rounded-lg bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-300" data-close-archived-recipient>Close</button></div>
@@ -351,7 +351,7 @@ document.addEventListener('click', async function (event) {
             html: details,
             width: 'min(56rem, calc(100vw - 2rem))',
             customClass: { popup: 'archive-view-modal-popup admin-archived-referral-popup' },
-            showCloseButton: true,
+            showCloseButton: @json(! auth()->user()?->isBcpcAdmin()),
             confirmButtonText: 'Close',
             confirmButtonColor: '#7e22ce'
         });

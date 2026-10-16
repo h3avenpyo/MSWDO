@@ -541,7 +541,7 @@
             message: message,
             message_type: smsState.activeTemplate,
             claiming_date: smsState.claimingDateRaw || null,
-            recipient_contact_number: smsState.convertedContactNumber || convertToPhilippineInternational(smsState.contactNumber) || smsState.contactNumber,
+            recipient_contact_number: (smsState.convertedContactNumber || convertToPhilippineInternational(smsState.contactNumber) || smsState.contactNumber || '').replace(/[^0-9]/g, ''),
         };
 
         fetch('/admin/financial/financialstep2/messages/send', {

@@ -7,7 +7,9 @@
                 <p class="text-sm text-gray-500 hidden sm:block">{{ $subtitle }}</p>
             @endif
         </div>
+        @unless(auth()->user()?->isMultiCaseDepartment() && request()->boolean('archive_report_preview') && request()->boolean('archived') && request()->routeIs('desk-officer.quarterly-reports.show', 'desk-officer.bcpc-case-monitoring.edit'))
         @include('components.desk-officer.header-account')
+        @endunless
     </div>
 </header>
 @endif

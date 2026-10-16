@@ -29,7 +29,7 @@ class UpdateOfficerRequest extends FormRequest
             }],
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($officerId)],
             'role' => ['required', Rule::enum(UserRole::class)],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'phone' => ['nullable', 'string', 'max:20', new \App\Rules\ContactNumber(null, 20)],
             'status' => ['nullable', 'in:active,inactive'],
             'signature_position' => ['nullable', 'in:osca_head,mswdo_officer,mswdo_staff'],
             'signature_image' => ['nullable', 'image', 'max:2048'],

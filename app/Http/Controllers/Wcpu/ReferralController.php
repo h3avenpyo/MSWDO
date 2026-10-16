@@ -114,6 +114,15 @@ class ReferralController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'client_contact' => ['nullable', new \App\Rules\ContactNumber(11)],
+            'client_name' => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
+            'recipient_name' => ['nullable', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
+            'referred_by_name' => ['nullable', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
+        ], [
+            '*.regex' => 'Names may contain only letters, spaces, hyphens, and apostrophes.',
+        ]);
+
         try {
             Log::info('Referral update request received', [
                 'id' => $id,

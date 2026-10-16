@@ -248,9 +248,9 @@
                                                         <p class="text-xs text-purple-200 mt-0.5">{{ $isVictim ? 'Victim' : 'Perpetrator' }}: <span class="text-white font-semibold">{{ $isVictim ? $person->victim_name : $person->abuser_name }}</span></p>
                                                     </div>
                                                 </div>
-                                                <button type="button" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition" aria-label="Close guardian information" onclick="this.closest('dialog').close()">
+                                                @unless(auth()->user()->isBcpcAdmin())<button type="button" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition" aria-label="Close guardian information" onclick="this.closest('dialog').close()">
                                                     <i class="fas fa-times text-sm"></i>
-                                                </button>
+                                                </button>@endunless
                                             </div>
 
                                             {{-- Modal Content --}}

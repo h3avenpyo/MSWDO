@@ -91,8 +91,9 @@ document.addEventListener('click', event => {
         html: frame,
         width: type === 'case' ? 'min(60rem, calc(100vw - 2rem))' : 'min(72rem, calc(100vw - 2rem))',
         customClass: { popup: `archive-view-modal-popup admin-archive-view-popup admin-archive-view-popup--${type}` },
-        showConfirmButton: false,
-        showCloseButton: true,
+        showConfirmButton: @json(auth()->user()?->isBcpcAdmin()),
+        showCloseButton: @json(! auth()->user()?->isBcpcAdmin()),
+        @if(auth()->user()?->isBcpcAdmin()) confirmButtonText: 'Close', @endif
         allowOutsideClick: true
     });
 }, true);

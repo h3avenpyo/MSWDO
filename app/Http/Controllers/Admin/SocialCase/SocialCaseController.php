@@ -453,7 +453,7 @@ class SocialCaseController extends Controller
     public function checkEligibility(Request $request, EligibilityChecker $checker)
     {
         $request->validate([
-            'client_name' => 'required|string|max:255',
+            'client_name' => ["required", "string", "max:255", "regex:/^[\p{L}\p{M}\s.'’-]+$/u"],
         ]);
 
         $name = trim($request->input('client_name'));
@@ -544,7 +544,7 @@ class SocialCaseController extends Controller
     public function submitEligibility(Request $request, EligibilityChecker $checker)
     {
         $request->validate([
-            'client_name' => 'required|string|max:255',
+            'client_name' => ["required", "string", "max:255", "regex:/^[\p{L}\p{M}\s.'’-]+$/u"],
             'override'    => 'sometimes|boolean',
             'encoder_id'  => 'nullable|integer|exists:users,id',
         ]);
@@ -680,7 +680,7 @@ class SocialCaseController extends Controller
             'control_no'                      => 'nullable|string|max:50',
             'status'                          => 'required|string|max:50',
             'client'                          => 'required|array',
-            'client.name'                     => 'required|string|max:255',
+            'client.name'                     => ["required", "string", "max:255", "regex:/^[\p{L}\p{M}\s.'’-]+$/u"],
             'client.suffix'                   => 'nullable|string|max:50',
             'client.age'                      => 'nullable|integer|min:0|max:150',
             'client.sex'                      => 'nullable|in:Male,Female',
@@ -692,9 +692,9 @@ class SocialCaseController extends Controller
             'client.civil_status'             => 'nullable|in:Single,Married,Widowed,Separated',
             'client.occupation'               => 'nullable|string|max:255',
             'client.income'                   => 'nullable|string|max:100',
-            'client.contact'                  => 'nullable|string|max:20',
+            'client.contact'                  => ["nullable", "string", "max:20", new \App\Rules\ContactNumber(11)],
             'household'                       => 'required|array|min:1',
-            'household.*.name'                => 'nullable|string|max:255',
+            'household.*.name'                => ["nullable", "string", "max:255", "regex:/^[\p{L}\p{M}\s.'’-]+$/u"],
             'household.*.relationship'        => 'nullable|string|max:100',
             'household.*.age'                 => 'nullable|integer|min:0|max:150',
             'household.*.education'           => 'nullable|string|max:100',

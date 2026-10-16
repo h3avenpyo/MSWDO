@@ -142,7 +142,7 @@
                                 @else
                                 <td class="px-5 py-4">{{ $record->barangay?->name ?? 'N/A' }}</td>
                                 <td class="px-5 py-4">Q{{ $record->quarter }} {{ $record->year }}</td>
-                                <td class="px-5 py-4">{{ \Carbon\Carbon::parse($record->archived_at)->format('M d, Y h:i A') }}</td>
+                                <td class="px-5 py-4">{{ $record->archived_at?->timezone('Asia/Manila')->format('M d, Y h:i A') ?? 'N/A' }}</td>
                                 <td class="px-5 py-4 text-center">
                                     @php($restoreBlocked = $isMonitoring
                                         ? (($activeMonitoringPeriods ?? [])["{$record->quarter}-{$record->year}"] ?? false)

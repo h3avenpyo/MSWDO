@@ -511,9 +511,9 @@
     <div class="admin-user-modal-card absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xs sm:max-w-md md:max-w-lg bg-white rounded-xl shadow-2xl overflow-hidden">
         <div class="bg-gradient-to-r from-purple-700 to-purple-600 px-4 py-3 flex items-center justify-between">
             <h3 class="text-lg font-semibold text-white">User Details</h3>
-            <button onclick="closeUserModal()" class="text-white/80 hover:text-white transition-colors">
+            @unless(auth()->user()->isBcpcAdmin() || auth()->user()->isVawcAdmin())<button onclick="closeUserModal()" class="text-white/80 hover:text-white transition-colors">
                 <i class="fas fa-times text-xl"></i>
-            </button>
+            </button>@endunless
         </div>
         <div id="userModalContent" class="p-4">
             <div class="flex justify-center py-8">
@@ -531,9 +531,9 @@
             <h3 class="text-lg font-semibold text-white flex items-center gap-2">
                 <i class="fas fa-edit"></i> Edit User
             </h3>
-            <button onclick="closeEditModal()" class="text-white/80 hover:text-white transition-colors">
+            @unless(auth()->user()->isBcpcAdmin() || auth()->user()->isVawcAdmin())<button onclick="closeEditModal()" class="text-white/80 hover:text-white transition-colors">
                 <i class="fas fa-times text-xl"></i>
-            </button>
+            </button>@endunless
         </div>
         <div id="editModalContent" class="p-4">
             <div class="flex justify-center py-8">
@@ -1403,7 +1403,7 @@ function openEditModal(userId) {
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Position</label>
-                            <input type="text" name="position" value="${data.position || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                            <input type="text" name="position" value="${data.position || ''}" @if(Auth::user()->isBcpcAdmin() || Auth::user()->isVawcAdmin()) readonly @endif class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>

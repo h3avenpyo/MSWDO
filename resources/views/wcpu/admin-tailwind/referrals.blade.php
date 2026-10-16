@@ -275,13 +275,8 @@
                     @php
                         $recipientUnavailable = $referral->recipient
                             && ($referral->recipient->trashed() || !$referral->recipient->active);
-                        $swdRecipientUnavailable = auth()->user()?->isVawcAdmin() && $recipientUnavailable;
-                        $adminReferralExists = auth()->user()?->isDepartmentAdmin()
-                            && $referral->caseHasDepartmentAdminReferral();
-                        $editDisabled = $swdRecipientUnavailable || $adminReferralExists;
-                        $editDisabledTitle = $adminReferralExists
-                            ? 'Editing is disabled after an Admin refers this case'
-                            : ($swdRecipientUnavailable ? 'The recipient is currently unavailable' : 'Edit');
+                        $editDisabled = false;
+                        $editDisabledTitle = 'Edit';
                     @endphp
                     <tr class="{{ $matchReportTable ? 'hover:bg-purple-50/50 transition' : 'hover:bg-gray-50 transition-colors' }}" data-referral-id="{{ $referral->id }}">
                         <td class="{{ $matchReportTable ? 'px-6' : 'px-4' }} py-4">
@@ -405,13 +400,8 @@
             @php
                 $recipientUnavailable = $referral->recipient
                     && ($referral->recipient->trashed() || !$referral->recipient->active);
-                $swdRecipientUnavailable = auth()->user()?->isVawcAdmin() && $recipientUnavailable;
-                $adminReferralExists = auth()->user()?->isDepartmentAdmin()
-                    && $referral->caseHasDepartmentAdminReferral();
-                $editDisabled = $swdRecipientUnavailable || $adminReferralExists;
-                $editDisabledTitle = $adminReferralExists
-                    ? 'Editing is disabled after an Admin refers this case'
-                    : ($swdRecipientUnavailable ? 'The recipient is currently unavailable' : 'Edit');
+                $editDisabled = false;
+                $editDisabledTitle = 'Edit';
             @endphp
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 referral-card" data-id="{{ $referral->id }}">
                 <div class="flex items-start justify-between gap-3 mb-3">

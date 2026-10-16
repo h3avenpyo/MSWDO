@@ -310,8 +310,8 @@
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="opacity-100 transform scale-100"
         x-transition:leave-end="opacity-0 transform scale-95"
-        class="notification-dropdown absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden"
-        style="display: none;"
+        class="notification-dropdown absolute right-0 mt-2 w-80 max-h-[50vh] flex flex-col bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden"
+        style="display: none; max-height: 50vh; max-height: 50dvh;"
     >
         <!-- Header -->
         <div class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-purple-700 to-purple-600 text-white">
@@ -325,7 +325,7 @@
         </div>
         
         <!-- Notification List -->
-        <div id="recent-activity-list" class="notification-dropdown-list max-h-80 overflow-y-auto divide-y divide-gray-100">
+        <div id="recent-activity-list" class="notification-dropdown-list min-h-0 flex-1 overflow-y-auto divide-y divide-gray-100">
             @forelse($recentActivities as $activity)
             <a 
                 href="{{ $activity['url'] ?? '#' }}" 

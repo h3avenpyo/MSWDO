@@ -1,5 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+@php
+    $isArchivedReportPreview = auth()->user()?->position === 'Desk Officer'
+        && auth()->user()?->isMultiCaseDepartment()
+        && request()->boolean('archived')
+        && ((request()->boolean('archive_report_preview')
+                && request()->routeIs('desk-officer.quarterly-reports.show', 'desk-officer.bcpc-case-monitoring.edit'))
+            || (request()->boolean('archive_case_preview')
+                && request()->routeIs('desk-officer.cases.show', 'cases.show')));
+    $persistsDeskOfficerSidebar = auth()->user()?->position === 'Desk Officer'
+        && (auth()->user()?->isMultiCaseDepartment() || in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true));
+    $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
+        ? 'multiRoleDeskOfficerSidebarCollapsed'
+        : ($persistsDeskOfficerSidebar
+            ? (auth()->user()?->defaultCaseDepartment() === 'BCPC' ? 'bcpcDeskOfficerSidebarCollapsed' : 'swdDeskOfficerSidebarCollapsed')
+            : 'sidebarCollapsed');
+@endphp
+<html lang="en" @if($isArchivedReportPreview) class="archive-report-preview" @endif>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -21,7 +37,35 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
+    @if($persistsDeskOfficerSidebar)
+    <script>
+        try {
+            document.documentElement.classList.toggle('bcpc-desk-sidebar-collapsed', localStorage.getItem(@json($deskOfficerSidebarStateKey)) === 'true');
+        } catch (e) {}
+    </script>
+    @endif
+
     @stack('styles')
+    @if($isArchivedReportPreview)
+    <style>
+        html.archive-report-preview { width: 100%; height: 100%; overflow-y: auto; }
+        html.archive-report-preview body.portal-ui { min-width: 0 !important; min-height: 0 !important; height: auto !important; overflow-y: visible !important; }
+        html.archive-report-preview body.portal-ui #mainContent {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding-inline: 0 !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            overflow-y: visible !important;
+        }
+        html.archive-report-preview #mainContent > header > div { display: block !important; }
+        html.archive-report-preview #mainContent > header > div > div:first-child { width: 100%; min-width: 0; max-width: none; }
+    </style>
+    @endif
     <link rel="stylesheet" href="{{ asset('css/desk-officer-tables.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin-pagination.css') }}">
     <link rel="stylesheet" href="{{ asset('css/table-action-controls.css') }}?v={{ filemtime(public_path('css/table-action-controls.css')) }}">
@@ -206,6 +250,42 @@
         .sidebar-menu a {
             text-decoration: none !important;
         }
+        .portal-ui #sidebar {
+            border-radius: 0 !important;
+        }
+        .portal-ui #sidebar > nav.sidebar-menu,
+        .portal-ui #sidebar > nav.sidebar-menu + .sidebar-menu {
+            background-color: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+        .portal-ui #sidebar > nav.sidebar-menu {
+            overflow-x: hidden !important;
+        }
+        @media (min-width: 40.0625rem) {
+            #sidebar.sidebar-collapsed [x-show],
+            #sidebar.sidebar-collapsed-init [x-show] {
+                width: 100% !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            #sidebar.sidebar-collapsed [x-show] > :is(a, button),
+            #sidebar.sidebar-collapsed-init [x-show] > :is(a, button) {
+                justify-content: center !important;
+                gap: 0 !important;
+                width: 100% !important;
+                min-height: 3rem !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            #sidebar.sidebar-collapsed [x-show] > :is(a, button).bg-purple-600,
+            #sidebar.sidebar-collapsed-init [x-show] > :is(a, button).bg-purple-600 {
+                background-color: #C41E3A !important;
+                box-shadow: none !important;
+            }
+        }
         
         /* Sidebar collapsed state - desktop only */
         @media (min-width: 1024px) {
@@ -373,6 +453,58 @@
 
         /* Keep shared Desk Officer pages stable across tablet portrait and landscape. */
         @media (min-width: 40.0625rem) and (max-width: 80rem) {
+            .portal-ui #mainContent {
+                padding-left: .75rem !important;
+                padding-right: .75rem !important;
+            }
+            #mobileTopBar,
+            #mobileMenuToggle,
+            #sidebarOverlay,
+            #sidebarCloseBtn {
+                display: none !important;
+            }
+            #sidebar {
+                width: 18rem !important;
+                min-width: 18rem !important;
+                max-width: 18rem !important;
+                height: 100vh !important;
+                opacity: 1 !important;
+                transform: translateX(0) !important;
+            }
+            #sidebar.sidebar-collapsed,
+            #sidebar.sidebar-collapsed-init {
+                width: 4.5rem !important;
+                min-width: 4.5rem !important;
+                max-width: 4.5rem !important;
+            }
+            #sidebar.sidebar-collapsed .sidebar-text,
+            #sidebar.sidebar-collapsed-init .sidebar-text {
+                opacity: 0 !important;
+                max-width: 0 !important;
+            }
+            #sidebarToggleBtn {
+                display: flex !important;
+            }
+            #mainContent .tablet-header-row {
+                grid-template-columns: minmax(0, 1fr) auto !important;
+            }
+            #mainContent .tablet-header-row > #mobileMenuToggle + div {
+                grid-column: 1 !important;
+            }
+            #mainContent .tablet-header-row > #mobileMenuToggle + div ~ div:last-child {
+                grid-column: 2 !important;
+            }
+            .portal-ui #mainContent {
+                width: calc(100vw - 18rem) !important;
+                min-width: 0 !important;
+                margin-left: 18rem !important;
+                overflow-x: hidden;
+            }
+            .portal-ui #sidebar.sidebar-collapsed ~ #mainContent,
+            .portal-ui #sidebar.sidebar-collapsed-init ~ #mainContent {
+                width: calc(100vw - 4.5rem) !important;
+                margin-left: 4.5rem !important;
+            }
             #mainContent > :is(main, div, section) {
                 min-width: 0;
                 max-width: 100%;
@@ -458,8 +590,9 @@
             }
 
             #mainContent #mobileMenuToggle {
-                background-color: #BC0202 !important;
-                color: #fff !important;
+                background-color: #ffffff !important;
+                border-color: transparent !important;
+                color: #C41E3A !important;
             }
 
             #mainContent #mobileMenuToggle > i {
@@ -659,8 +792,22 @@
     $defaultDashboardRoute = $defaultCaseDepartment === 'BCPC'
         ? route('desk-officer.bcpc.dashboard')
         : route('desk-officer.dashboard');
+    $isArchiveDetailPage = request()->boolean('archived') && request()->routeIs(
+        'cases.show',
+        'desk-officer.cases.show',
+        'desk-officer.quarterly-reports.show',
+        'desk-officer.bcpc-case-monitoring.edit'
+    );
+    $isArchiveListPage = request()->routeIs(
+        'desk-officer.referrals.archived',
+        'desk-officer.quarterly-reports.archived',
+        'desk-officer.bcpc-case-monitoring.archived',
+        'desk-officer.archived-barangay-cases.index'
+    );
+    $isArchivesOpen = $isArchiveListPage || $isArchiveDetailPage;
 @endphp
 
+    @unless($isArchivedReportPreview)
     <!-- Mobile Sticky Top Bar -->
     <div id="mobileTopBar" class="lg:hidden sticky top-0 z-30 relative bg-purple-900 text-white flex items-center justify-between px-4 py-2.5 shadow-md border-b border-purple-800">
         <div class="flex items-center gap-3">
@@ -698,6 +845,13 @@
                lg:translate-x-0 flex flex-col shadow-2xl
                rounded-r-3xl lg:rounded-none"
     >
+        @if($persistsDeskOfficerSidebar)
+        <script>
+            if (document.documentElement.classList.contains('bcpc-desk-sidebar-collapsed')) {
+                document.getElementById('sidebar')?.classList.add('sidebar-collapsed');
+            }
+        </script>
+        @endif
         <!-- Sidebar Header -->
         <div class="sidebar-header py-5 border-b border-white">
             <div class="flex items-center justify-center gap-3 {{ $isMultiCaseDepartment ? 'w-full' : '' }}">
@@ -720,21 +874,6 @@
         
         <!-- Sidebar Menu -->
         <nav class="flex-1 overflow-y-auto py-4 sidebar-menu">
-            @php
-                $isArchiveDetailPage = request()->boolean('archived') && request()->routeIs(
-                    'cases.show',
-                    'desk-officer.cases.show',
-                    'desk-officer.quarterly-reports.show',
-                    'desk-officer.bcpc-case-monitoring.edit'
-                );
-                $isArchiveListPage = request()->routeIs(
-                    'desk-officer.referrals.archived',
-                    'desk-officer.quarterly-reports.archived',
-                    'desk-officer.bcpc-case-monitoring.archived',
-                    'desk-officer.archived-barangay-cases.index'
-                );
-                $isArchivesOpen = $isArchiveListPage || $isArchiveDetailPage;
-            @endphp
             <!-- Dashboard -->
             @if($isMultiCaseDepartment)
             @php
@@ -872,8 +1011,12 @@
                     <span class="flex items-center gap-3"><i class="fas fa-archive w-5 text-center"></i><span class="sidebar-text">Archives</span></span><i class="fas fa-chevron-down text-xs sidebar-text" :class="{ 'rotate-180': archiveOpen }"></i>
                 </button>
                 <div x-show="archiveOpen" x-cloak class="mt-1 pl-6 pr-2 space-y-1">
-                    @foreach(['desk-officer.archived-barangay-cases.index' => 'Archived Barangay Cases', 'desk-officer.quarterly-reports.archived' => 'Archived Reports', 'desk-officer.referrals.archived' => 'Archived Referrals'] as $archiveRoute => $archiveLabel)
-                    <a href="{{ route($archiveRoute) }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs($archiveRoute) ? 'bg-purple-600 text-white shadow-sm font-semibold' : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"><i class="fas fa-folder w-4 text-center"></i><span class="sidebar-text">{{ $archiveLabel }}</span></a>
+                    @foreach([
+                        'desk-officer.archived-barangay-cases.index' => ['Archived Barangay Cases', 'fa-map-marked-alt'],
+                        'desk-officer.quarterly-reports.archived' => ['Archived Reports', 'fa-chart-pie'],
+                        'desk-officer.referrals.archived' => ['Archived Referrals', 'fa-paper-plane'],
+                    ] as $archiveRoute => [$archiveLabel, $archiveIcon])
+                    <a href="{{ route($archiveRoute) }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs($archiveRoute) ? 'bg-purple-600 text-white shadow-sm font-semibold' : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"><i class="fas {{ $archiveIcon }} w-4 text-center"></i><span class="sidebar-text">{{ $archiveLabel }}</span></a>
                     @endforeach
                 </div>
             </div>
@@ -881,7 +1024,7 @@
         </nav>
         
         <!-- Sidebar Footer -->
-        <div class="py-4 border-t border-white sidebar-menu">
+        <div class="py-4 sidebar-menu">
             <form id="logout-form" method="POST" action="{{ route('logout') }}" class="hidden" data-skip-loading-modal>
                 @csrf
             </form>
@@ -911,6 +1054,7 @@
         <i class="fas fa-chevron-left text-gray-600 text-xs transition-transform duration-300"></i>
     </button>
     
+    @endunless
     <!-- Main Content -->
     <div 
         id="mainContent" data-page-title="@yield('title', '')"
@@ -918,7 +1062,9 @@
     >
         @yield('content')
     </div>
+    @unless($isArchivedReportPreview)
     @include('components.portal-clock')
+    @endunless
 
     <!-- Notification dropdown modal (desk-officer) -->
     @if($deskOfficerNotificationCount > 0)
@@ -1188,18 +1334,31 @@
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+        const sidebarStateKey = @json($deskOfficerSidebarStateKey);
         
-        // Always start each visit with the desktop sidebar expanded.
-        localStorage.setItem('sidebarCollapsed', 'false');
+        @if($persistsDeskOfficerSidebar)
+        if (sidebar) sidebar.classList.toggle('sidebar-collapsed', localStorage.getItem(sidebarStateKey) === 'true');
+        @elseif(auth()->user()?->position === 'Desk Officer' && (auth()->user()?->isMultiCaseDepartment() || in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)))
+        if (sidebar) sidebar.classList.add('sidebar-collapsed');
+        localStorage.setItem(sidebarStateKey, 'true');
+        @else
+        localStorage.setItem(sidebarStateKey, 'false');
+        @endif
         
         function collapseSidebar() {
             if (sidebar) sidebar.classList.add('sidebar-collapsed');
-            localStorage.setItem('sidebarCollapsed', 'true');
+            localStorage.setItem(sidebarStateKey, 'true');
+            @if($persistsDeskOfficerSidebar)
+            document.documentElement.classList.add('bcpc-desk-sidebar-collapsed');
+            @endif
         }
         
         function expandSidebar() {
             if (sidebar) sidebar.classList.remove('sidebar-collapsed');
-            localStorage.setItem('sidebarCollapsed', 'false');
+            localStorage.setItem(sidebarStateKey, 'false');
+            @if($persistsDeskOfficerSidebar)
+            document.documentElement.classList.remove('bcpc-desk-sidebar-collapsed');
+            @endif
             const initialStyle = document.getElementById('sidebar-initial-collapsed-style');
             if (initialStyle) {
                 initialStyle.remove();
@@ -1317,5 +1476,6 @@
 @include('components.record-table-columns')
 @include('components.multirole-loading')
 @include('components.inactivity-timeout')
+<script src="{{ asset('js/contact-number-validation.js') }}?v={{ filemtime(public_path('js/contact-number-validation.js')) }}"></script>
 </body>
 </html>

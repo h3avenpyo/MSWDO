@@ -116,9 +116,9 @@ class SeniorController extends Controller
             'barangay' => ['required', 'string', 'max:255'],
             'birth_date' => ['required', 'date'],
             'sex' => ['required', 'in:Male,Female'],
-            'contact_number' => ['required', 'string', 'regex:/^[0-9]{11}$/', 'max:11'],
+            'contact_number' => ['required', 'string', 'regex:/^[0-9]{11}$/', 'max:11', new \App\Rules\ContactNumber(11)],
             'emergency_contact_name' => ['nullable', 'string', 'max:255'],
-            'emergency_contact_number' => ['nullable', 'string', 'max:20'],
+            'emergency_contact_number' => ['nullable', 'string', 'max:20', new \App\Rules\ContactNumber(11)],
             'philsys_number' => ['nullable', 'string', 'regex:/^[0-9]{12}$/', 'max:12'],
             'rrn_number' => ['nullable', 'string', 'regex:/^[0-9]{29}$/', 'max:29'],
             'remarks' => ['nullable', 'string', 'max:1000'],
@@ -549,9 +549,9 @@ class SeniorController extends Controller
             'sex' => 'nullable|in:Male,Female',
             'address' => 'nullable|string|max:255',
             'barangay' => 'nullable|string|max:100',
-            'contact_number' => 'nullable|string|max:20',
+            'contact_number' => ["nullable", "string", "max:20", new \App\Rules\ContactNumber(11)],
             'emergency_contact_name' => 'nullable|string|max:100',
-            'emergency_contact_number' => 'nullable|string|max:20',
+            'emergency_contact_number' => ["nullable", "string", "max:20", new \App\Rules\ContactNumber(11)],
             'status' => 'nullable|in:active,pending,archived',
         ]);
 

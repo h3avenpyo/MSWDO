@@ -39,6 +39,9 @@ function normalizeClientName(name){
     .replace(/\s+/g, ' ')
     .trim();
 }
+function sanitizePersonName(name){
+  return String(name || '').replace(/[^\p{L}\p{M}\s.'’\-]/gu, '');
+}
 function parseClientName(fullName){
   const normalized = normalizeClientName(fullName);
   const parts = normalized.split(/\s+/).filter(Boolean);
@@ -2593,7 +2596,7 @@ function renderIntakeForm(){
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div class="lg:col-span-2">
           <label class="form-label">Full Name <span style="color:#DC2626;font-weight:700;font-size:16px">*</span></label>
-          <input type="text" class="form-input" value="${escapeHtml(d.client.name)}" oninput="draftIntake.client.name=this.value" placeholder="Enter client's full name" required maxlength="255">
+          <input type="text" class="form-input" value="${escapeHtml(d.client.name)}" oninput="this.value=sanitizePersonName(this.value); draftIntake.client.name=this.value" placeholder="Enter client's full name" required maxlength="255">
         </div>
         <div>
           <label class="form-label">Suffix</label>
@@ -2688,7 +2691,7 @@ function renderIntakeForm(){
               <tr>
                 <td>
                   <span class="family-mobile-label" style="display:none">Full Name</span>
-                  <input type="text" class="form-input" value="${escapeHtml(m.name)}" oninput="draftIntake.household[${i}].name=this.value" placeholder="e.g. Maria Santos" required>
+                  <input type="text" class="form-input" value="${escapeHtml(m.name)}" oninput="this.value=sanitizePersonName(this.value); draftIntake.household[${i}].name=this.value" placeholder="e.g. Maria Santos" required>
                 </td>
                 <td>
                   <span class="family-mobile-label" style="display:none">Relationship</span>

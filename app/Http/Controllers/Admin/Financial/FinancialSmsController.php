@@ -30,7 +30,7 @@ class FinancialSmsController extends Controller
             'message' => ['required', 'string', 'min:3', 'max:1000'],
             'message_type' => ['nullable', 'string', 'max:50'],
             'claiming_date' => ['nullable', 'date'],
-            'recipient_contact_number' => ['nullable', 'string', 'max:50'],
+            'recipient_contact_number' => ['nullable', 'string', 'max:50', new \App\Rules\ContactNumber(null, 50)],
         ]);
 
         $intake = BeneficiaryIntake::with(['client', 'payrollRecord'])->findOrFail($request->intake_id);

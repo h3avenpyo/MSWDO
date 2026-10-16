@@ -506,16 +506,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (result.isConfirmed) {
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i>Creating Account...';
-                @if(auth()->user()->isBcpcAdmin())
-                Swal.fire({
-                    title: 'Creating User...',
-                    text: 'Please wait while the account is being created.',
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    showConfirmButton: false,
-                    didOpen: () => Swal.showLoading()
-                });
-                @endif
                 registerForm.submit();
             }
         });

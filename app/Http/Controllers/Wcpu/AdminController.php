@@ -731,11 +731,11 @@ class AdminController extends Controller
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'first_name' => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
+            'last_name' => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
-            'phone_number' => 'nullable|string|max:20',
+            'phone_number' => ["nullable", "string", "max:20", new \App\Rules\ContactNumber(null, 20)],
             'position' => 'nullable|string|max:255',
             'department' => 'nullable|string|max:255',
             'is_active' => 'boolean',
@@ -1217,29 +1217,29 @@ class AdminController extends Controller
             'incident_time' => 'required|date_format:H:i',
             'date_reported' => 'required|date',
             'abuse_type' => 'required|string|max:255',
-            'perpetrator_name' => 'nullable|string|max:255',
+            'perpetrator_name' => ['nullable', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
             'relationship_to_victim' => 'nullable|string|max:255',
             'case_details' => 'required|string',
             'status' => 'required|string|max:50',
             'assigned_to' => 'nullable|exists:users,id',
             
             // Victim Information
-            'victim_name' => 'required|string|max:255',
+            'victim_name' => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
             'victim_age' => 'required|integer|min:0|max:120',
             'victim_gender' => 'required|string|max:50',
-            'victim_contact' => 'required|string|max:20',
+            'victim_contact' => ["required", "string", "max:20", new \App\Rules\ContactNumber(11)],
             'victim_address' => 'required|string|max:255',
             
             // Abuser Information
-            'abuser_name' => 'required|string|max:255',
+            'abuser_name' => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
             'abuser_age' => 'nullable|integer|min:0|max:120',
             'abuse_relationship' => 'required|string|max:255',
             'incident_location' => 'required|string|max:255',
             'incident_details' => 'required|string',
             
             // Witness Information
-            'witness_name' => 'nullable|string|max:255',
-            'witness_contact' => 'nullable|string|max:20',
+            'witness_name' => ['nullable', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
+            'witness_contact' => ["nullable", "string", "max:20", new \App\Rules\ContactNumber(11)],
             
             // Documents
             'statement' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
@@ -2093,22 +2093,6 @@ class AdminController extends Controller
     {
         $referral = \App\Models\Wcpu\CaseReferral::with(['case', 'recipient'])->findOrFail($id);
 
-        if (Auth::user()->isDepartmentAdmin() && $referral->caseHasDepartmentAdminReferral()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Editing is disabled after an Admin refers this case.',
-            ], 403);
-        }
-
-        if (Auth::user()->isVawcAdmin()
-            && $referral->recipient
-            && ($referral->recipient->trashed() || ! $referral->recipient->active)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'The recipient is currently unavailable. The referral cannot be processed due to this reason.',
-            ], 422);
-        }
-
         $validated = $request->validate([
             'date_of_referral' => ['nullable', 'date'],
             'action_taken' => ['nullable', 'string'],
@@ -2349,11 +2333,23 @@ class AdminController extends Controller
             'quarter' => 'required|integer|between:1,4',
             'year' => 'required|integer|between:2020,2100',
             'bcpc_crimes_against_children' => 'nullable|array',
+            'bcpc_crimes_against_children.*.*.*' => 'nullable|integer|min:0',
             'bcpc_cicl_crimes' => 'nullable|array',
+            'bcpc_cicl_crimes.*.*.*' => 'nullable|integer|min:0',
             'bcpc_cicl_status' => 'nullable|array',
+            'bcpc_cicl_status.*.*.*' => 'nullable|integer|min:0',
             'bcpc_children_at_risk' => 'nullable|array',
+            'bcpc_children_at_risk.*.*.*' => 'nullable|integer|min:0',
             'bcpc_special_protection' => 'nullable|array',
+            'bcpc_special_protection.*.*.*' => 'nullable|integer|min:0',
             'bcpc_organizations' => 'nullable|array',
+            'bcpc_organizations.*.name' => ['nullable', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} ]+$/u"],
+            'bcpc_organizations.*.responsible_person' => ['nullable', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} ]+$/u"],
+            'bcpc_organizations.*.phone' => ['nullable', 'regex:/^[0-9]+$/', new \App\Rules\ContactNumber(null)],
+        ], [
+            'bcpc_organizations.*.name.regex' => 'The organization name may contain only letters and spaces.',
+            'bcpc_organizations.*.responsible_person.regex' => 'The responsible person and designation may contain only letters and spaces.',
+            'bcpc_organizations.*.phone.regex' => 'The phone or mobile number may contain numbers only.',
         ]);
 
         $barangay = Barangay::findOrFail($data['barangay_id']);

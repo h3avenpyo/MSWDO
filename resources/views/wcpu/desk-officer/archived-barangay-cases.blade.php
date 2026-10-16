@@ -77,7 +77,7 @@
     @foreach($caseGroups as $department => $cases)
     <section class="mb-6 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
         @if(auth()->user()->isMultiCaseDepartment())
-        <div class="border-b border-gray-100 px-5 py-4">
+        <div class="border-b border-gray-100 px-4 py-4">
             <h2 class="text-lg font-semibold text-[#991b1b]">{{ $department === 'VAWC' ? 'SWD' : $department }} Cases</h2>
         </div>
         @endif
@@ -98,7 +98,7 @@
                             <td class="px-4 py-3 font-semibold text-gray-800">#{{ $case->case_number }}</td>
                             <td class="px-4 py-3 text-gray-700">{{ censorLastName($case->victim_name) }}</td>
                             <td class="px-4 py-3"><span class="inline-block rounded px-3 py-1 text-xs font-semibold bg-gray-100 text-gray-700">{{ $case->status }}</span></td>
-                            <td class="px-4 py-3 text-sm text-gray-600">{{ $case->deleted_at?->format('M d, Y h:i A') }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">{{ $case->deleted_at?->timezone('Asia/Manila')->format('M d, Y h:i A') }}</td>
                             <td class="px-4 py-3 text-center">
                                 <div class="flex items-center justify-center gap-2">
                                     <a href="{{ ($department ?? 'VAWC') === 'BCPC' ? route('desk-officer.cases.show', ['hash' => encrypt($case->id), 'archived' => 1]) : route('cases.show', ['id' => $case->id, 'archived' => 1]) }}" title="View Case" class="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#C41E3A] text-white hover:bg-[#A01830]">
@@ -129,7 +129,7 @@
             @forelse($cases as $case)
             <article data-archive-search="{{ $case->case_number }} {{ $case->victim_name }} {{ $case->abuse_type }}" data-archive-status="{{ $case->status }}" class="archived-case-card rounded-xl border border-gray-200 bg-white shadow-sm">
                 <div class="flex items-start justify-between gap-3 border-b border-gray-100 pb-3"><div class="min-w-0"><p class="text-xs text-gray-500">Case Number</p><p class="font-semibold text-gray-800 break-all">{{ $case->case_number }}</p></div><span class="shrink-0 self-start rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium leading-tight text-gray-700 text-center">{{ $case->status }}</span></div>
-                <dl class="grid grid-cols-2 gap-x-4 gap-y-3 py-3 text-sm"><div><dt class="text-xs text-gray-500">Victim</dt><dd class="font-medium text-gray-800 break-words">{{ censorLastName($case->victim_name) }}</dd></div><div><dt class="text-xs text-gray-500">Archived At</dt><dd class="font-medium text-gray-800">{{ $case->deleted_at?->format('M d, Y h:i A') }}</dd></div></dl>
+                <dl class="grid grid-cols-2 gap-x-4 gap-y-3 py-3 text-sm"><div><dt class="text-xs text-gray-500">Victim</dt><dd class="font-medium text-gray-800 break-words">{{ censorLastName($case->victim_name) }}</dd></div><div><dt class="text-xs text-gray-500">Archived At</dt><dd class="font-medium text-gray-800">{{ $case->deleted_at?->timezone('Asia/Manila')->format('M d, Y h:i A') }}</dd></div></dl>
                 <div class="archived-case-card-actions border-t border-gray-100 pt-3">
                     <a href="{{ ($department ?? 'VAWC') === 'BCPC' ? route('desk-officer.cases.show', ['hash' => encrypt($case->id), 'archived' => 1]) : route('cases.show', ['id' => $case->id, 'archived' => 1]) }}" title="View Case" class="rounded-lg bg-[#C41E3A] text-white"><i class="fas fa-eye"></i><span class="sr-only">View</span></a>
                     <form method="POST" action="{{ route('desk-officer.archived-barangay-cases.restore', $case->id) }}" class="restore-case-form" data-case-number="{{ $case->case_number }}">@csrf<button type="submit" title="Restore Case" class="rounded-lg bg-[#C41E3A] text-white"><i class="fas fa-undo"></i><span class="sr-only">Restore</span></button></form>

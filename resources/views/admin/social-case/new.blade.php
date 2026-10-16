@@ -168,7 +168,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
                 <h3><i data-lucide="search" style="width:18px;height:18px"></i> Search Client</h3>
                 
                 <div class="search-box-large">
-                    <input type="text" id="elig-name" placeholder="Search by Full Name" value="{{ $clientName ?? '' }}">
+                    <input type="text" id="elig-name" placeholder="Search by Full Name" value="{{ $clientName ?? '' }}" oninput="this.value=sanitizePersonName(this.value)">
                 </div>
                 
                 <div class="hint" style="margin-bottom:16px">We'll check if this client received a social case study in the last 6 months.</div>

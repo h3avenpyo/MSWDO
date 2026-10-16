@@ -10,7 +10,6 @@
 <dialog id="swdArchiveViewDialog" aria-labelledby="swdArchiveViewTitle">
     <div class="swd-archive-dialog-header">
         <h2 id="swdArchiveViewTitle"></h2>
-        <button type="button" data-swd-archive-close aria-label="Close this dialog" class="text-2xl text-gray-500">&times;</button>
     </div>
     <div data-swd-archive-content aria-live="polite"></div>
     <div class="swd-archive-dialog-footer">

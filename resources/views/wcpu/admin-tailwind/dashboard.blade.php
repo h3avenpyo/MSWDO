@@ -234,8 +234,12 @@
             </div>
         </div>
         @if(auth()->user()->isVawcAdmin() || auth()->user()->isBcpcAdmin())
-        <div class="lg:col-start-1 self-start">
-            @include('components.swd-dashboard-announcements', ['announcementUser' => auth()->user()])
+        <div class="w-full lg:col-span-2 mt-2 self-start">
+            @include('components.swd-dashboard-announcements', [
+                'announcementUser' => auth()->user(),
+                'announcementLimit' => 4,
+                'announcementTwoColumns' => true,
+            ])
         </div>
         @endif
     </div>

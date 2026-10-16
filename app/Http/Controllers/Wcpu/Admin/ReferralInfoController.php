@@ -11,6 +11,14 @@ use Illuminate\Validation\Rule;
 
 class ReferralInfoController extends Controller
 {
+    private function allowedRoles(): array
+    {
+        // Referral recipients must remain within the signed-in department.
+        return auth()->user()->isVawcAdmin()
+            ? ['SWD - Staff', 'SWD - Focal']
+            : ['BCPC - Staff', 'BCPC - Focal'];
+    }
+
     public function index()
     {
         $recipients = ReportRecipient::orderBy('created_at', 'desc')->get();
@@ -24,12 +32,14 @@ class ReferralInfoController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
             'email' => ['required', 'email', Rule::unique(ReportRecipient::class, 'email')],
             'role' => auth()->user()->isDepartmentAdmin()
-                ? ['required', 'string', Rule::in(['BCPC - Staff', 'SWD - Staff', 'SWD - Focal', 'BCPC - Focal'])]
+                ? ['required', 'string', Rule::in($this->allowedRoles())]
                 : 'nullable|string|max:255',
-            'contact_number' => 'nullable|digits:11',
+            'contact_number' => ["nullable", "digits:11", new \App\Rules\ContactNumber(11)],
+        ], [
+            'name.regex' => 'Name may contain only letters, spaces, hyphens, and apostrophes.',
         ]);
 
         if ($validator->fails()) {
@@ -63,12 +73,14 @@ class ReferralInfoController extends Controller
         $recipient = ReportRecipient::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
             'email' => ['required', 'email', Rule::unique(ReportRecipient::class, 'email')->ignore($recipient->getKey())],
             'role' => auth()->user()->isDepartmentAdmin()
-                ? ['nullable', 'string', Rule::in(['BCPC - Staff', 'SWD - Staff', 'SWD - Focal', 'BCPC - Focal'])]
+                ? ['nullable', 'string', Rule::in($this->allowedRoles())]
                 : 'nullable|string|max:255',
-            'contact_number' => 'nullable|digits:11',
+            'contact_number' => ["nullable", "digits:11", new \App\Rules\ContactNumber(11)],
+        ], [
+            'name.regex' => 'Name may contain only letters, spaces, hyphens, and apostrophes.',
         ]);
 
         if ($validator->fails()) {

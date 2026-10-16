@@ -240,12 +240,24 @@ class BcpcCaseMonitoringController extends Controller
             'quarter' => 'required|integer|between:1,4',
             'year' => 'required|integer|between:2020,2100',
             'bcpc_crimes_against_children' => 'nullable|array',
+            'bcpc_crimes_against_children.*.*.*' => 'nullable|integer|min:0',
             'bcpc_cicl_crimes' => 'nullable|array',
+            'bcpc_cicl_crimes.*.*.*' => 'nullable|integer|min:0',
             'bcpc_cicl_status' => 'nullable|array',
+            'bcpc_cicl_status.*.*.*' => 'nullable|integer|min:0',
             'bcpc_children_at_risk' => 'nullable|array',
+            'bcpc_children_at_risk.*.*.*' => 'nullable|integer|min:0',
             'bcpc_special_protection' => 'nullable|array',
+            'bcpc_special_protection.*.*.*' => 'nullable|integer|min:0',
             'bcpc_organizations' => 'nullable|array',
+            'bcpc_organizations.*.name' => ['nullable', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} ]+$/u"],
+            'bcpc_organizations.*.responsible_person' => ['nullable', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} ]+$/u"],
+            'bcpc_organizations.*.phone' => ['nullable', 'regex:/^[0-9]+$/', new \App\Rules\ContactNumber(null)],
             'send_to_admin' => 'nullable|boolean',
+        ], [
+            'bcpc_organizations.*.name.regex' => 'The organization name may contain only letters and spaces.',
+            'bcpc_organizations.*.responsible_person.regex' => 'The responsible person and designation may contain only letters and spaces.',
+            'bcpc_organizations.*.phone.regex' => 'The phone or mobile number may contain numbers only.',
         ]);
         $barangay = $this->barangay();
         abort_unless($barangay, 404, 'Barangay not found for your account.');

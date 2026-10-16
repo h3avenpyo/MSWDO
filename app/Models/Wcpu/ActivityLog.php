@@ -47,7 +47,7 @@ class ActivityLog extends BaseActivity
      */
     public function getDescriptionAttribute($value): string
     {
-        return $this->getDescription();
+        return (string) $value;
     }
 
     /**

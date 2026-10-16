@@ -784,7 +784,7 @@ class QuarterlyReportController extends Controller
             return response()->json(['success' => true, 'message' => 'Quarterly report regenerated successfully.', 'redirect_url' => route('desk-officer.quarterly-reports.index')]);
         }
 
-        return redirect()->route('desk-officer.quarterly-reports.index')
+        return redirect()->route($isAdmin ? 'admin.quarterly-reports.index' : 'desk-officer.quarterly-reports.index')
             ->with('quarterly_report_completed', true)
             ->with('success', "Quarterly report for Q{$quarter} {$year} ({$report->type}) has been successfully updated with latest cases.");
     }

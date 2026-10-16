@@ -310,7 +310,7 @@
 <!-- Date Events Modal -->
 <div id="dateEventsModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeDateEventsModal()"></div>
-    <div class="flex items-start sm:items-center justify-center overflow-y-auto p-4">
+    <div class="flex min-h-full items-center justify-center overflow-y-auto p-4">
         <div id="dateEventsModalContent" class="relative bg-white rounded-xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain p-6">
             <h2 class="text-xl font-bold text-gray-800 mb-4" id="dateEventsTitle">Events on Date</h2>
             <div id="dateEventsList" class="space-y-3 mb-6"></div>
@@ -327,7 +327,7 @@
 <!-- Event Modal -->
 <div id="eventModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeEventModal()"></div>
-    <div id="eventModalDialog" class="flex items-start sm:items-center justify-center overflow-y-auto p-4">
+    <div id="eventModalDialog" class="flex items-center justify-center overflow-y-auto p-4">
         <div id="eventModalContent" class="relative bg-white rounded-xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain p-6">
             <h2 class="text-xl font-bold text-gray-800 mb-4">Add New Event</h2>
             
@@ -355,15 +355,16 @@
                 
                 <div class="mb-4">
                     <label for="event_date_input" class="block text-sm font-medium text-gray-700 mb-2">Date <span class="text-red-500">*</span></label>
-                    <input type="datetime-local" id="event_date_input" name="event_date_input" required
+                    <input type="datetime-local" id="event_date_input" name="event_date_input" required oninput="validateEventEndTime()"
                            min="{{ date('Y-m-d\TH:i') }}"
                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                 </div>
                 
                 <div class="mb-4">
                     <label for="end_time" class="block text-sm font-medium text-gray-700 mb-2">End Time</label>
-                    <input type="datetime-local" id="end_time" name="end_time"
+                    <input type="datetime-local" id="end_time" name="end_time" oninput="validateEventEndTime()" aria-describedby="eventEndTimeHint"
                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                    <p id="eventEndTimeHint" class="mt-1 text-xs text-gray-500">Optional. Choose a date and time after the event starts.</p>
                 </div>
                 
                 <div class="mb-4">
@@ -396,7 +397,7 @@
 <!-- Conflict Modal -->
 <div id="conflictModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeConflictModal()"></div>
-    <div class="flex items-start sm:items-center justify-center overflow-y-auto p-4">
+    <div class="flex min-h-full items-center justify-center overflow-y-auto p-4">
         <div class="relative bg-white rounded-xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain p-6">
             <div class="flex justify-center mb-4">
                 <div class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -424,7 +425,7 @@
 <!-- Event Details Modal -->
 <div id="eventDetailsModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeEventDetailsModal()"></div>
-    <div class="flex items-start sm:items-center justify-center overflow-y-auto p-4">
+    <div class="flex min-h-full items-center justify-center overflow-y-auto p-4">
         <div id="eventDetailsModalContent" class="relative bg-white rounded-xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain p-6">
             <h2 id="eventTitle" class="text-xl font-bold text-gray-800 mb-4"></h2>
             <div id="eventDetails" class="space-y-3 mb-6"></div>
@@ -774,12 +775,14 @@ function openEventModal(date = null) {
     if (date) {
         document.getElementById('event_date').value = date;
         document.getElementById('event_date_input').value = date;
+        validateEventEndTime();
     }
 }
 
 function closeEventModal() {
     document.getElementById('eventModal').classList.add('hidden');
     document.getElementById('eventForm').reset();
+    validateEventEndTime();
     pendingEventData = null;
 }
 
@@ -793,8 +796,26 @@ function toggleVisibilityOptions() {
     }
 }
 
+function validateEventEndTime() {
+    const start = document.getElementById('event_date_input');
+    const end = document.getElementById('end_time');
+    const hint = document.getElementById('eventEndTimeHint');
+    if (!start || !end) return;
+
+    const invalid = Boolean(start.value && end.value && end.value <= start.value);
+    end.min = start.value || '';
+    end.setCustomValidity(invalid ? 'Choose an end date and time later than the event start.' : '');
+    if (hint) {
+        hint.textContent = invalid
+            ? 'Choose an end date and time later than the event start.'
+            : 'Optional. Choose a date and time after the event starts.';
+        hint.classList.toggle('text-red-600', invalid);
+    }
+}
 function submitEvent(e) {
     e.preventDefault();
+    validateEventEndTime();
+    if (!document.getElementById('eventForm').reportValidity()) return;
     
     const formData = new FormData(document.getElementById('eventForm'));
     formData.set('event_date', document.getElementById('event_date_input').value);

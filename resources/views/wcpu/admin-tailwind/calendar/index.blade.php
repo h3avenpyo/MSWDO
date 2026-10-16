@@ -334,15 +334,16 @@
                 
                 <div class="mb-4">
                     <label for="event_date_input" class="block text-sm font-medium text-gray-700 mb-2">Date <span class="text-red-500">*</span></label>
-                    <input type="datetime-local" id="event_date_input" name="event_date_input" required
+                    <input type="datetime-local" id="event_date_input" name="event_date_input" required oninput="validateEventEndTime()"
                            min="{{ date('Y-m-d\TH:i') }}"
                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                 </div>
                 
                 <div class="mb-4">
                     <label for="end_time" class="block text-sm font-medium text-gray-700 mb-2">End Time</label>
-                    <input type="datetime-local" id="end_time" name="end_time"
+                    <input type="datetime-local" id="end_time" name="end_time" oninput="validateEventEndTime()" aria-describedby="eventEndTimeHint"
                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                    <p id="eventEndTimeHint" class="mt-1 text-xs text-gray-500">Optional. Choose a date and time after the event starts.</p>
                 </div>
                 
                 <div class="mb-4">
@@ -722,12 +723,14 @@ function openEventModal(date = null) {
     if (date) {
         document.getElementById('event_date').value = date;
         document.getElementById('event_date_input').value = date;
+        validateEventEndTime();
     }
 }
 
 function closeEventModal() {
     document.getElementById('eventModal').classList.add('hidden');
     document.getElementById('eventForm').reset();
+    validateEventEndTime();
     pendingEventData = null;
 }
 
@@ -741,8 +744,26 @@ function toggleVisibilityOptions() {
     }
 }
 
+function validateEventEndTime() {
+    const start = document.getElementById('event_date_input');
+    const end = document.getElementById('end_time');
+    const hint = document.getElementById('eventEndTimeHint');
+    if (!start || !end) return;
+
+    const invalid = Boolean(start.value && end.value && end.value <= start.value);
+    end.min = start.value || '';
+    end.setCustomValidity(invalid ? 'Choose an end date and time later than the event start.' : '');
+    if (hint) {
+        hint.textContent = invalid
+            ? 'Choose an end date and time later than the event start.'
+            : 'Optional. Choose a date and time after the event starts.';
+        hint.classList.toggle('text-red-600', invalid);
+    }
+}
 function submitEvent(e) {
     e.preventDefault();
+    validateEventEndTime();
+    if (!document.getElementById('eventForm').reportValidity()) return;
     
     const formData = new FormData(document.getElementById('eventForm'));
     formData.set('event_date', document.getElementById('event_date_input').value);
