@@ -7,6 +7,8 @@ use App\Models\SocialCase\SocialCaseStudy;
 use App\Models\SocialCase\BeneficiaryIntake;
 use App\Models\Senior\SeniorCitizenRecord;
 use App\Models\Senior\BirthdayPayout;
+use App\Models\Wcpu\CaseModel;
+use App\Models\Wcpu\Barangay;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -164,6 +166,14 @@ class AdminReportController extends Controller
                 $payload = array_merge($payload, $this->aggregateFinancialData($start, $end));
                 break;
 
+            case 'bcpc':
+                $payload = array_merge($payload, $this->aggregateBcpcData($start, $end));
+                break;
+
+            case 'vawc':
+                $payload = array_merge($payload, $this->aggregateVawcData($start, $end));
+                break;
+
             case 'all':
             default:
                 $payload = array_merge($payload, $this->aggregateConsolidatedData($start, $end));
@@ -179,6 +189,8 @@ class AdminReportController extends Controller
             case 'social_case': return 'Social Case Study';
             case 'senior': return 'Senior Citizen Affairs';
             case 'financial': return 'Financial Assistance Intake & Payroll';
+            case 'bcpc': return 'Barangay Council for the Protection of Children (BCPC)';
+            case 'vawc': return 'Violence Against Women and Children (VAWC)';
             case 'all': default: return 'Consolidated Welfare Services';
         }
     }
@@ -429,6 +441,213 @@ class AdminReportController extends Controller
     }
 
     /**
+     * BCPC Data Aggregation
+     */
+    private function aggregateBcpcData(Carbon $start, Carbon $end): array
+    {
+        try {
+            $query = CaseModel::where('type', 'BCPC');
+
+            $totalCases = (clone $query)->count();
+            $activeCases = (clone $query)->whereNull('closed_at')->count();
+            $resolvedCases = (clone $query)->whereNotNull('closed_at')->count();
+
+            // Breakdown by abuse_type
+            $categoryBreakdown = (clone $query)
+                ->whereNotNull('abuse_type')
+                ->where('abuse_type', '!=', '')
+                ->selectRaw("COALESCE(NULLIF(abuse_type, ''), 'Others') as category, count(*) as count")
+                ->groupBy('category')
+                ->orderByDesc('count')
+                ->take(8)
+                ->pluck('count', 'category')
+                ->toArray();
+
+            // Breakdown by status
+            $statusBreakdown = (clone $query)
+                ->selectRaw("COALESCE(NULLIF(status, ''), 'pending') as status_val, count(*) as count")
+                ->groupBy('status_val')
+                ->pluck('count', 'status_val')
+                ->toArray();
+
+            // Barangay breakdown
+            $barangayBreakdown = $this->caseBarangayBreakdown($query);
+
+            // Records list
+            $records = (clone $query)
+                ->latest('created_at')
+                ->take(25)
+                ->get()
+                ->map(function ($c) {
+                    return [
+                        'ref' => $c->case_number ?: ('#BCPC-' . str_pad($c->id, 5, '0', STR_PAD_LEFT)),
+                        'name' => $c->victim_name ?: 'N/A',
+                        'barangay' => $this->resolveCaseBarangay($c),
+                        'category' => 'BCPC Case',
+                        'status' => ucfirst($c->status ?: 'Pending'),
+                        'amount' => 0.00,
+                        'date' => $c->created_at ? $c->created_at->format('M d, Y') : 'N/A',
+                    ];
+                })
+                ->toArray();
+
+            return [
+                'stats' => [
+                    'totalVolume' => $totalCases,
+                    'pendingVolume' => $activeCases,
+                    'completedVolume' => $resolvedCases,
+                    'totalAmount' => 0.00,
+                ],
+                'breakdowns' => [
+                    'categories' => $categoryBreakdown,
+                    'statuses' => $statusBreakdown,
+                    'barangays' => $barangayBreakdown,
+                ],
+                'records' => $records,
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'stats' => ['totalVolume' => 0, 'pendingVolume' => 0, 'completedVolume' => 0, 'totalAmount' => 0],
+                'breakdowns' => ['categories' => [], 'statuses' => [], 'barangays' => []],
+                'records' => [],
+            ];
+        }
+    }
+
+    /**
+     * VAWC Data Aggregation
+     */
+    private function aggregateVawcData(Carbon $start, Carbon $end): array
+    {
+        try {
+            $query = CaseModel::where(function($q) {
+                $q->where('type', 'VAWC')->orWhereNull('type');
+            });
+
+            $totalCases = (clone $query)->count();
+            $activeCases = (clone $query)->whereNull('closed_at')->count();
+            $resolvedCases = (clone $query)->whereNotNull('closed_at')->count();
+
+            // Breakdown by abuse_type
+            $categoryBreakdown = (clone $query)
+                ->whereNotNull('abuse_type')
+                ->where('abuse_type', '!=', '')
+                ->selectRaw("COALESCE(NULLIF(abuse_type, ''), 'Others') as category, count(*) as count")
+                ->groupBy('category')
+                ->orderByDesc('count')
+                ->take(8)
+                ->pluck('count', 'category')
+                ->toArray();
+
+            // Breakdown by status
+            $statusBreakdown = (clone $query)
+                ->selectRaw("COALESCE(NULLIF(status, ''), 'pending') as status_val, count(*) as count")
+                ->groupBy('status_val')
+                ->pluck('count', 'status_val')
+                ->toArray();
+
+            // Barangay breakdown
+            $barangayBreakdown = $this->caseBarangayBreakdown($query);
+
+            // Records list
+            $records = (clone $query)
+                ->latest('created_at')
+                ->take(25)
+                ->get()
+                ->map(function ($c) {
+                    return [
+                        'ref' => $c->case_number ?: ('#VAWC-' . str_pad($c->id, 5, '0', STR_PAD_LEFT)),
+                        'name' => $c->victim_name ?: 'N/A',
+                        'barangay' => $this->resolveCaseBarangay($c),
+                        'category' => 'VAWC Case',
+                        'status' => ucfirst($c->status ?: 'Pending'),
+                        'amount' => 0.00,
+                        'date' => $c->created_at ? $c->created_at->format('M d, Y') : 'N/A',
+                    ];
+                })
+                ->toArray();
+
+            return [
+                'stats' => [
+                    'totalVolume' => $totalCases,
+                    'pendingVolume' => $activeCases,
+                    'completedVolume' => $resolvedCases,
+                    'totalAmount' => 0.00,
+                ],
+                'breakdowns' => [
+                    'categories' => $categoryBreakdown,
+                    'statuses' => $statusBreakdown,
+                    'barangays' => $barangayBreakdown,
+                ],
+                'records' => $records,
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'stats' => ['totalVolume' => 0, 'pendingVolume' => 0, 'completedVolume' => 0, 'totalAmount' => 0],
+                'breakdowns' => ['categories' => [], 'statuses' => [], 'barangays' => []],
+                'records' => [],
+            ];
+        }
+    }
+
+    /**
+     * Build a barangay name => count breakdown for WCPU cases.
+     *
+     * The cases table stores the barangay reference in `case_designation`
+     * (either a barangay id or, for legacy rows, the barangay name itself).
+     */
+    private function caseBarangayBreakdown($query): array
+    {
+        $rows = (clone $query)
+            ->whereNotNull('case_designation')
+            ->where('case_designation', '!=', '')
+            ->selectRaw('case_designation, count(*) as count')
+            ->groupBy('case_designation')
+            ->orderByDesc('count')
+            ->take(8)
+            ->get();
+
+        $ids = $rows->pluck('case_designation')
+            ->filter(fn ($v) => is_numeric($v))
+            ->map(fn ($v) => (int) $v)
+            ->all();
+
+        $names = [];
+        if (!empty($ids) && class_exists(Barangay::class)) {
+            $names = Barangay::whereIn('id', $ids)->pluck('name', 'id')->toArray();
+        }
+
+        $out = [];
+        foreach ($rows as $row) {
+            $designation = $row->case_designation;
+            $key = is_numeric($designation)
+                ? ($names[(int) $designation] ?? ('Barangay #' . $designation))
+                : $designation;
+            $out[$key] = (int) $row->count;
+        }
+
+        return $out;
+    }
+
+    /**
+     * Resolve a readable barangay label for a single WCPU case.
+     */
+    private function resolveCaseBarangay($case): string
+    {
+        $designation = $case->case_designation ?? null;
+
+        if (empty($designation)) {
+            return 'N/A';
+        }
+
+        if (is_numeric($designation)) {
+            return $case->barangay?->name ?? ('Barangay #' . $designation);
+        }
+
+        return $designation;
+    }
+
+    /**
      * Consolidated (All Services) Aggregation
      */
     private function aggregateConsolidatedData(Carbon $start, Carbon $end): array
@@ -436,8 +655,11 @@ class AdminReportController extends Controller
         $sc = $this->aggregateSocialCaseData($start, $end);
         $sr = $this->aggregateSeniorData($start, $end);
         $fa = $this->aggregateFinancialData($start, $end);
+        $bc = $this->aggregateBcpcData($start, $end);
+        $vw = $this->aggregateVawcData($start, $end);
 
-        $totalBeneficiaries = $sc['stats']['totalVolume'] + $sr['stats']['totalVolume'] + $fa['stats']['totalVolume'];
+        $totalBeneficiaries = $sc['stats']['totalVolume'] + $sr['stats']['totalVolume'] + $fa['stats']['totalVolume']
+            + $bc['stats']['totalVolume'] + $vw['stats']['totalVolume'];
         $totalDisbursed = $sc['stats']['totalAmount'] + $sr['stats']['totalAmount'] + $fa['stats']['totalAmount'];
 
         // Combined services breakdown
@@ -445,13 +667,17 @@ class AdminReportController extends Controller
             'Social Case Studies' => $sc['stats']['totalVolume'],
             'Senior Citizen Registrations' => $sr['stats']['totalVolume'],
             'Financial Assistance Intakes' => $fa['stats']['totalVolume'],
+            'BCPC Cases' => $bc['stats']['totalVolume'],
+            'VAWC Cases' => $vw['stats']['totalVolume'],
         ];
 
-        // Combined records (sample from all 3)
+        // Combined records (sample from all services)
         $combinedRecords = array_merge(
             array_slice($sc['records'], 0, 8),
             array_slice($fa['records'], 0, 8),
-            array_slice($sr['records'], 0, 8)
+            array_slice($sr['records'], 0, 8),
+            array_slice($bc['records'], 0, 5),
+            array_slice($vw['records'], 0, 5)
         );
 
         return [
@@ -460,6 +686,8 @@ class AdminReportController extends Controller
                 'socialCaseCases' => $sc['stats']['totalVolume'],
                 'seniorRegistrations' => $sr['stats']['totalVolume'],
                 'financialIntakes' => $fa['stats']['totalVolume'],
+                'bcpcCases' => $bc['stats']['totalVolume'],
+                'vawcCases' => $vw['stats']['totalVolume'],
                 'totalAmount' => (float) $totalDisbursed,
             ],
             'breakdowns' => [
@@ -468,6 +696,8 @@ class AdminReportController extends Controller
                     'Social Cases Resolved' => $sc['stats']['completedVolume'],
                     'Seniors Paid Cash Gift' => $sr['stats']['payoutBeneficiaries'],
                     'FA Disbursed / Claimed' => $fa['stats']['completedVolume'],
+                    'BCPC Cases Resolved' => $bc['stats']['completedVolume'],
+                    'VAWC Cases Resolved' => $vw['stats']['completedVolume'],
                 ],
                 'barangays' => array_slice($fa['breakdowns']['barangays'] ?: $sc['breakdowns']['barangays'], 0, 8, true),
             ],

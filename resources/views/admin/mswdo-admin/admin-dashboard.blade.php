@@ -278,22 +278,25 @@ $initials = count($words) >= 2
         color: #0F172A;
         line-height: 1.1;
     }
-    .stat-tile-val.val-success { color: #059669; }
-    .stat-tile-val.val-info { color: #2563EB; }
-    .stat-tile-val.val-warning { color: #D97706; }
-    .stat-tile-val.val-danger { color: #DC2626; }
+    .stat-tile-val.val-success { color: #0F172A; }
+    .stat-tile-val.val-info { color: #0F172A; }
+    .stat-tile-val.val-warning { color: #0F172A; }
+    .stat-tile-val.val-danger { color: #0F172A; }
+    .stat-tile-val.val-neutral { color: #0F172A; }
 
-    /* Themed Accents for Service Cards */
-    .card-theme-indigo .service-avatar { background: #EEF2FF; color: #4338CA; }
-    .card-theme-indigo .service-badge { background: #EEF2FF; color: #4338CA; }
-    .card-theme-emerald .service-avatar { background: #ECFDF5; color: #059669; }
-    .card-theme-emerald .service-badge { background: #ECFDF5; color: #059669; }
-    .card-theme-amber .service-avatar { background: #FEF3C7; color: #D97706; }
-    .card-theme-amber .service-badge { background: #FEF3C7; color: #D97706; }
-    .card-theme-rose .service-avatar { background: #FFE4E6; color: #E11D48; }
-    .card-theme-rose .service-badge { background: #FFE4E6; color: #E11D48; }
-    .card-theme-cyan .service-avatar { background: #CFFAFE; color: #0891B2; }
-    .card-theme-cyan .service-badge { background: #CFFAFE; color: #0891B2; }
+    /* Themed Accents for Service Cards - All using MSWDO Red */
+    .card-theme-indigo .service-avatar { background: #FEF2F2; color: #B11116; }
+    .card-theme-indigo .service-badge { background: #FEF2F2; color: #B11116; }
+    .card-theme-emerald .service-avatar { background: #FEF2F2; color: #B11116; }
+    .card-theme-emerald .service-badge { background: #FEF2F2; color: #B11116; }
+    .card-theme-amber .service-avatar { background: #FEF2F2; color: #B11116; }
+    .card-theme-amber .service-badge { background: #FEF2F2; color: #B11116; }
+    .card-theme-rose .service-avatar { background: #FEF2F2; color: #B11116; }
+    .card-theme-rose .service-badge { background: #FEF2F2; color: #B11116; }
+    .card-theme-cyan .service-avatar { background: #FEF2F2; color: #B11116; }
+    .card-theme-cyan .service-badge { background: #FEF2F2; color: #B11116; }
+    .card-theme-red .service-avatar { background: #FEF2F2; color: #B11116; }
+    .card-theme-red .service-badge { background: #FEF2F2; color: #B11116; }
 
     /* Service Card Footer Link */
     .service-footer {
@@ -363,7 +366,7 @@ $initials = count($words) >= 2
     .chart-panel-title svg { width: 18px; height: 18px; color: var(--dash-navy); }
     .chart-canvas-box {
         position: relative;
-        height: 270px;
+        height: 320px;
         width: 100%;
         flex: 1;
     }
@@ -919,15 +922,6 @@ $initials = count($words) >= 2
                 </div>
             @endif
         </div>
-
-        @if(!$isStandby && $route !== '#')
-        <div class="service-footer">
-            <a href="{{ $route }}" class="service-nav-btn">
-                <span>Access Module</span>
-                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-            </a>
-        </div>
-        @endif
     </div>
     @endforeach
 </div>
@@ -971,7 +965,7 @@ $initials = count($words) >= 2
     <div class="chart-panel">
         <div class="chart-panel-header">
             <h4 class="chart-panel-title">
-                <i data-lucide="pie-chart"></i> Senior Citizen Status Ratio
+                <i data-lucide="pie-chart"></i> Senior Citizens per Barangay
             </h4>
         </div>
         <div class="chart-canvas-box">
@@ -988,6 +982,30 @@ $initials = count($words) >= 2
         </div>
         <div class="chart-canvas-box">
             <canvas id="distributionChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart 5: VAWC Category Distribution -->
+    <div class="chart-panel">
+        <div class="chart-panel-header">
+            <h4 class="chart-panel-title">
+                <i data-lucide="shield-alert"></i> VAWC Case Categories
+            </h4>
+        </div>
+        <div class="chart-canvas-box">
+            <canvas id="vawcChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart 6: BCPC Category Distribution -->
+    <div class="chart-panel">
+        <div class="chart-panel-header">
+            <h4 class="chart-panel-title">
+                <i data-lucide="smile"></i> BCPC Case Categories
+            </h4>
+        </div>
+        <div class="chart-canvas-box">
+            <canvas id="bcpcChart"></canvas>
         </div>
     </div>
 </div>
@@ -1094,7 +1112,7 @@ $initials = count($words) >= 2
             <h3 class="section-title">
                 <i data-lucide="file-check-2"></i> Executive Report Generator &amp; Analytics
             </h3>
-            <p class="section-subtitle">Produce official weekly, monthly, quarterly, and yearly welfare reports with live metrics and PDF export</p>
+            <p class="section-subtitle">Produce official weekly, monthly, quarterly, and yearly welfare reports per service division with live metrics and PDF export</p>
         </div>
         <div class="flex items-center gap-2">
             <a href="{{ route('admin.social-case.cases') }}" class="btn-pill" title="Jump to Social Cases">
@@ -1119,6 +1137,8 @@ $initials = count($words) >= 2
                 <option value="social_case" selected>Social Case Study</option>
                 <option value="senior">Senior Citizen</option>
                 <option value="financial">Financial Assistance</option>
+                <option value="bcpc">BCPC (Child Protection)</option>
+                <option value="vawc">VAWC (Women &amp; Children)</option>
             </select>
         </div>
 
@@ -1156,10 +1176,10 @@ $initials = count($words) >= 2
             <label class="report-field-label" for="reportQuarter">Quarter</label>
             <select id="reportQuarter" class="report-select" onchange="onReportConfigChange()">
                 @php $curQ = (int) ceil(date('n') / 3); @endphp
-                <option value="1" {{ $curQ === 1 ? 'selected' : '' }}>Q1 (Jan – Mar)</option>
-                <option value="2" {{ $curQ === 2 ? 'selected' : '' }}>Q2 (Apr – Jun)</option>
-                <option value="3" {{ $curQ === 3 ? 'selected' : '' }}>Q3 (Jul – Sep)</option>
-                <option value="4" {{ $curQ === 4 ? 'selected' : '' }}>Q4 (Oct – Dec)</option>
+                <option value="1" {{ $curQ === 1 ? 'selected' : '' }}>Q1 (Jan - Mar)</option>
+                <option value="2" {{ $curQ === 2 ? 'selected' : '' }}>Q2 (Apr - Jun)</option>
+                <option value="3" {{ $curQ === 3 ? 'selected' : '' }}>Q3 (Jul - Sep)</option>
+                <option value="4" {{ $curQ === 4 ? 'selected' : '' }}>Q4 (Oct - Dec)</option>
             </select>
         </div>
 
@@ -1196,7 +1216,7 @@ $initials = count($words) >= 2
         <div class="report-scope-info">
             <span class="report-scope-pill" id="reportScopeBadge">Monthly Report</span>
             <span id="reportScopeTitle" class="font-bold text-slate-800">Social Case Study</span>
-            <span class="text-slate-400">•</span>
+            <span class="text-slate-400">&bull;</span>
             <span id="reportScopeRange" class="text-slate-600 font-normal">Loading range...</span>
         </div>
         <div class="text-xs text-slate-500" id="reportTimestamp">
@@ -1213,23 +1233,11 @@ $initials = count($words) >= 2
             </div>
         </div>
 
-        <!-- Dynamic KPI Metric Tiles -->
+        <!-- Dynamic KPI Metric Tiles (labels adapt per selected service) -->
         <div class="rep-grid" id="reportKpisContainer">
             <div class="rep-card">
-                <div class="rep-title">Total Caseload Volume</div>
-                <div class="rep-val" id="repStatVolume">—</div>
-            </div>
-            <div class="rep-card">
-                <div class="rep-title">Pending / In Review</div>
-                <div class="rep-val text-amber-600" id="repStatPending">—</div>
-            </div>
-            <div class="rep-card">
-                <div class="rep-title">Completed / Released</div>
-                <div class="rep-val text-emerald-600" id="repStatCompleted">—</div>
-            </div>
-            <div class="rep-card">
-                <div class="rep-title">Total Assistance Disbursed</div>
-                <div class="rep-val text-indigo-700" id="repStatDisbursed">—</div>
+                <div class="rep-title">Awaiting Report</div>
+                <div class="rep-val">&mdash;</div>
             </div>
         </div>
 
@@ -1281,7 +1289,7 @@ $initials = count($words) >= 2
                     <tbody id="reportRecordsTbody">
                         <tr>
                             <td colspan="5" class="text-center py-6 text-slate-400">
-                                Click "Generate Report" to populate records.
+                                Click "Generate" to populate records.
                             </td>
                         </tr>
                     </tbody>
@@ -1293,6 +1301,31 @@ $initials = count($words) >= 2
 @endsection
 
 @push('scripts')
+@php
+    // Prepare chart data in PHP to avoid issues in JavaScript
+    $monthlyLabels = $monthlySocialCases['labels'] ?? [];
+    $monthlyData = $monthlySocialCases['data'] ?? [];
+    $finData = $serviceBreakdown['Financial Assistance'] ?? [];
+    $seniorData = $serviceBreakdown['Senior Citizen'] ?? [];
+    $barangayLabels = $barangayStats['labels'] ?? [];
+    $barangayData = $barangayStats['data'] ?? [];
+    $vawcCategories = $serviceBreakdown['VAWC']['categories'] ?? [];
+    if (empty($vawcCategories)) {
+        $vawcCategories = [
+            'Active Cases' => $serviceBreakdown['VAWC']['active'] ?? 0,
+            'Pending Action' => $serviceBreakdown['VAWC']['pending'] ?? 0,
+            'Resolved' => $serviceBreakdown['VAWC']['completed'] ?? 0
+        ];
+    }
+    $bcpcCategories = $serviceBreakdown['BCPC']['categories'] ?? [];
+    if (empty($bcpcCategories)) {
+        $bcpcCategories = [
+            'Active Cases' => $serviceBreakdown['BCPC']['active'] ?? 0,
+            'Monitorings' => $serviceBreakdown['BCPC']['pending'] ?? 0,
+            'Resolved' => $serviceBreakdown['BCPC']['completed'] ?? 0
+        ];
+    }
+@endphp
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     // Live Clock with Philippine formatting
@@ -1328,13 +1361,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // 1. Social Case Study 12-Month Inflow Chart
     const socialCaseCtx = document.getElementById('socialCaseChart');
     if (socialCaseCtx) {
-        @php
-            $monthlyLabels = $monthlySocialCases['labels'] ?? [];
-            $monthlyData = $monthlySocialCases['data'] ?? [];
-        @endphp
-
-        const scLabels = {!! json_encode($monthlyLabels) !!};
-        const scData = {!! json_encode($monthlyData) !!};
+        const scLabels = @json($monthlyLabels);
+        const scData = @json($monthlyData);
 
         const ctx = socialCaseCtx.getContext('2d');
         const gradient = ctx.createLinearGradient(0, 0, 0, 240);
@@ -1391,10 +1419,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // 2. Financial Assistance Pipeline Chart
     const financialCtx = document.getElementById('financialChart');
     if (financialCtx) {
-        @php
-            $finData = $serviceBreakdown['Financial Assistance'] ?? [];
-        @endphp
-
         new Chart(financialCtx, {
             type: 'bar',
             data: {
@@ -1402,9 +1426,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     label: 'Applications',
                     data: [
-                        {{ $finData['active'] ?? 0 }}, 
-                        {{ $finData['pending'] ?? 0 }}, 
-                        {{ $finData['overdue'] ?? 0 }}, 
+                        {{ $finData['active'] ?? 0 }},
+                        {{ $finData['pending'] ?? 0 }},
+                        {{ $finData['overdue'] ?? 0 }},
                         {{ $finData['completed'] ?? 0 }}
                     ],
                     backgroundColor: ['#1A237E', '#F59E0B', '#3B82F6', '#10B981'],
@@ -1441,20 +1465,16 @@ document.addEventListener('DOMContentLoaded', function () {
     // 3. Senior Citizen Demographics Chart
     const seniorCtx = document.getElementById('seniorChart');
     if (seniorCtx) {
-        @php
-            $senData = $serviceBreakdown['Senior Citizen'] ?? [];
-        @endphp
-
-        const activeCount = {{ $senData['pending'] ?? 0 }};
-        const archivedCount = {{ $senData['overdue'] ?? 0 }};
+        const seniorLabels = @json($barangayLabels);
+        const seniorData = @json($barangayData);
 
         new Chart(seniorCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Active Seniors', 'Archived / Inactive'],
+                labels: seniorLabels.length > 0 ? seniorLabels : ['No Data'],
                 datasets: [{
-                    data: [activeCount, archivedCount],
-                    backgroundColor: ['#10B981', '#94A3B8'],
+                    data: seniorData.length > 0 ? seniorData : [1],
+                    backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4'],
                     borderWidth: 3,
                     borderColor: '#FFFFFF',
                     hoverOffset: 4
@@ -1463,14 +1483,16 @@ document.addEventListener('DOMContentLoaded', function () {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '70%',
+                cutout: '50%',
                 plugins: {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            padding: 16,
+                            padding: 8,
                             usePointStyle: true,
-                            font: { size: 12 }
+                            font: { size: 10 },
+                            boxWidth: 8,
+                            padding: 8
                         }
                     },
                     tooltip: {
@@ -1515,6 +1537,94 @@ document.addEventListener('DOMContentLoaded', function () {
                             padding: 12,
                             usePointStyle: true,
                             font: { size: 11 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0F172A',
+                        padding: 10,
+                        cornerRadius: 8
+                    }
+                }
+            }
+        });
+    }
+
+    // 5. VAWC Case Distribution Chart
+    const vawcCtx = document.getElementById('vawcChart');
+    if (vawcCtx) {
+        const vawcCategories = @json($vawcCategories);
+        const vawcLabels = Object.keys(vawcCategories);
+        const vawcData = Object.values(vawcCategories);
+
+        new Chart(vawcCtx, {
+            type: 'doughnut',
+            data: {
+                labels: vawcLabels.length > 0 ? vawcLabels : ['No Data'],
+                datasets: [{
+                    data: vawcData.length > 0 ? vawcData : [1],
+                    backgroundColor: ['#B11116', '#F97316', '#22C55E', '#3B82F6', '#8B5CF6', '#EC4899'],
+                    borderWidth: 3,
+                    borderColor: '#FFFFFF',
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '50%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 8,
+                            usePointStyle: true,
+                            font: { size: 10 },
+                            boxWidth: 8,
+                            padding: 8
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0F172A',
+                        padding: 10,
+                        cornerRadius: 8
+                    }
+                }
+            }
+        });
+    }
+
+    // 6. BCPC Case Distribution Chart
+    const bcpcCtx = document.getElementById('bcpcChart');
+    if (bcpcCtx) {
+        const bcpcCategories = @json($bcpcCategories);
+        const bcpcLabels = Object.keys(bcpcCategories);
+        const bcpcData = Object.values(bcpcCategories);
+
+        new Chart(bcpcCtx, {
+            type: 'doughnut',
+            data: {
+                labels: bcpcLabels.length > 0 ? bcpcLabels : ['No Data'],
+                datasets: [{
+                    data: bcpcData.length > 0 ? bcpcData : [1],
+                    backgroundColor: ['#B11116', '#F97316', '#22C55E', '#3B82F6', '#8B5CF6', '#EC4899'],
+                    borderWidth: 3,
+                    borderColor: '#FFFFFF',
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '50%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 8,
+                            usePointStyle: true,
+                            font: { size: 10 },
+                            boxWidth: 8,
+                            padding: 8
                         }
                     },
                     tooltip: {
@@ -1603,8 +1713,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(res => {
             if (!res.success || !res.data) throw new Error('Invalid payload');
-            const data = res.data;
-            renderReportOutput(data);
+            renderReportOutput(res.data);
         })
         .catch(err => {
             console.error('Report Generation Error:', err);
@@ -1619,8 +1728,49 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     };
 
+    // ── Per-service KPI card definitions ──
+    // Each card reads a stat key from the report payload and is only shown
+    // when it is relevant to the selected service division.
+    const REPORT_CARD_CONFIG = {
+        social_case: [
+            { title: 'Total Case Volume', key: 'totalVolume', fmt: 'number' },
+            { title: 'Pending / In Review', key: 'pendingVolume', fmt: 'number', color: 'text-amber-600' },
+            { title: 'Completed / Released', key: 'completedVolume', fmt: 'number', color: 'text-emerald-600' }
+        ],
+        senior: [
+            { title: 'New Registrations', key: 'totalVolume', fmt: 'number' },
+            { title: 'Active Senior Citizens', key: 'activeSeniors', fmt: 'number', color: 'text-sky-600' },
+            { title: 'Birthday Cash Recipients', key: 'payoutBeneficiaries', fmt: 'number', color: 'text-emerald-600' },
+            { title: 'Total Cash Subsidies', key: 'totalAmount', fmt: 'currency' }
+        ],
+        financial: [
+            { title: 'Total Intake Volume', key: 'totalVolume', fmt: 'number' },
+            { title: 'Pending Assessment', key: 'pendingVolume', fmt: 'number', color: 'text-amber-600' },
+            { title: 'Approved Assistance', key: 'completedVolume', fmt: 'number', color: 'text-emerald-600' },
+            { title: 'Assistance Granted', key: 'totalAmount', fmt: 'currency' }
+        ],
+        bcpc: [
+            { title: 'Total BCPC Cases', key: 'totalVolume', fmt: 'number' },
+            { title: 'Active / Open Cases', key: 'pendingVolume', fmt: 'number', color: 'text-amber-600' },
+            { title: 'Resolved / Closed', key: 'completedVolume', fmt: 'number', color: 'text-emerald-600' }
+        ],
+        vawc: [
+            { title: 'Total VAWC Cases', key: 'totalVolume', fmt: 'number' },
+            { title: 'Active / Open Cases', key: 'pendingVolume', fmt: 'number', color: 'text-amber-600' },
+            { title: 'Resolved / Closed', key: 'completedVolume', fmt: 'number', color: 'text-emerald-600' }
+        ],
+        all: [
+            { title: 'Total Beneficiaries', key: 'totalVolume', fmt: 'number' },
+            { title: 'Social Case Studies', key: 'socialCaseCases', fmt: 'number', color: 'text-indigo-600' },
+            { title: 'Senior Registrations', key: 'seniorRegistrations', fmt: 'number', color: 'text-sky-600' },
+            { title: 'Financial Intakes', key: 'financialIntakes', fmt: 'number', color: 'text-amber-600' },
+            { title: 'BCPC Cases', key: 'bcpcCases', fmt: 'number', color: 'text-rose-600' },
+            { title: 'VAWC Cases', key: 'vawcCases', fmt: 'number', color: 'text-rose-600' },
+            { title: 'Total Assistance Disbursed', key: 'totalAmount', fmt: 'currency', color: 'text-emerald-600' }
+        ]
+    };
+
     function renderReportOutput(data) {
-        // Scope Strip
         const scopeBadge = document.getElementById('reportScopeBadge');
         const scopeTitle = document.getElementById('reportScopeTitle');
         const scopeRange = document.getElementById('reportScopeRange');
@@ -1631,41 +1781,32 @@ document.addEventListener('DOMContentLoaded', function () {
         if (scopeRange) scopeRange.textContent = (data.range.label || '') + ' (' + (data.range.formattedRange || '') + ')';
         if (timestamp) timestamp.textContent = 'Updated: ' + (new Date()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
 
-        // KPI Numbers
-        const vol = document.getElementById('repStatVolume');
-        const pnd = document.getElementById('repStatPending');
-        const cmp = document.getElementById('repStatCompleted');
-        const dsb = document.getElementById('repStatDisbursed');
-
+        // KPI Tiles — labels, values and count adapt to the selected service
         const stats = data.stats || {};
-        if (vol) vol.textContent = Number(stats.totalVolume || 0).toLocaleString();
-
-        if (pnd) {
-            if (stats.pendingVolume !== undefined) {
-                pnd.textContent = Number(stats.pendingVolume).toLocaleString();
-            } else if (stats.activeSeniors !== undefined) {
-                pnd.textContent = Number(stats.activeSeniors).toLocaleString() + ' Active';
-            } else {
-                pnd.textContent = '0';
-            }
+        const kpiBox = document.getElementById('reportKpisContainer');
+        if (kpiBox) {
+            const config = REPORT_CARD_CONFIG[data.service] || REPORT_CARD_CONFIG.social_case;
+            let kpiHtml = '';
+            config.forEach(card => {
+                const raw = stats[card.key];
+                let val;
+                if (raw === undefined || raw === null) {
+                    val = '&mdash;';
+                } else if (card.fmt === 'currency') {
+                    val = '₱' + Number(raw).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                } else {
+                    val = Number(raw).toLocaleString();
+                }
+                kpiHtml += `
+                    <div class="rep-card">
+                        <div class="rep-title">${card.title}</div>
+                        <div class="rep-val ${card.color || ''}">${val}</div>
+                    </div>
+                `;
+            });
+            kpiBox.innerHTML = kpiHtml;
         }
 
-        if (cmp) {
-            if (stats.completedVolume !== undefined) {
-                cmp.textContent = Number(stats.completedVolume).toLocaleString();
-            } else if (stats.payoutBeneficiaries !== undefined) {
-                cmp.textContent = Number(stats.payoutBeneficiaries).toLocaleString() + ' Paid';
-            } else {
-                cmp.textContent = '0';
-            }
-        }
-
-        if (dsb) {
-            const amt = Number(stats.totalAmount || 0);
-            dsb.textContent = '₱' + amt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-
-        // Category Breakdown
         const catBox = document.getElementById('reportCategoryBreakdown');
         if (catBox) {
             const categories = (data.breakdowns && data.breakdowns.categories) ? data.breakdowns.categories : {};
@@ -1692,7 +1833,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Barangay Breakdown
         const brgyBox = document.getElementById('reportBarangayBreakdown');
         if (brgyBox) {
             const barangays = (data.breakdowns && data.breakdowns.barangays) ? data.breakdowns.barangays : {};
@@ -1714,7 +1854,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Records Table
         const tbody = document.getElementById('reportRecordsTbody');
         const countSpan = document.getElementById('reportRecordsCount');
         const records = data.records || [];
@@ -1759,6 +1898,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // Auto-initialize Report Studio on load
     updateReportExportUrls();
     generateReport();
+
+    // Lucide Icons Initialization
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+        setTimeout(() => lucide.createIcons(), 120);
+    }
 });
 </script>
 @endpush
