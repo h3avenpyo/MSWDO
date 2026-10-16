@@ -710,14 +710,9 @@ class AdminController extends Controller
     public function create()
     {
         $roles = \App\Models\Wcpu\Role::orderBy('name')->get();
-<<<<<<< HEAD
         $barangays = \App\Models\Wcpu\Barangay::orderBy('name')->get(['id', 'name']);
         
         return view('admin-tailwind.register-user', compact('roles', 'barangays'));
-=======
-        
-        return view('admin-tailwind.register-user', compact('roles'));
->>>>>>> 93ba7b912d918f581ced5753318a7376a38e8496
     }
 
 
@@ -2008,16 +2003,12 @@ class AdminController extends Controller
     public function archivedReferrals()
     {
         abort_unless(Auth::user()->isDepartmentAdmin(), 403);
-<<<<<<< HEAD
         $department = Auth::user()->defaultCaseDepartment();
         $referrals = \App\Models\Wcpu\CaseReferral::onlyTrashed()
             ->whereHas('case', fn ($query) => $query->where('type', $department))
             ->latest('deleted_at')
             ->paginate(5, ['*'], 'referrals_page')
             ->withQueryString();
-=======
-        $referrals = \App\Models\Wcpu\CaseReferral::onlyTrashed()->latest('deleted_at')->paginate(5, ['*'], 'referrals_page')->withQueryString();
->>>>>>> 93ba7b912d918f581ced5753318a7376a38e8496
         $recipients = \App\Models\Wcpu\ReportRecipient::onlyTrashed()->latest('deleted_at')->paginate(5, ['*'], 'info_page')->withQueryString();
         return view('admin-tailwind.archived-referrals', compact('referrals', 'recipients'));
     }
@@ -2041,7 +2032,6 @@ class AdminController extends Controller
         abort_unless(Auth::user()->isDepartmentAdmin(), 403);
         abort_unless(in_array($type, ['referral', 'info'], true), 404);
         $model = $type === 'referral' ? \App\Models\Wcpu\CaseReferral::class : \App\Models\Wcpu\ReportRecipient::class;
-<<<<<<< HEAD
         $query = $model::onlyTrashed();
         if ($type === 'referral') {
             $department = Auth::user()->defaultCaseDepartment();
@@ -2049,9 +2039,6 @@ class AdminController extends Controller
         }
 
         return $query->findOrFail($id);
-=======
-        return $model::onlyTrashed()->findOrFail($id);
->>>>>>> 93ba7b912d918f581ced5753318a7376a38e8496
     }
 
     /**

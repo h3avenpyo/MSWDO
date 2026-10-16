@@ -2,18 +2,12 @@
 @section('title', 'Archived Referrals - iSERVE SILANG Admin')
 @push('styles')
 <style>
-<<<<<<< HEAD
     .archived-referrals-table-scroll { width: 100%; overflow-x: auto; }
     .archived-static-table { width: 100%; min-width: 54rem; table-layout: auto; font-size: .8125rem; }
     .archived-static-table :is(th, td) { padding: .625rem .75rem !important; line-height: 1.4; }
     .archived-static-table th:last-child, .archived-static-table td:last-child { width: 1%; white-space: nowrap; }
     .archived-static-table td { overflow-wrap: anywhere; }
     .archived-static-table td:last-child { overflow-wrap: normal; }
-=======
-    .archived-static-table { width: 100%; table-layout: fixed; font-size: .8125rem; }
-    .archived-static-table :is(th, td) { padding: .625rem .75rem !important; line-height: 1.4; }
-    .archived-static-table th:last-child, .archived-static-table td:last-child { width: 10rem; white-space: nowrap; }
->>>>>>> 93ba7b912d918f581ced5753318a7376a38e8496
     #viewArchivedRecipientModal .archived-recipient-modal-card { max-height: calc(100dvh - 2rem); }
     #viewArchivedRecipientModal #viewArchivedRecipientContent { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
     .swal2-popup.admin-archived-referral-popup { box-sizing: border-box; width: min(48rem, calc(100vw - 2rem)) !important; max-height: min(48rem, calc(100dvh - 2rem)); grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; padding: 0; }
@@ -112,11 +106,7 @@
     <p id="archived-referrals-result-count" class="text-sm text-gray-500" aria-live="polite"></p>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Referrals</h3>
-<<<<<<< HEAD
         <div class="archived-referrals-table-view archived-referrals-table-scroll">
-=======
-        <div class="archived-referrals-table-view">
->>>>>>> 93ba7b912d918f581ced5753318a7376a38e8496
         <table class="archived-static-table w-full text-sm text-left">
             <thead class="bg-gray-50 text-gray-600"><tr><th class="p-3">Referral Number</th><th class="p-3">Client</th><th class="p-3">Recipient</th><th class="p-3">Date of Referral</th><th class="p-3">Archived At</th><th class="p-3 text-center">Actions</th></tr></thead>
             <tbody class="divide-y divide-gray-100">
@@ -152,11 +142,7 @@
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Referral Info</h3>
-<<<<<<< HEAD
         <div class="archived-referrals-table-view archived-referrals-table-scroll">
-=======
-        <div class="archived-referrals-table-view">
->>>>>>> 93ba7b912d918f581ced5753318a7376a38e8496
         <table class="archived-static-table w-full text-sm text-left">
             <thead class="bg-gray-50 text-gray-600"><tr><th class="p-3">Name</th><th class="p-3">Email</th><th class="p-3">Contact Number</th><th class="p-3">Role</th><th class="p-3">Archived At</th><th class="p-3 text-center">Actions</th></tr></thead>
             <tbody class="divide-y divide-gray-100">

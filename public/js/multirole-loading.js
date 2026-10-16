@@ -16,22 +16,8 @@
             options.headers['X-Skip-Loading']
         );
         const isSwalBusy = window.Swal && (Swal.isVisible() || Swal.isLoading());
-<<<<<<< ours
         const isExcluded = /notifications|mark-seen|unread|\/session\/|refer|regenerate|quarterly-reports|bcpc-case-monitoring|case-profiles/i.test(url.pathname);
         const visible = url.origin === location.origin && !isExcluded && !hasSkipHeader && !isSwalBusy;
-=======
-<<<<<<< ours
-        const isExcluded = /notifications|mark-seen|unread|\/session\/|refer|regenerate|quarterly-reports|bcpc-case-monitoring|case-profiles/i.test(url.pathname);
-        const visible = url.origin === location.origin && !isExcluded && !hasSkipHeader && !isSwalBusy;
-=======
-<<<<<<< ours
-        const isExcluded = /notifications|mark-seen|unread|\/session\/|refer|regenerate|quarterly-reports|bcpc-case-monitoring|case-profiles/i.test(url.pathname);
-        const visible = url.origin === location.origin && !isExcluded && !hasSkipHeader && !isSwalBusy;
-=======
-        const visible = url.origin === location.origin && !hasSkipHeader && !isSwalBusy;
->>>>>>> theirs
->>>>>>> theirs
->>>>>>> theirs
         if (!visible) return originalFetch.call(this, input, options);
         pending++; show();
         try {
@@ -43,48 +29,16 @@
     document.addEventListener('submit', event => {
         queueMicrotask(() => {
             const form = event.target;
-<<<<<<< ours
             const action = (form && form.action) ? form.action : '';
             const isExcludedForm = /refer|regenerate|quarterly-reports|bcpc-case-monitoring|case-profiles/i.test(action);
             if (!event.defaultPrevented && event.target.target !== '_blank' && event.target.method !== 'dialog' && !isExcludedForm && !isSwalBusy) show();
-=======
-<<<<<<< ours
-            const action = (form && form.action) ? form.action : '';
-            const isExcludedForm = /refer|regenerate|quarterly-reports|bcpc-case-monitoring|case-profiles/i.test(action);
-            if (!event.defaultPrevented && event.target.target !== '_blank' && event.target.method !== 'dialog' && !isExcludedForm && !isSwalBusy) show();
-=======
-<<<<<<< ours
-            const action = (form && form.action) ? form.action : '';
-            const isExcludedForm = /refer|regenerate|quarterly-reports|bcpc-case-monitoring|case-profiles/i.test(action);
-            if (!event.defaultPrevented && event.target.target !== '_blank' && event.target.method !== 'dialog' && !isExcludedForm && !isSwalBusy) show();
-=======
-            if (!event.defaultPrevented && event.target.target !== '_blank' && event.target.method !== 'dialog' && !isSwalBusy) show();
->>>>>>> theirs
->>>>>>> theirs
->>>>>>> theirs
         });
     });
     const submit = HTMLFormElement.prototype.submit;
     HTMLFormElement.prototype.submit = function() {
-<<<<<<< ours
         const action = this.action || '';
         const isExcluded = /refer|regenerate|quarterly-reports|bcpc-case-monitoring|case-profiles/i.test(action);
         if (this.target !== '_blank' && !isExcluded) show();
-=======
-<<<<<<< ours
-        const action = this.action || '';
-        const isExcluded = /refer|regenerate|quarterly-reports|bcpc-case-monitoring|case-profiles/i.test(action);
-        if (this.target !== '_blank' && !isExcluded) show();
-=======
-<<<<<<< ours
-        const action = this.action || '';
-        const isExcluded = /refer|regenerate|quarterly-reports|bcpc-case-monitoring|case-profiles/i.test(action);
-        if (this.target !== '_blank' && !isExcluded) show();
-=======
-        if (this.target !== '_blank') show();
->>>>>>> theirs
->>>>>>> theirs
->>>>>>> theirs
         return submit.call(this);
     };
     document.addEventListener('click', event => {
