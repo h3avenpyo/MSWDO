@@ -45,8 +45,8 @@
         <div id="calendar-list-pagination" class="hidden mt-4 flex items-center justify-between gap-3 text-sm">
             <span id="calendar-list-page-info" aria-live="polite"></span>
             <div class="flex gap-2">
-                <button type="button" id="calendar-list-prev" class="px-3 py-2 border border-gray-300 rounded-lg text-purple-700 disabled:opacity-40">Previous</button>
-                <button type="button" id="calendar-list-next" class="px-3 py-2 border border-gray-300 rounded-lg text-purple-700 disabled:opacity-40">Next</button>
+                <button type="button" id="calendar-list-prev" class="px-3 py-2 border border-gray-300 rounded-lg text-purple-700 disabled:bg-red-100 disabled:text-red-800 disabled:border-red-200 disabled:opacity-100 disabled:cursor-not-allowed">Previous</button>
+                <button type="button" id="calendar-list-next" class="px-3 py-2 border border-gray-300 rounded-lg text-purple-700 disabled:bg-red-100 disabled:text-red-800 disabled:border-red-200 disabled:opacity-100 disabled:cursor-not-allowed">Next</button>
             </div>
         </div>
         @endif
@@ -868,7 +868,8 @@ function showEventDetails(eventId) {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Failed to load event details. Please try again.');
+            if (window.Swal) Swal.fire({ icon: 'error', title: 'Unable to Load Event', text: 'Failed to load event details. Please try again.' });
+            else alert('Failed to load event details. Please try again.');
         });
 }
 
@@ -921,10 +922,14 @@ async function deleteEvent() {
             closeEventDetailsModal();
             location.reload();
         } else {
-            alert(data.message);
+            if (window.Swal) Swal.fire({ icon: 'error', title: 'Unable to Delete Event', text: data.message });
+            else alert(data.message);
         }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        if (window.Swal) Swal.fire({ icon: 'error', title: 'Unable to Delete Event', text: 'Unable to delete the event. Please try again.' });
+    });
 }
 </script>
 @endsection

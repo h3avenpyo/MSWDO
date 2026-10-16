@@ -192,6 +192,29 @@ class OfficerController extends Controller
 
     public function storeOfficer(StoreOfficerRequest $request)
     {
+        if (in_array($request->role, ['bcpc_admin', 'swd_admin'], true)) {
+            $nameParts = preg_split('/\s+/', trim($request->name), 2);
+            $attributes = [
+                'first_name' => $nameParts[0],
+                'last_name' => $nameParts[1] ?? '',
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'phone_number' => $request->phone,
+                'position' => 'Administrator',
+                'department' => $request->role === 'bcpc_admin' ? 'BCPC' : 'VAWC',
+                'is_active' => $request->status !== 'inactive',
+                'bcpc_is_active' => $request->role === 'bcpc_admin',
+                'vawc_is_active' => $request->role === 'swd_admin',
+            ];
+            $model = new WcpuUser();
+            if ($model->getConnection()->getSchemaBuilder()->hasColumn($model->getTable(), 'username')) {
+                $attributes['username'] = $request->email;
+            }
+            WcpuUser::create($attributes);
+
+            return redirect()->route('admin.add-officers')->with('success', 'Officer created successfully.')->with('officer_created', true);
+        }
+
         $signatureImagePath = null;
         if ($request->hasFile('signature_image')) {
             $file = $request->file('signature_image');

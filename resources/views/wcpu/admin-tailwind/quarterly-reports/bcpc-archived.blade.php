@@ -151,7 +151,7 @@
                                         <a class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-[#C41E3A] text-white hover:bg-[#A01830] active:bg-[#8B1429] transition-colors" href="{{ $isMonitoring ? route('admin.bcpc-case-monitoring.edit', ['view' => $record->id, 'archived' => 1]) : route('admin.quarterly-reports.show', ['id' => $record->id, 'archived' => 1]) }}" data-admin-archive-view="{{ $isMonitoring ? 'monitoring' : 'report' }}" data-modal-title="{{ $isMonitoring ? 'BCPC Monitoring Report Details' : 'Quarterly Report Details' }}" title="View Details" aria-label="View Details"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View Details</span></a>
                                         <form method="POST" class="restore-confirm-form" action="{{ $isMonitoring ? route('admin.bcpc-case-monitoring.restore', $record->id) : route('admin.quarterly-reports.restore', $record->id) }}">
                                             @csrf
-                                            <button type="submit" @disabled($restoreBlocked) class="px-3 py-2 rounded-lg {{ $restoreBlocked ? 'bg-gray-300 text-gray-500 opacity-50 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 text-white' }} transition-colors">Restore</button>
+                                            <button type="submit" @disabled($restoreBlocked) class="px-3 py-2 rounded-lg {{ $restoreBlocked ? 'bg-red-100 text-red-800 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 text-white' }} transition-colors">Restore</button>
                                         </form>
                                     </div>
                                 </td>

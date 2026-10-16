@@ -1312,7 +1312,11 @@
         }
 
         .pagination-btn:disabled {
-            opacity: 0.5;
+            background: #FEE2E2;
+            color: #B91C1C;
+            border-color: #FCA5A5;
+            opacity: 1;
+            box-shadow: 0 2px 6px rgba(196,30,58,.12);
             cursor: not-allowed;
         }
 
@@ -1429,7 +1433,11 @@
         }
 
         .btn:disabled {
-            opacity: 0.45;
+            background: #FEE2E2;
+            border-color: #FCA5A5;
+            color: #B91C1C;
+            opacity: 1;
+            box-shadow: 0 2px 6px rgba(196,30,58,.12);
             cursor: not-allowed;
             pointer-events: none;
         }
@@ -2964,9 +2972,10 @@
         }
 
         .sc-page-btn:disabled {
-            color: var(--text-muted);
-            background-color: var(--background);
-            border-color: var(--border);
+            color: #B91C1C;
+            background-color: #FEE2E2;
+            border-color: #FCA5A5;
+            box-shadow: 0 2px 6px rgba(196,30,58,.12);
             cursor: not-allowed;
         }
 
@@ -4806,6 +4815,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('css/logout-modal.css') }}?v={{ filemtime(public_path('css/logout-modal.css')) }}">
 </head>
 
 <body>
@@ -4830,17 +4840,16 @@
         function confirmLogout(event) {
         event.preventDefault();
         Swal.fire({
-            title: 'Are you sure?',
-            text: 'Do you really want to log out?',
-            icon: 'warning',
-            showCancelButton: true,
+            title: 'Logout',
+        html: '<svg class="logout-modal-symbol" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M12 5l7 7-7 7v-4H7V9h5V5Z" fill="currentColor"/></svg><p class="logout-modal-message">Are you sure you want to log out?</p>',
+        showCancelButton: true,
             reverseButtons: true,
             confirmButtonColor: '#B11116',
             cancelButtonColor: '#6B7280',
-            confirmButtonText: 'Yes, log out',
+            confirmButtonText: 'Yes, log me out',
             cancelButtonText: 'Cancel',
             background: '#ffffff',
-            customClass: { popup: 'rounded-4 shadow-lg' }
+            customClass: { popup: 'rounded-4 shadow-lg app-logout-modal' }
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById('logout-form').submit();

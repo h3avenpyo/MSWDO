@@ -23,10 +23,10 @@
       </button>
 
       <!-- Header with title and action buttons -->
-      <div class="p-4 border-b pr-12">
+      <div class="case-modal-top-header p-4 border-b pr-12">
         <div class="mb-2">
           <h5 class="text-lg font-semibold" x-text="'Case #' + caseNumber">Case Details</h5>
-          <small class="text-gray-500">Viewing case details</small>
+          <div class="case-modal-top-summary" x-html="new DOMParser().parseFromString(content || '', 'text/html').querySelector('[data-case-modal-summary]')?.innerHTML || ''"></div>
         </div>
         <div class="case-modal-header-actions flex items-center gap-2 flex-wrap {{ Auth::user()->position === 'Desk Officer' && (Auth::user()->defaultCaseDepartment() === 'BCPC' || Auth::user()->isMultiCaseDepartment()) ? 'w-full justify-end' : '' }}">
           @if(Auth::user()->position === 'Desk Officer' && (Auth::user()->defaultCaseDepartment() === 'BCPC' || Auth::user()->isMultiCaseDepartment()))
@@ -353,14 +353,14 @@
         .swd-desk-cases-page .case-summary-grid > div { min-height: 0; padding: .875rem 1rem; }
         .swd-desk-cases-page .cases-list-heading { padding: 1rem 1.25rem; }
         @if(in_array(Auth::user()->defaultCaseDepartment(), ['BCPC', 'SWD', 'VAWC'], true))
-        .swd-desk-cases-page :is(.swd-desk-table, .case-card-actions) :is(.view-case, .edit-case, button[title="Archive Case"]) {
+        .swd-desk-cases-page :is(.swd-desk-table, .case-card-actions) :is(.view-case, .edit-case:not(:disabled), button[title="Archive Case"]:not(:disabled)) {
             background-color: #C41E3A !important;
             border-color: #C41E3A !important;
             color: #ffffff !important;
             transition: none !important;
             -webkit-tap-highlight-color: transparent;
         }
-        .swd-desk-cases-page :is(.swd-desk-table, .case-card-actions) :is(.view-case, .edit-case, button[title="Archive Case"]):is(:hover, :focus, :active) {
+        .swd-desk-cases-page :is(.swd-desk-table, .case-card-actions) :is(.view-case, .edit-case:not(:disabled), button[title="Archive Case"]:not(:disabled)):is(:hover, :focus, :active) {
             background-color: #A01830 !important;
             border-color: #A01830 !important;
             color: #ffffff !important;
@@ -844,7 +844,7 @@
                         @endif
                         @if($case->created_by == ($currentUserId ?? Auth::id()) || (Auth::user()->position === 'Desk Officer' && Auth::user()->defaultCaseDepartment() === 'BCPC'))
                         @if($editDisabled)
-                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-400 bg-gray-100 text-gray-400 opacity-60 cursor-not-allowed" title="Only Case Filed cases can be edited" aria-disabled="true">
+                        <span class="inline-flex h-9 w-9 flex-none items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-600 shadow-sm cursor-not-allowed" title="Only Case Filed cases can be edited" aria-disabled="true">
                             <i class="fas fa-edit"></i>
                         </span>
                         @else
@@ -859,10 +859,10 @@
                         @include('components.case-archive-button', ['archiveUrl' => route('desk-officer.cases.destroy', ['hash' => encrypt($case->id), 'type' => request('type', strtolower($case->type ?? 'bcpc'))])])
                         @else
                         @if(Auth::user()->defaultCaseDepartment() === 'BCPC')
-                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border {{ $case->case_type_id === 'VAWC' ? 'border-red-600 bg-red-600 text-white opacity-60' : 'border-gray-300 text-gray-400' }} cursor-not-allowed" title="Only the creator can edit this case" aria-disabled="true">
+                        <span class="inline-flex h-9 w-9 flex-none items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-600 shadow-sm cursor-not-allowed" title="Only the creator can edit this case" aria-disabled="true">
                             <i class="fas fa-edit"></i>
                         </span>
-                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border {{ $case->case_type_id === 'VAWC' ? 'border-red-600 bg-red-600 text-white opacity-60' : 'border-amber-500 text-amber-300' }} cursor-not-allowed" title="Only the creator can archive this case" aria-disabled="true">
+                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-800 cursor-not-allowed" title="Only the creator can archive this case" aria-disabled="true">
                             <i class="fas fa-archive"></i>
                         </span>
                         @else
@@ -942,7 +942,7 @@
                 @endif
                 @if($case->created_by == ($currentUserId ?? Auth::id()) || (Auth::user()->position === 'Desk Officer' && Auth::user()->defaultCaseDepartment() === 'BCPC'))
                 @if($editDisabled)
-                <span class="case-card-icon-action flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-400 bg-gray-100 text-gray-400 opacity-60 rounded-lg text-sm cursor-not-allowed" title="Only Case Filed cases can be edited" aria-disabled="true">
+                <span class="case-card-icon-action flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-red-200 bg-red-50 text-red-600 shadow-sm rounded-lg text-sm cursor-not-allowed" title="Only Case Filed cases can be edited" aria-disabled="true">
                     <i class="fas fa-edit text-xs"></i><span class="case-card-action-label">Edit</span>
                 </span>
                 @else
@@ -956,10 +956,10 @@
                 @include('components.case-archive-button', ['archiveUrl' => route('desk-officer.cases.destroy', ['hash' => encrypt($case->id), 'type' => request('type', strtolower($case->type ?? 'bcpc'))])])
                 @else
                 @if(Auth::user()->defaultCaseDepartment() === 'BCPC')
-                <span class="case-card-icon-action flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border rounded-lg text-sm cursor-not-allowed {{ $case->case_type_id === 'VAWC' ? 'border-red-600 bg-red-600 text-white opacity-60' : 'border-gray-300 text-gray-400' }}" title="Only the creator can edit" aria-disabled="true">
+                        <span class="case-card-icon-action flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-red-200 bg-red-50 text-red-600 shadow-sm rounded-lg text-sm cursor-not-allowed" title="Only the creator can edit" aria-disabled="true">
                     <i class="fas fa-edit text-xs"></i><span class="case-card-action-label">Edit</span>
                 </span>
-                <span class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border rounded-lg text-sm cursor-not-allowed {{ $case->case_type_id === 'VAWC' ? 'border-red-600 bg-red-600 text-white opacity-60' : 'border-amber-500 text-amber-300' }}" title="Only the creator can archive" aria-disabled="true">
+                        <span class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-red-200 bg-red-50 text-red-800 rounded-lg text-sm cursor-not-allowed" title="Only the creator can archive" aria-disabled="true">
                     <i class="fas fa-archive text-xs"></i> Archive
                 </span>
                 @else
@@ -1400,7 +1400,8 @@ function attachEditFormHandler() {
             title: 'Updating Case',
             html: '<div class="text-center"><i class="fas fa-spinner fa-spin text-4xl text-purple-500 mb-3"></i><p class="text-gray-700">Please wait...</p></div>',
             showConfirmButton: false,
-            allowOutsideClick: false
+            allowOutsideClick: false,
+            allowEscapeKey: false
         });
         
         fetch(actionUrl, {
@@ -1465,7 +1466,8 @@ async function submitRefer(caseId, selectedRecipients) {
         title: 'Referring Case',
         html: '<div class="text-center"><i class="fas fa-spinner fa-spin text-4xl text-purple-500 mb-3"></i><p class="text-gray-700">Sending emails...</p></div>',
         showConfirmButton: false,
-        allowOutsideClick: false
+        allowOutsideClick: false,
+            allowEscapeKey: false
     });
     
     try {
@@ -1545,7 +1547,8 @@ async function submitSendCopy(caseId, emailAddress) {
         title: 'Sending Copy',
         html: '<div class="text-center"><i class="fas fa-spinner fa-spin text-4xl text-purple-500 mb-3"></i><p class="text-gray-700">Sending email...</p></div>',
         showConfirmButton: false,
-        allowOutsideClick: false
+        allowOutsideClick: false,
+            allowEscapeKey: false
     });
     
     try {

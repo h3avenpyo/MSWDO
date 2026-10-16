@@ -306,7 +306,8 @@
     document.getElementById('referSubmitForm')?.addEventListener('submit', e=>{
         if(!boxes().some(cb=>cb.checked)){
             e.preventDefault();
-            alert('Select at least one recipient.');
+            if (window.Swal) Swal.fire({ icon: 'warning', text: 'Select at least one recipient.' });
+            else alert('Select at least one recipient.');
         }
     });
 })();

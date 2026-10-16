@@ -692,12 +692,12 @@ $initials = count($words) >= 2
         cursor: default;
     }
     .sc-page-btn:disabled {
-        opacity: 0.45;
+        opacity: 1;
         cursor: not-allowed;
-        background: #F8FAFC;
-        border-color: #E2E8F0;
-        color: #94A3B8;
-        box-shadow: none;
+        background: #FEE2E2;
+        border-color: #FCA5A5;
+        color: #B91C1C;
+        box-shadow: 0 2px 6px rgba(196,30,58,.12);
         transform: none;
     }
     @media (max-width: 639.98px) {

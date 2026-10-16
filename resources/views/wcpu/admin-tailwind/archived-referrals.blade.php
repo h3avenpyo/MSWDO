@@ -186,26 +186,40 @@
                 @unless(auth()->user()->isBcpcAdmin())<button type="button" class="text-white/80 transition-colors hover:text-white" aria-label="Close" data-close-archived-recipient><i class="fas fa-times text-xl"></i></button>@endunless
             </div>
             <div id="viewArchivedRecipientContent" class="min-h-0 flex-1 space-y-4 overflow-y-auto p-6"></div>
-            <div class="shrink-0 flex justify-end border-t border-gray-100 bg-gray-50 px-6 py-3"><button type="button" class="rounded-lg bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-300" data-close-archived-recipient>Close</button></div>
+            <div class="shrink-0 flex justify-end border-t border-gray-100 bg-gray-50 px-6 py-3"><button type="button" class="portal-modal-close rounded-lg bg-purple-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-purple-800" data-close-archived-recipient>Close</button></div>
         </div>
     </div>
 </div>
 @if(auth()->user()->isVawcAdmin())
 @foreach($referrals as $referral)
 <template id="swd-archived-referral-{{ $referral->id }}">
-    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-        @foreach(['referral_number', 'date_of_referral', 'status', 'client_name', 'client_age', 'client_sex', 'client_address', 'client_contact', 'family_guardian_name', 'family_guardian_contact', 'family_guardian_address', 'recipient_name', 'recipient_address', 'recipient_contact', 'recipient_email', 'referred_by_name', 'referred_by_designation', 'referred_by_address', 'referred_by_contact', 'referred_by_email', 'reason_for_referral', 'specific_services_requested', 'additional_notes', 'feedback', 'feedback_received_at', 'deleted_at'] as $field)
-        <div class="rounded-lg border border-gray-200 p-3">
+    <div class="archived-referral-field-grid space-y-3 text-sm">
+        @foreach([
+            'Client Information' => ['client_name', 'client_age', 'client_sex', 'client_address', 'client_contact'],
+            'Family / Guardian Information' => ['family_guardian_name', 'family_guardian_contact', 'family_guardian_address'],
+            'Referral Information' => ['referral_number', 'date_of_referral', 'status', 'reason_for_referral', 'specific_services_requested', 'additional_notes'],
+            'Receiving Agency' => ['recipient_name', 'recipient_address', 'recipient_contact', 'recipient_email'],
+            'Referred By' => ['referred_by_name', 'referred_by_designation', 'referred_by_address', 'referred_by_contact', 'referred_by_email'],
+            'Response and Archive Information' => ['feedback', 'feedback_received_at', 'deleted_at'],
+        ] as $section => $fields)
+        <section class="overflow-hidden rounded-lg border border-gray-200 bg-white">
+            <h3 class="border-b border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800">{{ $section }}</h3>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4">
+        @foreach($fields as $field)
+        <div class="min-w-0 {{ in_array($field, ['client_name', 'client_address', 'family_guardian_address', 'reason_for_referral', 'specific_services_requested', 'additional_notes', 'recipient_address', 'feedback']) ? 'sm:col-span-2' : '' }}">
             <dt class="text-xs text-gray-500 mb-1">{{ $field === 'deleted_at' ? 'Archived At' : ucwords(str_replace('_', ' ', $field)) }}</dt>
             <dd class="text-gray-800 whitespace-pre-wrap break-words">{{ $referral->$field instanceof \DateTimeInterface ? $referral->$field->format('M d, Y h:i A') : ($referral->$field ?? '—') }}</dd>
         </div>
         @endforeach
-    </dl>
+            </dl>
+        </section>
+        @endforeach
+    </div>
 </template>
 @endforeach
 @foreach($recipients as $recipient)
 <template id="swd-archived-recipient-{{ $recipient->id }}">
-    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+    <dl class="archived-recipient-field-grid grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
         @foreach(['name', 'email', 'contact_number', 'role', 'deleted_at'] as $field)
         <div class="rounded-lg border border-gray-200 p-3">
             <dt class="text-xs text-gray-500 mb-1">{{ $field === 'deleted_at' ? 'Archived At' : ucwords(str_replace('_', ' ', $field)) }}</dt>

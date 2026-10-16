@@ -447,7 +447,7 @@ function sendToAdmin(id, barangayName, period) {
             Swal.fire({
                 title: 'Sending to Admin...',
                 text: 'Please wait while we submit the report to Admin.',
-                allowOutsideClick: false,
+                allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false,
                 didOpen: () => { Swal.showLoading(); }
             });
 
@@ -500,7 +500,7 @@ function archiveMonitoring(id, barangayName, period) {
             Swal.fire({
                 title: 'Archiving...',
                 text: 'Please wait while we archive this record.',
-                allowOutsideClick: false,
+                allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false,
                 didOpen: () => { Swal.showLoading(); }
             });
 

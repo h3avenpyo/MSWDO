@@ -125,7 +125,7 @@
                             @if($archived ?? false)
                             <form method="POST" class="restore-confirm-form inline-flex items-center justify-center m-0 p-0" action="{{ route('desk-officer.quarterly-reports.restore', $report->id) }}">
                                 @csrf
-                                <button type="submit" {{ $restoreDisabled ? 'disabled' : '' }} data-icon-action="labelled" title="{{ $restoreDisabled ? 'An active report already exists for this quarter and year' : 'Restore Report' }}" class="inline-flex {{ $actionButtonSize }} items-center justify-center {{ $restoreDisabled ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-purple-700 hover:bg-purple-800 text-white' }} rounded-lg transition shadow-sm border-0 p-0 m-0"><i class="fas fa-undo text-sm"></i><span class="sr-only">Restore</span></button>
+                                <button type="submit" {{ $restoreDisabled ? 'disabled' : '' }} data-icon-action="labelled" title="{{ $restoreDisabled ? 'An active report already exists for this quarter and year' : 'Restore Report' }}" class="inline-flex {{ $actionButtonSize }} items-center justify-center {{ $restoreDisabled ? 'bg-red-100 text-red-800 cursor-not-allowed' : 'bg-purple-700 hover:bg-purple-800 text-white' }} rounded-lg transition shadow-sm border-0 p-0 m-0"><i class="fas fa-undo text-sm"></i><span class="sr-only">Restore</span></button>
                             </form>
                             @else
                             @if($isVawcDeskOfficer)
@@ -198,7 +198,7 @@
                     @if($archived ?? false)
                     <form method="POST" class="restore-confirm-form inline-flex items-center justify-center m-0 p-0" action="{{ route('desk-officer.quarterly-reports.restore', $report->id) }}">
                         @csrf
-                        <button type="submit" {{ $restoreDisabled ? 'disabled' : '' }} data-icon-action="labelled" title="{{ $restoreDisabled ? 'An active report already exists for this quarter and year' : 'Restore Report' }}" class="inline-flex {{ $actionButtonSize }} items-center justify-center {{ $restoreDisabled ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-purple-700 hover:bg-purple-800 text-white' }} rounded-lg transition shadow-sm border-0 p-0 m-0"><i class="fas fa-undo text-sm"></i><span class="sr-only">Restore</span></button>
+                        <button type="submit" {{ $restoreDisabled ? 'disabled' : '' }} data-icon-action="labelled" title="{{ $restoreDisabled ? 'An active report already exists for this quarter and year' : 'Restore Report' }}" class="inline-flex {{ $actionButtonSize }} items-center justify-center {{ $restoreDisabled ? 'bg-red-100 text-red-800 cursor-not-allowed' : 'bg-purple-700 hover:bg-purple-800 text-white' }} rounded-lg transition shadow-sm border-0 p-0 m-0"><i class="fas fa-undo text-sm"></i><span class="sr-only">Restore</span></button>
                     </form>
                     @else
                     @if($isVawcDeskOfficer)
@@ -232,7 +232,7 @@ document.querySelectorAll('.quarterly-table-view').forEach(view => {
 
 const submitQuarterlyReportAction = async (form, successTitle) => {
     if (typeof Swal === 'undefined') return form.submit();
-    Swal.fire({ title: 'Processing...', text: 'Please wait while your action is completed.', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    Swal.fire({ title: 'Processing...', text: 'Please wait while your action is completed.', allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false, didOpen: () => Swal.showLoading() });
     try {
         const response = await fetch(form.action, { method: form.method || 'POST', body: new FormData(form), credentials: 'same-origin', headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' } });
         const data = await response.json().catch(() => ({}));

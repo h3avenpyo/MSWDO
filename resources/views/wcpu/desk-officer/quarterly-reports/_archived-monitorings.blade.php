@@ -17,7 +17,7 @@
                         <a href="{{ route('desk-officer.bcpc-case-monitoring.edit', ['view' => $monitoring->id, 'archived' => 1]) }}" title="View Record" class="inline-flex w-10 h-10 items-center justify-center bg-blue-600 text-white rounded-lg"><i class="fas fa-eye"></i><span class="sr-only">View</span></a>
                         <form method="POST" action="{{ route('desk-officer.bcpc-case-monitoring.restore', $monitoring->id) }}" class="restore-monitoring-form">
                             @csrf
-                            <button type="submit" @disabled($monitoringRestoreDisabled) title="{{ $monitoringRestoreDisabled ? 'An active monitoring report already exists for this quarter and year' : 'Restore Report' }}" class="inline-flex w-10 h-10 items-center justify-center rounded-lg {{ $monitoringRestoreDisabled ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-purple-700 text-white' }}"><i class="fas fa-undo"></i><span class="sr-only">Restore</span></button>
+                            <button type="submit" @disabled($monitoringRestoreDisabled) title="{{ $monitoringRestoreDisabled ? 'An active monitoring report already exists for this quarter and year' : 'Restore Report' }}" class="inline-flex w-10 h-10 items-center justify-center rounded-lg {{ $monitoringRestoreDisabled ? 'bg-red-100 text-red-800 cursor-not-allowed' : 'bg-purple-700 text-white' }}"><i class="fas fa-undo"></i><span class="sr-only">Restore</span></button>
                         </form>
                     </div></td>
                 </tr>

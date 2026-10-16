@@ -1,5 +1,5 @@
 @if($paginator->hasPages())
-    <div class="px-6 py-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
+    <div data-pagination-label="{{ $label ?? 'records' }}" class="px-6 py-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
         <div class="text-sm text-gray-600">Showing {{ $paginator->firstItem() ?? 0 }} - {{ $paginator->lastItem() ?? 0 }} of {{ $paginator->total() }} {{ $label ?? 'records' }}</div>
         <div class="flex items-center gap-2">
             <a href="{{ $paginator->previousPageUrl() ?: '#' }}" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm {{ $paginator->onFirstPage() ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' }}"><i class="fas fa-chevron-left text-gray-600"></i><span class="sr-only">Previous page</span></a>

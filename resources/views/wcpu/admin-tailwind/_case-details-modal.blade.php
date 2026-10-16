@@ -32,9 +32,9 @@
 <a href="{{ auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'BCPC' ? route('desk-officer.cases.print', ['hash' => encrypt($case->id)]) : route('admin.case.print', $case->id) }}" class="hidden modal-print-link"></a>
 <a href="{{ auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'BCPC' ? route('desk-officer.cases.refer', ['hash' => encrypt($case->id)]) : route('cases.refer.form', $case->id) }}" class="hidden modal-refer-link"></a>
 
-<div class="space-y-6">
+<div class="case-modal-details space-y-6">
     <!-- Case Header -->
-    <div class="bg-gradient-to-r from-purple-700 to-purple-600 rounded-lg p-4 text-white">
+    <div data-case-modal-summary class="bg-gradient-to-r from-purple-700 to-purple-600 rounded-lg p-4 text-white">
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
                 <h3 class="font-semibold text-lg">{{ $case->case_number ?? 'N/A' }}</h3>
@@ -210,13 +210,13 @@
                     <span class="text-sm text-gray-800">{{ $case->incident_location ?? 'N/A' }}</span>
                 </div>
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-start gap-1">
-                    <span class="text-sm font-medium text-gray-500 sm:w-32 flex-shrink-0">{{ auth()->user()->isDepartmentAdmin() ? 'Incident Details:' : 'Details:' }}</span>
+                    <span class="text-sm font-medium text-gray-500 sm:w-32 flex-shrink-0">{{ auth()->user()->isDepartmentAdmin() || ($useAdminArchivePresentation ?? false) ? 'Incident Details:' : 'Details:' }}</span>
                     <span class="text-sm text-gray-800">{{ $incidentDetailsForDisplay ?? 'N/A' }}</span>
                 </div>
             </div>
         </div>
 
-        @if($isDeskOfficer)
+        @if($isDeskOfficer && !($useAdminArchivePresentation ?? false))
         <!-- Desk Officer: Types of Abuse -->
         <div class="bg-white border border-gray-200 rounded-lg overflow-hidden md:col-span-2">
             <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
@@ -236,7 +236,7 @@
                 </div>
             </div>
         </div>
-        @elseif(auth()->user()->isDepartmentAdmin())
+        @elseif(auth()->user()->isDepartmentAdmin() || ($useAdminArchivePresentation ?? false))
         <!-- Types of Abuse -->
         <div class="bg-white border border-gray-200 rounded-lg overflow-hidden md:col-span-2">
             <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">

@@ -38,18 +38,17 @@ function closeSidebar() {
 function confirmLogout(event) {
     event.preventDefault();
     Swal.fire({
-        title: 'Are you sure?',
-        text: 'Do you really want to log out?',
-        icon: 'warning',
+        title: 'Logout',
+        html: '<svg class="logout-modal-symbol" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M12 5l7 7-7 7v-4H7V9h5V5Z" fill="currentColor"/></svg><p class="logout-modal-message">Are you sure you want to log out?</p>',
         showCancelButton: true,
         reverseButtons: true,
         confirmButtonColor: '#1A237E',
         cancelButtonColor: '#6B7280',
-        confirmButtonText: 'Yes, log out',
+        confirmButtonText: 'Yes, log me out',
         cancelButtonText: 'Cancel',
         background: '#ffffff',
         customClass: {
-            popup: 'rounded-4 shadow-lg'
+            popup: 'rounded-4 shadow-lg app-logout-modal'
         }
     }).then((result) => {
         if (result.isConfirmed) {

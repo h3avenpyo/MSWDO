@@ -1,0 +1,1469 @@
+/* Modal presentation only. Reference: Senior masterlist details, Financial
+   Assistance intake details, and Social Case Study confirmation dialogs.
+   Keep this separate from the page theme so tables/navigation are unaffected. */
+@media screen {
+    .portal-ui :is(.swal2-popup, dialog) [data-pagination-label="case records"],
+    body.portal-ui.archive-report-modal-preview [data-pagination-label="case records"] {
+        display: none !important;
+    }
+    /* The overlay itself must not create a second viewport scrollbar. */
+    .portal-ui > .swal2-container:has(.swal2-popup:not(.swal2-toast)) {
+        overflow: hidden !important;
+    }
+    html:has(body.portal-ui > .swal2-container .swal2-popup:not(.swal2-toast)),
+    body.portal-ui:has(> .swal2-container .swal2-popup:not(.swal2-toast)) {
+        overflow: hidden !important;
+        scrollbar-width: none;
+    }
+    html:has(body.portal-ui > .swal2-container .swal2-popup:not(.swal2-toast))::-webkit-scrollbar,
+    body.portal-ui:has(> .swal2-container .swal2-popup:not(.swal2-toast))::-webkit-scrollbar {
+        display: none;
+    }
+    /* The page theme forces overflow:auto; modal scroll locks must win. */
+    html:has(> body.portal-ui.swal2-shown:not(.swal2-toast-shown)),
+    html:has(> body.portal-ui.modal-open),
+    html:has(> body.portal-ui.overflow-hidden),
+    html:has(> body.portal-ui dialog:modal),
+    body.portal-ui.swal2-shown:not(.swal2-toast-shown),
+    body.portal-ui.modal-open,
+    body.portal-ui.overflow-hidden,
+    body.portal-ui:has(dialog:modal) {
+        overflow: hidden !important;
+        overscroll-behavior: none;
+    }
+    .portal-ui .swal2-container,
+    .portal-ui .swal2-html-container,
+    .portal-ui dialog:modal,
+    .portal-ui .modal-body {
+        overscroll-behavior: contain;
+    }
+    /* Case metadata belongs to the existing top header, not a second banner. */
+    .portal-ui #caseModal [x-html="content"] [data-case-modal-summary] { display: none !important; }
+    .portal-ui #caseModal .case-modal-top-summary :is(h3, h4) { display: none !important; }
+    .portal-ui #caseModal .case-modal-top-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px 20px;
+        padding-right: 20px !important;
+    }
+    .portal-ui #caseModal .case-modal-top-header > div:first-child { flex: 1 1 280px; min-width: 0; margin-bottom: 0; }
+    .portal-ui #caseModal .case-modal-top-header .case-modal-header-actions { width: auto !important; margin-left: auto; }
+    .portal-ui #caseModal .case-modal-top-summary:empty { display: none; }
+    .portal-ui #caseModal .case-modal-top-summary > div,
+    .portal-ui #caseModal .case-modal-top-summary .case-modal-summary-labels {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 8px 12px;
+        margin-top: 8px;
+    }
+    .portal-ui #caseModal .case-modal-top-summary p { margin: 0 !important; font-size: 13px; }
+    .portal-ui #caseModal .case-modal-top-summary .case-modal-summary-labels { margin: 0; }
+    .portal-ui #caseModal .case-modal-top-summary :is(.badge, .rounded-full) {
+        border-radius: 999px !important;
+        padding: 4px 12px !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        line-height: 1.5;
+        white-space: nowrap;
+    }
+    .portal-ui #caseModal [x-html="content"] > .space-y-6 > [data-case-modal-summary] + div { margin-top: 0 !important; }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], [role="alertdialog"], #notif-modal-overlay, .swal2-popup) {
+        --modal-brand: #B11116;
+        --modal-brand-hover: #8A0D11;
+        --modal-canvas: #F5F7FB;
+        --modal-surface: #FFFFFF;
+        --modal-border: #E5E7EB;
+        --modal-text: #111827;
+        --modal-muted: #6B7280;
+        font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif !important;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--modal-text);
+    }
+
+    /* Existing panels retain their widths, visibility, positioning and actions. */
+    .portal-ui :is(dialog:not(:has(> .bg-white)), [id$="Modal"] > .bg-white, [id$="Modal"] > div > .bg-white, [id$="Modal"] > div > div > .bg-white, .modal-content, .refer-modal, .swal2-popup) {
+        border: 1px solid var(--modal-border, #E5E7EB) !important;
+        border-radius: 14px !important;
+        background-color: var(--modal-canvas, #F5F7FB) !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, .15) !important;
+    }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], [role="alertdialog"], #notif-modal-overlay) :is(.bg-black\/50, .bg-black\/60),
+    .portal-ui :is([id$="Modal"], [role="alertdialog"]):is([class~="bg-black/50"], [class~="bg-black/60"]),
+    .portal-ui .modal-backdrop {
+        background-color: rgba(0, 0, 0, .5) !important;
+        backdrop-filter: blur(4px);
+    }
+    .portal-ui dialog::backdrop { background: rgba(0, 0, 0, .5); backdrop-filter: blur(4px); }
+    .portal-ui #caseTypeModal {
+        width: min(384px, calc(100vw - 2rem));
+        padding: 0;
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    /* Framed detail/edit modals use the compact red header from Senior. */
+    .portal-ui :is([id$="Modal"], dialog, .modal[id]) :is(.modal-header, .swd-archive-dialog-header),
+    .portal-ui :is([id$="Modal"] > .bg-white, [id$="Modal"] > div > .bg-white, [id$="Modal"] > div > div > .bg-white) > div:is([class*="bg-gradient"], [class*="bg-[#C41E3A]"], .border-b):has(h2, h3, h4, h5) {
+        background: var(--modal-brand) !important;
+        color: #fff !important;
+        padding: 12px 20px !important;
+        border-bottom: 1px solid var(--modal-brand-hover) !important;
+    }
+    .portal-ui :is([id$="Modal"], dialog, .modal[id]) :is(.modal-header, .swd-archive-dialog-header) :is(h2, h3, h4, h5, p, small, span, i),
+    .portal-ui :is([id$="Modal"] > .bg-white, [id$="Modal"] > div > .bg-white, [id$="Modal"] > div > div > .bg-white) > div:is([class*="bg-gradient"], [class*="bg-[#C41E3A]"], .border-b):has(h2, h3, h4, h5) :is(h2, h3, h4, h5, p, small) {
+        color: #fff !important;
+    }
+    .portal-ui :is([id$="Modal"], dialog, .modal[id]) :is(.modal-title, .modal-header h2, .modal-header h3, .modal-header h5, .swd-archive-dialog-header h2),
+    .portal-ui :is([id$="Modal"] > .bg-white, [id$="Modal"] > div > .bg-white, [id$="Modal"] > div > div > .bg-white) > div:has(h2, h3, h4, h5):is(.border-b, [class*="bg-gradient"], [class*="bg-[#C41E3A]"]) :is(h2, h3, h4, h5) {
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        line-height: 1.4;
+        margin: 0 !important;
+    }
+
+    /* Unframed form/choice modals keep their existing structure. */
+    .portal-ui :is([id$="Modal"] > .bg-white, [id$="Modal"] > div > .bg-white, [id$="Modal"] > div > div > .bg-white)[class~="p-6"],
+    .portal-ui .refer-modal { padding: 20px !important; }
+    .portal-ui :is([id$="Modal"] > .bg-white, [id$="Modal"] > div > .bg-white, [id$="Modal"] > div > div > .bg-white)[class~="p-6"] > :is(h2, h3, h5),
+    .portal-ui .refer-modal > h5 {
+        color: var(--modal-brand) !important;
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        line-height: 1.4;
+        margin-bottom: 16px;
+    }
+    .portal-ui dialog > :is(h2, h3),
+    .portal-ui dialog > .bg-white > :is(h2, h3),
+    .portal-ui :is([id$="Modal"], dialog) :is(.bg-white, .p-6) > div.mb-4 > :is(h2, h3, h5) {
+        color: var(--modal-brand) !important;
+        font-size: 18px !important;
+        font-weight: 700 !important;
+    }
+    .portal-ui :is([id$="Modal"], dialog, .modal[id]) :is(.modal-body, [data-swd-archive-content], #referralDetails, #userModalContent, #editModalContent, #modalContent, [x-html="content"]) {
+        padding: 16px 20px !important;
+        background: var(--modal-canvas) !important;
+        color: var(--modal-text);
+    }
+    .portal-ui :is([id$="Modal"], dialog, .modal[id]) :is(.modal-footer, .swd-archive-dialog-footer),
+    .portal-ui :is([id$="Modal"] > .bg-white, [id$="Modal"] > div > .bg-white, [id$="Modal"] > div > div > .bg-white) > .border-t {
+        background: var(--modal-surface) !important;
+        border-top: 1px solid var(--modal-border) !important;
+        padding: 10px 20px !important;
+        gap: 10px;
+    }
+
+    /* Existing label/value pairs become the reference's compact detail fields. */
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], [role="alertdialog"], .swal2-popup) :is(.info-label, .detail-label, dt, p.text-xs:has(+ p)) {
+        display: block;
+        color: #9CA3AF !important;
+        font-size: .72rem !important;
+        font-weight: 600 !important;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        line-height: 1.4;
+        margin: 0 0 4px !important;
+        text-align: left;
+    }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], [role="alertdialog"], .swal2-popup) :is(.info-value, .detail-value, dd, p.text-xs + p) {
+        background: var(--modal-surface) !important;
+        border: 1px solid var(--modal-border) !important;
+        border-radius: 6px !important;
+        padding: 6px 10px !important;
+        min-height: 32px;
+        margin: 0;
+        color: var(--modal-text) !important;
+        font-size: .813rem !important;
+        font-weight: 500;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+        text-align: left;
+    }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], .swal2-popup) :is(.section-heading, .section-title, h4.uppercase) {
+        color: var(--modal-brand) !important;
+        background: transparent !important;
+        border-bottom: 1px solid var(--modal-border);
+        font-size: .813rem !important;
+        font-weight: 700 !important;
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+        text-align: left;
+    }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], .swal2-popup) dt:not(:first-child) { margin-top: 10px !important; }
+    .portal-ui [id$="Modal"] #eventDetails > p {
+        background: var(--modal-surface);
+        border: 1px solid var(--modal-border);
+        border-radius: 6px;
+        padding: 8px 10px;
+        font-size: 13px;
+        color: var(--modal-text);
+        text-align: left;
+        overflow-wrap: anywhere;
+    }
+    .portal-ui [id$="Modal"] #eventDetails > p > strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: .72rem;
+        font-weight: 600;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: var(--modal-muted);
+    }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], .swal2-popup) .card {
+        border: 1px solid var(--modal-border) !important;
+        border-radius: 8px !important;
+        background: var(--modal-surface) !important;
+        box-shadow: none !important;
+    }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], .swal2-popup) .card-header {
+        background: var(--modal-canvas) !important;
+        border-bottom: 1px solid var(--modal-border) !important;
+        padding: 10px 16px !important;
+    }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], .swal2-popup) .card-header :is(h4, h5) {
+        color: var(--modal-brand) !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+    }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], .swal2-popup) .card-body { padding: 16px !important; }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], .swal2-popup) :is(.grid, .info-grid, .modal-grid-2) { gap: 12px !important; }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], .swal2-popup) :is(.space-y-6, .space-y-4) > :not([hidden]) ~ :not([hidden]) { margin-top: 16px; }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], .swal2-popup) :is(.bg-gray-50, .bg-slate-50):not(button, a, .border-b) {
+        background-color: var(--modal-canvas) !important;
+        border-color: var(--modal-border) !important;
+    }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], .swal2-popup) label {
+        color: var(--modal-muted);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], .swal2-popup) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea) {
+        font-family: inherit !important;
+        font-size: 14px !important;
+        color: var(--modal-text);
+        background-color: var(--modal-surface);
+        border: 1px solid var(--modal-border);
+        border-radius: 8px !important;
+        padding: 10px 12px;
+    }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], .swal2-popup) :is(input, select, textarea):focus {
+        border-color: var(--modal-brand) !important;
+        outline-color: var(--modal-brand);
+        --tw-ring-color: rgba(177, 17, 22, .15);
+    }
+
+    /* Button styles do not alter enabled/disabled state or available actions. */
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], [role="alertdialog"], .swal2-popup) :is(button, a.btn, a[class*="bg-"]) {
+        font-family: inherit !important;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 8px !important;
+    }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], [role="alertdialog"], .swal2-popup) :is(button, a):is([class*="bg-purple-"], [class*="bg-red-6"], [class*="bg-red-7"], [class*="bg-blue-6"], [class*="bg-green-6"], [class*="bg-emerald-6"], [class*="bg-[#C41E3A]"], .btn-primary, .btn-success, .swal2-confirm):not(:disabled):not([aria-disabled="true"]) {
+        background: var(--modal-brand) !important;
+        border-color: var(--modal-brand) !important;
+        color: #fff !important;
+    }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], [role="alertdialog"], .swal2-popup) :is(button, a):is([class*="bg-purple-"], [class*="bg-red-6"], [class*="bg-red-7"], [class*="bg-blue-6"], [class*="bg-green-6"], [class*="bg-emerald-6"], [class*="bg-[#C41E3A]"], .btn-primary, .btn-success, .swal2-confirm):not(:disabled):not([aria-disabled="true"]):hover {
+        background: var(--modal-brand-hover) !important;
+        border-color: var(--modal-brand-hover) !important;
+    }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id], .swal2-popup) :is(.btn-secondary, .btn-cancel-gray, .swal2-cancel) {
+        background: #6B7280 !important;
+        border-color: #6B7280 !important;
+        color: #fff !important;
+    }
+    .portal-ui :is([id$="Modal"], dialog, .modal[id]) :is(.modal-header, .swd-archive-dialog-header) button:has(.fa-times),
+    .portal-ui :is([id$="Modal"] > .bg-white, [id$="Modal"] > div > .bg-white, [id$="Modal"] > div > div > .bg-white) > div:is(.border-b, [class*="bg-gradient"], [class*="bg-[#C41E3A]"]) button:has(.fa-times) {
+        color: #fff !important;
+        background: transparent !important;
+    }
+
+    /* Social Case Study alert format; keep icons, text and action order intact. */
+    .portal-ui .swal2-popup {
+        border-radius: 16px !important;
+        padding: 1.5rem !important;
+        box-sizing: border-box;
+    }
+    .portal-ui .swal2-title { color: #B11116 !important; font-size: 1.35rem !important; font-weight: 700 !important; }
+    .portal-ui .swal2-html-container { color: #374151 !important; font-size: .925rem !important; }
+    .portal-ui :is(.swal2-confirm, .swal2-cancel, .swal2-deny) { padding: 10px 24px !important; font-weight: 600 !important; }
+    .portal-ui .swal2-cancel:hover { background: #4B5563 !important; }
+    .portal-ui .swal2-popup.admin-archive-view-popup { padding: 0 !important; }
+    .portal-ui .swal2-popup.admin-archive-view-popup > .swal2-title {
+        background: #B11116 !important;
+        color: #fff !important;
+        padding: 12px 48px 12px 20px !important;
+        font-size: 16px !important;
+        text-align: left;
+    }
+    .portal-ui .swal2-popup.admin-archive-view-popup > .swal2-html-container { padding: 16px 20px !important; }
+}
+
+/* Case detail spacing follows the reference's 20px panel inset and 12px gaps. */
+@media screen {
+    .portal-ui #caseModal .case-modal-top-header {
+        padding: 16px 20px !important;
+        gap: 12px 20px !important;
+    }
+    .portal-ui #caseModalInner > .case-modal-top-header { padding-right: 60px !important; }
+    .portal-ui #caseModal .case-modal-top-summary > div {
+        margin-top: 8px !important;
+        gap: 8px 12px !important;
+    }
+    .portal-ui #caseModal .case-modal-top-summary .case-modal-summary-labels { margin-top: 0 !important; }
+    .portal-ui #caseModal .case-modal-top-header > div:last-child { gap: 8px !important; }
+    .portal-ui #caseModal .case-modal-top-header a { padding: 8px 12px !important; margin: 0 !important; }
+    .portal-ui #caseModal [x-html="content"] { padding: 16px 20px 20px !important; }
+    .portal-ui #caseModal [x-html="content"] > .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 16px !important; }
+    .portal-ui #caseModal [x-html="content"] > .space-y-6 > [data-case-modal-summary] + div { margin-top: 0 !important; }
+    .portal-ui #caseModal [x-html="content"] .grid { gap: 12px !important; }
+    .portal-ui #caseModal [x-html="content"] .grid > .bg-white > .border-b {
+        padding: 10px 16px !important;
+    }
+    .portal-ui #caseModal [x-html="content"] .grid > .bg-white > .border-b h4 { margin: 0 !important; }
+    .portal-ui #caseModal [x-html="content"] .divide-y > div {
+        padding: 10px 16px !important;
+        gap: 8px 12px !important;
+        align-items: flex-start;
+    }
+    .portal-ui #caseModal [x-html="content"] .divide-y > div > span:first-child {
+        margin: 0;
+        line-height: 1.5;
+    }
+    .portal-ui #caseModal [x-html="content"] .divide-y > div > span + span {
+        min-width: 0;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+    .portal-ui #caseModal [x-html="content"] .card { margin-bottom: 16px !important; }
+    .portal-ui #caseModal [x-html="content"] .row { --bs-gutter-x: 12px; --bs-gutter-y: 0; }
+}
+
+/* Both case-detail templates share the same cards and aligned information rows.
+   Presentation classes leave department-specific fields and conditions intact. */
+@media screen {
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details.case-details {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details.case-details > .row,
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details.case-details > .row > .col-md-6 { display: contents; }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details.case-details > .card { grid-column: 1 / -1; }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details.case-details > .case-modal-guardian {
+        grid-column: 2;
+        grid-row: 1;
+    }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details .case-modal-victim { grid-column: 1; grid-row: 1; }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details .case-modal-perpetrator { grid-column: 1; grid-row: 2; }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details :is(.card, .grid > .bg-white) {
+        margin: 0 !important;
+        background: #fff !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+        overflow: hidden;
+        min-width: 0;
+    }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details :is(.card-header, .bg-gray-50.border-b) {
+        padding: 10px 16px !important;
+        background: #f8fafc !important;
+        border-bottom: 1px solid #E5E7EB !important;
+        border-radius: 0 !important;
+    }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details :is(.card-header, .bg-gray-50.border-b) :is(h4, h5) {
+        margin: 0 !important;
+        color: #111827 !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        line-height: 1.5;
+    }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details .card-body:has(> dl) { padding: 0 !important; }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details dl {
+        display: grid;
+        grid-template-columns: 140px minmax(0, 1fr);
+        gap: 0;
+        margin: 0 !important;
+    }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details dl > :is(dt, dd) {
+        margin: 0 !important;
+        padding: 10px 16px !important;
+        border: 0 !important;
+        border-bottom: 1px solid #f3f4f6 !important;
+        border-radius: 0 !important;
+        min-height: 0;
+        background: transparent !important;
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        line-height: 1.5;
+        text-transform: none;
+        letter-spacing: normal;
+        overflow-wrap: anywhere;
+        text-align: left;
+    }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details dl > dt { color: #6B7280 !important; }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details dl > dd { color: #111827 !important; }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details dl > :is(dt:nth-last-child(2), dd:last-child) { border-bottom: 0 !important; }
+    .portal-ui #caseModal .case-modal-top-summary .text-muted { color: #fff !important; }
+}
+
+/* Archive previews embed a full case page. These rules apply only after the
+   preview frame is marked, never to the standalone page. */
+@media screen {
+    .portal-ui .swal2-popup:is(.desk-archive-view-popup, .admin-archive-view-popup, .admin-archived-referral-popup) {
+        padding: 0 !important;
+        border-radius: 14px !important;
+        background: #F5F7FB !important;
+    }
+    .portal-ui .swal2-popup:is(.desk-archive-view-popup, .admin-archive-view-popup, .admin-archived-referral-popup) > .swal2-title {
+        margin: 0 !important;
+        padding: 14px 52px 14px 20px !important;
+        background: #B11116 !important;
+        color: #fff !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        text-align: left;
+    }
+    .portal-ui .swal2-popup:is(.desk-archive-view-popup, .admin-archive-view-popup, .admin-archived-referral-popup) > .swal2-close {
+        position: absolute !important;
+        top: 12px !important;
+        right: 12px !important;
+        left: auto !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        border: 0 !important;
+        border-radius: 8px !important;
+        background: #f8fafc !important;
+        color: #6B7280 !important;
+        font-size: 24px !important;
+        font-weight: 400 !important;
+        line-height: 1 !important;
+        z-index: 2;
+    }
+    .portal-ui .swal2-popup:is(.desk-archive-view-popup, .admin-archive-view-popup, .admin-archived-referral-popup) > .swal2-close:hover {
+        background: #E5E7EB !important;
+        color: #111827 !important;
+    }
+    .portal-ui .swal2-popup:is(.desk-archive-view-popup, .admin-archive-view-popup, .admin-archived-referral-popup) > .swal2-html-container {
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: left;
+    }
+    .portal-ui .swal2-popup:is(.desk-archive-view-popup, .admin-archive-view-popup, .admin-archived-referral-popup) > .swal2-actions {
+        margin: 0 !important;
+        padding: 10px 20px !important;
+        background: #fff;
+        border-top: 1px solid #E5E7EB;
+    }
+    body.portal-ui.archive-case-modal-preview {
+        font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+        background: #F5F7FB !important;
+    }
+    body.portal-ui.archive-case-modal-preview #mainContent {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        min-height: 0 !important;
+    }
+    body.portal-ui.archive-case-modal-preview #mainContent > header { display: none !important; }
+    body.portal-ui.archive-case-modal-preview #mainContent > :is(main, .case-profile-details) {
+        margin: 0 !important;
+        padding: 16px 20px !important;
+        max-width: none !important;
+        min-height: 0 !important;
+    }
+    body.portal-ui.archive-case-modal-preview .case-profile-details > .bg-white {
+        margin-bottom: 12px !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+    }
+    body.portal-ui.archive-case-modal-preview .case-profile-details > .bg-white > [class*="bg-gradient"] {
+        padding: 12px 16px !important;
+        background: #fff !important;
+        color: #111827 !important;
+        border-bottom: 1px solid #E5E7EB;
+    }
+    body.portal-ui.archive-case-modal-preview .case-profile-details > .bg-white > [class*="bg-gradient"] :is(h1, p) {
+        color: #111827 !important;
+    }
+    body.portal-ui.archive-case-modal-preview .case-profile-details h1 { font-size: 16px !important; }
+    body.portal-ui.archive-case-modal-preview .case-profile-details > .bg-white > .border-b {
+        padding: 10px 16px !important;
+        gap: 8px !important;
+        background: #f8fafc;
+    }
+    body.portal-ui.archive-case-modal-preview .case-profile-details > .bg-white > .border-b h3 {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        margin: 0 !important;
+    }
+    body.portal-ui.archive-case-modal-preview .case-profile-details > .bg-white > .border-b > .w-10 {
+        width: 20px;
+        height: 20px;
+        background: transparent !important;
+        color: #B11116;
+    }
+    body.portal-ui.archive-case-modal-preview .case-profile-details > .bg-white > .border-b i { color: #B11116 !important; }
+    body.portal-ui.archive-case-modal-preview .case-profile-details .p-6 { padding: 12px 16px !important; }
+    body.portal-ui.archive-case-modal-preview .case-profile-details .grid { gap: 12px !important; }
+    body.portal-ui.archive-case-modal-preview .case-profile-details .detail-row {
+        display: flex !important;
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 4px !important;
+        padding: 0 !important;
+        border: 0 !important;
+    }
+    body.portal-ui.archive-case-modal-preview .case-profile-details .detail-row > :first-child {
+        color: #9CA3AF !important;
+        font-size: .72rem !important;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+    body.portal-ui.archive-case-modal-preview .case-profile-details .detail-row > :last-child {
+        padding: 6px 10px;
+        min-height: 32px;
+        border: 1px solid #E5E7EB;
+        border-radius: 6px;
+        font-size: 13px !important;
+        color: #111827;
+        text-align: left !important;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media screen {
+    .portal-ui .archive-case-modal-title { padding: 16px 52px 16px 20px !important; }
+    .portal-ui .archive-case-heading { font-size: 16px; font-weight: 600; line-height: 1.4; }
+    .portal-ui .archive-case-heading-summary { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 8px; font-size: 13px; font-weight: 400; }
+    .portal-ui .archive-case-heading-summary :is(.rounded-full, .badge) { padding: 4px 12px !important; border-radius: 999px !important; font-size: 12px !important; line-height: 1.5; }
+    .portal-ui .archive-case-summary-in-header { display: none !important; }
+    body.portal-ui.archive-case-modal-preview .archive-case-filed-date { margin: 0; padding: 10px 16px; font-size: 13px; color: #6B7280; }
+    body.portal-ui.archive-case-modal-preview .case-profile-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    body.portal-ui.archive-case-modal-preview .case-profile-details > * { grid-column: 1 / -1; }
+    body.portal-ui.archive-case-modal-preview .case-profile-details > .archive-case-person-card { grid-column: auto; margin: 0 !important; }
+    body.portal-ui.archive-case-modal-preview .archive-case-person-card .grid { grid-template-columns: minmax(0, 1fr) !important; }
+    body.portal-ui.archive-case-modal-preview .archive-case-person-card .grid > * { grid-column: 1 !important; }
+    body.portal-ui.archive-case-modal-preview .archive-case-person-card .detail-row { display: grid !important; grid-template-columns: 128px minmax(0, 1fr); gap: 12px !important; padding: 10px 16px !important; border-bottom: 1px solid #f3f4f6 !important; }
+    body.portal-ui.archive-case-modal-preview .archive-case-person-card .detail-row > :first-child { font-size: 14px !important; text-transform: none; letter-spacing: normal; font-weight: 400; color: #6B7280 !important; }
+    body.portal-ui.archive-case-modal-preview .archive-case-person-card .detail-row > :last-child { padding: 0; min-height: 0; border: 0; border-radius: 0; }
+    body.portal-ui.archive-case-modal-preview .archive-case-person-card > .p-6 { padding: 0 !important; }
+    body.portal-ui.archive-case-modal-preview .archive-case-person-card > .p-6 > .grid { gap: 0 !important; }
+}
+
+@media screen {
+    body.portal-ui.archive-report-modal-preview {
+        background: #F5F7FB !important;
+        font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    }
+    body.portal-ui.archive-report-modal-preview #mainContent {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        min-height: 0 !important;
+    }
+    body.portal-ui.archive-report-modal-preview #mainContent > header,
+    body.portal-ui.archive-report-modal-preview #mainContent .max-w-7xl > .mb-6:has(h1) { display: none !important; }
+    body.portal-ui.archive-report-modal-preview #mainContent > .max-w-7xl {
+        padding: 16px 20px !important;
+        margin: 0 !important;
+        max-width: none !important;
+    }
+    body.portal-ui.archive-report-modal-preview #mainContent .max-w-7xl > .bg-white {
+        border: 1px solid #E5E7EB !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+    }
+}
+
+/* Archived referral details use one value box per field and an inset body. */
+@media screen {
+    .portal-ui .swal2-popup:is(.archived-referral-view-popup, .admin-archived-referral-popup) {
+        display: flex !important;
+        flex-direction: column;
+        max-height: min(82dvh, calc(100dvh - 2rem)) !important;
+        overflow: hidden;
+        padding: 0 !important;
+        margin: 1rem auto !important;
+    }
+    .portal-ui .swal2-popup:is(.archived-referral-view-popup, .admin-archived-referral-popup) > .swal2-title {
+        flex: 0 0 auto;
+        margin: 0 !important;
+        padding: 14px 56px 14px 20px !important;
+    }
+    .portal-ui .swal2-popup:is(.archived-referral-view-popup, .admin-archived-referral-popup) > .swal2-html-container {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none !important;
+        overflow-y: auto !important;
+        padding: 16px 20px !important;
+        margin: 0 !important;
+        background: #F5F7FB;
+    }
+    .portal-ui .swal2-popup:is(.archived-referral-view-popup, .admin-archived-referral-popup) > .swal2-actions { flex: 0 0 auto; }
+    .portal-ui :is(.archived-referral-view-popup, .admin-archived-referral-popup, #archivedReferralDetailsModal) section {
+        border: 1px solid #E5E7EB !important;
+        border-radius: 8px !important;
+    }
+    .portal-ui :is(.archived-referral-view-popup, .admin-archived-referral-popup, #archivedReferralDetailsModal) section > h3 {
+        margin: 0 !important;
+        padding: 10px 16px !important;
+        font-size: 14px !important;
+        line-height: 1.5;
+    }
+    .portal-ui :is(.archived-referral-view-popup, .admin-archived-referral-popup, #archivedReferralDetailsModal) section > dl {
+        padding: 12px 16px !important;
+        gap: 12px !important;
+        margin: 0 !important;
+    }
+    .portal-ui :is(.archived-referral-view-popup, .admin-archived-referral-popup, #archivedReferralDetailsModal) section > dl > div {
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+    }
+    .portal-ui :is(.archived-referral-view-popup, .admin-archived-referral-popup, #archivedReferralDetailsModal) section > dl > div > dd {
+        margin: 4px 0 0 !important;
+        padding: 6px 10px !important;
+        font-size: 13px !important;
+    }
+    .portal-ui :is(.archived-referral-view-popup, .admin-archived-referral-popup, #archivedReferralDetailsModal) .space-y-5 > section + section { margin-top: 12px !important; }
+}
+
+@media screen {
+    .portal-ui dialog.guardian-dialog {
+        width: min(512px, calc(100vw - 2rem)) !important;
+        max-width: calc(100vw - 2rem) !important;
+        padding: 0 !important;
+        text-align: left !important;
+    }
+    .portal-ui dialog.guardian-dialog > div:first-child {
+        padding: 12px 20px !important;
+        background: #B11116 !important;
+        color: #fff !important;
+        text-align: left !important;
+    }
+    .portal-ui dialog.guardian-dialog > div:first-child h3 {
+        margin: 0 !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        line-height: 1.4;
+    }
+    .portal-ui dialog.guardian-dialog > div:first-child p { margin: 4px 0 0 !important; color: #fff !important; font-size: 12px !important; }
+    .portal-ui dialog.guardian-dialog > div:first-child > button {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        padding: 0 !important;
+        border-radius: 8px !important;
+        background: #f8fafc !important;
+        color: #6B7280 !important;
+    }
+    .portal-ui dialog.guardian-dialog > div:nth-child(2) { padding: 16px 20px !important; text-align: left !important; }
+    .portal-ui dialog.guardian-dialog > div:nth-child(2) > div {
+        padding: 0 !important;
+        background: transparent !important;
+        border: 0 !important;
+    }
+    .portal-ui dialog.guardian-dialog .grid { gap: 12px !important; text-align: left !important; }
+    .portal-ui dialog.guardian-dialog .grid > div > span:first-child {
+        display: block;
+        margin: 0 0 4px !important;
+        color: #9CA3AF !important;
+        font-size: .72rem !important;
+        font-weight: 600 !important;
+        letter-spacing: .04em;
+        text-align: left !important;
+    }
+    .portal-ui dialog.guardian-dialog .grid > div > span + span {
+        display: block;
+        min-height: 32px;
+        padding: 6px 10px;
+        background: #fff;
+        border: 1px solid #E5E7EB;
+        border-radius: 6px;
+        color: #111827 !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        line-height: 1.5;
+        text-align: left !important;
+        overflow-wrap: anywhere;
+    }
+    .portal-ui dialog.guardian-dialog > div:last-child { padding: 10px 20px !important; background: #fff !important; border-top: 1px solid #E5E7EB !important; }
+    .portal-ui dialog.guardian-dialog > div:last-child button { padding: 8px 20px !important; width: auto !important; height: auto !important; }
+}
+
+/* Remaining portal modal families share the Guardian dialog's presentation. */
+@media screen {
+    .portal-ui :is(#eventModalContent, #dateEventsModalContent, #eventDetailsModalContent, #caseTypeModal > .bg-white, #reportTypeModal > .bg-white, #generateQuarterlyModal) {
+        padding: 20px !important;
+        text-align: left;
+    }
+    .portal-ui :is(#eventModalContent, #dateEventsModalContent, #eventDetailsModalContent, #caseTypeModal > .bg-white, #reportTypeModal > .bg-white, #generateQuarterlyModal) > h2:first-child {
+        margin: -20px -20px 16px !important;
+        padding: 12px 20px !important;
+        background: #B11116 !important;
+        color: #fff !important;
+        border-radius: 13px 13px 0 0;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        line-height: 1.5;
+        text-align: left !important;
+    }
+    .portal-ui :is(#referModal, #sendCopyModal) .bg-white.p-6 > .mb-4:has(h5) {
+        margin: -20px -20px 16px !important;
+        padding: 12px 20px !important;
+        background: #B11116 !important;
+        color: #fff !important;
+        border-radius: 13px 13px 0 0;
+    }
+    .portal-ui :is(#referModal, #sendCopyModal) .bg-white.p-6 > .mb-4 :is(h5, p) { color: #fff !important; margin: 0 !important; }
+    .portal-ui :is(#referModal, #sendCopyModal) .bg-white.p-6 > .mb-4 h5 { font-size: 16px !important; font-weight: 600 !important; }
+    .portal-ui :is(#addMonitoringModal, #generateReportModal) .bg-white > form { padding: 16px 20px !important; }
+    .portal-ui :is(#activityModal, #recipientModal, #viewRecipientModal, #viewArchivedRecipientModal, #userModal, #editModal, #editCaseModal, #referralModal, #addMonitoringModal, #generateReportModal) .bg-white > div:first-child:has(h3, h5) {
+        padding: 12px 20px !important;
+        background: #B11116 !important;
+        color: #fff !important;
+        text-align: left;
+    }
+    .portal-ui :is(#activityModal, #recipientModal, #viewRecipientModal, #viewArchivedRecipientModal, #userModal, #editModal, #editCaseModal, #referralModal, #addMonitoringModal, #generateReportModal) .bg-white > div:first-child :is(h3, h5) {
+        margin: 0 !important;
+        color: #fff !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        line-height: 1.5;
+    }
+    .portal-ui :is(#activityModal, #recipientModal, #viewRecipientModal, #viewArchivedRecipientModal, #userModal, #editModal, #editCaseModal, #referralModal, #addMonitoringModal, #generateReportModal) .bg-white > div:first-child button:has(.fa-times) {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px;
+        padding: 0 !important;
+        border: 0;
+        border-radius: 8px !important;
+        background: #f8fafc !important;
+        color: #6B7280 !important;
+    }
+    .portal-ui :is(#activityModal, #recipientModal, #viewRecipientModal, #viewArchivedRecipientModal, #userModal, #editModal, #editCaseModal, #referralModal, #addMonitoringModal, #generateReportModal) .bg-white > div:first-child button:has(.fa-times) i { color: inherit !important; font-size: 14px !important; }
+    .portal-ui :is(#viewRecipientContent, #activityModal .overflow-y-auto, #notification-action-details > .p-6) { padding: 16px 20px !important; text-align: left; }
+    .portal-ui :is(#eventForm, #generateQuarterlyReportForm, #add-monitoring-form, #generate-monitoring-report-form) > .flex:last-child {
+        margin-top: 16px !important;
+        padding-top: 12px;
+        gap: 10px !important;
+        border-top: 1px solid #E5E7EB;
+    }
+    .portal-ui :is(#dateEventsModalContent, #eventDetailsModalContent) > .flex:last-child {
+        margin: 16px -20px -20px;
+        padding: 10px 20px;
+        background: #fff;
+        border-top: 1px solid #E5E7EB;
+        gap: 10px;
+    }
+    .portal-ui :is(#dateEventsModalContent, #eventDetailsModalContent) > .flex:last-child button:first-child {
+        background: #B11116 !important;
+        color: #fff !important;
+        border-color: #B11116 !important;
+    }
+    .portal-ui #notification-action-details > .p-6 > div:first-child {
+        margin: -16px -20px 16px !important;
+        padding: 12px 20px;
+        background: #B11116;
+        color: #fff;
+    }
+    .portal-ui #notification-action-details > .p-6 > div:first-child :is(h4, p, button) { color: #fff !important; }
+    .portal-ui #notification-action-details h4 { margin: 0; font-size: 16px !important; }
+    .portal-ui #notification-action-details > .p-6 > .flex:last-child { padding-top: 12px; border-top: 1px solid #E5E7EB; gap: 10px; }
+}
+
+/* Single-department archive details inherit the multi-role preview shell. */
+@media screen {
+    .portal-ui .swal2-popup.swd-archive-detail-popup {
+        display: flex !important;
+        flex-direction: column;
+        max-height: min(88dvh, calc(100dvh - 2rem)) !important;
+        overflow: hidden;
+    }
+    .portal-ui .swal2-popup.swd-archive-detail-popup > .swal2-title { flex: 0 0 auto; }
+    .portal-ui .swal2-popup.swd-archive-detail-popup > .swal2-html-container {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none !important;
+        overflow: auto !important;
+        padding: 16px 20px !important;
+    }
+    .portal-ui .swal2-popup.swd-archive-detail-popup .swd-archive-detail {
+        max-height: none !important;
+        overflow: visible;
+        padding: 0;
+    }
+    .portal-ui .swal2-popup.swd-archive-detail-popup > .swal2-actions { flex: 0 0 auto; justify-content: flex-end; }
+    .portal-ui .swd-archive-detail-popup .swd-archive-detail > .w-full { margin: 0 !important; padding: 0 !important; }
+    .portal-ui .swd-archive-detail-popup .swd-archive-detail > .w-full > .bg-white {
+        margin-bottom: 12px !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+    }
+    .portal-ui .swd-archive-detail-popup .swd-archive-detail th { overflow-wrap: normal !important; word-break: normal !important; }
+    .portal-ui .swd-archive-detail-popup .swd-archive-detail th:last-child { white-space: nowrap; }
+    .portal-ui .swal2-popup.swd-archive-detail-popup.archived-referral-view-popup {
+        width: min(48rem, calc(100vw - 2rem)) !important;
+        max-height: min(82dvh, calc(100dvh - 2rem)) !important;
+    }
+    .portal-ui .archived-referral-view-popup .swd-referral-fields { gap: 12px !important; }
+    .portal-ui .archived-referral-view-popup .swd-referral-field {
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+    }
+}
+
+@media screen {
+    body.portal-ui :is(dialog, [id$="Modal"], .swal2-popup) .portal-modal-dismiss-source.portal-modal-dismiss-source[data-footer-dismiss] { display: none !important; }
+    .portal-ui .portal-modal-dismiss-footer {
+        flex: 0 0 auto;
+        grid-column: 1 / -1;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 12px;
+        padding: 10px 20px;
+        border-top: 1px solid #E5E7EB;
+        background: #fff;
+    }
+    body.portal-ui :is(dialog, [id$="Modal"], .swal2-popup) .portal-modal-close.portal-modal-close {
+        position: static !important;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        width: auto !important;
+        height: auto !important;
+        min-width: 85px !important;
+        min-height: 40px !important;
+        padding: 8px 20px !important;
+        margin: 0 !important;
+        border: 1px solid #B11116 !important;
+        border-radius: 8px !important;
+        background: #B11116 !important;
+        color: #fff !important;
+        font-family: inherit !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        line-height: 1.5 !important;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    body.portal-ui :is(dialog, [id$="Modal"], .swal2-popup) .portal-modal-close.portal-modal-close:hover { background: #8A0D11 !important; }
+}
+
+/* One Add Event design for Admin, Desk Officer and multi-role calendars. */
+@media screen {
+    .portal-ui #eventModalDialog {
+        height: 100dvh;
+        min-height: 0;
+        display: flex;
+        align-items: center !important;
+        justify-content: center;
+        padding: 20px !important;
+        overflow: hidden !important;
+    }
+    .portal-ui #eventModalContent {
+        box-sizing: border-box;
+        width: min(448px, 100%) !important;
+        max-width: 448px !important;
+        max-height: calc(100dvh - 40px) !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        border-radius: 14px !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+        background: #F5F7FB !important;
+    }
+    .portal-ui #eventModalContent > h2:first-child {
+        margin: -20px -20px 16px !important;
+        padding: 12px 20px !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        line-height: 24px;
+        background: #B11116 !important;
+        color: #fff !important;
+    }
+    .portal-ui #eventForm > .mb-4,
+    .portal-ui #eventFormFields > .mb-4 { margin-bottom: 24px !important; }
+    .portal-ui #eventFormFields > .mb-4:last-child,
+    .portal-ui #eventForm > .mb-4:nth-last-child(2) { margin-bottom: 0 !important; }
+    .portal-ui #eventForm label {
+        display: block;
+        margin: 0 0 8px !important;
+        color: #475569 !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        line-height: 20px;
+    }
+    .portal-ui #eventForm :is(input:not([type="hidden"]), textarea, select) {
+        box-sizing: border-box;
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: 10px 16px !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        background: #fff;
+        font-size: 14px !important;
+        font-weight: 400;
+        line-height: 22px;
+    }
+    .portal-ui #eventForm textarea { min-height: 84px; resize: vertical; }
+    .portal-ui #eventForm select { min-height: 40px; padding-top: 8px !important; padding-bottom: 8px !important; }
+    .portal-ui #eventEndTimeHint { margin: 4px 0 0 !important; font-size: 12px !important; line-height: 16px; }
+    .portal-ui #eventForm > .flex:last-child {
+        margin-top: 24px !important;
+        padding-top: 12px !important;
+        border-top: 1px solid #E5E7EB;
+        justify-content: flex-end;
+        gap: 10px !important;
+    }
+    .portal-ui #eventForm > .flex:last-child button {
+        min-height: 44px;
+        padding: 10px 24px !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        line-height: 22px;
+    }
+    .portal-ui #eventForm > .flex:last-child button[type="button"] { background: transparent !important; color: #475569 !important; border: 1px solid #E5E7EB !important; }
+    .portal-ui #eventForm > .flex:last-child button[type="submit"] { background: #C4183A !important; color: #fff !important; border: 1px solid #C4183A !important; }
+}
+
+/* Admin referral viewing follows the Desk Officer's framed detail sections. */
+@media screen {
+    .portal-ui #referralModal > div > .bg-white {
+        display: flex;
+        flex-direction: column;
+        width: min(48rem, calc(100vw - 2rem));
+        max-width: 48rem !important;
+        max-height: min(82dvh, calc(100dvh - 2rem)) !important;
+    }
+    .portal-ui #referralModal #referralDetails {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none !important;
+        padding: 16px 20px !important;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+    .portal-ui #referralDetails > .space-y-6 > div:has(> h4) {
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+    }
+    .portal-ui #referralDetails > .space-y-6 > div + div { margin-top: 12px !important; }
+    .portal-ui #referralDetails > .space-y-6 > div > h4 {
+        margin: 0 !important;
+        padding: 10px 16px !important;
+        border-bottom: 1px solid #E5E7EB;
+        background: #f8fafc !important;
+        color: #111827 !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        line-height: 1.5;
+        text-transform: none;
+        letter-spacing: normal;
+    }
+    .portal-ui #referralDetails > .space-y-6 > div > div {
+        padding: 12px 16px !important;
+        border-radius: 0 !important;
+        background: #fff !important;
+        gap: 12px !important;
+    }
+    .portal-ui #referralDetails > .space-y-6 > div:first-child > .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .portal-ui #referralDetails > .space-y-6 > div:first-child > .grid > div:first-child { grid-column: 1 / -1; }
+    .portal-ui #referralModal > div > .bg-white > .portal-modal-dismiss-footer { margin-top: 0; }
+}
+
+@media screen {
+    .portal-ui :is(#viewRecipientModal, #viewArchivedRecipientModal) > .fixed > .bg-white {
+        display: flex;
+        flex-direction: column;
+        width: min(448px, calc(100vw - 2rem));
+        max-height: min(82dvh, calc(100dvh - 2rem));
+    }
+    .portal-ui :is(#viewRecipientContent, #viewArchivedRecipientContent) {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 16px 20px !important;
+    }
+    .portal-ui :is(#viewRecipientContent, #viewArchivedRecipientContent) > .space-y-4 > .bg-gray-50 {
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+    }
+    .portal-ui :is(#viewRecipientContent, #viewArchivedRecipientContent) .space-y-3 > div + div { margin-top: 12px !important; }
+    .portal-ui :is(#viewRecipientContent, #viewArchivedRecipientContent) .grid { gap: 12px !important; }
+    .portal-ui :is(#viewRecipientContent, #viewArchivedRecipientContent) div > span:first-child:not(.rounded-full) {
+        display: block;
+        margin-bottom: 4px;
+        color: #9CA3AF !important;
+        font-size: .72rem !important;
+        font-weight: 600 !important;
+        letter-spacing: .04em;
+        line-height: 1.4;
+    }
+    .portal-ui :is(#viewRecipientContent, #viewArchivedRecipientContent) div > span + span:not(.rounded-full) {
+        display: block;
+        padding: 6px 10px;
+        min-height: 32px;
+        border: 1px solid #E5E7EB;
+        border-radius: 6px;
+        background: #fff;
+        color: #111827 !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+        text-align: left;
+    }
+    .portal-ui :is(#viewRecipientContent, #viewArchivedRecipientContent) .border-t { padding-top: 12px !important; }
+    .portal-ui :is(#viewRecipientModal, #viewArchivedRecipientModal) > .fixed > .bg-white > .border-t {
+        flex: 0 0 auto;
+        padding: 10px 20px !important;
+        background: #fff !important;
+        border-top: 1px solid #E5E7EB !important;
+        justify-content: flex-end;
+    }
+}
+
+@media screen {
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details.case-details > .case-modal-perpetrator-guardian {
+        grid-column: 2;
+        grid-row: 2;
+    }
+    .portal-ui #caseModal > div > .bg-white,
+    .portal-ui #caseModal > div > div > .bg-white {
+        max-height: calc(100dvh - 2rem) !important;
+        overflow: hidden;
+    }
+    .portal-ui #caseModal .case-modal-top-header { flex: 0 0 auto; }
+    .portal-ui #caseModal [x-html="content"] { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+    .portal-ui #caseModal .portal-modal-dismiss-footer {
+        margin-top: 0;
+        justify-content: flex-end;
+    }
+    .portal-ui .swal2-popup:has(.archive-case-heading-summary .rounded-full) > .portal-modal-dismiss-footer { justify-content: flex-end; margin-top: 0; }
+    .portal-ui :is(.case-modal-top-summary, .archive-case-heading-summary) .bg-orange-100 { color: #9a3412 !important; }
+    .portal-ui :is(.case-modal-top-summary, .archive-case-heading-summary) .bg-red-100 { color: #991b1b !important; }
+    .portal-ui :is(.case-modal-top-summary, .archive-case-heading-summary) .bg-green-100 { color: #166534 !important; }
+    .portal-ui :is(.case-modal-top-summary, .archive-case-heading-summary) .bg-gray-100 { color: #1f2937 !important; }
+}
+
+/* Shared final footer alignment for both Admin and Desk Officer modules. */
+@media screen {
+    body.portal-ui :is(.portal-modal-dismiss-footer, .modal-footer, .swd-archive-dialog-footer),
+    body.portal-ui :is(dialog, div[id$="Modal"], .swal2-popup) div:has(> .portal-modal-close) {
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center;
+        text-align: right !important;
+    }
+    body.portal-ui .swal2-popup > .swal2-actions {
+        box-sizing: border-box;
+        width: 100%;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+/* Keep the multi-role badge palette independent of the white header text. */
+@media screen {
+    body.portal-ui :is(#caseModal, #swdArchiveViewDialog, .swal2-popup) :is(.case-modal-top-summary, .archive-case-heading-summary) span.bg-green-100 {
+        background-color: #dcfce7 !important;
+        color: #166534 !important;
+    }
+    body.portal-ui :is(#caseModal, #swdArchiveViewDialog, .swal2-popup) :is(.case-modal-top-summary, .archive-case-heading-summary) span.bg-red-100 {
+        background-color: #fee2e2 !important;
+        color: #991b1b !important;
+    }
+    body.portal-ui :is(#caseModal, #swdArchiveViewDialog, .swal2-popup) :is(.case-modal-top-summary, .archive-case-heading-summary) span.bg-orange-100 {
+        background-color: #ffedd5 !important;
+        color: #9a3412 !important;
+    }
+    body.portal-ui :is(#caseModal, #swdArchiveViewDialog, .swal2-popup) :is(.case-modal-top-summary, .archive-case-heading-summary) span.bg-amber-100 {
+        background-color: #fef3c7 !important;
+        color: #92400e !important;
+    }
+    body.portal-ui :is(#caseModal, #swdArchiveViewDialog, .swal2-popup) :is(.case-modal-top-summary, .archive-case-heading-summary) span.bg-blue-100 {
+        background-color: #dbeafe !important;
+        color: #1e40af !important;
+    }
+    body.portal-ui :is(#caseModal, #swdArchiveViewDialog, .swal2-popup) :is(.case-modal-top-summary, .archive-case-heading-summary) span.bg-gray-100 {
+        background-color: #f3f4f6 !important;
+        color: #1f2937 !important;
+    }
+}
+
+@media screen {
+    .portal-ui #swdArchiveViewDialog:has(.archived-referral-field-grid) {
+        width: min(48rem, calc(100vw - 2rem)) !important;
+        max-height: min(82dvh, calc(100dvh - 2rem)) !important;
+    }
+    .portal-ui #swdArchiveViewDialog:has(.archived-referral-field-grid)[open] { display: flex; flex-direction: column; }
+    .portal-ui #swdArchiveViewDialog:has(.archived-referral-field-grid) > :is(.swd-archive-dialog-header, .swd-archive-dialog-footer) { flex: 0 0 auto; }
+    .portal-ui #swdArchiveViewDialog:has(.archived-referral-field-grid) > [data-swd-archive-content] {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none !important;
+        overflow-y: auto;
+        padding: 16px 20px !important;
+    }
+    .portal-ui #swdArchiveViewDialog .archived-referral-field-grid { margin: 0 !important; gap: 12px !important; }
+    .portal-ui #swdArchiveViewDialog .archived-referral-field-grid > div {
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        min-width: 0;
+    }
+    .portal-ui #swdArchiveViewDialog .archived-referral-field-grid dd { margin: 4px 0 0 !important; padding: 6px 10px !important; }
+    .portal-ui #swdArchiveViewDialog .archived-referral-field-grid > section + section { margin-top: 12px !important; }
+    .portal-ui #swdArchiveViewDialog .archived-referral-field-grid > section > h3 {
+        margin: 0 !important;
+        padding: 10px 16px !important;
+        background: #f8fafc !important;
+        color: #111827 !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        line-height: 1.5;
+    }
+    .portal-ui #swdArchiveViewDialog .archived-referral-field-grid > section > dl { margin: 0 !important; padding: 12px 16px !important; gap: 12px !important; }
+}
+
+@media screen {
+    .portal-ui #swdArchiveViewDialog:has(.archived-recipient-field-grid) {
+        width: min(448px, calc(100vw - 2rem)) !important;
+        max-height: min(82dvh, calc(100dvh - 2rem)) !important;
+    }
+    .portal-ui #swdArchiveViewDialog:has(.archived-recipient-field-grid)[open] { display: flex; flex-direction: column; }
+    .portal-ui #swdArchiveViewDialog:has(.archived-recipient-field-grid) > :is(.swd-archive-dialog-header, .swd-archive-dialog-footer) { flex: 0 0 auto; }
+    .portal-ui #swdArchiveViewDialog:has(.archived-recipient-field-grid) > [data-swd-archive-content] {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none !important;
+        overflow-y: auto;
+        padding: 16px 20px !important;
+    }
+    .portal-ui #swdArchiveViewDialog .archived-recipient-field-grid { margin: 0 !important; gap: 12px !important; }
+    .portal-ui #swdArchiveViewDialog .archived-recipient-field-grid > div {
+        min-width: 0;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+    }
+    .portal-ui #swdArchiveViewDialog .archived-recipient-field-grid > div:nth-child(-n+2) { grid-column: 1 / -1; }
+    .portal-ui #swdArchiveViewDialog .archived-recipient-field-grid dd { margin: 4px 0 0 !important; padding: 6px 10px !important; }
+}
+
+@media screen {
+    body.portal-ui .swal2-popup.portal-logout-modal {
+        width: min(448px, calc(100vw - 2rem)) !important;
+        padding: 24px !important;
+        border-radius: 14px !important;
+        overflow: hidden;
+        background: #F5F7FB !important;
+    }
+    body.portal-ui .portal-logout-modal > .swal2-title {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        color: #B11116 !important;
+        font-size: 22px !important;
+        font-weight: 700 !important;
+        line-height: 24px;
+        text-align: center;
+    }
+    body.portal-ui .portal-logout-modal > .swal2-html-container { margin: 0 !important; padding: 24px 0 !important; text-align: center; }
+    body.portal-ui .portal-logout-modal > .swal2-html-container > div { padding: 0 !important; }
+    body.portal-ui .portal-logout-modal .fa-sign-out-alt { display: block; margin: 0 0 16px !important; color: #B11116 !important; font-size: 36px !important; }
+    body.portal-ui .portal-logout-modal .swal2-html-container p { margin: 0; font-size: 14px; line-height: 1.5; color: #374151; }
+    body.portal-ui .portal-logout-modal > .swal2-actions {
+        margin: 0 !important;
+        padding: 0 !important;
+        border-top: 0;
+        background: transparent;
+        justify-content: center !important;
+        gap: 8px !important;
+    }
+    body.portal-ui .portal-logout-modal .swal2-actions button { margin: 0 !important; min-height: 40px; padding: 8px 16px !important; font-size: 14px !important; }
+}
+
+@media screen {
+    .portal-ui #referralDetailsForm .referral-detail-sections { display: grid; gap: 12px; margin: 0; padding: 0; border: 0; min-width: 0; }
+    .portal-ui #referralDetailsForm .referral-detail-section { overflow: hidden; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; }
+    .portal-ui #referralDetailsForm .referral-detail-section > h3 { margin: 0; padding: 10px 16px; border-bottom: 1px solid #E5E7EB; background: #f8fafc; color: #111827; font-size: 14px; font-weight: 600; line-height: 1.5; }
+    .portal-ui #referralDetailsForm .referral-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 12px 16px; }
+    .portal-ui #referralDetailsForm .referral-detail-field { min-width: 0; margin: 0; }
+    .portal-ui #referralDetailsForm .referral-detail-wide { grid-column: 1 / -1; }
+    .portal-ui #referralDetailsForm .referral-detail-field > label { display: block; margin: 0 0 4px !important; font-size: .72rem !important; font-weight: 600 !important; color: #9CA3AF !important; text-transform: uppercase; letter-spacing: .04em; line-height: 1.4; }
+    .portal-ui #referralDetailsForm .referral-detail-field > :is(input, textarea) { margin: 0; padding: 6px 10px !important; border: 1px solid #E5E7EB !important; border-radius: 6px !important; background: #fff !important; color: #111827 !important; font-size: 13px !important; line-height: 1.5; cursor: default; opacity: 1; -webkit-text-fill-color: #111827; }
+    .portal-ui #referralDetailsForm .referral-detail-field > input { min-height: 32px; height: auto; }
+    .portal-ui #referralDetailsForm > .d-flex { margin: 12px 0 0 !important; }
+}
+@media screen {
+    .portal-ui :is(dialog, .modal, .swal2-popup) .archived-referral-details > section { overflow: hidden; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; }
+    .portal-ui :is(dialog, .modal, .swal2-popup) .archived-referral-details > section + section { margin-top: 12px !important; }
+    .portal-ui :is(dialog, .modal, .swal2-popup) .archived-referral-details > section > h3 { margin: 0 !important; padding: 10px 16px !important; background: #f8fafc; border-bottom: 1px solid #E5E7EB; color: #111827; font-size: 14px; font-weight: 600; line-height: 1.5; }
+    .portal-ui :is(dialog, .modal, .swal2-popup) .archived-referral-details > section > dl { margin: 0 !important; padding: 12px 16px !important; gap: 12px !important; }
+    .portal-ui :is(dialog, .modal, .swal2-popup) .archived-referral-details > section > dl > div { padding: 0 !important; border: 0 !important; background: transparent !important; min-width: 0; }
+}
+
+/* Center every calendar event list/detail dialog using the shared card format. */
+@media screen {
+    .portal-ui :is(#dateEventsModal, #eventDetailsModal) > .flex {
+        box-sizing: border-box;
+        display: flex;
+        align-items: center !important;
+        justify-content: center;
+        height: 100dvh;
+        min-height: 0 !important;
+        padding: 20px !important;
+        overflow: hidden !important;
+    }
+    .portal-ui :is(#dateEventsModalContent, #eventDetailsModalContent) {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        width: min(448px, 100%) !important;
+        max-width: 448px !important;
+        max-height: calc(100dvh - 40px) !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        border-radius: 14px !important;
+    }
+    .portal-ui :is(#dateEventsModalContent, #eventDetailsModalContent) > h2:first-child {
+        flex: 0 0 auto;
+        margin: 0 !important;
+        padding: 12px 20px !important;
+        background: #B11116 !important;
+        color: #fff !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        line-height: 24px;
+        border-radius: 0;
+        text-align: left;
+    }
+    .portal-ui :is(#dateEventsList, #eventDetails) {
+        flex: 1 1 auto;
+        min-height: 0;
+        margin: 0 !important;
+        padding: 16px 20px !important;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+    .portal-ui #dateEventsList > div {
+        padding: 16px !important;
+        border-radius: 14px !important;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    .portal-ui #dateEventsList > div + div { margin-top: 12px !important; }
+    .portal-ui #dateEventsList h3 { margin: 0; font-size: 14px !important; font-weight: 500 !important; }
+    .portal-ui #dateEventsList p { margin: 0; font-size: 14px !important; color: #6B7280; }
+    .portal-ui :is(#dateEventsModalContent, #eventDetailsModalContent) > .flex:last-child {
+        flex: 0 0 auto;
+        margin: 0 !important;
+        padding: 10px 20px !important;
+        justify-content: flex-end;
+        border-top: 1px solid #E5E7EB;
+        background: #fff;
+    }
+    html:has(body.portal-ui :is(#dateEventsModal, #eventDetailsModal, #eventModal):not(.hidden)),
+    body.portal-ui:has(:is(#dateEventsModal, #eventDetailsModal, #eventModal):not(.hidden)) { overflow: hidden !important; }
+}
+
+/* Identical admin detail-card geometry for both department themes. */
+@media screen {
+    .portal-ui :is(.admin-user-modal-card, .archived-user-modal-card, .archived-recipient-modal-card) {
+        border: 1px solid #E5E7EB !important;
+        border-radius: 14px !important;
+        max-height: min(82dvh, calc(100dvh - 2rem)) !important;
+        background: #F5F7FB !important;
+    }
+    .portal-ui :is(.admin-user-modal-card, .archived-user-modal-card, .archived-recipient-modal-card) > div:first-child:has(h3) {
+        padding: 12px 20px !important;
+        background: #B11116 !important;
+        color: #fff !important;
+        text-align: left;
+    }
+    .portal-ui :is(#userModalContent, #editModalContent, #viewArchivedRecipientContent) { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+    .portal-ui :is(#userModal, #editModal) .admin-user-modal-card { display: flex; flex-direction: column; }
+    .portal-ui :is(#userModalContent, #editModalContent) { flex: 1 1 auto; }
+}
+
+@media screen {
+    body.portal-ui.archive-case-modal-preview .case-profile-details > .case-details-actions { display: none !important; }
+    body.portal-ui.archive-case-modal-preview .archive-case-overview-title {
+        margin: 0 !important;
+        padding: 10px 16px;
+        border-bottom: 1px solid #E5E7EB;
+        background: #f8fafc;
+        color: #111827;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.5;
+    }
+    body.portal-ui.archive-case-modal-preview .archive-case-overview > .p-6 { padding: 12px 16px !important; }
+}
+
+@media screen and (max-width: 575.98px) {
+    .portal-ui #referralDetailsForm .referral-detail-grid { grid-template-columns: minmax(0, 1fr); }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id]) :is(.modal-body, [data-swd-archive-content], #referralDetails, #userModalContent, #editModalContent, #modalContent, [x-html="content"]) { padding: 14px 16px !important; }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id]) .grid:not(.grid-cols-1) { grid-template-columns: minmax(0, 1fr) !important; }
+    .portal-ui :is(dialog, [id$="Modal"], .modal[id]) .grid > [class*="col-span-"] { grid-column: 1 / -1 !important; }
+    .portal-ui .swal2-popup { padding: 1rem .75rem !important; border-radius: 12px !important; }
+    .portal-ui .swal2-title { font-size: 1.1rem !important; }
+    .portal-ui .swal2-actions { gap: 8px !important; }
+    .portal-ui #caseModal .case-modal-top-header { padding: 14px 16px !important; gap: 12px !important; }
+    .portal-ui #caseModalInner > .case-modal-top-header { padding-right: 56px !important; }
+    .portal-ui #caseModal [x-html="content"] { padding: 14px 16px 16px !important; }
+    .portal-ui #caseModal [x-html="content"] .divide-y > div { padding: 10px 12px !important; gap: 4px !important; }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details.case-details { grid-template-columns: minmax(0, 1fr); }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details.case-details :is(.case-modal-victim, .case-modal-perpetrator, .case-modal-guardian) { grid-column: 1; grid-row: auto; }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details.case-details > .case-modal-perpetrator-guardian { grid-column: 1; grid-row: auto; }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details dl { grid-template-columns: minmax(0, 1fr); }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details dl > dt { border-bottom: 0 !important; padding: 10px 12px 2px !important; }
+    .portal-ui :is(#caseModal, dialog, .swal2-popup) .case-modal-details dl > dd { padding: 2px 12px 10px !important; }
+    body.portal-ui.archive-case-modal-preview #mainContent > :is(main, .case-profile-details) { padding: 12px !important; }
+    body.portal-ui.archive-case-modal-preview .case-profile-details .grid { grid-template-columns: minmax(0, 1fr) !important; }
+    body.portal-ui.archive-case-modal-preview .case-profile-details .grid > [class*="col-span-"] { grid-column: 1 / -1 !important; }
+    body.portal-ui.archive-case-modal-preview .case-profile-details { grid-template-columns: minmax(0, 1fr); }
+    body.portal-ui.archive-case-modal-preview .archive-case-person-card .detail-row { grid-template-columns: minmax(0, 1fr); gap: 4px !important; }
+    body.portal-ui.archive-report-modal-preview #mainContent > .max-w-7xl { padding: 12px !important; }
+    .portal-ui .swal2-popup:is(.archived-referral-view-popup, .admin-archived-referral-popup) > .swal2-html-container { padding: 12px !important; }
+    .portal-ui .swal2-popup.swd-archive-detail-popup > .swal2-html-container { padding: 12px !important; }
+    .portal-ui #referralModal #referralDetails { padding: 12px !important; }
+    .portal-ui #referralDetails > .space-y-6 > div:first-child > .grid { grid-template-columns: minmax(0, 1fr) !important; }
+}
+
+/* Shared BCPC/SWD modal presentation. Existing actions and ordering stay intact. */
+@media screen {
+    body.portal-ui .swal2-popup:is(.portal-alert-popup, .portal-form-popup) {
+        width: min(448px, calc(100vw - 32px)) !important;
+        max-height: calc(100vh - 32px);
+        max-height: calc(100dvh - 32px);
+        padding: 24px !important;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+    body.portal-ui .swal2-popup:is(.portal-alert-popup, .portal-form-popup) > .swal2-title {
+        margin: 0 !important; padding: 0 !important; line-height: 1.35;
+    }
+    body.portal-ui .swal2-popup:is(.portal-alert-popup, .portal-form-popup) > .swal2-icon { flex-shrink: 0; margin: 12px auto 20px; }
+    body.portal-ui .swal2-popup:is(.portal-alert-popup, .portal-form-popup) > .swal2-html-container {
+        min-width: 0; margin: 20px 0 24px !important; padding: 0 !important;
+        line-height: 1.5; overflow-wrap: anywhere;
+    }
+    body.portal-ui .swal2-popup.portal-alert-popup > .swal2-html-container { text-align: center; }
+    body.portal-ui .swal2-popup.portal-form-popup > .swal2-html-container { text-align: left; }
+    body.portal-ui .swal2-popup:is(.portal-alert-popup, .portal-form-popup) > .swal2-actions {
+        width: 100%; flex-wrap: wrap; align-items: center; gap: 10px !important;
+        margin: 0 !important; padding: 0 !important;
+    }
+    body.portal-ui .swal2-popup.portal-alert-popup > .swal2-actions { justify-content: center !important; }
+    body.portal-ui .swal2-popup:is(.portal-form-popup, .portal-detail-popup) > .swal2-actions { justify-content: flex-end !important; }
+    body.portal-ui .swal2-popup:not(.swal2-toast) > .swal2-actions > button { min-height: 40px; margin: 0 !important; line-height: 1.5; }
+    body.portal-ui .swal2-popup.portal-alert-popup .swal2-html-container > .text-center { padding: 0 !important; }
+    body.portal-ui .swal2-popup.portal-alert-popup .swal2-html-container > .text-center > i { display: block; margin: 0 auto 16px !important; font-size: 40px; line-height: 1; }
+    body.portal-ui .swal2-popup.portal-alert-popup .swal2-html-container p { margin-bottom: 0; }
+    body.portal-ui .swal2-loader { border-color: #B11116 transparent #B11116 transparent !important; }
+    body.portal-ui .portal-modal-panel {
+        min-width: 0; max-height: calc(100vh - 32px) !important; max-height: calc(100dvh - 32px) !important;
+        overscroll-behavior: contain; overflow-y: auto;
+    }
+    /* Native dialogs must stay hidden until showModal()/show() sets open. */
+    body.portal-ui dialog:not([open]) { display: none !important; }
+    body.portal-ui .portal-modal-panel.portal-modal-framed:not(dialog),
+    body.portal-ui dialog.portal-modal-panel.portal-modal-framed[open] { display: flex; flex-direction: column; overflow: hidden; }
+    body.portal-ui .portal-modal-panel > .portal-modal-header { background: #B11116 !important; color: #fff !important; padding: 12px 20px !important; border-bottom: 1px solid #8A0D11 !important; }
+    body.portal-ui .portal-modal-panel > .portal-modal-header :is(h2, h3, h4, h5) { color: #fff !important; margin: 0 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4; }
+    body.portal-ui .portal-modal-framed > :is(.portal-modal-header, .modal-footer, .border-t, .portal-modal-dismiss-footer) { flex: 0 0 auto; }
+    body.portal-ui .portal-modal-framed > .portal-modal-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+    body.portal-ui .portal-modal-overlay { overflow: hidden !important; align-items: center !important; }
+    body.portal-ui .portal-modal-framed > .portal-modal-dismiss-footer { margin-top: 0; }
+    body.portal-ui .portal-modal-panel .portal-modal-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px !important; }
+    body.portal-ui .portal-modal-panel .portal-modal-actions > :is(button, form) { flex: 0 1 auto; }
+    body.portal-ui .portal-modal-panel .portal-modal-actions > button,
+    body.portal-ui .portal-modal-panel .portal-modal-actions > form > button { width: auto; min-height: 40px; padding: 8px 20px; }
+    body.portal-ui :is(#referralModal, #referralDetailsModal, #archivedReferralDetailsModal) .portal-modal-panel { width: 100%; max-width: 720px !important; }
+    body.portal-ui .swal2-popup.portal-detail-popup:is(.admin-archived-referral-popup, .archived-referral-view-popup) { width: min(760px, calc(100vw - 32px)) !important; }
+    body.portal-ui .portal-modal-panel :is(input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([readonly]):not([disabled]), select:not([disabled])) { min-height: 42px; }
+    body.portal-ui .portal-modal-panel textarea { min-height: 84px; }
+    body.portal-ui .portal-modal-panel :is(input, select, textarea) { max-width: 100%; box-sizing: border-box; }
+    body.portal-ui :is(.portal-modal-panel, .portal-form-popup) .relative:has(> button :is(.fa-eye, .fa-eye-slash)) > input { padding-right: 40px !important; }
+    body.portal-ui .portal-modal-panel :is(.animate-spin, .spinner-border) { color: #B11116; }
+    body.portal-ui .portal-modal-panel .animate-spin:not(svg) { border-top-color: #B11116 !important; }
+    body.portal-ui :is(.portal-modal-panel, .portal-detail-popup) .case-modal-details :is(.card-header, .grid > .bg-white > .border-b) { padding: 10px 16px !important; background: #f8fafc !important; }
+    body.portal-ui :is(.portal-modal-panel, .portal-detail-popup) .case-modal-details :is(.card-header, .grid > .bg-white > .border-b) :is(h4, h5) { color: #111827 !important; font-size: 14px !important; font-weight: 500 !important; }
+    body.portal-ui :is(.portal-modal-panel, .portal-detail-popup) .case-modal-details .divide-y > div { padding: 10px 16px !important; }
+    body.portal-ui.portal-native-modal-open, html:has(> body.portal-ui.portal-native-modal-open) { overflow: hidden !important; overscroll-behavior: none; }
+    body.portal-ui :is(#archiveModal, #restoreModal, #conflictModal) .portal-modal-actions { justify-content: center; }
+    body.portal-ui :is(#archiveModal, #restoreModal) .flex:has(> button + form) { justify-content: center; gap: 10px; }
+    body.portal-ui :is(#archiveModal, #restoreModal) .flex:has(> button + form) > :is(button, form) { flex: 0 1 auto; }
+    body.portal-ui :is(#archiveModal, #restoreModal) .flex:has(> button + form) button { min-height: 40px; padding: 8px 20px; }
+    body.portal-ui :is(#reportTypeModal, #printModal) > .portal-modal-panel { width: min(448px, calc(100vw - 32px)); margin: 0; }
+    body.portal-ui dialog:is(#bcpc-report-result, #generated-report-result) { width: min(448px, calc(100vw - 32px)) !important; padding: 24px !important; text-align: center; }
+    body.portal-ui :is(#referModal, #sendCopyModal) .portal-modal-panel > .flex:has(> button + button) { justify-content: flex-end; gap: 10px; }
+    body.portal-ui :is(#referModal, #sendCopyModal) button[style*="linear-gradient"] { background: #B11116 !important; }
+    @media (max-width: 575.98px) {
+        body.portal-ui .swal2-popup:is(.portal-alert-popup, .portal-form-popup) { padding: 20px !important; }
+        body.portal-ui .portal-modal-panel .grid-cols-2 { grid-template-columns: minmax(0, 1fr); }
+        body.portal-ui .portal-modal-panel .grid-cols-2 > .col-span-2 { grid-column: 1 / -1; }
+    }
+}
+
+/* Admin and multi-role archived cases render the same detail partial. */
+@media screen {
+    body.portal-ui .swal2-popup.multi-role-archived-case-modal { width: min(1100px, calc(100vw - 32px)) !important; }
+    body.portal-ui .swal2-popup.multi-role-archived-case-modal > .swal2-title { padding: 12px 20px !important; }
+    body.portal-ui .swal2-popup.multi-role-archived-case-modal .desk-archive-view-frame { height: min(72dvh, 52rem); min-height: 24rem; }
+    @media (max-width: 47.9375rem) {
+        body.portal-ui .swal2-popup.multi-role-archived-case-modal { width: calc(100vw - 16px) !important; }
+        body.portal-ui .swal2-popup.multi-role-archived-case-modal .desk-archive-view-frame { height: calc(100dvh - 9rem); min-height: 18rem; }
+    }
+    body.portal-ui.archive-case-modal-preview .bcpc-shared-case-preview { display: block !important; }
+    body.portal-ui.archive-case-modal-preview .bcpc-shared-case-preview .case-modal-details > .grid { margin-top: 0 !important; gap: 12px !important; }
+    body.portal-ui.archive-case-modal-preview .bcpc-shared-case-preview .grid > .bg-white { border: 1px solid #E5E7EB; border-radius: 8px; box-shadow: none; }
+    body.portal-ui.archive-case-modal-preview .bcpc-shared-case-preview .grid > .bg-white > .border-b,
+    body.portal-ui.archive-case-modal-preview .bcpc-preview-record-information > h4 { margin: 0; padding: 10px 16px; background: #f8fafc; border-bottom: 1px solid #E5E7EB; }
+    body.portal-ui.archive-case-modal-preview .bcpc-shared-case-preview .grid > .bg-white > .border-b h4,
+    body.portal-ui.archive-case-modal-preview .bcpc-preview-record-information > h4 { margin: 0; color: #111827; font-size: 14px; font-weight: 500; line-height: 1.5; }
+    body.portal-ui.archive-case-modal-preview .bcpc-shared-case-preview .divide-y > div,
+    body.portal-ui.archive-case-modal-preview .bcpc-preview-record-information > div { padding: 10px 16px !important; gap: 12px !important; align-items: start; border-bottom: 1px solid #f3f4f6; }
+    body.portal-ui.archive-case-modal-preview .bcpc-shared-case-preview .divide-y > div > span:first-child,
+    body.portal-ui.archive-case-modal-preview .bcpc-preview-record-information > div > span:first-child { color: #6B7280; font-size: 14px; font-weight: 400; line-height: 1.5; }
+    body.portal-ui.archive-case-modal-preview .bcpc-shared-case-preview .divide-y > div > span + span,
+    body.portal-ui.archive-case-modal-preview .bcpc-preview-record-information > div > span + span { color: #111827; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+    body.portal-ui.archive-case-modal-preview .bcpc-preview-record-information { margin-top: 12px; overflow: hidden; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; }
+    body.portal-ui.archive-case-modal-preview .bcpc-preview-record-information > div { display: grid; grid-template-columns: 128px minmax(0, 1fr); }
+}

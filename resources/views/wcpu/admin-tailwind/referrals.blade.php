@@ -78,23 +78,26 @@
 @if(auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin())
 <style>
     #referCaseButton:disabled {
-        background-color: #EEEEEE !important;
-        color: #000000 !important;
+        background-color: #FEE2E2 !important;
+        border-color: #FCA5A5 !important;
+        color: #B91C1C !important;
         font-weight: 700 !important;
     }
     #referCaseButton:disabled > i {
-        color: #000000 !important;
+        color: #B91C1C !important;
         font-weight: 900 !important;
     }
     #referCaseButton:disabled > span {
-        color: #000000 !important;
+        color: #B91C1C !important;
         font-weight: 700 !important;
     }
     .portal-ui #mainContent button.disabled-referral-edit.disabled-referral-edit:disabled {
-        background-color: #EEEEEE !important;
+        background-color: #FEE2E2 !important;
+        border-color: #FCA5A5 !important;
+        color: #B91C1C !important;
     }
     .portal-ui #mainContent button.disabled-referral-edit.disabled-referral-edit:disabled > i {
-        color: #000000 !important;
+        color: #B91C1C !important;
         font-weight: 900 !important;
     }
 
@@ -319,7 +322,7 @@
                                     title="View Details" data-id="{{ $referral->id }}">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button type="button" @disabled($editDisabled) class="{{ $editDisabled ? 'disabled-referral-edit inline-flex items-center justify-center bg-gray-300 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium cursor-not-allowed' : ($matchReportTable ? 'edit-referral-btn inline-flex items-center justify-center bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'edit-referral-btn inline-flex items-center justify-center px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 rounded-lg text-xs font-medium transition-colors') }}"
+                                <button type="button" @disabled($editDisabled) class="{{ $editDisabled ? 'disabled-referral-edit inline-flex items-center justify-center border border-red-200 bg-red-50 text-red-800 px-3 py-1.5 rounded-lg text-xs font-medium cursor-not-allowed' : ($matchReportTable ? 'edit-referral-btn inline-flex items-center justify-center bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'edit-referral-btn inline-flex items-center justify-center px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 rounded-lg text-xs font-medium transition-colors') }}"
                                     title="{{ $editDisabledTitle }}" data-id="{{ $referral->id }}">
                                     <i class="fas fa-edit"></i>
                                 </button>
@@ -444,7 +447,7 @@
                         <i class="fas fa-eye"></i>
                         View Details
                     </button>
-                    <button type="button" @disabled($editDisabled) class="{{ $editDisabled ? 'disabled-referral-edit flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 bg-gray-200 rounded-lg cursor-not-allowed' : 'edit-referral-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors' }}"
+                    <button type="button" @disabled($editDisabled) class="{{ $editDisabled ? 'disabled-referral-edit flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-red-800 border border-red-200 bg-red-50 rounded-lg cursor-not-allowed' : 'edit-referral-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors' }}"
                         title="{{ $editDisabledTitle }}" data-id="{{ $referral->id }}">
                         <i class="fas fa-edit"></i>
                         Edit

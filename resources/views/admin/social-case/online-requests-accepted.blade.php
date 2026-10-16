@@ -338,7 +338,11 @@
     }
     .sc-page-btn[disabled],
     .sc-page-btn:disabled {
-        opacity: 0.5;
+        opacity: 1;
+        background: #FEE2E2;
+        border-color: #FCA5A5;
+        color: #B91C1C;
+        box-shadow: 0 2px 6px rgba(196,30,58,.12);
         cursor: not-allowed;
     }
     

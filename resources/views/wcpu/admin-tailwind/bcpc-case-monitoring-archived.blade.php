@@ -129,7 +129,7 @@
                                     </a>
                                     <button type="button" {{ $restoreBlocked ? 'disabled' : '' }}
                                             @unless($restoreBlocked) onclick="restoreMonitoring({{ $monitoring->id }}, '{{ addslashes($monitoring->barangay->name ?? 'Barangay') }}', 'Q{{ $monitoring->quarter }} {{ $monitoring->year }}')" @endunless
-                                            class="inline-flex items-center justify-center w-9 h-9 {{ $restoreBlocked ? '!bg-gray-300 hover:!bg-gray-300 !text-gray-500 opacity-50 blur-[0.35px] cursor-not-allowed pointer-events-none' : 'bg-[#C41E3A] hover:bg-[#A01830] text-white' }} rounded-lg text-xs font-medium transition shadow-sm"
+                                            class="inline-flex items-center justify-center w-9 h-9 {{ $restoreBlocked ? '!bg-red-100 hover:!bg-red-100 !text-red-800 !border !border-red-200 cursor-not-allowed pointer-events-none' : 'bg-[#C41E3A] hover:bg-[#A01830] text-white' }} rounded-lg text-xs font-medium transition shadow-sm"
                                             title="{{ $restoreBlocked ? 'An active BCPC monitoring case already exists for this barangay, quarter, and year' : 'Restore Record' }}">
                                         <i class="fas fa-undo"></i>
                                         <span class="sr-only">Restore</span>
@@ -187,7 +187,7 @@
                         </a>
                         <button type="button" {{ $restoreBlocked ? 'disabled' : '' }}
                                 @unless($restoreBlocked) onclick="restoreMonitoring({{ $monitoring->id }}, '{{ addslashes($monitoring->barangay->name ?? 'Barangay') }}', 'Q{{ $monitoring->quarter }} {{ $monitoring->year }}')" @endunless
-                                class="inline-flex items-center justify-center gap-1 px-2.5 py-2 {{ $restoreBlocked ? '!bg-gray-300 hover:!bg-gray-300 !text-gray-500 opacity-50 blur-[0.35px] cursor-not-allowed pointer-events-none' : 'bg-[#C41E3A] hover:bg-[#A01830] text-white' }} rounded-lg text-xs font-medium transition shadow-sm"
+                                class="inline-flex items-center justify-center gap-1 px-2.5 py-2 {{ $restoreBlocked ? '!bg-red-100 hover:!bg-red-100 !text-red-800 !border !border-red-200 cursor-not-allowed pointer-events-none' : 'bg-[#C41E3A] hover:bg-[#A01830] text-white' }} rounded-lg text-xs font-medium transition shadow-sm"
                                 title="{{ $restoreBlocked ? 'An active BCPC monitoring case already exists for this barangay, quarter, and year' : 'Restore Record' }}">
                             <i class="fas fa-undo text-xs"></i>
                             <span>Restore</span>
@@ -225,6 +225,7 @@ document.getElementById('archived-bcpc-report-search')?.addEventListener('input'
 function restoreMonitoring(id, barangayName, period) {
     Swal.fire({
         title: 'Restore Case Monitoring?',
+        customClass: { popup: 'bcpc-monitoring-restore-confirm' },
         html: `
             <div class="text-center py-2">
                 <i class="fas fa-undo text-5xl text-emerald-500 mb-4"></i>
@@ -243,7 +244,7 @@ function restoreMonitoring(id, barangayName, period) {
             Swal.fire({
                 title: 'Restoring...',
                 text: 'Please wait while we restore this record.',
-                allowOutsideClick: false,
+                allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false,
                 didOpen: () => { Swal.showLoading(); }
             });
 
@@ -264,6 +265,7 @@ function restoreMonitoring(id, barangayName, period) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Restored!',
+                    customClass: { popup: 'bcpc-monitoring-restore-success' },
                     text: data.message || 'Record has been restored.',
                     confirmButtonText: 'OK'
                 }).then(() => window.location.href = @json(route('admin.bcpc-case-monitoring.archived')));

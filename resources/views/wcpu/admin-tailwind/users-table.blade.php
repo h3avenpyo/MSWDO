@@ -249,7 +249,7 @@
             <div class="flex items-center gap-2">
                 <button 
                     id="prev-page-btn" 
-                    class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors text-sm"
+                    class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 disabled:bg-red-100 disabled:text-red-800 disabled:border-red-200 disabled:opacity-100 disabled:cursor-not-allowed rounded-lg transition-colors text-sm"
                     disabled
                 >
                     <i class="fas fa-chevron-left text-gray-600"></i>
@@ -259,7 +259,7 @@
                 </div>
                 <button 
                     id="next-page-btn" 
-                    class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors text-sm"
+                    class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 disabled:bg-red-100 disabled:text-red-800 disabled:border-red-200 disabled:opacity-100 disabled:cursor-not-allowed rounded-lg transition-colors text-sm"
                     disabled
                 >
                     <i class="fas fa-chevron-right text-gray-600"></i>
@@ -932,7 +932,7 @@ function viewUserDetails(userId) {
                     <button type="button" onclick="closeUserModal(); openEditModal(${data.id});" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#C41E3A] text-white rounded-lg hover:bg-[#A01830] transition-colors text-sm font-medium">
                         <i class="fas fa-edit"></i> Edit User
                     </button>
-                    <button type="button" onclick="closeUserModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                    <button type="button" onclick="closeUserModal()" class="portal-modal-close px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors text-sm font-medium">
                         Close
                     </button>
                 </div>

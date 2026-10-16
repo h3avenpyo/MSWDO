@@ -30,7 +30,7 @@
 @else
 <div>
     <style>
-        .form-control[readonly] {
+        #referralDetailsForm .form-control[readonly] {
             background-color: #f8f9fa;
             border-color: #dee2e6;
             cursor: not-allowed;
@@ -39,51 +39,51 @@
     </style>
     <form id="referralDetailsForm">
         @csrf
-        <fieldset disabled>
-        <div class="mb-3">
+        <fieldset disabled class="referral-detail-sections">
+<section class="referral-detail-section"><h3>Client Information</h3><div class="referral-detail-grid"><div class="referral-detail-field referral-detail-wide">
             <label class="form-label font-medium text-gray-700">Name of Client</label>
             <input type="text" class="form-control" name="client_name" value="{{ censorLastName($referral->client_name) }}" readonly>
         </div>
-        <div class="mb-3">
+<div class="referral-detail-field">
             <label class="form-label font-medium text-gray-700">Age</label>
             <input type="number" class="form-control" name="client_age" value="{{ $referral->client_age }}" readonly>
         </div>
-        <div class="mb-3">
+<div class="referral-detail-field">
             <label class="form-label font-medium text-gray-700">Sex</label>
             <input type="text" class="form-control" name="client_sex" value="{{ $referral->client_sex }}" readonly>
-        </div>
-        <div class="mb-3">
+        </div></div></section>
+<section class="referral-detail-section"><h3>Referral Information</h3><div class="referral-detail-grid"><div class="referral-detail-field referral-detail-wide">
             <label class="form-label font-medium text-gray-700">Service/s Needed</label>
             <textarea class="form-control" name="specific_services_requested" rows="3" readonly>{{ $referral->specific_services_requested }}</textarea>
         </div>
-        <div class="mb-3">
+<div class="referral-detail-field">
             <label class="form-label font-medium text-gray-700">Referring/Receiving Agency</label>
             <input type="text" class="form-control" name="recipient_name" value="{{ $referral->recipient_name }}" readonly>
         </div>
-        <div class="mb-3">
+<div class="referral-detail-field">
             <label class="form-label font-medium text-gray-700">From/To Whom</label>
             <input type="text" class="form-control" name="referred_by_name" value="{{ $referral->referred_by_name }}" readonly>
         </div>
-        <div class="mb-3">
+<div class="referral-detail-field">
             <label class="form-label font-medium text-gray-700">Date of Referral</label>
             <input type="date" class="form-control" name="date_of_referral" value="{{ \Carbon\Carbon::parse($referral->date_of_referral)->format('Y-m-d') }}" readonly>
         </div>
-        <div class="mb-3">
+<div class="referral-detail-field">
             <label class="form-label font-medium text-gray-700">Date Referral Received/Sent</label>
             <input type="date" class="form-control" name="received_at" value="{{ $referral->feedback_received_at ? \Carbon\Carbon::parse($referral->feedback_received_at)->format('Y-m-d') : '' }}" readonly>
-        </div>
-        <div class="mb-3">
+        </div></div></section>
+<section class="referral-detail-section"><h3>Receiving Agency and Response</h3><div class="referral-detail-grid"><div class="referral-detail-field referral-detail-wide">
             <label class="form-label font-medium text-gray-700">Action Taken by Receiving Organization</label>
             <textarea class="form-control" name="action_taken" rows="3" placeholder="No feedback data" readonly>{{ $referral->feedback }}</textarea>
         </div>
-        <div class="mb-3">
+<div class="referral-detail-field">
             <label class="form-label font-medium text-gray-700">By Whom</label>
             <input type="text" class="form-control" name="by_whom" value="{{ optional($referral->referredBy)->first_name ?? '-' }}" readonly>
         </div>
-        <div class="mb-3">
+<div class="referral-detail-field referral-detail-wide">
             <label class="form-label font-medium text-gray-700">Remarks</label>
             <textarea class="form-control" name="remarks" rows="3" readonly>{{ $referral->additional_notes }}</textarea>
-        </div>
+        </div></div></section>
         </fieldset>
         
         @unless($isArchived ?? false)

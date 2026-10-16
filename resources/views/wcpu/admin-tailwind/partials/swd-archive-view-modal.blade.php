@@ -71,9 +71,11 @@
                 page.querySelectorAll('script').forEach(script => script.remove());
                 if (isCase) {
                     content.replaceChildren(...Array.from(page.body.childNodes));
+                    window.applyArchiveCaseModalDesign(content, document.getElementById('swdArchiveViewTitle'));
                 } else {
                     const report = page.querySelector('.w-full.max-w-7xl.mx-auto');
                     if (!report) throw new Error('Unable to load report details.');
+                    window.applyArchiveReportModalDesign(page, document.getElementById('swdArchiveViewTitle'));
                     report.querySelector(':scope > .mb-6.flex')?.remove();
                     report.querySelectorAll('form, button').forEach(control => control.remove());
                     report.className = 'w-full';

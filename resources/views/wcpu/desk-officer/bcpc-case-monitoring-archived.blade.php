@@ -10,7 +10,7 @@
     .bcpc-monitoring-actions > :is(a, button):is(:hover, :focus, :active),
     .bcpc-monitoring-actions > button[title="Restore Record"]:is(:hover, :focus, :active) { background-color: #A01830 !important; border-color: #A01830 !important; color: #ffffff !important; }
     .bcpc-monitoring-actions > button:disabled,
-    .bcpc-monitoring-actions > button:disabled:hover { background-color: #d1d5db !important; border-color: #d1d5db !important; color: #6b7280 !important; cursor: not-allowed !important; }
+    .bcpc-monitoring-actions > button:disabled:hover { background-color: #FEE2E2 !important; border-color: #FCA5A5 !important; color: #991B1B !important; cursor: not-allowed !important; }
     .monitoring-search-control { flex: 1 1 15rem !important; min-width: 15rem !important; }
     .monitoring-quarter-control { flex: 0 0 8.125rem; width: 8.125rem; }
     .monitoring-year-control { flex: 0 0 7.1875rem; width: 7.1875rem; }
@@ -261,7 +261,7 @@ function restoreMonitoring(id, barangayName, period) {
             Swal.fire({
                 title: 'Restoring...',
                 text: 'Please wait while we restore this record.',
-                allowOutsideClick: false,
+                allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false,
                 didOpen: () => { Swal.showLoading(); }
             });
 

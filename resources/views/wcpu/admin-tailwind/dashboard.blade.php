@@ -7,6 +7,7 @@
     .admin-dashboard-statistics > * { min-width: 0; }
     .admin-dashboard-statistic-content { min-width: 0; }
     .admin-dashboard-statistic-label { overflow-wrap: anywhere; line-height: 1.25; }
+    #dashboardMenuToggle { display: none; }
 
     @media (min-width: 768px) and (max-width: 1439px) {
         .admin-dashboard-statistics { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; }
@@ -63,6 +64,101 @@
         .admin-dashboard-statistic-card > div { align-items: flex-start; }
         .admin-dashboard-statistic-content p:first-child { font-size: 1.5rem; }
     }
+
+    /* Dashboard mobile navigation opens as a vertical menu below the top bar. */
+    @media (max-width: 63.9375rem) {
+        body.admin-dashboard-mobile-nav #mobileTopBar { display: none !important; }
+        body.admin-dashboard-mobile-nav #mobileMenuToggle { display: none !important; }
+        body.admin-dashboard-mobile-nav #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar {
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: auto !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: calc(100vh - 60px) !important;
+            overflow-y: auto !important;
+            z-index: 999 !important;
+            border-radius: 0 0 14px 14px !important;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, .22) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(-8px) !important;
+            transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-open {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed,
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed-init {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar .sidebar-header { display: none !important; }
+        body.admin-dashboard-mobile-nav #sidebar .sidebar-text {
+            opacity: 1 !important;
+            max-width: none !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar .sidebar-menu {
+            flex: 0 1 auto;
+            min-height: 0;
+            padding: .5rem !important;
+            overflow-y: auto !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar .sidebar-link {
+            justify-content: flex-start !important;
+            gap: .75rem !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar #sidebarCloseBtn {
+            display: none !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebarToggleBtn { display: none !important; }
+        body.admin-dashboard-mobile-nav #mainContent {
+            width: 100% !important;
+            min-width: 0 !important;
+            margin-left: 0 !important;
+        }
+        body.admin-dashboard-mobile-nav #admin-dashboard-header > div > div:first-child {
+            min-width: 0;
+            flex: 1 1 auto;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: .5rem;
+        }
+        body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div {
+            align-items: flex-start;
+            padding-left: max(.5rem, env(safe-area-inset-left)) !important;
+            padding-right: max(1rem, env(safe-area-inset-right)) !important;
+        }
+        body.admin-dashboard-mobile-nav #admin-dashboard-header > div > div:first-child > div {
+            width: auto;
+            flex: 1 1 auto;
+            text-align: left;
+        }
+        body.admin-dashboard-mobile-nav #dashboardMenuToggle {
+            display: inline-flex !important;
+            flex: 0 0 2.5rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e5e7eb;
+            border-radius: .625rem;
+            background: #ffffff;
+            color: #C41E3A;
+        }
+        body.admin-dashboard-mobile-nav #admin-dashboard-header h2,
+        body.admin-dashboard-mobile-nav #admin-dashboard-header p { min-width: 0; }
+    }
 </style>
 @endpush
 
@@ -87,9 +183,14 @@
 <!-- Top Header -->
 <header id="admin-dashboard-header" data-dashboard-header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
-        <div>
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Welcome, {{ $dashboardDepartment }} SILANG</h2>
-            <p class="text-sm text-gray-500">{{ $dashboardDepartment }} {{ $dashboardRole }} - Silang, Cavite</p>
+        <div class="flex items-center gap-3 min-w-0">
+            <button id="dashboardMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="min-w-0">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Welcome, {{ $dashboardDepartment }} SILANG</h2>
+                <p class="text-sm text-gray-500">{{ $dashboardDepartment }} {{ $dashboardRole }} - Silang, Cavite</p>
+            </div>
         </div>
         <div class="flex items-center gap-4">
             <!-- Notifications -->

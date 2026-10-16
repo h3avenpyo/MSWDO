@@ -297,17 +297,17 @@
              x-transition:leave-end="opacity-0 scale-95"
              class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
             <!-- Modal Header -->
-            <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+            <div class="case-modal-top-header flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
                 <div>
                     <h5 class="text-lg font-semibold text-gray-800" x-text="'Case #' + caseNumber">Case Details</h5>
-                    <p class="text-sm text-gray-500">Viewing case details</p>
+                    <div class="case-modal-top-summary" x-html="new DOMParser().parseFromString(content || '', 'text/html').querySelector('[data-case-modal-summary]')?.innerHTML || ''"></div>
                 </div>
                 <div class="flex items-center gap-2">
                     <a :href="printUrl" target="_blank" class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
                         <i class="fas fa-print"></i>
                         <span class="hidden sm:inline">Print</span>
                     </a>
-                    <a :href="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((caseStatus || '').trim().toLowerCase()) ? null : (referUrl || ('/admin/cases/' + caseId + '/refer'))" :aria-disabled="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((caseStatus || '').trim().toLowerCase())" :tabindex="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((caseStatus || '').trim().toLowerCase()) ? -1 : 0" :class="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((caseStatus || '').trim().toLowerCase()) ? 'cursor-not-allowed bg-gray-300 text-gray-500 pointer-events-none' : 'bg-purple-700 text-white hover:bg-purple-800'" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium">
+                    <a :href="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((caseStatus || '').trim().toLowerCase()) ? null : (referUrl || ('/admin/cases/' + caseId + '/refer'))" :aria-disabled="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((caseStatus || '').trim().toLowerCase())" :tabindex="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((caseStatus || '').trim().toLowerCase()) ? -1 : 0" :class="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((caseStatus || '').trim().toLowerCase()) ? 'cursor-not-allowed border border-red-200 bg-red-50 text-red-800 pointer-events-none' : 'bg-purple-700 text-white hover:bg-purple-800'" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium">
                         <i class="fas fa-share-square"></i>
                         <span class="hidden sm:inline">Refer Case</span>
                     </a>
@@ -660,7 +660,7 @@
                                             ? ($isClosedCase || $isReferredCase)
                                             : (auth()->user()->isDepartmentAdmin() ? ($isClosedCase || $isReferredCase) : $isClosedCase);
                                     @endphp
-                                    <button type="button" class="edit-case inline-flex items-center justify-center {{ $isCaseDeskOfficer ? 'w-10 h-10 flex-none' : 'w-9 h-9' }} rounded-lg border border-gray-400 transition-colors {{ $editDisabled ? 'cursor-not-allowed bg-gray-100 text-gray-400 opacity-60' : 'text-gray-600 hover:bg-gray-50' }}"
+                                    <button type="button" class="edit-case inline-flex items-center justify-center {{ $isCaseDeskOfficer ? 'w-10 h-10 flex-none' : 'w-9 h-9' }} rounded-lg border transition-colors {{ $editDisabled ? 'cursor-not-allowed border-red-200 bg-red-50 text-red-600 shadow-sm opacity-100' : 'border-gray-400 text-gray-600 hover:bg-gray-50' }}"
                                             data-ajax-url="{{ route('cases.edit', $case->id) }}"
                                             data-case-number="{{ $isSwdDeskOfficer ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? '') : $case->case_number }}"
                                             title="{{ $editDisabled ? ($isClosedCase ? 'Editing is unavailable for closed cases' : 'Editing is unavailable for referred cases') : 'Edit Case' }}"
@@ -728,7 +728,7 @@
                                 ? ($isClosedCase || $isReferredCase)
                                 : (auth()->user()->isDepartmentAdmin() ? ($isClosedCase || $isReferredCase) : $isClosedCase);
                         @endphp
-                        <button type="button" class="edit-case inline-flex items-center justify-center w-10 h-10 rounded-lg border border-gray-400 transition-colors {{ $editDisabled ? 'cursor-not-allowed bg-gray-100 text-gray-400 opacity-60' : 'text-gray-600 hover:bg-gray-50' }}"
+                            <button type="button" class="edit-case inline-flex items-center justify-center w-10 h-10 rounded-lg border transition-colors {{ $editDisabled ? 'cursor-not-allowed border-red-200 bg-red-50 text-red-600 shadow-sm opacity-100' : 'border-gray-400 text-gray-600 hover:bg-gray-50' }}"
                                 data-ajax-url="{{ route('cases.edit', $case->id) }}" data-case-number="{{ $isSwdDeskOfficer ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? '') : $case->case_number }}" title="{{ $editDisabled ? ($isClosedCase ? 'Editing is unavailable for closed cases' : 'Editing is unavailable for referred cases') : 'Edit Case' }}" {{ $editDisabled ? 'disabled' : '' }}>
                             <i class="fas fa-edit" aria-hidden="true"></i><span class="sr-only">Edit</span>
                         </button>
@@ -762,7 +762,7 @@
                     <div class="flex items-center gap-1">
                         {{-- Previous Button --}}
                         @if($cases->onFirstPage())
-                            <span class="px-3 py-2 bg-gray-100 text-gray-400 rounded-lg text-sm cursor-not-allowed">
+                            <span class="px-3 py-2 border border-red-200 bg-red-50 text-red-800 rounded-lg text-sm cursor-not-allowed">
                                 <i class="fas fa-chevron-left"></i>
                             </span>
                         @else
@@ -816,7 +816,7 @@
                                 <i class="fas fa-chevron-right"></i>
                             </a>
                         @else
-                            <span class="px-3 py-2 bg-gray-100 text-gray-400 rounded-lg text-sm cursor-not-allowed">
+                            <span class="px-3 py-2 border border-red-200 bg-red-50 text-red-800 rounded-lg text-sm cursor-not-allowed">
                                 <i class="fas fa-chevron-right"></i>
                             </span>
                         @endif
@@ -1164,7 +1164,8 @@ function attachEditFormHandler() {
             title: 'Updating Case', 
             html: '<div class="text-center"><i class="fas fa-spinner fa-spin text-4xl text-purple-500 mb-3"></i><p class="text-gray-700">Please wait...</p></div>', 
             showConfirmButton: false, 
-            allowOutsideClick: false 
+            allowOutsideClick: false,
+            allowEscapeKey: false
         });
         
         fetch(actionUrl, { 

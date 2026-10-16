@@ -185,7 +185,7 @@
             Swal.fire({
                 title: 'Generating Report...',
                 text: 'Please wait while the report is prepared.',
-                allowOutsideClick: false,
+                allowOutsideClick: false, showConfirmButton: false,
                 allowEscapeKey: false,
                 didOpen: () => Swal.showLoading(),
             });

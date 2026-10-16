@@ -427,7 +427,7 @@ function sendToAdmin(id, period) {
             Swal.fire({
                 title: 'Sending to Admin...',
                 text: 'Please wait while we submit the report to Admin.',
-                allowOutsideClick: false,
+                allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false,
                 didOpen: () => { Swal.showLoading(); }
             });
 

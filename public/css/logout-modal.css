@@ -1,0 +1,61 @@
+/* Shared logout confirmation only; no other alerts or page elements. */
+.swal2-popup.app-logout-modal.app-logout-modal {
+    box-sizing: border-box;
+    width: min(448px, calc(100vw - 2rem)) !important;
+    padding: 24px !important;
+    border: 1px solid #E5E7EB !important;
+    border-radius: 14px !important;
+    background: #F5F7FB !important;
+    font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .15) !important;
+}
+.swal2-popup.app-logout-modal.app-logout-modal > .swal2-title {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    color: #B11116 !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    line-height: 28px !important;
+    text-align: center !important;
+}
+.swal2-popup.app-logout-modal.app-logout-modal > .swal2-html-container {
+    margin: 20px 0 24px !important;
+    padding: 0 !important;
+    color: #475569 !important;
+    font-size: 14px !important;
+    line-height: 21px !important;
+    text-align: center !important;
+}
+.app-logout-modal .logout-modal-symbol { display: block; width: 36px; height: 36px; margin: 0 auto 16px; color: #B11116; }
+.app-logout-modal .logout-modal-message { margin: 0 !important; }
+.swal2-popup.app-logout-modal.app-logout-modal > .swal2-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+}
+.swal2-popup.app-logout-modal.app-logout-modal .swal2-actions button {
+    width: auto !important;
+    min-height: 40px !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 8px 16px !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    font-family: inherit !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 24px !important;
+    box-shadow: none !important;
+}
+.swal2-popup.app-logout-modal.app-logout-modal .swal2-confirm { background: #B11116 !important; }
+.swal2-popup.app-logout-modal.app-logout-modal .swal2-cancel { background: #6B7280 !important; }
+.swal2-popup.app-logout-modal.app-logout-modal .swal2-confirm:hover { background: #8A0D11 !important; }
+.swal2-popup.app-logout-modal.app-logout-modal .swal2-cancel:hover { background: #4B5563 !important; }

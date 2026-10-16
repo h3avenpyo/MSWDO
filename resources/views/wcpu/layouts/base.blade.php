@@ -17,6 +17,7 @@
     <script>
         document.documentElement.classList.add('js');
     </script>
+    <link rel="stylesheet" href="{{ asset('css/logout-modal.css') }}?v={{ filemtime(public_path('css/logout-modal.css')) }}">
 </head>
 <body>
     <!-- Mobile Menu Toggle Button -->
@@ -118,13 +119,8 @@
                     
                     Swal.fire({
                         title: 'Logout',
-                        html: '<div class="text-center">\
-                            <div class="mb-4">\
-                                <i class="fas fa-sign-out-alt text-4xl text-purple-500 mb-3"></i>\
-                            </div>\
-                            <p class="text-gray-700">Are you sure you want to log out?</p>\
-                        </div>',
-                        showCancelButton: true,
+        html: '<svg class="logout-modal-symbol" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M12 5l7 7-7 7v-4H7V9h5V5Z" fill="currentColor"/></svg><p class="logout-modal-message">Are you sure you want to log out?</p>',
+        showCancelButton: true,
                         confirmButtonText: 'Yes, log me out',
                         cancelButtonText: 'Cancel',
                         focusConfirm: false,
@@ -141,7 +137,7 @@
                         customClass: {
                             confirmButton: 'swal2-confirm',
                             cancelButton: 'swal2-cancel',
-                            popup: 'shadow-lg',
+                            popup: 'shadow-lg app-logout-modal',
                             container: 'swal2-container',
                             title: 'text-xl font-semibold',
                             htmlContainer: 'text-gray-600',

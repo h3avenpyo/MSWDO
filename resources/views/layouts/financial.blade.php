@@ -33,6 +33,7 @@
             } catch (e) {}
         })();
     </script>
+    <link rel="stylesheet" href="{{ asset('css/logout-modal.css') }}?v={{ filemtime(public_path('css/logout-modal.css')) }}">
 </head>
 <body>
     <!-- Reusable Sidebar Component -->

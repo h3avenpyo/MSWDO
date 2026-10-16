@@ -94,7 +94,7 @@
 <div class="modal fade" id="archivedReferralDetailsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 720px;">
         <div class="modal-content">
-            <div class="modal-header bg-[#C41E3A] text-white" style="background-color: #C41E3A !important; color: white !important;">
+            <div class="modal-header bg-[#C41E3A] text-white" style="background-color: var(--modal-brand, #B11116) !important; color: white !important;">
                 <h5 class="modal-title text-white flex items-center gap-2"><i class="fas fa-file-alt"></i> Referral Details</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>

@@ -120,7 +120,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
     .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
     .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
     .sc-page-btn.active { background: #B11116; color: #fff; border-color: #B11116; font-weight: 700; }
-    .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .sc-page-btn:disabled { opacity: 1; background: #FEE2E2; border-color: #FCA5A5; color: #B91C1C; box-shadow: 0 2px 6px rgba(196,30,58,.12); cursor: not-allowed; }
 
     /* ── Empty state ── */
     .empty-row { background: transparent !important; border: none !important; box-shadow: none !important; }

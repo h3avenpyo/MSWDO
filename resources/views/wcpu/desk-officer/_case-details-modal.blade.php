@@ -34,8 +34,8 @@
      data-client-contact="{{ $case->victim_contact ?? '' }}"
 ></div>
 
-<div class="case-details">
-    <div class="case-header mb-4" style="background-color: #e9ecef; padding: .75rem 1rem; border-radius: .5rem;">
+<div class="case-details case-modal-details">
+    <div data-case-modal-summary class="case-header mb-4" style="background-color: #e9ecef; padding: .75rem 1rem; border-radius: .5rem;">
         <h4 class="mb-0" style="font-weight:700; margin:0;">Case #{{ $case->case_number }}</h4>
         <div class="text-muted" style="margin-top:.35rem;">
             {{-- Use computed color (from DeskOfficerController::getStatusColor) for consistent badge coloring --}}
@@ -52,7 +52,7 @@
 
     <div class="row">
         <div class="col-md-6">
-            <div class="card mb-4">
+            <div class="card case-modal-victim mb-4">
                 <div class="card-header" style="background-color: #e9ecef; padding: .5rem 1rem; border-radius: .4rem;">
                     <h5 class="mb-0" style="font-weight:700; margin:0; color:#222;">Victim Information</h5>
                 </div>
@@ -78,7 +78,7 @@
         </div>
 
         <div class="col-md-6">
-            <div class="card mb-4">
+            <div class="card case-modal-perpetrator mb-4">
                 <div class="card-header" style="background-color: #e9ecef; padding: .5rem 1rem; border-radius: .4rem;">
                     <h5 class="mb-0" style="font-weight:700; margin:0; color:#222;">Perpetrator Information</h5>
                 </div>
@@ -102,7 +102,7 @@
 
     {{-- Guardian of Victim card: show only when any guardian data exists --}}
     @if(!empty($case->guardian) || !empty($case->guardian_contact) || !empty($case->guardian_address) || !empty($case->relationship_to_victim))
-    <div class="card mb-4">
+    <div class="card case-modal-guardian mb-4">
         <div class="card-header" style="background-color: #e9ecef; padding: .5rem 1rem; border-radius: .4rem;">
             <h5 class="mb-0" style="font-weight:700; margin:0; color:#222;">Guardian of Victim Information</h5>
         </div>
@@ -126,7 +126,7 @@
 
     {{-- Guardian of Perpetrator card: show only when any guardian data exists --}}
     @if(!empty($case->guardian_abuser_name) || !empty($case->guardian_abuser_contact) || !empty($case->guardian_abuser_address) || !empty($case->relationship_to_abuser))
-    <div class="card mb-4">
+    <div class="card case-modal-perpetrator-guardian mb-4">
         <div class="card-header" style="background-color: #e9ecef; padding: .5rem 1rem; border-radius: .4rem;">
             <h5 class="mb-0" style="font-weight:700; margin:0; color:#222;">Guardian of Perpetrator Information</h5>
         </div>

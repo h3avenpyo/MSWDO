@@ -136,10 +136,10 @@
     usort($activities, function($a, $b) {
         return $b['timestamp'] <=> $a['timestamp'];
     });
-    $recentActivities = $activities;
+    $recentActivities = array_slice($activities, 0, 10);
     
     // Count only unread notifications
-    $unreadCount = count(array_filter($recentActivities, function($activity) {
+    $unreadCount = count(array_filter($activities, function($activity) {
         return $activity['unread'] ?? false;
     }));
 @endphp

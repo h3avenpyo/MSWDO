@@ -104,7 +104,7 @@
     </div>
 </header>
 @endif
-<div class="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+<div class="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8" data-archive-report-title="{{ str_replace('VAWC', 'SWD', $report->type ?? 'VAWC') }} Quarterly Compliance Report" data-archive-report-subtitle="Barangay {{ $barangay->name ?? 'N/A' }} • Period: Q{{ $report->quarter }} {{ $report->year }}">
     <!-- Header -->
     <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div class="{{ (($isAdmin && request()->boolean('archived')) || (!$isAdmin && $report->archived_at)) ? 'flex-1 min-w-0' : '' }}">
@@ -114,10 +114,12 @@
                     <i class="fas fa-arrow-left"></i>
                     <span>{{ ($isAdmin && request()->boolean('archived')) || (!$isAdmin && $report->archived_at) ? 'Back to Archived Quarterly Reports' : 'Back to Quarterly Reports' }}</span>
                 </a>
+                @unless($isAdmin && ($report->type ?? 'VAWC') === 'BCPC')
                 <span class="text-gray-300">|</span>
                 <span class="quarterly-report-type-label inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider {{ ($report->type ?? 'VAWC') === 'BCPC' ? 'bg-red-100 text-red-700' : 'bg-purple-100 text-purple-700' }}">
                     {{ str_replace('VAWC', 'SWD', $report->type ?? 'VAWC') }} Report
                 </span>
+                @endunless
             @if($report->archived_at && !request()->boolean('archived'))
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800">
                     Archived
@@ -155,7 +157,7 @@
             @if($isReportArchived)
                 @if(!($isAdmin && in_array($report->type ?? 'VAWC', ['VAWC', 'SWD', 'BCPC'], true)))
                 @unless(!$isAdmin && auth()->user()?->position === 'Desk Officer' && (auth()->user()?->isMultiCaseDepartment() || in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)))
-                <button type="button" disabled @if(!$isAdmin && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) && !auth()->user()?->isMultiCaseDepartment()) style="width: auto !important; flex: 0 0 auto !important; white-space: nowrap;" @endif title="Print is unavailable for archived reports" class="inline-flex items-center justify-center gap-2 flex-1 sm:flex-initial px-4 py-2 bg-gray-300 text-gray-500 rounded-xl text-xs sm:text-sm font-medium cursor-not-allowed shadow-none">
+                <button type="button" disabled @if(!$isAdmin && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) && !auth()->user()?->isMultiCaseDepartment()) style="width: auto !important; flex: 0 0 auto !important; white-space: nowrap;" @endif title="Print is unavailable for archived reports" class="inline-flex items-center justify-center gap-2 flex-1 sm:flex-initial px-4 py-2 bg-red-100 text-red-800 rounded-xl text-xs sm:text-sm font-medium cursor-not-allowed shadow-sm">
                     <i class="fas fa-print"></i>
                     <span>Print Report</span>
                 </button>
@@ -459,7 +461,7 @@ function sendReportToAdmin(id, period) {
             Swal.fire({
                 title: 'Sending to Admin...',
                 text: 'Please wait while we submit the report to Admin.',
-                allowOutsideClick: false,
+                allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false,
                 didOpen: () => { Swal.showLoading(); }
             });
 

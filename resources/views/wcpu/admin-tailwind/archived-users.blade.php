@@ -265,7 +265,7 @@
                 <!-- Content populated by JS -->
             </div>
             <div class="shrink-0 px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
-                <button id="closeModal" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <button id="closeModal" class="portal-modal-close px-4 py-2 text-sm font-medium text-white bg-purple-700 border border-purple-700 rounded-lg hover:bg-purple-800 transition-colors">
                     Close
                 </button>
             </div>

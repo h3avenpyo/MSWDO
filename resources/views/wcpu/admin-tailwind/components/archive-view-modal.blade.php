@@ -48,6 +48,15 @@
 const makeAdminArchiveFrameReadOnly = frame => {
     const doc = frame.contentDocument;
     if (!doc) return;
+    window.applyArchiveReportModalDesign(doc, Swal.getTitle());
+
+    if (doc.querySelector('.case-profile-details')) {
+        doc.body.classList.add('archive-case-modal-preview');
+        window.applyArchiveCaseModalDesign(doc, Swal.getTitle());
+        @if(auth()->user()?->isBcpcAdmin())
+        window.applyBcpcArchiveCaseDesign(doc);
+        @endif
+    }
 
     doc.querySelectorAll('#sidebar, #mobileTopBar, #sidebarToggleBtn, .sidebar-overlay, .portal-clock-only-header, nav, [role="navigation"]').forEach(element => element.remove());
     doc.querySelectorAll('button[aria-label="Notifications"]').forEach(button => button.closest('.relative')?.remove());
@@ -82,7 +91,13 @@ document.addEventListener('click', event => {
     const frame = document.createElement('iframe');
     frame.className = 'admin-archive-view-frame';
     frame.addEventListener('load', () => makeAdminArchiveFrameReadOnly(frame));
+    @if(auth()->user()?->isBcpcAdmin())
+    const previewUrl = new URL(link.href, window.location.href);
+    if (type === 'case') previewUrl.searchParams.set('bcpc_modal_preview', '1');
+    frame.src = previewUrl.href;
+    @else
     frame.src = link.href;
+    @endif
     frame.title = title;
     frame.loading = 'eager';
 

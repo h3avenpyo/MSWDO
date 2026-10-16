@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Vite / Tailwind CSS -->
     @if(auth()->user()?->isVawcAdmin())
@@ -48,6 +48,18 @@
     <style>
         /* Hide elements with x-cloak until Alpine.js initializes */
         [x-cloak] { display: none !important; }
+        /* Unify colored primary actions across BCPC/SWD admin pages. Status
+           badges and informational surfaces are excluded by targeting controls. */
+        .portal-ui #mainContent :is(button, a):is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]):not(:disabled):not([aria-disabled="true"]) {
+            background-color: #C41E3A !important;
+            border-color: #C41E3A !important;
+            color: #ffffff !important;
+        }
+        .portal-ui #mainContent :is(button, a):is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]):not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active) {
+            background-color: #A01830 !important;
+            border-color: #A01830 !important;
+            color: #ffffff !important;
+        }
         @if(auth()->user()?->isVawcAdmin())
         html, body, #mainContent { scrollbar-width: none; }
         html::-webkit-scrollbar, body::-webkit-scrollbar, #mainContent::-webkit-scrollbar { display: none; }
@@ -72,6 +84,45 @@
             flex-wrap: nowrap !important;
         }
         @endif
+        /* Native disabled controls in BCPC and SWD Admin use the shared muted
+           red state. Actionable deactivate/archive controls do not match :disabled. */
+        .portal-ui #mainContent button:disabled,
+        .portal-ui #mainContent input[type="button"]:disabled,
+        .portal-ui #mainContent input[type="submit"]:disabled,
+        .portal-ui #mainContent [role="button"][aria-disabled="true"],
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button) {
+            background-color: #FEE2E2 !important;
+            border-color: #FCA5A5 !important;
+            color: #991B1B !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+            transition: none !important;
+        }
+        .portal-ui #mainContent button:disabled:is(:hover, :focus, :active),
+        .portal-ui #mainContent input[type="button"]:disabled:is(:hover, :focus, :active),
+        .portal-ui #mainContent input[type="submit"]:disabled:is(:hover, :focus, :active),
+        .portal-ui #mainContent [role="button"][aria-disabled="true"]:is(:hover, :focus, :active),
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button):is(:hover, :focus, :active) {
+            background-color: #FEE2E2 !important;
+            border-color: #FCA5A5 !important;
+            color: #991B1B !important;
+            box-shadow: 0 2px 6px rgba(196, 30, 58, .12) !important;
+            transform: none !important;
+            filter: none !important;
+        }
+        .portal-ui #mainContent button:disabled > :is(i, svg),
+        .portal-ui #mainContent button:disabled > :is(span, .case-card-action-label) > :is(i, svg),
+        .portal-ui #mainContent [role="button"][aria-disabled="true"] > :is(i, svg),
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button) > :is(i, svg) {
+            color: #B91C1C !important;
+            stroke: currentColor;
+        }
+        .portal-ui #mainContent button:disabled,
+        .portal-ui #mainContent [role="button"][aria-disabled="true"],
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button) {
+            box-shadow: 0 2px 6px rgba(196, 30, 58, .12) !important;
+            opacity: 1 !important;
+        }
         @if(auth()->user()?->isBcpcAdmin())
         /* BCPC Admin uses the standard red treatment for every existing View action. */
         .portal-ui #mainContent :is(a, button)[data-action="view"],
@@ -110,19 +161,19 @@
         }
 
         /* Prevent BCPC Admin Edit and Archive actions from flashing white while interacted with. */
-        .portal-ui #mainContent :is(a, button)[data-action="edit"],
-        .portal-ui #mainContent :is(a, button)[data-action="archive"],
-        .portal-ui #mainContent :is(a, button)[title^="Edit"],
-        .portal-ui #mainContent :is(a, button)[title^="Archive"] {
+        .portal-ui #mainContent :is(a, button)[data-action="edit"]:not(:disabled):not([aria-disabled="true"]),
+        .portal-ui #mainContent :is(a, button)[data-action="archive"]:not(:disabled):not([aria-disabled="true"]),
+        .portal-ui #mainContent :is(a, button)[title^="Edit"]:not(:disabled):not([aria-disabled="true"]),
+        .portal-ui #mainContent :is(a, button)[title^="Archive"]:not(:disabled):not([aria-disabled="true"]) {
             background-color: #C41E3A !important;
             border-color: #C41E3A !important;
             color: #ffffff !important;
             transition: none !important;
         }
-        .portal-ui #mainContent :is(a, button)[data-action="edit"]:is(:hover, :focus, :active),
-        .portal-ui #mainContent :is(a, button)[data-action="archive"]:is(:hover, :focus, :active),
-        .portal-ui #mainContent :is(a, button)[title^="Edit"]:is(:hover, :focus, :active),
-        .portal-ui #mainContent :is(a, button)[title^="Archive"]:is(:hover, :focus, :active) {
+        .portal-ui #mainContent :is(a, button)[data-action="edit"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active),
+        .portal-ui #mainContent :is(a, button)[data-action="archive"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active),
+        .portal-ui #mainContent :is(a, button)[title^="Edit"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active),
+        .portal-ui #mainContent :is(a, button)[title^="Archive"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active) {
             background-color: #A01830 !important;
             border-color: #A01830 !important;
             color: #ffffff !important;
@@ -166,19 +217,19 @@
         }
 
         /* Prevent SWD Admin Edit and Archive actions from flashing white while interacted with. */
-        .portal-ui #mainContent :is(a, button)[data-action="edit"],
-        .portal-ui #mainContent :is(a, button)[data-action="archive"],
-        .portal-ui #mainContent :is(a, button)[title^="Edit"],
-        .portal-ui #mainContent :is(a, button)[title^="Archive"] {
+        .portal-ui #mainContent :is(a, button)[data-action="edit"]:not(:disabled):not([aria-disabled="true"]),
+        .portal-ui #mainContent :is(a, button)[data-action="archive"]:not(:disabled):not([aria-disabled="true"]),
+        .portal-ui #mainContent :is(a, button)[title^="Edit"]:not(:disabled):not([aria-disabled="true"]),
+        .portal-ui #mainContent :is(a, button)[title^="Archive"]:not(:disabled):not([aria-disabled="true"]) {
             background-color: #C41E3A !important;
             border-color: #C41E3A !important;
             color: #ffffff !important;
             transition: none !important;
         }
-        .portal-ui #mainContent :is(a, button)[data-action="edit"]:is(:hover, :focus, :active),
-        .portal-ui #mainContent :is(a, button)[data-action="archive"]:is(:hover, :focus, :active),
-        .portal-ui #mainContent :is(a, button)[title^="Edit"]:is(:hover, :focus, :active),
-        .portal-ui #mainContent :is(a, button)[title^="Archive"]:is(:hover, :focus, :active) {
+        .portal-ui #mainContent :is(a, button)[data-action="edit"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active),
+        .portal-ui #mainContent :is(a, button)[data-action="archive"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active),
+        .portal-ui #mainContent :is(a, button)[title^="Edit"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active),
+        .portal-ui #mainContent :is(a, button)[title^="Archive"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active) {
             background-color: #A01830 !important;
             border-color: #A01830 !important;
             color: #ffffff !important;
@@ -422,6 +473,20 @@
             transition: none !important;
         }
 
+        /* Keep the only phone/tablet sidebar entry point visible. */
+        @media (max-width: 80rem) {
+            #mobileTopBar { display: flex !important; }
+            #mobileMenuToggle {
+                display: flex !important;
+                flex: 0 0 2.25rem;
+                width: 2.25rem;
+                height: 2.25rem;
+                align-items: center;
+                justify-content: center;
+                visibility: visible !important;
+            }
+        }
+
         /*
          * Tablet navigation (600px–1280px): retain one stable content column
          * and use the existing mobile menu controls as an off-canvas drawer.
@@ -487,13 +552,53 @@
             }
         }
 
+        /* Keep the navigation rail visible on tablets and iPads. */
+        @media (min-width: 37.5rem) and (max-width: 80rem) {
+            #sidebarOverlay { display: none !important; }
+            #sidebar {
+                inset: 3.5rem auto 0 0 !important;
+                width: 18rem !important;
+                min-width: 18rem !important;
+                max-width: 18rem !important;
+                height: calc(100dvh - 3.5rem) !important;
+                max-height: none !important;
+                opacity: 1 !important;
+                transform: translateX(0) !important;
+                transition: width .3s ease !important;
+            }
+            #sidebar.sidebar-collapsed,
+            #sidebar.sidebar-collapsed-init {
+                width: 4.5rem !important;
+                min-width: 4.5rem !important;
+                max-width: 4.5rem !important;
+            }
+            #sidebar.sidebar-collapsed .sidebar-text,
+            #sidebar.sidebar-collapsed-init .sidebar-text {
+                opacity: 0 !important;
+                max-width: 0 !important;
+            }
+            #sidebarCloseBtn,
+            #mobileMenuToggle { display: none !important; }
+            #sidebarToggleBtn {
+                display: flex !important;
+                top: calc(3.5rem + 1.5rem) !important;
+            }
+            .portal-ui #sidebar ~ #mainContent {
+                width: calc(100vw - 18rem) !important;
+                min-width: 0 !important;
+                margin-left: 18rem !important;
+                overflow-x: hidden;
+            }
+            .portal-ui #sidebar.sidebar-collapsed ~ #mainContent,
+            .portal-ui #sidebar.sidebar-collapsed-init ~ #mainContent {
+                width: calc(100vw - 4.5rem) !important;
+                margin-left: 4.5rem !important;
+            }
+        }
+
         @if(auth()->user()?->isDepartmentAdmin())
         /* Keep BCPC and SWD administrator pages within the tablet viewport. */
         @media (min-width: 37.5rem) and (max-width: 80rem) {
-            #mobileTopBar {
-                display: none !important;
-            }
-
             #mainContent > :is(main, div, section) {
                 min-width: 0;
                 max-width: 100%;
@@ -579,7 +684,6 @@
 
         /* Phone header: retain navigation, title, notifications, and avatar only. */
         @media (max-width: 40rem) {
-            #mobileTopBar,
             #mainContent .portal-page-clock,
             #mainContent .portal-clock-only-header,
             #mainContent .department-admin-tablet-role-badge {
@@ -628,13 +732,49 @@
                 display: none !important;
             }
         }
+
+        @if(request()->routeIs('admin-dashboard'))
+        /* Apply after portal-theme.css so the mobile dashboard alignment wins. */
+        @media (max-width: 63.9375rem) {
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div {
+                padding-left: 0 !important;
+                padding-right: max(1rem, env(safe-area-inset-right)) !important;
+                align-items: flex-start !important;
+            }
+            body.portal-ui.admin-dashboard-mobile-nav #dashboardMenuToggle {
+                position: relative !important;
+                left: 0 !important;
+                margin-left: 0 !important;
+                transform: none !important;
+            }
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-child {
+                flex-direction: row !important;
+                align-items: flex-start !important;
+                gap: .5rem !important;
+            }
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-child > div {
+                width: auto !important;
+                flex: 1 1 auto !important;
+                text-align: left !important;
+            }
+        }
+        @endif
     </style>
     
     <script>
         document.documentElement.classList.add('js');
     </script>
+    <link rel="stylesheet" href="{{ asset('css/portal-modals.css') }}?v={{ filemtime(public_path('css/portal-modals.css')) }}">
+    <script src="{{ asset('js/archive-case-modal-design.js') }}?v={{ filemtime(public_path('js/archive-case-modal-design.js')) }}" defer></script>
+    <script src="{{ asset('js/portal-modal-close.js') }}?v={{ filemtime(public_path('js/portal-modal-close.js')) }}" defer></script>
+    <link rel="stylesheet" href="{{ asset('css/logout-modal.css') }}?v={{ filemtime(public_path('css/logout-modal.css')) }}">
+    @if(auth()->user()?->isBcpcAdmin())
+    <link rel="stylesheet" href="{{ asset('css/bcpc-admin-modals.css') }}?v={{ filemtime(public_path('css/bcpc-admin-modals.css')) }}">
+    <script src="{{ asset('js/bcpc-admin-modal-design.js') }}?v={{ filemtime(public_path('js/bcpc-admin-modal-design.js')) }}" defer></script>
+    @endif
+    <script src="{{ asset('js/portal-modal-presentation.js') }}?v={{ filemtime(public_path('js/portal-modal-presentation.js')) }}" defer></script>
 </head>
-<body class="portal-ui {{ auth()->user()?->isBcpcAdmin() ? 'bcpc-admin-header-theme' : (auth()->user()?->isVawcAdmin() ? 'swd-admin-header-theme' : '') }} font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased" style="--portal-user-initials: '{{ strtoupper(mb_substr((string) auth()->user()?->first_name, 0, 1) . mb_substr((string) auth()->user()?->last_name, 0, 1)) }}';">
+<body class="portal-ui {{ request()->routeIs('admin-dashboard') ? 'admin-dashboard-mobile-nav' : '' }} {{ auth()->user()?->isBcpcAdmin() ? 'bcpc-admin-header-theme' : (auth()->user()?->isVawcAdmin() ? 'swd-admin-header-theme' : '') }} font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased" style="--portal-user-initials: '{{ strtoupper(mb_substr((string) auth()->user()?->first_name, 0, 1) . mb_substr((string) auth()->user()?->last_name, 0, 1)) }}';">
     
     <!-- Mobile Sticky Top Bar -->
     <div id="mobileTopBar" class="lg:hidden sticky top-0 z-30 bg-purple-900 text-white flex items-center justify-between px-4 py-2.5 shadow-md border-b border-purple-800">
@@ -644,6 +784,8 @@
                 id="mobileMenuToggle" 
                 class="bg-purple-800/80 hover:bg-purple-700 text-white p-2 rounded-lg transition-colors focus:outline-none flex items-center justify-center w-9 h-9"
                 aria-label="Toggle menu"
+                aria-controls="sidebar"
+                aria-expanded="false"
             >
                 <i class="fas fa-bars text-base"></i>
             </button>
@@ -696,6 +838,7 @@
             id="sidebarCloseBtn"
             class="lg:hidden absolute -right-4 top-6 w-8 h-8 bg-purple-600 rounded-full shadow-lg flex items-center justify-center text-white hover:bg-purple-700"
             aria-label="Close sidebar"
+            aria-controls="sidebar"
         >
             <i class="fas fa-chevron-left text-sm"></i>
         </button>
@@ -1015,6 +1158,8 @@
                shadow-lg shadow-gray-600/60 hover:shadow-xl hover:bg-gray-50 
                transition-all duration-200 border border-gray-300"
         aria-label="Toggle sidebar"
+        aria-controls="sidebar"
+        aria-expanded="true"
         title="Toggle sidebar"
     >
         <i class="fas fa-chevron-left text-gray-600 text-xs transition-transform duration-300"></i>
@@ -1066,6 +1211,8 @@
         const sidebar = document.getElementById('sidebar');
         const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const dashboardMenuToggle = document.getElementById('dashboardMenuToggle');
+        const mobileMenuToggles = [mobileMenuToggle, dashboardMenuToggle].filter(Boolean);
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
         const sidebarStateKey = @json($adminSidebarStateKey);
@@ -1078,14 +1225,19 @@
         @else
         localStorage.setItem(sidebarStateKey, 'false');
         @endif
-        
+        if (sidebarToggleBtn && sidebar) {
+            sidebarToggleBtn.setAttribute('aria-expanded', String(!sidebar.classList.contains('sidebar-collapsed')));
+        }
+
         function collapseSidebar() {
             sidebar.classList.add('sidebar-collapsed');
+            if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'false');
             localStorage.setItem(sidebarStateKey, 'true');
         }
         
         function expandSidebar() {
             sidebar.classList.remove('sidebar-collapsed');
+            if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'true');
             localStorage.setItem(sidebarStateKey, 'false');
             // Remove the initial collapsed style if it exists
             const initialStyle = document.getElementById('sidebar-initial-collapsed-style');
@@ -1116,14 +1268,30 @@
         }
         
         // Mobile toggle - open sidebar
-        if (mobileMenuToggle) {
-            mobileMenuToggle.addEventListener('click', function(e) {
+        if (mobileMenuToggles.length) {
+            mobileMenuToggles.forEach(function(menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
+                if (document.body.classList.contains('admin-dashboard-mobile-nav') && window.matchMedia('(max-width: 63.9375rem)').matches && sidebar.classList.contains('sidebar-open')) {
+                    closeMobileSidebar();
+                    return;
+                }
                 // Open sidebar with fade in from left
                 sidebar.classList.add('sidebar-open');
+                mobileMenuToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'true'));
+                if (document.body.classList.contains('admin-dashboard-mobile-nav')) {
+                    document.body.style.overflow = 'hidden';
+                    mobileMenuToggles.forEach(toggle => {
+                        toggle.setAttribute('aria-label', 'Close navigation menu');
+                        toggle.querySelector('i')?.classList.replace('fa-bars', 'fa-xmark');
+                    });
+                    const dashboardHeader = document.getElementById('admin-dashboard-header');
+                    if (dashboardHeader) sidebar.style.setProperty('top', `${dashboardHeader.getBoundingClientRect().bottom}px`, 'important');
+                }
                 // Show overlay
-                sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                if (sidebarOverlay) sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                });
             });
         }
         
@@ -1131,8 +1299,17 @@
         function closeMobileSidebar() {
             // Close sidebar with fade out to left
             sidebar.classList.remove('sidebar-open');
+            mobileMenuToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'false'));
+            if (document.body.classList.contains('admin-dashboard-mobile-nav')) {
+                document.body.style.overflow = '';
+                mobileMenuToggles.forEach(toggle => {
+                    toggle.setAttribute('aria-label', 'Open navigation menu');
+                    toggle.querySelector('i')?.classList.replace('fa-xmark', 'fa-bars');
+                });
+                sidebar.style.removeProperty('top');
+            }
             // Hide overlay
-            sidebarOverlay.classList.add('opacity-0', 'pointer-events-none');
+            if (sidebarOverlay) sidebarOverlay.classList.add('opacity-0', 'pointer-events-none');
         }
         
         // Close sidebar on overlay click (mobile)
@@ -1151,6 +1328,16 @@
                 closeMobileSidebar();
             });
         }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sidebar?.classList.contains('sidebar-open')) {
+                closeMobileSidebar();
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            if (window.matchMedia('(min-width: 80.0625rem)').matches) closeMobileSidebar();
+        });
         
         // Handle logout button
         const logoutForm = document.getElementById('logout-form');
@@ -1162,18 +1349,15 @@
                 
                 Swal.fire({
                     title: 'Logout',
-                    html: '<div class="text-center py-4">' +
-                        '<i class="fas fa-sign-out-alt text-5xl text-purple-500 mb-4"></i>' +
-                        '<p class="text-gray-700">Are you sure you want to log out?</p>' +
-                        '</div>',
-                    showCancelButton: true,
+        html: '<svg class="logout-modal-symbol" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M12 5l7 7-7 7v-4H7V9h5V5Z" fill="currentColor"/></svg><p class="logout-modal-message">Are you sure you want to log out?</p>',
+        showCancelButton: true,
                     confirmButtonText: 'Yes, log me out',
                     cancelButtonText: 'Cancel',
                     confirmButtonColor: '#b91c1c',
                     cancelButtonColor: '#ef4444',
                     reverseButtons: true,
                     customClass: {
-                        popup: 'rounded-xl',
+                        popup: 'rounded-xl app-logout-modal',
                         container: 'swal2-container-high-z'
                     }
                 }).then((result) => {

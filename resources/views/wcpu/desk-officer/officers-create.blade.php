@@ -416,7 +416,7 @@
         
         <!-- Incident Details Section -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-orange-600 to-orange-500 px-6 py-4">
+            <div class="bg-[#C41E3A] px-6 py-4" style="background: linear-gradient(90deg, #C41E3A 0%, #A01830 100%);">
                 <h3 class="text-lg font-semibold text-white flex items-center gap-2">
                     <i class="fas fa-exclamation-triangle"></i>
                     Incident Details
@@ -845,7 +845,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     Swal.fire({
                         title: 'Submitting Case...',
                         text: 'Please wait while we record the case details.',
-                        allowOutsideClick: false,
+                        allowOutsideClick: false, showConfirmButton: false,
                         allowEscapeKey: false,
                         didOpen: () => {
                             Swal.showLoading();

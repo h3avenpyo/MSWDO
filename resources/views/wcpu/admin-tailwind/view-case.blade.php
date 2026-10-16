@@ -66,6 +66,18 @@
         $addNewCaseUrl = route('admin-add-new-case');
     }
 @endphp
+@if((auth()->user()->isBcpcAdmin() && request()->boolean('bcpc_modal_preview')) || (auth()->user()->position === 'Desk Officer' && auth()->user()->isMultiCaseDepartment() && request()->boolean('archive_case_preview')))
+<main class="case-profile-details bcpc-shared-case-preview">
+    @include('admin-tailwind._case-details-modal', ['case' => $case, 'useAdminArchivePresentation' => true])
+    @if($case->witness_name || $case->witness_contact)
+    <section class="bcpc-preview-record-information">
+        <h4>Witness Information</h4>
+        <div><span>Name:</span><span>{{ $case->witness_name ?? 'N/A' }}</span></div>
+        <div><span>Contact:</span><span>{{ $case->witness_contact ?? 'N/A' }}</span></div>
+    </section>
+    @endif
+</main>
+@else
 
 @if($case->trashed() || auth()->user()->isBcpcAdmin() || auth()->user()->isVawcAdmin() || auth()->user()->defaultCaseDepartment() === 'BCPC' || (auth()->user()->position === 'Desk Officer' && auth()->user()->defaultCaseDepartment() === 'VAWC'))
 <style>
@@ -161,7 +173,7 @@
         @endif
         <div class="case-details-print-actions flex flex-wrap gap-3">
             @if($case->trashed())
-            <button type="button" disabled class="case-details-action-print inline-flex items-center gap-2 px-4 py-2 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed text-sm font-medium" aria-label="Print unavailable for archived case">
+            <button type="button" disabled class="case-details-action-print inline-flex items-center gap-2 px-4 py-2 bg-red-100 text-red-800 border border-red-200 rounded-lg cursor-not-allowed text-sm font-medium shadow-sm" aria-label="Print unavailable for archived case">
                 <i class="fas fa-print"></i>
                 <span>Print</span>
             </button>
@@ -173,7 +185,7 @@
             @endif
             @unless($case->trashed() || auth()->user()->isDepartmentAdmin() || auth()->user()->defaultCaseDepartment() === 'BCPC' || (auth()->user()->position === 'Desk Officer' && auth()->user()->defaultCaseDepartment() === 'VAWC'))
             @php $referralUnavailable = auth()->user()->isBcpcAdmin() && preg_match('/referred|closed|complet/i', trim((string) $case->status)); @endphp
-            <button type="button" id="referCaseBtn" {{ $referralUnavailable ? 'disabled' : '' }} class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium {{ $referralUnavailable ? 'cursor-not-allowed bg-gray-300 text-gray-500' : 'bg-purple-700 text-white hover:bg-purple-800 transition-colors' }}">
+            <button type="button" id="referCaseBtn" {{ $referralUnavailable ? 'disabled' : '' }} class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium {{ $referralUnavailable ? 'cursor-not-allowed border border-red-200 bg-red-50 text-red-800' : 'bg-purple-700 text-white hover:bg-purple-800 transition-colors' }}">
                 <i class="fas fa-share-square"></i>
                 <span>Refer Case</span>
             </button>
@@ -421,6 +433,7 @@
     @endif
     
     <!-- Record Metadata -->
+    @unless(auth()->user()->position === 'Desk Officer' && auth()->user()->isMultiCaseDepartment() && request()->boolean('archive_case_preview'))
     <div class="bg-gray-50 rounded-lg p-4 text-xs text-gray-500 print:bg-white print:border print:border-gray-200">
         <div class="flex flex-wrap justify-between gap-4">
             <div>
@@ -430,6 +443,7 @@
             <p class="uppercase tracking-wider">All times Asia/Manila (PST)</p>
         </div>
     </div>
+    @endunless
 </main>
 
 @push('scripts')
@@ -453,4 +467,5 @@ document.getElementById('referCaseBtn')?.addEventListener('click', function() {
 </script>
 @endpush
 
+@endif
 @endsection

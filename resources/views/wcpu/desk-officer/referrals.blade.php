@@ -182,7 +182,7 @@
                                     <i class="fas fa-eye"></i>
                                 </button>
                                 @if($editDisabled)
-                                <button type="button" disabled class="inline-flex items-center justify-center gap-1.5 bg-gray-300 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium cursor-not-allowed" style="background-color: #9ca3af !important; color: #4b5563 !important; border-color: #9ca3af !important;" title="{{ $editDisabledTitle }}">
+                                <button type="button" disabled class="inline-flex items-center justify-center gap-1.5 bg-red-100 text-red-800 px-3 py-1.5 rounded-lg text-xs font-medium cursor-not-allowed" style="background-color: #FEE2E2 !important; color: #991B1B !important; border-color: #FCA5A5 !important;" title="{{ $editDisabledTitle }}">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 @else
@@ -243,7 +243,7 @@
                 <div class="referral-card-actions grid grid-cols-4 gap-2 border-t border-gray-100 pt-3">
                     <button type="button" class="view-referral-btn inline-flex min-h-12 items-center justify-center rounded-lg bg-blue-600 text-white" title="View Details" data-id="{{ $referral->id }}"><i class="fas fa-eye"></i><span class="sr-only">View</span></button>
                     @if($editDisabled)
-                    <button type="button" disabled class="inline-flex min-h-12 items-center justify-center rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed" style="background-color: #9ca3af !important; color: #4b5563 !important; border-color: #9ca3af !important;" title="{{ $editDisabledTitle }}"><i class="fas fa-edit"></i><span class="sr-only">Edit</span></button>
+                    <button type="button" disabled class="inline-flex min-h-12 items-center justify-center rounded-lg bg-red-100 text-red-800 cursor-not-allowed" style="background-color: #FEE2E2 !important; color: #991B1B !important; border-color: #FCA5A5 !important;" title="{{ $editDisabledTitle }}"><i class="fas fa-edit"></i><span class="sr-only">Edit</span></button>
                     @else
                     <button type="button" class="edit-referral-btn inline-flex min-h-12 items-center justify-center rounded-lg bg-purple-700 text-white" title="Edit" data-id="{{ $referral->id }}"><i class="fas fa-edit"></i><span class="sr-only">Edit</span></button>
                     @endif
@@ -271,7 +271,7 @@
 <div class="modal fade" id="referralDetailsModal" tabindex="-1" aria-labelledby="referralDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 720px;">
         <div class="modal-content">
-            <div class="modal-header bg-[#C41E3A] text-white" style="background-color: #C41E3A !important; color: white !important;">
+            <div class="modal-header bg-[#C41E3A] text-white" style="background-color: var(--modal-brand, #B11116) !important; color: white !important;">
                 <h5 class="modal-title text-white flex items-center gap-2" id="referralDetailsModalLabel">
                     <i id="deskReferralModalIcon" class="fas fa-file-alt"></i>
                     <span id="deskReferralModalHeading">Referral Details</span>

@@ -28,7 +28,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -74,6 +74,17 @@
     <style>
         /* Hide elements with x-cloak until Alpine.js initializes */
         [x-cloak] { display: none !important; }
+        /* Unify colored primary actions across BCPC/SWD and multi-role desk pages. */
+        .portal-ui #mainContent :is(button, a):is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]):not(:disabled):not([aria-disabled="true"]) {
+            background-color: #C41E3A !important;
+            border-color: #C41E3A !important;
+            color: #ffffff !important;
+        }
+        .portal-ui #mainContent :is(button, a):is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]):not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active) {
+            background-color: #A01830 !important;
+            border-color: #A01830 !important;
+            color: #ffffff !important;
+        }
         #sidebar [x-show] > a, #sidebar [x-show] > button { font-family: inherit; font-size: .875rem; line-height: 1.25rem; font-weight: 500; }
         #sidebar [x-show] > a > i, #sidebar [x-show] > button > i { font-size: .875rem; width: 1rem; text-align: center; flex-shrink: 0; }
         @media (min-width: 37.5rem) and (max-width: 79.9375rem) {
@@ -116,6 +127,46 @@
         }
         @endif
         
+        /* Muted red treatment for disabled controls on BCPC and SWD pages.
+           This native-state selector leaves clickable archive/deactivate actions unchanged. */
+        .portal-ui #mainContent button:disabled,
+        .portal-ui #mainContent input[type="button"]:disabled,
+        .portal-ui #mainContent input[type="submit"]:disabled,
+        .portal-ui #mainContent [role="button"][aria-disabled="true"],
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button) {
+            background-color: #FEE2E2 !important;
+            border-color: #FCA5A5 !important;
+            color: #991B1B !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+            transition: none !important;
+        }
+        .portal-ui #mainContent button:disabled:is(:hover, :focus, :active),
+        .portal-ui #mainContent input[type="button"]:disabled:is(:hover, :focus, :active),
+        .portal-ui #mainContent input[type="submit"]:disabled:is(:hover, :focus, :active),
+        .portal-ui #mainContent [role="button"][aria-disabled="true"]:is(:hover, :focus, :active),
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button):is(:hover, :focus, :active) {
+            background-color: #FEE2E2 !important;
+            border-color: #FCA5A5 !important;
+            color: #991B1B !important;
+            box-shadow: 0 2px 6px rgba(196, 30, 58, .12) !important;
+            transform: none !important;
+            filter: none !important;
+        }
+        .portal-ui #mainContent button:disabled > :is(i, svg),
+        .portal-ui #mainContent button:disabled > :is(span, .case-card-action-label) > :is(i, svg),
+        .portal-ui #mainContent [role="button"][aria-disabled="true"] > :is(i, svg),
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button) > :is(i, svg) {
+            color: #B91C1C !important;
+            stroke: currentColor;
+        }
+        .portal-ui #mainContent button:disabled,
+        .portal-ui #mainContent [role="button"][aria-disabled="true"],
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button) {
+            box-shadow: 0 2px 6px rgba(196, 30, 58, .12) !important;
+            opacity: 1 !important;
+        }
+
         /* SweetAlert2 high z-index override */
         .swal2-container-high-z { z-index: 9999 !important; }
         .swal2-container.swal2-backdrop-show { z-index: 9999 !important; }
@@ -388,6 +439,20 @@
             transition: none !important;
         }
 
+        /* Keep the only phone/tablet sidebar entry point visible. */
+        @media (max-width: 80rem) {
+            #mobileTopBar { display: flex !important; }
+            #mobileMenuToggle {
+                display: flex !important;
+                flex: 0 0 2.25rem;
+                width: 2.25rem;
+                height: 2.25rem;
+                align-items: center;
+                justify-content: center;
+                visibility: visible !important;
+            }
+        }
+
         @media (min-width: 37.5rem) and (max-width: 80rem) {
             #mobileTopBar { display: flex !important; }
             #mobileTopBar .multi-role-mobile-brand {
@@ -451,25 +516,19 @@
             }
         }
 
-        /* Keep shared Desk Officer pages stable across tablet portrait and landscape. */
-        @media (min-width: 40.0625rem) and (max-width: 80rem) {
-            .portal-ui #mainContent {
-                padding-left: .75rem !important;
-                padding-right: .75rem !important;
-            }
-            #mobileTopBar,
-            #mobileMenuToggle,
-            #sidebarOverlay,
-            #sidebarCloseBtn {
-                display: none !important;
-            }
+        /* Keep the navigation rail visible on tablets and iPads. */
+        @media (min-width: 37.5rem) and (max-width: 80rem) {
+            #sidebarOverlay { display: none !important; }
             #sidebar {
+                inset: 3.5rem auto 0 0 !important;
                 width: 18rem !important;
                 min-width: 18rem !important;
                 max-width: 18rem !important;
-                height: 100vh !important;
+                height: calc(100dvh - 3.5rem) !important;
+                max-height: none !important;
                 opacity: 1 !important;
                 transform: translateX(0) !important;
+                transition: width .3s ease !important;
             }
             #sidebar.sidebar-collapsed,
             #sidebar.sidebar-collapsed-init {
@@ -482,19 +541,13 @@
                 opacity: 0 !important;
                 max-width: 0 !important;
             }
+            #sidebarCloseBtn,
+            #mobileMenuToggle { display: none !important; }
             #sidebarToggleBtn {
                 display: flex !important;
+                top: calc(3.5rem + 1.5rem) !important;
             }
-            #mainContent .tablet-header-row {
-                grid-template-columns: minmax(0, 1fr) auto !important;
-            }
-            #mainContent .tablet-header-row > #mobileMenuToggle + div {
-                grid-column: 1 !important;
-            }
-            #mainContent .tablet-header-row > #mobileMenuToggle + div ~ div:last-child {
-                grid-column: 2 !important;
-            }
-            .portal-ui #mainContent {
+            .portal-ui #sidebar ~ #mainContent {
                 width: calc(100vw - 18rem) !important;
                 min-width: 0 !important;
                 margin-left: 18rem !important;
@@ -504,6 +557,23 @@
             .portal-ui #sidebar.sidebar-collapsed-init ~ #mainContent {
                 width: calc(100vw - 4.5rem) !important;
                 margin-left: 4.5rem !important;
+            }
+        }
+
+        /* Keep shared Desk Officer pages stable across tablet portrait and landscape. */
+        @media (min-width: 40.0625rem) and (max-width: 80rem) {
+            .portal-ui #mainContent {
+                padding-left: .75rem !important;
+                padding-right: .75rem !important;
+            }
+            #mainContent .tablet-header-row {
+                grid-template-columns: minmax(0, 1fr) auto !important;
+            }
+            #mainContent .tablet-header-row > #mobileMenuToggle + div {
+                grid-column: 1 !important;
+            }
+            #mainContent .tablet-header-row > #mobileMenuToggle + div ~ div:last-child {
+                grid-column: 2 !important;
             }
             #mainContent > :is(main, div, section) {
                 min-width: 0;
@@ -565,10 +635,6 @@
 
         /* Tablet header: retain the existing controls in one white page header. */
         @media (min-width: 40.0625rem) and (max-width: 80rem) {
-            #mobileTopBar {
-                display: none !important;
-            }
-
             #mainContent .tablet-header-row {
                 display: grid !important;
                 grid-template-columns: 2.25rem minmax(0, 1fr) auto;
@@ -622,7 +688,6 @@
         /* ── Mobile-responsive overrides ── */
         /* Phone header: retain navigation, title, notifications, and avatar only. */
         @media (max-width: 40rem) {
-            #mobileTopBar,
             #mainContent .portal-page-clock,
             #mainContent .portal-clock-only-header,
             #mainContent .desk-officer-tablet-role-badge {
@@ -760,6 +825,11 @@
     <script>
         document.documentElement.classList.add('js');
     </script>
+    <link rel="stylesheet" href="{{ asset('css/portal-modals.css') }}?v={{ filemtime(public_path('css/portal-modals.css')) }}">
+    <script src="{{ asset('js/archive-case-modal-design.js') }}?v={{ filemtime(public_path('js/archive-case-modal-design.js')) }}" defer></script>
+    <script src="{{ asset('js/portal-modal-close.js') }}?v={{ filemtime(public_path('js/portal-modal-close.js')) }}" defer></script>
+    <link rel="stylesheet" href="{{ asset('css/logout-modal.css') }}?v={{ filemtime(public_path('css/logout-modal.css')) }}">
+    <script src="{{ asset('js/portal-modal-presentation.js') }}?v={{ filemtime(public_path('js/portal-modal-presentation.js')) }}" defer></script>
 </head>
 <body class="portal-ui {{ auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) ? 'desk-officer-header-theme' : '' }} font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased overflow-x-hidden" style="--portal-user-initials: '{{ strtoupper(mb_substr((string) auth()->user()?->first_name, 0, 1) . mb_substr((string) auth()->user()?->last_name, 0, 1)) }}';">
 @php
@@ -815,6 +885,8 @@
                 id="mobileMenuToggle" 
                 class="bg-purple-800/80 hover:bg-purple-700 text-white p-2 rounded-lg transition-colors focus:outline-none flex items-center justify-center w-9 h-9"
                 aria-label="Toggle menu"
+                aria-controls="sidebar"
+                aria-expanded="false"
             >
                 <i class="fas fa-bars text-base"></i>
             </button>
@@ -868,6 +940,7 @@
             id="sidebarCloseBtn"
             class="lg:hidden absolute -right-4 top-6 w-8 h-8 bg-purple-600 rounded-full shadow-lg flex items-center justify-center text-white hover:bg-purple-700"
             aria-label="Close sidebar"
+            aria-controls="sidebar"
         >
             <i class="fas fa-chevron-left text-sm"></i>
         </button>
@@ -1049,6 +1122,8 @@
                shadow-lg shadow-gray-600/60 hover:shadow-xl hover:bg-gray-50 
                transition-all duration-200 border border-gray-300"
         aria-label="Toggle sidebar"
+        aria-controls="sidebar"
+        aria-expanded="true"
         title="Toggle sidebar"
     >
         <i class="fas fa-chevron-left text-gray-600 text-xs transition-transform duration-300"></i>
@@ -1332,6 +1407,8 @@
         const sidebar = document.getElementById('sidebar');
         const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const pageMobileMenuToggle = document.getElementById('pageMobileMenuToggle');
+        const mobileMenuToggles = [mobileMenuToggle, pageMobileMenuToggle].filter(Boolean);
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
         const sidebarStateKey = @json($deskOfficerSidebarStateKey);
@@ -1344,9 +1421,14 @@
         @else
         localStorage.setItem(sidebarStateKey, 'false');
         @endif
-        
+
+        if (sidebarToggleBtn && sidebar) {
+            sidebarToggleBtn.setAttribute('aria-expanded', String(!sidebar.classList.contains('sidebar-collapsed')));
+        }
+
         function collapseSidebar() {
             if (sidebar) sidebar.classList.add('sidebar-collapsed');
+            if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'false');
             localStorage.setItem(sidebarStateKey, 'true');
             @if($persistsDeskOfficerSidebar)
             document.documentElement.classList.add('bcpc-desk-sidebar-collapsed');
@@ -1355,6 +1437,7 @@
         
         function expandSidebar() {
             if (sidebar) sidebar.classList.remove('sidebar-collapsed');
+            if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'true');
             localStorage.setItem(sidebarStateKey, 'false');
             @if($persistsDeskOfficerSidebar)
             document.documentElement.classList.remove('bcpc-desk-sidebar-collapsed');
@@ -1378,16 +1461,24 @@
         }
         
         // Mobile toggle - open sidebar
-        if (mobileMenuToggle) {
-            mobileMenuToggle.addEventListener('click', function() {
+        mobileMenuToggles.forEach(function(toggle) {
+            toggle.addEventListener('click', function() {
                 if (sidebar) sidebar.classList.add('sidebar-open');
+                mobileMenuToggles.forEach(function(menuToggle) {
+                    menuToggle.setAttribute('aria-expanded', 'true');
+                    menuToggle.setAttribute('aria-label', 'Close navigation menu');
+                });
                 if (sidebarOverlay) sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
             });
-        }
+        });
         
         // Function to close mobile sidebar
         function closeMobileSidebar() {
             if (sidebar) sidebar.classList.remove('sidebar-open');
+            mobileMenuToggles.forEach(function(toggle) {
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.setAttribute('aria-label', 'Open navigation menu');
+            });
             if (sidebarOverlay) sidebarOverlay.classList.add('opacity-0', 'pointer-events-none');
         }
         
@@ -1398,6 +1489,16 @@
         if (sidebarCloseBtn) {
             sidebarCloseBtn.addEventListener('click', closeMobileSidebar);
         }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && sidebar?.classList.contains('sidebar-open')) {
+                closeMobileSidebar();
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            if (window.matchMedia('(min-width: 80.0625rem)').matches) closeMobileSidebar();
+        });
 
         // Notification toggle
         const notificationToggle = document.getElementById('desk-officer-notification-toggle');
@@ -1424,18 +1525,15 @@
                 
                 Swal.fire({
                     title: 'Logout',
-                    html: '<div class="text-center py-4">' +
-                        '<i class="fas fa-sign-out-alt text-5xl text-purple-500 mb-4"></i>' +
-                        '<p class="text-gray-700">Are you sure you want to log out?</p>' +
-                        '</div>',
-                    showCancelButton: true,
+        html: '<svg class="logout-modal-symbol" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M12 5l7 7-7 7v-4H7V9h5V5Z" fill="currentColor"/></svg><p class="logout-modal-message">Are you sure you want to log out?</p>',
+        showCancelButton: true,
                     confirmButtonText: 'Yes, log me out',
                     cancelButtonText: 'Cancel',
                     confirmButtonColor: '#b91c1c',
                     cancelButtonColor: '#ef4444',
                     reverseButtons: true,
                     customClass: {
-                        popup: 'rounded-xl',
+                        popup: 'rounded-xl app-logout-modal',
                         container: 'swal2-container-high-z'
                     }
                 }).then((result) => {

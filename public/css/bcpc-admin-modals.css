@@ -1,0 +1,169 @@
+/* BCPC-only presentation parity with the WCPU Admin modal implementation.
+   Loaded only for BCPC administrators. No visibility or action changes. */
+@media screen {
+    body.portal-ui.bcpc-admin-header-theme :is(dialog, div[id$="Modal"], .modal[id], .swal2-popup, [role="alertdialog"]) {
+        --modal-brand: #B11116;
+        --modal-brand-hover: #8A0D11;
+        --modal-canvas: #F5F7FB;
+        --modal-surface: #FFFFFF;
+        --modal-border: #E5E7EB;
+        --modal-text: #111827;
+        --modal-muted: #6B7280;
+        font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif !important;
+        font-size: 14px;
+        line-height: 1.5;
+        text-align: left;
+    }
+    body.portal-ui.bcpc-admin-header-theme :is(div[id$="Modal"] > .bg-white, div[id$="Modal"] > div > .bg-white, div[id$="Modal"] > div > div > .bg-white, .modal-content, .swal2-popup) {
+        border: 1px solid #E5E7EB !important;
+        border-radius: 14px !important;
+        background-color: #F5F7FB !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, .15) !important;
+    }
+    body.portal-ui.bcpc-admin-header-theme :is(#userModal, #editModal, #recipientModal, #viewRecipientModal, #viewArchivedRecipientModal, #activityModal, #referralModal, #addMonitoringModal, #generateReportModal, #caseModal, #editCaseModal) .bg-white > div:first-child:has(h3, h5) {
+        padding: 12px 20px !important;
+        background: #B11116 !important;
+        color: #fff !important;
+        border-bottom: 1px solid #8A0D11 !important;
+    }
+    body.portal-ui.bcpc-admin-header-theme :is(#userModal, #editModal, #recipientModal, #viewRecipientModal, #viewArchivedRecipientModal, #activityModal, #referralModal, #addMonitoringModal, #generateReportModal, #caseModal, #editCaseModal) .bg-white > div:first-child :is(h3, h5) {
+        margin: 0 !important;
+        color: #fff !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        line-height: 1.5;
+    }
+    body.portal-ui.bcpc-admin-header-theme :is(#userModalContent, #editModalContent, #modalContent, #viewRecipientContent, #viewArchivedRecipientContent, #referralDetails, #recipientForm, #add-monitoring-form, #generate-monitoring-report-form) {
+        padding: 16px 20px !important;
+        min-height: 0;
+        overscroll-behavior: contain;
+        text-align: left;
+    }
+    body.portal-ui.bcpc-admin-header-theme :is(dialog, div[id$="Modal"], .modal[id], .swal2-popup) :is(.grid, .referral-detail-grid) { gap: 12px !important; }
+    body.portal-ui.bcpc-admin-header-theme :is(dialog, div[id$="Modal"], .modal[id], .swal2-popup) :is(label, .form-label) { font-size: 13px; line-height: 1.5; }
+    body.portal-ui.bcpc-admin-header-theme :is(dialog, div[id$="Modal"], .modal[id], .swal2-popup) :is(input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea) {
+        font-family: inherit !important;
+        font-size: 14px;
+        border-radius: 8px !important;
+        line-height: 1.5;
+    }
+    body.portal-ui.bcpc-admin-header-theme :is(dialog, div[id$="Modal"], .modal[id], .swal2-popup) :is(dt, .detail-label, p.text-xs:has(+ p)) {
+        font-size: .72rem !important;
+        font-weight: 600 !important;
+        letter-spacing: .04em;
+        color: #9CA3AF !important;
+        text-transform: uppercase;
+        margin-bottom: 4px !important;
+    }
+    body.portal-ui.bcpc-admin-header-theme :is(dialog, div[id$="Modal"], .modal[id], .swal2-popup) :is(dd, .detail-value, p.text-xs + p) {
+        padding: 6px 10px !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 6px !important;
+        background: #fff !important;
+        color: #111827 !important;
+        font-size: 13px !important;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+        text-align: left;
+    }
+    body.portal-ui.bcpc-admin-header-theme :is(dialog, div[id$="Modal"], .modal[id], .swal2-popup) :is(.modal-footer, .portal-modal-dismiss-footer, .swd-archive-dialog-footer),
+    body.portal-ui.bcpc-admin-header-theme :is(.admin-user-modal-card, .archived-user-modal-card, .archived-recipient-modal-card) > .border-t {
+        padding: 10px 20px !important;
+        border-top: 1px solid #E5E7EB !important;
+        background: #fff !important;
+        justify-content: flex-end !important;
+        gap: 10px;
+    }
+    body.portal-ui.bcpc-admin-header-theme .swal2-popup:is(.admin-archive-view-popup, .admin-archived-referral-popup) {
+        padding: 0 !important;
+        max-height: min(88dvh, calc(100dvh - 2rem));
+    }
+    body.portal-ui.bcpc-admin-header-theme .swal2-popup:is(.admin-archive-view-popup, .admin-archived-referral-popup) > .swal2-title {
+        margin: 0 !important;
+        padding: 14px 20px !important;
+        background: #B11116 !important;
+        color: #fff !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        text-align: left;
+    }
+    body.portal-ui.bcpc-admin-header-theme .swal2-popup.admin-archive-view-popup--case { width: min(1100px, calc(100vw - 2rem)) !important; }
+    body.portal-ui.bcpc-admin-header-theme .swal2-popup:not(.admin-archive-view-popup):not(.admin-archived-referral-popup):not(.app-logout-modal) > .swal2-title {
+        color: #B11116 !important;
+        font-size: 1.35rem !important;
+        font-weight: 700 !important;
+        text-align: center;
+    }
+    body.portal-ui.bcpc-admin-header-theme .swal2-popup:not(.admin-archive-view-popup):not(.admin-archived-referral-popup):not(.app-logout-modal) > .swal2-html-container { text-align: center; }
+    body.portal-ui.bcpc-admin-header-theme .swal2-popup:not(.app-logout-modal) .swal2-actions button { margin: 0 !important; padding: 10px 24px !important; border-radius: 8px !important; font-size: 14px; font-weight: 600 !important; }
+    body.portal-ui.bcpc-admin-header-theme .swal2-popup .swal2-confirm { background: #B11116 !important; color: #fff !important; }
+    body.portal-ui.bcpc-admin-header-theme .swal2-popup .swal2-cancel { background: #6B7280 !important; color: #fff !important; }
+    /* Archived recipient details use the same compact grid as Recipient Details. */
+    body.portal-ui.bcpc-admin-header-theme #viewArchivedRecipientContent > .bg-gray-50 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+    }
+    body.portal-ui.bcpc-admin-header-theme #viewArchivedRecipientContent > .bg-gray-50 > div { min-width: 0; margin: 0 !important; }
+    body.portal-ui.bcpc-admin-header-theme #viewArchivedRecipientContent > .bg-gray-50 > div:nth-child(-n+2) { grid-column: 1 / -1; }
+    /* Full-page archive content is styled only inside its existing preview frame. */
+    body.portal-ui.bcpc-admin-header-theme.archive-case-modal-preview .case-profile-details > .bg-white { margin-bottom: 0 !important; }
+    body.portal-ui.bcpc-admin-header-theme.archive-case-modal-preview .case-profile-details .detail-row {
+        gap: 4px !important;
+        text-align: left;
+    }
+    body.portal-ui.bcpc-admin-header-theme.archive-case-modal-preview .archive-case-person-card .detail-row {
+        grid-template-columns: 128px minmax(0, 1fr);
+        gap: 12px !important;
+        padding: 10px 16px !important;
+    }
+    body.portal-ui.bcpc-admin-header-theme.archive-case-modal-preview .case-profile-details > .bg-white > .p-6 { padding: 0 !important; }
+    body.portal-ui.bcpc-admin-header-theme.archive-case-modal-preview .case-profile-details > .bg-white > .p-6 > .grid { grid-template-columns: minmax(0, 1fr) !important; gap: 0 !important; margin: 0 !important; }
+    body.portal-ui.bcpc-admin-header-theme.archive-case-modal-preview .case-profile-details :is(.bcpc-case-detail-row, div:has(> p.text-xs + p), div:has(> p.text-xs + div)) {
+        display: grid !important;
+        grid-template-columns: 128px minmax(0, 1fr) !important;
+        gap: 12px !important;
+        align-items: start !important;
+        margin: 0 !important;
+        padding: 10px 16px !important;
+        border-bottom: 1px solid #f3f4f6 !important;
+        border-radius: 0 !important;
+        background: #fff !important;
+    }
+    body.portal-ui.bcpc-admin-header-theme.archive-case-modal-preview :is(.bcpc-case-detail-row, div:has(> p.text-xs + p), div:has(> p.text-xs + div)) > :first-child {
+        margin: 0 !important;
+        padding: 0 !important;
+        color: #6B7280 !important;
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        text-transform: none !important;
+        letter-spacing: normal !important;
+        line-height: 1.5;
+    }
+    body.portal-ui.bcpc-admin-header-theme.archive-case-modal-preview :is(.bcpc-case-detail-row, div:has(> p.text-xs + p), div:has(> p.text-xs + div)) > :last-child {
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        color: #111827 !important;
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        line-height: 1.5;
+        text-align: left !important;
+        overflow-wrap: anywhere;
+    }
+}
+@media screen and (max-width: 575.98px) {
+    body.portal-ui.bcpc-admin-header-theme #viewArchivedRecipientContent > .bg-gray-50 { grid-template-columns: minmax(0, 1fr); }
+    body.portal-ui.bcpc-admin-header-theme :is(#userModalContent, #editModalContent, #modalContent, #viewRecipientContent, #viewArchivedRecipientContent, #referralDetails, #recipientForm, #add-monitoring-form, #generate-monitoring-report-form) { padding: 14px 16px !important; }
+    body.portal-ui.bcpc-admin-header-theme.archive-case-modal-preview .archive-case-person-card .detail-row { grid-template-columns: minmax(0, 1fr); gap: 4px !important; }
+    body.portal-ui.bcpc-admin-header-theme.archive-case-modal-preview .case-profile-details :is(.bcpc-case-detail-row, div:has(> p.text-xs + p), div:has(> p.text-xs + div)) { grid-template-columns: minmax(0, 1fr) !important; gap: 4px !important; }
+}
+

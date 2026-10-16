@@ -37,7 +37,12 @@
         if (!doc) return;
 
         const frameUrl = new URL(frame.src, window.location.href);
+        window.applyArchiveReportModalDesign(doc, Swal.getTitle());
         const caseTitle = doc.querySelector('#mainContent > header h2');
+        if (doc.querySelector('.case-profile-details')) {
+            doc.body.classList.add('archive-case-modal-preview');
+            window.applyArchiveCaseModalDesign(doc, Swal.getTitle());
+        }
         const isArchivedDetailHeader = caseTitle?.textContent.trim() === 'Case Details'
             || caseTitle?.textContent.includes('Quarterly Compliance Report')
             || caseTitle?.textContent.includes('Case Monitoring');
@@ -117,6 +122,7 @@
             ? @json(url('/desk-officer/referrals')) + '/' + view.dataset.referralId + '/details?archived=1'
             : view.href;
         Swal.fire({ title, width: isReferral ? 'min(760px, 95vw)' : 'min(1100px, 95vw)',
+            customClass: { popup: `archive-view-modal-popup desk-archive-view-popup swd-archive-detail-popup${isReferral ? ' archived-referral-view-popup' : ''}` },
             html: '<div class="swd-archive-detail" aria-live="polite">Loading details...</div>',
             showCloseButton: true, showConfirmButton: true, confirmButtonText: 'Close', confirmButtonColor: '#7c3aed',
             didOpen: async () => {
@@ -131,17 +137,35 @@
                         const page = new DOMParser().parseFromString(html, 'text/html');
                         page.querySelectorAll('script').forEach(script => script.remove());
                         if (isReferral && page.querySelector('input:not([type="hidden"]), textarea, select')) {
-                            const fields = document.createElement('dl');
-                            fields.className = 'swd-referral-fields';
+                            const grouped = !!page.querySelector('.referral-detail-section');
+                            const fields = document.createElement(grouped ? 'div' : 'dl');
+                            fields.className = grouped ? 'archived-referral-details space-y-3' : 'swd-referral-fields';
+                            const sections = new Map();
                             page.querySelectorAll('input:not([type="hidden"]), textarea, select').forEach(input => {
+                                let list = fields;
+                                const sourceSection = input.closest('.referral-detail-section');
+                                if (grouped && sourceSection) {
+                                    if (!sections.has(sourceSection)) {
+                                        const section = document.createElement('section');
+                                        const heading = document.createElement('h3');
+                                        heading.textContent = sourceSection.querySelector('h3')?.textContent || '';
+                                        const grid = document.createElement('dl');
+                                        grid.className = 'grid grid-cols-1 sm:grid-cols-2';
+                                        section.append(heading, grid);
+                                        fields.appendChild(section);
+                                        sections.set(sourceSection, grid);
+                                    }
+                                    list = sections.get(sourceSection);
+                                }
                                 const field = document.createElement('div');
                                 field.className = 'swd-referral-field';
+                                if (input.closest('.referral-detail-wide')) field.classList.add('sm:col-span-2');
                                 const label = document.createElement('dt');
-                                label.textContent = input.closest('.mb-3, .mb-4')?.querySelector('label')?.textContent.trim() || input.name.replaceAll('_', ' ');
+                                label.textContent = input.closest('.referral-detail-field, .mb-3, .mb-4')?.querySelector('label')?.textContent.trim() || input.name.replaceAll('_', ' ');
                                 const value = document.createElement('dd');
                                 value.textContent = input.tagName === 'SELECT' ? input.selectedOptions[0]?.textContent || '—' : input.value || '—';
                                 field.append(label, value);
-                                fields.appendChild(field);
+                                list.appendChild(field);
                             });
                             if (!fields.children.length) throw new Error('Unable to load referral details.');
                             content.replaceChildren(fields);
@@ -150,6 +174,7 @@
                         } else if (isCase) {
                             if (page.querySelector('#sidebar, #mainContent')) throw new Error('Unable to load case details.');
                             content.replaceChildren(...Array.from(page.body.childNodes));
+                            window.applyArchiveCaseModalDesign(content, Swal.getTitle());
                         } else if (isMonitoring) {
                             const monitoring = page.querySelector('#bcpc-monitoring-form');
                             if (!monitoring) throw new Error('Unable to load monitoring report details.');
@@ -167,6 +192,7 @@
                         } else {
                             const report = page.querySelector('.w-full.max-w-7xl.mx-auto');
                             if (!report) throw new Error('Unable to load report details.');
+                            window.applyArchiveReportModalDesign(page, Swal.getTitle());
                             report.querySelector(':scope > .mb-6.flex')?.remove();
                             report.querySelectorAll('form, button').forEach(control => control.remove());
                             report.className = 'w-full';
@@ -214,8 +240,11 @@
         let reportPreviewClosed = false;
         let reportPreviewFrame = null;
         Swal.fire({
-            title, width: isReferral ? 'min(48rem, calc(100vw - 2rem))' : 'min(68rem, 95vw)', showConfirmButton: false, showCloseButton: true,
-            customClass: { popup: `archive-view-modal-popup desk-archive-view-popup${isReferral ? ' archived-referral-view-popup' : ''}${isReportPreview ? ' multi-role-archived-report-modal' : ''}` },
+            title, width: isReferral ? 'min(48rem, calc(100vw - 2rem))' : 'min(68rem, 95vw)',
+            showConfirmButton: isMultiRoleArchivedCases && isCasePreview,
+            showCloseButton: !(isMultiRoleArchivedCases && isCasePreview),
+            confirmButtonText: 'Close',
+            customClass: { popup: `archive-view-modal-popup desk-archive-view-popup${isReferral ? ' archived-referral-view-popup' : ''}${isReportPreview ? ' multi-role-archived-report-modal' : ''}${isMultiRoleArchivedCases && isCasePreview ? ' multi-role-archived-case-modal' : ''}` },
             willClose: () => {
                 if (!isReportPreview) return;
                 reportPreviewClosed = true;

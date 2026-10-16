@@ -454,6 +454,8 @@ $initials = count($words) >= 2
                         <option value="eligibility_checker" {{ old('role') == 'eligibility_checker' ? 'selected' : '' }}>Social Case Worker — Eligibility Checker</option>
                         <option value="social_worker" {{ old('role') == 'social_worker' ? 'selected' : '' }}>Social Case Worker — Case Encoder</option>
                         <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>System Administrator</option>
+                        <option value="bcpc_admin" {{ old('role') == 'bcpc_admin' ? 'selected' : '' }}>BCPC Administrator</option>
+                        <option value="swd_admin" {{ old('role') == 'swd_admin' ? 'selected' : '' }}>SWD Administrator</option>
                     </select>
                 </div>
                 <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">

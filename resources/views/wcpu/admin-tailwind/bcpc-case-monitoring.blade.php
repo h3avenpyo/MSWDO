@@ -523,6 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function archiveMonitoring(id, barangayName, period) {
     Swal.fire({
         title: 'Archive Case Monitoring?',
+        customClass: { popup: 'bcpc-monitoring-archive-confirm' },
         html: `
             <div class="text-center py-2">
                 <i class="fas fa-archive text-5xl text-amber-500 mb-4"></i>
@@ -541,7 +542,7 @@ function archiveMonitoring(id, barangayName, period) {
             Swal.fire({
                 title: 'Archiving...',
                 text: 'Please wait while we archive this record.',
-                allowOutsideClick: false,
+                allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false,
                 didOpen: () => { Swal.showLoading(); }
             });
 
@@ -559,6 +560,7 @@ function archiveMonitoring(id, barangayName, period) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Archived!',
+                        customClass: { popup: 'bcpc-monitoring-archive-success' },
                         text: data.message || 'Record has been moved to archive.',
                             confirmButtonText: 'OK'
                     }).then(() => location.reload());

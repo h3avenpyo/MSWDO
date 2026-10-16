@@ -283,7 +283,7 @@
             <div class="flex items-center gap-1 sm:gap-2">
                 <button 
                     id="prev-page-btn" 
-                    class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors text-sm"
+                    class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white border border-gray-300 hover:bg-gray-50 disabled:bg-red-100 disabled:text-red-800 disabled:border-red-200 disabled:opacity-100 disabled:cursor-not-allowed rounded-lg transition-colors text-sm"
                     disabled
                 >
                     <i class="fas fa-chevron-left text-gray-600"></i>
@@ -294,7 +294,7 @@
                 <span id="mobile-page-info" class="sm:hidden text-xs text-gray-600 px-2"></span>
                 <button 
                     id="next-page-btn" 
-                    class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors text-sm"
+                    class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white border border-gray-300 hover:bg-gray-50 disabled:bg-red-100 disabled:text-red-800 disabled:border-red-200 disabled:opacity-100 disabled:cursor-not-allowed rounded-lg transition-colors text-sm"
                     disabled
                 >
                     <i class="fas fa-chevron-right text-gray-600"></i>

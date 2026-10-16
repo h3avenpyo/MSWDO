@@ -96,10 +96,12 @@
                 modal.hide();
                 location.reload();
             } else {
-                alert('Failed to save changes');
+                if (window.Swal) Swal.fire({ icon: 'error', title: 'Unable to Update Referral', text: 'Failed to save changes' });
+                else alert('Failed to save changes');
             }
         }).catch(() => {
-            alert('Failed to save changes');
+            if (window.Swal) Swal.fire({ icon: 'error', title: 'Unable to Update Referral', text: 'Failed to save changes' });
+                else alert('Failed to save changes');
         });
     });
 })();
