@@ -143,7 +143,7 @@
                 <input type="text" id="liquidationSearchInput" name="search"
                     class="form-control form-control-sm rounded-3"
                     placeholder="Search by Control No, Beneficiary, Payroll Reference..."
-                    value="{{ request('search') }}" autocomplete="off">
+                    value="{{ request('search') }}" autocomplete="off" maxlength="150">
             </div>
             <div class="col-md-3 col-lg-3">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> Filter

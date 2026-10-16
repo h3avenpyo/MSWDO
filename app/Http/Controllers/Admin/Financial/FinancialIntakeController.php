@@ -429,6 +429,15 @@ class FinancialIntakeController extends Controller
      */
     public function transmittalReport(Request $request)
     {
+        $request->validate([
+            'transmittal_date' => ['nullable', 'date'],
+            'date' => ['nullable', 'date'],
+            'transmittal_session' => ['nullable', 'in:AM,PM,am,pm'],
+            'staff_name' => ['nullable', 'string', 'max:100'],
+            'search' => ['nullable', 'string', 'max:150'],
+            'barangay' => ['nullable', 'string', 'max:100'],
+        ]);
+
         $query = BeneficiaryIntake::query();
 
         // Determine target date (defaults to current day / today)

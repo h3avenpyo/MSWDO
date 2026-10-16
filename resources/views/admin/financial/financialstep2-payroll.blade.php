@@ -351,7 +351,7 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
                                         <div class="d-flex align-items-center gap-1">
                                             <div class="amount-input-group flex-grow-1">
                                                 <span class="currency-symbol">&#8369;</span>
-                                                <input type="number" step="0.01" min="0"
+                                                <input type="number" step="0.01" min="0" max="9999999.99" inputmode="decimal"
                                                     name="amounts[{{ $intake->id }}]"
                                                     id="input-amount-{{ $intake->id }}"
                                                     class="form-control form-control-sm amount-input-field {{ $hasAmount ? 'is-saved' : 'is-unencoded' }}"

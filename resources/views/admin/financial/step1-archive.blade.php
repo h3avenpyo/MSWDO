@@ -49,13 +49,13 @@
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1" style="color: #b11116;"></i> Search</label>
                 @if(request('search'))
                 <div class="input-group input-group-sm">
-                    <input type="text" name="search" class="form-control rounded-start-3" placeholder="Search by Control No, Name, Representative, Barangay..." value="{{ request('search') }}">
+                    <input type="text" name="search" class="form-control rounded-start-3" placeholder="Search by Control No, Name, Representative, Barangay..." value="{{ request('search') }}" maxlength="150">
                     <a href="{{ route('admin.financial.step1.archive', request()->except('search')) }}" class="btn btn-light border border-start-0 rounded-end-3" title="Clear Search">
                         <i class="fas fa-times text-muted"></i>
                     </a>
                 </div>
                 @else
-                <input type="text" name="search" class="form-control form-control-sm rounded-3" placeholder="Search by Control No, Name, Representative, Barangay..." value="{{ request('search') }}">
+                <input type="text" name="search" class="form-control form-control-sm rounded-3" placeholder="Search by Control No, Name, Representative, Barangay..." value="{{ request('search') }}" maxlength="150">
                 @endif
             </div>
             <div class="col-md-3 col-lg-3">

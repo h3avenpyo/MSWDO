@@ -118,7 +118,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                     style="color: #b11116;"></i> Search Today's
                 Intake ({{ date('F d, Y') }})</label>
             <input type="text" name="search" class="form-control form-control-sm rounded-3 search-input-red"
-                placeholder="Search by Control No, Client Name, Rep, or Barangay..." value="{{ request('search') }}">
+                placeholder="Search by Control No, Client Name, Rep, or Barangay..." value="{{ request('search') }}" maxlength="150">
         </div>
         <div class="col-md-3 col-lg-3 d-flex gap-2">
             <button type="submit" class="btn btn-sm btn-search-red rounded-3 px-3 fw-semibold w-100">
@@ -284,7 +284,10 @@ $userName = session('admin_user_name') ?? 'Officer';
                 html: `Are you sure you want to archive this intake record for <strong>${name}</strong> (<span class="text-primary font-monospace">${controlNumber}</span>)?<br><br><small class="text-muted">The record will be safely removed from the active intake list but will remain available in the Archive.</small>`,
                 icon: 'warning',
                 input: 'text',
-                inputPlaceholder: 'Reason for archiving (optional)',
+                inputPlaceholder: 'Reason for archiving (optional, max 500 characters)',
+                inputAttributes: {
+                    maxlength: '500'
+                },
                 showCancelButton: true,
                 confirmButtonColor: '#DC2626',
                 cancelButtonColor: '#6B7280',

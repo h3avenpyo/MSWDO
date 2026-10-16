@@ -201,21 +201,21 @@
                         <label class="form-label">Apelyido (Last Name) <span class="required-star">*</span></label>
                         <input type="text" name="beneficiary_last_name" id="beneficiary_last_name" class="form-control"
                             value="{{ old('beneficiary_last_name', $client->last_name ?? '') }}" placeholder="Apelyido"
-                            required>
+                            maxlength="100" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Unang Pangalan (First Name) <span
                                 class="required-star">*</span></label>
                         <input type="text" name="beneficiary_first_name" id="beneficiary_first_name"
                             class="form-control" value="{{ old('beneficiary_first_name', $client->first_name ?? '') }}"
-                            placeholder="Unang Pangalan" required>
+                            placeholder="Unang Pangalan" maxlength="100" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Gitnang Pangalan (Middle Name)</label>
                         <input type="text" name="beneficiary_middle_name" id="beneficiary_middle_name"
                             class="form-control"
                             value="{{ old('beneficiary_middle_name', $client->middle_name ?? '') }}"
-                            placeholder="Gitnang Pangalan">
+                            placeholder="Gitnang Pangalan" maxlength="100">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Ext. (Sr., Jr., III)</label>
@@ -240,7 +240,7 @@
                                 class="required-star">*</span></label>
                         <input type="text" name="beneficiary_street_address" class="form-control"
                             value="{{ old('beneficiary_street_address', $client->street_address ?? '') }}"
-                            placeholder="House No. / Street / Purok" required>
+                            placeholder="House No. / Street / Purok" maxlength="255" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Barangay <span class="required-star">*</span></label>
@@ -274,13 +274,12 @@
                 <!-- Demographics -->
                 <div class="row g-3">
                     <div class="col-md-3">
-                        <label class="form-label" for="beneficiary_contact_number">Numero ng Telepono (Mobile No.) <span
+                        <label class="form-label" for="beneficiary_contact_number">Numero ng Telepono<span
                                 class="required-star">*</span></label>
-                        <input type="text" name="beneficiary_contact_number" id="beneficiary_contact_number"
+                        <input type="tel" name="beneficiary_contact_number" id="beneficiary_contact_number"
                             class="form-control contact-number-input @error('beneficiary_contact_number') is-invalid @enderror"
                             value="{{ old('beneficiary_contact_number', $client->contact_number ?? '') }}"
-                            placeholder="09XXXXXXXXX" inputmode="numeric" pattern="[0-9]{11}" minlength="11"
-                            maxlength="11" autocomplete="tel" required>
+                            placeholder="09XXXXXXXXX" inputmode="tel" maxlength="13" autocomplete="tel" required>
                         <div class="d-flex justify-content-between align-items-center mt-1">
                             <span class="text-muted small contact-digit-counter" id="beneficiary_contact_number_counter"
                                 style="font-size: 0.76rem;">0/11 digits</span>
@@ -292,7 +291,7 @@
                             @error('beneficiary_contact_number')
                             {{ $message }}
                             @else
-                            Contact number must be exactly 11 digits (0–9) without letters, spaces, or symbols.
+                            Contact number must be exactly 11 digits starting with 09 (e.g., 09XXXXXXXXX).
                             @enderror
                         </div>
                     </div>
@@ -305,7 +304,7 @@
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Edad (Age) <span class="required-star">*</span></label>
-                        <input type="number" name="beneficiary_age" id="beneficiary_age" class="form-control"
+                        <input type="number" min="0" max="125" step="1" inputmode="numeric" name="beneficiary_age" id="beneficiary_age" class="form-control"
                             value="{{ old('beneficiary_age', $client->age ?? '') }}" readonly required
                             placeholder="Edad">
                     </div>
@@ -327,7 +326,7 @@
                         </div>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Civil Status (Katayuan) <span class="required-star">*</span></label>
+                        <label class="form-label">Civil Status <span class="required-star">*</span></label>
                         <select name="beneficiary_civil_status" class="form-select" required>
                             <option value="">Select</option>
                             <option value="Single" {{ old('beneficiary_civil_status')=='Single' ? 'selected' : '' }}>
@@ -344,13 +343,13 @@
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="form-label">Trabaho (Occupation)</label>
-                        <input type="text" name="beneficiary_occupation" class="form-control"
-                            value="{{ old('beneficiary_occupation') }}"
+                        <input type="text" name="beneficiary_occupation" id="beneficiary_occupation" class="form-control text-only-input"
+                            value="{{ old('beneficiary_occupation') }}" maxlength="150" data-text-only="true"
                             placeholder="Trabaho (e.g. N/A, Vendor, Housekeeper)">
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="form-label">Buwanang Kita (Monthly Salary)</label>
-                        <input type="text" inputmode="decimal" name="beneficiary_monthly_salary"
+                        <input type="text" inputmode="decimal" maxlength="15" name="beneficiary_monthly_salary"
                             id="beneficiary_monthly_salary" class="form-control salary-comma-input"
                             value="{{ old('beneficiary_monthly_salary') }}" placeholder="0.00">
                     </div>
@@ -387,19 +386,19 @@
                             <label class="form-label">Apelyido (Last Name) <span
                                     class="required-star rep-star">*</span></label>
                             <input type="text" name="rep_last_name" id="rep_last_name" class="form-control rep-field"
-                                value="{{ old('rep_last_name') }}" placeholder="Apelyido">
+                                value="{{ old('rep_last_name') }}" placeholder="Apelyido" maxlength="100">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Unang Pangalan (First Name) <span
                                     class="required-star rep-star">*</span></label>
                             <input type="text" name="rep_first_name" id="rep_first_name" class="form-control rep-field"
-                                value="{{ old('rep_first_name') }}" placeholder="Unang Pangalan">
+                                value="{{ old('rep_first_name') }}" placeholder="Unang Pangalan" maxlength="100">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Gitnang Pangalan (Middle Name)</label>
                             <input type="text" name="rep_middle_name" id="rep_middle_name"
                                 class="form-control rep-field" value="{{ old('rep_middle_name') }}"
-                                placeholder="Gitnang Pangalan">
+                                placeholder="Gitnang Pangalan" maxlength="100">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Ext. (Sr., Jr., III)</label>
@@ -421,7 +420,7 @@
                             <label class="form-label">House No. / Street / Purok <span
                                     class="required-star rep-star">*</span></label>
                             <input type="text" name="rep_street_address" class="form-control rep-field"
-                                value="{{ old('rep_street_address') }}" placeholder="House No., Street">
+                                value="{{ old('rep_street_address') }}" placeholder="House No., Street" maxlength="255">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Barangay <span class="required-star rep-star">*</span></label>
@@ -455,10 +454,10 @@
                         <div class="col-md-3">
                             <label class="form-label" for="rep_contact_number">Numero ng Telepono <span
                                     class="required-star rep-star">*</span></label>
-                            <input type="text" name="rep_contact_number" id="rep_contact_number"
+                            <input type="tel" name="rep_contact_number" id="rep_contact_number"
                                 class="form-control rep-field contact-number-input @error('rep_contact_number') is-invalid @enderror"
-                                value="{{ old('rep_contact_number') }}" placeholder="09XXXXXXXXX" inputmode="numeric"
-                                pattern="[0-9]{11}" minlength="11" maxlength="11" autocomplete="tel">
+                                value="{{ old('rep_contact_number') }}" placeholder="09XXXXXXXXX" inputmode="tel"
+                                maxlength="13" autocomplete="tel">
                             <div class="d-flex justify-content-between align-items-center mt-1">
                                 <span class="text-muted small contact-digit-counter" id="rep_contact_number_counter"
                                     style="font-size: 0.76rem;">0/11 digits</span>
@@ -469,7 +468,7 @@
                                 @error('rep_contact_number')
                                 {{ $message }}
                                 @else
-                                Representative contact number must be exactly 11 digits (0–9).
+                                Representative contact number must be exactly 11 digits starting with 09 (e.g., 09XXXXXXXXX).
                                 @enderror
                             </div>
                         </div>
@@ -482,7 +481,7 @@
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Edad (Age) <span class="required-star rep-star">*</span></label>
-                            <input type="number" name="rep_age" id="rep_age" class="form-control rep-field"
+                            <input type="number" min="18" max="125" step="1" inputmode="numeric" name="rep_age" id="rep_age" class="form-control rep-field"
                                 value="{{ old('rep_age') }}" readonly placeholder="Edad">
                         </div>
                         <div class="col-md-2">
@@ -510,12 +509,12 @@
                         </div>
                         <div class="col-md-4 mt-3">
                             <label class="form-label">Trabaho (Occupation)</label>
-                            <input type="text" name="rep_occupation" class="form-control rep-field"
-                                value="{{ old('rep_occupation') }}" placeholder="Trabaho">
+                            <input type="text" name="rep_occupation" id="rep_occupation" class="form-control rep-field text-only-input"
+                                value="{{ old('rep_occupation') }}" placeholder="Trabaho" maxlength="150" data-text-only="true">
                         </div>
                         <div class="col-md-4 mt-3">
                             <label class="form-label">Buwanang Kita (Monthly Salary)</label>
-                            <input type="text" inputmode="decimal" name="rep_monthly_salary" id="rep_monthly_salary"
+                            <input type="text" inputmode="decimal" maxlength="15" name="rep_monthly_salary" id="rep_monthly_salary"
                                 class="form-control rep-field salary-comma-input"
                                 value="{{ old('rep_monthly_salary') }}" placeholder="0.00">
                         </div>
@@ -625,27 +624,27 @@
                             @foreach($oldFam as $index => $fam)
                             <tr>
                                 <td>
-                                    <input type="text" name="family_composition[{{ $index }}][name]"
-                                        class="form-control form-control-sm" value="{{ $fam['name'] ?? '' }}"
-                                        placeholder="Full Name">
+                                    <input type="text" maxlength="150" name="family_composition[{{ $index }}][name]"
+                                        class="form-control form-control-sm text-only-input" value="{{ $fam['name'] ?? '' }}"
+                                        placeholder="Full Name" data-text-only="true">
                                 </td>
                                 <td>
-                                    <input type="text" name="family_composition[{{ $index }}][relationship]"
-                                        class="form-control form-control-sm" value="{{ $fam['relationship'] ?? '' }}"
-                                        placeholder="e.g. Spouse, Son">
+                                    <input type="text" maxlength="100" name="family_composition[{{ $index }}][relationship]"
+                                        class="form-control form-control-sm text-only-input" value="{{ $fam['relationship'] ?? '' }}"
+                                        placeholder="e.g. Spouse, Son" data-text-only="true">
                                 </td>
                                 <td>
-                                    <input type="number" min="0" name="family_composition[{{ $index }}][age]"
+                                    <input type="number" min="0" max="125" step="1" inputmode="numeric" name="family_composition[{{ $index }}][age]"
                                         class="form-control form-control-sm" value="{{ $fam['age'] ?? '' }}"
                                         placeholder="Edad">
                                 </td>
                                 <td>
-                                    <input type="text" name="family_composition[{{ $index }}][occupation]"
-                                        class="form-control form-control-sm" value="{{ $fam['occupation'] ?? '' }}"
-                                        placeholder="Trabaho">
+                                    <input type="text" maxlength="150" name="family_composition[{{ $index }}][occupation]"
+                                        class="form-control form-control-sm text-only-input" value="{{ $fam['occupation'] ?? '' }}"
+                                        placeholder="Trabaho" data-text-only="true">
                                 </td>
                                 <td>
-                                    <input type="text" inputmode="decimal"
+                                    <input type="text" inputmode="decimal" maxlength="15"
                                         name="family_composition[{{ $index }}][salary]"
                                         class="form-control form-control-sm salary-comma-input"
                                         value="{{ $fam['salary'] ?? '' }}" placeholder="0.00"

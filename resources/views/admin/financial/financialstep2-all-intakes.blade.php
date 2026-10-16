@@ -113,7 +113,7 @@
         <form id="allIntakesFilterForm" action="{{ route('admin.financial.financialstep2.all-intakes') }}" method="GET" class="row g-2 align-items-end">
             <div class="col-md-3 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search Intake / Beneficiary</label>
-                <input type="text" id="searchInput" name="search" class="form-control form-control-sm rounded-3" placeholder="Name, control no, brgy..." value="{{ request('search') }}" autocomplete="off">
+                <input type="text" id="searchInput" name="search" class="form-control form-control-sm rounded-3" placeholder="Name, control no, brgy..." value="{{ request('search') }}" autocomplete="off" maxlength="150">
             </div>
             <div class="col-md-2 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i> Barangay</label>
@@ -145,7 +145,7 @@
             </div>
             <div class="col-md-2 col-lg-2">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> Month &amp; Year</label>
-                <input type="month" name="month" class="form-control form-control-sm rounded-3" value="{{ request('month') }}" title="Filter by Month & Year">
+                <input type="month" name="month" class="form-control form-control-sm rounded-3" value="{{ request('month') }}" max="{{ date('Y-m') }}" title="Filter by Month & Year">
             </div>
             <div class="col-md-1 col-lg-1">
                 <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-sort me-1"></i> Sort</label>
@@ -528,7 +528,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 html: `Are you sure you want to archive this financial assistance record for <strong>${name}</strong> (<span class="text-primary font-monospace">${controlNumber}</span>)?<br><br><small class="text-muted">The record will be safely removed from active processing and payroll generation, but will remain available in the Step 2 Archive.</small>`,
                 icon: 'warning',
                 input: 'text',
-                inputPlaceholder: 'Reason for archiving (optional)',
+                inputPlaceholder: 'Reason for archiving (optional, max 500 characters)',
+                inputAttributes: {
+                    maxlength: '500'
+                },
                 showCancelButton: true,
                 confirmButtonColor: '#DC2626',
                 cancelButtonColor: '#6B7280',

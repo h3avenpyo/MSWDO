@@ -25,6 +25,24 @@ class StoreHistoricalFinancialIntakeRequest extends FormRequest
             ? str_replace(',', '', (string)$this->beneficiary_monthly_salary) 
             : null;
 
+        $repSalary = $this->rep_monthly_salary !== null 
+            ? str_replace(',', '', (string)$this->rep_monthly_salary) 
+            : null;
+
+        $normalizePhone = function ($phone) {
+            if ($phone === null || trim((string)$phone) === '') {
+                return null;
+            }
+            $clean = preg_replace('/[\s\-\(\)\.]/', '', (string)$phone);
+            if (preg_match('/^(\+63|63)(9\d{9})$/', $clean, $matches)) {
+                return '0' . $matches[2];
+            }
+            return $clean;
+        };
+
+        $benPhone = $normalizePhone($this->beneficiary_contact_number);
+        $repPhone = $normalizePhone($this->rep_contact_number);
+
         $assignedControlNumber = null;
         if (!empty($this->control_number) && !BeneficiaryIntake::where('control_number', $this->control_number)->exists()) {
             $assignedControlNumber = $this->control_number;
@@ -49,8 +67,18 @@ class StoreHistoricalFinancialIntakeRequest extends FormRequest
             'claim_status' => $this->claim_status ?: 'Claimed',
         ];
 
+        if ($this->has('beneficiary_contact_number')) {
+            $mergeData['beneficiary_contact_number'] = $benPhone;
+        }
+        if ($this->has('rep_contact_number')) {
+            $mergeData['rep_contact_number'] = $repPhone;
+        }
+
         if ($this->has('beneficiary_monthly_salary')) {
             $mergeData['beneficiary_monthly_salary'] = ($benSalary === '' || $benSalary === null) ? null : $benSalary;
+        }
+        if ($this->has('rep_monthly_salary')) {
+            $mergeData['rep_monthly_salary'] = ($repSalary === '' || $repSalary === null) ? null : $repSalary;
         }
 
         $familyComposition = $this->family_composition;
@@ -60,9 +88,24 @@ class StoreHistoricalFinancialIntakeRequest extends FormRequest
                     $cleanSalary = str_replace(',', '', (string)$famMember['salary']);
                     $famMember['salary'] = ($cleanSalary === '') ? null : $cleanSalary;
                 }
+                foreach (['name', 'relationship', 'occupation'] as $txtField) {
+                    if (isset($famMember[$txtField])) {
+                        $trimmed = trim((string)$famMember[$txtField]);
+                        $famMember[$txtField] = ($trimmed === '') ? null : $trimmed;
+                    }
+                }
             }
             unset($famMember);
             $mergeData['family_composition'] = $familyComposition;
+        }
+
+        if ($this->has('beneficiary_occupation')) {
+            $benOcc = trim((string)$this->beneficiary_occupation);
+            $mergeData['beneficiary_occupation'] = ($benOcc === '') ? null : $benOcc;
+        }
+        if ($this->has('rep_occupation')) {
+            $repOcc = trim((string)$this->rep_occupation);
+            $mergeData['rep_occupation'] = ($repOcc === '') ? null : $repOcc;
         }
 
         $this->merge($mergeData);
@@ -101,53 +144,135 @@ class StoreHistoricalFinancialIntakeRequest extends FormRequest
             'claiming_date' => ['nullable', 'date', 'before_or_equal:today'],
 
             // Beneficiary Information (Required)
-            'beneficiary_last_name' => ['required', 'string', 'max:100'],
-            'beneficiary_first_name' => ['required', 'string', 'max:100'],
-            'beneficiary_middle_name' => ['nullable', 'string', 'max:100'],
-            'beneficiary_extension_name' => ['nullable', 'string', 'max:20'],
+            'beneficiary_last_name' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^(?![\s\.\'\x{2019}\-]+$)[\p{L}\p{M}\s\.\'\x{2019}\-]+$/u',
+            ],
+            'beneficiary_first_name' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^(?![\s\.\'\x{2019}\-]+$)[\p{L}\p{M}\s\.\'\x{2019}\-]+$/u',
+            ],
+            'beneficiary_middle_name' => [
+                'nullable',
+                'string',
+                'max:100',
+                'regex:/^(?![\s\.\'\x{2019}\-]+$)[\p{L}\p{M}\s\.\'\x{2019}\-]+$/u',
+            ],
+            'beneficiary_extension_name' => [
+                'nullable',
+                'string',
+                'max:20',
+                'regex:/^(?![\s\.\'\x{2019}\-]+$)[\p{L}\p{M}\s\.\'\x{2019}\-]+$/u',
+            ],
             'beneficiary_street_address' => ['required', 'string', 'max:255'],
             'beneficiary_barangay' => ['required', 'string', 'max:100'],
             'beneficiary_city' => ['required', 'string', 'max:100'],
             'beneficiary_province' => ['required', 'string', 'max:100'],
             'beneficiary_region' => ['required', 'string', 'max:100'],
-            'beneficiary_contact_number' => ['required', 'string', 'regex:/^[0-9]{11}$/'],
-            'beneficiary_birthday' => ['required', 'date'],
-            'beneficiary_age' => ['required', 'integer', 'min:0', 'max:150'],
+            'beneficiary_contact_number' => ['required', 'string', 'regex:/^(09\d{9}|\+639\d{9}|639\d{9})$/'],
+            'beneficiary_birthday' => ['required', 'date', 'before_or_equal:today'],
+            'beneficiary_age' => ['required', 'integer', 'min:0', 'max:125'],
             'beneficiary_sex' => ['required', 'in:Male,Female'],
             'beneficiary_civil_status' => ['required', 'string', 'max:50'],
-            'beneficiary_occupation' => ['nullable', 'string', 'max:150'],
-            'beneficiary_monthly_salary' => ['nullable', 'numeric', 'min:0'],
+            'beneficiary_occupation' => [
+                'nullable',
+                'string',
+                'max:150',
+                'regex:/^(?!.*[0-9])(?=.*[\p{L}])[\p{L}\p{M}\s\.\'\x{2019}\-\/\&\(\)\,]+$/u',
+            ],
+            'beneficiary_monthly_salary' => ['nullable', 'numeric', 'min:0', 'max:9999999.99'],
             'beneficiary_category' => ['nullable', 'string', 'max:100'],
             'beneficiary_category_other' => ['nullable', 'string', 'max:150'],
             'beneficiary_categories' => ['nullable', 'array'],
 
             // Representative Information (Optional)
             'has_representative' => ['boolean'],
-            'rep_last_name' => ['nullable', 'required_if:has_representative,1,true', 'string', 'max:100'],
-            'rep_first_name' => ['nullable', 'required_if:has_representative,1,true', 'string', 'max:100'],
-            'rep_middle_name' => ['nullable', 'string', 'max:100'],
-            'rep_extension_name' => ['nullable', 'string', 'max:20'],
+            'rep_last_name' => [
+                'nullable',
+                'required_if:has_representative,1,true',
+                'string',
+                'max:100',
+                'regex:/^(?![\s\.\'\x{2019}\-]+$)[\p{L}\p{M}\s\.\'\x{2019}\-]+$/u',
+            ],
+            'rep_first_name' => [
+                'nullable',
+                'required_if:has_representative,1,true',
+                'string',
+                'max:100',
+                'regex:/^(?![\s\.\'\x{2019}\-]+$)[\p{L}\p{M}\s\.\'\x{2019}\-]+$/u',
+            ],
+            'rep_middle_name' => [
+                'nullable',
+                'string',
+                'max:100',
+                'regex:/^(?![\s\.\'\x{2019}\-]+$)[\p{L}\p{M}\s\.\'\x{2019}\-]+$/u',
+            ],
+            'rep_extension_name' => [
+                'nullable',
+                'string',
+                'max:20',
+                'regex:/^(?![\s\.\'\x{2019}\-]+$)[\p{L}\p{M}\s\.\'\x{2019}\-]+$/u',
+            ],
             'rep_street_address' => ['nullable', 'required_if:has_representative,1,true', 'string', 'max:255'],
             'rep_barangay' => ['nullable', 'required_if:has_representative,1,true', 'string', 'max:100'],
             'rep_city' => ['nullable', 'string', 'max:100'],
             'rep_province' => ['nullable', 'string', 'max:100'],
             'rep_region' => ['nullable', 'string', 'max:100'],
-            'rep_contact_number' => ['nullable', 'required_if:has_representative,1,true', 'string', 'regex:/^[0-9]{11}$/'],
-            'rep_birthday' => ['nullable', 'required_if:has_representative,1,true', 'date'],
-            'rep_age' => ['nullable', 'required_if:has_representative,1,true', 'integer', 'min:0', 'max:150'],
+            'rep_contact_number' => ['nullable', 'required_if:has_representative,1,true', 'string', 'regex:/^(09\d{9}|\+639\d{9}|639\d{9})$/'],
+            'rep_birthday' => ['nullable', 'required_if:has_representative,1,true', 'date', 'before_or_equal:today'],
+            'rep_age' => ['nullable', 'required_if:has_representative,1,true', 'integer', 'min:18', 'max:125'],
             'rep_sex' => ['nullable', 'required_if:has_representative,1,true', 'in:Male,Female'],
             'rep_civil_status' => ['nullable', 'required_if:has_representative,1,true', 'string', 'max:50'],
-            'rep_occupation' => ['nullable', 'string', 'max:150'],
-            'rep_monthly_salary' => ['nullable', 'numeric', 'min:0'],
+            'rep_occupation' => [
+                'nullable',
+                'string',
+                'max:150',
+                'regex:/^(?!.*[0-9])(?=.*[\p{L}])[\p{L}\p{M}\s\.\'\x{2019}\-\/\&\(\)\,]+$/u',
+            ],
+            'rep_monthly_salary' => ['nullable', 'numeric', 'min:0', 'max:9999999.99'],
             'rep_relationship' => ['nullable', 'required_if:has_representative,1,true', 'string', 'max:100'],
 
             // DSWD Section & Assessment
             'family_composition' => ['nullable', 'array'],
+            'family_composition.*.name' => [
+                'nullable',
+                'string',
+                'max:150',
+                'regex:/^(?!.*[0-9])(?=.*[\p{L}])[\p{L}\p{M}\s\.\'\x{2019}\-]+$/u',
+            ],
+            'family_composition.*.relationship' => [
+                'nullable',
+                'string',
+                'max:100',
+                'regex:/^(?!.*[0-9])(?=.*[\p{L}])[\p{L}\p{M}\s\.\'\x{2019}\-\/\(\)\,]+$/u',
+            ],
+            'family_composition.*.age' => ['nullable', 'integer', 'min:0', 'max:125'],
+            'family_composition.*.occupation' => [
+                'nullable',
+                'string',
+                'max:150',
+                'regex:/^(?!.*[0-9])(?=.*[\p{L}])[\p{L}\p{M}\s\.\'\x{2019}\-\/\&\(\)\,]+$/u',
+            ],
+            'family_composition.*.salary' => ['nullable', 'numeric', 'min:0', 'max:9999999.99'],
             'social_worker_assessment' => ['nullable', 'string'],
             'recommended_assistance_type' => ['nullable', 'string', 'max:150'],
             'assistance_purpose' => ['nullable', 'string', 'max:255'],
-            'interviewed_by' => ['nullable', 'string', 'max:150'],
-            'reviewed_by' => ['nullable', 'string', 'max:150'],
+            'interviewed_by' => [
+                'nullable',
+                'string',
+                'max:150',
+                'regex:/^(?![\s\.\'\x{2019}\-]+$)[\p{L}\p{M}\s\.\'\x{2019}\-]+$/u',
+            ],
+            'reviewed_by' => [
+                'nullable',
+                'string',
+                'max:150',
+                'regex:/^(?![\s\.\'\x{2019}\-]+$)[\p{L}\p{M}\s\.\'\x{2019}\-]+$/u',
+            ],
 
             'service_provided' => ['nullable', 'string', 'max:255'],
             'purpose' => ['nullable', 'string', 'max:255'],
@@ -169,11 +294,46 @@ class StoreHistoricalFinancialIntakeRequest extends FormRequest
             'recommended_amount.required' => 'The Financial Assistance Amount provided is required.',
             'recommended_amount.numeric' => 'The Financial Assistance Amount must be a valid number.',
             'recommended_amount.min' => 'The Financial Assistance Amount cannot be negative.',
+            'recommended_amount.max' => 'The Financial Assistance Amount exceeds the maximum allowed limit.',
+            'claiming_date.before_or_equal' => 'The Claiming Date cannot be in the future.',
+            'beneficiary_first_name.required' => 'Unang pangalan (First name) is required.',
+            'beneficiary_first_name.regex' => 'Ang unang pangalan ay maaari lamang maglaman ng mga titik, espasyo, gitling (-), kudlit (\'), at tuldok (.). Hindi pinapayagan ang purong numero.',
+            'beneficiary_last_name.required' => 'Apelyido (Last name) is required.',
+            'beneficiary_last_name.regex' => 'Ang apelyido ay maaari lamang maglaman ng mga titik, espasyo, gitling (-), kudlit (\'), at tuldok (.). Hindi pinapayagan ang purong numero.',
+            'beneficiary_middle_name.regex' => 'Ang gitnang pangalan ay maaari lamang maglaman ng mga titik, espasyo, gitling (-), kudlit (\'), at tuldok (.).',
+            'beneficiary_extension_name.regex' => 'Ang extension name ay maaari lamang maglaman ng mga titik, tuldok (.), o gitling.',
+            'rep_first_name.required_if' => 'Unang pangalan ng kinatawan is required when representative is enabled.',
+            'rep_first_name.regex' => 'Ang unang pangalan ng kinatawan ay maaari lamang maglaman ng mga titik, espasyo, gitling (-), kudlit (\'), at tuldok (.). Hindi pinapayagan ang purong numero.',
+            'rep_last_name.required_if' => 'Apelyido ng kinatawan is required when representative is enabled.',
+            'rep_last_name.regex' => 'Ang apelyido ng kinatawan ay maaari lamang maglaman ng mga titik, espasyo, gitling (-), kudlit (\'), at tuldok (.). Hindi pinapayagan ang purong numero.',
+            'rep_middle_name.regex' => 'Ang gitnang pangalan ng kinatawan ay maaari lamang maglaman ng mga titik, espasyo, gitling (-), kudlit (\'), at tuldok (.).',
             'beneficiary_contact_number.required' => 'Numero ng telepono (Contact number) is required.',
-            'beneficiary_contact_number.regex' => 'Contact number must be exactly 11 digits (0–9) without letters, spaces, or symbols (e.g., 09XXXXXXXXX).',
+            'beneficiary_contact_number.regex' => 'Mangyaring maglagay ng wastong Philippine mobile number (halimbawa: 09171234567 o +639171234567).',
             'rep_contact_number.required_if' => 'Representative contact number is required when representative is enabled.',
-            'rep_contact_number.regex' => 'Representative contact number must be exactly 11 digits (0–9) without letters, spaces, or symbols (e.g., 09XXXXXXXXX).',
+            'rep_contact_number.regex' => 'Mangyaring maglagay ng wastong Philippine mobile number para sa kinatawan (halimbawa: 09171234567 o +639171234567).',
+            'beneficiary_birthday.required' => 'Kapanganakan (Date of birth) is required.',
+            'beneficiary_birthday.before_or_equal' => 'Ang petsa ng kapanganakan ay hindi maaaring sa hinaharap (future date).',
+            'rep_birthday.before_or_equal' => 'Ang petsa ng kapanganakan ng kinatawan ay hindi maaaring sa hinaharap (future date).',
+            'beneficiary_age.min' => 'Ang edad ng benepisyaryo ay hindi maaaring mas mababa sa 0.',
+            'beneficiary_age.max' => 'Ang edad ng benepisyaryo ay hindi maaaring lumagpas sa 125.',
+            'rep_age.min' => 'Ang kinatawan ay dapat nasa hustong gulang (18 taong gulang pataas).',
+            'rep_age.max' => 'Ang edad ng kinatawan ay hindi maaaring lumagpas sa 125.',
+            'beneficiary_monthly_salary.numeric' => 'Ang buwanang sahod ay dapat wastong numero o halaga.',
+            'beneficiary_monthly_salary.min' => 'Ang buwanang sahod ay hindi maaaring negatibo.',
+            'beneficiary_monthly_salary.max' => 'Ang buwanang sahod ay lumagpas sa pinakamataas na limitasyon.',
+            'rep_monthly_salary.numeric' => 'Ang buwanang sahod ng kinatawan ay dapat wastong numero o halaga.',
+            'rep_monthly_salary.min' => 'Ang buwanang sahod ng kinatawan ay hindi maaaring negatibo.',
+            'rep_monthly_salary.max' => 'Ang buwanang sahod ng kinatawan ay lumagpas sa pinakamataas na limitasyon.',
             'control_number.unique' => 'This Control Number has already been used in the system.',
+            'beneficiary_occupation.regex' => 'Ang trabaho ng benepisyaryo ay dapat naglalaman ng mga wastong titik o deskripsyon lamang, at hindi pinapayagan ang mga numero.',
+            'rep_occupation.regex' => 'Ang trabaho ng kinatawan ay dapat naglalaman ng mga wastong titik o deskripsyon lamang, at hindi pinapayagan ang mga numero.',
+            'family_composition.*.name.regex' => 'Ang pangalan sa komposisyon ng pamilya ay maaari lamang maglaman ng mga titik, espasyo, gitling (-), kudlit (\'), at tuldok (.). Hindi pinapayagan ang purong numero.',
+            'family_composition.*.relationship.regex' => 'Ang relasyon sa komposisyon ng pamilya ay dapat teksto lamang (hal. Ama, Ina, Asawa, Anak) at hindi maaaring maglaman ng numero.',
+            'family_composition.*.occupation.regex' => 'Ang trabaho sa komposisyon ng pamilya ay dapat naglalaman ng mga wastong titik o deskripsyon lamang, at hindi pinapayagan ang mga numero.',
+            'family_composition.*.age.min' => 'Ang edad ng miyembro ng pamilya ay hindi maaaring mas mababa sa 0.',
+            'family_composition.*.age.max' => 'Ang edad ng miyembro ng pamilya ay hindi maaaring lumagpas sa 125.',
+            'family_composition.*.salary.numeric' => 'Ang sahod ng miyembro ng pamilya ay dapat wastong numero o halaga.',
+            'family_composition.*.salary.min' => 'Ang sahod ng miyembro ng pamilya ay hindi maaaring negatibo.',
         ];
     }
 }

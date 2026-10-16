@@ -59,7 +59,7 @@
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
                     <input type="text" name="search" class="form-control border-start-0"
-                        placeholder="Type name or control no..." value="{{ request('search') }}">
+                        placeholder="Type name or control no..." value="{{ request('search') }}" maxlength="150">
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -84,6 +84,7 @@
                 <label class="form-label fw-bold text-secondary small"><i
                         class="fas fa-calendar-day me-1 text-muted"></i> Filter by Date</label>
                 <input type="date" name="date" class="form-control" value="{{ request('date') }}"
+                    max="{{ date('Y-m-d') }}"
                     onchange="this.form.submit()" title="Filter by Date">
             </div>
         </form>
@@ -288,7 +289,7 @@
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small text-secondary">Transmittal Date</label>
                             <input type="date" name="transmittal_date" class="form-control"
-                                value="{{ request('date') ?? date('Y-m-d') }}" required>
+                                value="{{ request('date') ?? date('Y-m-d') }}" max="{{ date('Y-m-d') }}" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small text-secondary">Session / Time</label>
@@ -302,7 +303,7 @@
                     <div class="mb-3">
                         <label class="form-label fw-semibold small text-secondary">Assigned Staff Name</label>
                         <input type="text" name="staff_name" class="form-control"
-                            value="{{ session('admin_user_name') ?? 'FRANCES' }}" placeholder="e.g. FRANCES" required>
+                            value="{{ session('admin_user_name') ?? 'FRANCES' }}" placeholder="e.g. FRANCES" maxlength="100" required>
                     </div>
 
                 </div>

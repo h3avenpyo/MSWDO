@@ -293,7 +293,7 @@
                     <i class="fas fa-search me-1" style="color: #b11116;"></i> Search Name / Control No.
                 </label>
                 <input type="text" name="search" class="form-control form-control-sm rounded-3"
-                    placeholder="Hal. Juan Dela Cruz o Control No." value="{{ request('search') }}">
+                    placeholder="Hal. Juan Dela Cruz o Control No." value="{{ request('search') }}" maxlength="100">
             </div>
 
             <!-- Status Filter -->
@@ -742,12 +742,12 @@
                         <option value="Iba pa (Pakilagay sa ibaba)">Iba pa (Pakilagay sa ibaba)</option>
                     </select>
                     <textarea id="rejectionReasonText" rows="3" class="form-control form-control-sm rounded-3"
-                        placeholder="Ilarawan ang detalyadong dahilan..."></textarea>
+                        maxlength="500" placeholder="Ilarawan ang detalyadong dahilan..."></textarea>
                 </div>
                 <div>
                     <label class="form-label small fw-bold text-muted">Karagdagang Tala ng Staff (Opsyonal)</label>
                     <textarea id="rejectNotesText" rows="2" class="form-control form-control-sm rounded-3"
-                        placeholder="Internal review notes..."></textarea>
+                        maxlength="500" placeholder="Internal review notes..."></textarea>
                 </div>
             </div>
             <div class="modal-footer border-top py-2 px-3 bg-light">

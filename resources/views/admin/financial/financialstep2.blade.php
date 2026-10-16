@@ -138,7 +138,7 @@ $userName = session('admin_user_name') ?? 'Officer';
             <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search
                 Beneficiary / Control No.</label>
             <input type="text" id="step2SearchInput" name="search" class="form-control form-control-sm rounded-3"
-                placeholder="Control No, Client, Rep, Barangay..." value="{{ request('search') }}" autocomplete="off">
+                placeholder="Control No, Client, Rep, Barangay..." value="{{ request('search') }}" autocomplete="off" maxlength="150">
         </div>
         <div class="col-md-2 col-lg-2">
             <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i>
@@ -628,7 +628,10 @@ $userName = session('admin_user_name') ?? 'Officer';
                 html: `Are you sure you want to archive this financial assistance record for <strong>${name}</strong> (<span class="text-primary font-monospace">${controlNumber}</span>)?<br><br><small class="text-muted">The record will be safely removed from active processing and payroll generation, but will remain available in the Step 2 Archive.</small>`,
                 icon: 'warning',
                 input: 'text',
-                inputPlaceholder: 'Reason for archiving (optional)',
+                inputPlaceholder: 'Reason for archiving (optional, max 500 characters)',
+                inputAttributes: {
+                    maxlength: '500'
+                },
                 showCancelButton: true,
                 confirmButtonColor: '#DC2626',
                 cancelButtonColor: '#6B7280',
