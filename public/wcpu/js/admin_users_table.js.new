@@ -1,0 +1,173 @@
+// Global variables
+let modal, modalContent, modalLoading;
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing user table functionality...');
+    
+    // Initialize modal elements
+    modal = document.getElementById('userInfoModal');
+    modalContent = document.getElementById('modalContent');
+    modalLoading = document.getElementById('modalLoading');
+    
+    if (!modal || !modalContent || !modalLoading) {
+        console.error('Required modal elements not found!');
+        return;
+    }
+    
+    // Handle view button clicks
+    document.addEventListener('click', function(e) {
+        const viewBtn = e.target.closest('.view-btn');
+        if (viewBtn) {
+            e.preventDefault();
+            const userId = viewBtn.getAttribute('data-user-id');
+            console.log('View button clicked for user ID:', userId);
+            openUserModal(userId);
+        }
+    });
+    
+    // Close modal when clicking outside or on close button
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal || e.target.classList.contains('close-modal')) {
+            closeUserModal();
+        }
+    });
+});
+
+// Close modal function
+function closeUserModal() {
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Open modal and load user data
+function openUserModal(userId) {
+    console.log('Opening modal for user ID:', userId);
+    
+    if (!modal || !modalContent || !modalLoading) {
+        console.error('Modal elements not initialized!');
+        return;
+    }
+    
+    // Show modal and loading state
+    modal.style.display = 'flex';
+    modalContent.style.display = 'none';
+    modalLoading.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    
+    // Fetch user data
+    fetch(`/admin/users/${userId}/details`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+    })
+    .then(user => {
+        if (!modalContent) return;
+        
+        // Format the user data for display
+        modalContent.innerHTML = `
+            <div style="display: flex; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+                <img src="${user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6a1b9a&color=fff`}" 
+                     alt="User Avatar" 
+                     style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #6a1b9a; object-fit: cover;">
+                <div style="margin-left: 20px;">
+                    <h3 style="margin: 0 0 5px 0; color: #333; font-size: 1.5rem;">${user.name || 'N/A'}</h3>
+                    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                        <span style="background: #e9d5ff; color: #6a1b9a; padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">
+                            ${user.role || 'N/A'}
+                        </span>
+                        <span style="margin-left: 10px; padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 500; 
+                              background-color: ${user.is_active ? '#e6f7e6' : '#ffebee'}; 
+                              color: ${user.is_active ? '#2e7d32' : '#c62828'};">
+                            ${user.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                    </div>
+                    <div style="color: #6c757d; font-size: 0.9rem;">
+                        Member since ${user.created_at || 'N/A'}
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #6a1b9a; margin: 0 0 15px 0; font-size: 1.1rem; padding-bottom: 8px; border-bottom: 1px solid #eee;">
+                    Contact Information
+                </h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <div style="font-size: 0.85rem; color: #6c757d; margin-bottom: 3px;">Email</div>
+                        <div style="font-weight: 500; word-break: break-all;">${user.email || 'N/A'}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.85rem; color: #6c757d; margin-bottom: 3px;">Phone</div>
+                        <div style="font-weight: 500;">${user.phone_number || 'N/A'}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.85rem; color: #6c757d; margin-bottom: 3px;">Position</div>
+                        <div style="font-weight: 500;">${user.position || 'N/A'}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.85rem; color: #6c757d; margin-bottom: 3px;">Department</div>
+                        <div style="font-weight: 500;">${user.department || 'N/A'}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #6a1b9a; margin: 0 0 15px 0; font-size: 1.1rem; padding-bottom: 8px; border-bottom: 1px solid #eee;">
+                    Activity
+                </h4>
+                <div style="font-size: 0.9rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #6c757d;">Last Login:</span>
+                        <span style="font-weight: 500;">${user.last_login_at || 'Never'}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="close-btn" style="margin-top: 20px; padding: 8px 20px; background: #6a1b9a; color: white; border: none; border-radius: 4px; cursor: pointer; float: right;">
+                Close
+            </button>
+        `;
+        
+        // Show content and hide loading
+        modalContent.style.display = 'block';
+        modalLoading.style.display = 'none';
+        
+        // Add event listener to the close button
+        const closeBtn = modalContent.querySelector('.close-btn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeUserModal);
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching user details:', error);
+        if (modalContent) {
+            modalContent.innerHTML = `
+                <div style="text-align: center; padding: 40px 0; color: #dc3545;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
+                    <h3>Error Loading User Details</h3>
+                    <p>${error.message || 'Failed to load user information. Please try again.'}</p>
+                    <button class="close-btn" style="margin-top: 20px; padding: 8px 20px; background: #6a1b9a; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Close
+                    </button>
+                </div>
+            `;
+            modalContent.style.display = 'block';
+            modalLoading.style.display = 'none';
+            
+            // Add event listener to the close button
+            const closeBtn = modalContent.querySelector('.close-btn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeUserModal);
+            }
+        }
+    });
+}

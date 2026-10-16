@@ -1,0 +1,659 @@
+@extends('layouts.financial')
+
+@section('title', 'Financial Assistance: Step 2 Masterlist - MSWDO Admin')
+@section('page-title', 'Financial Assistance Step 2 Masterlist')
+
+@section('page-styles')
+<link href="{{ asset('css/financialstep2.css') }}" rel="stylesheet">
+<style>
+    .step-wizard-card {
+        background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
+        box-shadow: 0 4px 16px rgba(177, 17, 22, 0.22) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .hero-subtitle {
+        color: rgba(255, 255, 255, 0.92) !important;
+    }
+    .step-1-badge,
+    .step-2-badge,
+    .step-pill-badge {
+        background: #FFFFFF;
+        color: #b11116;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        vertical-align: middle;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+    .user-welcome {
+        background: rgba(255, 255, 255, 0.18) !important;
+        border: 1px solid rgba(255, 255, 255, 0.35) !important;
+        color: #ffffff !important;
+        backdrop-filter: blur(4px);
+    }
+
+    @media (max-width: 575.98px) {
+        .filter-card .row.g-2>[class*="col-md-"] {
+            width: 100%;
+            max-width: 100%;
+            flex: 0 0 100%;
+        }
+    }
+</style>
+@endsection
+
+@section('content')
+@php
+$userName = session('admin_user_name') ?? 'Officer';
+@endphp
+
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show rounded-3 mb-4 shadow-xs" role="alert">
+    <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4 shadow-xs" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
+<!-- Step Wizard Header Card -->
+<div class="step-wizard-card animate-fade-in mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2">
+                <span><i class="fas fa-hand-holding-usd me-2"></i>Financial Assistance: Step 2 Masterlist</span>
+                <span class="badge step-2-badge rounded-pill px-2.5 py-1">Step 2</span>
+            </h2>
+            <p class="mb-0 hero-subtitle">Today's Client General Intake Masterlist &bull; Step 2 Financial
+                Assistance records processed today ({{ date('F d, Y') }})</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <div class="user-welcome">
+                <i class="fas fa-user-circle me-1"></i>
+                <span>{{ $userName }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stat Cards Grid -->
+<div class="stat-cards-grid mb-4">
+    <div class="card animate-fade-in mb-0">
+        <a href="{{ route('admin.financial.financialstep2', ['period' => 'all']) }}" class="text-decoration-none"
+            title="Click to view all masterlist records">
+            <div class="stat-card-inner">
+                <div>
+                    <p class="stat-label mb-1">Total Masterlist Records</p>
+                    <h3 class="stat-value text-dark mb-0">{{ number_format($totalQueueCount ?? 0) }}</h3>
+                </div>
+                <div class="stat-icon primary"><i class="fas fa-users"></i></div>
+            </div>
+        </a>
+    </div>
+    <div class="card animate-fade-in mb-0">
+        <div class="stat-card-inner">
+            <div>
+                <p class="stat-label mb-1">Unprocessed Intakes</p>
+                <h3 class="stat-value mb-0">{{ number_format($unprocessedCount ?? $unprocessedIntakesCount ?? 0) }}</h3>
+                <small class="text-muted text-xs">{{ request('period') === 'all' ? 'All Masterlist' : "Today's Queue"
+                    }}</small>
+            </div>
+            <div class="stat-icon warning"><i class="fas fa-clock"></i></div>
+        </div>
+    </div>
+    <div class="card animate-fade-in mb-0">
+        <div class="stat-card-inner">
+            <div>
+                <p class="stat-label mb-1">Unclaimed</p>
+                <h3 class="stat-value mb-0">{{ number_format($unclaimedCount ?? 0) }}</h3>
+                <small class="text-muted text-xs">{{ request('period') === 'all' ? 'All Masterlist' : "Today's Queue"
+                    }}</small>
+            </div>
+            <div class="stat-icon info"><i class="fas fa-file-invoice-dollar"></i></div>
+        </div>
+    </div>
+    <div class="card animate-fade-in mb-0">
+        <div class="stat-card-inner">
+            <div>
+                <p class="stat-label mb-1">Claimed</p>
+                <h3 class="stat-value mb-0">{{ number_format($claimedCount ?? 0) }}</h3>
+                <small class="text-muted text-xs">{{ request('period') === 'all' ? 'All Masterlist' : "Today's Queue"
+                    }}</small>
+            </div>
+            <div class="stat-icon success"><i class="fas fa-check-circle"></i></div>
+        </div>
+    </div>
+</div>
+
+<!-- Search, Filter & Sorting Controls -->
+<div class="filter-card animate-fade-in mb-4">
+    <form id="step2FilterForm" action="{{ route('admin.financial.financialstep2') }}" method="GET"
+        class="row g-2 align-items-end">
+        <div class="col-md-3 col-lg-2">
+            <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-search me-1"></i> Search
+                Beneficiary / Control No.</label>
+            <input type="text" id="step2SearchInput" name="search" class="form-control form-control-sm rounded-3"
+                placeholder="Control No, Client, Rep, Barangay..." value="{{ request('search') }}" autocomplete="off">
+        </div>
+        <div class="col-md-2 col-lg-2">
+            <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i>
+                Barangay</label>
+            <select name="barangay" class="form-select form-select-sm rounded-3">
+                <option value="All">All Barangays</option>
+                @foreach($barangays as $brgy)
+                <option value="{{ $brgy }}" {{ request('barangay')==$brgy ? 'selected' : '' }}>{{ $brgy }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-2 col-lg-2">
+            <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-tags me-1"></i> Category</label>
+            <select name="category" class="form-select form-select-sm rounded-3">
+                <option value="All">All Categories</option>
+                @foreach($categories as $cat)
+                <option value="{{ $cat }}" {{ request('category')==$cat ? 'selected' : '' }}>{{ $cat }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-2 col-lg-2">
+            <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-info-circle me-1"></i>
+                Status</label>
+            <select name="status" class="form-select form-select-sm rounded-3">
+                <option value="All">All Statuses</option>
+                <option value="unprocessed" {{ request('status')=='unprocessed' ? 'selected' : '' }}>Unprocessed Intakes
+                </option>
+                <option value="pending_amount" {{ request('status')=='pending_amount' ||
+                    request('status')=='for_assessment' ? 'selected' : '' }}>Pending Amount</option>
+                <option value="unclaimed" {{ request('status')=='unclaimed' ? 'selected' : '' }}>Unclaimed</option>
+                <option value="claimed" {{ request('status')=='claimed' ? 'selected' : '' }}>Claimed</option>
+                <option value="amount_assigned" {{ request('status')=='amount_assigned' ||
+                    request('status')=='ready_payout' ? 'selected' : '' }}>Amount Assigned</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-lg-2">
+            <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-layer-group me-1"></i> Records
+                View</label>
+            <select name="period" class="form-select form-select-sm rounded-3">
+                <option value="today" {{ request('period', 'today' )==='today' ? 'selected' : '' }}>Today's Queue ({{
+                    date('M d') }})</option>
+                <option value="all" {{ request('period')==='all' ? 'selected' : '' }}>All Masterlist Records</option>
+            </select>
+        </div>
+        <div class="col-md-1 col-lg-1">
+            <label class="form-label small fw-bold text-muted mb-1"><i class="fas fa-sort me-1"></i> Sort</label>
+            <select name="sort" class="form-select form-select-sm rounded-3">
+                <option value="date_desc" {{ request('sort')=='date_desc' ? 'selected' : '' }}>Newest</option>
+                <option value="date_asc" {{ request('sort')=='date_asc' ? 'selected' : '' }}>Oldest</option>
+                <option value="name_asc" {{ request('sort')=='name_asc' ? 'selected' : '' }}>Name A-Z</option>
+                <option value="name_desc" {{ request('sort')=='name_desc' ? 'selected' : '' }}>Name Z-A</option>
+                <option value="amount_desc" {{ request('sort')=='amount_desc' ? 'selected' : '' }}>Amount &darr;
+                </option>
+                <option value="amount_asc" {{ request('sort')=='amount_asc' ? 'selected' : '' }}>Amount &uarr;</option>
+                <option value="control_asc" {{ request('sort')=='control_asc' ? 'selected' : '' }}>Ctrl # &uarr;
+                </option>
+            </select>
+        </div>
+        <div class="col-md-1 col-lg-1 filter-actions-group">
+            @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort', 'date', 'period']))
+            <a href="{{ route('admin.financial.financialstep2') }}"
+                class="btn btn-sm btn-outline-secondary rounded-3 w-100" title="Reset Filters">
+                <i class="fas fa-redo"></i>
+            </a>
+            @endif
+        </div>
+
+        @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort', 'period']))
+        <div class="d-flex align-items-center gap-2 flex-wrap mt-2 pt-2 border-top col-12">
+            <span class="text-muted small fw-semibold me-1"><i class="fas fa-sliders-h me-1"></i> Active Filters:</span>
+            @if(request('period') === 'all')
+            <span
+                class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 text-xs fw-semibold">
+                <i class="fas fa-layer-group me-1"></i> View: All Masterlist Records
+            </span>
+            @endif
+            @if(request('search'))
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Search: "{{ request('search') }}"
+            </span>
+            @endif
+            @if(request('barangay') && request('barangay') !== 'All')
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Barangay: {{ request('barangay') }}
+            </span>
+            @endif
+            @if(request('category') && request('category') !== 'All')
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Category: {{ request('category') }}
+            </span>
+            @endif
+            @if(request('status') && request('status') !== 'All')
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Status: {{ ucwords(str_replace('_', ' ', request('status'))) }}
+            </span>
+            @endif
+            @if(request('sort') && request('sort') !== 'date_desc')
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-xs">
+                Sort: {{ ucwords(str_replace('_', ' ', request('sort'))) }}
+            </span>
+            @endif
+            <a href="{{ route('admin.financial.financialstep2') }}"
+                class="btn btn-link btn-sm text-danger p-0 ms-auto text-decoration-none fw-semibold text-xs">
+                <i class="fas fa-times-circle me-1"></i>Clear all filters
+            </a>
+        </div>
+        @endif
+    </form>
+</div>
+
+<!-- Content Workspace: Masterlist Table Directory -->
+<div class="row g-4">
+    <div class="col-12">
+        <div class="card animate-fade-in">
+            <div class="card-header-clean d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <h3 class="card-title-clean">
+                        @if(request()->filled('search'))
+                        <i class="fas fa-search me-2 text-primary"></i>Search Results for "{{ request('search') }}" in
+                        Masterlist
+                        @elseif(request('period') === 'all')
+                        <i class="fas fa-layer-group me-2 text-primary"></i>All General Intake Masterlist Records
+                        @elseif(request()->filled('date'))
+                        <i class="fas fa-calendar-day me-2 text-primary"></i>General Intake Masterlist Records ({{
+                        \Carbon\Carbon::parse(request('date'))->format('M d, Y') }})
+                        @else
+                        <i class="fas fa-address-book me-2 text-primary"></i>Today's General Intake Masterlist Records
+                        ({{ date('M d, Y') }})
+                        @endif
+                    </h3>
+                    <p class="card-subtitle-clean">
+                        @if(request('period') === 'all')
+                        Displaying all active and historical general intake masterlist records &bull; <a
+                            href="{{ route('admin.financial.financialstep2') }}"
+                            class="text-primary fw-semibold text-decoration-none">Switch to Today's Queue</a>
+                        @else
+                        Clients processed today &bull; To view all historical intakes, visit the <a
+                            href="{{ route('admin.financial.financialstep2', ['period' => 'all']) }}"
+                            class="text-primary fw-semibold text-decoration-none">All Masterlist Records</a> view or <a
+                            href="{{ route('admin.financial.financialstep2.all-intakes') }}"
+                            class="text-primary fw-semibold text-decoration-none">All Intakes</a> page
+                        @endif
+                    </p>
+                </div>
+
+            </div>
+            <div class="p-3">
+                <div class="table-responsive">
+                    <table class="table-clean w-100">
+                        <thead>
+                            <tr>
+                                <th class="col-control-no">Control No.</th>
+                                <th class="col-beneficiary">Client / Beneficiary Information</th>
+                                <th class="col-address">Address &amp; Contact</th>
+                                <th class="col-date-officer">Intake Date</th>
+                                <th class="col-category-purpose">Med. Purpose</th>
+                                <th class="col-amount">Aid</th>
+                                <th class="col-status">Status</th>
+                                <th class="col-actions text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($intakes as $intake)
+                            <tr>
+                                <td>
+                                    <span class="fw-bold text-brand-color">{{ $intake->control_number }}</span>
+                                    <div>
+                                        <span
+                                            class="badge bg-light text-secondary border px-2 py-0.5 rounded-pill badge-client-subtle">{{
+                                            $intake->client_type ?? 'New' }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">{{ $intake->beneficiary_full_name }}</div>
+                                    <div class="text-muted small">
+                                        @if($intake->beneficiary_age)
+                                        {{ $intake->beneficiary_age }} yrs &bull;
+                                        @endif
+                                        {{ $intake->beneficiary_sex ?? 'N/A' }}
+                                    </div>
+                                    @if($intake->has_representative)
+                                    <div class="text-primary small mt-1 font-text-xs">
+                                        <i class="fas fa-user-friends me-1"></i>Rep: <strong>{{
+                                            $intake->representative_full_name }}</strong> ({{ $intake->rep_relationship
+                                        ?? 'Representative' }})
+                                    </div>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="text-dark fw-medium">{{ $intake->beneficiary_barangay ?? 'Silang,
+                                        Cavite' }}</div>
+                                    <div class="text-muted small">{{ $intake->beneficiary_contact_number ?? 'No contact'
+                                        }}</div>
+                                </td>
+                                <td>
+                                    <div class="fw-medium text-dark">{{ $intake->date_processed ?
+                                        $intake->date_processed->format('M d, Y') : 'N/A' }}</div>
+                                    <div class="text-muted small font-text-xs"><i class="fas fa-user-edit me-1"></i>{{
+                                        $intake->encoderUser?->name ?? 'MSWDO Staff' }}</div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="badge-category">{{ $intake->display_category }}</span>
+                                    </div>
+                                    <div class="text-muted small mt-1 text-truncate purpose-max-w-200"
+                                        title="{{ $intake->display_assistance_purpose }}">
+                                        <i class="fas fa-notes-medical me-1 text-danger"></i>{{
+                                        $intake->display_assistance_purpose }}
+                                    </div>
+                                </td>
+                                <td>
+                                    @if($intake->recommended_amount && $intake->recommended_amount > 0)
+                                    <span class="badge-amount">&#8369;{{ number_format($intake->recommended_amount, 2)
+                                        }}</span>
+                                    @else
+                                    <span
+                                        class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-0.5 fw-medium small">
+                                        <i class="fas fa-clock me-1"></i>Pending Amount
+                                    </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if(!$intake->recommended_amount || $intake->recommended_amount <= 0) <span
+                                        class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1 fw-bold badge-status-assessment">
+                                        <i class="fas fa-clock me-1"></i>Pending Amount
+                                        </span>
+                                        @elseif($intake->claim_status === 'Claimed')
+                                        <span
+                                            class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 fw-bold">
+                                            <i class="fas fa-check-circle me-1"></i>Claimed
+                                        </span>
+                                        @elseif($intake->is_payroll_generated)
+                                        <span
+                                            class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2.5 py-1 fw-bold">
+                                            <i class="fas fa-file-invoice me-1"></i>Unclaimed
+                                        </span>
+                                        @else
+                                        <span
+                                            class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 fw-bold">
+                                            <i class="fas fa-check-circle me-1"></i>Amount Assigned
+                                        </span>
+                                        @endif
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-1">
+                                        <!-- View -->
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-primary action-btn btn-view-intake"
+                                            title="View Details" data-intake="{{ json_encode($intake) }}">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <!-- Archive -->
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-danger action-btn btn-archive-step2"
+                                            data-id="{{ $intake->id }}" data-control="{{ $intake->control_number }}"
+                                            data-name="{{ $intake->beneficiary_full_name }}" title="Archive Record">
+                                            <i class="fas fa-box-archive"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="8" class="p-5 text-center">
+                                    <div class="empty-state-box text-center py-4">
+                                        <i class="fas fa-folder-open fa-3x mb-3 text-muted opacity-50 d-block"></i>
+                                        <h4 class="fw-bold mb-1 empty-title">
+                                            @if(request('period') === 'all')
+                                            No General Intake records found in masterlist
+                                            @elseif(request()->filled('search'))
+                                            No records found matching "{{ request('search') }}"
+                                            @else
+                                            No General Intake records found for today
+                                            @endif
+                                        </h4>
+                                        <div class="text-muted mb-0 empty-desc">
+                                            @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort']))
+                                            <p class="mb-2">No records matched your search filters. Try resetting the
+                                                filter criteria or viewing all masterlist records.</p>
+                                            <a href="{{ route('admin.financial.financialstep2', ['period' => 'all']) }}"
+                                                class="btn btn-sm btn-outline-brand rounded-pill px-3 shadow-xs">
+                                                <i class="fas fa-layer-group me-1"></i> View All Masterlist Records ({{
+                                                number_format($totalQueueCount ?? 0) }})
+                                            </a>
+                                            @elseif(($totalQueueCount ?? 0) > 0 && request('period') !== 'all')
+                                            <p class="mb-2">There are no intake records processed today, but there are
+                                                <strong>{{ number_format($totalQueueCount) }}</strong> records in the
+                                                full masterlist.
+                                            </p>
+                                            <a href="{{ route('admin.financial.financialstep2', ['period' => 'all']) }}"
+                                                class="btn btn-sm btn-primary btn-brand-primary rounded-pill px-3 shadow-xs">
+                                                <i class="fas fa-layer-group me-1"></i> View All Masterlist Records ({{
+                                                number_format($totalQueueCount) }})
+                                            </a>
+                                            @else
+                                            <p class="mb-0">Clients who complete the Step 1 General Intake process or
+                                                intakes encoded from Admin will automatically appear in this masterlist.
+                                            </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                @if(method_exists($intakes, 'hasPages') && $intakes->hasPages())
+                <div class="pt-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="text-muted small">
+                        Showing <strong>{{ $intakes->firstItem() }}</strong> to <strong>{{ $intakes->lastItem()
+                            }}</strong> of <strong>{{ $intakes->total() }}</strong> clients
+                    </div>
+                    <div>
+                        {{ $intakes->links() }}
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Step 1 General Intake Quick Preview Modal -->
+<div class="modal fade" id="intakeQuickViewModal" tabindex="-1" aria-labelledby="intakeQuickViewModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header text-white modal-header-brand">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-clipboard-check fa-lg"></i>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0" id="intakeQuickViewModalLabel">General Intake Masterlist
+                            Preview (Step 1 Record)</h5>
+                        <div class="text-white-50 small" id="modalControlNumberHeader">Control No: --</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                <!-- Section 1: Beneficiary Information -->
+                <div class="card border-0 shadow-xs rounded-3 mb-3 p-3 bg-white">
+                    <div class="modal-section-title">
+                        <i class="fas fa-user me-1"></i> Section I: Beneficiary Identifying Information
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="detail-field-label">Buong Pangalan (Full Name)</div>
+                            <div class="detail-field-value" id="modalBeneficiaryName">--</div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="detail-field-label">Kasarian / Edad</div>
+                            <div class="detail-field-value" id="modalBeneficiarySexAge">--</div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="detail-field-label">Kapanganakan (Birthdate)</div>
+                            <div class="detail-field-value" id="modalBeneficiaryBirthday">--</div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="detail-field-label">Contact Number</div>
+                            <div class="detail-field-value" id="modalBeneficiaryContact">--</div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="detail-field-label">Tirahan (Complete Address)</div>
+                            <div class="detail-field-value" id="modalBeneficiaryAddress">--</div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="detail-field-label">Barangay</div>
+                            <div class="detail-field-value" id="modalBeneficiaryBarangay">--</div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="detail-field-label">Trabaho</div>
+                            <div class="detail-field-value" id="modalBeneficiaryOccupation">--</div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="detail-field-label">Buwanang Sahod</div>
+                            <div class="detail-field-value" id="modalBeneficiarySalary">--</div>
+                        </div>
+                        <div class="col-12">
+                            <div class="detail-field-label">Kategorya (Category)</div>
+                            <div class="detail-field-value" id="modalBeneficiaryCategory">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Representative Information -->
+                <div class="card border-0 shadow-xs rounded-3 mb-3 p-3 bg-white" id="modalRepresentativeCard">
+                    <div class="modal-section-title">
+                        <i class="fas fa-user-friends me-1"></i> Section II: Authorized Representative Information
+                    </div>
+                    <div class="row g-3" id="modalRepresentativeContent">
+                        <div class="col-md-4">
+                            <div class="detail-field-label">Pangalan ng Kinatawan</div>
+                            <div class="detail-field-value" id="modalRepName">--</div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="detail-field-label">Relasyon sa Benepisyaryo</div>
+                            <div class="detail-field-value" id="modalRepRelationship">--</div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="detail-field-label">Kasarian / Edad</div>
+                            <div class="detail-field-value" id="modalRepSexAge">--</div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="detail-field-label">Contact Number</div>
+                            <div class="detail-field-value" id="modalRepContact">--</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-field-label">Tirahan ng Kinatawan</div>
+                            <div class="detail-field-value" id="modalRepAddress">--</div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="detail-field-label">Trabaho</div>
+                            <div class="detail-field-value" id="modalRepOccupation">--</div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="detail-field-label">Buwanang Sahod</div>
+                            <div class="detail-field-value" id="modalRepSalary">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Assessment & Assistance Recommendation -->
+                <div class="card border-0 shadow-xs rounded-3 mb-0 p-3 bg-white">
+                    <div class="modal-section-title">
+                        <i class="fas fa-hand-holding-medical me-1"></i> Section III: Assessment &amp; Assistance
+                        Recommendations
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="detail-field-label">Medikal na Kondisyon / Concerns</div>
+                            <div class="detail-field-value" id="modalMedicalConditions">--</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-field-label">Dahilan ng Paghingi ng Tulong (Purpose)</div>
+                            <div class="detail-field-value" id="modalAssistancePurpose">--</div>
+                        </div>
+                        <div class="col-12">
+                            <div class="detail-field-label">Pagsusuri ng Social Worker (Assessment)</div>
+                            <div class="detail-field-value p-2 rounded bg-light border modal-assessment-box"
+                                id="modalSocialWorkerAssessment">--</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-field-label">Inirerekomendang Uri ng Tulong</div>
+                            <div class="detail-field-value text-primary fw-bold" id="modalRecommendedType">--</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-field-label">Inirerekomendang Halaga (Assessed Grant)</div>
+                            <div class="detail-field-value text-success fs-5 fw-bold" id="modalRecommendedAmount">--
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-white border-top d-flex justify-content-between">
+                <span class="text-muted small"><i class="fas fa-check-circle text-success me-1"></i> Inherited from Step
+                    1 General Intake</span>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-4"
+                    data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden Form for Step 2 Archive Action -->
+<form id="archiveStep2Form" method="POST" style="display: none;">
+    @csrf
+    <input type="hidden" name="reason" id="archiveStep2Reason">
+</form>
+
+@endsection
+
+@section('page-scripts')
+<script src="{{ asset('js/financialstep2.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-archive-step2').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const controlNumber = this.getAttribute('data-control');
+            const name = this.getAttribute('data-name');
+
+            Swal.fire({
+                title: 'I-archive ang Financial Record?',
+                html: `Are you sure you want to archive this financial assistance record for <strong>${name}</strong> (<span class="text-primary font-monospace">${controlNumber}</span>)?<br><br><small class="text-muted">The record will be safely removed from active processing and payroll generation, but will remain available in the Step 2 Archive.</small>`,
+                icon: 'warning',
+                input: 'text',
+                inputPlaceholder: 'Reason for archiving (optional)',
+                showCancelButton: true,
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: '<i class="fas fa-box-archive me-1"></i> I-archive Record',
+                cancelButtonText: 'Kanselahin',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Ina-archive ang Record...',
+                        text: 'Sandali lamang...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    const form = document.getElementById('archiveStep2Form');
+                    document.getElementById('archiveStep2Reason').value = result.value || '';
+                    form.action = `/admin/financial/financialstep2/archive/${id}`;
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
+@endsection

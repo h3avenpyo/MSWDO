@@ -1,0 +1,192 @@
+/* ══════════════════════════════════════════════════════════════
+   MSWDO — UNIFIED RESPONSIVE LAYER
+   Shared, mobile-first fixes safe across every admin system:
+   Tailwind Play CDN pages, Bootstrap 5.3 CDN pages, Bootstrap-compat.
+   Loaded AFTER each layout's own CSS so overrides apply on mobile only.
+   Breakpoints follow Tailwind v4 defaults:
+     sm 640 / md 768 / lg 1024 / xl 1280 / 2xl 1536
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Images & media never overflow their container ── */
+img, svg, video, canvas, embed, iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ── Tables: let wide tables scroll horizontally instead of bursting the layout ──
+   Applies to plain <table> and Bootstrap .table components.
+   Tables that convert to stacked cards keep their own rules (higher specificity
+   / later cascade in the page wins). */
+@media (max-width: 767.98px) {
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    table {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ── Keep tables printable ── */
+@media print {
+    table {
+        display: table;
+        width: auto;
+        max-width: none;
+        overflow: visible;
+    }
+    body {
+        overflow: visible;
+    }
+}
+
+/* ── Bootstrap form rows / button rails stack on very small screens ── */
+@media (max-width: 575.98px) {
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .form-group label {
+        margin-bottom: .25rem;
+    }
+    .input-group {
+        flex-wrap: wrap;
+    }
+    .btn-toolbar,
+    .btn-group {
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+}
+
+/* ── Modal safety on small phones ── */
+@media (max-width: 575.98px) {
+    .modal-dialog {
+        margin: .75rem;
+        max-width: calc(100vw - 1.5rem);
+    }
+    .modal-content {
+        max-height: 90dvh;
+        overflow-y: auto;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   UNIFORM SWEETALERT2 MODAL STYLES (ACROSS ENTIRE SYSTEM)
+   ══════════════════════════════════════════════════════════════ */
+.swal2-popup {
+    border-radius: 16px !important;
+    padding: 1.5rem !important;
+    font-family: inherit !important;
+    max-width: 95vw !important;
+    box-sizing: border-box !important;
+}
+.swal2-title {
+    color: #1A237E !important;
+    font-weight: 700 !important;
+    font-size: 1.35rem !important;
+}
+.swal2-html-container {
+    font-size: 0.925rem !important;
+    color: #374151 !important;
+    max-height: 75vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+.swal2-confirm {
+    background-color: #1A237E !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 10px 24px !important;
+}
+.swal2-cancel {
+    background-color: #6B7280 !important;
+    color: #FFFFFF !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 10px 24px !important;
+    transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+}
+.swal2-cancel:hover,
+.swal2-cancel:focus {
+    background-color: #4B5563 !important;
+    color: #FFFFFF !important;
+}
+/* Step 1 & Step 2 Logout Confirmation Dialog Buttons */
+.swal2-popup.swal2-logout-popup .swal2-confirm,
+.swal2-confirm.swal2-logout-confirm-btn {
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+}
+.swal2-popup.swal2-logout-popup .swal2-confirm:hover,
+.swal2-popup.swal2-logout-popup .swal2-confirm:focus,
+.swal2-confirm.swal2-logout-confirm-btn:hover,
+.swal2-confirm.swal2-logout-confirm-btn:focus {
+    background-color: #9b0e13 !important;
+    border-color: #9b0e13 !important;
+    color: #ffffff !important;
+    background-image: none !important;
+}
+.swal2-popup.swal2-logout-popup .swal2-confirm:active,
+.swal2-confirm.swal2-logout-confirm-btn:active {
+    background-color: #850c10 !important;
+    border-color: #850c10 !important;
+    color: #ffffff !important;
+    background-image: none !important;
+}
+.swal2-popup.swal2-logout-popup .swal2-cancel,
+.swal2-cancel.swal2-logout-cancel-btn {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+}
+.swal2-popup.swal2-logout-popup .swal2-cancel:hover,
+.swal2-popup.swal2-logout-popup .swal2-cancel:focus,
+.swal2-cancel.swal2-logout-cancel-btn:hover,
+.swal2-cancel.swal2-logout-cancel-btn:focus {
+    background-color: #5c636a !important;
+    border-color: #565e64 !important;
+    color: #ffffff !important;
+    background-image: none !important;
+}
+.swal2-popup.swal2-logout-popup .swal2-cancel:active,
+.swal2-cancel.swal2-logout-cancel-btn:active {
+    background-color: #4b5157 !important;
+    border-color: #4b5157 !important;
+    color: #ffffff !important;
+    background-image: none !important;
+}
+.swal2-actions {
+    flex-direction: row !important;
+    gap: 12px !important;
+}
+@media (max-width: 575.98px) {
+    .swal2-popup {
+        padding: 1rem 0.75rem !important;
+        border-radius: 12px !important;
+    }
+    .swal2-title {
+        font-size: 1.1rem !important;
+    }
+    .swal2-actions {
+        flex-direction: column-reverse !important;
+        gap: 8px !important;
+        width: 100% !important;
+        margin-top: 1rem !important;
+    }
+    .swal2-actions button {
+        width: 100% !important;
+        margin: 0 !important;
+        height: 44px !important;
+    }
+}

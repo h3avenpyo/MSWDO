@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Sexual Violence Icon - X symbol -->
+  <circle cx="100" cy="100" r="90" fill="#f8f8f8" stroke="#ec407a" stroke-width="2"/>
+  <g fill="#ec407a">
+    <!-- Stylized X symbol -->
+    <path d="M70,70 L130,130" stroke="#ec407a" stroke-width="12" stroke-linecap="round"/>
+    <path d="M130,70 L70,130" stroke="#ec407a" stroke-width="12" stroke-linecap="round"/>
+  </g>
+</svg>

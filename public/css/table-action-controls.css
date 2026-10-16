@@ -1,0 +1,149 @@
+.table-action-control {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    min-height: 2.5rem !important;
+    min-width: 2.5rem !important;
+    padding: 0 !important;
+    border-radius: .5rem !important;
+    border: 0 !important;
+    background: #c41e3a !important;
+    color: #fff !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: .375rem;
+    font-size: 0 !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    flex: 0 0 2.5rem !important;
+    box-sizing: border-box !important;
+}
+.table-action-control:hover { background: #a91931 !important; color: #fff !important; }
+.table-action-control.bcpc-disable-control,
+.table-action-control.bcpc-disable-control:hover { background: #08306b !important; }
+.table-action-control.bcpc-enable-control,
+.table-action-control.bcpc-enable-control:hover { background: #c35817 !important; }
+.bcpc-referral-disable-control,
+.bcpc-referral-disable-control:hover { background: #b22222 !important; }
+.bcpc-referral-enable-control,
+.bcpc-referral-enable-control:hover { background: #c35817 !important; }
+.swd-disable-control,
+.swd-disable-control:hover { background: #b22222 !important; }
+.swd-enable-control,
+.swd-enable-control:hover { background: #c35817 !important; }
+.table-action-control.swd-view-action { gap: 0 !important; }
+.table-action-control.swd-view-action > span { display: none !important; }
+.table-action-control.swd-view-action > i { margin: 0 !important; }
+.table-action-control.bcpc-view-action { gap: 0 !important; }
+.table-action-control.bcpc-view-action > span { display: none !important; }
+.table-action-control.bcpc-view-action > i { margin: 0 !important; }
+.table-action-control i { font-size: .875rem !important; }
+td.table-action-cell {
+    text-align: center !important;
+    vertical-align: middle !important;
+    white-space: nowrap !important;
+}
+td.table-action-cell > div {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: .5rem !important;
+    vertical-align: middle !important;
+    flex-wrap: nowrap !important;
+    width: max-content;
+    min-width: max-content;
+}
+td.table-action-cell > form,
+td.table-action-cell > div > form {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: middle !important;
+    gap: 0 !important;
+}
+
+.table-action-control[data-action="view"],
+.table-action-control[title="View"],
+.table-action-control[title="View Details"],
+.table-action-control[title="View Report"] { background: #2563eb !important; }
+.table-action-control[data-action="view"]:hover,
+.table-action-control[title="View"]:hover,
+.table-action-control[title="View Details"]:hover,
+.table-action-control[title="View Report"]:hover { background: #1d4ed8 !important; }
+
+.table-action-control[data-action="download"],
+.table-action-control[title="Download"],
+.table-action-control[title="Download PDF"],
+.table-action-control[title="Download Report"] { background: #059669 !important; }
+.table-action-control[data-action="download"]:hover,
+.table-action-control[title="Download"]:hover,
+.table-action-control[title="Download PDF"]:hover,
+.table-action-control[title="Download Report"]:hover { background: #047857 !important; }
+
+.table-action-control[data-action="restore"],
+.table-action-control[title="Restore"],
+.table-action-control[title="Restore Record"],
+.table-action-control[title="Restore report"],
+.table-action-control[title="Restore Report"] { background: #7c3aed !important; }
+.table-action-control[data-action="restore"]:hover,
+.table-action-control[title="Restore"]:hover,
+.table-action-control[title="Restore Record"]:hover,
+.table-action-control[title="Restore report"]:hover,
+.table-action-control[title="Restore Report"]:hover { background: #6d28d9 !important; }
+
+/* Password Request Table Action Controls: Center icons and keep green/red */
+.password-request-approve-btn,
+.table-action-control.password-request-approve-btn,
+.table-action-control[title="Approve"] {
+    background-color: #16a34a !important;
+    color: #ffffff !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+    min-width: 2.25rem !important;
+    min-height: 2.25rem !important;
+}
+.password-request-approve-btn:hover,
+.table-action-control.password-request-approve-btn:hover,
+.table-action-control[title="Approve"]:hover {
+    background-color: #15803d !important;
+}
+
+.password-request-reject-btn,
+.table-action-control.password-request-reject-btn,
+.table-action-control[title="Reject"] {
+    background-color: #dc2626 !important;
+    color: #ffffff !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+    min-width: 2.25rem !important;
+    min-height: 2.25rem !important;
+}
+.password-request-reject-btn:hover,
+.table-action-control.password-request-reject-btn:hover,
+.table-action-control[title="Reject"]:hover {
+    background-color: #b91c1c !important;
+}
+
+.password-request-approve-btn i,
+.password-request-reject-btn i,
+.table-action-control.password-request-approve-btn i,
+.table-action-control.password-request-reject-btn i {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 0.875rem !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+    text-align: center !important;
+}

@@ -1,0 +1,732 @@
+/**
+ * Financial Assistance Step 2 Statistics Stylesheet
+ * Clean borderless card design adhering to MSWDO design language (border-0, shadow-xs, rounded-4)
+ */
+
+.stat-kpi-card {
+    background: #FFFFFF;
+    border: none !important;
+    border-radius: 1rem;
+    padding: 1.15rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.stat-kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.stat-kpi-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748B;
+    margin-bottom: 2px;
+}
+
+.stat-kpi-value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #1E293B;
+    line-height: 1.2;
+    margin-bottom: 0;
+}
+
+/* Borderless Card Containers */
+.chart-container-card {
+    background: #FFFFFF;
+    border: none !important;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+}
+
+.chart-container-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.chart-card-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #F8FAFC;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.chart-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0;
+}
+
+.chart-card-subtitle {
+    font-size: 0.75rem;
+    color: #64748B;
+    margin-top: 2px;
+    margin-bottom: 0;
+}
+
+.chart-box {
+    position: relative;
+    padding: 1.25rem 1.5rem;
+    width: 100%;
+}
+
+/* Scalable Chart Scroll Viewport for Large Datasets */
+.chart-scroll-wrapper {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 480px;
+    padding-right: 4px;
+}
+
+.chart-scroll-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chart-scroll-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chart-scroll-wrapper::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 6px;
+}
+
+.chart-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+}
+
+.search-box-wrapper {
+    width: 190px;
+    transition: width 0.2s ease;
+}
+
+.search-box-wrapper:focus-within {
+    width: 220px;
+}
+
+.btn-barangay-limit,
+.btn-sector-limit,
+.btn-sector-metric,
+.btn-medical-limit,
+.btn-medical-metric {
+    border: none !important;
+    color: #64748B;
+    background: transparent;
+    transition: all 0.15s ease-in-out;
+}
+
+.btn-barangay-limit:hover,
+.btn-sector-limit:hover,
+.btn-sector-metric:hover,
+.btn-medical-limit:hover,
+.btn-medical-metric:hover {
+    color: #1E293B;
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.btn-barangay-limit.active,
+.btn-sector-limit.active,
+.btn-sector-metric.active {
+    background: #b11116 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 1px 3px rgba(177, 17, 22, 0.25);
+}
+
+.btn-barangay-limit.active:hover,
+.btn-sector-limit.active:hover,
+.btn-sector-metric.active:hover {
+    background: #9b0e13 !important;
+    color: #FFFFFF !important;
+}
+
+.btn-barangay-limit.active:active,
+.btn-sector-limit.active:active,
+.btn-sector-metric.active:active {
+    background: #7c0b0f !important;
+    color: #FFFFFF !important;
+}
+
+.btn-medical-limit.active,
+.btn-medical-metric.active {
+    background: #b11116 !important;
+    border-color: #b11116 !important;
+    color: #FFFFFF !important;
+    box-shadow: none !important;
+}
+
+.btn-medical-limit.active:hover,
+.btn-medical-metric.active:hover {
+    background: #9b0e13 !important;
+    border-color: #9b0e13 !important;
+    color: #FFFFFF !important;
+}
+
+.btn-medical-limit.active:active,
+.btn-medical-metric.active:active {
+    background: #7c0b0f !important;
+    border-color: #7c0b0f !important;
+    color: #FFFFFF !important;
+}
+
+.barangay-chart-wrapper,
+.barangay-chart-inner,
+.sector-chart-inner,
+.medical-chart-inner {
+    position: relative;
+    width: 100%;
+}
+
+/* Ranked Barangay Breakdown List - Borderless Cards */
+.barangay-list-container {
+    max-height: 440px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.barangay-list-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+.barangay-list-container::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+}
+
+.barangay-card-item {
+    background: #F8FAFC;
+    border: none !important;
+    border-radius: 10px;
+    padding: 0.6rem 0.9rem;
+    margin-bottom: 0.45rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background-color 0.15s ease;
+}
+
+.barangay-card-item:hover {
+    background: #F1F5F9;
+}
+
+.barangay-rank-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Ranked Sector Leaderboard - Borderless Cards */
+.sector-list-container {
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.sector-list-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sector-list-container::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+}
+
+.sector-card-item {
+    background: #F8FAFC;
+    border: none !important;
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.15s ease;
+}
+
+.sector-card-item:hover {
+    background: #F1F5F9;
+}
+
+.sector-rank-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.sector-progress {
+    height: 6px;
+    border-radius: 999px;
+    background-color: #E2E8F0;
+    margin-top: 6px;
+}
+
+/* Medical Concerns Summary Table */
+#medicalListContainer tr.medical-card-item:hover {
+    background-color: #F8FAFC;
+}
+
+/* Gender Donut Details - Borderless Cards */
+.gender-pill-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #F8FAFC;
+    border: none !important;
+    border-radius: 10px;
+    padding: 0.65rem 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Responsive Overrides */
+@media (max-width: 1440px) {
+    .stat-kpi-card {
+        padding: 1rem;
+    }
+    .stat-kpi-value {
+        font-size: 1.2rem;
+    }
+}
+
+/* Screen Print Button Styling (Compliments MSWDO Crimson Module Theme) */
+.btn-print-statistics {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    border-radius: 9999px !important;
+    color: #b11116 !important;
+    font-size: 0.825rem;
+    font-weight: 700;
+    line-height: 1.2;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.btn-print-statistics:hover {
+    background-color: #fdf2f2 !important;
+    border-color: rgba(255, 255, 255, 0.85) !important;
+    color: #8e0d11 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.btn-print-statistics:focus {
+    background-color: #fdf2f2 !important;
+    border-color: #ffffff !important;
+    color: #8e0d11 !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
+    outline: none;
+}
+
+.btn-print-statistics:active {
+    background-color: #fae8e8 !important;
+    border-color: rgba(255, 255, 255, 0.8) !important;
+    color: #7c0b0f !important;
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.btn-print-statistics i {
+    color: #b11116;
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
+}
+
+.btn-print-statistics:hover i {
+    color: #8e0d11;
+}
+
+/* ============================================================
+   Print-Ready Report Layout (A4 Portrait - Pure Data Report)
+   ============================================================ */
+/* Default / Screen Mode: Hide Printable Report Document */
+.print-report-document {
+    display: none;
+}
+
+@page {
+    size: A4 portrait;
+    margin: 8mm 10mm 8mm 10mm;
+}
+
+@media print {
+    /* 1. HIDE ENTIRE SCREEN DASHBOARD INTERFACE */
+    .screen-dashboard-container,
+    .no-print,
+    .sidebar,
+    .top-navbar,
+    .sidebar-overlay,
+    .btn,
+    button,
+    .btn-print-statistics {
+        display: none !important;
+    }
+
+    /* 2. PAGE & COLOR RESETS */
+    html, body {
+        background-color: #ffffff !important;
+        background: #ffffff !important;
+        color: #0F172A !important;
+        font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+        font-size: 9pt !important;
+        line-height: 1.35 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        min-height: auto !important;
+    }
+
+    .financial-content-wrapper {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .container-fluid {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+    }
+
+    /* 3. SHOW DEDICATED PRINTABLE DATA REPORT */
+    .print-report-document {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* 4. OFFICIAL REPORT HEADER & LETTERHEAD */
+    .report-header-banner {
+        margin-bottom: 10px !important;
+    }
+
+    .report-seal-img {
+        width: 56px !important;
+        height: 56px !important;
+        object-fit: contain !important;
+    }
+
+    .govt-republic-text {
+        font-size: 8pt !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        color: #475569 !important;
+        line-height: 1.2 !important;
+    }
+
+    .govt-province-text {
+        font-size: 8.5pt !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        color: #334155 !important;
+        line-height: 1.2 !important;
+    }
+
+    .govt-office-text {
+        font-size: 10.5pt !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        color: #1A237E !important;
+        margin-top: 1px !important;
+        line-height: 1.2 !important;
+    }
+
+    .report-main-title {
+        font-size: 15pt !important;
+        font-weight: 900 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.04em !important;
+        color: #0F172A !important;
+        margin: 4px 0 2px 0 !important;
+        line-height: 1.2 !important;
+    }
+
+    .report-sub-title {
+        font-size: 8.5pt !important;
+        font-weight: 600 !important;
+        color: #64748B !important;
+    }
+
+    /* 5. METADATA TABLE */
+    .report-meta-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border: 1.5px solid #94A3B8 !important;
+        background-color: #F8FAFC !important;
+        margin-bottom: 10px !important;
+    }
+
+    .report-meta-cell {
+        padding: 5px 8px !important;
+        border: 1px solid #CBD5E1 !important;
+        vertical-align: middle !important;
+    }
+
+    .report-meta-title {
+        font-size: 7pt !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        color: #64748B !important;
+        letter-spacing: 0.03em !important;
+    }
+
+    .report-meta-val {
+        font-size: 9pt !important;
+        font-weight: 700 !important;
+        color: #0F172A !important;
+        margin-top: 1px !important;
+    }
+
+    /* 6. EXECUTIVE SUMMARY INDICATORS TABLE */
+    .report-summary-box {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border: 1.5px solid #94A3B8 !important;
+        margin-bottom: 12px !important;
+    }
+
+    .report-summary-cell {
+        padding: 8px 10px !important;
+        border: 1px solid #CBD5E1 !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        background-color: #FFFFFF !important;
+    }
+
+    .report-summary-title {
+        font-size: 7.5pt !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        color: #475569 !important;
+        letter-spacing: 0.03em !important;
+    }
+
+    .report-summary-val {
+        font-size: 14pt !important;
+        font-weight: 800 !important;
+        color: #1A237E !important;
+        margin: 2px 0 1px 0 !important;
+        line-height: 1.2 !important;
+    }
+
+    .report-summary-sub {
+        font-size: 7.5pt !important;
+        color: #64748B !important;
+        font-weight: 600 !important;
+    }
+
+    /* 7. FULL-WIDTH REPORT SECTIONS (EVEN & ALIGNED) */
+    .report-section {
+        width: 100% !important;
+        margin-bottom: 12px !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* 8. REPORT SECTION HEADINGS */
+    .report-section-heading {
+        font-size: 9.5pt !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.03em !important;
+        color: #0F172A !important;
+        margin-bottom: 5px !important;
+        border-bottom: 2px solid #0F172A !important;
+        padding-bottom: 3px !important;
+    }
+
+    .report-table-subtext {
+        font-size: 7.5pt !important;
+        color: #64748B !important;
+        margin-top: -2px !important;
+        margin-bottom: 5px !important;
+    }
+
+    /* 9. REPORT DATA TABLES (UNIFORM ALIGNMENT) */
+    .report-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border: 1.5px solid #94A3B8 !important;
+        font-size: 8.5pt !important;
+        table-layout: fixed !important;
+    }
+
+    .report-table th {
+        background-color: #f2dbdb !important;
+        color: #0F172A !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        font-size: 7.5pt !important;
+        letter-spacing: 0.03em !important;
+        padding: 6px 8px !important;
+        border: 1px solid #94A3B8 !important;
+    }
+
+    .report-table td {
+        padding: 5px 8px !important;
+        border: 1px solid #CBD5E1 !important;
+        color: #0F172A !important;
+        font-size: 8.5pt !important;
+        vertical-align: middle !important;
+    }
+
+    .report-table-total-row td {
+        background-color: #F8FAFC !important;
+        font-weight: 800 !important;
+        border-top: 2px solid #0F172A !important;
+        border-bottom: 2px solid #0F172A !important;
+        color: #0F172A !important;
+        font-size: 9pt !important;
+        padding: 6px 8px !important;
+    }
+
+    /* 10. PAGE BREAK & PART II (PAGE 2) */
+    .report-page-break {
+        page-break-before: always !important;
+        break-before: page !important;
+        height: 0 !important;
+        margin: 0 !important;
+        display: block !important;
+    }
+
+    .report-page-header-mini {
+        margin-top: 4px !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* 11. ADMINISTRATIVE NOTES */
+    .report-notes-box {
+        border: 1px solid #CBD5E1 !important;
+        background-color: #F8FAFC !important;
+        padding: 7px 10px !important;
+        border-radius: 4px !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* 12. SIGNATURES SECTION */
+    .report-signatures-section {
+        margin-top: 10px !important;
+        margin-bottom: 6px !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    .signature-space {
+        height: 36px !important;
+    }
+
+    .signature-line {
+        width: 200px !important;
+        height: 1.5px !important;
+        background-color: #0F172A !important;
+        margin: 0 auto !important;
+    }
+
+    /* 13. OFFICIAL DOCUMENT FOOTER */
+    .report-official-footer {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+        font-size: 7.5pt !important;
+        margin-top: 10px !important;
+        padding-top: 4px !important;
+    }
+}
+
+/* ============================================================
+   STEP WIZARD HERO BANNER (MSWDO Red Gradient Theme)
+   ============================================================ */
+.step-wizard-card {
+    background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
+    color: #ffffff !important;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 16px rgba(177, 17, 22, 0.22) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.wizard-heading {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #FFFFFF !important;
+    letter-spacing: -0.01em;
+}
+
+.hero-subtitle {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.step-2-badge,
+.step-1-badge {
+    background: #FFFFFF !important;
+    color: #b11116 !important;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    vertical-align: middle;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.user-welcome {
+    background: rgba(255, 255, 255, 0.18) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #ffffff !important;
+    display: inline-flex;
+    align-items: center;
+    backdrop-filter: blur(4px);
+}
+

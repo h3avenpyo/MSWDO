@@ -1,0 +1,673 @@
+/* ============================================================
+   Financial Assistance Step 1 Statistics Module Styles
+   ============================================================ */
+
+
+
+.chart-container-card {
+    background: #ffffff;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    margin-bottom: 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.chart-container-card:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.chart-card-header {
+    padding: 1.25rem 1.5rem 0.75rem 1.5rem;
+    border-bottom: 1px solid #F1F5F9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.chart-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0;
+}
+
+.chart-card-subtitle {
+    font-size: 0.75rem;
+    color: #64748B;
+    margin-top: 0.15rem;
+}
+
+.chart-box {
+    position: relative;
+    padding: 1.25rem;
+    min-height: 280px;
+}
+
+.tagalog-section-card {
+    background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+    border: 1px solid #FCD34D;
+    border-radius: 16px;
+    padding: 1.5rem 1.75rem;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+.tagalog-badge {
+    background-color: #78350F;
+    color: #FEF3C7;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-card {
+    background: #ffffff;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+}
+
+.kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+/* ============================================================
+   Screen Controls & Action Bar
+   ============================================================ */
+.btn-print-statistics {
+    background-color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    color: #b11116 !important;
+    transition: all 0.2s ease;
+}
+
+.btn-print-statistics:hover {
+    background-color: #fdf2f2 !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    color: #8e0d11 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+/* ============================================================
+   Print-Ready Report Layout (A4 Portrait - Pure Data Report)
+   ============================================================ */
+/* Default / Screen Mode: Hide Printable Report Document */
+.print-report-document {
+    display: none;
+}
+
+@page {
+    size: A4 portrait;
+    margin: 8mm 10mm 8mm 10mm;
+}
+
+@media print {
+    /* 1. HIDE ENTIRE SCREEN DASHBOARD INTERFACE */
+    .screen-dashboard-container,
+    .no-print,
+    .sidebar,
+    .top-navbar,
+    .sidebar-overlay,
+    .btn,
+    button,
+    .btn-print-statistics {
+        display: none !important;
+    }
+
+    /* 2. PAGE & COLOR RESETS */
+    html, body {
+        background-color: #ffffff !important;
+        background: #ffffff !important;
+        color: #0F172A !important;
+        font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+        font-size: 9pt !important;
+        line-height: 1.35 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        min-height: auto !important;
+    }
+
+    .financial-content-wrapper {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .container-fluid {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+    }
+
+    /* 3. SHOW DEDICATED PRINTABLE DATA REPORT */
+    .print-report-document {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* 4. OFFICIAL REPORT HEADER & LETTERHEAD */
+    .report-header-banner {
+        margin-bottom: 10px !important;
+    }
+
+    .report-seal-img {
+        width: 56px !important;
+        height: 56px !important;
+        object-fit: contain !important;
+    }
+
+    .govt-republic-text {
+        font-size: 8pt !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        color: #475569 !important;
+        line-height: 1.2 !important;
+    }
+
+    .govt-province-text {
+        font-size: 8.5pt !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        color: #334155 !important;
+        line-height: 1.2 !important;
+    }
+
+    .govt-office-text {
+        font-size: 10.5pt !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        color: #1A237E !important;
+        margin-top: 1px !important;
+        line-height: 1.2 !important;
+    }
+
+    .report-main-title {
+        font-size: 15pt !important;
+        font-weight: 900 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.04em !important;
+        color: #0F172A !important;
+        margin: 4px 0 2px 0 !important;
+        line-height: 1.2 !important;
+    }
+
+    .report-sub-title {
+        font-size: 8.5pt !important;
+        font-weight: 600 !important;
+        color: #64748B !important;
+    }
+
+    /* 5. METADATA TABLE */
+    .report-meta-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border: 1.5px solid #94A3B8 !important;
+        background-color: #F8FAFC !important;
+        margin-bottom: 10px !important;
+    }
+
+    .report-meta-cell {
+        padding: 5px 8px !important;
+        border: 1px solid #CBD5E1 !important;
+        vertical-align: middle !important;
+    }
+
+    .report-meta-title {
+        font-size: 7pt !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        color: #64748B !important;
+        letter-spacing: 0.03em !important;
+    }
+
+    .report-meta-val {
+        font-size: 9pt !important;
+        font-weight: 700 !important;
+        color: #0F172A !important;
+        margin-top: 1px !important;
+    }
+
+    /* 6. EXECUTIVE SUMMARY INDICATORS TABLE */
+    .report-summary-box {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border: 1.5px solid #94A3B8 !important;
+        margin-bottom: 12px !important;
+    }
+
+    .report-summary-cell {
+        padding: 8px 10px !important;
+        border: 1px solid #CBD5E1 !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        background-color: #FFFFFF !important;
+    }
+
+    .report-summary-title {
+        font-size: 7.5pt !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        color: #475569 !important;
+        letter-spacing: 0.03em !important;
+    }
+
+    .report-summary-val {
+        font-size: 14pt !important;
+        font-weight: 800 !important;
+        color: #1A237E !important;
+        margin: 2px 0 1px 0 !important;
+        line-height: 1.2 !important;
+    }
+
+    .report-summary-sub {
+        font-size: 7.5pt !important;
+        color: #64748B !important;
+        font-weight: 600 !important;
+    }
+
+    /* 7. FULL-WIDTH REPORT SECTIONS (EVEN & ALIGNED) */
+    .report-section {
+        width: 100% !important;
+        margin-bottom: 12px !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* 8. REPORT SECTION HEADINGS */
+    .report-section-heading {
+        font-size: 9.5pt !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.03em !important;
+        color: #0F172A !important;
+        margin-bottom: 5px !important;
+        border-bottom: 2px solid #0F172A !important;
+        padding-bottom: 3px !important;
+    }
+
+    .report-table-subtext {
+        font-size: 7.5pt !important;
+        color: #64748B !important;
+        margin-top: -2px !important;
+        margin-bottom: 5px !important;
+    }
+
+    /* 9. REPORT DATA TABLES (UNIFORM ALIGNMENT) */
+    .report-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border: 1.5px solid #94A3B8 !important;
+        font-size: 8.5pt !important;
+        table-layout: fixed !important;
+    }
+
+    .report-table th {
+        background-color: #f2dbdb !important;
+        color: #0F172A !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        font-size: 7.5pt !important;
+        letter-spacing: 0.03em !important;
+        padding: 6px 8px !important;
+        border: 1px solid #94A3B8 !important;
+    }
+
+    .report-table td {
+        padding: 5px 8px !important;
+        border: 1px solid #CBD5E1 !important;
+        color: #0F172A !important;
+        font-size: 8.5pt !important;
+        vertical-align: middle !important;
+    }
+
+    .report-table-total-row td {
+        background-color: #F8FAFC !important;
+        font-weight: 800 !important;
+        border-top: 2px solid #0F172A !important;
+        border-bottom: 2px solid #0F172A !important;
+        color: #0F172A !important;
+        font-size: 9pt !important;
+        padding: 6px 8px !important;
+    }
+
+    /* 10. PAGE BREAK & PART II (PAGE 2) */
+    .report-page-break {
+        page-break-before: always !important;
+        break-before: page !important;
+        height: 0 !important;
+        margin: 0 !important;
+        display: block !important;
+    }
+
+    .report-page-header-mini {
+        margin-top: 4px !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* 11. ADMINISTRATIVE NOTES */
+    .report-notes-box {
+        border: 1px solid #CBD5E1 !important;
+        background-color: #F8FAFC !important;
+        padding: 7px 10px !important;
+        border-radius: 4px !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* 12. SIGNATURES SECTION */
+    .report-signatures-section {
+        margin-top: 10px !important;
+        margin-bottom: 6px !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    .signature-space {
+        height: 36px !important;
+    }
+
+    .signature-line {
+        width: 200px !important;
+        height: 1.5px !important;
+        background-color: #0F172A !important;
+        margin: 0 auto !important;
+    }
+
+    /* 13. OFFICIAL DOCUMENT FOOTER */
+    .report-official-footer {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+        font-size: 7.5pt !important;
+        margin-top: 10px !important;
+        padding-top: 4px !important;
+    }
+}
+
+/* ============================================================
+   STEP WIZARD HERO BANNER & STATISTICS HEADER (MSWDO Red Gradient)
+   ============================================================ */
+.step-wizard-card {
+    background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
+    color: #ffffff !important;
+    border-radius: 14px;
+    padding: 1.35rem 1.6rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 16px rgba(177, 17, 22, 0.22) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.wizard-heading {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #FFFFFF !important;
+    letter-spacing: -0.01em;
+}
+
+.hero-subtitle {
+    font-size: 0.825rem;
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.step-1-badge,
+.step-2-badge {
+    background: #FFFFFF !important;
+    color: #b11116 !important;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 0.25rem 0.75rem;
+    vertical-align: middle;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.user-welcome {
+    background: rgba(255, 255, 255, 0.18) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #ffffff !important;
+    display: inline-flex;
+    align-items: center;
+    backdrop-filter: blur(4px);
+}
+
+/* ============================================================
+   STEP 1 STATISTICS SPECIFIC HEADER & CONTROLS UI
+   ============================================================ */
+.stats-header-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-header-content {
+    flex: 1 1 auto;
+    min-width: 260px;
+}
+
+.stats-header-title-row {
+    line-height: 1.3;
+}
+
+.stats-header-meta-row {
+    margin-top: 0.3rem;
+}
+
+/* Period indicator pill badge */
+.stats-period-badge {
+    display: inline-flex;
+    align-items: center;
+    background: #FFFFFF;
+    color: #b11116;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.stats-period-badge i {
+    color: #b11116;
+}
+
+/* Header actions container */
+.stats-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+/* Consistent 38px Pill Dropdown for Month/Year Filter */
+.stats-filter-pill {
+    display: inline-flex;
+    align-items: center;
+    height: 38px;
+    min-height: 38px;
+    max-height: 38px;
+    background: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 9999px;
+    padding: 0 0.85rem 0 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.stats-filter-pill:hover,
+.stats-filter-pill:focus-within {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    transform: translateY(-1px);
+}
+
+.stats-filter-icon {
+    color: #b11116;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+
+.stats-filter-select {
+    border: none;
+    background-color: transparent;
+    color: #1e293b;
+    font-size: 0.825rem;
+    font-weight: 700;
+    line-height: 38px;
+    height: 100%;
+    padding: 0 1.5rem 0 0;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23b11116' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: 11px 9px;
+}
+
+.stats-filter-select:focus {
+    outline: none;
+}
+
+/* Consistent 38px Pill Print Statistics Button */
+.btn-stats-print,
+.btn-print-statistics {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 38px;
+    min-height: 38px;
+    max-height: 38px;
+    padding: 0 1.25rem;
+    background: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    border-radius: 9999px !important;
+    color: #b11116 !important;
+    font-size: 0.825rem;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    box-sizing: border-box;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.btn-stats-print:hover,
+.btn-print-statistics:hover {
+    background-color: #fdf2f2 !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    color: #8e0d11 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.btn-stats-print:active,
+.btn-print-statistics:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.btn-stats-print i,
+.btn-print-statistics i {
+    color: #b11116;
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
+}
+
+.btn-stats-print:hover i,
+.btn-print-statistics:hover i {
+    color: #8e0d11;
+}
+
+/* ============================================================
+   RESPONSIVE DESIGN BREAKPOINTS FOR STEP 1 STATS HEADER
+   ============================================================ */
+@media (max-width: 991.98px) {
+    .stats-header-inner {
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .stats-header-card {
+        padding: 1.15rem 1.25rem;
+    }
+    
+    .stats-header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .stats-header-inner {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1.1rem;
+    }
+
+    .stats-header-actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 0.65rem;
+    }
+
+    .stats-header-actions form,
+    .stats-filter-pill,
+    .btn-stats-print,
+    .btn-print-statistics {
+        width: 100%;
+    }
+
+    .stats-filter-pill {
+        justify-content: space-between;
+    }
+
+    .stats-filter-select {
+        flex: 1 1 auto;
+        width: 100%;
+    }
+}
+

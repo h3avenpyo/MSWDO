@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Birthday Payout History</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { corePlugins: { preflight: false } }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root{
+            --primary:#B11116;--primary-hover:#8A0D11;--primary-dark:#8A0D11;--sidebar-bg:#B11116;--sidebar-dark:#8A0D11;--accent-yellow:#FBC02D;--background:#F5F7FB;--surface:#FFFFFF;--border:#E5E7EB;--text-primary:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--success:#16A34A;--success-bg:#ECFDF5;--danger:#DC2626;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EEF2FF;--purple:#7C3AED;--purple-bg:#F3E8FF;--sidebar-width:260px;--content-padding:32px;--shadow:0 10px 30px rgba(15,23,42,.08);--font-family:'Public Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+        }
+        *,*::before,*::after{box-sizing:border-box;}
+        html,body{margin:0;padding:0;background:var(--background);color:var(--text-primary);font-family:var(--font-family);min-height:100%;}
+        body{font-size:14px;line-height:1.5;overflow-x:hidden;}
+        h1,h2,h3,h4,h5{margin:0;font-weight:600;letter-spacing:-0.01em;}
+        button{font-family:inherit;cursor:pointer;}
+        a{text-decoration:none;}
+
+        /* ── Buttons ── */
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border);border-radius:10px;font-family:var(--font-family);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s ease;padding:10px 20px;background:var(--surface);color:var(--text-primary);box-shadow:var(--shadow);height:44px;min-height:44px;text-decoration:none;white-space:nowrap;}
+        .btn:hover{border-color:var(--primary);transform:translateY(-1px);}
+        .btn svg{width:16px;height:16px;}
+        .btn.primary{background:var(--primary);color:#FFFFFF;border-color:var(--primary);}
+        .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);transform:translateY(-1px);}
+        .btn-clear{background:var(--surface);color:var(--danger);border-color:var(--danger);font-weight:600;}
+        .btn-clear:hover{border-color:var(--danger);color:var(--danger);}
+
+        /* ── Filter Bar (matches archive page) ── */
+        .section-spacing{margin-bottom:28px;}
+        #filterGrid{display:grid;grid-template-columns:1fr;gap:12px;align-items:stretch;}
+        .filter-field{display:flex;flex-direction:column;justify-content:flex-end;min-width:0;gap:3px;}
+        .filter-label{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:3px;display:block;text-transform:uppercase;letter-spacing:0.05em;height:18px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .filter-select{width:100%;height:44px;min-height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text-primary);background:var(--surface);cursor:pointer;transition:all .2s ease;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:16px 12px;}
+        .filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,35,126,.08);}
+        input[type="date"].filter-select{cursor:text;background-image:none;background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-right:12px;}
+        .filter-actions-row{display:flex;gap:8px;align-items:center;min-width:0;}
+        .filter-actions-row .btn{white-space:nowrap;flex:1;}
+
+        /* ── Archive-style panel & table (matches archive page) ── */
+        .archive-panel-wrap{width:100%;padding:1rem;margin-bottom:1rem;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
+        .archive-table-wrap{border:2px solid #CBD5E1;border-radius:8px;overflow:visible;min-height:auto;max-height:none;scrollbar-width:none;-ms-overflow-style:none;}
+        .archive-table-wrap::-webkit-scrollbar{display:none !important;width:0 !important;height:0 !important;}
+        .archive-table{width:100%;border-collapse:collapse;font-size:14px;}
+        .archive-table thead th{padding:14px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:#1E293B;text-align:left;border-bottom:2px solid #94A3B8;background:#E2E8F0;white-space:nowrap;position: sticky; top: 0; z-index: 10;}
+        .archive-table tbody td{padding:14px 16px;font-size:13px;color:var(--text-primary);border-bottom:1px solid #CBD5E1;vertical-align:middle;white-space:normal;word-break:break-word;}
+        .archive-table tbody tr:last-child td{border-bottom:none;}
+
+        /* ── Badges ── */
+        .badge-span{padding:.3rem .7rem;border-radius:999px;font-size:.78rem;display:inline-block;white-space:nowrap;font-weight:600;}
+        .badge-released{background:var(--success-bg);color:var(--success);}
+        .badge-generated{background:var(--info-bg);color:var(--info);}
+        .badge-cancelled{background:var(--danger-bg);color:var(--danger);}
+        .badge-reset{background:#FEF3C7;color:#D97706;}
+        .ref-badge{background:var(--info-bg);color:var(--info);padding:.25rem .6rem;border-radius:6px;font-size:.75rem;font-weight:600;display:inline-block;}
+        .hidden-table{display:none !important;}
+
+        /* ── Empty State ── */
+        .empty-row{background:transparent !important;border:none !important;box-shadow:none !important;padding:0 !important;margin:0 !important;}
+        .empty-cell{padding:2.5rem 1rem !important;border:none !important;display:flex !important;flex-direction:column !important;align-items:center !important;justify-content:center !important;width:100% !important;}
+        .empty-cell::before{display:none !important;}
+        .empty-state-content{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+        .empty-icon-wrap{width:64px;height:64px;border-radius:50%;background:#F3F4F6;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:#9CA3AF;}
+        .empty-icon-wrap svg{width:32px;height:32px;}
+        .empty-title{font-size:1.125rem;font-weight:700;color:#1F2937;margin-bottom:4px;}
+        .empty-subtitle{font-size:0.875rem;color:#6B7280;}
+
+        /* ── Pagination info ── */
+        .archive-pagination-info{font-size:0.875rem;color:var(--text-secondary);text-align:center;padding-top:0.75rem;}
+
+        /* ── Pagination links ── */
+        .pagination-wrap{display:flex;justify-content:center;flex-wrap:wrap;padding-top:1rem;margin-top:1rem;border-top:1px solid var(--border);}
+
+        /* ── Social Case Style Pagination ── */
+        .sc-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-shrink: 0; padding: 4px 0; flex-wrap: wrap; }
+        .sc-pagination-info { font-size: 0.813rem; color: #6B7280; font-weight: 500; }
+        .sc-pagination-controls { display: flex; gap: 4px; flex-wrap: wrap; }
+        .sc-page-btn { height: 36px; min-width: 36px; padding: 0 10px; border: 1px solid #E5E7EB; border-radius: 6px; background: #fff; color: #374151; font-size: 0.813rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
+        .sc-page-btn:hover:not(:disabled) { background: #F3F4F6; border-color: #D1D5DB; }
+        .sc-page-btn.active { background: #B11116; color: #fff; border-color: #B11116; font-weight: 700; }
+        .sc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* ── Filter container (matches archive page) ── */
+        .archive-filter-bar{display:block;margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;}
+        .archive-filter-bar #filterGrid{margin-bottom:0;}
+
+        /* ── Mobile Pagination ── */
+        @media (max-width: 767.98px) {
+            .sc-pagination { flex-direction: column; align-items: stretch; gap: 12px; padding: 14px 0 4px; border-top: 1px solid var(--border); margin-top: 14px; }
+            .sc-pagination-info { text-align: center; }
+            .sc-pagination-controls { justify-content: center; gap: 8px; width: 100%; }
+            .sc-page-btn { flex: 0 1 auto; min-width: 44px; height: 44px; min-height: 44px; justify-content: center; }
+        }
+
+        /* ── Flash Messages ── */
+        .flash-message{display:flex;align-items:center;gap:12px;padding:.875rem 1.25rem;border-radius:10px;font-size:.875rem;font-weight:500;margin-bottom:1rem;animation:fadeIn .3s ease;}
+        .flash-message svg{width:20px;height:20px;flex-shrink:0;}
+        .flash-success{background:var(--success-bg);color:#166534;border:1px solid #BBF7D0;}
+        .flash-error{background:var(--danger-bg);color:#991B1B;border:1px solid #FECACA;}
+        .flash-close{margin-left:auto;cursor:pointer;opacity:.6;transition:opacity .2s;background:none;border:none;padding:0;line-height:0;}
+        .flash-close:hover{opacity:1;}
+        .flash-close svg{width:18px;height:18px;}
+
+        /* ── Animations ── */
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+        /* ══════════════════════════════════════════════
+           RESPONSIVE BREAKPOINTS
+           ══════════════════════════════════════════════ */
+
+        /* ── Extra Large (1400px+) ── */
+        @media (min-width:1400px){
+            .section-spacing{margin-bottom:32px;}
+            #filterGrid{grid-template-columns:minmax(180px,1fr) minmax(160px,1fr) minmax(160px,1fr) auto;gap:16px;}
+            .filter-label{font-size:13px !important;}
+            .filter-select,.filter-actions-row .btn{height:48px !important;min-height:48px !important;}
+            .filter-select{font-size:14px !important;}
+            .filter-actions-row .btn{font-size:14px !important;padding:12px 22px !important;}
+            .archive-table thead th{font-size:13px !important;padding:14px 18px !important;}
+            .archive-table tbody td{font-size:15px !important;padding:16px 18px !important;}
+            .badge-span{font-size:13px !important;padding:5px 12px !important;}
+        }
+
+        /* ── Large Desktop (1200–1399px) ── */
+        @media (min-width:1200px) and (max-width:1399px){
+            .section-spacing{margin-bottom:28px;}
+            #filterGrid{grid-template-columns:minmax(180px,1fr) minmax(160px,1fr) minmax(160px,1fr) auto;gap:14px;}
+            .filter-label{font-size:12px !important;}
+            .filter-select,.filter-actions-row .btn{height:46px !important;min-height:46px !important;}
+            .filter-select{font-size:13px !important;}
+            .filter-actions-row .btn{font-size:13px !important;padding:0 20px !important;}
+            .archive-table thead th{font-size:12px !important;padding:12px 16px !important;}
+            .archive-table tbody td{font-size:14px !important;padding:14px 16px !important;}
+        }
+
+        /* ── Medium Desktop (992–1199px) ── */
+        @media (min-width:992px) and (max-width:1199px){
+            .section-spacing{margin-bottom:24px;}
+            #filterGrid{grid-template-columns:1fr 1fr;gap:14px;}
+            .archive-table thead th{padding:11px 14px !important;}
+            .archive-table tbody td{padding:13px 14px !important;}
+            .empty-icon-wrap{width:56px;height:56px;}
+            .empty-title{font-size:1rem !important;}
+        }
+
+        /* ── Tablet (768–991px) ── */
+        @media (min-width:768px) and (max-width:991px){
+            .section-spacing{margin-bottom:20px;}
+            #filterGrid{grid-template-columns:1fr 1fr;gap:12px;}
+            .archive-table thead th{padding:10px 12px !important;}
+            .archive-table tbody td{padding:12px 12px !important;}
+            .empty-icon-wrap{width:56px;height:56px;}
+        }
+
+        /* ── Desktop layout ── */
+        @media (min-width:1200px){
+            html,body{overflow-y:auto !important;overflow-x:hidden !important;}
+            .app{height:auto !important;min-height:100vh !important;overflow:visible !important;}
+            .app .main{height:auto !important;overflow:visible !important;display:flex !important;flex-direction:column !important;}
+            .app .main-scroll{overflow:visible !important;}
+            #birthdayTableSection:not(.hidden-table),
+            #inBetweenTableSection:not(.hidden-table){display:block !important;overflow:visible !important;}
+            .archive-panel-wrap{padding:1rem !important;margin-bottom:1rem !important;overflow:visible !important;}
+            .archive-panel-wrap.hidden-table{display:none !important;}
+            .archive-table-wrap{border:1px solid var(--border) !important;overflow:visible !important;height:auto !important;max-height:none !important;min-height:auto !important;border-radius:8px !important;}
+            .sc-pagination{margin-top:14px !important;flex-shrink:0 !important;}
+            .empty-icon-wrap{width:80px;height:80px;margin-bottom:20px;background:#FDF2F2;color:#B11116;}
+            .empty-icon-wrap svg{width:40px !important;height:40px !important;}
+            .empty-title{font-size:1.35rem !important;font-weight:700 !important;color:#111827 !important;margin-bottom:8px !important;}
+            .empty-subtitle{font-size:0.95rem !important;color:#6B7280 !important;max-width:400px;line-height:1.5;}
+        }
+        @media (min-width:768px) and (max-width:1199px){
+            .archive-table-wrap{min-height:auto !important;max-height:none !important;overflow:visible !important;}
+            .archive-table tbody tr.empty-row{display:table-row !important;background:transparent !important;border:none !important;box-shadow:none !important;margin:0 !important;}
+            .archive-table tbody tr.empty-row td.empty-cell{display:table-cell !important;padding:2.5rem 1.5rem !important;border:none !important;text-align:center !important;}
+            .archive-table tbody tr.empty-row td.empty-cell::before{display:none !important;}
+            .archive-table tbody tr.empty-row td.empty-cell .empty-state-content{align-items:center;justify-content:center;}
+        }
+        @media (min-width:1200px){
+            .archive-table tbody tr.empty-row{display:table-row !important;background:transparent !important;border:none !important;box-shadow:none !important;margin:0 !important;}
+            .archive-table tbody tr.empty-row td.empty-cell{display:table-cell !important;padding:3rem 1.5rem !important;border:none !important;text-align:center !important;}
+            .archive-table tbody tr.empty-row td.empty-cell::before{display:none !important;}
+        }
+
+        /* ── Large Mobile (576–767px): stacked filters, table → cards ── */
+        @media (min-width:576px) and (max-width:767px){
+            .section-spacing{margin-bottom:18px;}
+            #filterGrid{grid-template-columns:1fr 1fr;gap:12px;}
+            #filterGrid .filter-field:first-child{grid-column:1 / -1;}
+            #filterGrid .filter-field:last-child{grid-column:1 / -1;}
+            .filter-actions-row{width:100%;}
+            .filter-actions-row .btn{width:100%;flex:1 1 auto;min-height:44px;}
+        }
+
+        /* ── Mobile (<768px): table → stacked cards (matches archive) ── */
+        @media (max-width:767px){
+            .archive-panel-wrap{padding:.75rem;}
+            .archive-table-wrap{width:100%;max-width:100%;max-height:none;overflow:visible;border:none;border-radius:0;box-shadow:none;}
+            .archive-table{display:block;width:100%;max-width:100%;}
+            .archive-table thead{display:none;}
+            .archive-table tbody{display:block;width:100%;max-width:100%;}
+            .archive-table tbody tr{display:flex;flex-direction:column;position:relative;box-sizing:border-box;width:100%;max-width:100%;background:var(--surface);border:1px solid #D1D5DB;border-radius:12px;margin-bottom:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+            .archive-table tbody tr:last-child{margin-bottom:0;}
+            .archive-table tbody td{display:grid;grid-template-columns:96px minmax(0,1fr);align-items:start;gap:48px;padding:9px 0;border:none;font-size:.82rem;overflow-wrap:anywhere;text-align:left;}
+            .archive-table tbody td:not(:last-child){border-bottom:1px solid var(--border);}
+            .archive-table tbody td::before{content:attr(data-label);font-weight:600;color:var(--text-secondary);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;line-height:1.5;grid-column:1;}
+            .archive-table tbody td[data-label="Action"]{position:absolute;top:15px;right:14px;display:flex;justify-content:flex-start;align-items:center;padding:0;border-bottom:none;}
+            .archive-table tbody td[data-label="Action"]::before{display:none;}
+            .archive-table tbody td[data-label="Date & Time"]{padding-right:140px;}
+            .archive-table tbody td[data-label="Details"] div{overflow-wrap:anywhere;}
+            .archive-table tbody tr.empty-row{background:transparent !important;border:none !important;box-shadow:none !important;margin:0 !important;}
+            .archive-table tbody td.empty-cell{display:flex !important;flex-direction:column !important;justify-content:center !important;align-items:center !important;text-align:center !important;padding:2.5rem 1rem !important;width:100% !important;}
+            .archive-table tbody td.empty-cell::before{display:none !important;}
+            .archive-table tbody td.empty-cell .empty-state-content{width:100%;max-width:320px;}
+            .empty-title{font-size:1rem !important;}
+            .empty-subtitle{font-size:.85rem !important;line-height:1.5;}
+        }
+
+        /* ── Small Mobile (<480px) ── */
+        @media (max-width:479px){
+            .section-spacing{margin-bottom:14px;}
+            #filterGrid{grid-template-columns:1fr 1fr;gap:10px;}
+            #filterGrid .filter-field:first-child{grid-column:1 / -1;}
+            #filterGrid .filter-field:last-child{grid-column:1 / -1;}
+            .archive-table tbody tr{padding:10px 12px;}
+            .archive-table tbody td{font-size:.75rem !important;grid-template-columns:76px minmax(0,1fr);gap:32px;padding:8px 0;}
+            .archive-table tbody td::before{font-size:.65rem;}
+        }
+
+        /* ── History toggle buttons ── */
+        .history-toggle{flex-wrap:wrap;}
+        .history-toggle .btn{flex:1 1 0;min-width:0;white-space:normal;text-align:center;font-size:13px;padding:10px 8px;}
+    </style>
+</head>
+<body>
+<div class="app">
+    @include('admin.senior.partials.navigation', ['active' => 'payouts', 'mobileSubtitle' => 'Payout History'])
+
+    <div class="main">
+        <div class="main-scroll">
+            <div style="margin-bottom:1.5rem;">
+                <p style="margin:0;font-size:0.875rem;color:#6B7280;">Review the release history of senior citizen birthday pension payouts.</p>
+            </div>
+
+            {{-- Flash Messages --}}
+            @if(session('success'))
+                <div class="flash-message flash-success">
+                    <i data-lucide="check-circle"></i>
+                    <span>{{ session('success') }}</span>
+                    <button type="button" class="flash-close" onclick="this.parentElement.remove()"><i data-lucide="x"></i></button>
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="flash-message flash-error">
+                    <i data-lucide="alert-circle"></i>
+                    <span>{{ session('error') }}</span>
+                    <button type="button" class="flash-close" onclick="this.parentElement.remove()"><i data-lucide="x"></i></button>
+                </div>
+            @endif
+
+            {{-- Filter Bar --}}
+            <form method="GET" action="{{ route('admin.senior.payouts-history') }}" style="margin-bottom: 20px;" id="payoutFilterForm">
+                <input type="hidden" name="tab" id="activeTabInput" value="{{ $activeTab ?? 'birthday' }}">
+                <div id="filterGrid">
+                    <div class="filter-field">
+                        <label class="filter-label" for="barangayFilter">Barangay</label>
+                        <select class="filter-select" id="barangayFilter" name="barangay">
+                            <option value="">All Barangays</option>
+                            @foreach($barangays as $barangay)
+                                <option value="{{ $barangay }}" {{ request('barangay') == $barangay ? 'selected' : '' }}>{{ $barangay }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="filter-field">
+                        <label class="filter-label" for="dateFromFilter">Date From</label>
+                        <input type="date" class="filter-select" id="dateFromFilter" name="date_from" value="{{ $dateFrom }}">
+                    </div>
+                    <div class="filter-field">
+                        <label class="filter-label" for="dateToFilter">Date To</label>
+                        <input type="date" class="filter-select" id="dateToFilter" name="date_to" value="{{ $dateTo }}">
+                    </div>
+                    <div class="filter-field">
+                        <label class="filter-label">&nbsp;</label>
+                        <div class="filter-actions-row">
+                            <button type="submit" class="btn primary">
+                                Filter
+                            </button>
+                            @if(request('barangay') || request('date_from') || request('date_to'))
+                                <a href="{{ route('admin.senior.payouts-history', ['tab' => $activeTab ?? 'birthday']) }}" class="btn btn-clear">
+                                    <i data-lucide="x"></i> Clear
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            {{-- Toggle Buttons --}}
+            <div class="history-toggle" style="margin-bottom: 20px; display: flex; gap: 12px;">
+                <button type="button" id="showBirthdayBtn" class="btn {{ ($activeTab ?? 'birthday') === 'birthday' ? 'primary' : '' }}" onclick="showTable('birthday')">
+                    <i data-lucide="cake" style="width: 16px; height: 16px;"></i>
+                    Birthday Payout History
+                </button>
+                <button type="button" id="showInBetweenBtn" class="btn {{ ($activeTab ?? 'birthday') === 'in-between' ? 'primary' : '' }}" onclick="showTable('in-between')">
+                    <i data-lucide="gift" style="width: 16px; height: 16px;"></i>
+                    In-Between Payout History
+                </button>
+            </div>
+
+            {{-- History Table --}}
+            <div class="{{ ($activeTab ?? 'birthday') === 'birthday' ? '' : 'hidden-table' }}" id="birthdayTableSection">
+                <div class="archive-panel-wrap">
+                    <div class="archive-table-wrap">
+                        <table class="archive-table">
+                        <thead>
+                            <tr>
+                                <th>Date &amp; Time</th>
+                                <th>Action</th>
+                                <th>Senior</th>
+                                <th>Amount</th>
+                                <th>Details</th>
+                                <th>Performed By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($history as $record)
+                                <tr>
+                                    <td data-label="Date & Time">{{ $record->created_at->format('M d, Y g:i A') }}</td>
+                                    <td data-label="Action">
+                                        <span class="badge-span badge-{{ $record->action }}">
+                                            {{ ucfirst(str_replace('_', ' ', $record->action)) }}
+                                        </span>
+                                    </td>
+                                    <td data-label="Senior">
+                                        @if($record->senior)
+                                            <div>
+                                                <strong>{{ $record->senior->full_name }}</strong>
+                                                <div style="font-size:0.72rem;margin-top:2px;color:var(--text-muted);">{{ $record->senior->control_number ?? '-' }}</div>
+                                            </div>
+                                        @else
+                                            <span style="font-size:0.8rem;color:var(--text-muted);">System-wide action</span>
+                                        @endif
+                                    </td>
+                                    <td data-label="Amount">PHP {{ number_format($record->payout->amount ?? 0, 2) }}</td>
+                                    <td data-label="Details"><div style="min-width:0;text-align:left">{{ $record->details ?? '-' }}</div></td>
+                                    <td data-label="Performed By">
+                                        @if($record->performedBy)
+                                            {{ $record->performedBy->name ?? 'Admin' }}
+                                        @else
+                                            <span style="font-size:0.8rem;color:var(--text-muted);">System</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr class="empty-row">
+                                    <td colspan="6" class="empty-cell">
+                                        <div class="empty-state-content">
+                                            <div class="empty-icon-wrap">
+                                                <i data-lucide="history"></i>
+                                            </div>
+                                            <div class="empty-title">No birthday payout history found</div>
+                                            <div class="empty-subtitle">Birthday payout records will appear here</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="border-top: 2px solid #94A3B8; margin: 10px 0 0 0; flex-shrink: 0;"></div>
+
+            <div class="sc-pagination">
+                <div class="sc-pagination-info">
+                    @if($history->total() === 0)
+                        Showing 0 of 0 Records
+                    @else
+                        Showing {{ $history->firstItem() }}–{{ $history->lastItem() }} of {{ $history->total() }} Records
+                    @endif
+                </div>
+                <div class="sc-pagination-controls">
+                    @if($history->onFirstPage())
+                        <span class="sc-page-btn" disabled>Previous</span>
+                    @else
+                        <a href="{{ $history->previousPageUrl() }}" class="sc-page-btn">Previous</a>
+                    @endif
+
+                    <span class="sc-page-btn active">{{ $history->currentPage() }}</span>
+
+                    @if($history->hasMorePages())
+                        <a href="{{ $history->nextPageUrl() }}" class="sc-page-btn">Next</a>
+                    @else
+                        <span class="sc-page-btn" disabled>Next</span>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+            <div class="{{ ($activeTab ?? 'birthday') === 'in-between' ? '' : 'hidden-table' }}" id="inBetweenTableSection">
+                <div class="archive-panel-wrap">
+                    <div class="archive-table-wrap">
+                        <table class="archive-table">
+                        <thead>
+                            <tr>
+                                <th>Date &amp; Time</th>
+                                <th>Control Number</th>
+                                <th>Senior</th>
+                                <th>Amount</th>
+                                <th>Next Eligible</th>
+                                <th>Processed By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($inBetweenHistory as $record)
+                                <tr>
+                                    <td data-label="Date & Time">{{ $record->created_at ? $record->created_at->format('M d, Y g:i A') : '-' }}</td>
+                                    <td data-label="Control Number">
+                                        <span class="ref-badge">{{ $record->senior->control_number ?? '-' }}</span>
+                                    </td>
+                                    <td data-label="Senior">
+                                        @if($record->senior)
+                                            <div>
+                                                <strong>{{ $record->full_name }}</strong>
+                                                <div style="font-size:0.72rem;margin-top:2px;color:var(--text-muted);">{{ $record->senior->control_number ?? '-' }}</div>
+                                            </div>
+                                        @else
+                                            <span style="font-size:0.8rem;color:var(--text-muted);">N/A</span>
+                                        @endif
+                                    </td>
+                                    <td data-label="Amount">₱{{ number_format($record->amount, 2) }}</td>
+                                    <td data-label="Next Eligible">
+                                        @if($record->payout_date)
+                                            {{ $record->payout_date->copy()->addYears(6)->format('M d, Y') }}
+                                        @else
+                                            <span style="color:#94A3B8; font-style:italic;">Pending payout</span>
+                                        @endif
+                                    </td>
+                                    <td data-label="Processed By">
+                                        @if($record->processedBy)
+                                            {{ $record->processedBy->name ?? 'Admin' }}
+                                        @else
+                                            <span style="font-size:0.8rem;color:var(--text-muted);">System</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr class="empty-row">
+                                    <td colspan="6" class="empty-cell">
+                                        <div class="empty-state-content">
+                                            <div class="empty-icon-wrap">
+                                                <i data-lucide="gift"></i>
+                                            </div>
+                                            <div class="empty-title">No in-between payout history found</div>
+                                            <div class="empty-subtitle">In-between benefit payout records will appear here</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="border-top: 2px solid #94A3B8; margin: 10px 0 0 0; flex-shrink: 0;"></div>
+
+            <div class="sc-pagination">
+                <div class="sc-pagination-info">
+                    @if($inBetweenHistory->total() === 0)
+                        Showing 0 of 0 Records
+                    @else
+                        Showing {{ $inBetweenHistory->firstItem() }}–{{ $inBetweenHistory->lastItem() }} of {{ $inBetweenHistory->total() }} Records
+                    @endif
+                </div>
+                <div class="sc-pagination-controls">
+                    @if($inBetweenHistory->onFirstPage())
+                        <span class="sc-page-btn" disabled>Previous</span>
+                    @else
+                        <a href="{{ $inBetweenHistory->previousPageUrl() }}" class="sc-page-btn">Previous</a>
+                    @endif
+
+                    <span class="sc-page-btn active">{{ $inBetweenHistory->currentPage() }}</span>
+
+                    @if($inBetweenHistory->hasMorePages())
+                        <a href="{{ $inBetweenHistory->nextPageUrl() }}" class="sc-page-btn">Next</a>
+                    @else
+                        <span class="sc-page-btn" disabled>Next</span>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+
+    function showTable(type) {
+        const birthdaySection = document.getElementById('birthdayTableSection');
+        const inBetweenSection = document.getElementById('inBetweenTableSection');
+        const birthdayBtn = document.getElementById('showBirthdayBtn');
+        const inBetweenBtn = document.getElementById('showInBetweenBtn');
+        const tabInput = document.getElementById('activeTabInput');
+
+        if (tabInput) {
+            tabInput.value = type;
+        }
+
+        try {
+            const url = new URL(window.location.href);
+            url.searchParams.set('tab', type);
+            window.history.replaceState({}, '', url.toString());
+        } catch (e) {}
+
+        if (type === 'birthday') {
+            birthdaySection.classList.remove('hidden-table');
+            inBetweenSection.classList.add('hidden-table');
+            birthdayBtn.classList.add('primary');
+            inBetweenBtn.classList.remove('primary');
+        } else {
+            birthdaySection.classList.add('hidden-table');
+            inBetweenSection.classList.remove('hidden-table');
+            birthdayBtn.classList.remove('primary');
+            inBetweenBtn.classList.add('primary');
+        }
+    }
+
+    // Initialize with selected tab
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const hash = window.location.hash;
+        const currentTab = urlParams.get('tab') || urlParams.get('type') || (hash === '#in-between' ? 'in-between' : '{{ $activeTab ?? 'birthday' }}');
+        showTable(currentTab === 'in-between' ? 'in-between' : 'birthday');
+    });
+</script>
+
+<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">@csrf</form>
+</body>
+</html>

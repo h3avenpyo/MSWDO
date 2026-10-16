@@ -1,0 +1,555 @@
+/**
+ * Financial Assistance Step 2 Payroll Records Stylesheet
+ */
+
+/* Policy 2.0 Unified Styling Tokens */
+:root {
+    --color-brand: #1A237E;
+    --color-brand-light: #EEF2FF;
+    --color-brand-dark: #0D1642;
+    --color-success: #059669;
+    --color-success-light: #ECFDF5;
+    --color-warning: #D97706;
+    --color-warning-light: #FEF3C7;
+    --color-info: #0284C7;
+    --color-info-light: #E0F2FE;
+    --color-border-subtle: #E2E8F0;
+}
+
+.filter-card {
+    background: #FFFFFF;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 14px;
+    padding: 18px 22px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.stat-metric-card {
+    background: #FFFFFF;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-metric-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.records-table-card {
+    background: #FFFFFF;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.records-table-card:hover {
+    border-color: #CBD5E1;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.date-group-card {
+    background: #FFFFFF;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    margin-bottom: 20px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.date-group-card:hover {
+    border-color: #CBD5E1;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.date-group-header {
+    background: #FFFFFF;
+    padding: 18px 24px;
+    border-radius: 14px;
+}
+
+.record-header {
+    user-select: none;
+    background: #FFFFFF;
+    transition: background-color 0.15s ease;
+}
+
+.record-header:hover {
+    background-color: #F8FAFC;
+}
+
+.record-toggle-icon {
+    transition: transform 0.2s ease;
+    display: inline-block;
+}
+
+.record-header[aria-expanded="true"] .record-toggle-icon {
+    transform: rotate(180deg);
+}
+
+.table-clean th {
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #475569;
+    background: #F8FAFC;
+    border-bottom: 2px solid #E2E8F0;
+    padding: 14px 16px;
+    white-space: nowrap;
+}
+
+.table-clean td {
+    padding: 14px 16px;
+    vertical-align: middle;
+    border-bottom: 1px solid #F1F5F9;
+    font-size: 0.875rem;
+}
+
+.table-clean tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.table-clean tbody tr:hover {
+    background-color: #F8FAFC;
+}
+
+.badge-control-no {
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 0.84rem;
+    background-color: var(--color-brand-light);
+    color: var(--color-brand);
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #C7D2FE;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-amount {
+    background-color: #ECFDF5;
+    color: #065F46;
+    font-weight: 700;
+    font-size: 0.88rem;
+    padding: 4px 12px;
+    border-radius: 8px;
+    border: 1px solid #A7F3D0;
+    display: inline-block;
+}
+
+.step-wizard-card,
+.date-hero-banner {
+    background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
+    color: #FFFFFF !important;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 4px 16px rgba(177, 17, 22, 0.22) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.date-hero-banner .hero-subtitle,
+.step-wizard-card .hero-subtitle {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.date-hero-banner .wizard-heading,
+.step-wizard-card .wizard-heading {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #FFFFFF !important;
+    letter-spacing: -0.01em;
+}
+
+.step-2-badge,
+.step-1-badge {
+    background: #FFFFFF !important;
+    color: #b11116 !important;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    vertical-align: middle;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.user-welcome {
+    background: rgba(255, 255, 255, 0.18) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #ffffff !important;
+    display: inline-flex;
+    align-items: center;
+    backdrop-filter: blur(4px);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #b11116;
+    border-color: #b11116;
+    color: #FFFFFF;
+}
+
+.pagination .page-link {
+    color: #b11116;
+    border-radius: 8px;
+    margin: 0 2px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Custom Reusable Utility Classes (Replacing inline styles) */
+.btn-brand-primary {
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
+    color: #FFFFFF !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-brand-primary:hover {
+    background-color: #9b0e13 !important;
+    border-color: #9b0e13 !important;
+    color: #FFFFFF !important;
+}
+
+.btn-brand-primary:focus {
+    background-color: #9b0e13 !important;
+    border-color: #9b0e13 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.25) !important;
+}
+
+.btn-brand-primary:active {
+    background-color: #7c0b0f !important;
+    border-color: #7c0b0f !important;
+    color: #FFFFFF !important;
+}
+
+/* Modal Interface Buttons */
+#monthlyUnclaimedModal .btn-outline-primary,
+#smsMessagingModal .btn-outline-primary,
+#smsModal .btn-outline-primary {
+    color: #b11116;
+    border-color: #b11116;
+    transition: all 0.15s ease-in-out;
+}
+
+#monthlyUnclaimedModal .btn-outline-primary:hover,
+#monthlyUnclaimedModal .btn-outline-primary:focus,
+#monthlyUnclaimedModal .btn-outline-primary.active,
+#smsMessagingModal .btn-outline-primary:hover,
+#smsMessagingModal .btn-outline-primary:focus,
+#smsMessagingModal .btn-outline-primary.active,
+#smsModal .btn-outline-primary:hover,
+#smsModal .btn-outline-primary:focus,
+#smsModal .btn-outline-primary.active {
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
+    color: #FFFFFF !important;
+}
+
+#monthlyUnclaimedModal .btn-outline-primary:disabled,
+#smsMessagingModal .btn-outline-primary:disabled,
+#smsModal .btn-outline-primary:disabled {
+    color: #94A3B8 !important;
+    border-color: #CBD5E1 !important;
+    background-color: transparent !important;
+}
+
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.btn-circle-toggle {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.th-col-num {
+    width: 50px;
+}
+
+.th-col-control {
+    width: 140px;
+}
+
+.th-col-action {
+    min-width: 220px;
+    width: 230px;
+    white-space: nowrap;
+}
+
+.text-rep-type {
+    font-size: 0.68rem;
+}
+
+.empty-state-icon-lg {
+    font-size: 4rem;
+}
+
+.text-brand-color {
+    color: var(--color-brand);
+}
+
+.bg-brand-icon {
+    background-color: var(--color-brand) !important;
+    color: #FFFFFF;
+}
+
+.text-2xs {
+    font-size: 0.65rem;
+}
+
+.claim-status-badge {
+    transition: all 0.2s ease-in-out;
+    letter-spacing: 0.02em;
+}
+
+/* Unified Table Action System */
+.table-action-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+}
+
+.table-action-group {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+
+.btn-table-action,
+.btn-send-sms,
+.btn-mark-claim,
+.btn-message-beneficiary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px !important;
+    padding: 5px 12px !important;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    height: 28px;
+    text-decoration: none;
+    cursor: pointer;
+    vertical-align: middle;
+    margin: 0;
+}
+
+.btn-table-action:hover,
+.btn-send-sms:hover,
+.btn-mark-claim:hover,
+.btn-message-beneficiary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12) !important;
+}
+
+.btn-table-action:active,
+.btn-send-sms:active,
+.btn-mark-claim:active,
+.btn-message-beneficiary:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Send Message Action Button (Preserved) */
+.btn-send-sms {
+    background-color: #1A237E !important;
+    border: 1px solid #1A237E !important;
+    color: #FFFFFF !important;
+}
+
+.btn-send-sms:hover,
+.btn-send-sms:focus {
+    background-color: #0D1642 !important;
+    border-color: #0D1642 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(26, 35, 126, 0.25) !important;
+}
+
+.btn-send-sms i,
+.btn-message-beneficiary i,
+.btn-mark-claim i {
+    font-size: 0.72rem;
+    margin-right: 5px;
+    line-height: 1;
+}
+
+.btn-send-sms:hover i {
+    transform: scale(1.08);
+    transition: transform 0.15s ease;
+}
+
+/* Message Beneficiary Button (Claimed state - Preserved) */
+.btn-message-beneficiary {
+    background-color: #EEF2FF !important;
+    border: 1px solid #C7D2FE !important;
+    color: #1A237E !important;
+}
+
+.btn-message-beneficiary:hover,
+.btn-message-beneficiary:focus {
+    background-color: #1A237E !important;
+    border-color: #1A237E !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2) !important;
+}
+
+/* Timestamp status badge */
+.last-sent-badge {
+    font-size: 0.68rem;
+    color: #64748B;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    margin-top: 2px;
+}
+
+.stat-unclaimed-card {
+    border-left: 4px solid var(--color-warning) !important;
+    background: linear-gradient(135deg, #FFFDF5 0%, #FFFFFF 100%);
+}
+
+/* Laptop Responsive Overrides (1366x768 - 1440x900) */
+@media (max-width: 1440px) {
+    .records-hero-banner {
+        padding: 14px 18px;
+        border-radius: 10px;
+    }
+    .records-hero-banner h2 {
+        font-size: 1.15rem;
+    }
+    .payroll-summary-card {
+        padding: 12px 16px;
+        border-radius: 10px;
+    }
+    .stat-metric-box {
+        padding: 8px 12px;
+    }
+    .table-records th,
+    .table-records td {
+        padding: 8px 10px;
+        font-size: 0.8rem;
+    }
+    .th-col-action {
+        min-width: 200px;
+        width: 205px;
+    }
+    .table-action-group {
+        gap: 5px;
+    }
+    .btn-table-action,
+    .btn-send-sms,
+    .btn-mark-claim,
+    .btn-message-beneficiary {
+        padding: 4px 9px !important;
+        font-size: 0.72rem;
+        height: 26px;
+    }
+    .btn-send-sms i,
+    .btn-message-beneficiary i,
+    .btn-mark-claim i {
+        font-size: 0.68rem;
+        margin-right: 4px;
+    }
+}
+
+/* Modern Clean Pagination Controls for Date Groups */
+.mswdo-pagination-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mswdo-pagination {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.mswdo-page-item {
+    display: inline-flex;
+}
+
+.mswdo-page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1;
+    color: #334155;
+    background-color: #FFFFFF;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.15s ease-in-out;
+    user-select: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.mswdo-page-link:hover:not(.mswdo-dots) {
+    color: #b11116;
+    background-color: #fef2f2;
+    border-color: #fecaca;
+}
+
+.mswdo-page-item.active .mswdo-page-link {
+    color: #FFFFFF !important;
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
+    box-shadow: 0 2px 4px rgba(177, 17, 22, 0.25);
+    cursor: default;
+}
+
+.mswdo-page-item.disabled .mswdo-page-link {
+    color: #94A3B8 !important;
+    background-color: #F8FAFC !important;
+    border-color: #E2E8F0 !important;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.8;
+}
+
+.mswdo-page-link.mswdo-dots {
+    border: none;
+    background: transparent;
+    cursor: default;
+    color: #64748B;
+    min-width: 24px;
+    box-shadow: none;
+}
+

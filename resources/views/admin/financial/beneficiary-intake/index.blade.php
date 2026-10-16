@@ -1,0 +1,381 @@
+@extends('layouts.financial')
+
+@section('title', 'Beneficiary Intake Masterlist - MSWDO Silang')
+@section('page-title', 'Beneficiary Intake Masterlist')
+
+@section('page-styles')
+<link href="{{ asset('css/beneficiary-intake/index.css') }}" rel="stylesheet">
+<style>
+    @media (max-width: 575.98px) {
+        .filter-card .row.g-3>[class*="col-"] {
+            width: 100%;
+            max-width: 100%;
+            flex: 0 0 100%;
+        }
+    }
+</style>
+@endsection
+
+@section('content')
+<div class="container-fluid">
+
+    <!-- Step Wizard Header Card -->
+    <div class="step-wizard-card animate-fade-in mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2 text-white">
+                    <span><i class="fas fa-list me-2"></i>Beneficiary Intake Records</span>
+                    <span class="badge step-1-badge rounded-pill px-2.5 py-1">Step 1 Masterlist</span>
+                </h2>
+                <p class="mb-0 hero-subtitle">View, search, edit, and manage all intake sheets.</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <button type="button" class="btn btn-light rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;"
+                    data-bs-toggle="modal" data-bs-target="#transmittalModal" id="btnOpenTransmittalModal">
+                    <i class="fas fa-file-invoice me-1"></i> Transmittal Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
+        <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    <!-- Search & Filter Card -->
+    <div class="filter-card">
+        <form action="{{ route('admin.beneficiary-intake.index') }}" method="GET" class="row g-3 align-items-end">
+            <div class="col-md-6 col-lg-3">
+                <label class="form-label fw-bold text-secondary small">Search Name or Control No.</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0"
+                        placeholder="Type name or control no..." value="{{ request('search') }}">
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label class="form-label fw-bold text-secondary small">Filter by Barangay</label>
+                <select name="barangay" class="form-select" onchange="this.form.submit()">
+                    <option value="All">All Barangays</option>
+                    @foreach($barangays as $brgy)
+                    <option value="{{ $brgy }}" {{ request('barangay')==$brgy ? 'selected' : '' }}>{{ $brgy }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label class="form-label fw-bold text-secondary small">Filter by Category</label>
+                <select name="category" class="form-select" onchange="this.form.submit()">
+                    <option value="All">All Categories</option>
+                    @foreach($categories as $cat)
+                    <option value="{{ $cat }}" {{ request('category')==$cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label class="form-label fw-bold text-secondary small"><i
+                        class="fas fa-calendar-day me-1 text-muted"></i> Filter by Date</label>
+                <input type="date" name="date" class="form-control" value="{{ request('date') }}"
+                    onchange="this.form.submit()" title="Filter by Date">
+            </div>
+        </form>
+
+        @if(request()->hasAny(['search', 'barangay', 'category', 'date', 'month']))
+        <div class="d-flex align-items-center gap-2 flex-wrap mt-3 pt-2 border-top">
+            <span class="text-muted small fw-semibold me-1"><i class="fas fa-sliders-h me-1"></i> Active Filters:</span>
+            @if(request('search'))
+            <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill small">
+                Search: <strong>{{ request('search') }}</strong>
+            </span>
+            @endif
+            @if(request('barangay') && request('barangay') !== 'All')
+            <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill small">
+                Barangay: <strong>{{ request('barangay') }}</strong>
+            </span>
+            @endif
+            @if(request('category') && request('category') !== 'All')
+            <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill small">
+                Category: <strong>{{ request('category') }}</strong>
+            </span>
+            @endif
+            @if(request('date'))
+            @php
+            $dateLabel = request('date');
+            try {
+            $dateLabel = \Carbon\Carbon::parse(request('date'))->format('M d, Y');
+            } catch (\Exception $e) {}
+            @endphp
+            <span
+                class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 rounded-pill small">
+                <i class="fas fa-calendar-day me-1"></i> Date: <strong>{{ $dateLabel }}</strong>
+            </span>
+            @endif
+            @if(request('month'))
+            @php
+            $monthLabel = request('month');
+            try {
+            $monthLabel = \Carbon\Carbon::createFromFormat('Y-m', request('month'))->format('F Y');
+            } catch (\Exception $e) {}
+            @endphp
+            <span
+                class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 rounded-pill small">
+                <i class="fas fa-calendar-alt me-1"></i> Month: <strong>{{ $monthLabel }}</strong>
+            </span>
+            @endif
+            <a href="{{ route('admin.beneficiary-intake.index') }}"
+                class="text-danger small fw-semibold text-decoration-none ms-auto">
+                <i class="fas fa-times-circle me-1"></i> Clear All Filters
+            </a>
+        </div>
+        @endif
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="table-clean">
+                <thead>
+                    <tr>
+                        <th>Control Number</th>
+                        <th>Beneficiary Name</th>
+                        <th>Barangay</th>
+                        <th>Category</th>
+                        <th>Representative</th>
+                        <th>Date Processed</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($intakes as $intake)
+                    <tr>
+                        <td>
+                            <span class="fw-bold text-primary">{{ $intake->control_number }}</span>
+                            @if($intake->is_historical)
+                            <div><span class="badge bg-warning text-dark border px-2 py-0.5 rounded-pill"
+                                    style="font-size: 10px;"><i class="fas fa-history me-1"></i>Pre-record</span></div>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">{{ $intake->beneficiary_full_name }}</div>
+                            <div class="text-muted small">{{ $intake->beneficiary_contact_number ?? 'No contact' }} • {{
+                                $intake->beneficiary_age ?? 'N/A' }} yrs ({{ $intake->beneficiary_sex ?? 'N/A' }})</div>
+                        </td>
+                        <td>
+                            <i class="fas fa-map-marker-alt text-muted me-1 small"></i>{{ $intake->beneficiary_barangay
+                            ?? 'N/A' }}
+                        </td>
+                        <td>
+                            <span class="badge-cat">{{ $intake->display_category }}</span>
+                        </td>
+                        <td>
+                            @if($intake->has_representative)
+                            <div class="badge-rep mb-1"><i class="fas fa-user-friends me-1"></i> Has Representative
+                            </div>
+                            <div class="small fw-semibold text-dark">{{ $intake->representative_full_name }}</div>
+                            <div class="text-muted" style="font-size: 0.75rem;">Rel: {{ $intake->rep_relationship ??
+                                'N/A' }}</div>
+                            @else
+                            <span class="text-muted small"><i class="fas fa-user me-1"></i> Self</span>
+                            @endif
+                        </td>
+                        <td>
+                            {{ $intake->date_processed ? $intake->date_processed->format('M d, Y') : 'N/A' }}
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-inline-flex gap-1">
+                                <!-- View -->
+                                <a href="{{ route('admin.beneficiary-intake.show', $intake) }}"
+                                    class="btn btn-sm btn-outline-primary action-btn" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <!-- Edit -->
+                                <a href="{{ route('admin.beneficiary-intake.edit', $intake) }}"
+                                    class="btn btn-sm btn-outline-secondary action-btn" title="Edit Record">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <!-- Archive -->
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-danger action-btn btn-archive-intake"
+                                    data-id="{{ $intake->id }}" data-control="{{ $intake->control_number }}"
+                                    data-name="{{ $intake->beneficiary_full_name }}" title="Archive Record">
+                                    <i class="fas fa-box-archive"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <div class="py-4">
+                                <i class="fas fa-folder-open fa-3x text-muted mb-3 opacity-50"></i>
+                                <h6 class="fw-bold text-secondary">No Beneficiary Intake Records Found</h6>
+                                <p class="text-muted small mb-3">Try clearing search filters or create a new intake
+                                    sheet.</p>
+                                <a href="{{ route('admin.beneficiary-intake.create') }}"
+                                    class="btn btn-primary btn-sm rounded-pill px-4">
+                                    <i class="fas fa-plus me-1"></i> Create New Intake
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if($intakes->total() > 0)
+        <div
+            class="intake-pagination-wrapper d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+            <div class="text-muted small fw-medium text-center text-md-start">
+                Showing <span class="fw-semibold text-dark">{{ $intakes->firstItem() }}</span> to <span
+                    class="fw-semibold text-dark">{{ $intakes->lastItem() }}</span> of <span
+                    class="fw-semibold text-dark">{{ $intakes->total() }}</span> records
+            </div>
+            @if($intakes->hasPages())
+            <div class="d-flex justify-content-center">
+                {{ $intakes->links('vendor.pagination.mswdo-compact') }}
+            </div>
+            @endif
+        </div>
+        @endif
+    </div>
+
+</div>
+
+<!-- Hidden Form for Step 1 Archive Action -->
+<form id="archiveStep1IndexForm" method="POST" style="display: none;">
+    @csrf
+    <input type="hidden" name="reason" id="archiveStep1IndexReason">
+</form>
+
+<!-- Transmittal Options Generator Modal -->
+<div class="modal fade" id="transmittalModal" tabindex="-1" aria-labelledby="transmittalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow overflow-hidden">
+            <div class="modal-header py-3 px-4 text-white" style="background:#1A237E">
+                <h5 class="modal-title fw-bold text-white m-0" id="transmittalModalLabel" style="font-size:1.05rem">
+                    <i class="fas fa-file-invoice me-2"></i>Generate Transmittal Report
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <form action="{{ route('admin.beneficiary-intake.transmittal') }}" method="GET" target="_blank" rel="opener"
+                id="transmittalForm">
+                <div class="modal-body py-4">
+
+                    @if(request()->filled('search'))
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
+                    @if(request()->filled('barangay') && request('barangay') !== 'All')
+                    <input type="hidden" name="barangay" value="{{ request('barangay') }}">
+                    @endif
+                    @if(request()->filled('date'))
+                    <input type="hidden" name="date" value="{{ request('date') }}">
+                    @endif
+                    @if(request()->filled('month'))
+                    <input type="hidden" name="month" value="{{ request('month') }}">
+                    @endif
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-secondary">Transmittal Date</label>
+                            <input type="date" name="transmittal_date" class="form-control"
+                                value="{{ request('date') ?? date('Y-m-d') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-secondary">Session / Time</label>
+                            <select name="transmittal_session" class="form-select" required>
+                                <option value="AM" selected>AM Session</option>
+                                <option value="PM">PM Session</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-secondary">Assigned Staff Name</label>
+                        <input type="text" name="staff_name" class="form-control"
+                            value="{{ session('admin_user_name') ?? 'FRANCES' }}" placeholder="e.g. FRANCES" required>
+                    </div>
+
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-light border px-3 rounded-pill"
+                        data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4 rounded-pill fw-bold"
+                        style="background: #1A237E; border: none;">
+                        <i class="fas fa-print me-1"></i> Generate &amp; Print Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('page-scripts')
+<script src="{{ asset('js/beneficiary-intake/index.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Smooth Transmittal Report Generation & Window Management
+    const transmittalForm = document.getElementById('transmittalForm');
+    if (transmittalForm) {
+        transmittalForm.addEventListener('submit', function() {
+            // Open window explicitly via script so browsers allow window.close() upon return
+            const reportWindow = window.open('', 'mswdo_transmittal_window');
+            if (reportWindow) {
+                this.target = 'mswdo_transmittal_window';
+            }
+
+            // Close the modal cleanly so the Intake Directory page is immediately usable
+            const modalEl = document.getElementById('transmittalModal');
+            if (modalEl && typeof bootstrap !== 'undefined') {
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            }
+        });
+    }
+
+    document.querySelectorAll('.btn-archive-intake').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const controlNumber = this.getAttribute('data-control');
+            const name = this.getAttribute('data-name');
+
+            Swal.fire({
+                title: 'I-archive ang Intake Record?',
+                html: `Are you sure you want to archive this intake record for <strong>${name}</strong> (<span class="text-primary font-monospace">${controlNumber}</span>)?<br><br><small class="text-muted">The record will be safely removed from the active intake list but will remain available in the Archive.</small>`,
+                icon: 'warning',
+                input: 'text',
+                inputPlaceholder: 'Reason for archiving (optional)',
+                showCancelButton: true,
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: '<i class="fas fa-box-archive me-1"></i> I-archive Record',
+                cancelButtonText: 'Kanselahin',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Ina-archive ang Record...',
+                        text: 'Sandali lamang...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    const form = document.getElementById('archiveStep1IndexForm');
+                    document.getElementById('archiveStep1IndexReason').value = result.value || '';
+                    form.action = `/admin/financial/step1/archive/${id}`;
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
+@endsection

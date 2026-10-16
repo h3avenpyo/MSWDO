@@ -1,0 +1,1272 @@
+@extends(auth()->user()?->position === 'Desk Officer' ? 'layouts.desk-officer' : 'layouts.admin-tailwind')
+
+@section('title', 'Cases - ' . ($barangay->name ?? 'N/A') . ' - iSERVE SILANG Admin')
+
+@php
+    $isSwdDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'VAWC' && !auth()->user()?->isMultiCaseDepartment();
+    $isBarangayDeskOfficer = auth()->user()?->position === 'Desk Officer'
+        && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)
+        && !auth()->user()?->isMultiCaseDepartment();
+    $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()->user()?->isMultiCaseDepartment();
+@endphp
+
+@push('styles')
+@if(auth()->user()?->position !== 'Desk Officer')
+<style>
+    /* Prevent page scrolling - only table should scroll */
+    html, body { overflow: hidden !important; height: 100vh !important; }
+    #mainContent { height: 100vh !important; overflow: hidden !important; }
+    [x-cloak] { display: none !important; }
+
+    /* Phone and tablet views use cards; the table is desktop-only. */
+    @media (max-width: 80rem) {
+        .view-cases-table-desktop { display: none !important; }
+        .view-cases-table-cards { display: block !important; }
+    }
+    @media (min-width: 80.0625rem) {
+        .view-cases-table-desktop { display: block !important; }
+        .view-cases-table-cards { display: none !important; }
+    }
+
+    /* Keep case content in a single fluid column while the shared sidebar is
+       an off-canvas drawer on Android tablets (600px–1280px). */
+    @media (min-width: 37.5rem) and (max-width: 80rem) {
+        html, body { height: auto !important; overflow: auto !important; }
+        #mainContent { height: auto !important; overflow: visible !important; }
+        #mainContent > main {
+            height: auto !important;
+            min-height: 0;
+            overflow: visible !important;
+            padding: clamp(1rem, 2vw, 1.5rem) !important;
+        }
+        .view-cases-table-desktop table {
+            min-width: 52rem;
+        }
+        .view-cases-table-desktop :is(th, td) {
+            padding: .75rem clamp(.625rem, 1.2vw, 1rem) !important;
+            font-size: clamp(.6875rem, 1.2vw, .8125rem);
+        }
+        .view-cases-table-cards .case-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 13rem;
+        }
+        .view-cases-table-cards .case-card > span {
+            order: 5;
+            align-self: flex-start;
+            margin-top: .5rem;
+        }
+        .view-cases-table-cards .case-card-actions {
+            order: 6;
+            display: grid;
+            grid-template-columns: repeat(3, 2.5rem);
+            justify-content: end;
+            gap: .5rem;
+            margin-top: auto !important;
+            margin-bottom: 0 !important;
+        }
+        .view-cases-table-cards .case-card-actions :is(button, form, form > button) {
+            width: 2.5rem;
+            min-width: 2.5rem;
+            height: 2.5rem;
+            min-height: 2.5rem;
+            padding: 0 !important;
+        }
+    }
+
+    /* Phone-first case view: keep the existing card presentation within the
+       viewport while allowing the document to scroll naturally. */
+    @media (max-width: 26.875rem), (max-height: 30rem) and (max-width: 58rem) {
+        html, body { height: auto !important; min-height: 100%; overflow-x: hidden !important; overflow-y: auto !important; }
+        #mainContent { height: auto !important; min-height: 100%; overflow: visible !important; }
+
+        #barangay-cases-view-header > div {
+            padding-top: max(.75rem, env(safe-area-inset-top)) !important;
+            padding-right: max(1rem, env(safe-area-inset-right)) !important;
+            padding-left: max(1rem, env(safe-area-inset-left)) !important;
+        }
+        #barangay-cases-view-header h2 { font-size: clamp(1.125rem, 5vw, 1.375rem); line-height: 1.25; }
+
+        #barangay-cases-view-main {
+            height: auto !important;
+            min-height: 0;
+            overflow: visible !important;
+            padding: 1rem max(1rem, env(safe-area-inset-right)) calc(1rem + env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left)) !important;
+        }
+        #barangay-cases-view-main :is(button, input, select) { min-height: 3rem; }
+
+        .view-cases-toolbar {
+            display: grid !important;
+            grid-template-columns: minmax(0, 9rem) auto;
+            align-items: stretch;
+            gap: .5rem !important;
+            justify-content: space-between;
+        }
+        .view-cases-toolbar > a {
+            min-width: 0;
+            min-height: 2.75rem;
+            padding: .5rem .75rem !important;
+            font-size: .75rem !important;
+            justify-content: center;
+            text-align: center;
+            white-space: normal;
+        }
+        .view-cases-toolbar-actions {
+            width: auto !important;
+            min-width: 0;
+            gap: .5rem !important;
+        }
+        .view-cases-toolbar-actions > :is(button, .relative > button) { min-height: 3rem; }
+
+        .view-cases-statistics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: .75rem !important; }
+        .view-cases-statistics > div { min-width: 0; padding: .875rem !important; }
+        .view-cases-statistics > div > div { min-width: 0; gap: .5rem !important; }
+        .view-cases-statistics p:first-child { font-size: .6875rem; overflow-wrap: anywhere; }
+
+        .view-cases-list { flex: none !important; min-height: 0; overflow: visible !important; }
+        .view-cases-list > div:first-child { padding: .875rem 1rem !important; }
+        .view-cases-table-cards { overflow: visible !important; padding: .75rem !important; }
+        .view-cases-table-cards .case-card { min-width: 0; padding: 1rem !important; overflow: hidden; }
+        .view-cases-table-cards .case-card > div:first-child { flex-wrap: wrap; }
+        .view-cases-table-cards .case-card > div:first-child > div { min-width: 0; overflow-wrap: anywhere; }
+        .view-cases-table-cards .case-card-actions { min-height: 3rem; gap: .5rem !important; flex-wrap: nowrap !important; }
+        .view-cases-table-cards .case-card-actions :is(button, a, form > button) {
+            width: 3rem !important;
+            min-width: 3rem !important;
+            height: 3rem !important;
+            min-height: 3rem !important;
+            padding: 0 !important;
+        }
+
+        .view-cases-pagination { padding: 1rem !important; }
+        .view-cases-pagination > div { gap: .75rem !important; }
+        .view-cases-pagination > div > p { text-align: center; }
+        .view-cases-pagination > div > div { flex-wrap: wrap; justify-content: center; }
+        .view-cases-pagination :is(a, span) { min-width: 3rem; min-height: 3rem; display: inline-flex; align-items: center; justify-content: center; }
+    }
+</style>
+@endif
+@if($isBarangayDeskOfficer || $isMultiroleDeskOfficer)
+<style>
+    @media (max-width: 767px), (hover: none) and (pointer: coarse) {
+        #barangay-cases-view-main {
+            height: auto !important;
+            min-height: 0;
+            overflow: visible !important;
+        }
+        .view-cases-toolbar { display: contents !important; }
+        .view-cases-toolbar > .relative {
+            order: 1;
+            width: 100%;
+            margin-bottom: .5rem;
+        }
+        .view-cases-active-filters { order: 2; margin-bottom: .5rem !important; }
+        .view-cases-statistics {
+            order: 3;
+            gap: .5rem !important;
+            margin-bottom: .5rem !important;
+        }
+        .view-cases-statistics > div { padding: .75rem !important; }
+        .view-cases-toolbar-actions {
+            order: 4;
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            width: 100% !important;
+            gap: .5rem !important;
+            margin-bottom: .75rem;
+        }
+        .view-cases-toolbar-actions > .relative,
+        .view-cases-toolbar-actions > button,
+        .view-cases-toolbar-actions button { width: 100%; }
+        .view-cases-toolbar-actions > button,
+        .view-cases-toolbar-actions > .relative > button {
+            min-height: 2.5rem;
+            justify-content: center;
+            padding: .5rem .75rem !important;
+        }
+        .view-cases-list { order: 5; }
+        .view-cases-table-desktop { display: none !important; }
+        .view-cases-table-cards {
+            display: block !important;
+            padding: .5rem !important;
+        }
+        .view-cases-table-cards .case-card {
+            position: relative;
+            padding: .75rem .75rem 3.5rem !important;
+        }
+        .view-cases-table-cards .case-card > span {
+            position: absolute;
+            bottom: .875rem;
+            left: .75rem;
+        }
+        .view-cases-table-cards .case-card-actions {
+            position: absolute;
+            right: .75rem;
+            bottom: .625rem;
+            margin: 0 !important;
+            gap: .5rem !important;
+            flex-wrap: nowrap !important;
+        }
+        .view-cases-table-cards .case-card-actions :is(button, form, form > button) {
+            width: 2.25rem !important;
+            min-width: 2.25rem !important;
+            height: 2.25rem !important;
+            min-height: 2.25rem !important;
+            padding: 0 !important;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 1439px) {
+        /* Stable tablet sidebar dimensions and internal navigation scrolling. */
+        #sidebar:not(.sidebar-collapsed) {
+            position: fixed !important;
+            inset: 0 auto 0 0 !important;
+            width: 18rem !important;
+            min-width: 18rem !important;
+            max-width: 18rem !important;
+            height: 100dvh !important;
+            max-height: 100dvh !important;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        #sidebar .sidebar-menu { min-height: 0; overflow-y: auto; }
+
+        .view-cases-statistics {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: .75rem !important;
+        }
+        .view-cases-statistics > div { min-width: 0; padding: .875rem 1rem !important; }
+        .view-cases-statistics > div > div { min-width: 0; }
+        .view-cases-statistics p:first-child {
+            overflow-wrap: anywhere;
+            line-height: 1.2;
+        }
+
+        .view-cases-table-desktop { display: none !important; }
+        .view-cases-table-cards { display: block !important; }
+        .view-cases-table-cards .case-card { min-width: 0; }
+        .view-cases-table-cards .case-card-actions {
+            justify-content: flex-end !important;
+            gap: .5rem !important;
+            flex-wrap: nowrap !important;
+        }
+        .view-cases-table-cards .case-card-actions :is(button, a, form > button) { flex: 0 0 auto; }
+        .multirole-desk-case-cards .case-card-actions { justify-content: flex-end !important; gap: .5rem !important; flex-wrap: nowrap !important; }
+        .multirole-desk-case-cards .case-card-actions > * { flex: 0 0 auto !important; }
+        .multirole-desk-case-cards .case-card-actions :is(button, a, form > button) { width: 2.5rem !important; min-width: 2.5rem !important; height: 2.5rem !important; min-height: 2.5rem !important; padding: 0 !important; }
+    }
+</style>
+@endif
+@if(auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin())
+<style>
+    .view-cases-table-desktop table :is(th, td) { text-align: center; vertical-align: middle; }
+</style>
+@endif
+@if(auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'SWD', 'VAWC'], true))
+<style>
+    .view-cases-table-desktop table :is(th, td) { text-align: center; vertical-align: middle; }
+</style>
+@endif
+@endpush
+
+@section('content')
+
+<!-- View Case Modal -->
+<div x-data="{ open: false, content: '', caseNumber: '', caseId: '', caseStatus: '', printUrl: '', referUrl: '', isBcpcAdmin: {{ auth()->user()->isBcpcAdmin() ? 'true' : 'false' }}, isVawcAdmin: {{ auth()->user()->isVawcAdmin() ? 'true' : 'false' }}, isBarangayDeskOfficer: {{ $isBarangayDeskOfficer ? 'true' : 'false' }}, allowBackdropClose: {{ auth()->user()->isDepartmentAdmin() ? 'false' : 'true' }} }"
+     x-cloak 
+     @open-case-modal.window="open = true; content = $event.detail.content; caseNumber = $event.detail.caseNumber || ''; caseId = $event.detail.caseId || ''; caseStatus = $event.detail.caseStatus || ''; printUrl = $event.detail.printUrl || '#';"
+     @close-case-modal.window="open = false"
+     id="caseModal"
+     x-effect="open ? document.body.classList.add('overflow-hidden') : document.body.classList.remove('overflow-hidden')">
+    <div x-show="open" 
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         @click.self="if (allowBackdropClose) open = false"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div @click.stop 
+             x-show="open"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+                <div>
+                    <h5 class="text-lg font-semibold text-gray-800" x-text="'Case #' + caseNumber">Case Details</h5>
+                    <p class="text-sm text-gray-500">Viewing case details</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a :href="printUrl" target="_blank" class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                        <i class="fas fa-print"></i>
+                        <span class="hidden sm:inline">Print</span>
+                    </a>
+                    <a :href="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((caseStatus || '').trim().toLowerCase()) ? null : (referUrl || ('/admin/cases/' + caseId + '/refer'))" :aria-disabled="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((caseStatus || '').trim().toLowerCase())" :tabindex="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((caseStatus || '').trim().toLowerCase()) ? -1 : 0" :class="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((caseStatus || '').trim().toLowerCase()) ? 'cursor-not-allowed bg-gray-300 text-gray-500 pointer-events-none' : 'bg-purple-700 text-white hover:bg-purple-800'" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium">
+                        <i class="fas fa-share-square"></i>
+                        <span class="hidden sm:inline">Refer Case</span>
+                    </a>
+                    <button @click="open = false" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-4 overflow-auto flex-1" x-html="content">
+                <div class="flex flex-col items-center justify-center py-12">
+                    <div class="animate-spin rounded-full h-10 w-10 border-4 border-purple-200 border-t-purple-700"></div>
+                    <p class="mt-4 text-sm text-gray-500">Loading case details...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Case Modal -->
+<div x-data="{ open: false, content: '', caseNumber: '', allowBackdropClose: {{ auth()->user()->isDepartmentAdmin() ? 'false' : 'true' }} }"
+     x-cloak
+     @open-edit-modal.window="open = true; content = $event.detail.content; caseNumber = $event.detail.caseNumber || '';"
+     @close-edit-modal.window="open = false"
+     id="editCaseModal"
+     x-effect="open ? document.body.classList.add('overflow-hidden') : document.body.classList.remove('overflow-hidden')">
+    <div x-show="open" 
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         @click.self="if (allowBackdropClose) open = false"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div @click.stop 
+             x-show="open"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+                <h5 class="text-lg font-semibold text-gray-800" x-text="'Edit Case #' + caseNumber">Edit Case</h5>
+                <button type="button" @click="{{ $isBarangayDeskOfficer ? 'window.portalUnsavedChanges.confirmExit(() => { open = false; window.portalUnsavedChanges.reset(); })' : 'open = false' }}" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-4 overflow-auto flex-1" x-html="content">
+                <div class="flex flex-col items-center justify-center py-12">
+                    <div class="animate-spin rounded-full h-10 w-10 border-4 border-purple-200 border-t-purple-700"></div>
+                    <p class="mt-4 text-sm text-gray-500">Loading edit form...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Header -->
+<header id="barangay-cases-view-header" class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
+    <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
+        <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800">{{ $barangay->name }} Cases</h2>
+            <p class="text-sm text-gray-500 hidden sm:block">Viewing cases for this barangay</p>
+        </div>
+        <div class="flex items-center gap-4">
+            @if($isBarangayDeskOfficer)
+                @include('desk-officer.components.notifications')
+            @else
+                @include('admin-tailwind.components.notifications')
+            @endif
+            <div class="hidden sm:flex items-center gap-3">
+                <img src="{{ asset('images/mswdo_logo.jpg') }}" alt="User Profile" class="w-10 h-10 rounded-full object-cover bg-gray-100">
+                <div class="text-right">
+                    <p class="text-sm font-medium text-gray-800">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
+                    <p class="text-xs text-gray-500">{{ Auth::user()->position }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main id="barangay-cases-view-main" class="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-4 flex flex-col h-[calc(100vh-80px)] overflow-hidden">
+    
+    <!-- Action Buttons -->
+    <div class="view-cases-toolbar flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
+        @if($isBarangayDeskOfficer)
+            <div class="relative w-full sm:max-w-md sm:flex-1">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input id="swd-case-search" type="text" placeholder="Search cases..." class="w-full h-10 pl-10 pr-4 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300">
+            </div>
+        @endif
+        <!-- The barangay directory is unavailable to SWD Desk Officers. -->
+        @unless($isBarangayDeskOfficer)
+            <a href="{{ route('admin-barangay-cases', request()->filled('type') ? ['type' => request('type')] : []) }}" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors text-xs sm:text-sm font-medium whitespace-nowrap">
+                <i class="fas fa-arrow-left"></i>
+                <span class="hidden xs:inline">Back to</span> <span>Barangay List</span>
+            </a>
+        @endunless
+        
+        <!-- Right Side - Action Buttons -->
+        <div class="view-cases-toolbar-actions flex w-full items-center justify-end gap-2 sm:w-auto {{ $isBarangayDeskOfficer ? 'sm:ml-auto' : '' }}">
+            <!-- Filter Button -->
+            <div class="relative {{ $isBarangayDeskOfficer ? 'single-role-desk-view-filter' : '' }}" x-data="{ open: false }">
+                <button 
+                    @click="open = !open"
+                    class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-xs sm:text-sm font-medium"
+                >
+                    <i class="fas fa-filter text-purple-600"></i>
+                    <span>Filter</span>
+                    @if(!empty($currentFilters['status']) || !empty($currentFilters['dateFrom']) || !empty($currentFilters['dateTo']))
+                        <span class="w-2 h-2 bg-purple-600 rounded-full"></span>
+                    @endif
+                </button>
+                
+                <!-- Filter Dropdown -->
+                <div 
+                    x-show="open" 
+                    x-cloak
+                    @click.away="open = false"
+                    x-transition
+                    class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg border border-gray-100 z-20 p-4"
+                >
+                    <form method="GET" action="{{ route('admin.barangay-cases.show', $barangay->id) }}">
+                        @if(request()->filled('type'))
+                            <input type="hidden" name="type" value="{{ request('type') }}">
+                        @endif
+                        <h4 class="font-semibold text-gray-800 mb-3">Filter Options</h4>
+                        
+                        <!-- Status Filter -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Status</label>
+                            <select name="status" id="status-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                <option value="">All Status</option>
+                                <option value="Case Filed" {{ ($currentFilters['status'] ?? '') == 'Case Filed' ? 'selected' : '' }}>Case Filed</option>
+                                <option value="Case Referred" {{ ($currentFilters['status'] ?? '') == 'Case Referred' ? 'selected' : '' }}>Case Referred</option>
+                                <option value="Case closed" {{ ($currentFilters['status'] ?? '') == 'Case closed' ? 'selected' : '' }}>Case Closed</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Date Range -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Date Range</label>
+                            <div class="space-y-2">
+                                <input type="date" name="date_from" id="date-from" value="{{ $currentFilters['dateFrom'] ?? '' }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm" placeholder="From">
+                                <input type="date" name="date_to" id="date-to" value="{{ $currentFilters['dateTo'] ?? '' }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm" placeholder="To">
+                            </div>
+                        </div>
+                        
+                        <!-- Filter Actions -->
+                        <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                            <a href="{{ route('admin.barangay-cases.show', array_filter(['barangay' => $barangay->id, 'type' => request('type')])) }}" class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                                Reset
+                            </a>
+                            <button type="submit" class="px-3 py-1.5 text-sm bg-purple-700 text-white hover:bg-purple-800 rounded-lg transition-colors">
+                                Apply
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Print Button -->
+            <button 
+                type="button" 
+                id="printButton"
+                class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs sm:text-sm font-medium whitespace-nowrap {{ $isBarangayDeskOfficer ? 'single-role-desk-view-print' : '' }}"
+            >
+                <i class="fas fa-print"></i>
+                <span class="hidden sm:inline">Print All</span><span class="sm:hidden">Print</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Active Filters Display -->
+    @if(!empty($currentFilters['status']) || !empty($currentFilters['dateFrom']) || !empty($currentFilters['dateTo']))
+        <div class="view-cases-active-filters flex flex-wrap items-center gap-2 mb-4 text-sm">
+            <span class="text-gray-500">Active Filters:</span>
+            @if(!empty($currentFilters['status']))
+                <span class="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">
+                    Status: {{ $currentFilters['status'] }}
+                </span>
+            @endif
+            @if(!empty($currentFilters['dateFrom']))
+                <span class="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">
+                    From: {{ \Carbon\Carbon::parse($currentFilters['dateFrom'])->format('M d, Y') }}
+                </span>
+            @endif
+            @if(!empty($currentFilters['dateTo']))
+                <span class="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">
+                    To: {{ \Carbon\Carbon::parse($currentFilters['dateTo'])->format('M d, Y') }}
+                </span>
+            @endif
+            <a href="{{ route('admin.barangay-cases.show', array_filter(['barangay' => $barangay->id, 'type' => request('type')])) }}" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-medium transition-colors">Clear filters</a>
+        </div>
+    @endif
+    
+    <!-- Summary Cards -->
+    <div class="view-cases-statistics grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <div>
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Case Closed</p>
+                    <p class="text-lg font-bold text-gray-800">{{ ($allCases ?? $cases)->whereIn('status', ['Case closed', 'Case Closed', 'Complete case', 'Complete Case'])->count() }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-orange-500"></div>
+                <div>
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Case Referred</p>
+                    <p class="text-lg font-bold text-gray-800">{{ ($allCases ?? $cases)->where('status', 'Case Referred')->count() }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                <div>
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Case Filed</p>
+                    <p class="text-lg font-bold text-gray-800">{{ ($allCases ?? $cases)->where('status', 'Case Filed')->count() }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-purple-600"></div>
+                <div>
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Total Cases</p>
+                    <p class="text-lg font-bold text-gray-800">{{ ($allCases ?? $cases)->count() }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cases Table Card -->
+    <div class="view-cases-list bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col flex-1 min-h-0 overflow-hidden">
+        <!-- Table Header -->
+        <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-purple-700 to-purple-600 flex-shrink-0">
+            <h3 class="text-white font-medium flex items-center gap-2">
+                <i class="fas fa-folder-open"></i>
+                Cases List ({{ $cases->total() }} total)
+            </h3>
+        </div>
+        
+        <!-- Desktop Table -->
+        <div class="view-cases-table-desktop hidden md:block flex-1 overflow-auto min-h-0">
+            <table class="w-full table-fixed">
+                <thead class="bg-gray-50 sticky top-0 z-10">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider w-[9%]">Case #</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider w-[10%]">Date Reported</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider w-[12%]">Victim Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider w-[10%]">Type of Abuse</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider w-[10%]">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider w-[10%]">Case Priority</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider w-[12%]">Last Updated</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider w-[12%]">Generated By</th>
+                        <th class="px-6 py-3 text-center text-xs font-semibold text-purple-700 uppercase tracking-wider w-[15%]">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($cases as $case)
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <button type="button" class="view-case text-purple-700 hover:text-purple-900 font-semibold text-sm underline"
+                                        data-ajax-url="{{ route('cases.show', $case->id) }}"
+                                        data-case-number="{{ $isSwdDeskOfficer ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? '') : $case->case_number }}"
+                                        data-case-id="{{ $case->id }}"
+                                        data-case-status="{{ $case->hasBeenReferred() ? 'Case Referred' : $case->status }}">
+                                    {{ $isSwdDeskOfficer ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? 'N/A') : ($case->case_number ?? 'N/A') }}
+                                </button>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {{ $case->date_reported ? \Carbon\Carbon::parse($case->date_reported)->format('M d, Y') : 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-800 truncate">
+                                {{ censorLastName($case->victim_name) }}
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($case->abuse_type)
+                                    @php
+                                        $abuseType = strtolower($case->abuse_type);
+                                        $typeColor = '#' . \App\Http\Controllers\AdminController::getAbuseTypeColor($abuseType);
+                                    @endphp
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" style="background-color: {{ $typeColor }}20; color: {{ $typeColor }};">
+                                        {{ ucfirst($case->abuse_type) }}
+                                    </span>
+                                @else
+                                    <span class="text-sm text-gray-400">N/A</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 {{ auth()->user()?->isDepartmentAdmin() || auth()->user()?->position === 'Desk Officer' ? 'text-center' : '' }}">
+                                @if($case->status)
+                                    @php
+                                        $statusColor = '#' . \App\Http\Controllers\AdminController::getStatusColor($case->status);
+                                    @endphp
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium text-white" style="background-color: {{ $statusColor }};">
+                                        {{ ($case->status ?? '') === 'Case closed' ? 'Case Closed' : $case->status }}
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-500 text-white">
+                                        Pending
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 {{ auth()->user()?->isDepartmentAdmin() || auth()->user()?->position === 'Desk Officer' ? 'text-center' : '' }}">
+                                @php
+                                    $priorityValue = trim((string) $case->priority);
+                                    $priorityKey = strtolower($priorityValue);
+                                    $priorityLabels = ['emergency' => 'Emergency', 'urgent' => 'Urgent', 'non-urgent' => 'Non-urgent', 'normal' => 'Non-urgent'];
+                                    $priorityColors = ['emergency' => ['#dc2626', '#fff'], 'urgent' => ['#f59e0b', '#111'], 'non-urgent' => ['#16a34a', '#fff'], 'normal' => ['#16a34a', '#fff']];
+                                    $priorityStyle = $priorityColors[$priorityKey] ?? ['#6b7280', '#fff'];
+                                @endphp
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" style="background-color: {{ $priorityStyle[0] }}; color: {{ $priorityStyle[1] }};">{{ $priorityLabels[$priorityKey] ?? ($priorityValue ?: 'N/A') }}</span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">
+                                {{ $case->updated_at ? \Carbon\Carbon::parse($case->updated_at)->format('M d, Y g:i A') : 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                <span class="inline-flex items-center gap-1 text-purple-700 font-medium">
+                                    <i class="fas fa-user-circle text-xs" aria-hidden="true"></i> You
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <button type="button" class="view-case {{ auth()->user()->isVawcAdmin() ? 'swd-view-action' : (auth()->user()->isBcpcAdmin() ? 'bcpc-view-action' : '') }} {{ auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'VAWC' ? 'flex-none' : '' }} inline-flex w-10 h-10 items-center justify-center rounded-lg bg-[#C41E3A] border border-[#C41E3A] text-white hover:bg-[#A01830] active:bg-[#8B1429] transition-colors"
+                                            data-ajax-url="{{ route('cases.show', $case->id) }}"
+                                            data-case-number="{{ $isSwdDeskOfficer ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? '') : $case->case_number }}"
+                                            data-case-id="{{ $case->id }}"
+                                            data-case-status="{{ $case->hasBeenReferred() ? 'Case Referred' : $case->status }}"
+                                            title="View Details">
+                                        <i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View Details</span>
+                                    </button>
+                                    @php
+                                        $isClosedCase = preg_match('/closed|complet/i', trim((string) $case->status));
+                                        $isReferredCase = $case->hasBeenReferred();
+                                        $isCaseDeskOfficer = $isBarangayDeskOfficer;
+                                        $isBcpcDeskOfficer = auth()->user()?->position === 'Desk Officer'
+                                            && auth()->user()?->defaultCaseDepartment() === 'BCPC'
+                                            && !auth()->user()?->isMultiCaseDepartment();
+                                        $editDisabled = $isCaseDeskOfficer
+                                            ? ($isClosedCase || $isReferredCase)
+                                            : (auth()->user()->isDepartmentAdmin() ? ($isClosedCase || $isReferredCase) : $isClosedCase);
+                                    @endphp
+                                    <button type="button" class="edit-case inline-flex items-center justify-center {{ $isCaseDeskOfficer ? 'w-10 h-10 flex-none' : 'w-9 h-9' }} rounded-lg border border-gray-400 transition-colors {{ $editDisabled ? 'cursor-not-allowed bg-gray-100 text-gray-400 opacity-60' : 'text-gray-600 hover:bg-gray-50' }}"
+                                            data-ajax-url="{{ route('cases.edit', $case->id) }}"
+                                            data-case-number="{{ $isSwdDeskOfficer ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? '') : $case->case_number }}"
+                                            title="{{ $editDisabled ? ($isClosedCase ? 'Editing is unavailable for closed cases' : 'Editing is unavailable for referred cases') : 'Edit Case' }}"
+                                            {{ $editDisabled ? 'disabled' : '' }}>
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    @include('components.case-archive-button', [
+                                        'archiveUrl' => route('cases.destroy', $case->id),
+                                        'buttonClass' => $isBcpcDeskOfficer ? 'w-10 h-10 flex-none border-[#C41E3A] bg-[#C41E3A] text-white hover:bg-[#A01830]' : ($isCaseDeskOfficer ? 'w-10 h-10 flex-none border-amber-500 text-amber-700 hover:bg-amber-50' : null),
+                                    ])
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr class="h-[22rem]">
+                            <td colspan="9" class="p-0 align-middle text-center">
+                                <div class="flex min-h-[22rem] flex-col items-center justify-center px-6">
+                                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                        <i class="fas fa-inbox text-gray-400 text-2xl"></i>
+                                    </div>
+                                    <h4 class="text-gray-600 font-medium mb-1">No Cases Found</h4>
+                                    <p class="text-sm text-gray-400">There are no cases recorded for {{ $barangay->name }} yet.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Mobile Cards -->
+        <div class="view-cases-table-cards {{ $isMultiroleDeskOfficer ? 'multirole-desk-case-cards' : '' }} md:hidden flex-1 overflow-auto p-4 space-y-3">
+            @forelse($cases as $case)
+                <div class="bg-white rounded-lg border border-gray-200 p-4 hover:border-purple-300 transition-colors case-card"
+                     data-ajax-url="{{ route('cases.show', $case->id) }}"
+                     data-case-number="{{ $isSwdDeskOfficer ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? '') : $case->case_number }}"
+                     data-case-id="{{ $case->id }}">
+                    <div class="flex items-start justify-between gap-3 mb-3">
+                        <div>
+                            <p class="text-sm font-semibold text-purple-700">{{ $isSwdDeskOfficer ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? 'N/A') : ($case->case_number ?? 'N/A') }}</p>
+                            <p class="text-xs text-gray-500">{{ $case->date_reported ? \Carbon\Carbon::parse($case->date_reported)->format('M d, Y') : 'N/A' }}</p>
+                        </div>
+                        @php $mobileStatus = $case->status ?: 'Pending'; @endphp
+                        @php $statusColor = '#' . \App\Http\Controllers\AdminController::getStatusColor($mobileStatus); @endphp
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-white flex-shrink-0" style="background-color: {{ $statusColor }};">
+                            {{ $mobileStatus }}
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-800 mb-2">{{ censorLastName($case->victim_name) }}</p>
+                    <p class="text-xs text-gray-500 mb-2"><i class="fas fa-user-circle text-purple-700" aria-hidden="true"></i> Generated by: You</p>
+                    <div class="case-card-actions flex items-center justify-end gap-2 mb-3">
+                        <button type="button" class="view-case {{ auth()->user()->isVawcAdmin() ? 'swd-view-action' : (auth()->user()->isBcpcAdmin() ? 'bcpc-view-action' : '') }} inline-flex w-10 h-10 items-center justify-center rounded-lg bg-[#C41E3A] border border-[#C41E3A] text-white hover:bg-[#A01830] active:bg-[#8B1429] transition-colors"
+                                data-ajax-url="{{ route('cases.show', $case->id) }}"
+                                data-case-number="{{ $isSwdDeskOfficer ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? '') : $case->case_number }}" data-case-id="{{ $case->id }}" data-case-status="{{ $case->hasBeenReferred() ? 'Case Referred' : $case->status }}" title="View Case">
+                            <i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View Details</span>
+                        </button>
+                        @php
+                            $isClosedCase = preg_match('/closed|complet/i', trim((string) $case->status));
+                            $isReferredCase = $case->hasBeenReferred();
+                            $isCaseDeskOfficer = $isBarangayDeskOfficer;
+                            $isBcpcDeskOfficer = auth()->user()?->position === 'Desk Officer'
+                                && auth()->user()?->defaultCaseDepartment() === 'BCPC'
+                                && !auth()->user()?->isMultiCaseDepartment();
+                            $editDisabled = $isCaseDeskOfficer
+                                ? ($isClosedCase || $isReferredCase)
+                                : (auth()->user()->isDepartmentAdmin() ? ($isClosedCase || $isReferredCase) : $isClosedCase);
+                        @endphp
+                        <button type="button" class="edit-case inline-flex items-center justify-center w-10 h-10 rounded-lg border border-gray-400 transition-colors {{ $editDisabled ? 'cursor-not-allowed bg-gray-100 text-gray-400 opacity-60' : 'text-gray-600 hover:bg-gray-50' }}"
+                                data-ajax-url="{{ route('cases.edit', $case->id) }}" data-case-number="{{ $isSwdDeskOfficer ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? '') : $case->case_number }}" title="{{ $editDisabled ? ($isClosedCase ? 'Editing is unavailable for closed cases' : 'Editing is unavailable for referred cases') : 'Edit Case' }}" {{ $editDisabled ? 'disabled' : '' }}>
+                            <i class="fas fa-edit" aria-hidden="true"></i><span class="sr-only">Edit</span>
+                        </button>
+                        @include('components.case-archive-button', [
+                            'archiveUrl' => route('cases.destroy', $case->id),
+                            'buttonClass' => $isBcpcDeskOfficer ? 'w-10 h-10 border-[#C41E3A] bg-[#C41E3A] text-white hover:bg-[#A01830]' : ($isCaseDeskOfficer ? 'w-10 h-10 border-amber-500 text-amber-700 hover:bg-amber-50' : null),
+                        ])
+                    </div>
+                    @php $typeColor = '#' . \App\Http\Controllers\AdminController::getAbuseTypeColor(strtolower($case->abuse_type ?? '')); @endphp
+                    <span class="{{ $case->abuse_type ? 'inline-flex' : 'hidden' }} items-center px-2 py-0.5 rounded-full text-xs font-medium" style="background-color: {{ $typeColor }}20; color: {{ $typeColor }};">
+                        {{ ucfirst($case->abuse_type ?? '') }}
+                    </span>
+                </div>
+            @empty
+                <div class="flex flex-col items-center justify-center py-12">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-inbox text-gray-400 text-2xl"></i>
+                    </div>
+                    <h4 class="text-gray-600 font-medium mb-1">No Cases Found</h4>
+                    <p class="text-sm text-gray-400">There are no cases recorded for {{ $barangay->name }} yet.</p>
+                </div>
+            @endforelse
+        </div>
+        
+        <!-- Pagination -->
+        <div class="view-cases-pagination {{ $cases->hasPages() ? '' : 'hidden' }} px-6 py-4 border-t border-gray-100 bg-gray-50 flex-shrink-0">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p class="text-sm text-gray-600">
+                        Showing {{ $cases->firstItem() }} - {{ $cases->lastItem() }} of {{ $cases->total() }} cases
+                    </p>
+                    <div class="flex items-center gap-1">
+                        {{-- Previous Button --}}
+                        @if($cases->onFirstPage())
+                            <span class="px-3 py-2 bg-gray-100 text-gray-400 rounded-lg text-sm cursor-not-allowed">
+                                <i class="fas fa-chevron-left"></i>
+                            </span>
+                        @else
+                            <a href="{{ $cases->previousPageUrl() }}" class="px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        @endif
+                        
+                        {{-- Page Numbers --}}
+                        @php
+                            $currentPage = $cases->currentPage();
+                            $lastPage = $cases->lastPage();
+                            $start = max(1, $currentPage - 2);
+                            $end = min($lastPage, $currentPage + 2);
+                            
+                            // Ensure we always show at least 5 pages when possible
+                            if ($end - $start < 4) {
+                                if ($start == 1) {
+                                    $end = min($lastPage, $start + 4);
+                                } elseif ($end == $lastPage) {
+                                    $start = max(1, $end - 4);
+                                }
+                            }
+                        @endphp
+                        
+                        @if($start > 1)
+                            <a href="{{ $cases->url(1) }}" class="px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">1</a>
+                            @if($start > 2)
+                                <span class="px-2 py-2 text-gray-400 text-sm">...</span>
+                            @endif
+                        @endif
+                        
+                        @for($i = $start; $i <= $end; $i++)
+                            @if($i == $currentPage)
+                                <span class="px-3 py-2 bg-[#C41E3A] text-white border border-[#C41E3A] rounded-lg text-sm font-medium">{{ $i }}</span>
+                            @else
+                                <a href="{{ $cases->url($i) }}" class="px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">{{ $i }}</a>
+                            @endif
+                        @endfor
+                        
+                        @if($end < $lastPage)
+                            @if($end < $lastPage - 1)
+                                <span class="px-2 py-2 text-gray-400 text-sm">...</span>
+                            @endif
+                            <a href="{{ $cases->url($lastPage) }}" class="px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">{{ $lastPage }}</a>
+                        @endif
+                        
+                        {{-- Next Button --}}
+                        @if($cases->hasMorePages())
+                            <a href="{{ $cases->nextPageUrl() }}" class="px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        @else
+                            <span class="px-3 py-2 bg-gray-100 text-gray-400 rounded-lg text-sm cursor-not-allowed">
+                                <i class="fas fa-chevron-right"></i>
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const isSwdAdmin = @json(auth()->user()->isVawcAdmin());
+    let activeViewRequest;
+    let activeEditRequest;
+    const swdCaseSearch = document.getElementById('swd-case-search');
+    if (swdCaseSearch) {
+        swdCaseSearch.addEventListener('input', function() {
+            const searchTerm = this.value.trim().toLowerCase();
+            document.querySelectorAll('table tbody tr').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(searchTerm) ? '' : 'none';
+            });
+            document.querySelectorAll('.case-card').forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(searchTerm) ? '' : 'none';
+            });
+        });
+    }
+    // Current filters from the page
+    const currentFilters = {
+        status: '{{ $currentFilters['status'] ?? '' }}',
+        dateFrom: '{{ $currentFilters['dateFrom'] ?? '' }}',
+        dateTo: '{{ $currentFilters['dateTo'] ?? '' }}'
+    };
+    
+    // Print button handler
+    const printButton = document.getElementById('printButton');
+    if (printButton) {
+        printButton.addEventListener('click', async function() {
+            if (@json(auth()->user()->isVawcAdmin() || auth()->user()->isBcpcAdmin() || $isBarangayDeskOfficer)) {
+                const barangayName = @json($barangay->name);
+                let printUrl = @json(route('admin.barangay-cases.print-individual', ['barangay' => $barangay->id]));
+                const params = new URLSearchParams();
+                if (currentFilters.dateFrom) params.append('date_from', currentFilters.dateFrom);
+                if (currentFilters.dateTo) params.append('date_to', currentFilters.dateTo);
+                if (currentFilters.status) params.append('status', currentFilters.status);
+                if (params.toString()) printUrl += '?' + params.toString();
+
+                Swal.fire({
+                    title: 'Print Cases',
+                    text: `Are you sure you want to print ${barangayName}?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Print',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#7c3aed',
+                    cancelButtonColor: '#6b7280',
+                    reverseButtons: true,
+                }).then((result) => {
+                    if (result.isConfirmed) window.open(printUrl, '_blank');
+                });
+                return;
+            }
+
+            let barangays;
+
+            try {
+                const response = await fetch('/api/barangays');
+                barangays = await response.json();
+            } catch (error) {
+                return;
+            }
+
+            const barangayOptions = barangays.map(barangay =>
+                `<option value="${barangay.id}">${barangay.name}</option>`
+            ).join('');
+
+            // Build date range message if filters are applied
+            let filterMessage = '';
+            let dateRangeText = '';
+            
+            if (currentFilters.dateFrom || currentFilters.dateTo) {
+                if (currentFilters.dateFrom && currentFilters.dateTo) {
+                    const fromDate = new Date(currentFilters.dateFrom).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    const toDate = new Date(currentFilters.dateTo).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    dateRangeText = `${fromDate} to ${toDate}`;
+                    filterMessage += `<p class="text-purple-600 text-sm mt-2 font-medium"><i class="fas fa-calendar-alt mr-1"></i>Date Range: ${dateRangeText}</p>`;
+                } else if (currentFilters.dateFrom) {
+                    const fromDate = new Date(currentFilters.dateFrom).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    filterMessage += `<p class="text-purple-600 text-sm mt-2 font-medium"><i class="fas fa-calendar-alt mr-1"></i>From: ${fromDate}</p>`;
+                } else if (currentFilters.dateTo) {
+                    const toDate = new Date(currentFilters.dateTo).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    filterMessage += `<p class="text-purple-600 text-sm mt-2 font-medium"><i class="fas fa-calendar-alt mr-1"></i>Until: ${toDate}</p>`;
+                }
+            }
+            
+            if (currentFilters.status) {
+                filterMessage += `<p class="text-purple-600 text-sm mt-1 font-medium"><i class="fas fa-tag mr-1"></i>Status: ${currentFilters.status}</p>`;
+            }
+            
+            const hasFilters = currentFilters.dateFrom || currentFilters.dateTo || currentFilters.status;
+            const printMessage = hasFilters 
+                ? 'Print cases with the selected filters?' 
+                : 'Are you sure you want to print all cases?';
+            
+            Swal.fire({
+                title: 'Print Cases',
+                html: `
+                    <div class="text-center py-4">
+                        <i class="fas fa-print text-5xl text-purple-500 mb-4"></i>
+                        <p class="text-gray-600">${printMessage}</p>
+                        ${filterMessage}
+                        <select id="print-barangay" class="w-full mt-4 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                            <option value="">Select barangay</option>
+                            ${barangayOptions}
+                        </select>
+                        <p class="text-gray-400 text-sm mt-2">This will open a print preview in a new window.</p>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Print',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#7c3aed',
+                cancelButtonColor: '#6b7280',
+                reverseButtons: true,
+                preConfirm: () => {
+                    const barangayId = document.getElementById('print-barangay').value;
+
+                    if (!barangayId) {
+                        Swal.showValidationMessage('Please select a barangay.');
+                    }
+
+                    return barangayId;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Build print URL with filters
+                    let printUrl = '{{ route("admin.barangay-cases.print-individual", ["barangay" => "__ID__"]) }}'
+                        .replace('__ID__', encodeURIComponent(result.value));
+                    const params = new URLSearchParams();
+                    
+                    if (currentFilters.dateFrom) {
+                        params.append('date_from', currentFilters.dateFrom);
+                    }
+                    if (currentFilters.dateTo) {
+                        params.append('date_to', currentFilters.dateTo);
+                    }
+                    if (currentFilters.status) {
+                        params.append('status', currentFilters.status);
+                    }
+                    
+                    if (params.toString()) {
+                        printUrl += '?' + params.toString();
+                    }
+                    
+                    window.open(printUrl, '_blank');
+                }
+            });
+        });
+    }
+
+    // Intercept these actions at the earliest event phase. This keeps a case
+    // modal action from being treated as navigation by any page-level handler.
+    window.addEventListener('click', function(event) {
+        const actionButton = event.target.closest('.view-case, .edit-case');
+        if (!actionButton || actionButton.disabled) return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        actionButton.dispatchEvent(new CustomEvent('case-modal-action'));
+    }, true);
+
+    // View case modal handlers
+    document.querySelectorAll('.view-case').forEach(btn => {
+        btn.addEventListener('case-modal-action', function() {
+            const ajaxUrl = this.dataset.ajaxUrl;
+            const caseNumber = this.dataset.caseNumber || '';
+            const caseId = this.dataset.caseId || '';
+            const caseStatus = this.dataset.caseStatus || '';
+            
+            if (!ajaxUrl) return;
+
+            const loadingHtml = `
+                <div class="flex flex-col items-center justify-center py-12">
+                    <div class="animate-spin rounded-full h-10 w-10 border-4 border-purple-200 border-t-purple-700"></div>
+                    <p class="mt-4 text-sm text-gray-500">Loading case details...</p>
+                </div>`;
+            
+            const openLoadingModal = () => window.dispatchEvent(new CustomEvent('open-case-modal', {
+                detail: { content: loadingHtml, caseNumber: caseNumber, caseId: caseId, caseStatus: caseStatus }
+            }));
+            if (@json(auth()->user()->isVawcAdmin())) {
+                openLoadingModal();
+            } else {
+                setTimeout(openLoadingModal, 0);
+            }
+
+            if (isSwdAdmin) activeViewRequest?.abort();
+            const request = isSwdAdmin ? new AbortController() : null;
+            if (isSwdAdmin) activeViewRequest = request;
+
+            fetch(ajaxUrl, { credentials: 'same-origin', cache: 'no-store', redirect: 'manual', signal: request?.signal, headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' }})
+                .then(r => {
+                    if (!r.ok) throw new Error('Unable to load case details.');
+                    return r.text();
+                })
+                .then(html => {
+                    if (isSwdAdmin && activeViewRequest !== request) return;
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const printUrl = doc.querySelector('a[href*="/print"]')?.getAttribute('href') || '#';
+                    const referUrl = doc.querySelector('a[href*="/refer"]')?.getAttribute('href') || '';
+
+                    window.dispatchEvent(new CustomEvent('open-case-modal', {
+                        detail: { content: html, printUrl: printUrl, referUrl: referUrl, caseNumber: caseNumber, caseId: caseId, caseStatus: caseStatus }
+                    }));
+                })
+                .catch(err => {
+                    if (err.name === 'AbortError') return;
+                    console.error('Failed to load case details:', err);
+                    window.dispatchEvent(new CustomEvent('open-case-modal', {
+                        detail: { content: '<div class="text-center py-8"><p class="text-red-500">Failed to load case details.</p></div>', caseNumber: caseNumber, caseId: caseId, caseStatus: caseStatus }
+                    }));
+                });
+        });
+    });
+
+    // Edit case modal handlers
+    document.querySelectorAll('.edit-case').forEach(btn => {
+        btn.addEventListener('case-modal-action', function() {
+            const ajaxUrl = this.dataset.ajaxUrl;
+            const caseNumber = this.dataset.caseNumber || '';
+            if (@json($isBarangayDeskOfficer) && window.portalUnsavedChanges) window.portalUnsavedChanges.reset(false);
+            
+            if (!ajaxUrl) return;
+
+            const loadingHtml = `
+                <div class="flex flex-col items-center justify-center py-12">
+                    <div class="animate-spin rounded-full h-10 w-10 border-4 border-purple-200 border-t-purple-700"></div>
+                    <p class="mt-4 text-sm text-gray-500">Loading edit form...</p>
+                </div>`;
+            
+            const openLoadingModal = () => window.dispatchEvent(new CustomEvent('open-edit-modal', {
+                detail: { content: loadingHtml, caseNumber: caseNumber }
+            }));
+            if (@json(auth()->user()->isVawcAdmin())) {
+                openLoadingModal();
+            } else {
+                setTimeout(openLoadingModal, 0);
+            }
+
+            if (isSwdAdmin) {
+                activeViewRequest?.abort();
+                window.dispatchEvent(new CustomEvent('close-case-modal'));
+                activeEditRequest?.abort();
+            }
+            const request = isSwdAdmin ? new AbortController() : null;
+            if (isSwdAdmin) activeEditRequest = request;
+
+            fetch(ajaxUrl, { credentials: 'same-origin', cache: 'no-store', redirect: 'manual', signal: request?.signal, headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' }})
+                .then(r => {
+                    if (!r.ok) throw new Error('Unable to load the edit form.');
+                    return r.text();
+                })
+                .then(html => {
+                    if (isSwdAdmin && activeEditRequest !== request) return;
+                    window.dispatchEvent(new CustomEvent('open-edit-modal', { detail: { content: html, caseNumber: caseNumber } }));
+                    setTimeout(() => attachEditFormHandler(), 100);
+                })
+                .catch(err => {
+                    if (err.name === 'AbortError') return;
+                    console.error('Failed to load edit form:', err);
+                    window.dispatchEvent(new CustomEvent('open-edit-modal', {
+                        detail: { content: '<div class="text-center py-8"><p class="text-red-500">Failed to load edit form.</p></div>', caseNumber: caseNumber }
+                    }));
+                });
+        });
+    });
+
+    // Mobile card click handlers
+    document.querySelectorAll('.case-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const ajaxUrl = this.dataset.ajaxUrl;
+            const caseNumber = this.dataset.caseNumber || '';
+            const caseId = this.dataset.caseId || '';
+            const caseStatus = this.dataset.caseStatus || '';
+            
+            if (!ajaxUrl) return;
+
+            const loadingHtml = `
+                <div class="flex flex-col items-center justify-center py-12">
+                    <div class="animate-spin rounded-full h-10 w-10 border-4 border-purple-200 border-t-purple-700"></div>
+                    <p class="mt-4 text-sm text-gray-500">Loading case details...</p>
+                </div>`;
+            
+            window.dispatchEvent(new CustomEvent('open-case-modal', { 
+                detail: { content: loadingHtml, caseNumber: caseNumber, caseId: caseId, caseStatus: caseStatus }
+            }));
+
+            fetch(ajaxUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' }})
+                .then(r => r.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const printUrl = doc.querySelector('a[href*="/print"]')?.getAttribute('href') || '#';
+                    const referUrl = doc.querySelector('a[href*="/refer"]')?.getAttribute('href') || '';
+
+                    window.dispatchEvent(new CustomEvent('open-case-modal', {
+                        detail: { content: html, printUrl: printUrl, referUrl: referUrl, caseNumber: caseNumber, caseId: caseId, caseStatus: caseStatus }
+                    }));
+                })
+                .catch(err => {
+                    console.error('Failed to load case details:', err);
+                });
+        });
+    });
+
+    // Close modals on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const caseModal = document.getElementById('caseModal');
+            const editModal = document.getElementById('editCaseModal');
+            if (caseModal && caseModal.__x) caseModal.__x.$data.open = false;
+            if (editModal && editModal.__x) editModal.__x.$data.open = false;
+        }
+    });
+});
+
+function closeEditModal() {
+    window.dispatchEvent(new CustomEvent('close-edit-modal'));
+}
+
+function attachEditFormHandler() {
+    const form = document.getElementById('edit-case-form-modal');
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const selectedDepartment = new URLSearchParams(window.location.search).get('type');
+        if (selectedDepartment) formData.set('type', selectedDepartment);
+        const actionUrl = this.action;
+        
+        Swal.fire({ 
+            title: 'Updating Case', 
+            html: '<div class="text-center"><i class="fas fa-spinner fa-spin text-4xl text-purple-500 mb-3"></i><p class="text-gray-700">Please wait...</p></div>', 
+            showConfirmButton: false, 
+            allowOutsideClick: false 
+        });
+        
+        fetch(actionUrl, { 
+            method: 'POST', 
+            body: formData, 
+            headers: { 
+                'X-Requested-With': 'XMLHttpRequest', 
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content 
+            }
+        })
+        .then(async response => {
+            if (response.redirected) {
+                Swal.fire({ title: 'Success!', text: 'Case updated successfully', icon: 'success', confirmButtonText: 'OK' })
+                    .then(() => window.location.assign(response.url));
+                return null;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data) return;
+            if (data && data.success) {
+                Swal.fire({ title: 'Success!', text: data.message || 'Case updated successfully', icon: 'success', confirmButtonText: 'OK' })
+                .then(() => {
+                    if (data.redirect_url) {
+                        window.location.assign(data.redirect_url);
+                    } else {
+                        window.location.reload();
+                    }
+                });
+            } else if (data && !data.success) {
+                let errorMessage = data.message || 'Update failed';
+                if (data.errors) errorMessage += '\n\nErrors:\n' + Object.values(data.errors).flat().join('\n');
+                Swal.fire({ title: 'Validation Error!', text: errorMessage, icon: 'error', confirmButtonText: 'OK' });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({ title: 'Error!', text: error.message || 'Failed to update case. Please try again.', icon: 'error', confirmButtonText: 'OK' });
+        });
+    });
+}
+
+// Archive via JSON so the active list updates immediately while retaining the loading modal.
+document.addEventListener('submit', function(event) {
+    const form = event.target.closest('form[data-confirm-action="archive"]');
+    if (!form) return;
+
+    event.preventDefault();
+    Swal.fire({
+        title: form.dataset.confirmTitle || 'Archive Case?',
+        text: form.dataset.confirmMessage || 'Archive this case?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Archive',
+        confirmButtonColor: '#d97706'
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+
+        Swal.fire({
+            title: 'Archiving Case...',
+            text: 'Please wait while the case is being archived.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(async (response) => {
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || !data.success) throw new Error(data.message || 'Unable to archive the case.');
+            return data;
+        })
+        .then((data) => {
+            if (@json($isBarangayDeskOfficer)) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Archived!',
+                    text: data.message || 'Case archived successfully.',
+                    confirmButtonColor: '#C41E3A',
+                    confirmButtonText: 'OK'
+                }).then(() => window.location.reload());
+                return;
+            }
+            const row = form.closest('tr');
+            const card = form.closest('.case-card');
+            if (row) row.remove();
+            if (card) card.remove();
+            Swal.fire({ icon: 'success', title: 'Archived!', text: data.message, confirmButtonColor: '#7c3aed' });
+        })
+        .catch((error) => Swal.fire({ icon: 'error', title: 'Unable to Archive Case', text: error.message, confirmButtonColor: '#7c3aed' }));
+    });
+});
+</script>
+@endpush
+
+@endsection
