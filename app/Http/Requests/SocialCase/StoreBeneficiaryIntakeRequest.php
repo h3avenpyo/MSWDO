@@ -87,7 +87,13 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
         $rawAssistanceType = $this->assistance_type ?? $this->uri_ng_assistance ?? $this->assistance_purpose_type;
         if ($rawAssistanceType !== null) {
             $typeVal = trim((string)$rawAssistanceType);
-            $mergeData['assistance_type'] = ($typeVal === '' || $typeVal === 'Select Assistance Purpose / Uri ng Assistance') ? null : $typeVal;
+            if ($typeVal === '' || $typeVal === 'Select Assistance Purpose / Uri ng Assistance') {
+                $mergeData['assistance_type'] = null;
+            } elseif ($typeVal === 'Other Assistance Purpose' && $this->filled('assistance_type_other')) {
+                $mergeData['assistance_type'] = trim((string)$this->assistance_type_other);
+            } else {
+                $mergeData['assistance_type'] = $typeVal;
+            }
         }
 
         $this->merge($mergeData);
@@ -177,6 +183,7 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
                 'max:255',
             ],
             'assistance_type' => ['nullable', 'string', 'max:150'],
+            'assistance_type_other' => ['nullable', 'string', 'max:150'],
             'uri_ng_assistance' => ['nullable', 'string', 'max:150'],
             'assistance_purpose_type' => ['nullable', 'string', 'max:150'],
             'recommended_amount' => ['nullable', 'numeric', 'min:0'],

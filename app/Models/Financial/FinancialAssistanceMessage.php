@@ -12,6 +12,7 @@ class FinancialAssistanceMessage extends Model
 {
     protected $fillable = [
         'intake_id',
+        'online_intake_id',
         'client_id',
         'beneficiary_name',
         'recipient_name',
@@ -34,6 +35,11 @@ class FinancialAssistanceMessage extends Model
     public function intake(): BelongsTo
     {
         return $this->belongsTo(BeneficiaryIntake::class, 'intake_id');
+    }
+
+    public function onlineIntake(): BelongsTo
+    {
+        return $this->belongsTo(OnlineFinancialIntake::class, 'online_intake_id');
     }
 
     public function client(): BelongsTo

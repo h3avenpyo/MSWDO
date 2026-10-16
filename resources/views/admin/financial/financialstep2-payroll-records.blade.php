@@ -413,7 +413,7 @@
                             <th>Name of Beneficiary</th>
                             <th>Barangay</th>
                             <th>Contact Number</th>
-                            <th class="text-end">Amount of Financial Assistance</th>
+                            <th class="text-end">Amount</th>
                             <th class="text-center">Claim Status</th>
                             <th class="text-center th-col-action">Action</th>
                         </tr>

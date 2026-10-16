@@ -18,6 +18,7 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
         Route::get('/{id}', [OnlineFinancialIntakeController::class, 'show'])->name('show');
         Route::post('/{id}/accept', [OnlineFinancialIntakeController::class, 'accept'])->name('accept');
         Route::post('/{id}/reject', [OnlineFinancialIntakeController::class, 'reject'])->name('reject');
+        Route::post('/{id}/resend-sms', [OnlineFinancialIntakeController::class, 'resendSms'])->name('resend-sms');
     });
 
     // Step 1: Archive Routes

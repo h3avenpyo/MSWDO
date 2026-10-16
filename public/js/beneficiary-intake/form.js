@@ -75,6 +75,18 @@ function togglePurposeOtherInput() {
     }
 }
 
+function toggleAssistanceTypeOtherInput() {
+    const select = document.getElementById('assistance_type_select');
+    const otherInput = document.getElementById('assistance_type_other_input');
+
+    if (select && select.value === 'Other Assistance Purpose') {
+        otherInput?.classList.remove('d-none');
+    } else if (otherInput) {
+        otherInput.classList.add('d-none');
+        otherInput.value = '';
+    }
+}
+
 function toggleRepresentativeSection() {
     const hasRepCheckbox = document.getElementById('has_representative');
     const repSection = document.getElementById('representative_section');
@@ -400,6 +412,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     toggleRepresentativeSection();
     togglePurposeOtherInput();
+    toggleAssistanceTypeOtherInput();
     initContactNumberValidation();
 
     // Check server-side duplicate error state

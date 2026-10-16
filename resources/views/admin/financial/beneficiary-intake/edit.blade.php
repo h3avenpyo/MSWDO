@@ -731,19 +731,30 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Assistance Purpose / Uri ng Assistance</label>
-                        @php $savedType = old('assistance_type', $intake->assistance_type); @endphp
-                        <select name="assistance_type" id="assistance_type_select" class="form-select">
+                        @php
+                            $knownAssistanceTypes = ['Medicine/Gamot', 'Laboratory Test', 'Therapy', 'Checkup/Consultation', 'Hospital Bill'];
+                            $savedType = old('assistance_type', $intake->assistance_type);
+                            $isCustomType = !empty($savedType) && !in_array($savedType, $knownAssistanceTypes);
+                            $selectedType = $isCustomType ? 'Other Assistance Purpose' : $savedType;
+                            $otherTypeVal = old('assistance_type_other', $isCustomType && $savedType !== 'Other Assistance Purpose' ? $savedType : '');
+                        @endphp
+                        <select name="assistance_type" id="assistance_type_select" class="form-select"
+                            onchange="toggleAssistanceTypeOtherInput()">
                             <option value="">Select Assistance Purpose / Uri ng Assistance</option>
-                            <option value="Medicine/Gamot" {{ $savedType=='Medicine/Gamot' ? 'selected' : '' }}>
+                            <option value="Medicine/Gamot" {{ $selectedType=='Medicine/Gamot' ? 'selected' : '' }}>
                                 Medicine/Gamot</option>
-                            <option value="Laboratory Test" {{ $savedType=='Laboratory Test' ? 'selected' : '' }}>
+                            <option value="Laboratory Test" {{ $selectedType=='Laboratory Test' ? 'selected' : '' }}>
                                 Laboratory Test</option>
-                            <option value="Therapy" {{ $savedType=='Therapy' ? 'selected' : '' }}>Therapy</option>
-                            <option value="Checkup/Consultation" {{ $savedType=='Checkup/Consultation' ? 'selected' : ''
+                            <option value="Therapy" {{ $selectedType=='Therapy' ? 'selected' : '' }}>Therapy</option>
+                            <option value="Checkup/Consultation" {{ $selectedType=='Checkup/Consultation' ? 'selected' : ''
                                 }}>Checkup/Consultation</option>
-                            <option value="Hospital Bill" {{ $savedType=='Hospital Bill' ? 'selected' : '' }}>Hospital
+                            <option value="Hospital Bill" {{ $selectedType=='Hospital Bill' ? 'selected' : '' }}>Hospital
                                 Bill</option>
+                            <option value="Other Assistance Purpose" {{ $selectedType=='Other Assistance Purpose' ? 'selected' : '' }}>Other Assistance Purpose</option>
                         </select>
+                        <input type="text" name="assistance_type_other" id="assistance_type_other_input"
+                            class="form-control mt-2 {{ $selectedType == 'Other Assistance Purpose' ? '' : 'd-none' }}"
+                            value="{{ $otherTypeVal }}" placeholder="Specify other assistance purpose...">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Interviewed by <span class="text-muted">(MSWD Personnel / Social

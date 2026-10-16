@@ -150,14 +150,107 @@ class FinancialAssistanceController extends Controller
             }));
         }
 
+        // Helper closures to format text values to uppercase
+        $toUpper = function ($value) {
+            if ($value === null || $value === '') {
+                return $value;
+            }
+            return mb_strtoupper(trim((string)$value), 'UTF-8');
+        };
+
+        $upperArray = function ($arr) use ($toUpper) {
+            if (empty($arr)) {
+                return $arr;
+            }
+            if (is_array($arr)) {
+                return array_map(function ($item) use ($toUpper) {
+                    return is_string($item) ? $toUpper($item) : $item;
+                }, $arr);
+            }
+            return $arr;
+        };
+
+        $upperFamily = function ($fam) use ($toUpper) {
+            if (empty($fam) || !is_array($fam)) {
+                return $fam;
+            }
+            return array_map(function ($member) use ($toUpper) {
+                if (!is_array($member)) {
+                    return $member;
+                }
+                foreach (['name', 'relationship', 'occupation', 'civil_status', 'educational_attainment'] as $field) {
+                    if (isset($member[$field]) && is_string($member[$field])) {
+                        $member[$field] = $toUpper($member[$field]);
+                    }
+                }
+                return $member;
+            }, $fam);
+        };
+
+        // Convert text attributes to uppercase
+        $textFields = [
+            'client_type',
+            'beneficiary_last_name',
+            'beneficiary_first_name',
+            'beneficiary_middle_name',
+            'beneficiary_extension_name',
+            'beneficiary_street_address',
+            'beneficiary_barangay',
+            'beneficiary_city',
+            'beneficiary_province',
+            'beneficiary_region',
+            'beneficiary_sex',
+            'beneficiary_civil_status',
+            'beneficiary_occupation',
+            'beneficiary_category',
+            'beneficiary_category_other',
+            'beneficiary_relationship',
+            'rep_last_name',
+            'rep_first_name',
+            'rep_middle_name',
+            'rep_extension_name',
+            'rep_street_address',
+            'rep_barangay',
+            'rep_city',
+            'rep_province',
+            'rep_region',
+            'rep_sex',
+            'rep_civil_status',
+            'rep_occupation',
+            'rep_relationship',
+            'assistance_purpose',
+            'assistance_type',
+            'service_provided',
+            'purpose',
+            'purpose_other',
+            'medical_condition_other',
+            'submitted_to',
+        ];
+
+        foreach ($textFields as $field) {
+            if (isset($data[$field])) {
+                $data[$field] = $toUpper($data[$field]);
+            }
+        }
+
+        if (isset($data['beneficiary_categories'])) {
+            $data['beneficiary_categories'] = $upperArray($data['beneficiary_categories']);
+        }
+        if (isset($data['medical_conditions'])) {
+            $data['medical_conditions'] = $upperArray($data['medical_conditions']);
+        }
+        if (isset($data['family_composition'])) {
+            $data['family_composition'] = $upperFamily($data['family_composition']);
+        }
+
         // Online applications do NOT receive a Control Number while Pending Review
         $data['control_number'] = null;
-        $data['beneficiary_city'] = $data['beneficiary_city'] ?? 'Silang';
-        $data['beneficiary_province'] = $data['beneficiary_province'] ?? 'Cavite';
-        $data['beneficiary_region'] = $data['beneficiary_region'] ?? 'Region IV-A';
-        $data['service_provided'] = 'Financial Assistance Intake';
-        $data['purpose'] = $data['assistance_purpose'] ?? 'General Assistance Request';
-        $data['submitted_to'] = 'MSWDO Silang Main Office';
+        $data['beneficiary_city'] = $toUpper($data['beneficiary_city'] ?? 'Silang');
+        $data['beneficiary_province'] = $toUpper($data['beneficiary_province'] ?? 'Cavite');
+        $data['beneficiary_region'] = $toUpper($data['beneficiary_region'] ?? 'Region IV-A');
+        $data['service_provided'] = 'FINANCIAL ASSISTANCE INTAKE';
+        $data['purpose'] = $toUpper($data['assistance_purpose'] ?? 'General Assistance Request');
+        $data['submitted_to'] = 'MSWDO SILANG MAIN OFFICE';
         $data['status'] = 'For Review';
         $data['date_submitted'] = now();
 

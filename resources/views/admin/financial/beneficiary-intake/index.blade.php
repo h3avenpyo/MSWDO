@@ -34,6 +34,12 @@
                     data-bs-toggle="modal" data-bs-target="#transmittalModal" id="btnOpenTransmittalModal">
                     <i class="fas fa-file-invoice me-1"></i> Transmittal Report
                 </button>
+                <a href="{{ route('admin.beneficiary-intake.create') }}"
+                    class="btn btn-light rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;"
+                    id="btnNewClientIntake">
+                    <i class="fas fa-plus me-1"></i>
+                    <span>New Client Intake</span>
+                </a>
             </div>
         </div>
     </div>
@@ -158,26 +164,26 @@
                             @endif
                         </td>
                         <td>
-                            <div class="fw-bold text-dark">{{ $intake->beneficiary_full_name }}</div>
-                            <div class="text-muted small">{{ $intake->beneficiary_contact_number ?? 'No contact' }} • {{
-                                $intake->beneficiary_age ?? 'N/A' }} yrs ({{ $intake->beneficiary_sex ?? 'N/A' }})</div>
+                            <div class="fw-bold text-dark text-uppercase">{{ $intake->beneficiary_full_name }}</div>
+                            <div class="text-muted small text-uppercase">{{ $intake->beneficiary_contact_number ?? 'No contact' }} • {{
+                                $intake->beneficiary_age ?? 'N/A' }} YRS ({{ $intake->beneficiary_sex ?? 'N/A' }})</div>
                         </td>
                         <td>
-                            <i class="fas fa-map-marker-alt text-muted me-1 small"></i>{{ $intake->beneficiary_barangay
-                            ?? 'N/A' }}
+                            <i class="fas fa-map-marker-alt text-muted me-1 small"></i><span class="text-uppercase">{{ $intake->beneficiary_barangay
+                            ?? 'N/A' }}</span>
                         </td>
                         <td>
-                            <span class="badge-cat">{{ $intake->display_category }}</span>
+                            <span class="badge-cat text-uppercase">{{ $intake->display_category }}</span>
                         </td>
                         <td>
                             @if($intake->has_representative)
                             <div class="badge-rep mb-1"><i class="fas fa-user-friends me-1"></i> Has Representative
                             </div>
-                            <div class="small fw-semibold text-dark">{{ $intake->representative_full_name }}</div>
-                            <div class="text-muted" style="font-size: 0.75rem;">Rel: {{ $intake->rep_relationship ??
+                            <div class="small fw-semibold text-dark text-uppercase">{{ $intake->representative_full_name }}</div>
+                            <div class="text-muted text-uppercase" style="font-size: 0.75rem;">REL: {{ $intake->rep_relationship ??
                                 'N/A' }}</div>
                             @else
-                            <span class="text-muted small"><i class="fas fa-user me-1"></i> Self</span>
+                            <span class="text-muted small text-uppercase"><i class="fas fa-user me-1"></i> Self</span>
                             @endif
                         </td>
                         <td>

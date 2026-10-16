@@ -7,11 +7,16 @@ use App\Models\Financial\OnlineFinancialIntake;
 use App\Models\SocialCase\BeneficiaryIntake;
 use App\Services\Financial\FinancialControlNumberService;
 use App\Services\Financial\FinancialDuplicateChecker;
+use App\Services\Financial\OnlineFinancialNotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OnlineFinancialIntakeController extends Controller
 {
+    protected OnlineFinancialNotificationService $notificationService;
+
     /**
      * Silang Barangays list
      */
@@ -27,6 +32,11 @@ class OnlineFinancialIntakeController extends Controller
         'San Vicente II', 'Santol', 'Tartaria', 'Tibig', 'Toledo', 'Tubuan I', 'Tubuan II',
         'Tubuan III', 'Ulat', 'Yakal'
     ];
+
+    public function __construct(OnlineFinancialNotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
 
     /**
      * Display a listing of online financial assistance intake applications with compound filters.
@@ -155,9 +165,14 @@ class OnlineFinancialIntakeController extends Controller
                     'barangay' => $application->rep_barangay,
                 ] : null,
                 'family_composition' => $application->family_composition ?: [],
-                'medical_conditions' => $application->medical_conditions ?: [],
+                'medical_conditions' => (!empty($application->medical_conditions) && is_array($application->medical_conditions) && count($application->medical_conditions) > 0)
+                    ? array_values(array_filter($application->medical_conditions, fn($m) => !empty($m) && trim((string)$m) !== ''))
+                    : ($application->display_medical_condition ? [$application->display_medical_condition] : []),
                 'medical_condition_other' => $application->medical_condition_other,
+                'display_medical_condition' => $application->display_medical_condition,
+                'display_assistance_purpose' => $application->display_assistance_purpose,
                 'assistance_purpose' => $application->assistance_purpose ?: 'General Assistance Request',
+                'assistance_type' => $application->assistance_type,
                 'service_provided' => $application->service_provided ?: 'Financial Assistance Intake',
                 'purpose' => $application->purpose ?: 'General Assistance Request',
                 'review_info' => [
@@ -166,7 +181,15 @@ class OnlineFinancialIntakeController extends Controller
                     'review_notes' => $application->review_notes,
                     'rejection_reason' => $application->rejection_reason,
                     'beneficiary_intake_id' => $application->beneficiary_intake_id,
-                ]
+                ],
+                'sms_info' => [
+                    'sms_status' => $application->sms_status,
+                    'sms_error' => $application->sms_error,
+                    'sms_notified_at' => $application->sms_notified_at ? $application->sms_notified_at->format('F d, Y h:i A') : null,
+                    'approval_sms_sent_at' => $application->approval_sms_sent_at ? $application->approval_sms_sent_at->format('F d, Y h:i A') : null,
+                    'rejection_sms_sent_at' => $application->rejection_sms_sent_at ? $application->rejection_sms_sent_at->format('F d, Y h:i A') : null,
+                    'applicant_contact' => $application->applicant_contact_number,
+                ],
             ]
         ]);
     }
@@ -223,73 +246,182 @@ class OnlineFinancialIntakeController extends Controller
             $controlNumber = FinancialControlNumberService::generate();
         }
 
+        // Helper closures to format text values to uppercase
+        $toUpper = function ($value) {
+            if ($value === null || $value === '') {
+                return $value;
+            }
+            return mb_strtoupper(trim((string)$value), 'UTF-8');
+        };
+
+        $upperArray = function ($arr) use ($toUpper) {
+            if (empty($arr)) {
+                return $arr;
+            }
+            if (is_string($arr)) {
+                $decoded = json_decode($arr, true);
+                if (is_array($decoded)) {
+                    return array_map(fn($item) => is_string($item) ? $toUpper($item) : $item, $decoded);
+                }
+                return $toUpper($arr);
+            }
+            if (is_array($arr)) {
+                return array_map(function ($item) use ($toUpper) {
+                    return is_string($item) ? $toUpper($item) : $item;
+                }, $arr);
+            }
+            return $arr;
+        };
+
+        $upperFamily = function ($fam) use ($toUpper) {
+            if (empty($fam)) {
+                return $fam;
+            }
+            if (is_string($fam)) {
+                $decoded = json_decode($fam, true);
+                if (is_array($decoded)) {
+                    $fam = $decoded;
+                }
+            }
+            if (!is_array($fam)) {
+                return $fam;
+            }
+            return array_map(function ($member) use ($toUpper) {
+                if (!is_array($member)) {
+                    return $member;
+                }
+                foreach (['name', 'relationship', 'occupation', 'civil_status', 'educational_attainment'] as $field) {
+                    if (isset($member[$field]) && is_string($member[$field])) {
+                        $member[$field] = $toUpper($member[$field]);
+                    }
+                }
+                return $member;
+            }, $fam);
+        };
+
+        $medConditions = $upperArray($onlineIntake->medical_conditions);
+        if (empty($medConditions) && !empty($onlineIntake->display_medical_condition)) {
+            $medConditions = [$onlineIntake->display_medical_condition];
+        }
+
         $intakeData = [
             'control_number' => $controlNumber,
-            'client_type' => $onlineIntake->client_type ?: 'New',
+            'client_type' => $toUpper($onlineIntake->client_type ?: 'NEW'),
             'date_processed' => Carbon::today()->toDateString(),
             'encoder' => $encoderId,
             'is_client_beneficiary' => $onlineIntake->is_client_beneficiary,
-            'beneficiary_last_name' => $onlineIntake->beneficiary_last_name,
-            'beneficiary_first_name' => $onlineIntake->beneficiary_first_name,
-            'beneficiary_middle_name' => $onlineIntake->beneficiary_middle_name,
-            'beneficiary_extension_name' => $onlineIntake->beneficiary_extension_name,
-            'beneficiary_street_address' => $onlineIntake->beneficiary_street_address,
-            'beneficiary_barangay' => $onlineIntake->beneficiary_barangay,
-            'beneficiary_city' => $onlineIntake->beneficiary_city ?: 'Silang',
-            'beneficiary_province' => $onlineIntake->beneficiary_province ?: 'Cavite',
-            'beneficiary_region' => $onlineIntake->beneficiary_region ?: 'Region IV-A',
+            'beneficiary_last_name' => $toUpper($onlineIntake->beneficiary_last_name),
+            'beneficiary_first_name' => $toUpper($onlineIntake->beneficiary_first_name),
+            'beneficiary_middle_name' => $toUpper($onlineIntake->beneficiary_middle_name),
+            'beneficiary_extension_name' => $toUpper($onlineIntake->beneficiary_extension_name),
+            'beneficiary_street_address' => $toUpper($onlineIntake->beneficiary_street_address),
+            'beneficiary_barangay' => $toUpper($onlineIntake->beneficiary_barangay),
+            'beneficiary_city' => $toUpper($onlineIntake->beneficiary_city ?: 'SILANG'),
+            'beneficiary_province' => $toUpper($onlineIntake->beneficiary_province ?: 'CAVITE'),
+            'beneficiary_region' => $toUpper($onlineIntake->beneficiary_region ?: 'REGION IV-A'),
             'beneficiary_contact_number' => $onlineIntake->beneficiary_contact_number,
             'beneficiary_birthday' => $onlineIntake->beneficiary_birthday,
             'beneficiary_age' => $onlineIntake->beneficiary_age,
-            'beneficiary_sex' => $onlineIntake->beneficiary_sex,
-            'beneficiary_civil_status' => $onlineIntake->beneficiary_civil_status,
-            'beneficiary_occupation' => $onlineIntake->beneficiary_occupation,
+            'beneficiary_sex' => $toUpper($onlineIntake->beneficiary_sex),
+            'beneficiary_civil_status' => $toUpper($onlineIntake->beneficiary_civil_status),
+            'beneficiary_occupation' => $toUpper($onlineIntake->beneficiary_occupation),
             'beneficiary_monthly_salary' => $onlineIntake->beneficiary_monthly_salary,
-            'beneficiary_category' => $onlineIntake->beneficiary_category,
-            'beneficiary_category_other' => $onlineIntake->beneficiary_category_other,
-            'beneficiary_categories' => $onlineIntake->beneficiary_categories,
-            'beneficiary_relationship' => $onlineIntake->beneficiary_relationship,
+            'beneficiary_category' => $toUpper($onlineIntake->beneficiary_category),
+            'beneficiary_category_other' => $toUpper($onlineIntake->beneficiary_category_other),
+            'beneficiary_categories' => $upperArray($onlineIntake->beneficiary_categories),
+            'beneficiary_relationship' => $toUpper($onlineIntake->beneficiary_relationship),
             'has_representative' => (bool) $onlineIntake->has_representative,
-            'rep_last_name' => $onlineIntake->rep_last_name,
-            'rep_first_name' => $onlineIntake->rep_first_name,
-            'rep_middle_name' => $onlineIntake->rep_middle_name,
-            'rep_extension_name' => $onlineIntake->rep_extension_name,
-            'rep_street_address' => $onlineIntake->rep_street_address,
-            'rep_barangay' => $onlineIntake->rep_barangay,
-            'rep_city' => $onlineIntake->rep_city,
-            'rep_province' => $onlineIntake->rep_province,
-            'rep_region' => $onlineIntake->rep_region,
+            'rep_last_name' => $toUpper($onlineIntake->rep_last_name),
+            'rep_first_name' => $toUpper($onlineIntake->rep_first_name),
+            'rep_middle_name' => $toUpper($onlineIntake->rep_middle_name),
+            'rep_extension_name' => $toUpper($onlineIntake->rep_extension_name),
+            'rep_street_address' => $toUpper($onlineIntake->rep_street_address),
+            'rep_barangay' => $toUpper($onlineIntake->rep_barangay),
+            'rep_city' => $toUpper($onlineIntake->rep_city),
+            'rep_province' => $toUpper($onlineIntake->rep_province),
+            'rep_region' => $toUpper($onlineIntake->rep_region),
             'rep_contact_number' => $onlineIntake->rep_contact_number,
             'rep_birthday' => $onlineIntake->rep_birthday,
             'rep_age' => $onlineIntake->rep_age,
-            'rep_sex' => $onlineIntake->rep_sex,
-            'rep_civil_status' => $onlineIntake->rep_civil_status,
-            'rep_occupation' => $onlineIntake->rep_occupation,
+            'rep_sex' => $toUpper($onlineIntake->rep_sex),
+            'rep_civil_status' => $toUpper($onlineIntake->rep_civil_status),
+            'rep_occupation' => $toUpper($onlineIntake->rep_occupation),
             'rep_monthly_salary' => $onlineIntake->rep_monthly_salary,
-            'rep_relationship' => $onlineIntake->rep_relationship,
-            'family_composition' => $onlineIntake->family_composition,
-            'medical_conditions' => $onlineIntake->medical_conditions,
-            'medical_condition_other' => $onlineIntake->medical_condition_other,
-            'assistance_purpose' => $onlineIntake->assistance_purpose,
-            'assistance_type' => $onlineIntake->assistance_type,
-            'service_provided' => $onlineIntake->service_provided ?: 'Financial Assistance Intake',
-            'purpose' => $onlineIntake->purpose ?: ($onlineIntake->assistance_purpose ?: 'General Assistance Request'),
-            'purpose_other' => $onlineIntake->purpose_other,
-            'submitted_to' => $onlineIntake->submitted_to ?: 'MSWDO Silang Main Office',
+            'rep_relationship' => $toUpper($onlineIntake->rep_relationship),
+            'family_composition' => $upperFamily($onlineIntake->family_composition),
+            'medical_conditions' => $medConditions,
+            'medical_condition_other' => $toUpper($onlineIntake->medical_condition_other),
+            'assistance_purpose' => $toUpper($onlineIntake->assistance_purpose),
+            'assistance_type' => $toUpper($onlineIntake->assistance_type),
+            'service_provided' => $toUpper($onlineIntake->service_provided ?: 'FINANCIAL ASSISTANCE INTAKE'),
+            'purpose' => $toUpper($onlineIntake->purpose ?: ($onlineIntake->assistance_purpose ?: 'GENERAL ASSISTANCE REQUEST')),
+            'purpose_other' => $toUpper($onlineIntake->purpose_other),
+            'submitted_to' => $toUpper($onlineIntake->submitted_to ?: 'MSWDO SILANG MAIN OFFICE'),
         ];
 
-        // Create the regular Step 1 intake record
-        $beneficiaryIntake = BeneficiaryIntake::create($intakeData);
+        // Create the regular Step 1 intake record and update online intake within a database transaction
+        $beneficiaryIntake = null;
+        DB::transaction(function () use (&$beneficiaryIntake, $onlineIntake, $intakeData, $controlNumber, $encoderId, $request) {
+            $beneficiaryIntake = BeneficiaryIntake::create($intakeData);
 
-        // Update online application status to Accepted and persist assigned Control Number
-        $onlineIntake->update([
-            'status' => 'Accepted',
-            'control_number' => $controlNumber,
-            'reviewed_by' => $encoderId,
-            'reviewed_at' => now(),
-            'review_notes' => $request->input('review_notes'),
-            'beneficiary_intake_id' => $beneficiaryIntake->id,
-        ]);
+            // Update online application status to Accepted, persist assigned Control Number, and uppercase text data
+            $onlineIntake->update([
+                'status' => 'Accepted',
+                'control_number' => $controlNumber,
+                'reviewed_by' => $encoderId,
+                'reviewed_at' => now(),
+                'review_notes' => $request->input('review_notes'),
+                'beneficiary_intake_id' => $beneficiaryIntake->id,
+                'beneficiary_last_name' => $intakeData['beneficiary_last_name'],
+                'beneficiary_first_name' => $intakeData['beneficiary_first_name'],
+                'beneficiary_middle_name' => $intakeData['beneficiary_middle_name'],
+                'beneficiary_extension_name' => $intakeData['beneficiary_extension_name'],
+                'beneficiary_street_address' => $intakeData['beneficiary_street_address'],
+                'beneficiary_barangay' => $intakeData['beneficiary_barangay'],
+                'beneficiary_city' => $intakeData['beneficiary_city'],
+                'beneficiary_province' => $intakeData['beneficiary_province'],
+                'beneficiary_region' => $intakeData['beneficiary_region'],
+                'beneficiary_sex' => $intakeData['beneficiary_sex'],
+                'beneficiary_civil_status' => $intakeData['beneficiary_civil_status'],
+                'beneficiary_occupation' => $intakeData['beneficiary_occupation'],
+                'beneficiary_category' => $intakeData['beneficiary_category'],
+                'beneficiary_category_other' => $intakeData['beneficiary_category_other'],
+                'beneficiary_categories' => $intakeData['beneficiary_categories'],
+                'beneficiary_relationship' => $intakeData['beneficiary_relationship'],
+                'rep_last_name' => $intakeData['rep_last_name'],
+                'rep_first_name' => $intakeData['rep_first_name'],
+                'rep_middle_name' => $intakeData['rep_middle_name'],
+                'rep_extension_name' => $intakeData['rep_extension_name'],
+                'rep_street_address' => $intakeData['rep_street_address'],
+                'rep_barangay' => $intakeData['rep_barangay'],
+                'rep_city' => $intakeData['rep_city'],
+                'rep_province' => $intakeData['rep_province'],
+                'rep_region' => $intakeData['rep_region'],
+                'rep_sex' => $intakeData['rep_sex'],
+                'rep_civil_status' => $intakeData['rep_civil_status'],
+                'rep_occupation' => $intakeData['rep_occupation'],
+                'rep_relationship' => $intakeData['rep_relationship'],
+                'family_composition' => $intakeData['family_composition'],
+                'medical_conditions' => $intakeData['medical_conditions'],
+                'medical_condition_other' => $intakeData['medical_condition_other'],
+                'assistance_purpose' => $intakeData['assistance_purpose'],
+                'assistance_type' => $intakeData['assistance_type'],
+                'purpose' => $intakeData['purpose'],
+                'purpose_other' => $intakeData['purpose_other'],
+            ]);
+        });
+
+        // Send automatic Tagalog approval SMS notification to applicant strictly after successful status change
+        $smsResult = null;
+        try {
+            $smsResult = $this->notificationService->notifyApproval($onlineIntake, $beneficiaryIntake);
+        } catch (\Throwable $e) {
+            Log::error("[OnlineFinancialIntake] Approval SMS dispatch exception: " . $e->getMessage());
+            $smsResult = [
+                'success' => false,
+                'error' => 'Hindi naipadala ang SMS abiso: ' . $e->getMessage(),
+            ];
+        }
 
         return response()->json([
             'success' => true,
@@ -300,6 +432,7 @@ class OnlineFinancialIntakeController extends Controller
                 'control_number' => $controlNumber,
                 'beneficiary_name' => $beneficiaryIntake->beneficiary_full_name,
                 'step1_url' => route('admin.financial.financialstep1'),
+                'sms' => $smsResult,
             ]
         ]);
     }
@@ -323,15 +456,36 @@ class OnlineFinancialIntakeController extends Controller
             ], 422);
         }
 
+        if ($onlineIntake->status === 'Rejected') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ang online application na ito ay tinanggihan na dati (Rejected).',
+            ], 422);
+        }
+
         $userId = auth()->id() ?? session('admin_user_id');
 
-        $onlineIntake->update([
-            'status' => 'Rejected',
-            'rejection_reason' => $request->rejection_reason,
-            'review_notes' => $request->review_notes,
-            'reviewed_by' => $userId,
-            'reviewed_at' => now(),
-        ]);
+        DB::transaction(function () use ($onlineIntake, $request, $userId) {
+            $onlineIntake->update([
+                'status' => 'Rejected',
+                'rejection_reason' => mb_strtoupper(trim($request->rejection_reason), 'UTF-8'),
+                'review_notes' => $request->review_notes ? mb_strtoupper(trim($request->review_notes), 'UTF-8') : null,
+                'reviewed_by' => $userId,
+                'reviewed_at' => now(),
+            ]);
+        });
+
+        // Send automatic Tagalog rejection SMS notification to applicant strictly after successful status change
+        $smsResult = null;
+        try {
+            $smsResult = $this->notificationService->notifyRejection($onlineIntake);
+        } catch (\Throwable $e) {
+            Log::error("[OnlineFinancialIntake] Rejection SMS dispatch exception: " . $e->getMessage());
+            $smsResult = [
+                'success' => false,
+                'error' => 'Hindi naipadala ang SMS abiso: ' . $e->getMessage(),
+            ];
+        }
 
         return response()->json([
             'success' => true,
@@ -340,7 +494,40 @@ class OnlineFinancialIntakeController extends Controller
                 'id' => $onlineIntake->id,
                 'status' => 'Rejected',
                 'rejection_reason' => $onlineIntake->rejection_reason,
+                'sms' => $smsResult,
             ]
         ]);
+    }
+
+    /**
+     * Resend/retry SMS notification for a previously reviewed online application.
+     */
+    public function resendSms(Request $request, $id)
+    {
+        $onlineIntake = OnlineFinancialIntake::with(['beneficiaryIntake'])->findOrFail($id);
+
+        if ($onlineIntake->status === 'For Review') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Hindi maaaring magpadala ng abiso sa aplikasyong nakabinbin pa (For Review).',
+            ], 422);
+        }
+
+        $officer = session('admin_user_name') ?? 'MSWDO Staff';
+        $smsResult = $this->notificationService->retryNotification($onlineIntake, $officer);
+
+        if ($smsResult['success']) {
+            return response()->json([
+                'success' => true,
+                'message' => $smsResult['message'] ?? 'Matagumpay na naipadala ang SMS sa aplikante.',
+                'data' => $smsResult,
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => $smsResult['error'] ?? 'Nabigo ang pagpapadala ng SMS.',
+            'data' => $smsResult,
+        ], 422);
     }
 }

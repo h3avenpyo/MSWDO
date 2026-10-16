@@ -793,21 +793,46 @@
                     <h2 class="section-heading">IV. Layunin ng Tulong at Kategorya</h2>
                     <p class="section-subtext">Assistance Purpose / Medical Condition &amp; Beneficiary Category</p>
 
-                    <!-- Assistance Purpose / Condition -->
-                    <div class="mb-4 sm:mb-5">
-                        <label for="assistance_purpose" class="form-label-custom">
-                            Layunin ng Tulong / Medical Condition <span class="required-star">*</span>
-                        </label>
-                        <select id="assistance_purpose" name="assistance_purpose" required class="form-input-custom"
-                            onchange="togglePurposeOther()">
-                            <option value="">Pumili ng Layunin ng Tulong / Kondisyong Medikal...</option>
-                            @foreach($medicalConditions as $cond)
-                            <option value="{{ $cond }}">{{ $cond }}</option>
-                            @endforeach
-                        </select>
-                        <input type="text" id="purpose_other_input" name="purpose_other"
-                            placeholder="Pakilahad ang partikular na karamdaman o detalye..."
-                            class="form-input-custom mt-2 hidden">
+                    <!-- Assistance Purpose & Medical Condition Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 sm:mb-5">
+                        <!-- Medical Condition -->
+                        <div>
+                            <label for="assistance_purpose" class="form-label-custom">
+                                Mga Karamdaman / Medical Condition <span class="required-star">*</span>
+                            </label>
+                            <select id="assistance_purpose" name="assistance_purpose" required class="form-input-custom"
+                                onchange="togglePurposeOther()">
+                                <option value="">Pumili ng Medikal na Karamdaman / Medical Condition...</option>
+                                @foreach($medicalConditions as $cond)
+                                <option value="{{ $cond }}" {{ old('assistance_purpose') == $cond ? 'selected' : '' }}>{{ $cond }}</option>
+                                @endforeach
+                            </select>
+                            <input type="text" id="purpose_other_input" name="purpose_other"
+                                value="{{ old('purpose_other') }}"
+                                placeholder="Pakilahad ang partikular na karamdaman o detalye..."
+                                class="form-input-custom mt-2 {{ old('assistance_purpose') == 'Other Medical Conditions' ? '' : 'hidden' }}">
+                        </div>
+
+                        <!-- Assistance Purpose / Uri ng Assistance -->
+                        <div>
+                            <label for="assistance_type" class="form-label-custom">
+                                Assistance Purpose / Uri ng Assistance
+                            </label>
+                            <select id="assistance_type" name="assistance_type" class="form-input-custom"
+                                onchange="toggleAssistanceTypeOther()">
+                                <option value="">Pumili ng Uri ng Assistance / Select Purpose...</option>
+                                <option value="Medicine/Gamot" {{ old('assistance_type') == 'Medicine/Gamot' ? 'selected' : '' }}>Medicine/Gamot</option>
+                                <option value="Laboratory Test" {{ old('assistance_type') == 'Laboratory Test' ? 'selected' : '' }}>Laboratory Test</option>
+                                <option value="Therapy" {{ old('assistance_type') == 'Therapy' ? 'selected' : '' }}>Therapy</option>
+                                <option value="Checkup/Consultation" {{ old('assistance_type') == 'Checkup/Consultation' ? 'selected' : '' }}>Checkup/Consultation</option>
+                                <option value="Hospital Bill" {{ old('assistance_type') == 'Hospital Bill' ? 'selected' : '' }}>Hospital Bill</option>
+                                <option value="Other Assistance Purpose" {{ old('assistance_type') == 'Other Assistance Purpose' ? 'selected' : '' }}>Other Assistance Purpose</option>
+                            </select>
+                            <input type="text" id="assistance_type_other_input" name="assistance_type_other"
+                                value="{{ old('assistance_type_other') }}"
+                                placeholder="Pakitukoy ang ibang layunin ng tulong (Specify other purpose)..."
+                                class="form-input-custom mt-2 {{ old('assistance_type') == 'Other Assistance Purpose' ? '' : 'hidden' }}">
+                        </div>
                     </div>
 
                     <!-- Beneficiary Category Checkboxes -->
