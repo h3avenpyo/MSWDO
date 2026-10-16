@@ -344,6 +344,17 @@ class BeneficiaryIntake extends Model
 
     public function getDisplayMedicalConditionAttribute(): string
     {
+        if (!empty($this->medical_conditions) && is_array($this->medical_conditions) && count($this->medical_conditions) > 0) {
+            $filtered = array_values(array_filter($this->medical_conditions, fn($c) => !empty($c) && is_string($c) && trim($c) !== ''));
+            if (!empty($filtered)) {
+                return mb_strtoupper(implode(', ', $filtered), 'UTF-8');
+            }
+        }
+
+        if (!empty($this->medical_condition_other)) {
+            return mb_strtoupper($this->medical_condition_other, 'UTF-8');
+        }
+
         if (($this->assistance_purpose === 'Other Medical Conditions' || $this->assistance_purpose === 'Others' || $this->assistance_purpose === 'Other') && ! empty($this->purpose_other)) {
             return mb_strtoupper($this->purpose_other, 'UTF-8');
         }

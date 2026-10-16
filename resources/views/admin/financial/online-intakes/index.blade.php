@@ -434,13 +434,22 @@
 
                         <!-- Purpose -->
                         <td>
-                            <div class="text-dark fw-medium text-uppercase">{{ $app->assistance_purpose ?: 'GENERAL ASSISTANCE' }}
+                            @php
+                                $requestedPurpose = !empty($app->assistance_type) 
+                                    ? $app->assistance_type 
+                                    : (!empty($app->display_assistance_purpose) && $app->display_assistance_purpose !== 'N/A' 
+                                        ? $app->display_assistance_purpose 
+                                        : ($app->assistance_purpose ?: 'GENERAL ASSISTANCE'));
+                                $medCondition = $app->display_medical_condition;
+                            @endphp
+                            <div class="text-dark fw-medium text-uppercase">{{ $requestedPurpose }}</div>
+                            @if(!empty($medCondition) && $medCondition !== 'N/A' && mb_strtoupper($medCondition) !== mb_strtoupper($requestedPurpose))
+                            <div class="text-muted small text-truncate text-uppercase mt-0.5" style="max-width: 220px;"
+                                title="{{ $medCondition }}">
+                                <i class="fas fa-notes-medical me-1 text-danger"></i>{{ $medCondition }}
                             </div>
-                            @if(!empty($app->assistance_type))
-                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle small px-2 py-0.5 mt-1 d-inline-block text-uppercase">{{ $app->assistance_type }}</span>
-                            @endif
-                            @if(!empty($app->medical_conditions) && is_array($app->medical_conditions))
-                            <div class="text-muted small text-truncate text-uppercase" style="max-width: 220px;"
+                            @elseif(!empty($app->medical_conditions) && is_array($app->medical_conditions))
+                            <div class="text-muted small text-truncate text-uppercase mt-0.5" style="max-width: 220px;"
                                 title="{{ strtoupper(implode(', ', $app->medical_conditions)) }}">
                                 <i class="fas fa-notes-medical me-1 text-danger"></i>{{ strtoupper(implode(', ',
                                 $app->medical_conditions)) }}
@@ -462,6 +471,26 @@
                             <span class="badge bg-warning text-dark px-2.5 py-1 rounded-pill fw-semibold text-uppercase">
                                 <i class="fas fa-clock me-1"></i>For Review
                             </span>
+                            @endif
+
+                            @if($app->sms_status === 'Sent')
+                            <div class="mt-1">
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5" style="font-size: 0.68rem;" title="Awtomatikong Tagalog SMS naipadala noong {{ $app->sms_notified_at?->format('M d, Y h:i A') }}">
+                                    <i class="fas fa-sms me-1"></i>SMS Naipadala
+                                </span>
+                            </div>
+                            @elseif($app->sms_status === 'Failed')
+                            <div class="mt-1">
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-0.5" style="font-size: 0.68rem;" title="{{ $app->sms_error }}">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>SMS Nabigo
+                                </span>
+                            </div>
+                            @elseif($app->sms_status === 'No Number')
+                            <div class="mt-1">
+                                <span class="badge bg-light text-muted border rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
+                                    <i class="fas fa-phone-slash me-1"></i>Walang Numero
+                                </span>
+                            </div>
                             @endif
                         </td>
 
@@ -707,8 +736,6 @@
                         <option value="">Pumili ng dahilan...</option>
                         <option value="Hindi kwalipikado sa ilalim ng patakaran ng MSWDO">Hindi kwalipikado sa ilalim ng
                             patakaran ng MSWDO</option>
-                        <option value="May umiiral na 6-Month Validity duplicate restriction">May umiiral na 6-Month
-                            Validity duplicate restriction</option>
                         <option value="Hindi kumpleto o malabo ang mga impormasyon">Hindi kumpleto o malabo ang mga
                             impormasyon</option>
                         <option value="Hindi residente ng Bayan ng Silang">Hindi residente ng Bayan ng Silang</option>
@@ -821,14 +848,23 @@ function openReviewModal(appId) {
             }
 
             // Assistance purpose & medical
-            let purposeText = (data.assistance_purpose || 'GENERAL FINANCIAL ASSISTANCE').toUpperCase();
-            if (data.assistance_type) {
-                purposeText += ` • ${data.assistance_type.toUpperCase()}`;
-            }
-            document.getElementById('modalAssistancePurpose').textContent = purposeText;
+            const assistancePurpose = (data.assistance_type || data.display_assistance_purpose || 'GENERAL FINANCIAL ASSISTANCE').toUpperCase();
+            document.getElementById('modalAssistancePurpose').textContent = assistancePurpose;
+
             const medContainer = document.getElementById('modalMedicalConditions');
-            if (data.medical_conditions && data.medical_conditions.length > 0) {
-                medContainer.innerHTML = data.medical_conditions.map(m => `<span class="badge bg-danger-subtle text-danger border border-danger-subtle me-1 mb-1 text-uppercase">${String(m).toUpperCase()}</span>`).join(' ');
+            let medList = [];
+            if (Array.isArray(data.medical_conditions) && data.medical_conditions.length > 0) {
+                medList = data.medical_conditions.filter(m => m && String(m).trim() !== '');
+            } else if (data.display_medical_condition) {
+                medList = [data.display_medical_condition];
+            } else if (data.medical_condition_other) {
+                medList = [data.medical_condition_other];
+            } else if (data.assistance_purpose && data.assistance_purpose !== data.assistance_type && data.assistance_purpose !== 'GENERAL ASSISTANCE REQUEST') {
+                medList = [data.assistance_purpose];
+            }
+
+            if (medList.length > 0) {
+                medContainer.innerHTML = medList.map(m => `<span class="badge bg-danger-subtle text-danger border border-danger-subtle me-1 mb-1 text-uppercase">${String(m).toUpperCase()}</span>`).join(' ');
             } else {
                 medContainer.innerHTML = '<span class="text-muted small text-uppercase">WALANG NAKASAAD NA MEDIKAL NA KARAMDAMAN</span>';
             }
@@ -859,26 +895,63 @@ function openReviewModal(appId) {
             const actionContainer = document.getElementById('modalActionButtons');
             actionContainer.innerHTML = '';
 
+            let smsStatusBanner = '';
+            if (data.sms_info) {
+                if (data.sms_info.sms_status === 'Sent') {
+                    smsStatusBanner = `
+                        <div class="mt-2.5 pt-2 border-top border-success-subtle small text-success d-flex align-items-center gap-2">
+                            <i class="fas fa-sms fa-lg"></i>
+                            <span><strong>Awtomatikong Tagalog SMS:</strong> Matagumpay na naipadala ang abiso sa aplikante (${data.sms_info.applicant_contact || 'Numero'}) noong ${data.sms_info.sms_notified_at || 'kamakailan'}.</span>
+                        </div>
+                    `;
+                } else if (data.sms_info.sms_status === 'Failed') {
+                    smsStatusBanner = `
+                        <div class="mt-2.5 pt-2 border-top border-danger-subtle small text-danger d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div>
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                <span><strong>SMS Status:</strong> Nabigo ang pagpapadala ng SMS (${data.sms_info.sms_error || 'Provider issue'}).</span>
+                            </div>
+                            <button type="button" class="btn btn-danger btn-sm py-0.5 px-3 rounded-pill fw-bold" onclick="retrySmsNotification(${data.id})">
+                                <i class="fas fa-redo me-1"></i> Muling Ipadala ang SMS (Retry)
+                            </button>
+                        </div>
+                    `;
+                } else if (data.sms_info.sms_status === 'No Number') {
+                    smsStatusBanner = `
+                        <div class="mt-2.5 pt-2 border-top border-secondary-subtle small text-muted">
+                            <i class="fas fa-phone-slash me-1"></i>
+                            <span>Walang nakatalang numero ng kontak kaya hindi napadalhan ng SMS.</span>
+                        </div>
+                    `;
+                }
+            }
+
             if (data.status === 'Accepted') {
-                noticeBox.className = 'alert alert-success d-flex align-items-center gap-2 rounded-3 mb-4';
+                noticeBox.className = 'alert alert-success d-block rounded-3 mb-4 shadow-xs';
                 noticeBox.innerHTML = `
-                    <i class="fas fa-check-circle fa-lg text-success"></i>
-                    <div>
-                        <strong>Matagumpay na Naitanggap at Nailipat sa Step 1:</strong> 
-                        Sinuri ni <u>${data.review_info.reviewed_by || 'Officer'}</u> noong ${data.review_info.reviewed_at || 'N/A'}. 
-                        <a href="{{ route('admin.financial.financialstep1') }}" class="fw-bold text-success text-decoration-underline ms-2">Buksan ang Step 1 Intake Directory</a>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-check-circle fa-lg text-success"></i>
+                        <div>
+                            <strong>Matagumpay na Naitanggap at Nailipat sa Step 1:</strong> 
+                            Sinuri ni <u>${data.review_info.reviewed_by || 'Officer'}</u> noong ${data.review_info.reviewed_at || 'N/A'}. 
+                            <a href="{{ route('admin.financial.financialstep1') }}" class="fw-bold text-success text-decoration-underline ms-2">Buksan ang Step 1 Intake Directory</a>
+                        </div>
                     </div>
+                    ${smsStatusBanner}
                 `;
                 noticeBox.classList.remove('d-none');
             } else if (data.status === 'Rejected') {
-                noticeBox.className = 'alert alert-danger d-flex align-items-start gap-2 rounded-3 mb-4';
+                noticeBox.className = 'alert alert-danger d-block rounded-3 mb-4 shadow-xs';
                 noticeBox.innerHTML = `
-                    <i class="fas fa-times-circle fa-lg text-danger mt-1"></i>
-                    <div>
-                        <strong>Tinanggihan ang Aplikasyon (Rejected):</strong><br>
-                        <span>Dahilan: ${data.review_info.rejection_reason || 'Walang nakasaad'}</span><br>
-                        <small class="text-muted">Sinuri ni ${data.review_info.reviewed_by || 'Officer'} noong ${data.review_info.reviewed_at || 'N/A'}</small>
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="fas fa-times-circle fa-lg text-danger mt-1"></i>
+                        <div>
+                            <strong>Tinanggihan ang Aplikasyon (Rejected):</strong><br>
+                            <span>Dahilan: ${data.review_info.rejection_reason || 'Walang nakasaad'}</span><br>
+                            <small class="text-muted">Sinuri ni ${data.review_info.reviewed_by || 'Officer'} noong ${data.review_info.reviewed_at || 'N/A'}</small>
+                        </div>
                     </div>
+                    ${smsStatusBanner}
                 `;
                 noticeBox.classList.remove('d-none');
             } else {
@@ -927,7 +1000,6 @@ function confirmAcceptApplication(overrideDuplicate = false) {
 function executeAccept(overrideDuplicate) {
     Swal.fire({
         title: 'Pinoproseso...',
-        text: 'Nagsasagawa ng duplicate check at naglilipat sa Step 1 Intake...',
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
@@ -972,14 +1044,32 @@ function executeAccept(overrideDuplicate) {
         }
 
         if (body.success) {
+            let smsNotice = '';
+            if (body.data && body.data.sms) {
+                if (body.data.sms.success) {
+                    smsNotice = `
+                        <div class="alert alert-success py-2 px-3 text-center my-2 border border-success rounded-3 bg-success-subtle small">
+                            <i class="fas fa-sms me-1"></i> <strong>Awtomatikong SMS:</strong> Matagumpay na naipadala ang mensahe sa aplikante!
+                        </div>
+                    `;
+                } else if (body.data.sms.error) {
+                    smsNotice = `
+                        <div class="alert alert-warning py-2 px-3 text-center my-2 border border-warning rounded-3 bg-warning-subtle small">
+                            <i class="fas fa-exclamation-triangle me-1"></i> <strong>Paalala sa SMS:</strong> ${body.data.sms.error}
+                        </div>
+                    `;
+                }
+            }
+
             Swal.fire({
                 title: 'Naitanggap Na!',
                 html: `
-                    <p class="text-secondary mb-3">${body.message}</p>
+                    <p class="text-secondary mb-2">${body.message}</p>
                     <div class="alert alert-success py-2.5 px-3 text-center my-2 border border-success rounded-3 bg-success-subtle">
                         <small class="text-muted d-block fw-bold text-uppercase" style="font-size:0.72rem;">Itinalagang Opisyal na Control Number (Step 1):</small>
                         <strong class="font-monospace fs-4 text-success">${body.data.control_number}</strong>
                     </div>
+                    ${smsNotice}
                     <small class="text-muted d-block mt-2">Nailipat na ang rekord sa regular na Step 1 Intake Directory.</small>
                 `,
                 icon: 'success',
@@ -1031,7 +1121,7 @@ function submitRejectApplication() {
 
     Swal.fire({
         title: 'I-reject ang Application?',
-        text: 'Sigurado ka bang nais mong tanggihan ang online intake application na ito?',
+        text: 'Sigurado ka bang nais mong tanggihan ang online intake application na ito? Awtomatikong magpapadala ng magalang na mensahe abiso sa aplikante.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#b11116',
@@ -1040,6 +1130,15 @@ function submitRejectApplication() {
         cancelButtonText: 'Kanselahin'
     }).then((result) => {
         if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Pinoproseso...',
+                text: 'Itinatala ang pagtanggi at nagpapadala ng magalang na Tagalog SMS...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             fetch(`/admin/financial/online-intakes/${currentActiveAppId}/reject`, {
                 method: 'POST',
                 headers: {
@@ -1055,9 +1154,29 @@ function submitRejectApplication() {
             .then(res => res.json())
             .then(res => {
                 if (res.success) {
+                    let smsNotice = '';
+                    if (res.data && res.data.sms) {
+                        if (res.data.sms.success) {
+                            smsNotice = `
+                                <div class="alert alert-success py-2 px-3 text-center my-2 border border-success rounded-3 bg-success-subtle small">
+                                    <i class="fas fa-sms me-1"></i> <strong>Awtomatikong SMS:</strong> Matagumpay na naipadala ang magalang na Tagalog SMS notification sa aplikante!
+                                </div>
+                            `;
+                        } else if (res.data.sms.error) {
+                            smsNotice = `
+                                <div class="alert alert-warning py-2 px-3 text-center my-2 border border-warning rounded-3 bg-warning-subtle small">
+                                    <i class="fas fa-exclamation-triangle me-1"></i> <strong>Paalala sa SMS:</strong> ${res.data.sms.error}
+                                </div>
+                            `;
+                        }
+                    }
+
                     Swal.fire({
                         title: 'Nai-reject Na',
-                        text: res.message,
+                        html: `
+                            <p class="text-secondary mb-2">${res.message}</p>
+                            ${smsNotice}
+                        `,
                         icon: 'success',
                         confirmButtonColor: '#b11116'
                     }).then(() => {
@@ -1065,6 +1184,53 @@ function submitRejectApplication() {
                     });
                 } else {
                     Swal.fire('Error', res.message || 'Hindi nai-reject ang aplikasyon.', 'error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire('Error', 'Nagkaroon ng problema sa koneksyon.', 'error');
+            });
+        }
+    });
+}
+
+function retrySmsNotification(id) {
+    Swal.fire({
+        title: 'Ipadala ang SMS Abiso?',
+        text: 'Nais mo bang subukang muling ipadala ang opisyal na Tagalog SMS notification?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#b11116',
+        cancelButtonColor: '#64748B',
+        confirmButtonText: 'Oo, Ipadala',
+        cancelButtonText: 'Kanselahin'
+    }).then((res) => {
+        if (res.isConfirmed) {
+            Swal.fire({
+                title: 'Nagpapadala ng SMS...',
+                text: 'Pakihintay habang nakikipag-ugnayan sa SMS gateway...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch(`/admin/financial/online-intakes/${id}/resend-sms`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(r => r.json().then(data => ({ status: r.status, body: data })))
+            .then(({ status, body }) => {
+                if (body.success) {
+                    Swal.fire('Naipadala Na!', body.message || 'Matagumpay na naipadala ang SMS.', 'success').then(() => {
+                        openReviewModal(id);
+                    });
+                } else {
+                    Swal.fire('Hindi Naipadala', body.message || 'Nabigo ang pagpapadala ng SMS.', 'error');
                 }
             })
             .catch(err => {

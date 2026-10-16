@@ -135,6 +135,24 @@ class SmsService
     }
 
     /**
+     * Generate the official Tagalog SMS message for an approved Financial Assistance online application.
+     */
+    public static function generateOnlineApprovedMessage(string $applicantName): string
+    {
+        $name = trim($applicantName);
+        return "Magandang araw, {$name}! Ang inyong online application para sa Financial Assistance ng MSWDO ay naaprubahan na para sa susunod na hakbang. Maaari na kayong maghanda at magsumite ng mga kinakailangang dokumento para sa beripikasyon. Mangyaring makipag-ugnayan sa tanggapan ng MSWDO tungkol sa mga kinakailangan. Maraming salamat.";
+    }
+
+    /**
+     * Generate the official Tagalog SMS message for a rejected Financial Assistance online application.
+     */
+    public static function generateOnlineRejectedMessage(string $applicantName): string
+    {
+        $name = trim($applicantName);
+        return "Magandang araw, {$name}. Ikinalulungkot naming ipaalam na hindi naaprubahan ang inyong online application para sa Financial Assistance ng MSWDO. Para sa karagdagang impormasyon tungkol sa dahilan ng pagtanggi at sa mga susunod na hakbang na maaari ninyong gawin, mangyaring makipag-ugnayan sa tanggapan ng MSWDO. Maraming salamat sa inyong pag-unawa.";
+    }
+
+    /**
      * Send SMS to a recipient.
      *
      * @param string $to Raw or normalized contact number

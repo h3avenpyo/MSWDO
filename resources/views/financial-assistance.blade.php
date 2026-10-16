@@ -798,11 +798,11 @@
                         <!-- Medical Condition -->
                         <div>
                             <label for="assistance_purpose" class="form-label-custom">
-                                Layunin ng Tulong / Medical Condition <span class="required-star">*</span>
+                                Mga Karamdaman / Medical Condition <span class="required-star">*</span>
                             </label>
                             <select id="assistance_purpose" name="assistance_purpose" required class="form-input-custom"
                                 onchange="togglePurposeOther()">
-                                <option value="">Pumili ng Layunin ng Tulong / Kondisyong Medikal...</option>
+                                <option value="">Pumili ng Medikal na Karamdaman / Medical Condition...</option>
                                 @foreach($medicalConditions as $cond)
                                 <option value="{{ $cond }}" {{ old('assistance_purpose') == $cond ? 'selected' : '' }}>{{ $cond }}</option>
                                 @endforeach

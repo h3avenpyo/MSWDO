@@ -67,12 +67,20 @@ class OnlineFinancialIntake extends Model
         'review_notes',
         'rejection_reason',
         'beneficiary_intake_id',
+        'sms_status',
+        'sms_error',
+        'sms_notified_at',
+        'approval_sms_sent_at',
+        'rejection_sms_sent_at',
     ];
 
     protected $appends = [
         'beneficiary_full_name',
         'display_assistance_purpose',
+        'display_medical_condition',
         'uri_ng_assistance',
+        'applicant_name',
+        'applicant_contact_number',
     ];
 
     protected $casts = [
@@ -80,6 +88,9 @@ class OnlineFinancialIntake extends Model
         'beneficiary_birthday' => 'date',
         'rep_birthday' => 'date',
         'reviewed_at' => 'datetime',
+        'sms_notified_at' => 'datetime',
+        'approval_sms_sent_at' => 'datetime',
+        'rejection_sms_sent_at' => 'datetime',
         'is_client_beneficiary' => 'boolean',
         'has_representative' => 'boolean',
         'beneficiary_categories' => 'array',
@@ -175,6 +186,32 @@ class OnlineFinancialIntake extends Model
         return $this->belongsTo(BeneficiaryIntake::class, 'beneficiary_intake_id');
     }
 
+    public function messages(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(FinancialAssistanceMessage::class, 'online_intake_id')->orderBy('created_at', 'desc');
+    }
+
+    public function latestMessage(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(FinancialAssistanceMessage::class, 'online_intake_id')->latestOfMany();
+    }
+
+    public function getApplicantNameAttribute(): string
+    {
+        if ($this->has_representative && !empty(trim($this->rep_full_name ?? '')) && $this->rep_full_name !== 'N/A') {
+            return $this->rep_full_name;
+        }
+        return $this->beneficiary_full_name;
+    }
+
+    public function getApplicantContactNumberAttribute(): ?string
+    {
+        if ($this->has_representative && !empty(trim($this->rep_contact_number ?? '')) && $this->rep_contact_number !== 'N/A') {
+            return $this->rep_contact_number;
+        }
+        return $this->beneficiary_contact_number;
+    }
+
     public function getBeneficiaryFullNameAttribute(): string
     {
         $parts = array_filter([
@@ -225,6 +262,30 @@ class OnlineFinancialIntake extends Model
             return mb_strtoupper($this->purpose_other, 'UTF-8');
         }
         return mb_strtoupper($this->assistance_purpose ?? 'N/A', 'UTF-8');
+    }
+
+    public function getDisplayMedicalConditionAttribute(): ?string
+    {
+        if (!empty($this->medical_conditions) && is_array($this->medical_conditions) && count($this->medical_conditions) > 0) {
+            $filtered = array_values(array_filter($this->medical_conditions, fn($c) => !empty($c) && is_string($c) && trim($c) !== ''));
+            if (!empty($filtered)) {
+                return mb_strtoupper(implode(', ', $filtered), 'UTF-8');
+            }
+        }
+
+        if (!empty($this->medical_condition_other)) {
+            return mb_strtoupper($this->medical_condition_other, 'UTF-8');
+        }
+
+        if (($this->assistance_purpose === 'Other Medical Conditions' || $this->assistance_purpose === 'Others' || $this->assistance_purpose === 'Other') && !empty($this->purpose_other)) {
+            return mb_strtoupper($this->purpose_other, 'UTF-8');
+        }
+
+        if (!empty($this->assistance_purpose) && $this->assistance_purpose !== 'ASSISTANCE PURPOSE' && $this->assistance_purpose !== 'GENERAL ASSISTANCE REQUEST') {
+            return mb_strtoupper($this->assistance_purpose, 'UTF-8');
+        }
+
+        return null;
     }
 
     public function getUriNgAssistanceAttribute(): ?string
