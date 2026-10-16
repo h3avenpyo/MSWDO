@@ -4275,6 +4275,86 @@ function renderCaseDetail(){
   lucide.createIcons();
 }
 
+const reportPageFitContainers = new Set();
+let reportPageFitObserver = null;
+let reportPageFitScheduled = false;
+
+function isAppleMobileBrowser(){
+  const userAgent = navigator.userAgent || '';
+  const isAppleMobileDevice = /iPad|iPhone|iPod/.test(userAgent)
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  return isAppleMobileDevice && /WebKit/i.test(userAgent);
+}
+
+function fitReportPages(container){
+  if (!container || !isAppleMobileBrowser()) return;
+
+  const computedContainerStyle = window.getComputedStyle(container);
+  const availableWidth = container.clientWidth
+    - parseFloat(computedContainerStyle.paddingLeft || '0')
+    - parseFloat(computedContainerStyle.paddingRight || '0');
+
+  if (availableWidth <= 0) return;
+
+  container.querySelectorAll('.page').forEach(page => {
+    let wrapper = page.parentElement;
+    if (!wrapper.classList.contains('page-wrap')) {
+      wrapper = document.createElement('div');
+      wrapper.className = 'page-wrap';
+      page.parentElement.insertBefore(wrapper, page);
+      wrapper.appendChild(page);
+    }
+
+    page.style.zoom = '1';
+    const pageWidth = page.offsetWidth;
+    const pageHeight = page.offsetHeight;
+    if (!pageWidth || !pageHeight) return;
+
+    const scale = Math.min(1, availableWidth / pageWidth);
+    wrapper.style.boxSizing = 'content-box';
+    wrapper.style.display = 'flex';
+    wrapper.style.flex = '0 0 auto';
+    wrapper.style.justifyContent = 'center';
+    wrapper.style.alignItems = 'flex-start';
+    wrapper.style.position = 'relative';
+    wrapper.style.overflow = 'visible';
+    wrapper.style.padding = '0';
+    wrapper.style.margin = '20px auto';
+    wrapper.style.width = `${pageWidth * scale}px`;
+    wrapper.style.height = `${pageHeight * scale}px`;
+
+    page.style.transform = `scale(${scale})`;
+    page.style.transformOrigin = 'top center';
+    page.style.margin = '0';
+  });
+}
+
+function scheduleReportPageFit(){
+  if (reportPageFitScheduled) return;
+  reportPageFitScheduled = true;
+  window.requestAnimationFrame(() => {
+    reportPageFitScheduled = false;
+    reportPageFitContainers.forEach(fitReportPages);
+  });
+}
+
+function registerReportPageFit(container){
+  reportPageFitContainers.add(container);
+  if (typeof ResizeObserver !== 'undefined') {
+    if (!reportPageFitObserver) {
+      reportPageFitObserver = new ResizeObserver(scheduleReportPageFit);
+    }
+    reportPageFitObserver.observe(container);
+  }
+  scheduleReportPageFit();
+}
+
+window.addEventListener('resize', scheduleReportPageFit);
+window.addEventListener('orientationchange', scheduleReportPageFit);
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', scheduleReportPageFit);
+}
+
 async function loadDocumentPreview(caseId){
   console.log('loadDocumentPreview called with caseId:', caseId);
   const container = document.getElementById('documentPreviewContainer');
@@ -4431,6 +4511,10 @@ async function loadDocumentPreview(caseId){
     // Add document-specific CSS
     const docStyles = `
       <style>
+        .document-viewer .page {
+          -webkit-text-size-adjust: 100%;
+          text-size-adjust: 100%;
+        }
         .page {
           width: 215.9mm;
           height: 279.4mm;
@@ -4527,7 +4611,7 @@ async function loadDocumentPreview(caseId){
         }
         .page .row {
           display: grid;
-          grid-template-columns: 180px 15px 1fr;
+          grid-template-columns: minmax(0, 180px) 15px minmax(0, 1fr);
           margin-bottom: 5px;
         }
         .page .row span:first-child {
@@ -4535,15 +4619,34 @@ async function loadDocumentPreview(caseId){
         }
         .page table {
           width: 100%;
+          table-layout: fixed;
           border-collapse: collapse;
           margin-top: 8px;
           font-size: 13px;
           border-radius: 0;
           overflow: visible;
         }
-        .page th {
+        .page th,
+        .page td {
           border: 1px solid black;
           padding: 6px;
+          vertical-align: top;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+        }
+        .page table th:nth-child(1),
+        .page table td:nth-child(1) { width: 22%; }
+        .page table th:nth-child(2),
+        .page table td:nth-child(2) { width: 17%; }
+        .page table th:nth-child(3),
+        .page table td:nth-child(3) { width: 8%; }
+        .page table th:nth-child(4),
+        .page table td:nth-child(4) { width: 22%; }
+        .page table th:nth-child(5),
+        .page table td:nth-child(5) { width: 18%; }
+        .page table th:nth-child(6),
+        .page table td:nth-child(6) { width: 13%; }
+        .page th {
           text-align: center;
           background-color: #ebdcdb;
           font-weight: bold;
@@ -4620,16 +4723,7 @@ async function loadDocumentPreview(caseId){
       return `<div class="page-wrap"><div class="page">${part.replace(/{{PAGE_NUMBER}}/g, String(pn)).replace(/{{TOTAL_PAGES}}/g, String(totalPages))}</div></div>`;
     }).join('');
     container.innerHTML = docStyles + pagesHtml;
-
-    // Responsive scaling is handled entirely by the CSS `zoom` media queries
-    // above, so clear any legacy inline transform/wrap-height from previous versions.
-    container.querySelectorAll('.page').forEach(p => {
-      p.style.transform = '';
-      p.style.transformOrigin = '';
-      p.style.margin = '';
-      p.style.marginBottom = '';
-      if (p.parentElement) p.parentElement.style.height = '';
-    });
+    registerReportPageFit(container);
 
     console.log('Document preview rendered successfully');
   } catch (error) {
@@ -4780,6 +4874,10 @@ async function renderDocument(){
 
   const toolbarHtml = `
   <style>
+    #documentContent .page {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
     .page {
       width: 215.9mm;
       min-height: 279.4mm;
@@ -4864,25 +4962,40 @@ async function renderDocument(){
     }
     .row {
       display: grid;
-      grid-template-columns: 180px 15px 1fr;
+      grid-template-columns: minmax(0, 180px) 15px minmax(0, 1fr);
       margin-bottom: 5px;
     }
     .row span:first-child { font-weight: bold; }
     table {
       width: 100%;
+      table-layout: fixed;
       border-collapse: collapse;
       margin-top: 8px;
       font-size: 13px;
     }
-    th {
-      border: 1px solid black;
-      padding: 6px;
-      text-align: center;
-      background-color: #ebdcdb;
-    }
+    th,
     td {
       border: 1px solid black;
       padding: 6px;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    table th:nth-child(1),
+    table td:nth-child(1) { width: 22%; }
+    table th:nth-child(2),
+    table td:nth-child(2) { width: 17%; }
+    table th:nth-child(3),
+    table td:nth-child(3) { width: 8%; }
+    table th:nth-child(4),
+    table td:nth-child(4) { width: 22%; }
+    table th:nth-child(5),
+    table td:nth-child(5) { width: 18%; }
+    table th:nth-child(6),
+    table td:nth-child(6) { width: 13%; }
+    th {
+      text-align: center;
+      background-color: #ebdcdb;
     }
     .paragraph {
       margin-top: 5px;
@@ -4945,7 +5058,9 @@ async function renderDocument(){
       .sidebar, .mobile-header, .page-head, .toolbar-row, header { display: none !important; }
       .main { padding: 0; max-width: none; margin: 0; }
       body { background: #fff; }
-      .page { height: 279.4mm !important; min-height: 0 !important; margin: 0 !important; padding: 12.7mm 25.4mm 32.4mm 25.4mm !important; box-shadow: none !important; overflow: hidden !important; zoom: 1 !important; page-break-after: always; break-after: page; }
+      .page-wrap { display: block !important; width: auto !important; height: auto !important; margin: 0 !important; page-break-after: always; break-after: page; }
+      .page-wrap:last-child { page-break-after: avoid; break-after: avoid; }
+      .page { height: 279.4mm !important; min-height: 0 !important; margin: 0 !important; padding: 12.7mm 25.4mm 32.4mm 25.4mm !important; box-shadow: none !important; overflow: hidden !important; zoom: 1 !important; transform: none !important; page-break-after: always; break-after: page; }
       .page:last-child { page-break-after: avoid; break-after: avoid; }
     }
   </style>
@@ -5032,13 +5147,13 @@ async function renderDocument(){
     const totalPhysicalPages = pageParts.length;
     const pagesHtml = pageParts.map((part, i) => {
       const pn = i + 1;
-      return `<div class="page">${part.replace(/{{PAGE_NUMBER}}/g, String(pn)).replace(/{{TOTAL_PAGES}}/g, String(totalPhysicalPages))}</div>`;
+      return `<div class="page-wrap"><div class="page">${part.replace(/{{PAGE_NUMBER}}/g, String(pn)).replace(/{{TOTAL_PAGES}}/g, String(totalPhysicalPages))}</div></div>`;
     }).join("");
 
     container.innerHTML = toolbarHtml + pagesHtml;
+    registerReportPageFit(container);
   } catch (error) {
     console.error('Error loading template:', error);
     container.innerHTML = `<div class="empty">Error loading document template. Please try again.</div>`;
   }
 }
-
