@@ -598,7 +598,7 @@
                                 @if($case->abuse_type)
                                     @php
                                         $abuseType = strtolower($case->abuse_type);
-                                        $typeColor = '#' . \App\Http\Controllers\AdminController::getAbuseTypeColor($abuseType);
+                                        $typeColor = '#' . \App\Http\Controllers\Wcpu\AdminController::getAbuseTypeColor($abuseType);
                                     @endphp
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" style="background-color: {{ $typeColor }}20; color: {{ $typeColor }};">
                                         {{ ucfirst($case->abuse_type) }}
@@ -610,7 +610,7 @@
                             <td class="px-6 py-4 {{ auth()->user()?->isDepartmentAdmin() || auth()->user()?->position === 'Desk Officer' ? 'text-center' : '' }}">
                                 @if($case->status)
                                     @php
-                                        $statusColor = '#' . \App\Http\Controllers\AdminController::getStatusColor($case->status);
+                                        $statusColor = '#' . \App\Http\Controllers\Wcpu\AdminController::getStatusColor($case->status);
                                     @endphp
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium text-white" style="background-color: {{ $statusColor }};">
                                         {{ ($case->status ?? '') === 'Case closed' ? 'Case Closed' : $case->status }}
@@ -704,7 +704,7 @@
                             <p class="text-xs text-gray-500">{{ $case->date_reported ? \Carbon\Carbon::parse($case->date_reported)->format('M d, Y') : 'N/A' }}</p>
                         </div>
                         @php $mobileStatus = $case->status ?: 'Pending'; @endphp
-                        @php $statusColor = '#' . \App\Http\Controllers\AdminController::getStatusColor($mobileStatus); @endphp
+                        @php $statusColor = '#' . \App\Http\Controllers\Wcpu\AdminController::getStatusColor($mobileStatus); @endphp
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-white flex-shrink-0" style="background-color: {{ $statusColor }};">
                             {{ $mobileStatus }}
                         </span>
@@ -737,7 +737,7 @@
                             'buttonClass' => $isBcpcDeskOfficer ? 'w-10 h-10 border-[#C41E3A] bg-[#C41E3A] text-white hover:bg-[#A01830]' : ($isCaseDeskOfficer ? 'w-10 h-10 border-amber-500 text-amber-700 hover:bg-amber-50' : null),
                         ])
                     </div>
-                    @php $typeColor = '#' . \App\Http\Controllers\AdminController::getAbuseTypeColor(strtolower($case->abuse_type ?? '')); @endphp
+                    @php $typeColor = '#' . \App\Http\Controllers\Wcpu\AdminController::getAbuseTypeColor(strtolower($case->abuse_type ?? '')); @endphp
                     <span class="{{ $case->abuse_type ? 'inline-flex' : 'hidden' }} items-center px-2 py-0.5 rounded-full text-xs font-medium" style="background-color: {{ $typeColor }}20; color: {{ $typeColor }};">
                         {{ ucfirst($case->abuse_type ?? '') }}
                     </span>

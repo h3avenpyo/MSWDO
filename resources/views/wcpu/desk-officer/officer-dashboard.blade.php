@@ -376,7 +376,7 @@
                             <div class="flex items-center gap-2 mt-1">
                                 @php
                                     $abuseType = strtolower($case->abuse_type ?? 'N/A');
-                                    $typeColor = '#' . \App\Http\Controllers\AdminController::getAbuseTypeColor($abuseType);
+                                    $typeColor = '#' . \App\Http\Controllers\Wcpu\AdminController::getAbuseTypeColor($abuseType);
                                 @endphp
                                 <span class="px-2 py-0.5 rounded-full text-[11px] font-medium border"
                                       style="background-color: {{ $typeColor }}15; color: {{ $typeColor }}; border-color: {{ $typeColor }}40;">
@@ -386,7 +386,7 @@
                         </div>
                         <div>
                             @php
-                                $statusColor = $case->status ? '#' . \App\Http\Controllers\AdminController::getStatusColor($case->status) : '#6c757d';
+                                $statusColor = $case->status ? '#' . \App\Http\Controllers\Wcpu\AdminController::getStatusColor($case->status) : '#6c757d';
                             @endphp
                             <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full text-white inline-block shadow-sm"
                                   style="background-color: {{ $statusColor }};">

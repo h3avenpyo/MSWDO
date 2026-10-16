@@ -64,7 +64,7 @@
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-gray-700 font-medium mb-2">Address <span class="text-red-500">*</span></label>
-                            <input type="text" name="referred_by_address" value="{{ old('referred_by_address', \App\Services\MultiroleReferralFields::officeAddress(Auth::user())) }}" class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-700" required readonly>
+                            <input type="text" name="referred_by_address" value="{{ old('referred_by_address', \App\Services\Wcpu\MultiroleReferralFields::officeAddress(Auth::user())) }}" class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-700" required readonly>
                         </div>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Contact Number</label>
@@ -132,7 +132,7 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Reason for Referral <span class="text-red-500">*</span></label>
-                            <textarea name="reason_for_referral" rows="4" class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-700" required readonly>{{ old('reason_for_referral', \App\Services\MultiroleReferralFields::reason($case)) }}</textarea>
+                            <textarea name="reason_for_referral" rows="4" class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-700" required readonly>{{ old('reason_for_referral', \App\Services\Wcpu\MultiroleReferralFields::reason($case)) }}</textarea>
                         </div>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Services Requested <span class="text-red-500">*</span></label>

@@ -25,7 +25,7 @@ class ReferralInfoController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:report_recipients,email',
+            'email' => ['required', 'email', Rule::unique(ReportRecipient::class, 'email')],
             'role' => auth()->user()->isDepartmentAdmin()
                 ? ['required', 'string', Rule::in(['BCPC - Staff', 'SWD - Staff', 'SWD - Focal', 'BCPC - Focal'])]
                 : 'nullable|string|max:255',
@@ -64,7 +64,7 @@ class ReferralInfoController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:report_recipients,email,' . $id,
+            'email' => ['required', 'email', Rule::unique(ReportRecipient::class, 'email')->ignore($recipient->getKey())],
             'role' => auth()->user()->isDepartmentAdmin()
                 ? ['nullable', 'string', Rule::in(['BCPC - Staff', 'SWD - Staff', 'SWD - Focal', 'BCPC - Focal'])]
                 : 'nullable|string|max:255',
