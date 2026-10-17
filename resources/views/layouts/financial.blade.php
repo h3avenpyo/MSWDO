@@ -6,6 +6,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Financial Assistance Module - MSWDO Admin')</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/IserveIcon.png') }}">
+
     <!-- Google Fonts: Public Sans & Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +22,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- External Module Stylesheet -->
-    <link href="{{ asset('css/financialstep1.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/financialstep1.css') }}?v={{ filemtime(public_path('css/financialstep1.css')) }}" rel="stylesheet">
     <link href="{{ asset('css/responsive.css') }}" rel="stylesheet">
     @yield('page-styles')
 

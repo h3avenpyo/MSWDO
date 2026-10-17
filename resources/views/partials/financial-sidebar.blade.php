@@ -1,7 +1,7 @@
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <div class="sidebar-brand-wrapper" onclick="handleBrandClick()" title="Financial Assistance">
-            <i class="fas fa-hand-holding-usd sidebar-brand-icon"></i>
+            <img src="{{ asset('images/IserveIcon.png') }}" class="sidebar-brand-logo" alt="iSERVE">
             <span class="sidebar-brand-text">Financial Assistance</span>
         </div>
         <button type="button" class="sidebar-toggle-btn" id="sidebarCollapseBtn" onclick="toggleSidebarCollapse()" aria-label="Collapse sidebar" title="Collapse sidebar">

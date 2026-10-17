@@ -119,18 +119,6 @@
                         <span>Contact</span>
                     </a>
                 </li>
-                {{-- Login hidden on mobile/tablet; available in the desktop navbar --}}
-                {{--
-                <li>
-                    <hr class="mobile-menu-divider">
-                </li>
-                <li>
-                    <a href="/admin">
-                        <i data-lucide="log-in" style="width:20px;height:20px"></i>
-                        <span>Login</span>
-                    </a>
-                </li>
-                --}}
             </ul>
         </div>
     </header>
@@ -278,7 +266,8 @@
                             </div>
                             <h3 class="font-bold text-lg sm:text-xl text-[#b11116]">Women & Children Protection</h3>
                             <p class="text-slate-600 text-xs sm:text-sm mt-3 leading-relaxed">
-                                Protection services, incident reporting, VAWC and BCPC child monitoring, case management, and crisis intervention.
+                                Protection services, incident reporting, VAWC and BCPC child monitoring, case
+                                management, and crisis intervention.
                             </p>
                         </div>
                     </div>
@@ -296,7 +285,8 @@
                             </div>
                             <h3 class="font-bold text-lg sm:text-xl text-[#b11116]">Senior Citizens</h3>
                             <p class="text-slate-600 text-xs sm:text-sm mt-3 leading-relaxed">
-                                Senior citizen registration, ID card issuance, and birthday cash gift benefits and payouts for eligible Silangueño senior citizens.
+                                Senior citizen registration, ID card issuance, and birthday cash gift benefits and
+                                payouts for eligible Silangueño senior citizens.
                             </p>
                         </div>
                     </div>
@@ -306,7 +296,8 @@
                     style="background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);">
                     <h2 class="text-2xl sm:text-3xl font-bold text-white">Need Social Assistance?</h2>
                     <p class="text-white/90 mt-3 sm:mt-4 text-sm sm:text-base max-w-2xl mx-auto">
-                        Our dedicated team is ready to assist you with your concerns. Select your required social service
+                        Our dedicated team is ready to assist you with your concerns. Select your required social
+                        service
                         below to proceed.
                     </p>
                     <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
@@ -795,7 +786,9 @@
     <!-- JAVASCRIPT -->
     <!-- ===================================== -->
     <script src="{{ asset('js/welcome.js') }}"></script>
-<script src="{{ asset('js/contact-number-validation.js') }}?v={{ filemtime(public_path('js/contact-number-validation.js')) }}"></script>
+    <script
+        src="{{ asset('js/contact-number-validation.js') }}?v={{ filemtime(public_path('js/contact-number-validation.js')) }}">
+    </script>
 </body>
 
 </html>
