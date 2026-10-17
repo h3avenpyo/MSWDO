@@ -38,6 +38,7 @@ class DepartmentAdministratorRegistrationTest extends TestCase
             $table->string('phone_number')->nullable();
             $table->string('position');
             $table->string('department');
+            $table->string('barangay')->nullable();
             $table->boolean('is_active');
             $table->boolean('bcpc_is_active');
             $table->boolean('vawc_is_active');
@@ -62,6 +63,7 @@ class DepartmentAdministratorRegistrationTest extends TestCase
             $user = User::where('email', $email)->firstOrFail();
             $this->assertSame('Administrator', $user->position);
             $this->assertSame($department, $user->department);
+            $this->assertNull($user->barangay);
             $this->assertTrue($department === 'BCPC' ? $user->isBcpcAdmin() : $user->isVawcAdmin());
             $this->assertTrue(Hash::check('Password123!', $user->password));
         }

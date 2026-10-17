@@ -13,6 +13,7 @@ use App\Services\DashboardRedirector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -51,8 +52,11 @@ class AuthController extends Controller
         }
 
         // 2. Attempt authentication against WCPU accounts (email or username)
-        $wcpuUser = WcpuUser::where('email', $login)
-            ->orWhere('username', $login)
+        $wcpuUserQuery = WcpuUser::where('email', $login);
+        if (Schema::connection('wcpu')->hasColumn('users', 'username')) {
+            $wcpuUserQuery->orWhere('username', $login);
+        }
+        $wcpuUser = $wcpuUserQuery
             ->first();
 
         if ($wcpuUser) {

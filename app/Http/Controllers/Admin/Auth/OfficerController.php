@@ -202,6 +202,7 @@ class OfficerController extends Controller
                 'phone_number' => $request->phone,
                 'position' => 'Administrator',
                 'department' => $request->role === 'bcpc_admin' ? 'BCPC' : 'VAWC',
+                'barangay' => null,
                 'is_active' => $request->status !== 'inactive',
                 'bcpc_is_active' => $request->role === 'bcpc_admin',
                 'vawc_is_active' => $request->role === 'swd_admin',

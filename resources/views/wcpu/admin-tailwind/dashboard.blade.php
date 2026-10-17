@@ -65,7 +65,7 @@
         .admin-dashboard-statistic-content p:first-child { font-size: 1.5rem; }
     }
 
-    /* Dashboard mobile navigation opens as a vertical menu below the top bar. */
+    /* Dashboard mobile navigation opens as a full-width drawer directly below the header, keeping the top navbar visible. */
     @media (max-width: 63.9375rem) {
         body.admin-dashboard-mobile-nav #mobileTopBar { display: none !important; }
         body.admin-dashboard-mobile-nav #mobileMenuToggle { display: none !important; }
@@ -104,6 +104,10 @@
             max-width: 100% !important;
         }
         body.admin-dashboard-mobile-nav #sidebar .sidebar-header { display: none !important; }
+        html body.portal-ui.admin-dashboard-mobile-nav #sidebar {
+            background: #C41E3A !important;
+            background-image: none !important;
+        }
         body.admin-dashboard-mobile-nav #sidebar .sidebar-text {
             opacity: 1 !important;
             max-width: none !important;
@@ -117,6 +121,26 @@
         body.admin-dashboard-mobile-nav #sidebar .sidebar-link {
             justify-content: flex-start !important;
             gap: .75rem !important;
+        }
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar nav :is(a, button),
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-link {
+            background: #C41E3A !important;
+            color: #ffffff !important;
+        }
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar nav :is(a, button) :is(i, svg, span),
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-link :is(i, svg, span) {
+            color: #ffffff !important;
+        }
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar nav :is(a, button):hover,
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-link:hover {
+            background: #99172E !important;
+            color: #ffffff !important;
+        }
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-link:is(.bg-purple-600, .bg-purple-700\/70),
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar nav [x-show] > :is(a, button).bg-purple-600 {
+            background: #99172E !important;
+            color: #ffffff !important;
+            box-shadow: inset 3px 0 0 #ffffff !important;
         }
         body.admin-dashboard-mobile-nav #sidebar #sidebarCloseBtn {
             display: none !important;
@@ -151,10 +175,18 @@
             height: 2.5rem;
             align-items: center;
             justify-content: center;
-            border: 1px solid #e5e7eb;
-            border-radius: .625rem;
-            background: #ffffff;
-            color: #C41E3A;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #ffffff;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header {
+            background: #C41E3A !important;
+            border-bottom-color: #99172E !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-of-type :is(h1, h2, h3, p) {
+            color: #ffffff !important;
         }
         body.admin-dashboard-mobile-nav #admin-dashboard-header h2,
         body.admin-dashboard-mobile-nav #admin-dashboard-header p { min-width: 0; }

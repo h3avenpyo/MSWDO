@@ -1,0 +1,2791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="csrf-token" content="">
+    <title>Victim and Perpetrator Profiles</title>
+    <link rel="icon" href="http://localhost/images/iserve_logo.jpg" type="image/jpeg">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Vite / Tailwind CSS -->
+            <script type="module" src="http://localhost:5173/@vite/client"></script><link rel="stylesheet" href="http://localhost:5173/resources/css/app.css" /><script type="module" src="http://localhost:5173/resources/js/app.js"></script>
+        
+        <script>
+        try {
+            document.documentElement.classList.toggle('admin-sidebar-collapsed', localStorage.getItem("swdAdminSidebarCollapsed") === 'true');
+        } catch (e) {}
+    </script>
+        <style>
+    .guardian-dialog::backdrop {
+        background: rgba(15, 23, 42, 0.65) !important;
+        backdrop-filter: blur(4px) !important;
+    }
+        html { scrollbar-gutter: stable; }
+    body.swal2-shown { padding-right: 0 !important; }
+        @media (max-width: 47.9375rem) {
+        .case-profiles-table-view { display: none !important; }
+        .case-profiles-mobile-cards { display: grid !important; gap: .75rem; }
+        .case-profiles-mobile-cards .case-profile-card { min-width: 0; padding: 1rem; }
+        .case-profiles-mobile-cards .case-profile-card-action {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 3rem !important;
+            min-width: 3rem !important;
+            height: 3rem !important;
+            min-height: 3rem !important;
+            padding: 0 !important;
+        }
+        #case-profiles-content {
+            min-width: 0;
+            padding-top: max(1rem, env(safe-area-inset-top)) !important;
+            padding-right: max(1rem, env(safe-area-inset-right)) !important;
+            padding-bottom: max(1.5rem, calc(1rem + env(safe-area-inset-bottom))) !important;
+            padding-left: max(1rem, env(safe-area-inset-left)) !important;
+        }
+        #case-profiles-filter-form { gap: .75rem; }
+        .case-profiles-age-department-row { width: 100%; }
+        .case-profiles-age-department-row:has(.case-profiles-department-switcher) {
+            display: block;
+        }
+        .case-profiles-department-switcher {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: .5rem;
+            min-width: 0;
+        }
+        .case-profiles-department-switcher > a,
+        #case-profiles-filter-form :is(input, button, a) {
+            min-height: 3rem;
+        }
+        .case-profiles-department-switcher > a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: .5rem !important;
+            text-align: center;
+        }
+        .case-profiles-age-department-row label { min-width: 0; }
+        .case-profiles-age-department-row input { width: 100% !important; }
+    }
+        @media (max-width: 47.9375rem) {
+        .case-profiles-mobile-cards {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+        }
+        .case-profiles-mobile-cards .case-profile-card {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .case-profiles-mobile-cards .case-profile-card > div:first-child,
+        .case-profiles-mobile-cards .case-profile-card > div:last-child {
+            min-width: 0;
+        }
+        .case-profiles-mobile-cards .case-profile-card :is(p, a, span) {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .case-profiles-mobile-cards .case-profile-card > div:first-child > div:first-child,
+        .case-profiles-mobile-cards .case-profile-card > div:last-child > span {
+            min-width: 0;
+        }
+        .case-profiles-mobile-cards .case-profile-card > div:last-child {
+            gap: .75rem;
+        }
+        .case-profiles-mobile-cards .case-profile-card-action {
+            flex: 0 0 3rem;
+        }
+    }
+        @media (min-width: 37.5rem) and (max-width: 79.9375rem) and (orientation: portrait) {
+        .case-profiles-table-view .case-profiles-table {
+            width: 100% !important;
+            min-width: 0 !important;
+            table-layout: fixed;
+        }
+        .case-profiles-table-view .case-profiles-table :is(th, td) {
+            white-space: normal !important;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .case-profiles-table-view .case-profiles-table :is(th, td):nth-child(3) { width: 28%; }
+        .case-profiles-table-view .case-profiles-table :is(th, td):nth-child(6) { width: 17%; }
+        .case-profiles-table-view .case-profiles-table td:nth-child(6) > div { min-width: 0; }
+    }
+    
+    /* Dashboard-style red navbar for mobile/tablet, matching /admin-dashboard.
+       The shared layouts keep their mobile top bar visible up to 80rem, so hide
+       it across that whole range (otherwise its recolored dark red shows). */
+    @media (max-width: 80rem) {
+        html body.portal-ui #mobileTopBar {
+            display: none !important;
+        }
+        html body.portal-ui #mainContent > header.sticky {
+            background: #C41E3A !important;
+            border-bottom-color: #99172E !important;
+        }
+        html body.portal-ui #mainContent > header > div > div:first-of-type :is(h1, h2, h3) {
+            color: #ffffff !important;
+        }
+        html body.portal-ui #mainContent > header > div > div:first-of-type p {
+            color: rgba(255, 255, 255, .85) !important;
+        }
+        html body.portal-ui #mainContent > header :is(#mobileMenuToggle, #pageMobileMenuToggle) {
+            background: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            color: #ffffff !important;
+        }
+        html body.portal-ui #mainContent > header :is(#mobileMenuToggle, #pageMobileMenuToggle) > i {
+            color: inherit !important;
+        }
+    }
+
+    /* Vertical dropdown burger menu, matching /admin-dashboard. */
+    @media (max-width: 63.9375rem) {
+        html body.portal-ui.case-profiles-mobile-nav #sidebar {
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: auto !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: calc(100vh - 60px) !important;
+            overflow-y: auto !important;
+            z-index: 999 !important;
+            border-radius: 0 0 14px 14px !important;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, .22) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(-8px) !important;
+            transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+            background: #C41E3A !important;
+            background-image: none !important;
+        }
+        html body.portal-ui.case-profiles-mobile-nav #sidebar.sidebar-open {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
+        }
+        html body.portal-ui.case-profiles-mobile-nav #sidebar.sidebar-collapsed,
+        html body.portal-ui.case-profiles-mobile-nav #sidebar.sidebar-collapsed-init {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+        }
+        html body.portal-ui.case-profiles-mobile-nav #sidebar .sidebar-header {
+            display: none !important;
+        }
+        html body.portal-ui.case-profiles-mobile-nav #sidebar .sidebar-text {
+            opacity: 1 !important;
+            max-width: none !important;
+        }
+        html body.portal-ui.case-profiles-mobile-nav #sidebar .sidebar-menu {
+            flex: 0 1 auto;
+            min-height: 0;
+            padding: .5rem !important;
+            overflow-y: auto !important;
+        }
+        html body.portal-ui.case-profiles-mobile-nav #sidebar .sidebar-link {
+            justify-content: flex-start !important;
+            gap: .75rem !important;
+        }
+        html body.portal-ui.case-profiles-mobile-nav #sidebar #sidebarCloseBtn {
+            display: none !important;
+        }
+    }
+</style>
+    <link rel="stylesheet" href="http://localhost/css/admin-pagination.css">
+    <link rel="stylesheet" href="http://localhost/css/table-action-controls.css?v=1792211933">
+    <link rel="stylesheet" href="http://localhost/css/portal-theme.css?v=1792211933">
+    
+    <style>
+        /* Hide elements with x-cloak until Alpine.js initializes */
+        [x-cloak] { display: none !important; }
+        /* Unify colored primary actions across BCPC/SWD admin pages. Status
+           badges and informational surfaces are excluded by targeting controls. */
+        .portal-ui #mainContent :is(button, a):is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]):not(:disabled):not([aria-disabled="true"]) {
+            background-color: #C41E3A !important;
+            border-color: #C41E3A !important;
+            color: #ffffff !important;
+        }
+        .portal-ui #mainContent :is(button, a):is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]):not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active) {
+            background-color: #A01830 !important;
+            border-color: #A01830 !important;
+            color: #ffffff !important;
+        }
+                html, body, #mainContent { scrollbar-width: none; }
+        html::-webkit-scrollbar, body::-webkit-scrollbar, #mainContent::-webkit-scrollbar { display: none; }
+        .portal-ui.swd-admin-header-theme #mainContent :is(table.archived-static-table, .archived-quarterly-table-view > table) {
+            table-layout: auto !important;
+            width: 100% !important;
+        }
+        .portal-ui.swd-admin-header-theme #mainContent .archived-quarterly-table-view > table > colgroup > col:last-child {
+            width: 1% !important;
+        }
+        .portal-ui.swd-admin-header-theme #mainContent :is(table.archived-static-table, .archived-quarterly-table-view > table) > :is(thead, tbody) > tr > :is(th, td):last-child:not([colspan]) {
+            width: 1% !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            padding-inline: .75rem !important;
+            white-space: nowrap !important;
+        }
+        .portal-ui.swd-admin-header-theme #mainContent :is(table.archived-static-table, .archived-quarterly-table-view > table) > tbody > tr > td:last-child:not([colspan]) > div {
+            display: inline-flex !important;
+            width: auto !important;
+            min-width: max-content !important;
+            flex-wrap: nowrap !important;
+        }
+                /* Native disabled controls in BCPC and SWD Admin use the shared muted
+           red state. Actionable deactivate/archive controls do not match :disabled. */
+        .portal-ui #mainContent button:disabled,
+        .portal-ui #mainContent input[type="button"]:disabled,
+        .portal-ui #mainContent input[type="submit"]:disabled,
+        .portal-ui #mainContent [role="button"][aria-disabled="true"],
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button) {
+            background-color: #FEE2E2 !important;
+            border-color: #FCA5A5 !important;
+            color: #991B1B !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+            transition: none !important;
+        }
+        .portal-ui #mainContent button:disabled:is(:hover, :focus, :active),
+        .portal-ui #mainContent input[type="button"]:disabled:is(:hover, :focus, :active),
+        .portal-ui #mainContent input[type="submit"]:disabled:is(:hover, :focus, :active),
+        .portal-ui #mainContent [role="button"][aria-disabled="true"]:is(:hover, :focus, :active),
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button):is(:hover, :focus, :active) {
+            background-color: #FEE2E2 !important;
+            border-color: #FCA5A5 !important;
+            color: #991B1B !important;
+            box-shadow: 0 2px 6px rgba(196, 30, 58, .12) !important;
+            transform: none !important;
+            filter: none !important;
+        }
+        .portal-ui #mainContent button:disabled > :is(i, svg),
+        .portal-ui #mainContent button:disabled > :is(span, .case-card-action-label) > :is(i, svg),
+        .portal-ui #mainContent [role="button"][aria-disabled="true"] > :is(i, svg),
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button) > :is(i, svg) {
+            color: #B91C1C !important;
+            stroke: currentColor;
+        }
+        .portal-ui #mainContent button:disabled,
+        .portal-ui #mainContent [role="button"][aria-disabled="true"],
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button) {
+            box-shadow: 0 2px 6px rgba(196, 30, 58, .12) !important;
+            opacity: 1 !important;
+        }
+                        /* SWD Admin uses the standard red treatment for every existing View action. */
+        .portal-ui #mainContent :is(a, button)[data-action="view"],
+        .portal-ui #mainContent .table-action-control[title^="View"],
+        .portal-ui #mainContent :is(a, button)[title^="View"] {
+            background-color: #C41E3A !important;
+            border-color: #C41E3A !important;
+            color: #ffffff !important;
+        }
+        .portal-ui #mainContent :is(a, button)[data-action="view"]:hover,
+        .portal-ui #mainContent .table-action-control[title^="View"]:hover,
+        .portal-ui #mainContent :is(a, button)[title^="View"]:hover {
+            background-color: #A01830 !important;
+            border-color: #A01830 !important;
+        }
+
+        /* Keep SWD Admin Download and Print actions in the same red action palette. */
+        .portal-ui #mainContent :is(a, button)[data-action="download"],
+        .portal-ui #mainContent :is(a, button)[data-action="print"],
+        .portal-ui #mainContent .table-action-control[title^="Download"],
+        .portal-ui #mainContent .table-action-control[title^="Print"],
+        .portal-ui #mainContent :is(a, button)[title^="Download"],
+        .portal-ui #mainContent :is(a, button)[title^="Print"] {
+            background-color: #C41E3A !important;
+            border-color: #C41E3A !important;
+            color: #ffffff !important;
+        }
+        .portal-ui #mainContent :is(a, button)[data-action="download"]:hover,
+        .portal-ui #mainContent :is(a, button)[data-action="print"]:hover,
+        .portal-ui #mainContent .table-action-control[title^="Download"]:hover,
+        .portal-ui #mainContent .table-action-control[title^="Print"]:hover,
+        .portal-ui #mainContent :is(a, button)[title^="Download"]:hover,
+        .portal-ui #mainContent :is(a, button)[title^="Print"]:hover {
+            background-color: #A01830 !important;
+            border-color: #A01830 !important;
+        }
+
+        /* Prevent SWD Admin Edit and Archive actions from flashing white while interacted with. */
+        .portal-ui #mainContent :is(a, button)[data-action="edit"]:not(:disabled):not([aria-disabled="true"]),
+        .portal-ui #mainContent :is(a, button)[data-action="archive"]:not(:disabled):not([aria-disabled="true"]),
+        .portal-ui #mainContent :is(a, button)[title^="Edit"]:not(:disabled):not([aria-disabled="true"]),
+        .portal-ui #mainContent :is(a, button)[title^="Archive"]:not(:disabled):not([aria-disabled="true"]) {
+            background-color: #C41E3A !important;
+            border-color: #C41E3A !important;
+            color: #ffffff !important;
+            transition: none !important;
+        }
+        .portal-ui #mainContent :is(a, button)[data-action="edit"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active),
+        .portal-ui #mainContent :is(a, button)[data-action="archive"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active),
+        .portal-ui #mainContent :is(a, button)[title^="Edit"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active),
+        .portal-ui #mainContent :is(a, button)[title^="Archive"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active) {
+            background-color: #A01830 !important;
+            border-color: #A01830 !important;
+            color: #ffffff !important;
+        }
+                        #sidebar [x-show] > a, #sidebar [x-show] > button { font-family: inherit; font-size: .875rem; line-height: 1.25rem; font-weight: 500; }
+        #sidebar [x-show] > a > i, #sidebar [x-show] > button > i { font-size: .875rem; width: 1rem; text-align: center; flex-shrink: 0; }
+        @media (min-width: 64rem) {
+            #sidebar.sidebar-collapsed [x-show],
+            #sidebar.sidebar-collapsed-init [x-show] {
+                width: 100% !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            #sidebar.sidebar-collapsed [x-show] > :is(a, button),
+            #sidebar.sidebar-collapsed-init [x-show] > :is(a, button) {
+                justify-content: center !important;
+                gap: 0 !important;
+                width: 100% !important;
+                min-height: 3rem !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            #sidebar.sidebar-collapsed [x-show] > :is(a, button).bg-purple-600,
+            #sidebar.sidebar-collapsed-init [x-show] > :is(a, button).bg-purple-600 {
+                background-color: #C41E3A !important;
+                box-shadow: none !important;
+            }
+        }
+                        
+        /* SweetAlert2 high z-index override */
+        .swal2-container-high-z { z-index: 9999 !important; }
+        .swal2-container.swal2-backdrop-show { z-index: 9999 !important; }
+        
+        /* Custom scrollbar for sidebar */
+        .sidebar-menu::-webkit-scrollbar { width: 4px; }
+        .sidebar-menu::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); }
+        .sidebar-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px; }
+        .sidebar-menu::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
+        
+        /* Smooth sidebar transition - mobile slide + fade */
+        @media (max-width: 1023px) {
+            #sidebar {
+                opacity: 0;
+                transform: translateX(-100%);
+                transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                            opacity 0.3s ease-out;
+            }
+            
+            #sidebar.sidebar-open {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Desktop sidebar transition */
+        @media (min-width: 1024px) {
+            #sidebar {
+                transition: width 0.3s ease;
+            }
+        }
+        
+        /* Mobile close button - hidden by default, shown when sidebar is open */
+        #sidebarCloseBtn {
+            opacity: 0;
+            transform: scale(0.5) translateX(-10px);
+            transition: opacity 0.25s ease 0.2s, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s;
+            pointer-events: none;
+        }
+        
+        #sidebar.sidebar-open #sidebarCloseBtn {
+            opacity: 1;
+            transform: scale(1) translateX(0);
+            pointer-events: auto;
+        }
+        
+        /* Main content transition */
+        .sidebar-transition {
+            transition: margin-left 0.3s ease;
+        }
+        
+        /* Sidebar text - smooth fade */
+        .sidebar-text {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: opacity 0.15s ease, max-width 0.3s ease;
+            opacity: 1;
+            max-width: 200px;
+        }
+        
+        /* Sidebar link - fixed icon position from left edge */
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        
+        .sidebar-link i {
+            flex-shrink: 0;
+            width: 1.25rem;
+            min-width: 1.25rem;
+            text-align: center;
+        }
+        
+        /* Sidebar header */
+        .sidebar-header {
+            min-height: 5.5rem; /* Keep consistent height */
+            padding-left: 0.75rem !important; /* Fixed left padding */
+        }
+        
+        .sidebar-header > div {
+            justify-content: flex-start !important;
+        }
+        
+        .sidebar-header img {
+            flex-shrink: 0;
+        }
+        
+        /* Sidebar menu fixed padding */
+        .sidebar-menu {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+        #sidebar > nav.sidebar-menu {
+            overflow-x: hidden !important;
+        }
+        
+        /* Sidebar collapsed state - desktop only */
+        @media (min-width: 1024px) {
+            #sidebar.sidebar-collapsed {
+                width: 4.5rem;
+            }
+            
+            /* Hide text smoothly */
+            #sidebar.sidebar-collapsed .sidebar-text {
+                opacity: 0;
+                max-width: 0;
+                margin-left: 0;
+            }
+            
+            /* Header - same padding as expanded */
+            #sidebar.sidebar-collapsed .sidebar-header {
+                padding-left: 0.75rem !important;
+                padding-right: 0.5rem !important;
+                min-height: 5.5rem;
+            }
+            
+            #sidebar.sidebar-collapsed .sidebar-header > div {
+                justify-content: flex-start !important;
+                gap: 0;
+            }
+            
+            /* Keep header icon same size */
+            #sidebar.sidebar-collapsed .sidebar-header img {
+                width: 3rem;
+                height: 3rem;
+            }
+            
+            /* Menu - same padding as expanded */
+            #sidebar.sidebar-collapsed .sidebar-menu {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+            
+            /* Links - same left padding as expanded */
+            #sidebar.sidebar-collapsed .sidebar-link {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+            
+            /* Footer - same padding */
+            #sidebar.sidebar-collapsed > div:last-of-type {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+            
+            /* Toggle button position when collapsed */
+            #sidebar.sidebar-collapsed ~ #sidebarToggleBtn {
+                left: calc(4.5rem - 0.75rem);
+            }
+            
+            #sidebar.sidebar-collapsed ~ #sidebarToggleBtn i {
+                transform: rotate(180deg);
+            }
+            
+            /* Main content margin when collapsed */
+            #sidebar.sidebar-collapsed ~ #mainContent {
+                margin-left: 4.5rem;
+            }
+        }
+        
+        /* Floating sidebar toggle button - on edge of sidebar */
+        #sidebarToggleBtn {
+            position: fixed;
+            top: calc(1.25rem + 1.5rem); /* p-5 padding + half of w-12 logo */
+            left: calc(18rem - 0.75rem); /* sidebar width minus half button width */
+            transform: translateY(-50%);
+            z-index: 50;
+            transition: left 0.3s ease;
+        }
+        
+        #sidebarToggleBtn i {
+            transition: transform 0.3s ease;
+        }
+        
+        /* Initial collapsed state - applied via JS before render */
+        #sidebar.sidebar-collapsed-init {
+            width: 4.5rem !important;
+            transition: none !important;
+        }
+        #sidebar.sidebar-collapsed-init .sidebar-text {
+            opacity: 0 !important;
+            max-width: 0 !important;
+        }
+        #sidebar.sidebar-collapsed-init ~ #sidebarToggleBtn {
+            left: calc(4.5rem - 0.75rem) !important;
+            transition: none !important;
+        }
+        #sidebar.sidebar-collapsed-init ~ #sidebarToggleBtn i {
+            transform: rotate(180deg) !important;
+        }
+        #sidebar.sidebar-collapsed-init ~ #mainContent {
+            margin-left: 4.5rem !important;
+            transition: none !important;
+        }
+
+        /* Keep the only phone/tablet sidebar entry point visible. */
+        @media (max-width: 80rem) {
+            #mobileTopBar { display: flex !important; }
+            #mobileMenuToggle {
+                display: flex !important;
+                flex: 0 0 2.25rem;
+                width: 2.25rem;
+                height: 2.25rem;
+                align-items: center;
+                justify-content: center;
+                visibility: visible !important;
+            }
+        }
+
+        /*
+         * Tablet navigation (600px–1280px): retain one stable content column
+         * and use the existing mobile menu controls as an off-canvas drawer.
+         * rem/clamp values keep the layout proportional across portrait and
+         * landscape Android tablets.
+         */
+        @media (min-width: 37.5rem) and (max-width: 80rem) {
+            .department-admin-tablet-role-badge { display: none !important; }
+            #mobileTopBar {
+                display: flex !important;
+            }
+
+            #sidebarOverlay {
+                display: block !important;
+            }
+
+            #sidebar {
+                inset: 0 auto 0 0 !important;
+                width: min(18rem, 82vw) !important;
+                min-width: min(18rem, 82vw) !important;
+                max-width: 82vw !important;
+                height: auto !important;
+                max-height: none !important;
+                opacity: 0;
+                transform: translateX(-100%) !important;
+                transition: transform .3s ease, opacity .2s ease !important;
+            }
+
+            /* A desktop preference must not reduce the tablet drawer. */
+            #sidebar.sidebar-collapsed,
+            #sidebar.sidebar-collapsed-init {
+                width: min(18rem, 82vw) !important;
+                min-width: min(18rem, 82vw) !important;
+                max-width: 82vw !important;
+            }
+
+            #sidebar.sidebar-collapsed .sidebar-text,
+            #sidebar.sidebar-collapsed-init .sidebar-text {
+                opacity: 1 !important;
+                max-width: 12.5rem !important;
+            }
+
+            #sidebar.sidebar-open {
+                opacity: 1;
+                transform: translateX(0) !important;
+            }
+
+            #sidebarCloseBtn {
+                display: flex !important;
+            }
+
+            #sidebarToggleBtn {
+                display: none !important;
+            }
+
+            #mainContent,
+            #sidebar.sidebar-collapsed ~ #mainContent,
+            #sidebar.sidebar-collapsed-init ~ #mainContent {
+                width: 100% !important;
+                min-width: 0 !important;
+                margin-left: 0 !important;
+                overflow-x: hidden;
+            }
+        }
+
+        /* Keep the navigation rail visible on tablets and iPads. */
+        @media (min-width: 37.5rem) and (max-width: 80rem) {
+            #sidebarOverlay { display: none !important; }
+            #sidebar {
+                inset: 3.5rem auto 0 0 !important;
+                width: 18rem !important;
+                min-width: 18rem !important;
+                max-width: 18rem !important;
+                height: calc(100dvh - 3.5rem) !important;
+                max-height: none !important;
+                opacity: 1 !important;
+                transform: translateX(0) !important;
+                transition: width .3s ease !important;
+            }
+            #sidebar.sidebar-collapsed,
+            #sidebar.sidebar-collapsed-init {
+                width: 4.5rem !important;
+                min-width: 4.5rem !important;
+                max-width: 4.5rem !important;
+            }
+            #sidebar.sidebar-collapsed .sidebar-text,
+            #sidebar.sidebar-collapsed-init .sidebar-text {
+                opacity: 0 !important;
+                max-width: 0 !important;
+            }
+            #sidebarCloseBtn,
+            #mobileMenuToggle { display: none !important; }
+            #sidebarToggleBtn {
+                display: flex !important;
+                top: calc(3.5rem + 1.5rem) !important;
+            }
+            .portal-ui #sidebar ~ #mainContent {
+                width: calc(100vw - 18rem) !important;
+                min-width: 0 !important;
+                margin-left: 18rem !important;
+                overflow-x: hidden;
+            }
+            .portal-ui #sidebar.sidebar-collapsed ~ #mainContent,
+            .portal-ui #sidebar.sidebar-collapsed-init ~ #mainContent {
+                width: calc(100vw - 4.5rem) !important;
+                margin-left: 4.5rem !important;
+            }
+        }
+
+                /* Keep BCPC and SWD administrator pages within the tablet viewport. */
+        @media (min-width: 37.5rem) and (max-width: 80rem) {
+            #mainContent > :is(main, div, section) {
+                min-width: 0;
+                max-width: 100%;
+            }
+
+            #mainContent > main {
+                padding: clamp(1rem, 2.5vw, 1.5rem) !important;
+            }
+
+            #mainContent .portal-page-header > div,
+            #mainContent > header > div {
+                flex-wrap: nowrap;
+                gap: .75rem;
+            }
+
+            #mainContent .portal-page-header > div > #mobileMenuToggle + div,
+            #mainContent > header > div > #mobileMenuToggle + div {
+                min-width: 0;
+                flex: 1 1 auto;
+            }
+
+            #mainContent #mobileMenuToggle {
+                background-color: #BC0202 !important;
+                color: #fff !important;
+            }
+
+            #mainContent #mobileMenuToggle > i {
+                color: inherit !important;
+            }
+
+            #mainContent .portal-page-header > div > div:last-child,
+            #mainContent > header > div > div:last-child {
+                flex-wrap: nowrap;
+                justify-content: flex-end;
+            }
+
+            #mainContent .portal-page-header div:has(> img[alt="User Profile"]),
+            #mainContent > header div:has(> img[alt="User Profile"]) {
+                min-width: 0;
+                max-width: 100%;
+            }
+
+            #mainContent .portal-page-header div:has(> img[alt="User Profile"]) > div,
+            #mainContent > header div:has(> img[alt="User Profile"]) > div {
+                min-width: 0;
+            }
+
+            #mainContent .portal-page-header div:has(> img[alt="User Profile"]) > div > p:first-child,
+            #mainContent > header div:has(> img[alt="User Profile"]) > div > p:first-child {
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            #mainContent .department-admin-tablet-role-badge {
+                display: none !important;
+            }
+
+            #mainContent :is(.portal-table-scroll, .overflow-x-auto, .table-responsive) {
+                max-width: 100%;
+                overscroll-behavior-x: contain;
+            }
+
+            #mainContent form:not(table form) > :is(.flex, .grid) {
+                min-width: 0;
+            }
+
+            #mainContent form:not(table form) :is(input, select, textarea, .relative) {
+                min-width: 0;
+                max-width: 100%;
+            }
+
+            #mainContent :is(.pagination, [aria-label*="Pagination"]) {
+                max-width: 100%;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+
+            :is(dialog, .modal-dialog, .swal2-popup) {
+                width: min(calc(100vw - 2rem), 680px) !important;
+                max-width: calc(100vw - 2rem) !important;
+            }
+        }
+
+        /* Phone header: retain navigation, title, notifications, and avatar only. */
+        @media (max-width: 40rem) {
+            #mainContent .portal-page-clock,
+            #mainContent .portal-clock-only-header,
+            #mainContent .department-admin-tablet-role-badge {
+                display: none !important;
+            }
+
+            #mainContent .portal-page-header div:has(> img[alt="User Profile"]),
+            #mainContent > header div:has(> img[alt="User Profile"]) {
+                display: flex !important;
+            }
+
+            #mainContent .portal-page-header div:has(> img[alt="User Profile"]) > div,
+            #mainContent > header div:has(> img[alt="User Profile"]) > div {
+                display: none !important;
+            }
+
+            #mainContent .tablet-header-row {
+                display: grid !important;
+                grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+                align-items: center;
+                column-gap: .75rem;
+            }
+
+            #mainContent .tablet-header-row > #mobileMenuToggle {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            #mainContent .tablet-header-row > #mobileMenuToggle + div {
+                grid-column: 2;
+                grid-row: 1;
+                min-width: 0;
+            }
+
+            #mainContent .tablet-header-row > #mobileMenuToggle + div ~ div:last-child {
+                grid-column: 3;
+                grid-row: 1;
+                min-width: 0;
+            }
+        }
+        
+        /* Keep the phone header focused on navigation and account controls. */
+        @media (max-width: 47.9375rem) {
+            #mobileTopBar .admin-mobile-brand {
+                display: none !important;
+            }
+        }
+
+            </style>
+    
+    <script>
+        document.documentElement.classList.add('js');
+    </script>
+    <link rel="stylesheet" href="http://localhost/css/portal-modals.css?v=1792211933">
+    <script src="http://localhost/js/archive-case-modal-design.js?v=1792211933" defer></script>
+    <script src="http://localhost/js/portal-modal-close.js?v=1792211933" defer></script>
+    <link rel="stylesheet" href="http://localhost/css/logout-modal.css?v=1792211933">
+        <script src="http://localhost/js/portal-modal-presentation.js?v=1792211933" defer></script>
+</head>
+<body class="portal-ui  swd-admin-header-theme font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased" style="--portal-user-initials: 'WS';">
+    
+    <!-- Mobile Sticky Top Bar -->
+    <div id="mobileTopBar" class="lg:hidden sticky top-0 z-30 bg-purple-900 text-white flex items-center justify-between px-4 py-2.5 shadow-md border-b border-purple-800">
+        <div class="flex items-center gap-3">
+            <button 
+                type="button"
+                id="mobileMenuToggle" 
+                class="bg-purple-800/80 hover:bg-purple-700 text-white p-2 rounded-lg transition-colors focus:outline-none flex items-center justify-center w-9 h-9"
+                aria-label="Toggle menu"
+                aria-controls="sidebar"
+                aria-expanded="false"
+            >
+                <i class="fas fa-bars text-base"></i>
+            </button>
+            <div class="admin-mobile-brand flex items-center gap-2">
+                <img src="http://localhost/images/iserve_logo.jpg" alt="I-serve Silang Logo" class="w-8 h-8 rounded object-contain">
+                <span class="font-bold text-base tracking-wide">iSERVE SILANG</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+                        <span class="department-admin-tablet-role-badge bg-[#C41E3A] text-white border-[#C41E3A] lg:bg-purple-800/80 lg:text-purple-200 lg:border-purple-700 text-xs px-2.5 py-1 rounded-full border font-medium">
+                Administrator
+            </span>
+                    </div>
+    </div>
+    
+    <!-- Sidebar Overlay (Mobile) -->
+    <div 
+        id="sidebarOverlay" 
+        class="fixed inset-0 bg-black/50 z-30 lg:hidden opacity-0 pointer-events-none transition-opacity duration-300"
+    ></div>
+    
+    <!-- Sidebar -->
+    <aside 
+        id="sidebar" 
+        class="fixed top-0 left-0 h-screen w-72 bg-[#C41E3A] text-white z-40
+               lg:translate-x-0 flex flex-col shadow-2xl
+               rounded-r-3xl lg:rounded-none "
+    >
+                <script>
+            document.getElementById('sidebar')?.classList.toggle('sidebar-collapsed', document.documentElement.classList.contains('admin-sidebar-collapsed'));
+        </script>
+                <!-- Sidebar Header -->
+        <div class="sidebar-header py-5 border-b border-white">
+            <div class="flex items-center justify-center gap-3">
+                <img src="http://localhost/images/iserve_logo.jpg" alt="I-serve Silang Logo" class="w-12 h-12 min-w-[3rem] rounded-lg object-contain">
+                <div class="sidebar-text whitespace-nowrap overflow-hidden leading-tight">
+                    <h1 class="text-xl font-bold tracking-wide">iSERVE SILANG</h1>
+                    <p class="mt-1 text-[10px] font-medium tracking-[.12em] text-white/70">SWD &amp; BCPC PORTAL</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Close Button - positioned outside sidebar flow -->
+        <button 
+            type="button"
+            id="sidebarCloseBtn"
+            class="lg:hidden absolute -right-4 top-6 w-8 h-8 bg-purple-600 rounded-full shadow-lg flex items-center justify-center text-white hover:bg-purple-700"
+            aria-label="Close sidebar"
+            aria-controls="sidebar"
+        >
+            <i class="fas fa-chevron-left text-sm"></i>
+        </button>
+        
+        <!-- Sidebar Menu -->
+        <nav class="flex-1 overflow-y-auto py-4 sidebar-menu">
+                        <!-- Dashboard -->
+            <a href="http://localhost/admin-dashboard" 
+               class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all duration-200
+                      text-purple-100 hover:bg-purple-700/50 hover:text-white"
+               data-tooltip="Dashboard"
+               title="Dashboard"
+            >
+                <i class="fas fa-tachometer-alt w-5 text-center flex-shrink-0"></i>
+                <span class="sidebar-text whitespace-nowrap overflow-hidden">Dashboard</span>
+            </a>
+
+                                    <div x-data="{ casesOpen: true }" @sidebar-dropdown-open.window="if ($event.detail !== 'casesOpen') casesOpen = false" class="mb-1">
+                <button type="button" @click="casesOpen = !casesOpen; if (casesOpen) $dispatch('sidebar-dropdown-open', 'casesOpen')" class="sidebar-link flex items-center justify-between w-full px-4 py-3 rounded-lg bg-purple-600 text-white shadow-sm font-medium" title="Manage cases" data-tooltip="Manage cases">
+                    <span class="flex items-center gap-3"><i class="fas fa-gavel w-5 text-center"></i><span class="sidebar-text">Manage cases</span></span>
+                    <i class="fas fa-chevron-down text-xs sidebar-text" :class="{ 'rotate-180': casesOpen }"></i>
+                </button>
+                <div x-show="casesOpen" x-cloak class="mt-1 pl-6 pr-2 space-y-1">
+                                                                    <a href="http://localhost/case-profiles" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs bg-purple-600 text-white shadow-sm font-semibold"><i class="fas fa-address-card" aria-hidden="true"></i><span class="sidebar-text">Case Profiles</span></a>
+                                                                    <a href="http://localhost/admin-barangay-cases" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-purple-200 hover:bg-purple-700/50 hover:text-white"><i class="fas fa-folder-open" aria-hidden="true"></i><span class="sidebar-text">Barangay Cases</span></a>
+                                                                    <a href="http://localhost/admin/cases/add" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-purple-200 hover:bg-purple-700/50 hover:text-white"><i class="fas fa-plus-circle" aria-hidden="true"></i><span class="sidebar-text">Add New Case</span></a>
+                                    </div>
+            </div>
+                                    <!-- User Information Dropdown -->
+            <div x-data="{ userMenuOpen: false }" @sidebar-dropdown-open.window="if ($event.detail !== 'userMenuOpen') userMenuOpen = false" class="mb-1">
+                <button type="button" 
+                        @click="userMenuOpen = !userMenuOpen; if (userMenuOpen && true) $dispatch('sidebar-dropdown-open', 'userMenuOpen')"
+                        class="sidebar-link flex items-center justify-between w-full px-4 py-3 rounded-lg transition-all duration-200 text-left
+                               text-purple-100 hover:bg-purple-700/50 hover:text-white"
+                        data-tooltip="User Information"
+                        title="User Information">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <i class="fas fa-users w-5 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">User Information</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs sidebar-text transition-transform duration-200" :class="{ 'rotate-180': userMenuOpen }"></i>
+                </button>
+                
+                <div x-show="userMenuOpen" x-cloak class="mt-1 pl-6 pr-2 space-y-1">
+                    <!-- User Information Link -->
+                    <a href="http://localhost/admin/users" 
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150
+                              text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                       title="Desk Officer Profile">
+                        <i class="fas fa-table-list text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">Desk Officer Profile</span>
+                    </a>
+
+                    <!-- User Register Link -->
+                    <a href="http://localhost/admin/users/create" 
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150
+                              text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                       title="Register Desk Officer">
+                        <i class="fas fa-user-plus text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">Register Desk Officer</span>
+                    </a>
+                    
+                    <!-- User Logs Link -->
+                                        <a href="http://localhost/admin/users/1/logs" 
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150
+                              text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                       title="Desk officer logs">
+                        <i class="fas fa-history text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">Desk officer logs</span>
+                    </a>
+                                    </div>
+            </div>
+            
+            <!-- Referrals -->
+            <a href="http://localhost/admin/referrals" 
+               class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all duration-200
+                      text-purple-100 hover:bg-purple-700/50 hover:text-white"
+               data-tooltip="Referrals"
+               title="Referrals"
+            >
+                <i class="fas fa-exchange-alt w-5 text-center flex-shrink-0"></i>
+                <span class="sidebar-text whitespace-nowrap overflow-hidden">Referrals</span>
+            </a>
+            
+            <!-- Referral Info -->
+            <a href="http://localhost/admin/referral-info" 
+               class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all duration-200
+                      text-purple-100 hover:bg-purple-700/50 hover:text-white"
+               data-tooltip="Referral Info"
+               title="Referral Info"
+            >
+                <i class="fas fa-envelope w-5 text-center flex-shrink-0"></i>
+                <span class="sidebar-text whitespace-nowrap overflow-hidden">Referral Info</span>
+            </a>
+            
+            <!-- Quarterly Reports -->
+            <a href="http://localhost/admin/quarterly-reports" 
+               class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all duration-200
+                      text-purple-100 hover:bg-purple-700/50 hover:text-white"
+               data-tooltip="Quarterly Reports"
+               title="Quarterly Reports"
+            >
+                <i class="fas fa-file-alt w-5 text-center flex-shrink-0"></i>
+                <span class="sidebar-text whitespace-nowrap overflow-hidden">Quarterly Reports</span>
+            </a>
+
+                        <!-- Calendar -->
+            <a href="http://localhost/admin/calendar" 
+               class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all duration-200
+                      text-purple-100 hover:bg-purple-700/50 hover:text-white"
+               data-tooltip="Calendar"
+               title="Calendar"
+            >
+                <i class="fas fa-calendar-alt w-5 text-center flex-shrink-0"></i>
+                <span class="sidebar-text whitespace-nowrap overflow-hidden">Calendar</span>
+            </a>
+            
+                        <!-- Archives Dropdown -->
+            <div x-data="{ archiveOpen: false }" @sidebar-dropdown-open.window="if ($event.detail !== 'archiveOpen') archiveOpen = false" class="mb-1">
+                <button type="button"
+                        @click="archiveOpen = !archiveOpen; if (archiveOpen && true) $dispatch('sidebar-dropdown-open', 'archiveOpen')"
+                        class="sidebar-link flex items-center justify-between w-full px-4 py-3 rounded-lg transition-all duration-200 text-left
+                               text-purple-100 hover:bg-purple-700/50 hover:text-white"
+                        data-tooltip="Archives"
+                        title="Archives">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <i class="fas fa-archive w-5 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">Archives</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs sidebar-text transition-transform duration-200" :class="{ 'rotate-180': archiveOpen }"></i>
+                </button>
+
+                <div x-show="archiveOpen" x-cloak class="mt-1 pl-6 pr-2 space-y-1">
+                    
+                                        <a href="http://localhost/admin/quarterly-reports/archived?section=barangay-cases"
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150
+                              text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                       title="Archived Barangay Cases">
+                        <i class="fas fa-map-marked-alt text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">Archived Barangay Cases</span>
+                    </a>
+                    
+                    <a href="http://localhost/admin/archived-referrals" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 text-purple-200 hover:bg-purple-700/50 hover:text-white" title="Archived Referrals">
+<i class="fas fa-paper-plane text-[11px] w-4 text-center flex-shrink-0"></i><span class="sidebar-text whitespace-nowrap overflow-hidden">Archived Referrals</span>
+</a>
+<!-- Archived Users Link -->
+                    <a href="http://localhost/admin/users/archived"
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150
+                              text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                       title="Archived Users">
+                        <i class="fas fa-user-lock text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">Archived Users</span>
+                    </a>
+
+                                        <a href="http://localhost/admin/quarterly-reports/archived?section=quarterly"
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150
+                              text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                       title="Archived Quarterly Reports">
+                        <i class="fas fa-chart-pie text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">Archived Quarterly Reports</span>
+                    </a>
+                    
+                    <!-- BCPC Case Monitoring Archive Link -->
+                                    </div>
+            </div>
+
+
+        </nav>
+        
+        <!-- Sidebar Footer -->
+        <div class="py-4 border-t border-white sidebar-menu">
+            <form id="logout-form" method="POST" action="http://localhost/logout" class="hidden"  data-skip-loading-modal >
+                <input type="hidden" name="_token" value="" autocomplete="off">            </form>
+            <button 
+                type="button" 
+                id="logout-button" 
+                class="sidebar-link flex items-center gap-3 w-full py-3 rounded-lg 
+                       text-purple-100 hover:bg-red-500/20 hover:text-red-300 
+                       transition-all duration-200"
+                title="Logout"
+            >
+                <i class="fas fa-sign-out-alt w-5 text-center flex-shrink-0"></i>
+                <span class="sidebar-text whitespace-nowrap overflow-hidden">Logout</span>
+            </button>
+        </div>
+    </aside>
+    
+    <!-- Floating Sidebar Toggle Button (Desktop Only) -->
+    <button 
+        type="button"
+        id="sidebarToggleBtn" 
+        class="hidden lg:flex items-center justify-center w-6 h-6 bg-white rounded-full 
+               shadow-lg shadow-gray-600/60 hover:shadow-xl hover:bg-gray-50 
+               transition-all duration-200 border border-gray-300"
+        aria-label="Toggle sidebar"
+        aria-controls="sidebar"
+        aria-expanded="true"
+        title="Toggle sidebar"
+    >
+        <i class="fas fa-chevron-left text-gray-600 text-xs transition-transform duration-300"></i>
+    </button>
+    
+    <!-- Main Content -->
+    <div 
+        id="mainContent" data-page-title="Victim and Perpetrator Profiles"
+        class="lg:ml-72 min-h-screen sidebar-transition overflow-x-hidden"
+    >
+        <header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
+    <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
+        <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Victim and Perpetrator Profiles</h2>
+            <p class="text-sm text-gray-500 hidden sm:block">View and manage case profiles</p>
+        </div>
+        <div class="flex items-center gap-4">
+    <!-- Notification Bell -->
+<div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false">
+    <button 
+        @click="open = !open" 
+        class="relative p-2 text-gray-600 hover:text-purple-700 hover:bg-purple-50 rounded-full transition-colors"
+        aria-label="Notifications"
+    >
+        <i class="fas fa-bell text-xl"></i>
+                <span id="notifications-unread-count" class="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full" style="background-color: #eab308 !important; color: #ffffff !important;">
+            9+
+        </span>
+            </button>
+    
+    <!-- Dropdown -->
+    <div 
+        x-show="open" 
+        x-cloak
+        @click.away="open = false"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 transform scale-95"
+        x-transition:enter-end="opacity-100 transform scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 transform scale-100"
+        x-transition:leave-end="opacity-0 transform scale-95"
+        class="notification-dropdown absolute right-0 mt-2 w-80 max-h-[50vh] flex flex-col bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden"
+        style="display: none; max-height: 50vh; max-height: 50dvh;"
+    >
+        <!-- Header -->
+        <div class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-purple-700 to-purple-600 text-white">
+            <h4 class="font-semibold text-sm">Recent Activity</h4>
+            <button 
+                id="markAllReadBtn"
+                class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition-colors"
+            >
+                Mark all as read
+            </button>
+        </div>
+        
+        <!-- Notification List -->
+        <div id="recent-activity-list" class="notification-dropdown-list min-h-0 flex-1 overflow-y-auto divide-y divide-gray-100">
+                        <a 
+                href="http://localhost/admin/cases/57?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/57?action=created"
+                data-notification-id="case_created_57"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">New case <strong>#BA2-042926-012</strong> was created</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/cases/56?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/56?action=created"
+                data-notification-id="case_created_56"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">New case <strong>#BA2-042826-011</strong> was created</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/cases/55?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/55?action=created"
+                data-notification-id="case_created_55"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">New case <strong>#BA2-042626-010</strong> was created</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/cases/54?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/54?action=created"
+                data-notification-id="case_created_54"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">New case <strong>#BA2-042626-009</strong> was created</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/cases/53?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/53?action=created"
+                data-notification-id="case_created_53"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">New case <strong>#BA2-042526-008</strong> was created</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/cases/52?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/52?action=created"
+                data-notification-id="case_created_52"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">New case <strong>#BA2-042526-007</strong> was created</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/users/40/logs" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/users/40/logs"
+                data-notification-id="action_386"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-history"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">User logged in</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/users/40/logs" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/users/40/logs"
+                data-notification-id="action_378"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-history"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">User logged in</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/cases/51?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/51?action=created"
+                data-notification-id="case_created_51"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">New case <strong>#BA2-042426-006</strong> was created</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/cases/48?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/48?action=created"
+                data-notification-id="status_updated_48"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">Case <strong>#SM2-042426-001</strong> status set to <strong>Case Reported</strong></p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                    </div>
+        
+        <!-- Footer -->
+        <div class="px-4 py-2 bg-gray-50 border-t border-gray-100">
+            <span class="text-xs" style="color:#6b7280 !important;">Last 10 activities</span>
+        </div>
+    </div>
+</div>
+
+<dialog id="notification-action-details" class="m-auto w-full max-w-md rounded-2xl border-0 p-0 shadow-2xl backdrop:bg-black/50">
+    <div class="p-6">
+        <div class="flex items-start justify-between gap-4 mb-5">
+            <div>
+                <h4 class="text-lg font-bold text-gray-800">Desk Officer Action</h4>
+                <p class="text-sm text-gray-500">Notification details</p>
+            </div>
+            <button type="button" id="notification-action-details-close" class="text-gray-400 hover:text-gray-700 text-xl" aria-label="Close">&times;</button>
+        </div>
+        <dl class="space-y-4 text-sm">
+            <div><dt class="font-semibold text-gray-500">Action</dt><dd id="notification-action-value" class="mt-1 text-gray-800"></dd></div>
+            <div><dt class="font-semibold text-gray-500">Performed by</dt><dd id="notification-officer-value" class="mt-1 text-gray-800"></dd></div>
+            <div><dt class="font-semibold text-gray-500">Performed at</dt><dd id="notification-time-value" class="mt-1 text-gray-800"></dd></div>
+        </dl>
+        <div class="mt-6 flex justify-end gap-3">
+            <button type="button" id="notification-action-details-cancel" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium">Close</button>
+            <a id="notification-action-details-link" href="#" class="px-4 py-2 rounded-lg bg-[#C41E3A] hover:bg-[#A01830] text-white text-sm font-medium">View Record</a>
+        </div>
+    </div>
+</dialog>
+
+    <div class="hidden sm:flex items-center gap-3">
+        <img src="http://localhost/images/mswdo_logo.jpg" alt="User Profile" class="w-10 h-10 rounded-full object-cover bg-gray-100">
+        <div class="text-right">
+            <p class="text-sm font-medium text-gray-800">WCPU SILANG</p>
+            <p class="text-xs text-gray-500">Administrator</p>
+        </div>
+    </div>
+</div>
+    </div>
+</header>
+<div id="case-profiles-content" class="p-4 sm:p-6 lg:p-8 space-y-8">
+                <form id="case-profiles-filter-form" method="GET" action="http://localhost/case-profiles" class="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-4 bg-white border border-gray-200 rounded-xl p-4">
+                        <div class="case-profiles-search-age-row flex w-full items-center gap-2 sm:flex-1">
+                <div class="case-profiles-search-control min-w-0 flex-1">
+                    <span class="relative block w-full">
+                        <i class="fas fa-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" aria-hidden="true"></i>
+                        <input type="search" id="profile-search-input" name="search" maxlength="255" value="" placeholder="Search name or address" aria-label="Search profiles" class="block w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3">
+                    </span>
+                </div>
+                <span class="case-profiles-age-control relative block w-28 shrink-0">
+                    <i class="fas fa-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" aria-hidden="true"></i>
+                    <input type="number" id="profile-age-input" name="age" min="0" max="120" value="" placeholder="All ages" aria-label="Search profiles by age" class="block w-full border border-gray-300 rounded-lg py-2 pl-8 pr-3">
+                </span>
+            </div>
+            <button class="px-4 py-2 bg-purple-700 text-white rounded-lg" type="submit">Filter</button>
+            <a href="http://localhost/case-profiles" class="case-profiles-clear-button px-4 py-2 border border-gray-300 rounded-lg">Clear</a>
+                    </form>
+        <div id="case-profiles-results" class="space-y-8">
+                            <section class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <h2 class="px-5 py-4 text-lg font-semibold text-purple-800">Victim Profiles</h2>
+            <div class="case-profiles-table-view">
+            <div class="overflow-x-auto">
+                <table class="case-profiles-table w-full min-w-[900px] table-fixed text-sm text-left">
+                    <colgroup>
+                        <col class="w-[16%]">
+                        <col class="w-[12%]">
+                        <col class="w-[22%]">
+                        <col class="w-[9%]">
+                        <col class="w-[21%]">
+                        <col class="w-[20%]">
+                    </colgroup>
+                    <thead class="bg-purple-700 text-white">
+                        <tr>
+                                                            <th class="px-5 py-3 ">Name</th>
+                                                            <th class="px-5 py-3 ">Cases</th>
+                                                            <th class="px-5 py-3 ">Type of Case</th>
+                                                            <th class="px-5 py-3 ">Age</th>
+                                                            <th class="px-5 py-3 ">Address</th>
+                                                            <th class="px-5 py-3 text-center align-middle">Guardian Information</th>
+                                                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                                                                                <tr class="align-top hover:bg-purple-50">
+                                <td class="px-5 py-4 font-medium break-words">Reynald agus</td>
+                                <td class="px-5 py-4">
+                                    <details>
+                                        <summary class="cursor-pointer text-purple-700">1 case</summary>
+                                                                                    <a class="block mt-2 text-purple-700 underline break-words [overflow-wrap:anywhere]" href="http://localhost/admin/cases/57?from=case-profiles">BA2-042926-012</a>
+                                                                            </details>
+                                </td>
+                                <td class="px-5 py-4 break-words">VAWC — Anti-Sexual Harassment Act</td>
+                                <td class="px-5 py-4">13</td>
+                                <td class="px-5 py-4 break-words">671 Purok5 Iba Silang Cavite</td>
+                                <td class="px-5 py-4 align-middle text-center">
+                                                                                                                                                        <div class="flex min-h-10 items-center justify-center">
+                                            <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-purple-700 text-white hover:bg-purple-800 text-xs font-medium shadow-xs transition" aria-haspopup="dialog" aria-controls="guardian-victim-57" onclick="document.getElementById('guardian-victim-57').showModal()">
+                                                <i class="fas fa-eye flex h-4 w-4 shrink-0 items-center justify-center leading-none text-xs" aria-hidden="true"></i>
+                                                <span class="sr-only">View</span>
+                                            </button>
+                                        </div>
+                                        <dialog id="guardian-victim-57" aria-labelledby="guardian-victim-57-title" class="guardian-dialog rounded-2xl p-0 shadow-2xl w-full max-w-lg text-gray-800 border border-gray-100 overflow-hidden backdrop:bg-slate-900/60 backdrop:backdrop-blur-xs">
+                                            
+                                            <div class="bg-gradient-to-r from-purple-700 to-purple-600 px-6 py-4 flex items-center justify-between text-white">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white text-base">
+                                                        <i class="fas fa-user-shield"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 id="guardian-victim-57-title" class="text-base font-bold text-white leading-tight">Guardian Information</h3>
+                                                        <p class="text-xs text-purple-200 mt-0.5">Victim: <span class="text-white font-semibold">Reynald agus</span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            
+                                            <div class="p-6 space-y-4 max-h-[65vh] overflow-y-auto">
+                                                                                                    <div class="bg-gray-50/80 border border-gray-200 rounded-xl p-4">
+                                                                                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Guardian Name</span>
+                                                                <span class="font-bold text-gray-900 break-words">Nelia Gonzales</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Relationship</span>
+                                                                <span class="font-medium text-gray-800 break-words">Guardian</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Contact Number</span>
+                                                                <span class="font-medium text-gray-800 break-words">09676800512</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Address</span>
+                                                                <span class="font-medium text-gray-800 break-words">671 Purok5</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                                                            </div>
+
+                                            
+                                            <div class="px-6 py-3.5 bg-gray-50 border-t border-gray-200 flex justify-end">
+                                                <button type="button" class="px-4 py-2 rounded-xl bg-purple-700 text-white text-xs font-semibold hover:bg-purple-800 transition shadow-xs" onclick="this.closest('dialog').close()">
+                                                    Close
+                                                </button>
+                                            </div>
+                                        </dialog>
+                                                                    </td>
+                            </tr>
+                                                                                <tr class="align-top hover:bg-purple-50">
+                                <td class="px-5 py-4 font-medium break-words">Zeon Belamide</td>
+                                <td class="px-5 py-4">
+                                    <details>
+                                        <summary class="cursor-pointer text-purple-700">1 case</summary>
+                                                                                    <a class="block mt-2 text-purple-700 underline break-words [overflow-wrap:anywhere]" href="http://localhost/admin/cases/56?from=case-profiles">BA2-042826-011</a>
+                                                                            </details>
+                                </td>
+                                <td class="px-5 py-4 break-words">VAWC — Anti-Child Pornography Act</td>
+                                <td class="px-5 py-4">14</td>
+                                <td class="px-5 py-4 break-words">671 Purok5</td>
+                                <td class="px-5 py-4 align-middle text-center">
+                                                                                                                                                        <div class="flex min-h-10 items-center justify-center">
+                                            <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-purple-700 text-white hover:bg-purple-800 text-xs font-medium shadow-xs transition" aria-haspopup="dialog" aria-controls="guardian-victim-56" onclick="document.getElementById('guardian-victim-56').showModal()">
+                                                <i class="fas fa-eye flex h-4 w-4 shrink-0 items-center justify-center leading-none text-xs" aria-hidden="true"></i>
+                                                <span class="sr-only">View</span>
+                                            </button>
+                                        </div>
+                                        <dialog id="guardian-victim-56" aria-labelledby="guardian-victim-56-title" class="guardian-dialog rounded-2xl p-0 shadow-2xl w-full max-w-lg text-gray-800 border border-gray-100 overflow-hidden backdrop:bg-slate-900/60 backdrop:backdrop-blur-xs">
+                                            
+                                            <div class="bg-gradient-to-r from-purple-700 to-purple-600 px-6 py-4 flex items-center justify-between text-white">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white text-base">
+                                                        <i class="fas fa-user-shield"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 id="guardian-victim-56-title" class="text-base font-bold text-white leading-tight">Guardian Information</h3>
+                                                        <p class="text-xs text-purple-200 mt-0.5">Victim: <span class="text-white font-semibold">Zeon Belamide</span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            
+                                            <div class="p-6 space-y-4 max-h-[65vh] overflow-y-auto">
+                                                                                                    <div class="bg-gray-50/80 border border-gray-200 rounded-xl p-4">
+                                                                                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Guardian Name</span>
+                                                                <span class="font-bold text-gray-900 break-words">Karen Reyes</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Relationship</span>
+                                                                <span class="font-medium text-gray-800 break-words">Guardian</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Contact Number</span>
+                                                                <span class="font-medium text-gray-800 break-words">09675800512</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Address</span>
+                                                                <span class="font-medium text-gray-800 break-words">671 Purok5</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                                                            </div>
+
+                                            
+                                            <div class="px-6 py-3.5 bg-gray-50 border-t border-gray-200 flex justify-end">
+                                                <button type="button" class="px-4 py-2 rounded-xl bg-purple-700 text-white text-xs font-semibold hover:bg-purple-800 transition shadow-xs" onclick="this.closest('dialog').close()">
+                                                    Close
+                                                </button>
+                                            </div>
+                                        </dialog>
+                                                                    </td>
+                            </tr>
+                                                                                <tr class="align-top hover:bg-purple-50">
+                                <td class="px-5 py-4 font-medium break-words">Rosalie Valdez</td>
+                                <td class="px-5 py-4">
+                                    <details>
+                                        <summary class="cursor-pointer text-purple-700">1 case</summary>
+                                                                                    <a class="block mt-2 text-purple-700 underline break-words [overflow-wrap:anywhere]" href="http://localhost/admin/cases/55?from=case-profiles">BA2-042626-010</a>
+                                                                            </details>
+                                </td>
+                                <td class="px-5 py-4 break-words">VAWC — Anti-Online Sexual Abuse or Exploitation of Children (OSAEC) and Anti-Child Sexual Abuse or Exploitation Materials (CSAEM)</td>
+                                <td class="px-5 py-4">10</td>
+                                <td class="px-5 py-4 break-words">Pob3 Silang Cavite</td>
+                                <td class="px-5 py-4 align-middle text-center">
+                                                                                                                                                        <div class="flex min-h-10 items-center justify-center">
+                                            <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-purple-700 text-white hover:bg-purple-800 text-xs font-medium shadow-xs transition" aria-haspopup="dialog" aria-controls="guardian-victim-55" onclick="document.getElementById('guardian-victim-55').showModal()">
+                                                <i class="fas fa-eye flex h-4 w-4 shrink-0 items-center justify-center leading-none text-xs" aria-hidden="true"></i>
+                                                <span class="sr-only">View</span>
+                                            </button>
+                                        </div>
+                                        <dialog id="guardian-victim-55" aria-labelledby="guardian-victim-55-title" class="guardian-dialog rounded-2xl p-0 shadow-2xl w-full max-w-lg text-gray-800 border border-gray-100 overflow-hidden backdrop:bg-slate-900/60 backdrop:backdrop-blur-xs">
+                                            
+                                            <div class="bg-gradient-to-r from-purple-700 to-purple-600 px-6 py-4 flex items-center justify-between text-white">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white text-base">
+                                                        <i class="fas fa-user-shield"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 id="guardian-victim-55-title" class="text-base font-bold text-white leading-tight">Guardian Information</h3>
+                                                        <p class="text-xs text-purple-200 mt-0.5">Victim: <span class="text-white font-semibold">Rosalie Valdez</span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            
+                                            <div class="p-6 space-y-4 max-h-[65vh] overflow-y-auto">
+                                                                                                    <div class="bg-gray-50/80 border border-gray-200 rounded-xl p-4">
+                                                                                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Guardian Name</span>
+                                                                <span class="font-bold text-gray-900 break-words">Renato Valdez</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Relationship</span>
+                                                                <span class="font-medium text-gray-800 break-words">Parent</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Contact Number</span>
+                                                                <span class="font-medium text-gray-800 break-words">09675800519</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Address</span>
+                                                                <span class="font-medium text-gray-800 break-words">Poblacion 3 Silang Cavite</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                                                            </div>
+
+                                            
+                                            <div class="px-6 py-3.5 bg-gray-50 border-t border-gray-200 flex justify-end">
+                                                <button type="button" class="px-4 py-2 rounded-xl bg-purple-700 text-white text-xs font-semibold hover:bg-purple-800 transition shadow-xs" onclick="this.closest('dialog').close()">
+                                                    Close
+                                                </button>
+                                            </div>
+                                        </dialog>
+                                                                    </td>
+                            </tr>
+                                                                                <tr class="align-top hover:bg-purple-50">
+                                <td class="px-5 py-4 font-medium break-words">Goodwin layto</td>
+                                <td class="px-5 py-4">
+                                    <details>
+                                        <summary class="cursor-pointer text-purple-700">1 case</summary>
+                                                                                    <a class="block mt-2 text-purple-700 underline break-words [overflow-wrap:anywhere]" href="http://localhost/admin/cases/54?from=case-profiles">BA2-042626-009</a>
+                                                                            </details>
+                                </td>
+                                <td class="px-5 py-4 break-words">VAWC — Special Protection of Children Against Abuse, Exploitation, and Discrimination Act</td>
+                                <td class="px-5 py-4">11</td>
+                                <td class="px-5 py-4 break-words">458 pob3</td>
+                                <td class="px-5 py-4 align-middle text-center">
+                                                                                                                                                        <div class="flex min-h-10 items-center justify-center">
+                                            <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-purple-700 text-white hover:bg-purple-800 text-xs font-medium shadow-xs transition" aria-haspopup="dialog" aria-controls="guardian-victim-54" onclick="document.getElementById('guardian-victim-54').showModal()">
+                                                <i class="fas fa-eye flex h-4 w-4 shrink-0 items-center justify-center leading-none text-xs" aria-hidden="true"></i>
+                                                <span class="sr-only">View</span>
+                                            </button>
+                                        </div>
+                                        <dialog id="guardian-victim-54" aria-labelledby="guardian-victim-54-title" class="guardian-dialog rounded-2xl p-0 shadow-2xl w-full max-w-lg text-gray-800 border border-gray-100 overflow-hidden backdrop:bg-slate-900/60 backdrop:backdrop-blur-xs">
+                                            
+                                            <div class="bg-gradient-to-r from-purple-700 to-purple-600 px-6 py-4 flex items-center justify-between text-white">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white text-base">
+                                                        <i class="fas fa-user-shield"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 id="guardian-victim-54-title" class="text-base font-bold text-white leading-tight">Guardian Information</h3>
+                                                        <p class="text-xs text-purple-200 mt-0.5">Victim: <span class="text-white font-semibold">Goodwin layto</span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            
+                                            <div class="p-6 space-y-4 max-h-[65vh] overflow-y-auto">
+                                                                                                    <div class="bg-gray-50/80 border border-gray-200 rounded-xl p-4">
+                                                                                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Guardian Name</span>
+                                                                <span class="font-bold text-gray-900 break-words">Nimfa Layto</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Relationship</span>
+                                                                <span class="font-medium text-gray-800 break-words">Parent</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Contact Number</span>
+                                                                <span class="font-medium text-gray-800 break-words">09675800556</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Address</span>
+                                                                <span class="font-medium text-gray-800 break-words">Pob3</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                                                            </div>
+
+                                            
+                                            <div class="px-6 py-3.5 bg-gray-50 border-t border-gray-200 flex justify-end">
+                                                <button type="button" class="px-4 py-2 rounded-xl bg-purple-700 text-white text-xs font-semibold hover:bg-purple-800 transition shadow-xs" onclick="this.closest('dialog').close()">
+                                                    Close
+                                                </button>
+                                            </div>
+                                        </dialog>
+                                                                    </td>
+                            </tr>
+                                                                                <tr class="align-top hover:bg-purple-50">
+                                <td class="px-5 py-4 font-medium break-words">Mary Rose lagura</td>
+                                <td class="px-5 py-4">
+                                    <details>
+                                        <summary class="cursor-pointer text-purple-700">1 case</summary>
+                                                                                    <a class="block mt-2 text-purple-700 underline break-words [overflow-wrap:anywhere]" href="http://localhost/admin/cases/53?from=case-profiles">BA2-042526-008</a>
+                                                                            </details>
+                                </td>
+                                <td class="px-5 py-4 break-words">VAWC — Special Protection of Children Against Abuse, Exploitation, and Discrimination Act</td>
+                                <td class="px-5 py-4">12</td>
+                                <td class="px-5 py-4 break-words">Sta Rosa Cavite</td>
+                                <td class="px-5 py-4 align-middle text-center">
+                                                                                                                                                        <div class="flex min-h-10 items-center justify-center">
+                                            <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-purple-700 text-white hover:bg-purple-800 text-xs font-medium shadow-xs transition" aria-haspopup="dialog" aria-controls="guardian-victim-53" onclick="document.getElementById('guardian-victim-53').showModal()">
+                                                <i class="fas fa-eye flex h-4 w-4 shrink-0 items-center justify-center leading-none text-xs" aria-hidden="true"></i>
+                                                <span class="sr-only">View</span>
+                                            </button>
+                                        </div>
+                                        <dialog id="guardian-victim-53" aria-labelledby="guardian-victim-53-title" class="guardian-dialog rounded-2xl p-0 shadow-2xl w-full max-w-lg text-gray-800 border border-gray-100 overflow-hidden backdrop:bg-slate-900/60 backdrop:backdrop-blur-xs">
+                                            
+                                            <div class="bg-gradient-to-r from-purple-700 to-purple-600 px-6 py-4 flex items-center justify-between text-white">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white text-base">
+                                                        <i class="fas fa-user-shield"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 id="guardian-victim-53-title" class="text-base font-bold text-white leading-tight">Guardian Information</h3>
+                                                        <p class="text-xs text-purple-200 mt-0.5">Victim: <span class="text-white font-semibold">Mary Rose lagura</span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            
+                                            <div class="p-6 space-y-4 max-h-[65vh] overflow-y-auto">
+                                                                                                    <div class="bg-gray-50/80 border border-gray-200 rounded-xl p-4">
+                                                                                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Guardian Name</span>
+                                                                <span class="font-bold text-gray-900 break-words">Nelia Sarao</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Relationship</span>
+                                                                <span class="font-medium text-gray-800 break-words">Aunt/Uncle</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Contact Number</span>
+                                                                <span class="font-medium text-gray-800 break-words">09675800511</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[11px] text-gray-500 uppercase font-semibold block mb-0.5">Address</span>
+                                                                <span class="font-medium text-gray-800 break-words">STA ROSA CAVITE</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                                                            </div>
+
+                                            
+                                            <div class="px-6 py-3.5 bg-gray-50 border-t border-gray-200 flex justify-end">
+                                                <button type="button" class="px-4 py-2 rounded-xl bg-purple-700 text-white text-xs font-semibold hover:bg-purple-800 transition shadow-xs" onclick="this.closest('dialog').close()">
+                                                    Close
+                                                </button>
+                                            </div>
+                                        </dialog>
+                                                                    </td>
+                            </tr>
+                                            </tbody>
+                </table>
+            </div>
+                            <div class="px-6 py-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
+                    <div class="text-sm text-gray-600">
+                        Showing 1 - 5 of 47 profiles
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm opacity-50 cursor-not-allowed pointer-events-none">
+                            <i class="fas fa-chevron-left text-gray-600"></i>
+                        </a>
+                                                <div class="flex items-center gap-1">
+                                                                                        <a href="http://localhost/case-profiles?victims_page=1" class="inline-flex items-center justify-center w-9 h-9 bg-[#C41E3A] text-white border border-[#C41E3A] font-medium rounded-lg text-sm">
+                                    1
+                                </a>
+                                                            <a href="http://localhost/case-profiles?victims_page=2" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">
+                                    2
+                                </a>
+                                                            <a href="http://localhost/case-profiles?victims_page=3" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">
+                                    3
+                                </a>
+                                                                                                                            <span class="px-2 text-gray-400">…</span>
+                                                                <a href="http://localhost/case-profiles?victims_page=10" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">10</a>
+                                                    </div>
+                        <a href="http://localhost/case-profiles?victims_page=2" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm ">
+                            <i class="fas fa-chevron-right text-gray-600"></i>
+                        </a>
+                    </div>
+                </div>
+                        </div>
+
+            <!-- Admin phone-only profile cards -->
+            <div class="case-profiles-mobile-cards hidden p-3 space-y-3">
+                                                        <article class="case-profile-card bg-white rounded-xl border border-gray-200 shadow-sm" data-profile-age="13">
+                        <div class="flex items-start justify-between gap-3 mb-4">
+                            <div class="min-w-0">
+                                <p class="text-xs text-gray-500 mb-1">Victim</p>
+                                <p class="font-semibold text-gray-800 break-words">Reynald agus</p>
+                            </div>
+                            <span class="shrink-0 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700">1 case</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                            <div><p class="text-xs text-gray-500 mb-1">Age</p><p class="text-gray-800">13</p></div>
+                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Address</p><p class="text-gray-800 break-words">671 Purok5 Iba Silang Cavite</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Type of Case</p><p class="text-gray-800 break-words">VAWC - Anti-Sexual Harassment Act</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Cases</p><div class="flex flex-wrap gap-x-3 gap-y-1"><a class="text-sm text-purple-700 underline" href="http://localhost/admin/cases/57?from=case-profiles">BA2-042926-012</a></div></div>
+                        </div>
+                                                <div class="flex items-center justify-between pt-3 border-t border-gray-100"><span class="text-sm font-medium text-gray-700">Guardian Information</span><button type="button" class="case-profile-card-action rounded-lg bg-purple-700 text-white hover:bg-purple-800 transition" aria-haspopup="dialog" aria-controls="guardian-victim-57" onclick="const guardianDialog = document.getElementById('guardian-victim-57'); if (guardianDialog && !guardianDialog.open) { document.body.appendChild(guardianDialog); guardianDialog.showModal(); }"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View guardian information</span></button></div>
+                                            </article>
+                                                        <article class="case-profile-card bg-white rounded-xl border border-gray-200 shadow-sm" data-profile-age="14">
+                        <div class="flex items-start justify-between gap-3 mb-4">
+                            <div class="min-w-0">
+                                <p class="text-xs text-gray-500 mb-1">Victim</p>
+                                <p class="font-semibold text-gray-800 break-words">Zeon Belamide</p>
+                            </div>
+                            <span class="shrink-0 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700">1 case</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                            <div><p class="text-xs text-gray-500 mb-1">Age</p><p class="text-gray-800">14</p></div>
+                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Address</p><p class="text-gray-800 break-words">671 Purok5</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Type of Case</p><p class="text-gray-800 break-words">VAWC - Anti-Child Pornography Act</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Cases</p><div class="flex flex-wrap gap-x-3 gap-y-1"><a class="text-sm text-purple-700 underline" href="http://localhost/admin/cases/56?from=case-profiles">BA2-042826-011</a></div></div>
+                        </div>
+                                                <div class="flex items-center justify-between pt-3 border-t border-gray-100"><span class="text-sm font-medium text-gray-700">Guardian Information</span><button type="button" class="case-profile-card-action rounded-lg bg-purple-700 text-white hover:bg-purple-800 transition" aria-haspopup="dialog" aria-controls="guardian-victim-56" onclick="const guardianDialog = document.getElementById('guardian-victim-56'); if (guardianDialog && !guardianDialog.open) { document.body.appendChild(guardianDialog); guardianDialog.showModal(); }"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View guardian information</span></button></div>
+                                            </article>
+                                                        <article class="case-profile-card bg-white rounded-xl border border-gray-200 shadow-sm" data-profile-age="10">
+                        <div class="flex items-start justify-between gap-3 mb-4">
+                            <div class="min-w-0">
+                                <p class="text-xs text-gray-500 mb-1">Victim</p>
+                                <p class="font-semibold text-gray-800 break-words">Rosalie Valdez</p>
+                            </div>
+                            <span class="shrink-0 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700">1 case</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                            <div><p class="text-xs text-gray-500 mb-1">Age</p><p class="text-gray-800">10</p></div>
+                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Address</p><p class="text-gray-800 break-words">Pob3 Silang Cavite</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Type of Case</p><p class="text-gray-800 break-words">VAWC - Anti-Online Sexual Abuse or Exploitation of Children (OSAEC) and Anti-Child Sexual Abuse or Exploitation Materials (CSAEM)</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Cases</p><div class="flex flex-wrap gap-x-3 gap-y-1"><a class="text-sm text-purple-700 underline" href="http://localhost/admin/cases/55?from=case-profiles">BA2-042626-010</a></div></div>
+                        </div>
+                                                <div class="flex items-center justify-between pt-3 border-t border-gray-100"><span class="text-sm font-medium text-gray-700">Guardian Information</span><button type="button" class="case-profile-card-action rounded-lg bg-purple-700 text-white hover:bg-purple-800 transition" aria-haspopup="dialog" aria-controls="guardian-victim-55" onclick="const guardianDialog = document.getElementById('guardian-victim-55'); if (guardianDialog && !guardianDialog.open) { document.body.appendChild(guardianDialog); guardianDialog.showModal(); }"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View guardian information</span></button></div>
+                                            </article>
+                                                        <article class="case-profile-card bg-white rounded-xl border border-gray-200 shadow-sm" data-profile-age="11">
+                        <div class="flex items-start justify-between gap-3 mb-4">
+                            <div class="min-w-0">
+                                <p class="text-xs text-gray-500 mb-1">Victim</p>
+                                <p class="font-semibold text-gray-800 break-words">Goodwin layto</p>
+                            </div>
+                            <span class="shrink-0 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700">1 case</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                            <div><p class="text-xs text-gray-500 mb-1">Age</p><p class="text-gray-800">11</p></div>
+                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Address</p><p class="text-gray-800 break-words">458 pob3</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Type of Case</p><p class="text-gray-800 break-words">VAWC - Special Protection of Children Against Abuse, Exploitation, and Discrimination Act</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Cases</p><div class="flex flex-wrap gap-x-3 gap-y-1"><a class="text-sm text-purple-700 underline" href="http://localhost/admin/cases/54?from=case-profiles">BA2-042626-009</a></div></div>
+                        </div>
+                                                <div class="flex items-center justify-between pt-3 border-t border-gray-100"><span class="text-sm font-medium text-gray-700">Guardian Information</span><button type="button" class="case-profile-card-action rounded-lg bg-purple-700 text-white hover:bg-purple-800 transition" aria-haspopup="dialog" aria-controls="guardian-victim-54" onclick="const guardianDialog = document.getElementById('guardian-victim-54'); if (guardianDialog && !guardianDialog.open) { document.body.appendChild(guardianDialog); guardianDialog.showModal(); }"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View guardian information</span></button></div>
+                                            </article>
+                                                        <article class="case-profile-card bg-white rounded-xl border border-gray-200 shadow-sm" data-profile-age="12">
+                        <div class="flex items-start justify-between gap-3 mb-4">
+                            <div class="min-w-0">
+                                <p class="text-xs text-gray-500 mb-1">Victim</p>
+                                <p class="font-semibold text-gray-800 break-words">Mary Rose lagura</p>
+                            </div>
+                            <span class="shrink-0 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700">1 case</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                            <div><p class="text-xs text-gray-500 mb-1">Age</p><p class="text-gray-800">12</p></div>
+                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Address</p><p class="text-gray-800 break-words">Sta Rosa Cavite</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Type of Case</p><p class="text-gray-800 break-words">VAWC - Special Protection of Children Against Abuse, Exploitation, and Discrimination Act</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Cases</p><div class="flex flex-wrap gap-x-3 gap-y-1"><a class="text-sm text-purple-700 underline" href="http://localhost/admin/cases/53?from=case-profiles">BA2-042526-008</a></div></div>
+                        </div>
+                                                <div class="flex items-center justify-between pt-3 border-t border-gray-100"><span class="text-sm font-medium text-gray-700">Guardian Information</span><button type="button" class="case-profile-card-action rounded-lg bg-purple-700 text-white hover:bg-purple-800 transition" aria-haspopup="dialog" aria-controls="guardian-victim-53" onclick="const guardianDialog = document.getElementById('guardian-victim-53'); if (guardianDialog && !guardianDialog.open) { document.body.appendChild(guardianDialog); guardianDialog.showModal(); }"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View guardian information</span></button></div>
+                                            </article>
+                                                    <div data-pagination-label="profiles" class="px-6 py-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
+        <div class="text-sm text-gray-600">Showing 1 - 5 of 47 profiles</div>
+        <div class="flex items-center gap-2">
+            <a href="#" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm opacity-50 cursor-not-allowed pointer-events-none"><i class="fas fa-chevron-left text-gray-600"></i><span class="sr-only">Previous page</span></a>
+                                                                                        <a href="http://localhost/case-profiles?victims_page=1" class="inline-flex items-center justify-center w-9 h-9 bg-[#C41E3A] text-white border border-[#C41E3A] font-medium rounded-lg text-sm">1</a>
+                            <a href="http://localhost/case-profiles?victims_page=2" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">2</a>
+                            <a href="http://localhost/case-profiles?victims_page=3" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">3</a>
+                         <span class="px-2 text-gray-400">...</span> <a href="http://localhost/case-profiles?victims_page=10" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">10</a>            <a href="http://localhost/case-profiles?victims_page=2" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm "><i class="fas fa-chevron-right text-gray-600"></i><span class="sr-only">Next page</span></a>
+        </div>
+    </div>
+                            </div>
+        </section>
+                                    <section class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <h2 class="px-5 py-4 text-lg font-semibold text-purple-800">Perpetrator Profiles</h2>
+            <div class="case-profiles-table-view">
+            <div class="overflow-x-auto">
+                <table class="case-profiles-table w-full min-w-[900px] table-fixed text-sm text-left">
+                    <colgroup>
+                        <col class="w-[16%]">
+                        <col class="w-[12%]">
+                        <col class="w-[22%]">
+                        <col class="w-[9%]">
+                        <col class="w-[21%]">
+                        <col class="w-[20%]">
+                    </colgroup>
+                    <thead class="bg-purple-700 text-white">
+                        <tr>
+                                                            <th class="px-5 py-3 ">Name</th>
+                                                            <th class="px-5 py-3 ">Cases</th>
+                                                            <th class="px-5 py-3 ">Type of Case</th>
+                                                            <th class="px-5 py-3 ">Age</th>
+                                                            <th class="px-5 py-3 ">Address</th>
+                                                            <th class="px-5 py-3 text-center align-middle">Guardian Information</th>
+                                                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                                                                                <tr class="align-top hover:bg-purple-50">
+                                <td class="px-5 py-4 font-medium break-words">Ramil perez</td>
+                                <td class="px-5 py-4">
+                                    <details>
+                                        <summary class="cursor-pointer text-purple-700">1 case</summary>
+                                                                                    <a class="block mt-2 text-purple-700 underline break-words [overflow-wrap:anywhere]" href="http://localhost/admin/cases/57?from=case-profiles">BA2-042926-012</a>
+                                                                            </details>
+                                </td>
+                                <td class="px-5 py-4 break-words">VAWC — Anti-Sexual Harassment Act</td>
+                                <td class="px-5 py-4">45</td>
+                                <td class="px-5 py-4 break-words">Not recorded</td>
+                                <td class="px-5 py-4 align-middle text-center">
+                                                                                                                N/A
+                                                                    </td>
+                            </tr>
+                                                                                <tr class="align-top hover:bg-purple-50">
+                                <td class="px-5 py-4 font-medium break-words">Jamrex Riosa</td>
+                                <td class="px-5 py-4">
+                                    <details>
+                                        <summary class="cursor-pointer text-purple-700">1 case</summary>
+                                                                                    <a class="block mt-2 text-purple-700 underline break-words [overflow-wrap:anywhere]" href="http://localhost/admin/cases/56?from=case-profiles">BA2-042826-011</a>
+                                                                            </details>
+                                </td>
+                                <td class="px-5 py-4 break-words">VAWC — Anti-Child Pornography Act</td>
+                                <td class="px-5 py-4">35</td>
+                                <td class="px-5 py-4 break-words">Not recorded</td>
+                                <td class="px-5 py-4 align-middle text-center">
+                                                                                                                N/A
+                                                                    </td>
+                            </tr>
+                                                                                <tr class="align-top hover:bg-purple-50">
+                                <td class="px-5 py-4 font-medium break-words">Rencio lagura</td>
+                                <td class="px-5 py-4">
+                                    <details>
+                                        <summary class="cursor-pointer text-purple-700">1 case</summary>
+                                                                                    <a class="block mt-2 text-purple-700 underline break-words [overflow-wrap:anywhere]" href="http://localhost/admin/cases/55?from=case-profiles">BA2-042626-010</a>
+                                                                            </details>
+                                </td>
+                                <td class="px-5 py-4 break-words">VAWC — Anti-Online Sexual Abuse or Exploitation of Children (OSAEC) and Anti-Child Sexual Abuse or Exploitation Materials (CSAEM)</td>
+                                <td class="px-5 py-4">21</td>
+                                <td class="px-5 py-4 break-words">Not recorded</td>
+                                <td class="px-5 py-4 align-middle text-center">
+                                                                                                                N/A
+                                                                    </td>
+                            </tr>
+                                                                                <tr class="align-top hover:bg-purple-50">
+                                <td class="px-5 py-4 font-medium break-words">William Burns</td>
+                                <td class="px-5 py-4">
+                                    <details>
+                                        <summary class="cursor-pointer text-purple-700">1 case</summary>
+                                                                                    <a class="block mt-2 text-purple-700 underline break-words [overflow-wrap:anywhere]" href="http://localhost/admin/cases/54?from=case-profiles">BA2-042626-009</a>
+                                                                            </details>
+                                </td>
+                                <td class="px-5 py-4 break-words">VAWC — Special Protection of Children Against Abuse, Exploitation, and Discrimination Act</td>
+                                <td class="px-5 py-4">61</td>
+                                <td class="px-5 py-4 break-words">Not recorded</td>
+                                <td class="px-5 py-4 align-middle text-center">
+                                                                                                                N/A
+                                                                    </td>
+                            </tr>
+                                                                                <tr class="align-top hover:bg-purple-50">
+                                <td class="px-5 py-4 font-medium break-words">Jose Romulo</td>
+                                <td class="px-5 py-4">
+                                    <details>
+                                        <summary class="cursor-pointer text-purple-700">1 case</summary>
+                                                                                    <a class="block mt-2 text-purple-700 underline break-words [overflow-wrap:anywhere]" href="http://localhost/admin/cases/53?from=case-profiles">BA2-042526-008</a>
+                                                                            </details>
+                                </td>
+                                <td class="px-5 py-4 break-words">VAWC — Special Protection of Children Against Abuse, Exploitation, and Discrimination Act</td>
+                                <td class="px-5 py-4">23</td>
+                                <td class="px-5 py-4 break-words">Not recorded</td>
+                                <td class="px-5 py-4 align-middle text-center">
+                                                                                                                N/A
+                                                                    </td>
+                            </tr>
+                                            </tbody>
+                </table>
+            </div>
+                            <div class="px-6 py-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
+                    <div class="text-sm text-gray-600">
+                        Showing 1 - 5 of 47 profiles
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm opacity-50 cursor-not-allowed pointer-events-none">
+                            <i class="fas fa-chevron-left text-gray-600"></i>
+                        </a>
+                                                <div class="flex items-center gap-1">
+                                                                                        <a href="http://localhost/case-profiles?perpetrators_page=1" class="inline-flex items-center justify-center w-9 h-9 bg-[#C41E3A] text-white border border-[#C41E3A] font-medium rounded-lg text-sm">
+                                    1
+                                </a>
+                                                            <a href="http://localhost/case-profiles?perpetrators_page=2" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">
+                                    2
+                                </a>
+                                                            <a href="http://localhost/case-profiles?perpetrators_page=3" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">
+                                    3
+                                </a>
+                                                                                                                            <span class="px-2 text-gray-400">…</span>
+                                                                <a href="http://localhost/case-profiles?perpetrators_page=10" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">10</a>
+                                                    </div>
+                        <a href="http://localhost/case-profiles?perpetrators_page=2" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm ">
+                            <i class="fas fa-chevron-right text-gray-600"></i>
+                        </a>
+                    </div>
+                </div>
+                        </div>
+
+            <!-- Admin phone-only profile cards -->
+            <div class="case-profiles-mobile-cards hidden p-3 space-y-3">
+                                                        <article class="case-profile-card bg-white rounded-xl border border-gray-200 shadow-sm" data-profile-age="45">
+                        <div class="flex items-start justify-between gap-3 mb-4">
+                            <div class="min-w-0">
+                                <p class="text-xs text-gray-500 mb-1">Perpetrator</p>
+                                <p class="font-semibold text-gray-800 break-words">Ramil perez</p>
+                            </div>
+                            <span class="shrink-0 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700">1 case</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                            <div><p class="text-xs text-gray-500 mb-1">Age</p><p class="text-gray-800">45</p></div>
+                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Address</p><p class="text-gray-800 break-words">Not recorded</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Type of Case</p><p class="text-gray-800 break-words">VAWC - Anti-Sexual Harassment Act</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Cases</p><div class="flex flex-wrap gap-x-3 gap-y-1"><a class="text-sm text-purple-700 underline" href="http://localhost/admin/cases/57?from=case-profiles">BA2-042926-012</a></div></div>
+                        </div>
+                                            </article>
+                                                        <article class="case-profile-card bg-white rounded-xl border border-gray-200 shadow-sm" data-profile-age="35">
+                        <div class="flex items-start justify-between gap-3 mb-4">
+                            <div class="min-w-0">
+                                <p class="text-xs text-gray-500 mb-1">Perpetrator</p>
+                                <p class="font-semibold text-gray-800 break-words">Jamrex Riosa</p>
+                            </div>
+                            <span class="shrink-0 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700">1 case</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                            <div><p class="text-xs text-gray-500 mb-1">Age</p><p class="text-gray-800">35</p></div>
+                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Address</p><p class="text-gray-800 break-words">Not recorded</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Type of Case</p><p class="text-gray-800 break-words">VAWC - Anti-Child Pornography Act</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Cases</p><div class="flex flex-wrap gap-x-3 gap-y-1"><a class="text-sm text-purple-700 underline" href="http://localhost/admin/cases/56?from=case-profiles">BA2-042826-011</a></div></div>
+                        </div>
+                                            </article>
+                                                        <article class="case-profile-card bg-white rounded-xl border border-gray-200 shadow-sm" data-profile-age="21">
+                        <div class="flex items-start justify-between gap-3 mb-4">
+                            <div class="min-w-0">
+                                <p class="text-xs text-gray-500 mb-1">Perpetrator</p>
+                                <p class="font-semibold text-gray-800 break-words">Rencio lagura</p>
+                            </div>
+                            <span class="shrink-0 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700">1 case</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                            <div><p class="text-xs text-gray-500 mb-1">Age</p><p class="text-gray-800">21</p></div>
+                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Address</p><p class="text-gray-800 break-words">Not recorded</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Type of Case</p><p class="text-gray-800 break-words">VAWC - Anti-Online Sexual Abuse or Exploitation of Children (OSAEC) and Anti-Child Sexual Abuse or Exploitation Materials (CSAEM)</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Cases</p><div class="flex flex-wrap gap-x-3 gap-y-1"><a class="text-sm text-purple-700 underline" href="http://localhost/admin/cases/55?from=case-profiles">BA2-042626-010</a></div></div>
+                        </div>
+                                            </article>
+                                                        <article class="case-profile-card bg-white rounded-xl border border-gray-200 shadow-sm" data-profile-age="61">
+                        <div class="flex items-start justify-between gap-3 mb-4">
+                            <div class="min-w-0">
+                                <p class="text-xs text-gray-500 mb-1">Perpetrator</p>
+                                <p class="font-semibold text-gray-800 break-words">William Burns</p>
+                            </div>
+                            <span class="shrink-0 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700">1 case</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                            <div><p class="text-xs text-gray-500 mb-1">Age</p><p class="text-gray-800">61</p></div>
+                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Address</p><p class="text-gray-800 break-words">Not recorded</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Type of Case</p><p class="text-gray-800 break-words">VAWC - Special Protection of Children Against Abuse, Exploitation, and Discrimination Act</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Cases</p><div class="flex flex-wrap gap-x-3 gap-y-1"><a class="text-sm text-purple-700 underline" href="http://localhost/admin/cases/54?from=case-profiles">BA2-042626-009</a></div></div>
+                        </div>
+                                            </article>
+                                                        <article class="case-profile-card bg-white rounded-xl border border-gray-200 shadow-sm" data-profile-age="23">
+                        <div class="flex items-start justify-between gap-3 mb-4">
+                            <div class="min-w-0">
+                                <p class="text-xs text-gray-500 mb-1">Perpetrator</p>
+                                <p class="font-semibold text-gray-800 break-words">Jose Romulo</p>
+                            </div>
+                            <span class="shrink-0 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700">1 case</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                            <div><p class="text-xs text-gray-500 mb-1">Age</p><p class="text-gray-800">23</p></div>
+                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Address</p><p class="text-gray-800 break-words">Not recorded</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Type of Case</p><p class="text-gray-800 break-words">VAWC - Special Protection of Children Against Abuse, Exploitation, and Discrimination Act</p></div>
+                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Cases</p><div class="flex flex-wrap gap-x-3 gap-y-1"><a class="text-sm text-purple-700 underline" href="http://localhost/admin/cases/53?from=case-profiles">BA2-042526-008</a></div></div>
+                        </div>
+                                            </article>
+                                                    <div data-pagination-label="profiles" class="px-6 py-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
+        <div class="text-sm text-gray-600">Showing 1 - 5 of 47 profiles</div>
+        <div class="flex items-center gap-2">
+            <a href="#" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm opacity-50 cursor-not-allowed pointer-events-none"><i class="fas fa-chevron-left text-gray-600"></i><span class="sr-only">Previous page</span></a>
+                                                                                        <a href="http://localhost/case-profiles?perpetrators_page=1" class="inline-flex items-center justify-center w-9 h-9 bg-[#C41E3A] text-white border border-[#C41E3A] font-medium rounded-lg text-sm">1</a>
+                            <a href="http://localhost/case-profiles?perpetrators_page=2" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">2</a>
+                            <a href="http://localhost/case-profiles?perpetrators_page=3" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">3</a>
+                         <span class="px-2 text-gray-400">...</span> <a href="http://localhost/case-profiles?perpetrators_page=10" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">10</a>            <a href="http://localhost/case-profiles?perpetrators_page=2" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm "><i class="fas fa-chevron-right text-gray-600"></i><span class="sr-only">Next page</span></a>
+        </div>
+    </div>
+                            </div>
+        </section>
+                    </div>
+</div>
+<style>
+    .guardian-dialog { margin: auto; max-width: min(32rem, calc(100vw - 2rem)); max-height: 85vh; overflow-y: auto; }
+    .guardian-dialog::backdrop { background: rgba(0, 0, 0, .5); }
+</style>
+
+    </div>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const mainContent = document.getElementById('mainContent');
+    if (!mainContent) return;
+
+    let headerRow = mainContent.querySelector(':scope > header > div');
+    if (!headerRow) {
+        const clockOnlyHeader = document.createElement('div');
+        clockOnlyHeader.className = 'portal-clock-only-header print:hidden';
+        headerRow = document.createElement('div');
+        headerRow.className = 'portal-clock-only-row';
+        clockOnlyHeader.append(headerRow);
+        mainContent.prepend(clockOnlyHeader);
+    }
+
+    if (headerRow.querySelector('[data-portal-clock]')) return;
+    const clock = document.createElement('time');
+    clock.className = 'portal-header-clock portal-page-clock';
+    clock.dataset.portalClock = '';
+    clock.setAttribute('aria-live', 'polite');
+    const update = () => {
+        const now = new Date();
+        const day = new Intl.DateTimeFormat(undefined, { weekday: 'long' }).format(now);
+        const date = new Intl.DateTimeFormat(undefined, { month: 'long', day: 'numeric', year: 'numeric' }).format(now);
+        const time = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(now);
+        clock.dateTime = now.toISOString();
+        clock.innerHTML = `<span class="portal-clock-segment portal-clock-calendar"><i class="far fa-calendar-alt" aria-hidden="true"></i><span class="portal-clock-day">${day}</span><span class="portal-clock-separator" aria-hidden="true">&bull;</span><span class="portal-clock-date">${date}</span></span><span class="portal-clock-divider" aria-hidden="true"></span><span class="portal-clock-segment portal-clock-time"><i class="far fa-clock" aria-hidden="true"></i><span>${time}</span></span>`;
+    };
+    const controls = headerRow.children.length > 1 ? headerRow.lastElementChild : null;
+    controls ? headerRow.insertBefore(clock, controls) : headerRow.append(clock);
+
+    const tabletLayout = window.matchMedia('(min-width: 641px) and (max-width: 1280px)');
+    const phoneLayout = window.matchMedia('(max-width: 640px)');
+    const isDeskOfficerHeader = document.body.classList.contains('desk-officer-header-theme');
+    const isDepartmentAdminHeader = document.body.classList.contains('bcpc-admin-header-theme')
+        || document.body.classList.contains('swd-admin-header-theme');
+    const supportsTabletHeader = document.body.classList.contains('desk-officer-header-theme')
+        || document.body.classList.contains('bcpc-admin-header-theme')
+        || document.body.classList.contains('swd-admin-header-theme');
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const roleBadge = document.querySelector('.desk-officer-tablet-role-badge, .department-admin-tablet-role-badge');
+    const clockParent = clock.parentElement;
+    const clockNextSibling = clock.nextSibling;
+    const mobileMenuParent = mobileMenuToggle?.parentElement;
+    const mobileMenuNextSibling = mobileMenuToggle?.nextSibling;
+    const roleBadgeParent = roleBadge?.parentElement;
+    const roleBadgeNextSibling = roleBadge?.nextSibling;
+
+    const restoreElement = (element, parent, nextSibling) => {
+        if (!element || !parent) return;
+        parent.insertBefore(element, nextSibling?.parentNode === parent ? nextSibling : null);
+    };
+
+    const syncTabletHeader = () => {
+        if ((supportsTabletHeader && tabletLayout.matches) || ((isDeskOfficerHeader || isDepartmentAdminHeader) && phoneLayout.matches)) {
+            clock.hidden = true;
+            if (mobileMenuToggle) headerRow.insertBefore(mobileMenuToggle, headerRow.firstElementChild);
+            headerRow.classList.add('tablet-header-row');
+            if (roleBadge && controls) controls.append(roleBadge);
+            return;
+        }
+
+        clock.hidden = false;
+        headerRow.classList.remove('tablet-header-row');
+        restoreElement(clock, clockParent, clockNextSibling);
+        restoreElement(mobileMenuToggle, mobileMenuParent, mobileMenuNextSibling);
+        restoreElement(roleBadge, roleBadgeParent, roleBadgeNextSibling);
+    };
+
+    tabletLayout.addEventListener('change', syncTabletHeader);
+    phoneLayout.addEventListener('change', syncTabletHeader);
+    syncTabletHeader();
+    update();
+    window.setInterval(update, 1000);
+});
+</script>
+    
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const markAllReadBtn = document.getElementById('markAllReadBtn');
+    const actionDetailsDialog = document.getElementById('notification-action-details');
+    const closeActionDetails = () => actionDetailsDialog?.close();
+    document.getElementById('notification-action-details-close')?.addEventListener('click', closeActionDetails);
+    document.getElementById('notification-action-details-cancel')?.addEventListener('click', closeActionDetails);
+    const showUnavailableNotification = () => {
+        const message = 'This notification is no longer available.';
+        if (window.Swal) {
+            window.Swal.fire({ icon: 'info', text: message, confirmButtonColor: '#C41E3A' });
+        } else {
+            window.alert(message);
+        }
+    };
+    const openNotificationDestination = async (url) => {
+        try {
+            const response = await fetch(url, {
+                method: 'HEAD',
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            if (response.ok) {
+                window.location.assign(url);
+                return;
+            }
+        } catch (_) {
+            // Treat an unavailable destination as a stale notification.
+        }
+        showUnavailableNotification();
+    };
+    
+    if (markAllReadBtn) {
+        markAllReadBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) return;
+            
+            fetch('/notifications/mark-read', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken.content,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove unread styling
+                    document.querySelectorAll('.notification-item').forEach(item => {
+                        item.classList.remove('bg-purple-50/50', 'border-l-4', 'border-purple-500');
+                    });
+                    // Hide all unread dots
+                    document.querySelectorAll('.notification-item .bg-purple-500.rounded-full').forEach(dot => {
+                        dot.style.display = 'none';
+                    });
+                    // Reload to refresh
+                    setTimeout(() => window.location.reload(), 300);
+                }
+            })
+            .catch(console.error);
+        });
+    }
+    
+    // Handle notification clicks
+    document.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            if (e.ctrlKey || e.metaKey) return;
+            
+            const isPasswordReset = this.getAttribute('data-is-password-reset') === 'true';
+            const url = this.getAttribute('href');
+            const notificationId = this.getAttribute('data-notification-id');
+            const requestId = this.getAttribute('data-request-id');
+            const actionDetails = this.getAttribute('data-action-details');
+            
+            // Mark as read
+            if (notificationId) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (csrfToken) {
+                    fetch('/notifications/mark-read', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken.content,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ notification_id: notificationId })
+                    }).catch(() => {});
+                }
+            }
+            
+            // Password reset: dismiss the notification and reload
+            if (isPasswordReset && requestId) {
+                e.preventDefault();
+                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (csrfToken) {
+                    fetch('/admin/password-reset-requests/' + requestId + '/dismiss', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken.content,
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(() => {
+                        window.location.reload();
+                    }).catch(() => {
+                        window.location.reload();
+                    });
+                }
+            }
+
+            // Each notification is a direct link to its related record or activity.
+            if (!isPasswordReset && url && url !== '#' && !url.startsWith('javascript:')) {
+                e.preventDefault();
+                openNotificationDestination(url);
+            }
+        });
+    });
+
+    if (true) {
+        let refreshing = false;
+        const refreshRecentActivity = async () => {
+            if (refreshing || document.hidden) return;
+            refreshing = true;
+            try {
+                const response = await fetch(window.location.href, {
+                    cache: 'no-store',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                });
+                if (!response.ok) return;
+                const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+                const nextList = page.querySelector('#recent-activity-list');
+                const currentList = document.querySelector('#recent-activity-list');
+                if (nextList && currentList && nextList.innerHTML !== currentList.innerHTML) {
+                    currentList.innerHTML = nextList.innerHTML;
+                }
+
+                const nextCount = page.querySelector('#notifications-unread-count');
+                const currentCount = document.querySelector('#notifications-unread-count');
+                if (nextCount && currentCount) {
+                    currentCount.textContent = nextCount.textContent;
+                } else if (nextCount && !currentCount) {
+                    document.querySelector('[aria-label="Notifications"]')?.append(nextCount.cloneNode(true));
+                } else if (!nextCount && currentCount) {
+                    currentCount.remove();
+                }
+            } catch (_) {
+                // Keep the currently displayed activity list if a refresh is unavailable.
+            } finally {
+                refreshing = false;
+            }
+        };
+
+        window.setInterval(refreshRecentActivity, 3000);
+        window.addEventListener('focus', refreshRecentActivity);
+    }
+});
+</script>
+<script>
+(() => {
+    let activeRequest;
+    const refreshProfiles = async (url) => {
+        activeRequest?.abort();
+        const request = new AbortController();
+        activeRequest = request;
+        try {
+            const response = await fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                signal: request.signal,
+            });
+            if (!response.ok) return;
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            const replacement = page.querySelector('#case-profiles-results');
+            const current = document.querySelector('#case-profiles-results');
+            if (!replacement || !current || request.signal.aborted || activeRequest !== request) return;
+            replacement.style.minHeight = `${current.offsetHeight}px`;
+            current.replaceWith(replacement);
+            history.replaceState({}, '', url);
+        } catch (error) {
+            if (error.name !== 'AbortError') throw error;
+        }
+    };
+
+    document.addEventListener('input', (event) => {
+        const form = event.target.closest('#case-profiles-filter-form');
+        if (!form || !['search', 'number'].includes(event.target.type)) return;
+        const url = new URL(form.action, location.origin);
+        url.search = new URLSearchParams(new FormData(form)).toString();
+        refreshProfiles(url);
+    });
+
+    document.addEventListener('click', (event) => {
+        const link = event.target.closest('#case-profiles-content a[href]');
+        if (!link) return;
+        const url = new URL(link.href, location.origin);
+        if (url.origin !== location.origin || !['victims_page', 'perpetrators_page'].some((name) => url.searchParams.has(name))) return;
+        event.preventDefault();
+        refreshProfiles(url);
+    });
+})();
+</script>
+<script>
+(function () {
+    var body = document.body;
+    var themed = body.classList.contains('bcpc-admin-header-theme')
+        || body.classList.contains('swd-admin-header-theme')
+        || body.classList.contains('desk-officer-header-theme');
+    if (!themed) return;
+
+    var mq = window.matchMedia('(max-width: 63.9375rem)');
+
+    var apply = function () {
+        if (mq.matches) {
+            body.classList.add('case-profiles-mobile-nav');
+        } else {
+            body.classList.remove('case-profiles-mobile-nav');
+        }
+
+        var sidebar = document.getElementById('sidebar');
+        if (!sidebar) return;
+
+        var open = mq.matches && sidebar.classList.contains('sidebar-open');
+        if (open) {
+            var header = document.querySelector('#mainContent > header') || document.querySelector('#mainContent > .portal-clock-only-header');
+            if (header) {
+                var bottom = Math.max(0, header.getBoundingClientRect().bottom);
+                sidebar.style.setProperty('top', bottom + 'px', 'important');
+                sidebar.style.setProperty('max-height', 'calc(100vh - ' + bottom + 'px)', 'important');
+            }
+            body.style.overflow = 'hidden';
+            document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
+        } else {
+            sidebar.style.removeProperty('top');
+            sidebar.style.removeProperty('max-height');
+            body.style.overflow = '';
+            document.documentElement.style.removeProperty('overflow-y');
+        }
+    };
+
+    var sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+        new MutationObserver(apply).observe(sidebar, { attributes: true, attributeFilter: ['class'] });
+    }
+    mq.addEventListener('change', apply);
+    window.addEventListener('resize', apply);
+    document.addEventListener('DOMContentLoaded', apply);
+    apply();
+})();
+</script>
+        <style>
+    #swdArchiveViewDialog { position: fixed; inset: 0; margin: auto; width: min(1100px, 95vw); max-width: 95vw; max-height: 85vh; padding: 0; border: 0; border-radius: .75rem; color: #374151; background: #fff; }
+    #swdArchiveViewDialog::backdrop { background: rgba(0, 0, 0, .4); }
+    #swdArchiveViewDialog .swd-archive-dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.5rem; border-bottom: 1px solid #e5e7eb; }
+    #swdArchiveViewDialog h2 { margin: 0; font-size: 1.5rem; font-weight: 600; }
+    #swdArchiveViewDialog [data-swd-archive-content] { text-align: left; max-height: 65vh; overflow: auto; padding: 1.5rem; }
+    #swdArchiveViewDialog .swd-archive-dialog-footer { padding: 1rem; text-align: center; border-top: 1px solid #e5e7eb; }
+</style>
+<dialog id="swdArchiveViewDialog" aria-labelledby="swdArchiveViewTitle">
+    <div class="swd-archive-dialog-header">
+        <h2 id="swdArchiveViewTitle"></h2>
+    </div>
+    <div data-swd-archive-content aria-live="polite"></div>
+    <div class="swd-archive-dialog-footer">
+        <button type="button" data-swd-archive-close class="rounded-lg bg-[#C41E3A] px-5 py-2 text-white">Close</button>
+    </div>
+</dialog>
+<script>
+(() => {
+    const dialog = document.getElementById('swdArchiveViewDialog');
+    const content = dialog.querySelector('[data-swd-archive-content]');
+    let request;
+    let generation = 0;
+    const close = () => dialog.close();
+    dialog.addEventListener('close', () => {
+        generation++;
+        request?.abort();
+        content.replaceChildren();
+    });
+    dialog.addEventListener('click', event => {
+        if (event.target !== dialog) return;
+        const bounds = dialog.getBoundingClientRect();
+        if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) close();
+    });
+    window.addEventListener('click', async event => {
+        if (event.target.closest('#swdArchiveViewDialog [data-swd-archive-close]')) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            close();
+            return;
+        }
+        const view = event.target.closest('[data-swd-archive-view], [data-swd-archived-referral], [data-swd-archived-recipient]');
+        if (!view) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        window.swdArchiveNavigation?.cancelPending();
+        request?.abort();
+        const current = ++generation;
+        const referral = view.hasAttribute('data-swd-archived-referral');
+        const recipient = view.hasAttribute('data-swd-archived-recipient');
+        const isCase = view.dataset.swdArchiveView === 'case';
+        document.getElementById('swdArchiveViewTitle').textContent = recipient ? 'Referral Info' : referral ? 'Referral Details' : isCase ? 'Case Details' : 'Quarterly Report';
+        content.textContent = 'Loading details...';
+        if (!dialog.open) dialog.showModal();
+        if (referral || recipient) {
+            const template = document.getElementById(recipient ? view.dataset.swdArchivedRecipient : view.dataset.swdArchivedReferral);
+            if (template) content.replaceChildren(template.content.cloneNode(true));
+            else content.textContent = 'Unable to load the archived record.';
+            return;
+        }
+        const load = async url => {
+            request?.abort();
+            const controller = new AbortController();
+            request = controller;
+            try {
+                const response = await fetch(url, { credentials: 'same-origin', signal: controller.signal, headers: isCase ? { 'X-Requested-With': 'XMLHttpRequest' } : {} });
+                if (!response.ok || response.redirected) throw new Error('Unable to load the archived record.');
+                const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+                if (!dialog.open || generation !== current || controller.signal.aborted) return;
+                page.querySelectorAll('script').forEach(script => script.remove());
+                if (isCase) {
+                    content.replaceChildren(...Array.from(page.body.childNodes));
+                    window.applyArchiveCaseModalDesign(content, document.getElementById('swdArchiveViewTitle'));
+                } else {
+                    const report = page.querySelector('.w-full.max-w-7xl.mx-auto');
+                    if (!report) throw new Error('Unable to load report details.');
+                    window.applyArchiveReportModalDesign(page, document.getElementById('swdArchiveViewTitle'));
+                    report.querySelector(':scope > .mb-6.flex')?.remove();
+                    report.querySelectorAll('form, button').forEach(control => control.remove());
+                    report.className = 'w-full';
+                    content.replaceChildren(report);
+                }
+            } catch (error) {
+                if (error.name !== 'AbortError' && dialog.open && generation === current) content.textContent = error.message;
+            }
+        };
+        content.onclick = event => {
+            const link = event.target.closest('a');
+            if (!link) return;
+            event.preventDefault();
+            event.stopPropagation();
+            if (!isCase && new URL(link.href).searchParams.has('case_records_page')) load(link.href);
+        };
+        await load(view.href);
+    }, true);
+})();
+</script>
+        <script>(() => {
+    const main = document.getElementById('mainContent');
+    if (!main) return;
+    let pageEvents = new AbortController();
+    window.swdArchiveNavigation = { cancelPending() {} };
+
+    // Run archive page scripts on a full page load and clean up their listeners
+    // when the page is left. Archive menu links use normal browser navigation.
+    const runPageScripts = async scripts => {
+        const signal = pageEvents.signal;
+        const scopedWindow = new Proxy(window, {
+            get(target, property) {
+                if (property === 'addEventListener') return (type, callback, options) => {
+                    target.addEventListener(type, callback, { ...(typeof options === 'boolean' ? { capture: options } : options), signal });
+                };
+                if (property === 'setInterval' || property === 'setTimeout') return (callback, delay, ...args) => {
+                    const id = target[property](callback, delay, ...args);
+                    signal.addEventListener('abort', () => {
+                        target[property === 'setInterval' ? 'clearInterval' : 'clearTimeout'](id);
+                    }, { once: true });
+                    return id;
+                };
+                const value = Reflect.get(target, property, target);
+                return typeof value === 'function' ? value.bind(target) : value;
+            }
+        });
+        const scopedDocument = new Proxy(document, {
+            get(target, property) {
+                if (property === 'addEventListener') return (type, callback, options) => {
+                    if (type === 'DOMContentLoaded') {
+                        callback.call(document, new Event(type));
+                        return;
+                    }
+                    target.addEventListener(type, callback, { ...(typeof options === 'boolean' ? { capture: options } : options), signal });
+                };
+                const value = Reflect.get(target, property, target);
+                return typeof value === 'function' ? value.bind(target) : value;
+            }
+        });
+        for (const script of scripts) {
+            if (script.type && script.type !== 'text/javascript') continue;
+            if (script.src) {
+                const response = await fetch(script.src, { credentials: 'same-origin' });
+                if (!response.ok) throw new Error('Unable to initialize the archive page.');
+                new Function('document', 'window', await response.text())(scopedDocument, scopedWindow);
+            } else {
+                // Preserve the existing restore modal's inline button callbacks.
+                const callbacks = ['openRestoreModal', 'closeRestoreModal'].map(name =>
+                    `if (typeof ${name} === 'function') window.${name} = ${name};`).join('\n');
+                new Function('document', 'window', script.textContent + '\n' + callbacks)(scopedDocument, scopedWindow);
+            }
+        }
+    };
+
+    const initialize = () => {
+        const scripts = document.getElementById('swd-archive-page-scripts');
+        if (scripts) {
+            runPageScripts(scripts.content.querySelectorAll('script')).catch(error => {
+                Swal.fire({ icon: 'error', title: 'Unable to Initialize Archive', text: error.message });
+            });
+        }
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize, { once: true });
+    else initialize();
+})();
+</script>
+        
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const dashboardMenuToggle = document.getElementById('dashboardMenuToggle');
+        const mobileMenuToggles = [mobileMenuToggle, dashboardMenuToggle].filter(Boolean);
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+        const sidebarStateKey = "swdAdminSidebarCollapsed";
+        
+                sidebar.classList.toggle('sidebar-collapsed', localStorage.getItem(sidebarStateKey) === 'true');
+                if (sidebarToggleBtn && sidebar) {
+            sidebarToggleBtn.setAttribute('aria-expanded', String(!sidebar.classList.contains('sidebar-collapsed')));
+        }
+
+        function collapseSidebar() {
+            sidebar.classList.add('sidebar-collapsed');
+            if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'false');
+            localStorage.setItem(sidebarStateKey, 'true');
+        }
+        
+        function expandSidebar() {
+            sidebar.classList.remove('sidebar-collapsed');
+            if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'true');
+            localStorage.setItem(sidebarStateKey, 'false');
+            // Remove the initial collapsed style if it exists
+            const initialStyle = document.getElementById('sidebar-initial-collapsed-style');
+            if (initialStyle) {
+                initialStyle.remove();
+            }
+            document.documentElement.classList.remove('sidebar-is-collapsed');
+        }
+        
+        // Ensure all non-form buttons have explicit type="button"
+        document.querySelectorAll('button:not([type])').forEach(btn => {
+            if (!btn.closest('form')) {
+                btn.setAttribute('type', 'button');
+            }
+        });
+
+        // Floating toggle button click
+        if (sidebarToggleBtn) {
+            sidebarToggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (sidebar.classList.contains('sidebar-collapsed')) {
+                    expandSidebar();
+                } else {
+                    collapseSidebar();
+                }
+            });
+        }
+        
+        // Mobile toggle - open sidebar
+        if (mobileMenuToggles.length) {
+            mobileMenuToggles.forEach(function(menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (document.body.classList.contains('admin-dashboard-mobile-nav') && window.matchMedia('(max-width: 63.9375rem)').matches && sidebar.classList.contains('sidebar-open')) {
+                    closeMobileSidebar();
+                    return;
+                }
+                // Open sidebar with fade in from left
+                sidebar.classList.add('sidebar-open');
+                mobileMenuToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'true'));
+                if (document.body.classList.contains('admin-dashboard-mobile-nav')) {
+                    document.body.style.overflow = 'hidden';
+                    document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
+                    mobileMenuToggles.forEach(toggle => {
+                        toggle.setAttribute('aria-label', 'Close navigation menu');
+                        toggle.querySelector('i')?.classList.replace('fa-bars', 'fa-xmark');
+                    });
+                    const dashboardHeader = document.getElementById('admin-dashboard-header');
+                    if (dashboardHeader) {
+                        const headerBottom = Math.max(0, dashboardHeader.getBoundingClientRect().bottom);
+                        sidebar.style.setProperty('top', `${headerBottom}px`, 'important');
+                        sidebar.style.setProperty('max-height', `calc(100vh - ${headerBottom}px)`, 'important');
+                    }
+                }
+                // Show overlay
+                if (sidebarOverlay) sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                });
+            });
+        }
+        
+        // Function to close mobile sidebar
+        function closeMobileSidebar() {
+            // Close sidebar with fade out to left
+            sidebar.classList.remove('sidebar-open');
+            mobileMenuToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'false'));
+            if (document.body.classList.contains('admin-dashboard-mobile-nav')) {
+                document.body.style.overflow = '';
+                document.documentElement.style.removeProperty('overflow-y');
+                mobileMenuToggles.forEach(toggle => {
+                    toggle.setAttribute('aria-label', 'Open navigation menu');
+                    toggle.querySelector('i')?.classList.replace('fa-xmark', 'fa-bars');
+                });
+                sidebar.style.removeProperty('top');
+                sidebar.style.removeProperty('max-height');
+            }
+            // Hide overlay
+            if (sidebarOverlay) sidebarOverlay.classList.add('opacity-0', 'pointer-events-none');
+        }
+        
+        // Close sidebar on overlay click (mobile)
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeMobileSidebar();
+            });
+        }
+        
+        // Close sidebar via close button (mobile)
+        if (sidebarCloseBtn) {
+            sidebarCloseBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeMobileSidebar();
+            });
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sidebar?.classList.contains('sidebar-open')) {
+                closeMobileSidebar();
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            if (window.matchMedia('(min-width: 80.0625rem)').matches) closeMobileSidebar();
+        });
+        
+        // Handle logout button
+        const logoutForm = document.getElementById('logout-form');
+        const logoutButton = document.getElementById('logout-button');
+        
+        if (logoutButton) {
+            logoutButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                Swal.fire({
+                    title: 'Logout',
+        html: '<svg class="logout-modal-symbol" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M12 5l7 7-7 7v-4H7V9h5V5Z" fill="currentColor"/></svg><p class="logout-modal-message">Are you sure you want to log out?</p>',
+        showCancelButton: true,
+                    confirmButtonText: 'Yes, log me out',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#b91c1c',
+                    cancelButtonColor: '#ef4444',
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'rounded-xl app-logout-modal',
+                        container: 'swal2-container-high-z'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Logging out...',
+                            html: '<div class="text-center py-4">' +
+                                '<i class="fas fa-check-circle text-5xl text-green-500 mb-4"></i>' +
+                                '<p class="text-gray-700">You have been successfully logged out.</p>' +
+                                '</div>',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            timerProgressBar: true,
+                            customClass: {
+                                popup: 'rounded-xl'
+                            },
+                            willClose: () => {
+                                if (logoutForm) {
+                                    logoutForm.submit();
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        // Capture-phase listener: ensure any button outside forms has type="button" and prevent unintentional form submit/reload on first click
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('button');
+            if (btn && !btn.hasAttribute('type') && !btn.closest('form')) {
+                btn.setAttribute('type', 'button');
+            }
+        }, true);
+    });
+    </script>
+        <script src="http://localhost/js/admin-table-actions.js?v=1792211933"></script>
+            <script src="http://localhost/js/vawc-table-pagination.js"></script>
+        <script src="http://localhost/js/admin-pagination-style.js"></script>
+    <script src="http://localhost/js/table-action-controls.js?v=1792211933"></script>
+<script src="http://localhost/js/portal-theme.js?v=1792211933"></script>
+<script src="http://localhost/js/unsaved-changes-guard.js?v=1792211933"></script>
+<script src="http://localhost/js/multirole-loading.js?v=1792211933"></script>
+<script id="inactivity-settings" type="application/json">{"key":"portal-activity-1-5ed0f9b2ad7be785205c3080295d657a5ef6e343c207e2b02e000ef936bd0a5d","lastActivity":1792223131000,"serverNow":1792223131000,"activityUrl":"http:\/\/localhost\/session\/activity","statusUrl":"http:\/\/localhost\/session\/status","logoutUrl":"http:\/\/localhost\/logout","loginUrl":"http:\/\/localhost\/login","inactiveLoginUrl":"http:\/\/localhost\/login?inactive=1","csrf":null}</script>
+<script src="http://localhost/js/inactivity-timeout.js"></script>
+<script src="http://localhost/js/contact-number-validation.js?v=1792211933"></script>
+</body>
+</html>

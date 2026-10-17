@@ -737,9 +737,15 @@
         /* Apply after portal-theme.css so the mobile dashboard alignment wins. */
         @media (max-width: 63.9375rem) {
             body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div {
-                padding-left: 0 !important;
+                padding-left: max(.5rem, env(safe-area-inset-left)) !important;
                 padding-right: max(1rem, env(safe-area-inset-right)) !important;
                 align-items: flex-start !important;
+                flex-wrap: nowrap !important;
+                min-width: 0 !important;
+            }
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:last-child {
+                flex: 0 0 auto !important;
+                flex-wrap: nowrap !important;
             }
             body.portal-ui.admin-dashboard-mobile-nav #dashboardMenuToggle {
                 position: relative !important;
@@ -747,15 +753,32 @@
                 margin-left: 0 !important;
                 transform: none !important;
             }
-            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-child {
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-of-type {
                 flex-direction: row !important;
                 align-items: flex-start !important;
                 gap: .5rem !important;
+                min-width: 0 !important;
+                flex: 1 1 auto !important;
             }
-            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-child > div {
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-of-type > div {
                 width: auto !important;
                 flex: 1 1 auto !important;
+                min-width: 0 !important;
                 text-align: left !important;
+            }
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent .tablet-header-row {
+                display: flex !important;
+            }
+            body.portal-ui.admin-dashboard-mobile-nav #sidebar ~ #mainContent {
+                width: 100% !important;
+                min-width: 0 !important;
+                margin-left: 0 !important;
+            }
+        }
+
+        @media (max-width: 40rem) {
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header div:has(> img[alt="User Profile"]) {
+                display: none !important;
             }
         }
         @endif
@@ -1282,12 +1305,17 @@
                 mobileMenuToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'true'));
                 if (document.body.classList.contains('admin-dashboard-mobile-nav')) {
                     document.body.style.overflow = 'hidden';
+                    document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
                     mobileMenuToggles.forEach(toggle => {
                         toggle.setAttribute('aria-label', 'Close navigation menu');
                         toggle.querySelector('i')?.classList.replace('fa-bars', 'fa-xmark');
                     });
                     const dashboardHeader = document.getElementById('admin-dashboard-header');
-                    if (dashboardHeader) sidebar.style.setProperty('top', `${dashboardHeader.getBoundingClientRect().bottom}px`, 'important');
+                    if (dashboardHeader) {
+                        const headerBottom = Math.max(0, dashboardHeader.getBoundingClientRect().bottom);
+                        sidebar.style.setProperty('top', `${headerBottom}px`, 'important');
+                        sidebar.style.setProperty('max-height', `calc(100vh - ${headerBottom}px)`, 'important');
+                    }
                 }
                 // Show overlay
                 if (sidebarOverlay) sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
@@ -1302,11 +1330,13 @@
             mobileMenuToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'false'));
             if (document.body.classList.contains('admin-dashboard-mobile-nav')) {
                 document.body.style.overflow = '';
+                document.documentElement.style.removeProperty('overflow-y');
                 mobileMenuToggles.forEach(toggle => {
                     toggle.setAttribute('aria-label', 'Open navigation menu');
                     toggle.querySelector('i')?.classList.replace('fa-xmark', 'fa-bars');
                 });
                 sidebar.style.removeProperty('top');
+                sidebar.style.removeProperty('max-height');
             }
             // Hide overlay
             if (sidebarOverlay) sidebarOverlay.classList.add('opacity-0', 'pointer-events-none');

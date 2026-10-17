@@ -122,6 +122,90 @@
         }
     }
     @endif
+
+    /* Dashboard-style red navbar for mobile/tablet, matching /admin-dashboard.
+       The shared layouts keep their mobile top bar visible up to 80rem, so hide
+       it across that whole range (otherwise its recolored dark red shows). */
+    @media (max-width: 80rem) {
+        html body.portal-ui #mobileTopBar {
+            display: none !important;
+        }
+        html body.portal-ui #mainContent > header.sticky {
+            background: #C41E3A !important;
+            border-bottom-color: #99172E !important;
+        }
+        html body.portal-ui #mainContent > header > div > div:first-of-type :is(h1, h2, h3) {
+            color: #ffffff !important;
+        }
+        html body.portal-ui #mainContent > header > div > div:first-of-type p {
+            color: rgba(255, 255, 255, .85) !important;
+        }
+        html body.portal-ui #mainContent > header :is(#mobileMenuToggle, #pageMobileMenuToggle) {
+            background: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            color: #ffffff !important;
+        }
+        html body.portal-ui #mainContent > header :is(#mobileMenuToggle, #pageMobileMenuToggle) > i {
+            color: inherit !important;
+        }
+    }
+
+    /* Vertical dropdown burger menu, matching /admin-dashboard. */
+    @media (max-width: 63.9375rem) {
+        html body.portal-ui.case-profiles-mobile-nav #sidebar {
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: auto !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: calc(100vh - 60px) !important;
+            overflow-y: auto !important;
+            z-index: 999 !important;
+            border-radius: 0 0 14px 14px !important;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, .22) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(-8px) !important;
+            transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+            background: #C41E3A !important;
+            background-image: none !important;
+        }
+        html body.portal-ui.case-profiles-mobile-nav #sidebar.sidebar-open {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
+        }
+        html body.portal-ui.case-profiles-mobile-nav #sidebar.sidebar-collapsed,
+        html body.portal-ui.case-profiles-mobile-nav #sidebar.sidebar-collapsed-init {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+        }
+        html body.portal-ui.case-profiles-mobile-nav #sidebar .sidebar-header {
+            display: none !important;
+        }
+        html body.portal-ui.case-profiles-mobile-nav #sidebar .sidebar-text {
+            opacity: 1 !important;
+            max-width: none !important;
+        }
+        html body.portal-ui.case-profiles-mobile-nav #sidebar .sidebar-menu {
+            flex: 0 1 auto;
+            min-height: 0;
+            padding: .5rem !important;
+            overflow-y: auto !important;
+        }
+        html body.portal-ui.case-profiles-mobile-nav #sidebar .sidebar-link {
+            justify-content: flex-start !important;
+            gap: .75rem !important;
+        }
+        html body.portal-ui.case-profiles-mobile-nav #sidebar #sidebarCloseBtn {
+            display: none !important;
+        }
+    }
 </style>
 @endpush
 
@@ -481,4 +565,55 @@
 </script>
 @endpush
 @endif
+
+@push('scripts')
+<script>
+(function () {
+    var body = document.body;
+    var themed = body.classList.contains('bcpc-admin-header-theme')
+        || body.classList.contains('swd-admin-header-theme')
+        || body.classList.contains('desk-officer-header-theme');
+    if (!themed) return;
+
+    var mq = window.matchMedia('(max-width: 63.9375rem)');
+
+    var apply = function () {
+        if (mq.matches) {
+            body.classList.add('case-profiles-mobile-nav');
+        } else {
+            body.classList.remove('case-profiles-mobile-nav');
+        }
+
+        var sidebar = document.getElementById('sidebar');
+        if (!sidebar) return;
+
+        var open = mq.matches && sidebar.classList.contains('sidebar-open');
+        if (open) {
+            var header = document.querySelector('#mainContent > header') || document.querySelector('#mainContent > .portal-clock-only-header');
+            if (header) {
+                var bottom = Math.max(0, header.getBoundingClientRect().bottom);
+                sidebar.style.setProperty('top', bottom + 'px', 'important');
+                sidebar.style.setProperty('max-height', 'calc(100vh - ' + bottom + 'px)', 'important');
+            }
+            body.style.overflow = 'hidden';
+            document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
+        } else {
+            sidebar.style.removeProperty('top');
+            sidebar.style.removeProperty('max-height');
+            body.style.overflow = '';
+            document.documentElement.style.removeProperty('overflow-y');
+        }
+    };
+
+    var sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+        new MutationObserver(apply).observe(sidebar, { attributes: true, attributeFilter: ['class'] });
+    }
+    mq.addEventListener('change', apply);
+    window.addEventListener('resize', apply);
+    document.addEventListener('DOMContentLoaded', apply);
+    apply();
+})();
+</script>
+@endpush
 @endsection

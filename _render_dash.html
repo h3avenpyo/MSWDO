@@ -1,0 +1,2335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="csrf-token" content="">
+    <title>Dashboard - iSERVE Admin</title>
+    <link rel="icon" href="http://localhost/images/iserve_logo.jpg" type="image/jpeg">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Vite / Tailwind CSS -->
+            <script type="module" src="http://localhost:5173/@vite/client"></script><link rel="stylesheet" href="http://localhost:5173/resources/css/app.css" /><script type="module" src="http://localhost:5173/resources/js/app.js"></script>
+        
+        <script>
+        try {
+            document.documentElement.classList.toggle('admin-sidebar-collapsed', localStorage.getItem("swdAdminSidebarCollapsed") === 'true');
+        } catch (e) {}
+    </script>
+        <style>
+    .admin-dashboard-statistics > * { min-width: 0; }
+    .admin-dashboard-statistic-content { min-width: 0; }
+    .admin-dashboard-statistic-label { overflow-wrap: anywhere; line-height: 1.25; }
+    #dashboardMenuToggle { display: none; }
+
+    @media (min-width: 768px) and (max-width: 1439px) {
+        .admin-dashboard-statistics { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; }
+        .admin-dashboard-statistics > *:nth-child(-n + 3) { grid-column: span 2; }
+        .admin-dashboard-statistics > *:nth-child(n + 4) { grid-column: span 3; }
+        .admin-dashboard-statistic-card { padding: 1rem; }
+        .admin-dashboard-statistic-card > div { gap: .75rem; }
+        .admin-dashboard-statistic-card .admin-dashboard-statistic-icon { width: 3rem; height: 3rem; }
+    }
+
+    /* Mobile-first Dashboard layout for 320px–430px Android phones/iPhones. */
+    @media (max-width: 26.875rem) {
+        #admin-dashboard-header > div {
+            padding-top: max(.875rem, env(safe-area-inset-top));
+            padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right));
+        }
+        #admin-dashboard-main {
+            padding: 1rem max(1rem, env(safe-area-inset-right)) calc(1rem + env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+        }
+        #admin-dashboard-header button,
+        #mobileMenuToggle {
+            min-width: 3rem;
+            min-height: 3rem;
+        }
+        #mobileMenuToggle {
+            width: 2.25rem !important;
+            min-width: 2.25rem !important;
+            height: 2.25rem !important;
+            min-height: 2.25rem !important;
+            padding: .5rem !important;
+        }
+        #mobileMenuToggle i { font-size: 1rem !important; }
+        .admin-dashboard-statistics {
+            grid-template-columns: 1fr !important;
+            gap: .75rem !important;
+            margin-bottom: 1.5rem !important;
+        }
+        .admin-dashboard-statistics > * { grid-column: auto !important; }
+        .admin-dashboard-statistic-card { padding: 1rem !important; }
+        .admin-dashboard-statistic-card > div { gap: .75rem !important; }
+        .admin-dashboard-statistic-icon {
+            width: 3rem !important;
+            height: 3rem !important;
+        }
+        #admin-dashboard-charts { gap: 1rem !important; }
+        #admin-dashboard-charts .admin-dashboard-chart-title { padding: 1rem !important; }
+        #admin-dashboard-charts .admin-dashboard-chart-body { padding: 1rem !important; }
+        #admin-dashboard-charts .admin-dashboard-chart-canvas { height: 15rem !important; }
+    }
+
+    @media (min-width: 23.5rem) and (max-width: 26.875rem) {
+        .admin-dashboard-statistics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+        .admin-dashboard-statistics > *:last-child { grid-column: 1 / -1 !important; }
+        .admin-dashboard-statistic-card > div { align-items: flex-start; }
+        .admin-dashboard-statistic-content p:first-child { font-size: 1.5rem; }
+    }
+
+    /* Dashboard mobile navigation opens as a full-width drawer directly below the header, keeping the top navbar visible. */
+    @media (max-width: 63.9375rem) {
+        body.admin-dashboard-mobile-nav #mobileTopBar { display: none !important; }
+        body.admin-dashboard-mobile-nav #mobileMenuToggle { display: none !important; }
+        body.admin-dashboard-mobile-nav #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar {
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: auto !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: calc(100vh - 60px) !important;
+            overflow-y: auto !important;
+            z-index: 999 !important;
+            border-radius: 0 0 14px 14px !important;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, .22) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(-8px) !important;
+            transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-open {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed,
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed-init {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar .sidebar-header { display: none !important; }
+        html body.portal-ui.admin-dashboard-mobile-nav #sidebar {
+            background: #C41E3A !important;
+            background-image: none !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar .sidebar-text {
+            opacity: 1 !important;
+            max-width: none !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar .sidebar-menu {
+            flex: 0 1 auto;
+            min-height: 0;
+            padding: .5rem !important;
+            overflow-y: auto !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar .sidebar-link {
+            justify-content: flex-start !important;
+            gap: .75rem !important;
+        }
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar nav :is(a, button),
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-link {
+            background: #C41E3A !important;
+            color: #ffffff !important;
+        }
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar nav :is(a, button) :is(i, svg, span),
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-link :is(i, svg, span) {
+            color: #ffffff !important;
+        }
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar nav :is(a, button):hover,
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-link:hover {
+            background: #99172E !important;
+            color: #ffffff !important;
+        }
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-link:is(.bg-purple-600, .bg-purple-700\/70),
+        body.portal-ui.admin-dashboard-mobile-nav #sidebar nav [x-show] > :is(a, button).bg-purple-600 {
+            background: #99172E !important;
+            color: #ffffff !important;
+            box-shadow: inset 3px 0 0 #ffffff !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar #sidebarCloseBtn {
+            display: none !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebarToggleBtn { display: none !important; }
+        body.admin-dashboard-mobile-nav #mainContent {
+            width: 100% !important;
+            min-width: 0 !important;
+            margin-left: 0 !important;
+        }
+        body.admin-dashboard-mobile-nav #admin-dashboard-header > div > div:first-child {
+            min-width: 0;
+            flex: 1 1 auto;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: .5rem;
+        }
+        body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div {
+            align-items: flex-start;
+            padding-left: max(.5rem, env(safe-area-inset-left)) !important;
+            padding-right: max(1rem, env(safe-area-inset-right)) !important;
+        }
+        body.admin-dashboard-mobile-nav #admin-dashboard-header > div > div:first-child > div {
+            width: auto;
+            flex: 1 1 auto;
+            text-align: left;
+        }
+        body.admin-dashboard-mobile-nav #dashboardMenuToggle {
+            display: inline-flex !important;
+            flex: 0 0 2.5rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            align-items: center;
+            justify-content: center;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #ffffff;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header {
+            background: #C41E3A !important;
+            border-bottom-color: #99172E !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-of-type :is(h1, h2, h3, p) {
+            color: #ffffff !important;
+        }
+        body.admin-dashboard-mobile-nav #admin-dashboard-header h2,
+        body.admin-dashboard-mobile-nav #admin-dashboard-header p { min-width: 0; }
+    }
+</style>
+    <link rel="stylesheet" href="http://localhost/css/admin-pagination.css">
+    <link rel="stylesheet" href="http://localhost/css/table-action-controls.css?v=1792211933">
+    <link rel="stylesheet" href="http://localhost/css/portal-theme.css?v=1792211933">
+    
+    <style>
+        /* Hide elements with x-cloak until Alpine.js initializes */
+        [x-cloak] { display: none !important; }
+        /* Unify colored primary actions across BCPC/SWD admin pages. Status
+           badges and informational surfaces are excluded by targeting controls. */
+        .portal-ui #mainContent :is(button, a):is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]):not(:disabled):not([aria-disabled="true"]) {
+            background-color: #C41E3A !important;
+            border-color: #C41E3A !important;
+            color: #ffffff !important;
+        }
+        .portal-ui #mainContent :is(button, a):is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]):not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active) {
+            background-color: #A01830 !important;
+            border-color: #A01830 !important;
+            color: #ffffff !important;
+        }
+                html, body, #mainContent { scrollbar-width: none; }
+        html::-webkit-scrollbar, body::-webkit-scrollbar, #mainContent::-webkit-scrollbar { display: none; }
+        .portal-ui.swd-admin-header-theme #mainContent :is(table.archived-static-table, .archived-quarterly-table-view > table) {
+            table-layout: auto !important;
+            width: 100% !important;
+        }
+        .portal-ui.swd-admin-header-theme #mainContent .archived-quarterly-table-view > table > colgroup > col:last-child {
+            width: 1% !important;
+        }
+        .portal-ui.swd-admin-header-theme #mainContent :is(table.archived-static-table, .archived-quarterly-table-view > table) > :is(thead, tbody) > tr > :is(th, td):last-child:not([colspan]) {
+            width: 1% !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            padding-inline: .75rem !important;
+            white-space: nowrap !important;
+        }
+        .portal-ui.swd-admin-header-theme #mainContent :is(table.archived-static-table, .archived-quarterly-table-view > table) > tbody > tr > td:last-child:not([colspan]) > div {
+            display: inline-flex !important;
+            width: auto !important;
+            min-width: max-content !important;
+            flex-wrap: nowrap !important;
+        }
+                /* Native disabled controls in BCPC and SWD Admin use the shared muted
+           red state. Actionable deactivate/archive controls do not match :disabled. */
+        .portal-ui #mainContent button:disabled,
+        .portal-ui #mainContent input[type="button"]:disabled,
+        .portal-ui #mainContent input[type="submit"]:disabled,
+        .portal-ui #mainContent [role="button"][aria-disabled="true"],
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button) {
+            background-color: #FEE2E2 !important;
+            border-color: #FCA5A5 !important;
+            color: #991B1B !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+            transition: none !important;
+        }
+        .portal-ui #mainContent button:disabled:is(:hover, :focus, :active),
+        .portal-ui #mainContent input[type="button"]:disabled:is(:hover, :focus, :active),
+        .portal-ui #mainContent input[type="submit"]:disabled:is(:hover, :focus, :active),
+        .portal-ui #mainContent [role="button"][aria-disabled="true"]:is(:hover, :focus, :active),
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button):is(:hover, :focus, :active) {
+            background-color: #FEE2E2 !important;
+            border-color: #FCA5A5 !important;
+            color: #991B1B !important;
+            box-shadow: 0 2px 6px rgba(196, 30, 58, .12) !important;
+            transform: none !important;
+            filter: none !important;
+        }
+        .portal-ui #mainContent button:disabled > :is(i, svg),
+        .portal-ui #mainContent button:disabled > :is(span, .case-card-action-label) > :is(i, svg),
+        .portal-ui #mainContent [role="button"][aria-disabled="true"] > :is(i, svg),
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button) > :is(i, svg) {
+            color: #B91C1C !important;
+            stroke: currentColor;
+        }
+        .portal-ui #mainContent button:disabled,
+        .portal-ui #mainContent [role="button"][aria-disabled="true"],
+        .portal-ui #mainContent a[aria-disabled="true"]:not(#bcpc-refer-case-button) {
+            box-shadow: 0 2px 6px rgba(196, 30, 58, .12) !important;
+            opacity: 1 !important;
+        }
+                        /* SWD Admin uses the standard red treatment for every existing View action. */
+        .portal-ui #mainContent :is(a, button)[data-action="view"],
+        .portal-ui #mainContent .table-action-control[title^="View"],
+        .portal-ui #mainContent :is(a, button)[title^="View"] {
+            background-color: #C41E3A !important;
+            border-color: #C41E3A !important;
+            color: #ffffff !important;
+        }
+        .portal-ui #mainContent :is(a, button)[data-action="view"]:hover,
+        .portal-ui #mainContent .table-action-control[title^="View"]:hover,
+        .portal-ui #mainContent :is(a, button)[title^="View"]:hover {
+            background-color: #A01830 !important;
+            border-color: #A01830 !important;
+        }
+
+        /* Keep SWD Admin Download and Print actions in the same red action palette. */
+        .portal-ui #mainContent :is(a, button)[data-action="download"],
+        .portal-ui #mainContent :is(a, button)[data-action="print"],
+        .portal-ui #mainContent .table-action-control[title^="Download"],
+        .portal-ui #mainContent .table-action-control[title^="Print"],
+        .portal-ui #mainContent :is(a, button)[title^="Download"],
+        .portal-ui #mainContent :is(a, button)[title^="Print"] {
+            background-color: #C41E3A !important;
+            border-color: #C41E3A !important;
+            color: #ffffff !important;
+        }
+        .portal-ui #mainContent :is(a, button)[data-action="download"]:hover,
+        .portal-ui #mainContent :is(a, button)[data-action="print"]:hover,
+        .portal-ui #mainContent .table-action-control[title^="Download"]:hover,
+        .portal-ui #mainContent .table-action-control[title^="Print"]:hover,
+        .portal-ui #mainContent :is(a, button)[title^="Download"]:hover,
+        .portal-ui #mainContent :is(a, button)[title^="Print"]:hover {
+            background-color: #A01830 !important;
+            border-color: #A01830 !important;
+        }
+
+        /* Prevent SWD Admin Edit and Archive actions from flashing white while interacted with. */
+        .portal-ui #mainContent :is(a, button)[data-action="edit"]:not(:disabled):not([aria-disabled="true"]),
+        .portal-ui #mainContent :is(a, button)[data-action="archive"]:not(:disabled):not([aria-disabled="true"]),
+        .portal-ui #mainContent :is(a, button)[title^="Edit"]:not(:disabled):not([aria-disabled="true"]),
+        .portal-ui #mainContent :is(a, button)[title^="Archive"]:not(:disabled):not([aria-disabled="true"]) {
+            background-color: #C41E3A !important;
+            border-color: #C41E3A !important;
+            color: #ffffff !important;
+            transition: none !important;
+        }
+        .portal-ui #mainContent :is(a, button)[data-action="edit"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active),
+        .portal-ui #mainContent :is(a, button)[data-action="archive"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active),
+        .portal-ui #mainContent :is(a, button)[title^="Edit"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active),
+        .portal-ui #mainContent :is(a, button)[title^="Archive"]:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus, :active) {
+            background-color: #A01830 !important;
+            border-color: #A01830 !important;
+            color: #ffffff !important;
+        }
+                        #sidebar [x-show] > a, #sidebar [x-show] > button { font-family: inherit; font-size: .875rem; line-height: 1.25rem; font-weight: 500; }
+        #sidebar [x-show] > a > i, #sidebar [x-show] > button > i { font-size: .875rem; width: 1rem; text-align: center; flex-shrink: 0; }
+        @media (min-width: 64rem) {
+            #sidebar.sidebar-collapsed [x-show],
+            #sidebar.sidebar-collapsed-init [x-show] {
+                width: 100% !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            #sidebar.sidebar-collapsed [x-show] > :is(a, button),
+            #sidebar.sidebar-collapsed-init [x-show] > :is(a, button) {
+                justify-content: center !important;
+                gap: 0 !important;
+                width: 100% !important;
+                min-height: 3rem !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            #sidebar.sidebar-collapsed [x-show] > :is(a, button).bg-purple-600,
+            #sidebar.sidebar-collapsed-init [x-show] > :is(a, button).bg-purple-600 {
+                background-color: #C41E3A !important;
+                box-shadow: none !important;
+            }
+        }
+                        
+        /* SweetAlert2 high z-index override */
+        .swal2-container-high-z { z-index: 9999 !important; }
+        .swal2-container.swal2-backdrop-show { z-index: 9999 !important; }
+        
+        /* Custom scrollbar for sidebar */
+        .sidebar-menu::-webkit-scrollbar { width: 4px; }
+        .sidebar-menu::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); }
+        .sidebar-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px; }
+        .sidebar-menu::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
+        
+        /* Smooth sidebar transition - mobile slide + fade */
+        @media (max-width: 1023px) {
+            #sidebar {
+                opacity: 0;
+                transform: translateX(-100%);
+                transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                            opacity 0.3s ease-out;
+            }
+            
+            #sidebar.sidebar-open {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Desktop sidebar transition */
+        @media (min-width: 1024px) {
+            #sidebar {
+                transition: width 0.3s ease;
+            }
+        }
+        
+        /* Mobile close button - hidden by default, shown when sidebar is open */
+        #sidebarCloseBtn {
+            opacity: 0;
+            transform: scale(0.5) translateX(-10px);
+            transition: opacity 0.25s ease 0.2s, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s;
+            pointer-events: none;
+        }
+        
+        #sidebar.sidebar-open #sidebarCloseBtn {
+            opacity: 1;
+            transform: scale(1) translateX(0);
+            pointer-events: auto;
+        }
+        
+        /* Main content transition */
+        .sidebar-transition {
+            transition: margin-left 0.3s ease;
+        }
+        
+        /* Sidebar text - smooth fade */
+        .sidebar-text {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: opacity 0.15s ease, max-width 0.3s ease;
+            opacity: 1;
+            max-width: 200px;
+        }
+        
+        /* Sidebar link - fixed icon position from left edge */
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        
+        .sidebar-link i {
+            flex-shrink: 0;
+            width: 1.25rem;
+            min-width: 1.25rem;
+            text-align: center;
+        }
+        
+        /* Sidebar header */
+        .sidebar-header {
+            min-height: 5.5rem; /* Keep consistent height */
+            padding-left: 0.75rem !important; /* Fixed left padding */
+        }
+        
+        .sidebar-header > div {
+            justify-content: flex-start !important;
+        }
+        
+        .sidebar-header img {
+            flex-shrink: 0;
+        }
+        
+        /* Sidebar menu fixed padding */
+        .sidebar-menu {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+        #sidebar > nav.sidebar-menu {
+            overflow-x: hidden !important;
+        }
+        
+        /* Sidebar collapsed state - desktop only */
+        @media (min-width: 1024px) {
+            #sidebar.sidebar-collapsed {
+                width: 4.5rem;
+            }
+            
+            /* Hide text smoothly */
+            #sidebar.sidebar-collapsed .sidebar-text {
+                opacity: 0;
+                max-width: 0;
+                margin-left: 0;
+            }
+            
+            /* Header - same padding as expanded */
+            #sidebar.sidebar-collapsed .sidebar-header {
+                padding-left: 0.75rem !important;
+                padding-right: 0.5rem !important;
+                min-height: 5.5rem;
+            }
+            
+            #sidebar.sidebar-collapsed .sidebar-header > div {
+                justify-content: flex-start !important;
+                gap: 0;
+            }
+            
+            /* Keep header icon same size */
+            #sidebar.sidebar-collapsed .sidebar-header img {
+                width: 3rem;
+                height: 3rem;
+            }
+            
+            /* Menu - same padding as expanded */
+            #sidebar.sidebar-collapsed .sidebar-menu {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+            
+            /* Links - same left padding as expanded */
+            #sidebar.sidebar-collapsed .sidebar-link {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+            
+            /* Footer - same padding */
+            #sidebar.sidebar-collapsed > div:last-of-type {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+            
+            /* Toggle button position when collapsed */
+            #sidebar.sidebar-collapsed ~ #sidebarToggleBtn {
+                left: calc(4.5rem - 0.75rem);
+            }
+            
+            #sidebar.sidebar-collapsed ~ #sidebarToggleBtn i {
+                transform: rotate(180deg);
+            }
+            
+            /* Main content margin when collapsed */
+            #sidebar.sidebar-collapsed ~ #mainContent {
+                margin-left: 4.5rem;
+            }
+        }
+        
+        /* Floating sidebar toggle button - on edge of sidebar */
+        #sidebarToggleBtn {
+            position: fixed;
+            top: calc(1.25rem + 1.5rem); /* p-5 padding + half of w-12 logo */
+            left: calc(18rem - 0.75rem); /* sidebar width minus half button width */
+            transform: translateY(-50%);
+            z-index: 50;
+            transition: left 0.3s ease;
+        }
+        
+        #sidebarToggleBtn i {
+            transition: transform 0.3s ease;
+        }
+        
+        /* Initial collapsed state - applied via JS before render */
+        #sidebar.sidebar-collapsed-init {
+            width: 4.5rem !important;
+            transition: none !important;
+        }
+        #sidebar.sidebar-collapsed-init .sidebar-text {
+            opacity: 0 !important;
+            max-width: 0 !important;
+        }
+        #sidebar.sidebar-collapsed-init ~ #sidebarToggleBtn {
+            left: calc(4.5rem - 0.75rem) !important;
+            transition: none !important;
+        }
+        #sidebar.sidebar-collapsed-init ~ #sidebarToggleBtn i {
+            transform: rotate(180deg) !important;
+        }
+        #sidebar.sidebar-collapsed-init ~ #mainContent {
+            margin-left: 4.5rem !important;
+            transition: none !important;
+        }
+
+        /* Keep the only phone/tablet sidebar entry point visible. */
+        @media (max-width: 80rem) {
+            #mobileTopBar { display: flex !important; }
+            #mobileMenuToggle {
+                display: flex !important;
+                flex: 0 0 2.25rem;
+                width: 2.25rem;
+                height: 2.25rem;
+                align-items: center;
+                justify-content: center;
+                visibility: visible !important;
+            }
+        }
+
+        /*
+         * Tablet navigation (600px–1280px): retain one stable content column
+         * and use the existing mobile menu controls as an off-canvas drawer.
+         * rem/clamp values keep the layout proportional across portrait and
+         * landscape Android tablets.
+         */
+        @media (min-width: 37.5rem) and (max-width: 80rem) {
+            .department-admin-tablet-role-badge { display: none !important; }
+            #mobileTopBar {
+                display: flex !important;
+            }
+
+            #sidebarOverlay {
+                display: block !important;
+            }
+
+            #sidebar {
+                inset: 0 auto 0 0 !important;
+                width: min(18rem, 82vw) !important;
+                min-width: min(18rem, 82vw) !important;
+                max-width: 82vw !important;
+                height: auto !important;
+                max-height: none !important;
+                opacity: 0;
+                transform: translateX(-100%) !important;
+                transition: transform .3s ease, opacity .2s ease !important;
+            }
+
+            /* A desktop preference must not reduce the tablet drawer. */
+            #sidebar.sidebar-collapsed,
+            #sidebar.sidebar-collapsed-init {
+                width: min(18rem, 82vw) !important;
+                min-width: min(18rem, 82vw) !important;
+                max-width: 82vw !important;
+            }
+
+            #sidebar.sidebar-collapsed .sidebar-text,
+            #sidebar.sidebar-collapsed-init .sidebar-text {
+                opacity: 1 !important;
+                max-width: 12.5rem !important;
+            }
+
+            #sidebar.sidebar-open {
+                opacity: 1;
+                transform: translateX(0) !important;
+            }
+
+            #sidebarCloseBtn {
+                display: flex !important;
+            }
+
+            #sidebarToggleBtn {
+                display: none !important;
+            }
+
+            #mainContent,
+            #sidebar.sidebar-collapsed ~ #mainContent,
+            #sidebar.sidebar-collapsed-init ~ #mainContent {
+                width: 100% !important;
+                min-width: 0 !important;
+                margin-left: 0 !important;
+                overflow-x: hidden;
+            }
+        }
+
+        /* Keep the navigation rail visible on tablets and iPads. */
+        @media (min-width: 37.5rem) and (max-width: 80rem) {
+            #sidebarOverlay { display: none !important; }
+            #sidebar {
+                inset: 3.5rem auto 0 0 !important;
+                width: 18rem !important;
+                min-width: 18rem !important;
+                max-width: 18rem !important;
+                height: calc(100dvh - 3.5rem) !important;
+                max-height: none !important;
+                opacity: 1 !important;
+                transform: translateX(0) !important;
+                transition: width .3s ease !important;
+            }
+            #sidebar.sidebar-collapsed,
+            #sidebar.sidebar-collapsed-init {
+                width: 4.5rem !important;
+                min-width: 4.5rem !important;
+                max-width: 4.5rem !important;
+            }
+            #sidebar.sidebar-collapsed .sidebar-text,
+            #sidebar.sidebar-collapsed-init .sidebar-text {
+                opacity: 0 !important;
+                max-width: 0 !important;
+            }
+            #sidebarCloseBtn,
+            #mobileMenuToggle { display: none !important; }
+            #sidebarToggleBtn {
+                display: flex !important;
+                top: calc(3.5rem + 1.5rem) !important;
+            }
+            .portal-ui #sidebar ~ #mainContent {
+                width: calc(100vw - 18rem) !important;
+                min-width: 0 !important;
+                margin-left: 18rem !important;
+                overflow-x: hidden;
+            }
+            .portal-ui #sidebar.sidebar-collapsed ~ #mainContent,
+            .portal-ui #sidebar.sidebar-collapsed-init ~ #mainContent {
+                width: calc(100vw - 4.5rem) !important;
+                margin-left: 4.5rem !important;
+            }
+        }
+
+                /* Keep BCPC and SWD administrator pages within the tablet viewport. */
+        @media (min-width: 37.5rem) and (max-width: 80rem) {
+            #mainContent > :is(main, div, section) {
+                min-width: 0;
+                max-width: 100%;
+            }
+
+            #mainContent > main {
+                padding: clamp(1rem, 2.5vw, 1.5rem) !important;
+            }
+
+            #mainContent .portal-page-header > div,
+            #mainContent > header > div {
+                flex-wrap: nowrap;
+                gap: .75rem;
+            }
+
+            #mainContent .portal-page-header > div > #mobileMenuToggle + div,
+            #mainContent > header > div > #mobileMenuToggle + div {
+                min-width: 0;
+                flex: 1 1 auto;
+            }
+
+            #mainContent #mobileMenuToggle {
+                background-color: #BC0202 !important;
+                color: #fff !important;
+            }
+
+            #mainContent #mobileMenuToggle > i {
+                color: inherit !important;
+            }
+
+            #mainContent .portal-page-header > div > div:last-child,
+            #mainContent > header > div > div:last-child {
+                flex-wrap: nowrap;
+                justify-content: flex-end;
+            }
+
+            #mainContent .portal-page-header div:has(> img[alt="User Profile"]),
+            #mainContent > header div:has(> img[alt="User Profile"]) {
+                min-width: 0;
+                max-width: 100%;
+            }
+
+            #mainContent .portal-page-header div:has(> img[alt="User Profile"]) > div,
+            #mainContent > header div:has(> img[alt="User Profile"]) > div {
+                min-width: 0;
+            }
+
+            #mainContent .portal-page-header div:has(> img[alt="User Profile"]) > div > p:first-child,
+            #mainContent > header div:has(> img[alt="User Profile"]) > div > p:first-child {
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            #mainContent .department-admin-tablet-role-badge {
+                display: none !important;
+            }
+
+            #mainContent :is(.portal-table-scroll, .overflow-x-auto, .table-responsive) {
+                max-width: 100%;
+                overscroll-behavior-x: contain;
+            }
+
+            #mainContent form:not(table form) > :is(.flex, .grid) {
+                min-width: 0;
+            }
+
+            #mainContent form:not(table form) :is(input, select, textarea, .relative) {
+                min-width: 0;
+                max-width: 100%;
+            }
+
+            #mainContent :is(.pagination, [aria-label*="Pagination"]) {
+                max-width: 100%;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+
+            :is(dialog, .modal-dialog, .swal2-popup) {
+                width: min(calc(100vw - 2rem), 680px) !important;
+                max-width: calc(100vw - 2rem) !important;
+            }
+        }
+
+        /* Phone header: retain navigation, title, notifications, and avatar only. */
+        @media (max-width: 40rem) {
+            #mainContent .portal-page-clock,
+            #mainContent .portal-clock-only-header,
+            #mainContent .department-admin-tablet-role-badge {
+                display: none !important;
+            }
+
+            #mainContent .portal-page-header div:has(> img[alt="User Profile"]),
+            #mainContent > header div:has(> img[alt="User Profile"]) {
+                display: flex !important;
+            }
+
+            #mainContent .portal-page-header div:has(> img[alt="User Profile"]) > div,
+            #mainContent > header div:has(> img[alt="User Profile"]) > div {
+                display: none !important;
+            }
+
+            #mainContent .tablet-header-row {
+                display: grid !important;
+                grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+                align-items: center;
+                column-gap: .75rem;
+            }
+
+            #mainContent .tablet-header-row > #mobileMenuToggle {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            #mainContent .tablet-header-row > #mobileMenuToggle + div {
+                grid-column: 2;
+                grid-row: 1;
+                min-width: 0;
+            }
+
+            #mainContent .tablet-header-row > #mobileMenuToggle + div ~ div:last-child {
+                grid-column: 3;
+                grid-row: 1;
+                min-width: 0;
+            }
+        }
+        
+        /* Keep the phone header focused on navigation and account controls. */
+        @media (max-width: 47.9375rem) {
+            #mobileTopBar .admin-mobile-brand {
+                display: none !important;
+            }
+        }
+
+                /* Apply after portal-theme.css so the mobile dashboard alignment wins. */
+        @media (max-width: 63.9375rem) {
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div {
+                padding-left: max(.5rem, env(safe-area-inset-left)) !important;
+                padding-right: max(1rem, env(safe-area-inset-right)) !important;
+                align-items: flex-start !important;
+                flex-wrap: nowrap !important;
+                min-width: 0 !important;
+            }
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:last-child {
+                flex: 0 0 auto !important;
+                flex-wrap: nowrap !important;
+            }
+            body.portal-ui.admin-dashboard-mobile-nav #dashboardMenuToggle {
+                position: relative !important;
+                left: 0 !important;
+                margin-left: 0 !important;
+                transform: none !important;
+            }
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-of-type {
+                flex-direction: row !important;
+                align-items: flex-start !important;
+                gap: .5rem !important;
+                min-width: 0 !important;
+                flex: 1 1 auto !important;
+            }
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-of-type > div {
+                width: auto !important;
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+                text-align: left !important;
+            }
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent .tablet-header-row {
+                display: flex !important;
+            }
+            body.portal-ui.admin-dashboard-mobile-nav #sidebar ~ #mainContent {
+                width: 100% !important;
+                min-width: 0 !important;
+                margin-left: 0 !important;
+            }
+        }
+
+        @media (max-width: 40rem) {
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header div:has(> img[alt="User Profile"]) {
+                display: none !important;
+            }
+        }
+            </style>
+    
+    <script>
+        document.documentElement.classList.add('js');
+    </script>
+    <link rel="stylesheet" href="http://localhost/css/portal-modals.css?v=1792211933">
+    <script src="http://localhost/js/archive-case-modal-design.js?v=1792211933" defer></script>
+    <script src="http://localhost/js/portal-modal-close.js?v=1792211933" defer></script>
+    <link rel="stylesheet" href="http://localhost/css/logout-modal.css?v=1792211933">
+        <script src="http://localhost/js/portal-modal-presentation.js?v=1792211933" defer></script>
+</head>
+<body class="portal-ui admin-dashboard-mobile-nav swd-admin-header-theme font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased" style="--portal-user-initials: 'WS';">
+    
+    <!-- Mobile Sticky Top Bar -->
+    <div id="mobileTopBar" class="lg:hidden sticky top-0 z-30 bg-purple-900 text-white flex items-center justify-between px-4 py-2.5 shadow-md border-b border-purple-800">
+        <div class="flex items-center gap-3">
+            <button 
+                type="button"
+                id="mobileMenuToggle" 
+                class="bg-purple-800/80 hover:bg-purple-700 text-white p-2 rounded-lg transition-colors focus:outline-none flex items-center justify-center w-9 h-9"
+                aria-label="Toggle menu"
+                aria-controls="sidebar"
+                aria-expanded="false"
+            >
+                <i class="fas fa-bars text-base"></i>
+            </button>
+            <div class="admin-mobile-brand flex items-center gap-2">
+                <img src="http://localhost/images/iserve_logo.jpg" alt="I-serve Silang Logo" class="w-8 h-8 rounded object-contain">
+                <span class="font-bold text-base tracking-wide">iSERVE SILANG</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+                        <span class="department-admin-tablet-role-badge bg-[#C41E3A] text-white border-[#C41E3A] lg:bg-purple-800/80 lg:text-purple-200 lg:border-purple-700 text-xs px-2.5 py-1 rounded-full border font-medium">
+                Administrator
+            </span>
+                    </div>
+    </div>
+    
+    <!-- Sidebar Overlay (Mobile) -->
+    <div 
+        id="sidebarOverlay" 
+        class="fixed inset-0 bg-black/50 z-30 lg:hidden opacity-0 pointer-events-none transition-opacity duration-300"
+    ></div>
+    
+    <!-- Sidebar -->
+    <aside 
+        id="sidebar" 
+        class="fixed top-0 left-0 h-screen w-72 bg-[#C41E3A] text-white z-40
+               lg:translate-x-0 flex flex-col shadow-2xl
+               rounded-r-3xl lg:rounded-none "
+    >
+                <script>
+            document.getElementById('sidebar')?.classList.toggle('sidebar-collapsed', document.documentElement.classList.contains('admin-sidebar-collapsed'));
+        </script>
+                <!-- Sidebar Header -->
+        <div class="sidebar-header py-5 border-b border-white">
+            <div class="flex items-center justify-center gap-3">
+                <img src="http://localhost/images/iserve_logo.jpg" alt="I-serve Silang Logo" class="w-12 h-12 min-w-[3rem] rounded-lg object-contain">
+                <div class="sidebar-text whitespace-nowrap overflow-hidden leading-tight">
+                    <h1 class="text-xl font-bold tracking-wide">iSERVE SILANG</h1>
+                    <p class="mt-1 text-[10px] font-medium tracking-[.12em] text-white/70">SWD &amp; BCPC PORTAL</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Close Button - positioned outside sidebar flow -->
+        <button 
+            type="button"
+            id="sidebarCloseBtn"
+            class="lg:hidden absolute -right-4 top-6 w-8 h-8 bg-purple-600 rounded-full shadow-lg flex items-center justify-center text-white hover:bg-purple-700"
+            aria-label="Close sidebar"
+            aria-controls="sidebar"
+        >
+            <i class="fas fa-chevron-left text-sm"></i>
+        </button>
+        
+        <!-- Sidebar Menu -->
+        <nav class="flex-1 overflow-y-auto py-4 sidebar-menu">
+                        <!-- Dashboard -->
+            <a href="http://localhost/admin-dashboard" 
+               class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all duration-200
+                      bg-purple-600 text-white shadow-lg"
+               data-tooltip="Dashboard"
+               title="Dashboard"
+            >
+                <i class="fas fa-tachometer-alt w-5 text-center flex-shrink-0"></i>
+                <span class="sidebar-text whitespace-nowrap overflow-hidden">Dashboard</span>
+            </a>
+
+                                    <div x-data="{ casesOpen: false }" @sidebar-dropdown-open.window="if ($event.detail !== 'casesOpen') casesOpen = false" class="mb-1">
+                <button type="button" @click="casesOpen = !casesOpen; if (casesOpen) $dispatch('sidebar-dropdown-open', 'casesOpen')" class="sidebar-link flex items-center justify-between w-full px-4 py-3 rounded-lg text-purple-100 hover:bg-purple-700/50 hover:text-white" title="Manage cases" data-tooltip="Manage cases">
+                    <span class="flex items-center gap-3"><i class="fas fa-gavel w-5 text-center"></i><span class="sidebar-text">Manage cases</span></span>
+                    <i class="fas fa-chevron-down text-xs sidebar-text" :class="{ 'rotate-180': casesOpen }"></i>
+                </button>
+                <div x-show="casesOpen" x-cloak class="mt-1 pl-6 pr-2 space-y-1">
+                                                                    <a href="http://localhost/case-profiles" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-purple-200 hover:bg-purple-700/50 hover:text-white"><i class="fas fa-address-card" aria-hidden="true"></i><span class="sidebar-text">Case Profiles</span></a>
+                                                                    <a href="http://localhost/admin-barangay-cases" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-purple-200 hover:bg-purple-700/50 hover:text-white"><i class="fas fa-folder-open" aria-hidden="true"></i><span class="sidebar-text">Barangay Cases</span></a>
+                                                                    <a href="http://localhost/admin/cases/add" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-purple-200 hover:bg-purple-700/50 hover:text-white"><i class="fas fa-plus-circle" aria-hidden="true"></i><span class="sidebar-text">Add New Case</span></a>
+                                    </div>
+            </div>
+                                    <!-- User Information Dropdown -->
+            <div x-data="{ userMenuOpen: false }" @sidebar-dropdown-open.window="if ($event.detail !== 'userMenuOpen') userMenuOpen = false" class="mb-1">
+                <button type="button" 
+                        @click="userMenuOpen = !userMenuOpen; if (userMenuOpen && true) $dispatch('sidebar-dropdown-open', 'userMenuOpen')"
+                        class="sidebar-link flex items-center justify-between w-full px-4 py-3 rounded-lg transition-all duration-200 text-left
+                               text-purple-100 hover:bg-purple-700/50 hover:text-white"
+                        data-tooltip="User Information"
+                        title="User Information">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <i class="fas fa-users w-5 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">User Information</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs sidebar-text transition-transform duration-200" :class="{ 'rotate-180': userMenuOpen }"></i>
+                </button>
+                
+                <div x-show="userMenuOpen" x-cloak class="mt-1 pl-6 pr-2 space-y-1">
+                    <!-- User Information Link -->
+                    <a href="http://localhost/admin/users" 
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150
+                              text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                       title="Desk Officer Profile">
+                        <i class="fas fa-table-list text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">Desk Officer Profile</span>
+                    </a>
+
+                    <!-- User Register Link -->
+                    <a href="http://localhost/admin/users/create" 
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150
+                              text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                       title="Register Desk Officer">
+                        <i class="fas fa-user-plus text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">Register Desk Officer</span>
+                    </a>
+                    
+                    <!-- User Logs Link -->
+                                        <a href="http://localhost/admin/users/1/logs" 
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150
+                              text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                       title="Desk officer logs">
+                        <i class="fas fa-history text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">Desk officer logs</span>
+                    </a>
+                                    </div>
+            </div>
+            
+            <!-- Referrals -->
+            <a href="http://localhost/admin/referrals" 
+               class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all duration-200
+                      text-purple-100 hover:bg-purple-700/50 hover:text-white"
+               data-tooltip="Referrals"
+               title="Referrals"
+            >
+                <i class="fas fa-exchange-alt w-5 text-center flex-shrink-0"></i>
+                <span class="sidebar-text whitespace-nowrap overflow-hidden">Referrals</span>
+            </a>
+            
+            <!-- Referral Info -->
+            <a href="http://localhost/admin/referral-info" 
+               class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all duration-200
+                      text-purple-100 hover:bg-purple-700/50 hover:text-white"
+               data-tooltip="Referral Info"
+               title="Referral Info"
+            >
+                <i class="fas fa-envelope w-5 text-center flex-shrink-0"></i>
+                <span class="sidebar-text whitespace-nowrap overflow-hidden">Referral Info</span>
+            </a>
+            
+            <!-- Quarterly Reports -->
+            <a href="http://localhost/admin/quarterly-reports" 
+               class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all duration-200
+                      text-purple-100 hover:bg-purple-700/50 hover:text-white"
+               data-tooltip="Quarterly Reports"
+               title="Quarterly Reports"
+            >
+                <i class="fas fa-file-alt w-5 text-center flex-shrink-0"></i>
+                <span class="sidebar-text whitespace-nowrap overflow-hidden">Quarterly Reports</span>
+            </a>
+
+                        <!-- Calendar -->
+            <a href="http://localhost/admin/calendar" 
+               class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all duration-200
+                      text-purple-100 hover:bg-purple-700/50 hover:text-white"
+               data-tooltip="Calendar"
+               title="Calendar"
+            >
+                <i class="fas fa-calendar-alt w-5 text-center flex-shrink-0"></i>
+                <span class="sidebar-text whitespace-nowrap overflow-hidden">Calendar</span>
+            </a>
+            
+                        <!-- Archives Dropdown -->
+            <div x-data="{ archiveOpen: false }" @sidebar-dropdown-open.window="if ($event.detail !== 'archiveOpen') archiveOpen = false" class="mb-1">
+                <button type="button"
+                        @click="archiveOpen = !archiveOpen; if (archiveOpen && true) $dispatch('sidebar-dropdown-open', 'archiveOpen')"
+                        class="sidebar-link flex items-center justify-between w-full px-4 py-3 rounded-lg transition-all duration-200 text-left
+                               text-purple-100 hover:bg-purple-700/50 hover:text-white"
+                        data-tooltip="Archives"
+                        title="Archives">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <i class="fas fa-archive w-5 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">Archives</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs sidebar-text transition-transform duration-200" :class="{ 'rotate-180': archiveOpen }"></i>
+                </button>
+
+                <div x-show="archiveOpen" x-cloak class="mt-1 pl-6 pr-2 space-y-1">
+                    
+                                        <a href="http://localhost/admin/quarterly-reports/archived?section=barangay-cases"
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150
+                              text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                       title="Archived Barangay Cases">
+                        <i class="fas fa-map-marked-alt text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">Archived Barangay Cases</span>
+                    </a>
+                    
+                    <a href="http://localhost/admin/archived-referrals" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 text-purple-200 hover:bg-purple-700/50 hover:text-white" title="Archived Referrals">
+<i class="fas fa-paper-plane text-[11px] w-4 text-center flex-shrink-0"></i><span class="sidebar-text whitespace-nowrap overflow-hidden">Archived Referrals</span>
+</a>
+<!-- Archived Users Link -->
+                    <a href="http://localhost/admin/users/archived"
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150
+                              text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                       title="Archived Users">
+                        <i class="fas fa-user-lock text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">Archived Users</span>
+                    </a>
+
+                                        <a href="http://localhost/admin/quarterly-reports/archived?section=quarterly"
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150
+                              text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                       title="Archived Quarterly Reports">
+                        <i class="fas fa-chart-pie text-[11px] w-4 text-center flex-shrink-0"></i>
+                        <span class="sidebar-text whitespace-nowrap overflow-hidden">Archived Quarterly Reports</span>
+                    </a>
+                    
+                    <!-- BCPC Case Monitoring Archive Link -->
+                                    </div>
+            </div>
+
+
+        </nav>
+        
+        <!-- Sidebar Footer -->
+        <div class="py-4 border-t border-white sidebar-menu">
+            <form id="logout-form" method="POST" action="http://localhost/logout" class="hidden"  data-skip-loading-modal >
+                <input type="hidden" name="_token" value="" autocomplete="off">            </form>
+            <button 
+                type="button" 
+                id="logout-button" 
+                class="sidebar-link flex items-center gap-3 w-full py-3 rounded-lg 
+                       text-purple-100 hover:bg-red-500/20 hover:text-red-300 
+                       transition-all duration-200"
+                title="Logout"
+            >
+                <i class="fas fa-sign-out-alt w-5 text-center flex-shrink-0"></i>
+                <span class="sidebar-text whitespace-nowrap overflow-hidden">Logout</span>
+            </button>
+        </div>
+    </aside>
+    
+    <!-- Floating Sidebar Toggle Button (Desktop Only) -->
+    <button 
+        type="button"
+        id="sidebarToggleBtn" 
+        class="hidden lg:flex items-center justify-center w-6 h-6 bg-white rounded-full 
+               shadow-lg shadow-gray-600/60 hover:shadow-xl hover:bg-gray-50 
+               transition-all duration-200 border border-gray-300"
+        aria-label="Toggle sidebar"
+        aria-controls="sidebar"
+        aria-expanded="true"
+        title="Toggle sidebar"
+    >
+        <i class="fas fa-chevron-left text-gray-600 text-xs transition-transform duration-300"></i>
+    </button>
+    
+    <!-- Main Content -->
+    <div 
+        id="mainContent" data-page-title="Dashboard - iSERVE Admin"
+        class="lg:ml-72 min-h-screen sidebar-transition overflow-x-hidden"
+    >
+        
+
+<!-- Top Header -->
+<header id="admin-dashboard-header" data-dashboard-header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
+    <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
+        <div class="flex items-center gap-3 min-w-0">
+            <button id="dashboardMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="min-w-0">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Welcome, SWD SILANG</h2>
+                <p class="text-sm text-gray-500">SWD Administrator - Silang, Cavite</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <!-- Notifications -->
+            <!-- Notification Bell -->
+<div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false">
+    <button 
+        @click="open = !open" 
+        class="relative p-2 text-gray-600 hover:text-purple-700 hover:bg-purple-50 rounded-full transition-colors"
+        aria-label="Notifications"
+    >
+        <i class="fas fa-bell text-xl"></i>
+                <span id="notifications-unread-count" class="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full" style="background-color: #eab308 !important; color: #ffffff !important;">
+            9+
+        </span>
+            </button>
+    
+    <!-- Dropdown -->
+    <div 
+        x-show="open" 
+        x-cloak
+        @click.away="open = false"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 transform scale-95"
+        x-transition:enter-end="opacity-100 transform scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 transform scale-100"
+        x-transition:leave-end="opacity-0 transform scale-95"
+        class="notification-dropdown absolute right-0 mt-2 w-80 max-h-[50vh] flex flex-col bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden"
+        style="display: none; max-height: 50vh; max-height: 50dvh;"
+    >
+        <!-- Header -->
+        <div class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-purple-700 to-purple-600 text-white">
+            <h4 class="font-semibold text-sm">Recent Activity</h4>
+            <button 
+                id="markAllReadBtn"
+                class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition-colors"
+            >
+                Mark all as read
+            </button>
+        </div>
+        
+        <!-- Notification List -->
+        <div id="recent-activity-list" class="notification-dropdown-list min-h-0 flex-1 overflow-y-auto divide-y divide-gray-100">
+                        <a 
+                href="http://localhost/admin/cases/57?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/57?action=created"
+                data-notification-id="case_created_57"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">New case <strong>#BA2-042926-012</strong> was created</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/cases/56?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/56?action=created"
+                data-notification-id="case_created_56"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">New case <strong>#BA2-042826-011</strong> was created</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/cases/55?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/55?action=created"
+                data-notification-id="case_created_55"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">New case <strong>#BA2-042626-010</strong> was created</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/cases/54?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/54?action=created"
+                data-notification-id="case_created_54"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">New case <strong>#BA2-042626-009</strong> was created</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/cases/53?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/53?action=created"
+                data-notification-id="case_created_53"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">New case <strong>#BA2-042526-008</strong> was created</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/cases/52?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/52?action=created"
+                data-notification-id="case_created_52"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">New case <strong>#BA2-042526-007</strong> was created</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/users/40/logs" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/users/40/logs"
+                data-notification-id="action_386"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-history"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">User logged in</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/users/40/logs" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/users/40/logs"
+                data-notification-id="action_378"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-history"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">User logged in</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/cases/51?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/51?action=created"
+                data-notification-id="case_created_51"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">New case <strong>#BA2-042426-006</strong> was created</p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                        <a 
+                href="http://localhost/admin/cases/48?action=created" 
+                class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors notification-item
+                       bg-purple-50/50 border-l-4 border-purple-500"
+                data-url="http://localhost/admin/cases/48?action=created"
+                data-notification-id="status_updated_48"
+                data-is-password-reset="false"
+                data-request-id=""
+                            >
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm leading-snug" style="display:block !important;color:#374151 !important;">Case <strong>#SM2-042426-001</strong> status set to <strong>Case Reported</strong></p>
+                    <span class="text-xs mt-1 block" style="color:#b91c1c !important;">5 months ago</span>
+                </div>
+                                <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
+                            </a>
+                    </div>
+        
+        <!-- Footer -->
+        <div class="px-4 py-2 bg-gray-50 border-t border-gray-100">
+            <span class="text-xs" style="color:#6b7280 !important;">Last 10 activities</span>
+        </div>
+    </div>
+</div>
+
+<dialog id="notification-action-details" class="m-auto w-full max-w-md rounded-2xl border-0 p-0 shadow-2xl backdrop:bg-black/50">
+    <div class="p-6">
+        <div class="flex items-start justify-between gap-4 mb-5">
+            <div>
+                <h4 class="text-lg font-bold text-gray-800">Desk Officer Action</h4>
+                <p class="text-sm text-gray-500">Notification details</p>
+            </div>
+            <button type="button" id="notification-action-details-close" class="text-gray-400 hover:text-gray-700 text-xl" aria-label="Close">&times;</button>
+        </div>
+        <dl class="space-y-4 text-sm">
+            <div><dt class="font-semibold text-gray-500">Action</dt><dd id="notification-action-value" class="mt-1 text-gray-800"></dd></div>
+            <div><dt class="font-semibold text-gray-500">Performed by</dt><dd id="notification-officer-value" class="mt-1 text-gray-800"></dd></div>
+            <div><dt class="font-semibold text-gray-500">Performed at</dt><dd id="notification-time-value" class="mt-1 text-gray-800"></dd></div>
+        </dl>
+        <div class="mt-6 flex justify-end gap-3">
+            <button type="button" id="notification-action-details-cancel" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium">Close</button>
+            <a id="notification-action-details-link" href="#" class="px-4 py-2 rounded-lg bg-[#C41E3A] hover:bg-[#A01830] text-white text-sm font-medium">View Record</a>
+        </div>
+    </div>
+</dialog>
+
+            
+            <!-- User Menu -->
+            <div class="hidden sm:flex items-center gap-3">
+                <img src="http://localhost/images/mswdo_logo.jpg" alt="User Profile" class="w-10 h-10 rounded-full object-cover bg-gray-100">
+                <div class="text-right">
+                    <p class="text-sm font-medium text-gray-800">WCPU SILANG</p>
+                    <p class="text-xs text-gray-500">Administrator</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Dashboard Content -->
+<main id="admin-dashboard-main" class="px-4 pt-4 pb-4 sm:p-6 lg:p-8">
+    <!-- Page Title -->
+    <div class="flex items-start gap-3 mb-6">
+        <span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-600" aria-hidden="true">
+            <i class="fas fa-table-columns inline-flex items-center justify-center leading-none"></i>
+        </span>
+        <div class="min-w-0">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-700">Overview &amp; Case Statistics</h2>
+            <p class="mt-1 text-xs sm:text-sm text-gray-500">Real-time summary of registered cases and active desk officers</p>
+        </div>
+    </div>
+    
+    <!-- Summary Statistics -->
+    <div class="admin-dashboard-statistics grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+        <!-- Total Cases -->
+        <div class="admin-dashboard-statistic-card bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-3 sm:gap-4">
+                <div class="admin-dashboard-statistic-icon w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-file-alt text-white text-lg sm:text-xl"></i>
+                </div>
+                <div class="admin-dashboard-statistic-content">
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-800">48</p>
+                    <p class="admin-dashboard-statistic-label text-xs sm:text-sm text-gray-500">Total Cases</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Active Users -->
+        <div class="admin-dashboard-statistic-card bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-3 sm:gap-4">
+                <div class="admin-dashboard-statistic-icon w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-users text-white text-lg sm:text-xl"></i>
+                </div>
+                <div class="admin-dashboard-statistic-content">
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-800">63</p>
+                    <p class="admin-dashboard-statistic-label text-xs sm:text-sm text-gray-500">Active Users</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Active Cases -->
+        <div class="admin-dashboard-statistic-card bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-3 sm:gap-4">
+                <div class="admin-dashboard-statistic-icon w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-folder-open text-white text-lg sm:text-xl"></i>
+                </div>
+                <div class="admin-dashboard-statistic-content">
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-800">0</p>
+                    <p class="admin-dashboard-statistic-label text-xs sm:text-sm text-gray-500">VAWC Filed Cases</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Today's Cases -->
+        <div class="admin-dashboard-statistic-card bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-3 sm:gap-4">
+                <div class="admin-dashboard-statistic-icon w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-chart-line text-white text-lg sm:text-xl"></i>
+                </div>
+                <div class="admin-dashboard-statistic-content">
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-800">0</p>
+                    <p class="admin-dashboard-statistic-label text-xs sm:text-sm text-gray-500">Today's Cases</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Referred Cases -->
+        <div class="admin-dashboard-statistic-card bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow col-span-2 sm:col-span-1">
+            <div class="flex items-center gap-3 sm:gap-4">
+                <div class="admin-dashboard-statistic-icon w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-share-square text-white text-lg sm:text-xl"></i>
+                </div>
+                <div class="admin-dashboard-statistic-content">
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-800">0</p>
+                    <p class="admin-dashboard-statistic-label text-xs sm:text-sm text-gray-500">Referred Cases</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Grid -->
+    <div id="admin-dashboard-charts" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Barangay Case Counts Chart -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="admin-dashboard-chart-title px-5 py-4 border-b border-gray-100 flex items-start gap-2">
+                <i class="fas fa-chart-bar text-purple-600 mt-1"></i>
+                <div class="min-w-0">
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-800">Cases by Barangay</h3>
+                    <p class="mt-0.5 text-xs sm:text-sm text-gray-500">Distribution of recorded cases across barangays.</p>
+                </div>
+            </div>
+            <div class="admin-dashboard-chart-body p-4 sm:p-5">
+                <div class="admin-dashboard-chart-canvas h-80 sm:h-96 relative">
+                    <canvas id="barangayChart"></canvas>
+                                    </div>
+            </div>
+        </div>
+        
+        <!-- Case Types Distribution Chart -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="admin-dashboard-chart-title px-5 py-4 border-b border-gray-100 flex items-start gap-2">
+                <i class="fas fa-chart-pie text-purple-600 mt-1"></i>
+                <div class="min-w-0">
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-800">Case Types Distribution</h3>
+                    <p class="mt-0.5 text-xs sm:text-sm text-gray-500">Breakdown of recorded cases by case type.</p>
+                </div>
+            </div>
+            <div class="admin-dashboard-chart-body p-4 sm:p-5">
+                <div class="admin-dashboard-chart-canvas h-80 sm:h-96 relative">
+                    <canvas id="caseTypesChart"></canvas>
+                                    </div>
+            </div>
+        </div>
+                <div class="w-full lg:col-span-2 mt-2 self-start">
+            <section class="dashboard-announcements-box w-full bg-white rounded-xl shadow-sm border border-gray-100 p-4" aria-labelledby="swd-announcements-heading">
+    <h2 id="swd-announcements-heading" class="text-lg font-semibold text-gray-800 mb-3">Announcements</h2>
+    <div class="dashboard-announcement-list grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                <p class="text-sm text-gray-500">No announcements yet.</p>
+            </div>
+    </section>
+        </div>
+            </div>
+</main>
+
+
+    </div>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const mainContent = document.getElementById('mainContent');
+    if (!mainContent) return;
+
+    let headerRow = mainContent.querySelector(':scope > header > div');
+    if (!headerRow) {
+        const clockOnlyHeader = document.createElement('div');
+        clockOnlyHeader.className = 'portal-clock-only-header print:hidden';
+        headerRow = document.createElement('div');
+        headerRow.className = 'portal-clock-only-row';
+        clockOnlyHeader.append(headerRow);
+        mainContent.prepend(clockOnlyHeader);
+    }
+
+    if (headerRow.querySelector('[data-portal-clock]')) return;
+    const clock = document.createElement('time');
+    clock.className = 'portal-header-clock portal-page-clock';
+    clock.dataset.portalClock = '';
+    clock.setAttribute('aria-live', 'polite');
+    const update = () => {
+        const now = new Date();
+        const day = new Intl.DateTimeFormat(undefined, { weekday: 'long' }).format(now);
+        const date = new Intl.DateTimeFormat(undefined, { month: 'long', day: 'numeric', year: 'numeric' }).format(now);
+        const time = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(now);
+        clock.dateTime = now.toISOString();
+        clock.innerHTML = `<span class="portal-clock-segment portal-clock-calendar"><i class="far fa-calendar-alt" aria-hidden="true"></i><span class="portal-clock-day">${day}</span><span class="portal-clock-separator" aria-hidden="true">&bull;</span><span class="portal-clock-date">${date}</span></span><span class="portal-clock-divider" aria-hidden="true"></span><span class="portal-clock-segment portal-clock-time"><i class="far fa-clock" aria-hidden="true"></i><span>${time}</span></span>`;
+    };
+    const controls = headerRow.children.length > 1 ? headerRow.lastElementChild : null;
+    controls ? headerRow.insertBefore(clock, controls) : headerRow.append(clock);
+
+    const tabletLayout = window.matchMedia('(min-width: 641px) and (max-width: 1280px)');
+    const phoneLayout = window.matchMedia('(max-width: 640px)');
+    const isDeskOfficerHeader = document.body.classList.contains('desk-officer-header-theme');
+    const isDepartmentAdminHeader = document.body.classList.contains('bcpc-admin-header-theme')
+        || document.body.classList.contains('swd-admin-header-theme');
+    const supportsTabletHeader = document.body.classList.contains('desk-officer-header-theme')
+        || document.body.classList.contains('bcpc-admin-header-theme')
+        || document.body.classList.contains('swd-admin-header-theme');
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const roleBadge = document.querySelector('.desk-officer-tablet-role-badge, .department-admin-tablet-role-badge');
+    const clockParent = clock.parentElement;
+    const clockNextSibling = clock.nextSibling;
+    const mobileMenuParent = mobileMenuToggle?.parentElement;
+    const mobileMenuNextSibling = mobileMenuToggle?.nextSibling;
+    const roleBadgeParent = roleBadge?.parentElement;
+    const roleBadgeNextSibling = roleBadge?.nextSibling;
+
+    const restoreElement = (element, parent, nextSibling) => {
+        if (!element || !parent) return;
+        parent.insertBefore(element, nextSibling?.parentNode === parent ? nextSibling : null);
+    };
+
+    const syncTabletHeader = () => {
+        if ((supportsTabletHeader && tabletLayout.matches) || ((isDeskOfficerHeader || isDepartmentAdminHeader) && phoneLayout.matches)) {
+            clock.hidden = true;
+            if (mobileMenuToggle) headerRow.insertBefore(mobileMenuToggle, headerRow.firstElementChild);
+            headerRow.classList.add('tablet-header-row');
+            if (roleBadge && controls) controls.append(roleBadge);
+            return;
+        }
+
+        clock.hidden = false;
+        headerRow.classList.remove('tablet-header-row');
+        restoreElement(clock, clockParent, clockNextSibling);
+        restoreElement(mobileMenuToggle, mobileMenuParent, mobileMenuNextSibling);
+        restoreElement(roleBadge, roleBadgeParent, roleBadgeNextSibling);
+    };
+
+    tabletLayout.addEventListener('change', syncTabletHeader);
+    phoneLayout.addEventListener('change', syncTabletHeader);
+    syncTabletHeader();
+    update();
+    window.setInterval(update, 1000);
+});
+</script>
+    
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const markAllReadBtn = document.getElementById('markAllReadBtn');
+    const actionDetailsDialog = document.getElementById('notification-action-details');
+    const closeActionDetails = () => actionDetailsDialog?.close();
+    document.getElementById('notification-action-details-close')?.addEventListener('click', closeActionDetails);
+    document.getElementById('notification-action-details-cancel')?.addEventListener('click', closeActionDetails);
+    const showUnavailableNotification = () => {
+        const message = 'This notification is no longer available.';
+        if (window.Swal) {
+            window.Swal.fire({ icon: 'info', text: message, confirmButtonColor: '#C41E3A' });
+        } else {
+            window.alert(message);
+        }
+    };
+    const openNotificationDestination = async (url) => {
+        try {
+            const response = await fetch(url, {
+                method: 'HEAD',
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            if (response.ok) {
+                window.location.assign(url);
+                return;
+            }
+        } catch (_) {
+            // Treat an unavailable destination as a stale notification.
+        }
+        showUnavailableNotification();
+    };
+    
+    if (markAllReadBtn) {
+        markAllReadBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) return;
+            
+            fetch('/notifications/mark-read', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken.content,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove unread styling
+                    document.querySelectorAll('.notification-item').forEach(item => {
+                        item.classList.remove('bg-purple-50/50', 'border-l-4', 'border-purple-500');
+                    });
+                    // Hide all unread dots
+                    document.querySelectorAll('.notification-item .bg-purple-500.rounded-full').forEach(dot => {
+                        dot.style.display = 'none';
+                    });
+                    // Reload to refresh
+                    setTimeout(() => window.location.reload(), 300);
+                }
+            })
+            .catch(console.error);
+        });
+    }
+    
+    // Handle notification clicks
+    document.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            if (e.ctrlKey || e.metaKey) return;
+            
+            const isPasswordReset = this.getAttribute('data-is-password-reset') === 'true';
+            const url = this.getAttribute('href');
+            const notificationId = this.getAttribute('data-notification-id');
+            const requestId = this.getAttribute('data-request-id');
+            const actionDetails = this.getAttribute('data-action-details');
+            
+            // Mark as read
+            if (notificationId) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (csrfToken) {
+                    fetch('/notifications/mark-read', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken.content,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ notification_id: notificationId })
+                    }).catch(() => {});
+                }
+            }
+            
+            // Password reset: dismiss the notification and reload
+            if (isPasswordReset && requestId) {
+                e.preventDefault();
+                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (csrfToken) {
+                    fetch('/admin/password-reset-requests/' + requestId + '/dismiss', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken.content,
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(() => {
+                        window.location.reload();
+                    }).catch(() => {
+                        window.location.reload();
+                    });
+                }
+            }
+
+            // Each notification is a direct link to its related record or activity.
+            if (!isPasswordReset && url && url !== '#' && !url.startsWith('javascript:')) {
+                e.preventDefault();
+                openNotificationDestination(url);
+            }
+        });
+    });
+
+    if (true) {
+        let refreshing = false;
+        const refreshRecentActivity = async () => {
+            if (refreshing || document.hidden) return;
+            refreshing = true;
+            try {
+                const response = await fetch(window.location.href, {
+                    cache: 'no-store',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                });
+                if (!response.ok) return;
+                const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+                const nextList = page.querySelector('#recent-activity-list');
+                const currentList = document.querySelector('#recent-activity-list');
+                if (nextList && currentList && nextList.innerHTML !== currentList.innerHTML) {
+                    currentList.innerHTML = nextList.innerHTML;
+                }
+
+                const nextCount = page.querySelector('#notifications-unread-count');
+                const currentCount = document.querySelector('#notifications-unread-count');
+                if (nextCount && currentCount) {
+                    currentCount.textContent = nextCount.textContent;
+                } else if (nextCount && !currentCount) {
+                    document.querySelector('[aria-label="Notifications"]')?.append(nextCount.cloneNode(true));
+                } else if (!nextCount && currentCount) {
+                    currentCount.remove();
+                }
+            } catch (_) {
+                // Keep the currently displayed activity list if a refresh is unavailable.
+            } finally {
+                refreshing = false;
+            }
+        };
+
+        window.setInterval(refreshRecentActivity, 3000);
+        window.addEventListener('focus', refreshRecentActivity);
+    }
+});
+</script>
+<script>
+const swdDashboardAnnouncements = [];
+function showSwdDashboardAnnouncement(index) {
+    const item = swdDashboardAnnouncements[index];
+    if (!item) return;
+    const details = document.createElement('div');
+    details.className = 'text-left space-y-3';
+    const fields = [['Title', item.title], ['Date', item.date], ['Time (from)', item.from], ['Time (to)', item.to], ['Description', item.description], ['Location / Barangay', item.location], ['Created by', item.creator]];
+    fields.forEach(([label, value]) => {
+        if (!value) return;
+        const field = document.createElement('div');
+        const heading = document.createElement('strong');
+        heading.className = 'block text-sm text-gray-500';
+        heading.textContent = label;
+        const text = document.createElement('p');
+        text.className = 'whitespace-pre-wrap break-words text-gray-800';
+        text.textContent = value;
+        field.append(heading, text);
+        details.appendChild(field);
+    });
+    if (item.image) {
+        const picture = document.createElement('img');
+        picture.src = item.image;
+        picture.alt = item.title;
+        picture.className = 'max-w-full rounded-lg';
+        details.appendChild(picture);
+    }
+    Swal.fire({ title: 'Announcement Details', html: details, showCloseButton: true, confirmButtonText: 'Close' });
+}
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const isMobileDashboard = window.matchMedia('(max-width: 26.875rem)').matches;
+    // Barangay cases chart
+    const barangayCtx = document.getElementById('barangayChart');
+    if (barangayCtx) {
+        let barangayData = [{"barangay":"Balite II","code":"BA2","count":12,"color":"#167909"},{"barangay":"Acacia","code":"ACA","count":11,"color":"#c4ca42"},{"barangay":"Biga I","code":"BG1","count":7,"color":"#d3d944"},{"barangay":"Narra II","code":"NR2","count":4,"color":"#a5bfc9"},{"barangay":"Iba","code":"IBA","count":3,"color":"#98f137"},{"barangay":"Yakal","code":"YKL","count":3,"color":"#ea5d2f"},{"barangay":"Balubad","code":"BLB","count":2,"color":"#8f14e4"},{"barangay":"Buho","code":"BUH","count":1,"color":"#aab323"},{"barangay":"Biluso","code":"BIL","count":1,"color":"#c20ad4"},{"barangay":"Kaong","code":"KNG","count":1,"color":"#8e296a"},{"barangay":"Lalaan I","code":"LL1","count":1,"color":"#4e732c"},{"barangay":"San Miguel II","code":"SM2","count":1,"color":"#d82c8d"},{"barangay":"Tubuan III","code":"TB3","count":1,"color":"#44f683"}];
+        
+        if (!Array.isArray(barangayData) || barangayData.length === 0) {
+            barangayData = [{ barangay: 'No Data Available', count: 1, color: '#9ca3af' }];
+        }
+        
+        // SWD displays every barangay so the chart total matches its department case total.
+        barangayData.sort((a, b) => b.count - a.count);
+        if (!true && barangayData.length > 10) {
+            barangayData = barangayData.slice(0, 10);
+        }
+        
+        new Chart(barangayCtx, {
+            type: 'bar',
+            data: {
+                labels: barangayData.map(item => item.barangay || 'Unassigned'),
+                datasets: [{
+                    label: 'Number of Cases',
+                    data: barangayData.map(item => item.count),
+                    backgroundColor: barangayData.map(item => item.color || '#8b5cf6'),
+                    borderColor: barangayData.map(item => item.color || '#7c3aed'),
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    maxBarThickness: 40,
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.9
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { precision: 0, font: { size: 12 } },
+                        grid: { display: true, color: 'rgba(0, 0, 0, 0.05)' },
+                        title: { display: true, text: 'Number of Cases', font: { size: 12, weight: 'bold' } }
+                    },
+                    y: {
+                        ticks: { font: { size: 12 } },
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        callbacks: {
+                            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.x} case${ctx.parsed.x !== 1 ? 's' : ''}`
+                        }
+                    }
+                },
+                animation: { duration: 1000, easing: 'easeOutQuart' }
+            }
+        });
+    }
+
+    // Case types chart
+    const typeCtx = document.getElementById('caseTypesChart');
+    if (typeCtx) {
+        const caseTypes = [{"name":"RA 9262","count":23,"color":"6f42c1","slug":"RA 9262"},{"name":"RA 7610","count":9,"color":"20c997","slug":"RA 7610"},{"name":"RA 11930","count":6,"color":"dc3545","slug":"RA 11930"},{"name":"RA 7877","count":4,"color":"17a2b8","slug":"RA 7877"},{"name":"RA 9208\/10364","count":2,"color":"fd7e14","slug":"RA 9208\/10364"},{"name":"RA 11313","count":1,"color":"6610f2","slug":"RA 11313"},{"name":"RA 8353","count":1,"color":"e83e8c","slug":"RA 8353"},{"name":"RA 9775","count":1,"color":"6f42c1","slug":"RA 9775"},{"name":"Suicide","count":1,"color":"6c757d","slug":"Suicide"}];
+        
+        if (caseTypes.length > 0) {
+            new Chart(typeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: caseTypes.map(item => item.name),
+                    datasets: [{
+                        data: caseTypes.map(item => item.count),
+                        backgroundColor: caseTypes.map(item => '#' + item.color),
+                        borderColor: '#ffffff',
+                        borderWidth: 3,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: isMobileDashboard ? 'bottom' : 'right',
+                            labels: {
+                                padding: isMobileDashboard ? 8 : 15,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                font: { size: isMobileDashboard ? 10 : 12 },
+                                generateLabels: chart => {
+                                    const data = chart.data;
+                                    if (data.labels.length && data.datasets.length) {
+                                        return data.labels.map((label, i) => {
+                                            const dataset = data.datasets[0];
+                                            const value = dataset.data[i];
+                                            return {
+                                                text: `${label}: ${value}`,
+                                                fillStyle: dataset.backgroundColor[i],
+                                                hidden: chart.getDatasetMeta(0).data[i].hidden,
+                                                pointStyle: 'circle'
+                                            };
+                                        });
+                                    }
+                                    return [];
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            callbacks: {
+                                label: ctx => {
+                                    const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((ctx.raw / total) * 100);
+                                    return `${ctx.label}: ${ctx.raw} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    animation: { animateScale: true, animateRotate: true, duration: 1000 }
+                }
+            });
+        }
+    }
+});
+</script>
+        <style>
+    #swdArchiveViewDialog { position: fixed; inset: 0; margin: auto; width: min(1100px, 95vw); max-width: 95vw; max-height: 85vh; padding: 0; border: 0; border-radius: .75rem; color: #374151; background: #fff; }
+    #swdArchiveViewDialog::backdrop { background: rgba(0, 0, 0, .4); }
+    #swdArchiveViewDialog .swd-archive-dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.5rem; border-bottom: 1px solid #e5e7eb; }
+    #swdArchiveViewDialog h2 { margin: 0; font-size: 1.5rem; font-weight: 600; }
+    #swdArchiveViewDialog [data-swd-archive-content] { text-align: left; max-height: 65vh; overflow: auto; padding: 1.5rem; }
+    #swdArchiveViewDialog .swd-archive-dialog-footer { padding: 1rem; text-align: center; border-top: 1px solid #e5e7eb; }
+</style>
+<dialog id="swdArchiveViewDialog" aria-labelledby="swdArchiveViewTitle">
+    <div class="swd-archive-dialog-header">
+        <h2 id="swdArchiveViewTitle"></h2>
+    </div>
+    <div data-swd-archive-content aria-live="polite"></div>
+    <div class="swd-archive-dialog-footer">
+        <button type="button" data-swd-archive-close class="rounded-lg bg-[#C41E3A] px-5 py-2 text-white">Close</button>
+    </div>
+</dialog>
+<script>
+(() => {
+    const dialog = document.getElementById('swdArchiveViewDialog');
+    const content = dialog.querySelector('[data-swd-archive-content]');
+    let request;
+    let generation = 0;
+    const close = () => dialog.close();
+    dialog.addEventListener('close', () => {
+        generation++;
+        request?.abort();
+        content.replaceChildren();
+    });
+    dialog.addEventListener('click', event => {
+        if (event.target !== dialog) return;
+        const bounds = dialog.getBoundingClientRect();
+        if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) close();
+    });
+    window.addEventListener('click', async event => {
+        if (event.target.closest('#swdArchiveViewDialog [data-swd-archive-close]')) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            close();
+            return;
+        }
+        const view = event.target.closest('[data-swd-archive-view], [data-swd-archived-referral], [data-swd-archived-recipient]');
+        if (!view) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        window.swdArchiveNavigation?.cancelPending();
+        request?.abort();
+        const current = ++generation;
+        const referral = view.hasAttribute('data-swd-archived-referral');
+        const recipient = view.hasAttribute('data-swd-archived-recipient');
+        const isCase = view.dataset.swdArchiveView === 'case';
+        document.getElementById('swdArchiveViewTitle').textContent = recipient ? 'Referral Info' : referral ? 'Referral Details' : isCase ? 'Case Details' : 'Quarterly Report';
+        content.textContent = 'Loading details...';
+        if (!dialog.open) dialog.showModal();
+        if (referral || recipient) {
+            const template = document.getElementById(recipient ? view.dataset.swdArchivedRecipient : view.dataset.swdArchivedReferral);
+            if (template) content.replaceChildren(template.content.cloneNode(true));
+            else content.textContent = 'Unable to load the archived record.';
+            return;
+        }
+        const load = async url => {
+            request?.abort();
+            const controller = new AbortController();
+            request = controller;
+            try {
+                const response = await fetch(url, { credentials: 'same-origin', signal: controller.signal, headers: isCase ? { 'X-Requested-With': 'XMLHttpRequest' } : {} });
+                if (!response.ok || response.redirected) throw new Error('Unable to load the archived record.');
+                const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+                if (!dialog.open || generation !== current || controller.signal.aborted) return;
+                page.querySelectorAll('script').forEach(script => script.remove());
+                if (isCase) {
+                    content.replaceChildren(...Array.from(page.body.childNodes));
+                    window.applyArchiveCaseModalDesign(content, document.getElementById('swdArchiveViewTitle'));
+                } else {
+                    const report = page.querySelector('.w-full.max-w-7xl.mx-auto');
+                    if (!report) throw new Error('Unable to load report details.');
+                    window.applyArchiveReportModalDesign(page, document.getElementById('swdArchiveViewTitle'));
+                    report.querySelector(':scope > .mb-6.flex')?.remove();
+                    report.querySelectorAll('form, button').forEach(control => control.remove());
+                    report.className = 'w-full';
+                    content.replaceChildren(report);
+                }
+            } catch (error) {
+                if (error.name !== 'AbortError' && dialog.open && generation === current) content.textContent = error.message;
+            }
+        };
+        content.onclick = event => {
+            const link = event.target.closest('a');
+            if (!link) return;
+            event.preventDefault();
+            event.stopPropagation();
+            if (!isCase && new URL(link.href).searchParams.has('case_records_page')) load(link.href);
+        };
+        await load(view.href);
+    }, true);
+})();
+</script>
+        <script>(() => {
+    const main = document.getElementById('mainContent');
+    if (!main) return;
+    let pageEvents = new AbortController();
+    window.swdArchiveNavigation = { cancelPending() {} };
+
+    // Run archive page scripts on a full page load and clean up their listeners
+    // when the page is left. Archive menu links use normal browser navigation.
+    const runPageScripts = async scripts => {
+        const signal = pageEvents.signal;
+        const scopedWindow = new Proxy(window, {
+            get(target, property) {
+                if (property === 'addEventListener') return (type, callback, options) => {
+                    target.addEventListener(type, callback, { ...(typeof options === 'boolean' ? { capture: options } : options), signal });
+                };
+                if (property === 'setInterval' || property === 'setTimeout') return (callback, delay, ...args) => {
+                    const id = target[property](callback, delay, ...args);
+                    signal.addEventListener('abort', () => {
+                        target[property === 'setInterval' ? 'clearInterval' : 'clearTimeout'](id);
+                    }, { once: true });
+                    return id;
+                };
+                const value = Reflect.get(target, property, target);
+                return typeof value === 'function' ? value.bind(target) : value;
+            }
+        });
+        const scopedDocument = new Proxy(document, {
+            get(target, property) {
+                if (property === 'addEventListener') return (type, callback, options) => {
+                    if (type === 'DOMContentLoaded') {
+                        callback.call(document, new Event(type));
+                        return;
+                    }
+                    target.addEventListener(type, callback, { ...(typeof options === 'boolean' ? { capture: options } : options), signal });
+                };
+                const value = Reflect.get(target, property, target);
+                return typeof value === 'function' ? value.bind(target) : value;
+            }
+        });
+        for (const script of scripts) {
+            if (script.type && script.type !== 'text/javascript') continue;
+            if (script.src) {
+                const response = await fetch(script.src, { credentials: 'same-origin' });
+                if (!response.ok) throw new Error('Unable to initialize the archive page.');
+                new Function('document', 'window', await response.text())(scopedDocument, scopedWindow);
+            } else {
+                // Preserve the existing restore modal's inline button callbacks.
+                const callbacks = ['openRestoreModal', 'closeRestoreModal'].map(name =>
+                    `if (typeof ${name} === 'function') window.${name} = ${name};`).join('\n');
+                new Function('document', 'window', script.textContent + '\n' + callbacks)(scopedDocument, scopedWindow);
+            }
+        }
+    };
+
+    const initialize = () => {
+        const scripts = document.getElementById('swd-archive-page-scripts');
+        if (scripts) {
+            runPageScripts(scripts.content.querySelectorAll('script')).catch(error => {
+                Swal.fire({ icon: 'error', title: 'Unable to Initialize Archive', text: error.message });
+            });
+        }
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize, { once: true });
+    else initialize();
+})();
+</script>
+        
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const dashboardMenuToggle = document.getElementById('dashboardMenuToggle');
+        const mobileMenuToggles = [mobileMenuToggle, dashboardMenuToggle].filter(Boolean);
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+        const sidebarStateKey = "swdAdminSidebarCollapsed";
+        
+                sidebar.classList.toggle('sidebar-collapsed', localStorage.getItem(sidebarStateKey) === 'true');
+                if (sidebarToggleBtn && sidebar) {
+            sidebarToggleBtn.setAttribute('aria-expanded', String(!sidebar.classList.contains('sidebar-collapsed')));
+        }
+
+        function collapseSidebar() {
+            sidebar.classList.add('sidebar-collapsed');
+            if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'false');
+            localStorage.setItem(sidebarStateKey, 'true');
+        }
+        
+        function expandSidebar() {
+            sidebar.classList.remove('sidebar-collapsed');
+            if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'true');
+            localStorage.setItem(sidebarStateKey, 'false');
+            // Remove the initial collapsed style if it exists
+            const initialStyle = document.getElementById('sidebar-initial-collapsed-style');
+            if (initialStyle) {
+                initialStyle.remove();
+            }
+            document.documentElement.classList.remove('sidebar-is-collapsed');
+        }
+        
+        // Ensure all non-form buttons have explicit type="button"
+        document.querySelectorAll('button:not([type])').forEach(btn => {
+            if (!btn.closest('form')) {
+                btn.setAttribute('type', 'button');
+            }
+        });
+
+        // Floating toggle button click
+        if (sidebarToggleBtn) {
+            sidebarToggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (sidebar.classList.contains('sidebar-collapsed')) {
+                    expandSidebar();
+                } else {
+                    collapseSidebar();
+                }
+            });
+        }
+        
+        // Mobile toggle - open sidebar
+        if (mobileMenuToggles.length) {
+            mobileMenuToggles.forEach(function(menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (document.body.classList.contains('admin-dashboard-mobile-nav') && window.matchMedia('(max-width: 63.9375rem)').matches && sidebar.classList.contains('sidebar-open')) {
+                    closeMobileSidebar();
+                    return;
+                }
+                // Open sidebar with fade in from left
+                sidebar.classList.add('sidebar-open');
+                mobileMenuToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'true'));
+                if (document.body.classList.contains('admin-dashboard-mobile-nav')) {
+                    document.body.style.overflow = 'hidden';
+                    document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
+                    mobileMenuToggles.forEach(toggle => {
+                        toggle.setAttribute('aria-label', 'Close navigation menu');
+                        toggle.querySelector('i')?.classList.replace('fa-bars', 'fa-xmark');
+                    });
+                    const dashboardHeader = document.getElementById('admin-dashboard-header');
+                    if (dashboardHeader) {
+                        const headerBottom = Math.max(0, dashboardHeader.getBoundingClientRect().bottom);
+                        sidebar.style.setProperty('top', `${headerBottom}px`, 'important');
+                        sidebar.style.setProperty('max-height', `calc(100vh - ${headerBottom}px)`, 'important');
+                    }
+                }
+                // Show overlay
+                if (sidebarOverlay) sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                });
+            });
+        }
+        
+        // Function to close mobile sidebar
+        function closeMobileSidebar() {
+            // Close sidebar with fade out to left
+            sidebar.classList.remove('sidebar-open');
+            mobileMenuToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'false'));
+            if (document.body.classList.contains('admin-dashboard-mobile-nav')) {
+                document.body.style.overflow = '';
+                document.documentElement.style.removeProperty('overflow-y');
+                mobileMenuToggles.forEach(toggle => {
+                    toggle.setAttribute('aria-label', 'Open navigation menu');
+                    toggle.querySelector('i')?.classList.replace('fa-xmark', 'fa-bars');
+                });
+                sidebar.style.removeProperty('top');
+                sidebar.style.removeProperty('max-height');
+            }
+            // Hide overlay
+            if (sidebarOverlay) sidebarOverlay.classList.add('opacity-0', 'pointer-events-none');
+        }
+        
+        // Close sidebar on overlay click (mobile)
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeMobileSidebar();
+            });
+        }
+        
+        // Close sidebar via close button (mobile)
+        if (sidebarCloseBtn) {
+            sidebarCloseBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeMobileSidebar();
+            });
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sidebar?.classList.contains('sidebar-open')) {
+                closeMobileSidebar();
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            if (window.matchMedia('(min-width: 80.0625rem)').matches) closeMobileSidebar();
+        });
+        
+        // Handle logout button
+        const logoutForm = document.getElementById('logout-form');
+        const logoutButton = document.getElementById('logout-button');
+        
+        if (logoutButton) {
+            logoutButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                Swal.fire({
+                    title: 'Logout',
+        html: '<svg class="logout-modal-symbol" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M12 5l7 7-7 7v-4H7V9h5V5Z" fill="currentColor"/></svg><p class="logout-modal-message">Are you sure you want to log out?</p>',
+        showCancelButton: true,
+                    confirmButtonText: 'Yes, log me out',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#b91c1c',
+                    cancelButtonColor: '#ef4444',
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'rounded-xl app-logout-modal',
+                        container: 'swal2-container-high-z'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Logging out...',
+                            html: '<div class="text-center py-4">' +
+                                '<i class="fas fa-check-circle text-5xl text-green-500 mb-4"></i>' +
+                                '<p class="text-gray-700">You have been successfully logged out.</p>' +
+                                '</div>',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            timerProgressBar: true,
+                            customClass: {
+                                popup: 'rounded-xl'
+                            },
+                            willClose: () => {
+                                if (logoutForm) {
+                                    logoutForm.submit();
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        // Capture-phase listener: ensure any button outside forms has type="button" and prevent unintentional form submit/reload on first click
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('button');
+            if (btn && !btn.hasAttribute('type') && !btn.closest('form')) {
+                btn.setAttribute('type', 'button');
+            }
+        }, true);
+    });
+    </script>
+        <script src="http://localhost/js/admin-table-actions.js?v=1792211933"></script>
+            <script src="http://localhost/js/vawc-table-pagination.js"></script>
+        <script src="http://localhost/js/admin-pagination-style.js"></script>
+    <script src="http://localhost/js/table-action-controls.js?v=1792211933"></script>
+<script src="http://localhost/js/portal-theme.js?v=1792211933"></script>
+<script src="http://localhost/js/unsaved-changes-guard.js?v=1792211933"></script>
+<script src="http://localhost/js/multirole-loading.js?v=1792211933"></script>
+<script id="inactivity-settings" type="application/json">{"key":"portal-activity-1-25792777113bc48982bd1dc88e100a7f72a3dd4225e37e4b53f745c3980de1ff","lastActivity":1792222767000,"serverNow":1792222767000,"activityUrl":"http:\/\/localhost\/session\/activity","statusUrl":"http:\/\/localhost\/session\/status","logoutUrl":"http:\/\/localhost\/logout","loginUrl":"http:\/\/localhost\/login","inactiveLoginUrl":"http:\/\/localhost\/login?inactive=1","csrf":null}</script>
+<script src="http://localhost/js/inactivity-timeout.js"></script>
+<script src="http://localhost/js/contact-number-validation.js?v=1792211933"></script>
+</body>
+</html>
