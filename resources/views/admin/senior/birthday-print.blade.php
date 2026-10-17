@@ -3,6 +3,9 @@
 <head>
     <meta charset="utf-8">
     <title>Birthday Beneficiaries - Print</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/IserveIcon.png') }}">
     @vite(['resources/css/admin-compat.css'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>

@@ -10,6 +10,9 @@
     <meta name="user-name" content="{{ session('admin_user_name') ?? 'Social Case Study Officer' }}">
     <meta name="admin-name" content="{{ optional(\App\Models\User::where('role', 'admin')->first())->name ?? '' }}">
     <title>@yield('title', 'Social Case Study System')</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/IserveIcon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap"
