@@ -108,18 +108,24 @@ class AdminUserController extends Controller
      */
     public function getUsersJson(Request $request)
     {
+        $hasUsername = \Illuminate\Support\Facades\Schema::connection('wcpu')->hasColumn('users', 'username');
+        $columns = ['id', 'first_name', 'last_name', 'email', 'position', 'department', 'barangay', 'is_active', 'bcpc_is_active', 'vawc_is_active', 'created_at'];
+        if ($hasUsername) {
+            $columns[] = 'username';
+        }
+
         $users = $this->scopeToAdminDepartments(User::where('position', 'Desk Officer'))
-            ->select(['id', 'first_name', 'last_name', 'email', 'username', 'position', 'department', 'barangay', 'is_active', 'bcpc_is_active', 'vawc_is_active', 'created_at'])
+            ->select($columns)
             ->orderByDesc('updated_at')
             ->get()
-            ->map(function($user) {
+            ->map(function($user) use ($hasUsername) {
                 return [
                     'id' => $user->id,
                     'first_name' => $user->first_name,
                     'last_name' => $user->last_name,
                     'full_name' => $user->first_name . ' ' . $user->last_name,
                     'email' => $user->email,
-                    'username' => $user->username ?: $user->email,
+                    'username' => ($hasUsername ? $user->username : null) ?: $user->email,
                     'position' => $user->position,
                     'department' => $user->department,
                     'barangay_name' => $user->barangay ?? 'Not assigned',

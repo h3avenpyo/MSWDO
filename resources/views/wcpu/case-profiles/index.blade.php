@@ -12,90 +12,177 @@
         background: rgba(15, 23, 42, 0.65) !important;
         backdrop-filter: blur(4px) !important;
     }
-    @if(auth()->user()->isVawcAdmin() || $isSwdDeskOfficer)
+    @if(auth()->user()?->isVawcAdmin() || $isSwdDeskOfficer)
     html { scrollbar-gutter: stable; }
     body.swal2-shown { padding-right: 0 !important; }
     @endif
     @media (max-width: 47.9375rem) {
         .case-profiles-table-view { display: none !important; }
-        .case-profiles-mobile-cards { display: grid !important; gap: .75rem; }
-        .case-profiles-mobile-cards .case-profile-card { min-width: 0; padding: 1rem; }
+
+        #case-profiles-content {
+            width: 100% !important;
+            max-width: 100vw !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
+            overflow-x: hidden !important;
+            padding-top: max(0.75rem, env(safe-area-inset-top)) !important;
+            padding-right: max(0.75rem, env(safe-area-inset-right)) !important;
+            padding-bottom: max(1.5rem, calc(1rem + env(safe-area-inset-bottom))) !important;
+            padding-left: max(0.75rem, env(safe-area-inset-left)) !important;
+        }
+
+        #case-profiles-results {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+        }
+
+        #case-profiles-results > section {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
+        }
+
+        .case-profiles-mobile-cards {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0.75rem !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
+            padding: 0.75rem !important;
+        }
+
+        .case-profiles-mobile-cards .case-profile-card {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
+            padding: 1rem !important;
+            margin: 0 !important;
+        }
+
+        .case-profiles-mobile-cards .case-profile-card * {
+            box-sizing: border-box !important;
+        }
+
+        .case-profiles-mobile-cards .case-profile-card :is(h1, h2, h3, h4, p, a, span, dt, dd, div) {
+            min-width: 0;
+            overflow-wrap: anywhere !important;
+            word-break: break-word !important;
+        }
+
+        .case-profiles-mobile-cards .case-profile-card .grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 0.75rem !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+        }
+
+        .case-profiles-mobile-cards .case-profile-card .grid > * {
+            min-width: 0 !important;
+            max-width: 100% !important;
+        }
+
         .case-profiles-mobile-cards .case-profile-card-action {
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
-            width: 3rem !important;
-            min-width: 3rem !important;
-            height: 3rem !important;
-            min-height: 3rem !important;
+            width: 2.75rem !important;
+            min-width: 2.75rem !important;
+            height: 2.75rem !important;
+            min-height: 2.75rem !important;
+            flex: 0 0 2.75rem !important;
             padding: 0 !important;
         }
-        #case-profiles-content {
-            min-width: 0;
-            padding-top: max(1rem, env(safe-area-inset-top)) !important;
-            padding-right: max(1rem, env(safe-area-inset-right)) !important;
-            padding-bottom: max(1.5rem, calc(1rem + env(safe-area-inset-bottom))) !important;
-            padding-left: max(1rem, env(safe-area-inset-left)) !important;
+
+        #case-profiles-filter-form {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
+            gap: 0.75rem !important;
+            padding: 0.75rem !important;
         }
-        #case-profiles-filter-form { gap: .75rem; }
-        .case-profiles-age-department-row { width: 100%; }
-        .case-profiles-age-department-row:has(.case-profiles-department-switcher) {
-            display: block;
+
+        .case-profiles-search-age-row {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
         }
+
         .case-profiles-department-switcher {
             display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: .5rem;
-            min-width: 0;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 0.5rem !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
         }
+
         .case-profiles-department-switcher > a,
         #case-profiles-filter-form :is(input, button, a) {
-            min-height: 3rem;
+            min-height: 2.75rem;
         }
-        .case-profiles-department-switcher > a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: .5rem !important;
-            text-align: center;
+
+        .case-profiles-department-switcher > a,
+        #case-profiles-filter-form .case-profiles-clear-button {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0.5rem !important;
+            text-align: center !important;
         }
-        .case-profiles-age-department-row label { min-width: 0; }
-        .case-profiles-age-department-row input { width: 100% !important; }
-    }
-    @if(auth()->user()->isDepartmentAdmin())
-    @media (max-width: 47.9375rem) {
-        .case-profiles-mobile-cards {
-            width: 100%;
-            max-width: 100%;
-            min-width: 0;
+
+        .case-profiles-mobile-cards [data-pagination-label] {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
+            padding: 0.75rem 0.25rem !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+            text-align: center !important;
         }
-        .case-profiles-mobile-cards .case-profile-card {
-            width: 100%;
-            max-width: 100%;
-            min-width: 0;
-            box-sizing: border-box;
-            overflow: hidden;
+
+        .case-profiles-mobile-cards [data-pagination-label] > div {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            justify-content: center !important;
+            text-align: center !important;
+            flex-wrap: wrap !important;
         }
-        .case-profiles-mobile-cards .case-profile-card > div:first-child,
-        .case-profiles-mobile-cards .case-profile-card > div:last-child {
-            min-width: 0;
-        }
-        .case-profiles-mobile-cards .case-profile-card :is(p, a, span) {
-            overflow-wrap: anywhere;
-            word-break: break-word;
-        }
-        .case-profiles-mobile-cards .case-profile-card > div:first-child > div:first-child,
-        .case-profiles-mobile-cards .case-profile-card > div:last-child > span {
-            min-width: 0;
-        }
-        .case-profiles-mobile-cards .case-profile-card > div:last-child {
-            gap: .75rem;
-        }
-        .case-profiles-mobile-cards .case-profile-card-action {
-            flex: 0 0 3rem;
+
+        .case-profiles-mobile-cards [data-pagination-label] .flex.items-center.gap-2 {
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+            gap: 0.25rem !important;
+            max-width: 100% !important;
         }
     }
-    @endif
+
+    @media (max-width: 26rem) {
+        .case-profiles-search-age-row {
+            flex-direction: column !important;
+            align-items: stretch !important;
+        }
+        .case-profiles-search-age-row .case-profiles-age-control {
+            width: 100% !important;
+        }
+        .case-profiles-mobile-cards .case-profile-card .grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
     @media (min-width: 37.5rem) and (max-width: 79.9375rem) and (orientation: portrait) {
         .case-profiles-table-view .case-profiles-table {
             width: 100% !important;
@@ -336,7 +423,7 @@
 @endpush
 
 @section('content')
-@if($isAdmin && auth()->user()->isDepartmentAdmin())
+@if($isAdmin && auth()->user()?->isDepartmentAdmin())
 <header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
         <div class="case-profiles-header-leading flex items-center gap-3 min-w-0">
@@ -345,7 +432,7 @@
             </button>
             <div class="min-w-0">
                 <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Victim and Perpetrator Profiles</h2>
-                <p class="text-sm text-gray-500 {{ auth()->user()->isDepartmentAdmin() ? '' : 'hidden sm:block' }}">View and manage case profiles</p>
+                <p class="text-sm text-gray-500 {{ auth()->user()?->isDepartmentAdmin() ? '' : 'hidden sm:block' }}">View and manage case profiles</p>
             </div>
         </div>
         @include('admin-tailwind.components.header-account')
@@ -354,12 +441,12 @@
 @endif
 @include('components.desk-officer.bcpc-dashboard-header', ['title' => 'Victim and Perpetrator Profiles', 'subtitle' => 'View and manage case profiles'])
 <div id="case-profiles-content" class="p-4 sm:p-6 lg:p-8 space-y-8">
-    @unless(auth()->user()->isDepartmentAdmin() || (auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)))
+    @unless(auth()->user()?->isDepartmentAdmin() || (auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)))
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h1 class="text-2xl font-bold text-gray-800">Victim and Perpetrator Profiles</h1>
     </div>
     @endunless
-    @if((auth()->user()->isDepartmentAdmin() || !$isAdmin))
+    @if((auth()->user()?->isDepartmentAdmin() || !$isAdmin))
         <form id="case-profiles-filter-form" method="GET" action="{{ route('case-profiles.index') }}" class="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-4 bg-white border border-gray-200 rounded-xl p-4">
             @if(!$isAdmin)
                 <input type="hidden" name="type" value="{{ $profileDepartment }}">
@@ -377,10 +464,10 @@
                 </span>
             </div>
             <button class="px-4 py-2 bg-purple-700 text-white rounded-lg" type="submit">Filter</button>
-            <a href="{{ route('case-profiles.index') }}" class="case-profiles-clear-button px-4 py-2 border border-gray-300 rounded-lg">Clear</a>
-            @if(!$isAdmin && auth()->user()->isMultiCaseDepartment())
+            <a href="{{ route('case-profiles.index') }}" class="case-profiles-clear-button inline-flex items-center justify-center text-center px-4 py-2 border border-gray-300 rounded-lg">Clear</a>
+            @if(!$isAdmin && auth()->user()?->isMultiCaseDepartment())
             <div class="case-profiles-department-switcher flex gap-2" aria-label="Profile department">
-                @foreach(auth()->user()->caseDepartments() as $department)
+                @foreach(auth()->user()?->caseDepartments() ?? [] as $department)
                 <a href="{{ route('case-profiles.index', ['type' => $department, 'age' => request('age'), 'search' => request('search')]) }}" class="px-4 py-2 rounded-lg {{ $profileDepartment === $department ? 'bg-purple-700 text-white' : 'bg-purple-50 text-purple-700' }}">{{ $department === 'VAWC' ? 'SWD' : $department }}</a>
                 @endforeach
             </div>
@@ -392,10 +479,10 @@
         @php
             $isVictim = $heading === 'Victim Profiles';
             $hasProfileFilter = request()->filled('search') || request()->filled('age');
-            $hideEmptySwdProfileTable = auth()->user()->defaultCaseDepartment() === 'VAWC'
+            $hideEmptySwdProfileTable = auth()->user()?->defaultCaseDepartment() === 'VAWC'
                 && $hasProfileFilter
                 && $profiles->total() === 0;
-            $hideEmptyBcpcProfileTable = auth()->user()->defaultCaseDepartment() === 'BCPC'
+            $hideEmptyBcpcProfileTable = auth()->user()?->defaultCaseDepartment() === 'BCPC'
                 && $hasProfileFilter
                 && $profiles->total() === 0;
         @endphp
@@ -514,7 +601,7 @@
                     </tbody>
                 </table>
             </div>
-            @if((auth()->user()->isDepartmentAdmin() || !$isAdmin) && $profiles->hasPages())
+            @if((auth()->user()?->isDepartmentAdmin() || !$isAdmin) && $profiles->hasPages())
                 <div class="px-6 py-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
                     <div class="text-sm text-gray-600">
                         Showing {{ $profiles->firstItem() ?? 0 }} - {{ $profiles->lastItem() ?? 0 }} of {{ $profiles->total() }} profiles
@@ -556,8 +643,8 @@
             @endif
             </div>
 
-            <!-- Admin phone-only profile cards -->
-            <div class="case-profiles-mobile-cards hidden p-3 space-y-3">
+            <!-- Mobile profile cards -->
+            <div class="case-profiles-mobile-cards hidden p-3">
                 @forelse($profiles as $records)
                     @php
                         $person = $records->first();
@@ -568,35 +655,37 @@
                         )->filter(fn($info) => count(array_filter($info)) > 0)->unique(fn($info) => json_encode($info));
                         $guardianDialogId = 'guardian-' . ($isVictim ? 'victim-' : 'perpetrator-') . $person->id;
                     @endphp
-                    <article class="case-profile-card bg-white rounded-xl border border-gray-200 shadow-sm" data-profile-age="{{ $profileAge }}">
-                        <div class="flex items-start justify-between gap-3 mb-4">
-                            <div class="min-w-0">
+                    <article class="case-profile-card bg-white rounded-xl border border-gray-200 shadow-sm w-full max-w-full min-w-0 box-border overflow-hidden p-4" data-profile-age="{{ $profileAge }}">
+                        <div class="flex items-start justify-between gap-3 mb-4 min-w-0">
+                            <div class="flex-1 min-w-0">
                                 <p class="text-xs text-gray-500 mb-1">{{ $isVictim ? 'Victim' : 'Perpetrator' }}</p>
-                                <p class="font-semibold text-gray-800 break-words">{{ $isVictim ? $person->victim_name : $person->abuser_name }}</p>
+                                <p class="font-semibold text-gray-800 break-words [overflow-wrap:anywhere]">{{ $isVictim ? $person->victim_name : $person->abuser_name }}</p>
                             </div>
-                            <span class="shrink-0 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700">{{ $records->count() }} {{ $records->count() === 1 ? 'case' : 'cases' }}</span>
+                            <span class="shrink-0 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700 whitespace-nowrap">{{ $records->count() }} {{ $records->count() === 1 ? 'case' : 'cases' }}</span>
                         </div>
-                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
-                            <div><p class="text-xs text-gray-500 mb-1">Age</p><p class="text-gray-800">{{ $profileAge }}</p></div>
-                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Address</p><p class="text-gray-800 break-words">{{ ($isVictim ? $person->victim_address : $person->abuser_address) ?: 'Not recorded' }}</p></div>
-                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Type of Case</p><p class="text-gray-800 break-words">{{ $records->map(fn($case) => ($isSwdDeskOfficer && $case->type === 'VAWC' ? 'SWD' : $case->type) . ' - ' . ($case->caseType?->name ?? $case->abuse_type))->unique()->implode(', ') }}</p></div>
-                            <div class="col-span-2"><p class="text-xs text-gray-500 mb-1">Cases</p><div class="flex flex-wrap gap-x-3 gap-y-1">@foreach($records as $case)<a class="text-sm text-purple-700 underline" href="{{ $isAdmin ? route('cases.show', ['id' => $case->id, 'from' => 'case-profiles']) : route('desk-officer.cases.show', ['hash' => encrypt($case->id), 'from' => in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) ? 'case-profiles' : null]) }}">{{ $case->case_number }}</a>@endforeach</div></div>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4 w-full min-w-0">
+                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Age</p><p class="text-gray-800 break-words [overflow-wrap:anywhere]">{{ $profileAge }}</p></div>
+                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Address</p><p class="text-gray-800 break-words [overflow-wrap:anywhere]">{{ ($isVictim ? $person->victim_address : $person->abuser_address) ?: 'Not recorded' }}</p></div>
+                            <div class="col-span-2 min-w-0"><p class="text-xs text-gray-500 mb-1">Type of Case</p><p class="text-gray-800 break-words [overflow-wrap:anywhere]">{{ $records->map(fn($case) => ($isSwdDeskOfficer && $case->type === 'VAWC' ? 'SWD' : $case->type) . ' - ' . ($case->caseType?->name ?? $case->abuse_type))->unique()->implode(', ') }}</p></div>
+                            <div class="col-span-2 min-w-0"><p class="text-xs text-gray-500 mb-1">Cases</p><div class="flex flex-wrap gap-x-3 gap-y-1 min-w-0">@foreach($records as $case)<a class="text-sm text-purple-700 underline break-all [overflow-wrap:anywhere]" href="{{ $isAdmin ? route('cases.show', ['id' => $case->id, 'from' => 'case-profiles']) : route('desk-officer.cases.show', ['hash' => encrypt($case->id), 'from' => in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) ? 'case-profiles' : null]) }}">{{ $case->case_number }}</a>@endforeach</div></div>
                         </div>
                         @if($guardians->isNotEmpty())
-                        <div class="flex items-center justify-between pt-3 border-t border-gray-100"><span class="text-sm font-medium text-gray-700">Guardian Information</span><button type="button" class="case-profile-card-action rounded-lg bg-purple-700 text-white hover:bg-purple-800 transition" aria-haspopup="dialog" aria-controls="{{ $guardianDialogId }}" onclick="const guardianDialog = document.getElementById('{{ $guardianDialogId }}'); if (guardianDialog && !guardianDialog.open) { document.body.appendChild(guardianDialog); guardianDialog.showModal(); }"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View guardian information</span></button></div>
+                        <div class="flex items-center justify-between gap-3 pt-3 border-t border-gray-100 min-w-0"><span class="text-sm font-medium text-gray-700 flex-1 min-w-0 break-words [overflow-wrap:anywhere]">Guardian Information</span><button type="button" class="case-profile-card-action shrink-0 rounded-lg bg-purple-700 text-white hover:bg-purple-800 transition" aria-haspopup="dialog" aria-controls="{{ $guardianDialogId }}" onclick="const guardianDialog = document.getElementById('{{ $guardianDialogId }}'); if (guardianDialog && !guardianDialog.open) { document.body.appendChild(guardianDialog); guardianDialog.showModal(); }"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View guardian information</span></button></div>
                         @endif
                     </article>
                 @empty
                 <div class="rounded-xl border border-gray-200 bg-white p-6 text-center text-gray-500">No profiles found.</div>
                 @endforelse
-                @if((auth()->user()->isDepartmentAdmin() || !$isAdmin) && $profiles->hasPages())
-                    @include('components.archived-pagination', ['paginator' => $profiles, 'label' => 'profiles'])
+                @if((auth()->user()?->isDepartmentAdmin() || !$isAdmin) && $profiles->hasPages())
+                    <div class="case-profiles-pagination-container w-full min-w-0 overflow-x-hidden">
+                        @include('components.archived-pagination', ['paginator' => $profiles, 'label' => 'profiles'])
+                    </div>
                 @endif
             </div>
         </section>
         @endif
     @endforeach
-    @if(auth()->user()->position === 'Desk Officer' && auth()->user()->defaultCaseDepartment() === 'VAWC' && (request()->filled('search') || request()->filled('age')) && $victims->total() === 0 && $perpetrators->total() === 0)
+    @if(auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'VAWC' && (request()->filled('search') || request()->filled('age')) && $victims->total() === 0 && $perpetrators->total() === 0)
         <div class="bg-white border border-gray-200 rounded-xl px-5 py-8 text-center text-gray-500">
             No results found.
         </div>
@@ -607,7 +696,7 @@
     .guardian-dialog { margin: auto; max-width: min(32rem, calc(100vw - 2rem)); max-height: 85vh; overflow-y: auto; }
     .guardian-dialog::backdrop { background: rgba(0, 0, 0, .5); }
 </style>
-@if(auth()->user()->defaultCaseDepartment() === 'BCPC' || (auth()->user()->position === 'Desk Officer' && auth()->user()->defaultCaseDepartment() === 'VAWC'))
+@if(auth()->user()?->defaultCaseDepartment() === 'BCPC' || (auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'VAWC'))
 @push('scripts')
 <script>
 (() => {
@@ -649,7 +738,7 @@
 </script>
 @endpush
 @endif
-@if(auth()->user()->isVawcAdmin())
+@if(auth()->user()?->isVawcAdmin())
 @push('scripts')
 <script>
 (() => {

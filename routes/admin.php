@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\MultiDatabaseDemoController;
 
 // Admin Authentication Routes
 Route::get('/admin', [AuthController::class, 'showLogin'])->name('admin.login.form');
+Route::redirect('/admin/login', '/admin');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login');
 Route::post('/admin/login/code/send', [EmailCodeController::class, 'send'])->name('admin.login.code.send');
 Route::post('/admin/login/code/verify', [EmailCodeController::class, 'verify'])->name('admin.login.code.verify');

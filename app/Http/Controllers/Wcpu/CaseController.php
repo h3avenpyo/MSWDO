@@ -78,12 +78,12 @@ class CaseController extends Controller
     {
         \Log::info('Form submission received', $request->all());
         
-        DB::beginTransaction();
+        DB::connection('wcpu')->beginTransaction();
 
         try {
             // Log available case types
-            if (Schema::hasTable('case_types')) {
-                $caseTypes = DB::table('case_types')->get();
+            if (Schema::connection('wcpu')->hasTable('case_types')) {
+                $caseTypes = DB::connection('wcpu')->table('case_types')->get();
                 \Log::debug('Available case types:', [
                     'count' => $caseTypes->count(),
                     'types' => $caseTypes->toArray()
@@ -107,7 +107,7 @@ class CaseController extends Controller
             
             // Validate the request data (added abuse_relationship; relationship_to_victim kept nullable)
             $validated = $request->validate([
-                'case_designation' => 'required|exists:barangays,id',
+                'case_designation' => 'required|exists:wcpu.barangays,id',
                 'incident_date' => 'required|date',
                 'incident_time' => 'required',
                 'date_reported' => 'required|date',
@@ -197,7 +197,7 @@ class CaseController extends Controller
                 'updated_at' => Carbon::now('Asia/Manila'),
             ]);
 
-            DB::commit();
+            DB::connection('wcpu')->commit();
             
             // Log the successful case creation (removed documents from log)
             \Log::info('Case created successfully', [
@@ -226,7 +226,7 @@ class CaseController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            DB::rollBack();
+            DB::connection('wcpu')->rollBack();
             
             $errorContext = [
                 'exception' => get_class($e),
@@ -452,7 +452,7 @@ class CaseController extends Controller
                     $clientAddress = $request->input('client_address') ?? $case->victim_address ?? null;
                     $clientContact = $request->input('client_contact') ?? $case->victim_contact ?? null;
 
-                    \DB::table('case_referrals')->insert([
+                    \DB::connection('wcpu')->table('case_referrals')->insert([
                         'referral_number' => $referralNumber,
                         'case_id' => $case->id,
                         'referred_by_user_id' => $user->id ?? null,
@@ -630,11 +630,9 @@ class CaseController extends Controller
             
             // Generate the case number in format: {TYPE}-{BARANGAY_CODE}-{DATE}-{SEQUENCE}
             $caseNumber = strtoupper($caseType) . '-' . $barangay->code . '-' . $date . '-' . str_pad($sequenceNumber, 3, '0', STR_PAD_LEFT);
-            if ($isSwdCase) {
-                while (CaseModel::withTrashed()->where('case_number', $caseNumber)->exists()) {
-                    $sequenceNumber++;
-                    $caseNumber = 'SWD-' . $barangay->code . '-' . $date . '-' . str_pad($sequenceNumber, 3, '0', STR_PAD_LEFT);
-                }
+            while (CaseModel::withTrashed()->where('case_number', $caseNumber)->exists()) {
+                $sequenceNumber++;
+                $caseNumber = strtoupper($caseType) . '-' . $barangay->code . '-' . $date . '-' . str_pad($sequenceNumber, 3, '0', STR_PAD_LEFT);
             }
             \Log::info('Generated case number: ' . $caseNumber);
             
@@ -898,7 +896,7 @@ class CaseController extends Controller
                     'recipient_email' => 'required|email:rfc|max:255',
                 ];
             } else {
-                $rules['recipient_id'] = 'required|exists:report_recipients,id';
+                $rules['recipient_id'] = 'required|exists:wcpu.report_recipients,id';
             }
 
             $validated = $request->validate($rules);

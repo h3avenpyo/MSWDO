@@ -2329,7 +2329,7 @@ class AdminController extends Controller
         abort_unless(Auth::user()->canAccessCaseDepartment('BCPC'), 403);
         $data = $request->validate([
             'monitoring_id' => 'nullable|integer',
-            'barangay_id' => 'required|exists:barangays,id',
+            'barangay_id' => 'required|exists:wcpu.barangays,id',
             'quarter' => 'required|integer|between:1,4',
             'year' => 'required|integer|between:2020,2100',
             'bcpc_crimes_against_children' => 'nullable|array',

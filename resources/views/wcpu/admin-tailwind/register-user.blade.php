@@ -281,17 +281,8 @@
                     </label>
                     <div class="flex flex-wrap gap-6">
                         <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="radio" name="position" value="Administrator" required
-                                {{ old('position') == 'Administrator' ? 'checked' : '' }}
-                                class="w-5 h-5 text-purple-600 border-gray-300 focus:ring-purple-500">
-                            <div>
-                                <span class="text-sm font-medium text-gray-800 group-hover:text-purple-700 transition-colors">Administrator</span>
-                                <p class="text-xs text-gray-500">Full system access</p>
-                            </div>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="radio" name="position" value="Desk Officer" required
-                                {{ old('position') == 'Desk Officer' ? 'checked' : '' }}
+                            <input type="radio" name="position" value="Desk Officer" required checked
+                                {{ old('position', 'Desk Officer') == 'Desk Officer' ? 'checked' : '' }}
                                 class="w-5 h-5 text-purple-600 border-gray-300 focus:ring-purple-500">
                             <div>
                                 <span class="text-sm font-medium text-gray-800 group-hover:text-purple-700 transition-colors">Desk Officer</span>
@@ -335,11 +326,11 @@
                     <select id="department" name="department"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white">
                         <option value="">Select Department</option>
-                        <option value="{{ auth()->user()->isVawcAdmin() ? 'VAWC' : 'BCPC' }}" data-administrator-department
-                            {{ old('department') === (auth()->user()->isVawcAdmin() ? 'VAWC' : 'BCPC') ? 'selected' : '' }}>
-                            {{ auth()->user()->isVawcAdmin() ? 'SWD' : 'BCPC' }}
+                        <option value="{{ auth()->user()?->isVawcAdmin() ? 'VAWC' : 'BCPC' }}" data-administrator-department
+                            {{ old('department') === (auth()->user()?->isVawcAdmin() ? 'VAWC' : 'BCPC') ? 'selected' : '' }}>
+                            {{ auth()->user()?->isVawcAdmin() ? 'SWD' : 'BCPC' }}
                         </option>
-                        <option value="BCPC/VAWC" data-desk-officer-department {{ old('department') === 'BCPC/VAWC' ? 'selected' : '' }}>{{ auth()->user()->isVawcAdmin() ? 'SWD/BCPC' : 'BCPC/SWD' }}</option>
+                        <option value="BCPC/VAWC" data-desk-officer-department {{ old('department') === 'BCPC/VAWC' ? 'selected' : '' }}>{{ auth()->user()?->isVawcAdmin() ? 'SWD/BCPC' : 'BCPC/SWD' }}</option>
                     </select>
                 </div>
                 
@@ -510,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
             departmentInput.value = administratorDepartmentOption.value;
         }
 
-        const hideBarangayForAdministrator = @json(auth()->user()->isDepartmentAdmin()) && isAdministrator;
+        const hideBarangayForAdministrator = @json(auth()->user()?->isDepartmentAdmin()) && isAdministrator;
         barangayGroup.classList.toggle('hidden', hideBarangayForAdministrator);
         barangayInput.required = !hideBarangayForAdministrator;
         if (hideBarangayForAdministrator) {

@@ -1158,7 +1158,7 @@ public function create()
                     'client_contact' => $clientContact,
                 ]);
 
-                DB::table('case_referrals')->insert([
+                DB::connection('wcpu')->table('case_referrals')->insert([
                     'referral_number' => $referralNumber,
                     'case_id' => $case->id,
                     'referred_by_user_id' => Auth::id(),
