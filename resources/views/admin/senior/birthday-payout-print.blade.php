@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Birthday Payout List</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/IserveIcon.png') }}">
     <style>
         @page {
             size: A4 landscape;
