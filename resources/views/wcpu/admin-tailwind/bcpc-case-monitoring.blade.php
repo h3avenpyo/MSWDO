@@ -3,23 +3,81 @@
 @section('title', 'BCPC Case Monitoring')
 
 @section('content')
-@if(auth()->user()->isBcpcAdmin())
-<header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
+@if(auth()->user()->isDepartmentAdmin())
+<header class="admin-reference-mobile-header sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm {{ auth()->user()->isVawcAdmin() ? 'bcpc-monitoring-mobile-header-swd-only' : '' }}">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
-        <div>
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-800">BCPC Case Monitoring</h2>
-            <p class="text-sm text-gray-500 hidden sm:block">Manage and View bcpc monitoring.</p>
+        <div class="admin-reference-mobile-leading min-w-0">
+            <button id="dashboardMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="admin-reference-mobile-title">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">BCPC Case Monitoring</h2>
+                <p class="admin-reference-mobile-subtitle text-sm text-gray-500 hidden sm:block">Manage and View bcpc monitoring.</p>
+            </div>
         </div>
         @include('admin-tailwind.components.header-account')
     </div>
 </header>
 @endif
 <style>
+    .bcpc-monitoring-mobile-header-swd-only { display: none; }
     .bcpc-monitoring-actions > * { display: inline-flex !important; width: 2.75rem !important; height: 1.875rem !important; min-width: 2.75rem !important; min-height: 1.875rem !important; padding: 0 !important; margin: 0 !important; align-items: center !important; justify-content: center !important; gap: 0 !important; text-align: center !important; }
     .bcpc-monitoring-actions > * > i { display: inline-flex !important; width: 1rem !important; height: 1rem !important; margin: 0 !important; padding: 0 !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; flex: 0 0 1rem !important; text-align: center !important; }
     .bcpc-monitoring-actions > * > span { display: none !important; }
 
     @if(auth()->user()->isDepartmentAdmin())
+    @media (max-width: 40rem) {
+        .bcpc-monitoring-mobile-header-swd-only { display: block !important; }
+        .bcpc-monitoring-content-title { display: none !important; }
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header > div {
+            column-gap: .75rem !important;
+        }
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header > div > .admin-reference-mobile-leading {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: flex-start !important;
+            gap: .5rem !important;
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+        }
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header .admin-reference-mobile-title {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            text-align: left !important;
+        }
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header #dashboardMenuToggle {
+            display: inline-flex !important;
+            position: relative !important;
+            flex: 0 0 2.5rem !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            transform: none !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #ffffff !important;
+        }
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header button[aria-label="Notifications"] {
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+        }
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header button[aria-label="Notifications"] > i {
+            margin: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1 !important;
+        }
+    }
+
     @media (max-width: 47.9375rem) and (orientation: portrait) {
         #bcpc-monitoring-mobile-action-flow {
             display: flex;
@@ -85,7 +143,7 @@
     <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         @unless(auth()->user()->isBcpcAdmin())
         <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">BCPC Case Monitoring</h1>
+            <h1 class="bcpc-monitoring-content-title text-2xl sm:text-3xl font-bold text-gray-800">BCPC Case Monitoring</h1>
         </div>
         @endunless
         <div class="flex flex-wrap items-center gap-3">
@@ -371,13 +429,14 @@
             <input type="hidden" name="add" value="1">
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Barangay</label>
-                    <select id="add-monitoring-barangay" name="barangay_id" required data-barangay-picker class="hidden">
-                        <option value="">Select Barangay</option>
-                        @foreach($barangays as $barangay)
-                            <option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
-                        @endforeach
-                    </select>
+                    <label class="block text-sm text-gray-700">Barangay
+                        <select id="add-monitoring-barangay" name="barangay_id" required class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg">
+                            <option value="">Select Barangay</option>
+                            @foreach($barangays as $barangay)
+                                <option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
+                            @endforeach
+                        </select>
+                    </label>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Quarter</label>
@@ -423,13 +482,14 @@
             <input type="hidden" name="generate" value="1">
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Barangay</label>
-                    <select id="generate-monitoring-barangay" name="barangay_id" required data-barangay-picker class="hidden">
-                        <option value="">Select Barangay</option>
-                        @foreach($barangays as $barangay)
-                            <option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
-                        @endforeach
-                    </select>
+                    <label class="block text-sm text-gray-700">Barangay
+                        <select id="generate-monitoring-barangay" name="barangay_id" required class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg">
+                            <option value="">Select Barangay</option>
+                            @foreach($barangays as $barangay)
+                                <option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
+                            @endforeach
+                        </select>
+                    </label>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Quarter</label>
@@ -589,28 +649,42 @@ document.querySelectorAll('[data-barangay-picker]').forEach((select) => {
     button.append(label, icon);
 
     const menu = document.createElement('div');
-    menu.className = 'absolute z-[60] hidden mt-1 w-full max-h-52 overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg';
+    const isGenerateReportPicker = select.id === 'generate-monitoring-barangay';
+    const menuPosition = isGenerateReportPicker ? 'relative' : 'absolute';
+    menu.className = `${menuPosition} z-[60] ${isGenerateReportPicker ? '' : 'hidden'} mt-1 w-full max-h-52 overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg`;
+    if (isGenerateReportPicker) {
+        menu.dataset.explicitVisibility = 'true';
+        menu.style.display = 'none';
+    }
 
     [...select.options].forEach((option) => {
+        if (isGenerateReportPicker && !option.value) return;
         const item = document.createElement('button');
         item.type = 'button';
-        item.className = 'block w-full px-3 py-2 text-left text-gray-700 hover:bg-purple-50';
+        item.className = `block w-full px-3 py-2 text-left text-gray-700 ${isGenerateReportPicker ? 'hover:bg-gray-100' : 'hover:bg-purple-50'}`;
         item.dataset.barangayPickerOption = option.value;
         item.textContent = option.textContent.trim();
         item.addEventListener('click', () => {
             if (option.disabled) return;
             select.value = option.value;
             label.textContent = option.textContent.trim();
-            menu.classList.add('hidden');
+            if (isGenerateReportPicker) menu.style.display = 'none';
+            else menu.classList.add('hidden');
             select.dispatchEvent(new Event('change', { bubbles: true }));
         });
         menu.appendChild(item);
     });
 
     button.addEventListener('click', () => {
-        const isOpen = !menu.classList.contains('hidden');
-        document.querySelectorAll('[data-barangay-picker-menu]').forEach((openMenu) => openMenu.classList.add('hidden'));
-        if (!isOpen) menu.classList.remove('hidden');
+        const isOpen = isGenerateReportPicker ? menu.style.display !== 'none' : !menu.classList.contains('hidden');
+        document.querySelectorAll('[data-barangay-picker-menu]').forEach((openMenu) => {
+            if (openMenu.dataset.explicitVisibility === 'true') openMenu.style.display = 'none';
+            else openMenu.classList.add('hidden');
+        });
+        if (!isOpen) {
+            if (isGenerateReportPicker) menu.style.display = 'block';
+            else menu.classList.remove('hidden');
+        }
     });
 
     menu.dataset.barangayPickerMenu = '';
@@ -620,7 +694,10 @@ document.querySelectorAll('[data-barangay-picker]').forEach((select) => {
 
 document.addEventListener('click', (event) => {
     if (!event.target.closest('[data-barangay-picker] + .relative')) {
-        document.querySelectorAll('[data-barangay-picker-menu]').forEach((menu) => menu.classList.add('hidden'));
+        document.querySelectorAll('[data-barangay-picker-menu]').forEach((menu) => {
+            if (menu.dataset.explicitVisibility === 'true') menu.style.display = 'none';
+            else menu.classList.add('hidden');
+        });
     }
 });
 

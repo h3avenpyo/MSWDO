@@ -2403,7 +2403,7 @@ class AdminController extends Controller
     {
         abort_unless(Auth::user()->canAccessCaseDepartment('BCPC'), 403);
         $request->validate([
-            'barangay_id' => 'required|exists:barangays,id',
+            'barangay_id' => ['required', Rule::exists(Barangay::class, 'id')],
             'quarter' => 'required|integer|min:1|max:4',
             'year' => 'required|integer|min:2020|max:2100',
         ]);

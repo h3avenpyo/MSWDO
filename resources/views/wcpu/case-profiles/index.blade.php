@@ -151,6 +151,132 @@
         }
     }
 
+    /* Match the Admin Dashboard header controls on phone screens. */
+    @media (max-width: 40rem) {
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header > div {
+            align-items: flex-start !important;
+            flex-wrap: nowrap !important;
+            min-width: 0 !important;
+            padding-left: max(.5rem, env(safe-area-inset-left)) !important;
+            padding-right: max(1rem, env(safe-area-inset-right)) !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header .tablet-header-row {
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 0 !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header .portal-header-clock[hidden] {
+            display: none !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent .tablet-header-row {
+            grid-template-columns: minmax(0, 1fr) auto !important;
+            align-items: flex-start !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent #mobileMenuToggle {
+            display: none !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent .case-profiles-header-leading {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: flex-start !important;
+            gap: .5rem !important;
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+            grid-column: 1 !important;
+            grid-row: 1 !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent .tablet-header-row > div:last-child {
+            grid-column: 2 !important;
+            grid-row: 1 !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #dashboardMenuToggle {
+            position: relative !important;
+            left: 0 !important;
+            margin-left: 0 !important;
+            transform: none !important;
+            display: inline-flex !important;
+            flex: 0 0 2.5rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            align-items: center;
+            justify-content: center;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #ffffff !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #dashboardMenuToggle i {
+            color: inherit !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent .case-profiles-header-leading > div {
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+            text-align: left !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent .case-profiles-header-leading :is(h1, h2, h3, p) {
+            color: #ffffff !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header > div > div:last-child {
+            flex: 0 0 auto !important;
+            flex-wrap: nowrap !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header button[aria-label="Notifications"] {
+            box-sizing: border-box !important;
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header button[aria-label="Notifications"] > i {
+            margin: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1 !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header #notifications-unread-count {
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+            top: -.25rem !important;
+            right: -.25rem !important;
+            font-size: .75rem !important;
+            line-height: 1 !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar nav :is(a, button),
+        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar .sidebar-link {
+            background: #C41E3A !important;
+            color: #ffffff !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar nav :is(a, button) :is(i, svg, span),
+        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar .sidebar-link :is(i, svg, span) {
+            color: #ffffff !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar nav :is(a, button):hover,
+        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar .sidebar-link:hover {
+            background: #99172E !important;
+            color: #ffffff !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar .sidebar-link:is([class~="bg-purple-600"], [class~="bg-purple-700/70"]),
+        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar nav [x-show] > :is(a, button).bg-purple-600 {
+            background: #99172E !important;
+            color: #ffffff !important;
+            box-shadow: inset 3px 0 0 #ffffff !important;
+        }
+    }
+
+    @media (max-width: 26.875rem) {
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header button {
+            min-width: 3rem !important;
+            min-height: 3rem !important;
+        }
+    }
+
     /* Vertical dropdown burger menu, matching /admin-dashboard. */
     @media (max-width: 63.9375rem) {
         html body.portal-ui.case-profiles-mobile-nav #sidebar {
@@ -213,9 +339,14 @@
 @if($isAdmin && auth()->user()->isDepartmentAdmin())
 <header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
-        <div>
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Victim and Perpetrator Profiles</h2>
-            <p class="text-sm text-gray-500 hidden sm:block">View and manage case profiles</p>
+        <div class="case-profiles-header-leading flex items-center gap-3 min-w-0">
+            <button id="dashboardMenuToggle" class="hidden" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="min-w-0">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Victim and Perpetrator Profiles</h2>
+                <p class="text-sm text-gray-500 {{ auth()->user()->isDepartmentAdmin() ? '' : 'hidden sm:block' }}">View and manage case profiles</p>
+            </div>
         </div>
         @include('admin-tailwind.components.header-account')
     </div>

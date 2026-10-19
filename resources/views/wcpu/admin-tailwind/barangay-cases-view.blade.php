@@ -13,6 +13,157 @@
 @push('styles')
 @if(auth()->user()?->position !== 'Desk Officer')
 <style>
+    @media (max-width: 40rem) {
+        html body.portal-ui.view-cases-admin-mobile-nav #mobileTopBar {
+            display: none !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent > header#barangay-cases-view-header {
+            background: #C41E3A !important;
+            border-bottom-color: #99172E !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-header > div {
+            align-items: flex-start !important;
+            flex-wrap: nowrap !important;
+            min-width: 0 !important;
+            padding: max(.75rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) .75rem max(.5rem, env(safe-area-inset-left)) !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent .tablet-header-row {
+            grid-template-columns: minmax(0, 1fr) auto !important;
+            align-items: flex-start !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent #mobileMenuToggle {
+            display: none !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent .view-cases-header-leading {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: flex-start !important;
+            gap: .5rem !important;
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+            grid-column: 1 !important;
+            grid-row: 1 !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent .tablet-header-row > div:last-child {
+            grid-column: 2 !important;
+            grid-row: 1 !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #dashboardMenuToggle {
+            display: inline-flex !important;
+            flex: 0 0 2.5rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            align-items: center;
+            justify-content: center;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #fff !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #dashboardMenuToggle i {
+            color: inherit !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-header h2 {
+            color: #fff !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-header p {
+            display: block !important;
+            margin-top: .125rem !important;
+            color: rgba(255,255,255,.85) !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-header div:has(> img[alt="User Profile"]) {
+            display: none !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-header > div > div:last-child {
+            flex: 0 0 auto !important;
+            flex-wrap: nowrap !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar {
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: auto !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: calc(100vh - 60px) !important;
+            overflow-y: auto !important;
+            z-index: 999 !important;
+            border-radius: 0 0 14px 14px !important;
+            box-shadow: 0 14px 28px rgba(0,0,0,.22) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(-8px) !important;
+            transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+            background: #C41E3A !important;
+            background-image: none !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar.sidebar-open {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar.sidebar-collapsed,
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar.sidebar-collapsed-init {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-header {
+            display: none !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-text {
+            opacity: 1 !important;
+            max-width: none !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-menu {
+            flex: 0 1 auto;
+            min-height: 0;
+            padding: .5rem !important;
+            overflow-y: auto !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-link {
+            justify-content: flex-start !important;
+            gap: .75rem !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar nav :is(a, button),
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-link {
+            background: #C41E3A !important;
+            color: #fff !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar nav :is(a, button) :is(i,svg,span),
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-link :is(i,svg,span) {
+            color: #fff !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar nav :is(a,button):hover,
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-link:hover {
+            background: #99172E !important;
+            color: #fff !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-link:is([class~="bg-purple-600"],[class~="bg-purple-700/70"]),
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar nav [x-show] > :is(a,button).bg-purple-600 {
+            background: #99172E !important;
+            color: #fff !important;
+            box-shadow: inset 3px 0 0 #fff !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar #sidebarCloseBtn,
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebarToggleBtn {
+            display: none !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent {
+            width: 100% !important;
+            min-width: 0 !important;
+            margin-left: 0 !important;
+        }
+    }
+
     /* Prevent page scrolling - only table should scroll */
     html, body { overflow: hidden !important; height: 100vh !important; }
     #mainContent { height: 100vh !important; overflow: hidden !important; }
@@ -143,6 +294,19 @@
         .view-cases-pagination > div > p { text-align: center; }
         .view-cases-pagination > div > div { flex-wrap: wrap; justify-content: center; }
         .view-cases-pagination :is(a, span) { min-width: 3rem; min-height: 3rem; display: inline-flex; align-items: center; justify-content: center; }
+    }
+
+    @media (max-width: 26.875rem) {
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent > header#barangay-cases-view-header {
+            background: #C41E3A !important;
+            border-bottom-color: #99172E !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent > header#barangay-cases-view-header :is(h1, h2, h3, p) {
+            color: #fff !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent > header#barangay-cases-view-header p {
+            opacity: .85 !important;
+        }
     }
 </style>
 @endif
@@ -373,9 +537,16 @@
 <!-- Top Header -->
 <header id="barangay-cases-view-header" class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
-        <div>
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-800">{{ $barangay->name }} Cases</h2>
-            <p class="text-sm text-gray-500 hidden sm:block">Viewing cases for this barangay</p>
+        <div class="view-cases-header-leading flex items-center gap-3 min-w-0">
+            @if(auth()->user()->isDepartmentAdmin())
+            <button id="dashboardMenuToggle" class="hidden" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            @endif
+            <div class="min-w-0">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">{{ $barangay->name }} Cases</h2>
+                <p class="text-sm text-gray-500 {{ auth()->user()->isDepartmentAdmin() ? '' : 'hidden sm:block' }}">Viewing cases for this barangay</p>
+            </div>
         </div>
         <div class="flex items-center gap-4">
             @if($isBarangayDeskOfficer)

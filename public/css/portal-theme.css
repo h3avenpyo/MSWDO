@@ -290,6 +290,16 @@ body.portal-ui { background: var(--mswdo-canvas) !important; color: #475569; fon
     font-size: 1rem !important;
     line-height: 1 !important;
 }
+@media (max-width: 26.875rem) {
+    body.portal-ui.admin-desk-officers-profile-mobile-nav #mainContent > header button[aria-label="Notifications"] {
+        min-width: 3rem !important;
+        min-height: 3rem !important;
+    }
+    body.portal-ui.admin-register-user-mobile-nav #mainContent > header button[aria-label="Notifications"] {
+        min-width: 3rem !important;
+        min-height: 3rem !important;
+    }
+}
 .portal-ui :is(.portal-page-header, #mainContent > header) div:has(> img[alt="User Profile"]) {
     display: flex !important;
     align-items: center !important;

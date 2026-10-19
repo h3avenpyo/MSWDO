@@ -50,13 +50,15 @@ window.applyArchiveCaseModalDesign = (root, title) => {
     }
 };
 
-window.applyArchiveReportModalDesign = (doc, title) => {
+window.applyArchiveReportModalDesign = (doc, title, allowBcpcMonitoring = false) => {
     if (!doc || !title) return;
     const heading = doc.querySelector('#mainContent > header h2')
         || doc.querySelector('#mainContent .max-w-7xl > .mb-6 h1');
     const report = doc.querySelector('[data-archive-report-title]');
     const reportTitle = report?.dataset.archiveReportTitle || heading?.textContent.trim();
-    if (!reportTitle?.includes('Quarterly Compliance Report')) return;
+    const isQuarterlyReport = reportTitle?.includes('Quarterly Compliance Report');
+    const isBcpcMonitoring = allowBcpcMonitoring && reportTitle?.trim() === 'BCPC Case Monitoring';
+    if (!isQuarterlyReport && !isBcpcMonitoring) return;
     const name = document.createElement('div');
     name.className = 'archive-case-heading';
     name.textContent = reportTitle;

@@ -1444,6 +1444,35 @@
 
 /* Admin and multi-role archived cases render the same detail partial. */
 @media screen {
+    body.portal-ui .swal2-popup.admin-archive-view-popup {
+        box-sizing: border-box;
+        max-height: calc(100dvh - 2rem);
+        overflow: hidden;
+        padding: 0 !important;
+    }
+    body.portal-ui .swal2-popup.admin-archive-view-popup--case {
+        display: flex !important;
+        flex-direction: column !important;
+        height: min(88dvh, calc(100dvh - 2rem));
+    }
+    body.portal-ui .swal2-popup.admin-archive-view-popup--case > :is(.swal2-title, .swal2-actions) { flex: 0 0 auto; }
+    body.portal-ui .swal2-popup.admin-archive-view-popup--case > .swal2-html-container {
+        display: flex !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
+    body.portal-ui .swal2-popup.admin-archive-view-popup--case .admin-archive-view-frame {
+        display: block !important;
+        flex: 1 1 0% !important;
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        border: 0;
+    }
     body.portal-ui .swal2-popup.multi-role-archived-case-modal { width: min(1100px, calc(100vw - 32px)) !important; }
     body.portal-ui .swal2-popup.multi-role-archived-case-modal > .swal2-title { padding: 12px 20px !important; }
     body.portal-ui .swal2-popup.multi-role-archived-case-modal .desk-archive-view-frame { height: min(72dvh, 52rem); min-height: 24rem; }
@@ -1466,4 +1495,11 @@
     body.portal-ui.archive-case-modal-preview .bcpc-preview-record-information > div > span + span { color: #111827; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
     body.portal-ui.archive-case-modal-preview .bcpc-preview-record-information { margin-top: 12px; overflow: hidden; border: 1px solid #E5E7EB; border-radius: 8px; background: #fff; }
     body.portal-ui.archive-case-modal-preview .bcpc-preview-record-information > div { display: grid; grid-template-columns: 128px minmax(0, 1fr); }
+}
+@media screen and (max-width: 47.9375rem) {
+    body.portal-ui .swal2-popup.admin-archive-view-popup { max-height: calc(100dvh - 1rem); }
+    body.portal-ui .swal2-popup.admin-archive-view-popup--case {
+        height: min(88dvh, calc(100dvh - 1rem));
+        width: calc(100vw - 1rem) !important;
+    }
 }

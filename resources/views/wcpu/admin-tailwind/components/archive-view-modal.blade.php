@@ -1,59 +1,16 @@
-<style>
-    .swal2-popup.admin-archive-view-popup {
-        box-sizing: border-box;
-        width: min(72rem, calc(100vw - 2rem)) !important;
-        max-height: calc(100dvh - 2rem);
-        overflow: hidden;
-        padding: 0;
-    }
-    .swal2-popup.admin-archive-view-popup.admin-archive-view-popup--case {
-        width: min(60rem, calc(100vw - 2rem)) !important;
-    }
-    .swal2-popup.admin-archive-view-popup .swal2-title {
-        padding: 1rem 3.5rem .625rem;
-    }
-    .swal2-popup.admin-archive-view-popup .swal2-html-container {
-        box-sizing: border-box;
-        width: 100%;
-        max-height: calc(100dvh - 5.5rem);
-        margin: 0;
-        padding: 0 .875rem .875rem;
-        overflow: auto;
-        overscroll-behavior: contain;
-    }
-    .admin-archive-view-frame {
-        display: block;
-        width: 100%;
-        height: min(72dvh, 52rem);
-        min-height: 24rem;
-        border: 0;
-    }
-    @media (max-width: 47.9375rem) {
-        .swal2-popup.admin-archive-view-popup,
-        .swal2-popup.admin-archive-view-popup.admin-archive-view-popup--case {
-            width: calc(100vw - 1rem) !important;
-            max-height: calc(100dvh - 1rem);
-        }
-        .swal2-popup.admin-archive-view-popup .swal2-html-container {
-            max-height: calc(100dvh - 5rem);
-            padding: 0 .75rem .75rem;
-        }
-        .admin-archive-view-frame {
-            height: calc(100dvh - 9rem);
-            min-height: 18rem;
-        }
-    }
-</style>
 <script>
 const makeAdminArchiveFrameReadOnly = frame => {
     const doc = frame.contentDocument;
     if (!doc) return;
-    window.applyArchiveReportModalDesign(doc, Swal.getTitle());
+    window.applyArchiveReportModalDesign(doc, Swal.getTitle(), @json(auth()->user()?->isBcpcAdmin()));
 
     if (doc.querySelector('.case-profile-details')) {
         doc.body.classList.add('archive-case-modal-preview');
+        @if(auth()->user()?->isVawcAdmin())
+        doc.body.classList.add('bcpc-admin-header-theme');
+        @endif
         window.applyArchiveCaseModalDesign(doc, Swal.getTitle());
-        @if(auth()->user()?->isBcpcAdmin())
+        @if(auth()->user()?->isDepartmentAdmin())
         window.applyBcpcArchiveCaseDesign(doc);
         @endif
     }
@@ -88,10 +45,20 @@ document.addEventListener('click', event => {
 
     const title = link.dataset.modalTitle || 'Archived Record Details';
     const type = link.dataset.adminArchiveView || 'report';
+    const isSwdArchivedCase = @json(auth()->user()?->isVawcAdmin()) && type === 'case';
     const frame = document.createElement('iframe');
     frame.className = 'admin-archive-view-frame';
-    frame.addEventListener('load', () => makeAdminArchiveFrameReadOnly(frame));
-    @if(auth()->user()?->isBcpcAdmin())
+    frame.style.visibility = 'hidden';
+    frame.addEventListener('load', () => {
+        try {
+            makeAdminArchiveFrameReadOnly(frame);
+        } catch (error) {
+            console.error('Unable to prepare archived case preview.', error);
+        } finally {
+            frame.style.visibility = 'visible';
+        }
+    });
+    @if(auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin())
     const previewUrl = new URL(link.href, window.location.href);
     if (type === 'case') previewUrl.searchParams.set('bcpc_modal_preview', '1');
     frame.src = previewUrl.href;
@@ -101,15 +68,19 @@ document.addEventListener('click', event => {
     frame.title = title;
     frame.loading = 'eager';
 
+    if (isSwdArchivedCase) document.body.classList.add('bcpc-admin-header-theme');
     Swal.fire({
         title,
         html: frame,
         width: type === 'case' ? 'min(60rem, calc(100vw - 2rem))' : 'min(72rem, calc(100vw - 2rem))',
-        customClass: { popup: `archive-view-modal-popup admin-archive-view-popup admin-archive-view-popup--${type}` },
-        showConfirmButton: @json(auth()->user()?->isBcpcAdmin()),
-        showCloseButton: @json(! auth()->user()?->isBcpcAdmin()),
-        @if(auth()->user()?->isBcpcAdmin()) confirmButtonText: 'Close', @endif
+        customClass: { popup: `archive-view-modal-popup admin-archive-view-popup admin-archive-view-popup--${type}${isSwdArchivedCase ? ' swd-archive-case-view-popup' : ''}` },
+        showConfirmButton: @json(auth()->user()?->isBcpcAdmin()) || isSwdArchivedCase,
+        showCloseButton: !(@json(auth()->user()?->isBcpcAdmin()) || isSwdArchivedCase),
+        @if(auth()->user()?->isBcpcAdmin()) confirmButtonText: 'Close',
+        @elseif(auth()->user()?->isVawcAdmin()) confirmButtonText: 'Close', @endif
         allowOutsideClick: true
+    }).then(() => {
+        if (isSwdArchivedCase) document.body.classList.remove('bcpc-admin-header-theme');
     });
 }, true);
 </script>

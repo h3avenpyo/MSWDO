@@ -42,6 +42,9 @@
         }
         const view = event.target.closest('[data-swd-archive-view], [data-swd-archived-referral], [data-swd-archived-recipient]');
         if (!view) return;
+        // Archived case links also use the shared BCPC preview. Let its handler
+        // render the compact case details instead of cloning the full case page.
+        if (view.dataset.swdArchiveView === 'case' && view.dataset.adminArchiveView === 'case') return;
         event.preventDefault();
         event.stopImmediatePropagation();
         window.swdArchiveNavigation?.cancelPending();
@@ -64,13 +67,18 @@
             const controller = new AbortController();
             request = controller;
             try {
-                const response = await fetch(url, { credentials: 'same-origin', signal: controller.signal, headers: isCase ? { 'X-Requested-With': 'XMLHttpRequest' } : {} });
+                const response = await fetch(url, { credentials: 'same-origin', signal: controller.signal });
                 if (!response.ok || response.redirected) throw new Error('Unable to load the archived record.');
                 const page = new DOMParser().parseFromString(await response.text(), 'text/html');
                 if (!dialog.open || generation !== current || controller.signal.aborted) return;
                 page.querySelectorAll('script').forEach(script => script.remove());
                 if (isCase) {
-                    content.replaceChildren(...Array.from(page.body.childNodes));
+                    // A full case page includes the admin shell. Only insert the
+                    // case details into the dialog so the sidebar/header cannot
+                    // appear over the archived preview.
+                    const caseDetails = page.querySelector('.case-profile-details');
+                    if (!caseDetails) throw new Error('Unable to load the archived case details.');
+                    content.replaceChildren(caseDetails.cloneNode(true));
                     window.applyArchiveCaseModalDesign(content, document.getElementById('swdArchiveViewTitle'));
                 } else {
                     const report = page.querySelector('.w-full.max-w-7xl.mx-auto');

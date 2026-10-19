@@ -284,6 +284,7 @@
         .sidebar-menu::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); }
         .sidebar-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px; }
         .sidebar-menu::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
+
         
         /* Smooth sidebar transition - mobile slide + fade */
         @media (max-width: 1023px) {
@@ -695,6 +696,11 @@
                 display: flex !important;
             }
 
+            body.portal-ui.case-profiles-mobile-profile-hidden #mainContent .portal-page-header div:has(> img[alt="User Profile"]),
+            body.portal-ui.case-profiles-mobile-profile-hidden #mainContent > header div:has(> img[alt="User Profile"]) {
+                display: none !important;
+            }
+
             #mainContent .portal-page-header div:has(> img[alt="User Profile"]) > div,
             #mainContent > header div:has(> img[alt="User Profile"]) > div {
                 display: none !important;
@@ -782,6 +788,189 @@
             }
         }
         @endif
+
+        @if(auth()->user()?->isDepartmentAdmin())
+        /* User Logs and Referrals share the Dashboard's mobile header and drawer. */
+        body.portal-ui.admin-reference-mobile-nav #dashboardMenuToggle { display: none; }
+        @media (max-width: 40rem) {
+            body.portal-ui.admin-reference-mobile-nav #mobileTopBar,
+            body.portal-ui.admin-reference-mobile-nav #sidebarOverlay {
+                display: none !important;
+                pointer-events: none !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #mainContent .tablet-header-row > #mobileMenuToggle {
+                display: none !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #sidebar {
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: auto !important;
+                width: 100% !important;
+                min-width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                max-height: calc(100vh - 60px) !important;
+                overflow-y: auto !important;
+                z-index: 999 !important;
+                border-radius: 0 0 14px 14px !important;
+                box-shadow: 0 14px 28px rgba(0, 0, 0, .22) !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                transform: translateY(-8px) !important;
+                transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+                background: #C41E3A !important;
+                background-image: none !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #sidebar.sidebar-open {
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: translateY(0) !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) {
+                width: 100% !important;
+                min-width: 100% !important;
+                max-width: 100% !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #sidebar .sidebar-header,
+            body.portal-ui.admin-reference-mobile-nav #sidebar #sidebarCloseBtn,
+            body.portal-ui.admin-reference-mobile-nav #sidebarToggleBtn {
+                display: none !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #sidebar .sidebar-text {
+                opacity: 1 !important;
+                max-width: none !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #sidebar .sidebar-menu {
+                flex: 0 1 auto;
+                min-height: 0;
+                padding: .5rem !important;
+                overflow-y: auto !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #sidebar .sidebar-link {
+                justify-content: flex-start !important;
+                gap: .75rem !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #sidebar nav :is(a, button),
+            body.portal-ui.admin-reference-mobile-nav #sidebar .sidebar-link {
+                background: #C41E3A !important;
+                color: #ffffff !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #sidebar nav :is(a, button) :is(i, svg, span),
+            body.portal-ui.admin-reference-mobile-nav #sidebar .sidebar-link :is(i, svg, span) {
+                color: #ffffff !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #sidebar nav :is(a, button):hover,
+            body.portal-ui.admin-reference-mobile-nav #sidebar .sidebar-link:hover {
+                background: #99172E !important;
+                color: #ffffff !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #sidebar .sidebar-link:is(.bg-purple-600, [class~="bg-purple-700/70"]),
+            body.portal-ui.admin-reference-mobile-nav #sidebar nav [x-show] > :is(a, button).bg-purple-600 {
+                background: #99172E !important;
+                color: #ffffff !important;
+                box-shadow: inset 3px 0 0 #ffffff !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #mainContent {
+                width: 100% !important;
+                min-width: 0 !important;
+                margin-left: 0 !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header {
+                background: #C41E3A !important;
+                border-bottom-color: #99172E !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header > div {
+                align-items: flex-start !important;
+                flex-wrap: nowrap !important;
+                min-width: 0 !important;
+                padding-top: max(.875rem, env(safe-area-inset-top)) !important;
+                padding-right: max(1rem, env(safe-area-inset-right)) !important;
+                padding-bottom: .875rem !important;
+                padding-left: max(.5rem, env(safe-area-inset-left)) !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #mainContent .tablet-header-row {
+                display: flex !important;
+                align-items: flex-start !important;
+                gap: 0 !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header > div > .admin-reference-mobile-leading {
+                display: flex !important;
+                flex: 1 1 auto !important;
+                align-items: flex-start !important;
+                gap: .5rem !important;
+                min-width: 0 !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header .admin-reference-mobile-title {
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #dashboardMenuToggle {
+                display: inline-flex !important;
+                position: relative !important;
+                flex: 0 0 2.5rem !important;
+                width: 2.5rem !important;
+                height: 2.5rem !important;
+                align-items: center !important;
+                justify-content: center !important;
+                left: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                transform: none !important;
+                border: 0 !important;
+                border-radius: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                color: #ffffff !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #dashboardMenuToggle i { color: inherit !important; }
+            body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header :is(h1, h2, h3, p) {
+                color: #ffffff !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header .admin-reference-mobile-subtitle {
+                display: block !important;
+                margin-top: .125rem !important;
+                color: rgba(255, 255, 255, .85) !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header div:has(> img[alt="User Profile"]) {
+                display: none !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header > div > div:last-child {
+                flex: 0 0 auto !important;
+                flex-wrap: nowrap !important;
+            }
+        }
+        @media (max-width: 40rem) {
+            body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header button[aria-label="Notifications"] {
+                box-sizing: border-box !important;
+                width: 3rem !important;
+                min-width: 3rem !important;
+                height: 3rem !important;
+                min-height: 3rem !important;
+                padding: .5rem !important;
+                border-radius: .625rem !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header button[aria-label="Notifications"] > i {
+                margin: 0 !important;
+                font-size: 1.25rem !important;
+                line-height: 1 !important;
+            }
+            body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header #notifications-unread-count {
+                width: 1.25rem !important;
+                height: 1.25rem !important;
+                top: -.25rem !important;
+                right: -.25rem !important;
+                font-size: .75rem !important;
+                line-height: 1 !important;
+            }
+        }
+        @media (max-width: 26.875rem) {
+            body.portal-ui.admin-reference-mobile-nav #dashboardMenuToggle {
+                min-width: 3rem !important;
+                min-height: 3rem !important;
+            }
+        }
+        @endif
     </style>
     
     <script>
@@ -791,13 +980,13 @@
     <script src="{{ asset('js/archive-case-modal-design.js') }}?v={{ filemtime(public_path('js/archive-case-modal-design.js')) }}" defer></script>
     <script src="{{ asset('js/portal-modal-close.js') }}?v={{ filemtime(public_path('js/portal-modal-close.js')) }}" defer></script>
     <link rel="stylesheet" href="{{ asset('css/logout-modal.css') }}?v={{ filemtime(public_path('css/logout-modal.css')) }}">
-    @if(auth()->user()?->isBcpcAdmin())
+    @if(auth()->user()?->isBcpcAdmin() || (auth()->user()?->isVawcAdmin() && request()->routeIs('cases.show') && request()->boolean('bcpc_modal_preview')) || (auth()->user()?->isVawcAdmin() && request()->routeIs('admin.quarterly-reports.archived') && request('section') === 'barangay-cases'))
     <link rel="stylesheet" href="{{ asset('css/bcpc-admin-modals.css') }}?v={{ filemtime(public_path('css/bcpc-admin-modals.css')) }}">
     <script src="{{ asset('js/bcpc-admin-modal-design.js') }}?v={{ filemtime(public_path('js/bcpc-admin-modal-design.js')) }}" defer></script>
     @endif
     <script src="{{ asset('js/portal-modal-presentation.js') }}?v={{ filemtime(public_path('js/portal-modal-presentation.js')) }}" defer></script>
 </head>
-<body class="portal-ui {{ request()->routeIs('admin-dashboard') ? 'admin-dashboard-mobile-nav' : '' }} {{ auth()->user()?->isBcpcAdmin() ? 'bcpc-admin-header-theme' : (auth()->user()?->isVawcAdmin() ? 'swd-admin-header-theme' : '') }} font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased" style="--portal-user-initials: '{{ strtoupper(mb_substr((string) auth()->user()?->first_name, 0, 1) . mb_substr((string) auth()->user()?->last_name, 0, 1)) }}';">
+<body class="portal-ui {{ request()->routeIs('admin-dashboard') ? 'admin-dashboard-mobile-nav' : '' }} {{ request()->routeIs('case-profiles.index') ? 'case-profiles-mobile-profile-hidden' : '' }} {{ request()->routeIs('case-profiles.index') && auth()->user()?->isDepartmentAdmin() ? 'case-profiles-admin-mobile-nav' : '' }} {{ request()->routeIs('cases.show') && auth()->user()?->isDepartmentAdmin() ? 'case-details-admin-mobile-nav' : '' }} {{ request()->routeIs('admin.users.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-desk-officers-profile-mobile-nav' : '' }} {{ request()->routeIs('admin.users.create') && auth()->user()?->isDepartmentAdmin() ? 'admin-register-user-mobile-nav' : '' }} {{ (request()->routeIs('admin.users.logs', 'admin.users.archived', 'admin.referrals.index', 'admin.referrals', 'admin.referrals.archived', 'admin.referral-info.index', 'admin.quarterly-reports.index', 'admin.quarterly-reports.show', 'admin.quarterly-reports.edit', 'admin.bcpc-case-monitoring.edit', 'admin.bcpc-case-monitoring.archived', 'admin.calendar.index') || (request()->routeIs('admin.quarterly-reports.archived') && in_array(request('section'), ['barangay-cases', 'quarterly'], true))) && auth()->user()?->isDepartmentAdmin() ? 'admin-reference-mobile-nav' : '' }} {{ request()->routeIs('admin-barangay-cases') && auth()->user()?->isDepartmentAdmin() ? 'barangay-cases-admin-mobile-nav' : '' }} {{ request()->routeIs('admin.barangay-cases.show') && auth()->user()?->isDepartmentAdmin() ? 'view-cases-admin-mobile-nav' : '' }} {{ request()->routeIs('admin-add-new-case') && auth()->user()?->isDepartmentAdmin() ? 'add-case-admin-mobile-nav' : '' }} {{ auth()->user()?->isBcpcAdmin() ? 'bcpc-admin-header-theme' : (auth()->user()?->isVawcAdmin() ? 'swd-admin-header-theme' : '') }} font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased" style="--portal-user-initials: '{{ strtoupper(mb_substr((string) auth()->user()?->first_name, 0, 1) . mb_substr((string) auth()->user()?->last_name, 0, 1)) }}';">
     
     <!-- Mobile Sticky Top Bar -->
     <div id="mobileTopBar" class="lg:hidden sticky top-0 z-30 bg-purple-900 text-white flex items-center justify-between px-4 py-2.5 shadow-md border-b border-purple-800">
@@ -854,7 +1043,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Mobile Close Button - positioned outside sidebar flow -->
         <button 
             type="button"
@@ -1239,6 +1428,15 @@
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
         const sidebarStateKey = @json($adminSidebarStateKey);
+        const isDashboardDrawer = () => document.body.classList.contains('admin-dashboard-mobile-nav')
+            || (document.body.classList.contains('admin-reference-mobile-nav') && window.matchMedia('(max-width: 40rem)').matches)
+            || (document.body.classList.contains('case-profiles-admin-mobile-nav') && window.matchMedia('(max-width: 47.9375rem)').matches)
+            || (document.body.classList.contains('case-details-admin-mobile-nav') && window.matchMedia('(max-width: 40rem)').matches)
+            || (document.body.classList.contains('admin-desk-officers-profile-mobile-nav') && window.matchMedia('(max-width: 40rem)').matches)
+            || (document.body.classList.contains('admin-register-user-mobile-nav') && window.matchMedia('(max-width: 40rem)').matches)
+            || (document.body.classList.contains('barangay-cases-admin-mobile-nav') && window.matchMedia('(max-width: 40rem)').matches)
+            || (document.body.classList.contains('view-cases-admin-mobile-nav') && window.matchMedia('(max-width: 40rem)').matches)
+            || (document.body.classList.contains('add-case-admin-mobile-nav') && window.matchMedia('(max-width: 40rem)').matches);
         
         @if($persistsAdminSidebar)
         sidebar.classList.toggle('sidebar-collapsed', localStorage.getItem(sidebarStateKey) === 'true');
@@ -1296,21 +1494,22 @@
                 menuToggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                if (document.body.classList.contains('admin-dashboard-mobile-nav') && window.matchMedia('(max-width: 63.9375rem)').matches && sidebar.classList.contains('sidebar-open')) {
+                if (isDashboardDrawer() && sidebar.classList.contains('sidebar-open')) {
                     closeMobileSidebar();
                     return;
                 }
                 // Open sidebar with fade in from left
                 sidebar.classList.add('sidebar-open');
                 mobileMenuToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'true'));
-                if (document.body.classList.contains('admin-dashboard-mobile-nav')) {
+                if (isDashboardDrawer()) {
                     document.body.style.overflow = 'hidden';
                     document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
                     mobileMenuToggles.forEach(toggle => {
                         toggle.setAttribute('aria-label', 'Close navigation menu');
                         toggle.querySelector('i')?.classList.replace('fa-bars', 'fa-xmark');
                     });
-                    const dashboardHeader = document.getElementById('admin-dashboard-header');
+                    const dashboardHeader = document.getElementById('admin-dashboard-header')
+                        || document.querySelector('#mainContent > header.sticky');
                     if (dashboardHeader) {
                         const headerBottom = Math.max(0, dashboardHeader.getBoundingClientRect().bottom);
                         sidebar.style.setProperty('top', `${headerBottom}px`, 'important');
@@ -1328,7 +1527,7 @@
             // Close sidebar with fade out to left
             sidebar.classList.remove('sidebar-open');
             mobileMenuToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'false'));
-            if (document.body.classList.contains('admin-dashboard-mobile-nav')) {
+            if (isDashboardDrawer()) {
                 document.body.style.overflow = '';
                 document.documentElement.style.removeProperty('overflow-y');
                 mobileMenuToggles.forEach(toggle => {

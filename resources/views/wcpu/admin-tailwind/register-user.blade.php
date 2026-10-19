@@ -2,14 +2,164 @@
 
 @section('title', 'Register User - iSERVE SILANG Admin')
 
+@push('styles')
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 40rem) {
+        html body.portal-ui.admin-register-user-mobile-nav #mobileTopBar { display: none !important; }
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent > header#register-user-page-header {
+            background: #C41E3A !important;
+            border-bottom-color: #99172E !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent > header#register-user-page-header > div {
+            align-items: flex-start !important;
+            flex-wrap: nowrap !important;
+            min-width: 0 !important;
+            padding: max(.875rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) .875rem max(.5rem, env(safe-area-inset-left)) !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent > header#register-user-page-header .tablet-header-row {
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 0 !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent > header#register-user-page-header .register-user-header-leading {
+            display: flex !important;
+            flex: 1 1 auto !important;
+            align-items: flex-start !important;
+            gap: .5rem !important;
+            min-width: 0 !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent > header#register-user-page-header .portal-header-clock[hidden] {
+            display: none !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent #mobileMenuToggle { display: none !important; }
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent > header#register-user-page-header #dashboardMenuToggle {
+            position: relative !important;
+            left: 0 !important;
+            margin-left: 0 !important;
+            transform: none !important;
+            display: inline-flex !important;
+            flex: 0 0 2.5rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            align-items: center;
+            justify-content: center;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #fff !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent > header#register-user-page-header :is(h1,h2,h3,p) {
+            color: #fff !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent > header#register-user-page-header p {
+            display: block !important;
+            margin-top: .125rem !important;
+            opacity: .85 !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent > header#register-user-page-header div:has(> img[alt="User Profile"]) {
+            display: none !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent > header#register-user-page-header > div > div:last-child {
+            flex: 0 0 auto !important;
+            flex-wrap: nowrap !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #sidebarOverlay { display: none !important; pointer-events: none !important; }
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar {
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: auto !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: calc(100vh - 60px) !important;
+            overflow-y: auto !important;
+            z-index: 999 !important;
+            border-radius: 0 0 14px 14px !important;
+            box-shadow: 0 14px 28px rgba(0,0,0,.22) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(-8px) !important;
+            transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+            background: #C41E3A !important;
+            background-image: none !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar.sidebar-open {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar:is(.sidebar-collapsed,.sidebar-collapsed-init) {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar .sidebar-header { display: none !important; }
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar .sidebar-text { opacity: 1 !important; max-width: none !important; }
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar .sidebar-menu {
+            flex: 0 1 auto;
+            min-height: 0;
+            padding: .5rem !important;
+            overflow-y: auto !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar .sidebar-link { justify-content: flex-start !important; gap: .75rem !important; }
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar nav :is(a,button),
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar .sidebar-link { background: #C41E3A !important; color: #fff !important; }
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar nav :is(a,button) :is(i,svg,span),
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar .sidebar-link :is(i,svg,span) { color: #fff !important; }
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar nav :is(a,button):hover,
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar .sidebar-link:hover { background: #99172E !important; color: #fff !important; }
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar .sidebar-link:is(.bg-purple-600,.bg-purple-700\/70),
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar nav [x-show] > :is(a,button).bg-purple-600 {
+            background: #99172E !important;
+            color: #fff !important;
+            box-shadow: inset 3px 0 0 #fff !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #sidebar #sidebarCloseBtn,
+        html body.portal-ui.admin-register-user-mobile-nav #sidebarToggleBtn { display: none !important; }
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent { width: 100% !important; min-width: 0 !important; margin-left: 0 !important; }
+    }
+    @media (max-width: 26.875rem) {
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent > header#register-user-page-header button:not(#dashboardMenuToggle):not([aria-label="Notifications"]) {
+            min-width: 3rem !important;
+            min-height: 3rem !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent > header#register-user-page-header button[aria-label="Notifications"] {
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+        }
+        html body.portal-ui.admin-register-user-mobile-nav #mainContent > header#register-user-page-header button[aria-label="Notifications"] > i {
+            margin: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1 !important;
+        }
+    }
+</style>
+@endif
+@endpush
+
 @section('content')
 
 <!-- Top Header -->
-<header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
+<header id="register-user-page-header" class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
-        <div>
+        <div class="register-user-header-leading">
+            @if(auth()->user()?->isDepartmentAdmin())
+            <button id="dashboardMenuToggle" class="hidden" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            @endif
+            <div class="min-w-0">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Register New User</h2>
-            <p class="text-sm text-gray-500 hidden sm:block">Create a new user account</p>
+            <p class="text-sm text-gray-500 {{ auth()->user()?->isDepartmentAdmin() ? '' : 'hidden sm:block' }}">Create a new user account</p>
+            </div>
         </div>
         <div class="flex items-center gap-4">
             @include('admin-tailwind.components.notifications')

@@ -23,6 +23,22 @@
         overflow-wrap: anywhere;
         word-break: break-word;
     }
+    @media (max-width: 40rem) {
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header button[aria-label="Notifications"] {
+            box-sizing: border-box !important;
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+        }
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header button[aria-label="Notifications"] > i {
+            margin: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1 !important;
+        }
+    }
 
 </style>
 @endpush
@@ -30,11 +46,18 @@
 @section('content')
 
 <!-- Top Header -->
-<header class="sticky top-0 z-30 bg-[#C41E3A] border-b border-[#C41E3A] shadow-sm">
+<header class="admin-reference-mobile-header sticky top-0 z-30 bg-[#C41E3A] border-b border-[#C41E3A] shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
-        <div>
-            <h2 class="text-xl sm:text-2xl font-bold text-white">User Activity Logs</h2>
-            <p class="text-sm text-white/80 hidden sm:block">System activity monitoring</p>
+        <div class="admin-reference-mobile-leading min-w-0">
+            @if(auth()->user()?->isDepartmentAdmin())
+            <button id="dashboardMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            @endif
+            <div class="admin-reference-mobile-title">
+                <h2 class="text-xl sm:text-2xl font-bold text-white">User Activity Logs</h2>
+                <p class="admin-reference-mobile-subtitle text-sm text-white/80 hidden sm:block">System activity monitoring</p>
+            </div>
         </div>
         <div class="flex items-center gap-4">
             @include('admin-tailwind.components.notifications')

@@ -5,6 +5,22 @@
 @section('content')
 
 <!-- Top Header -->
+@if(auth()->user()->isDepartmentAdmin())
+<header class="admin-reference-mobile-header sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
+    <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
+        <div class="admin-reference-mobile-leading min-w-0">
+            <button id="dashboardMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="admin-reference-mobile-title">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Calendar</h2>
+                <p class="admin-reference-mobile-subtitle text-sm text-gray-500 hidden sm:block">View and manage events</p>
+            </div>
+        </div>
+        @include('admin-tailwind.components.header-account')
+    </div>
+</header>
+@else
 <header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
         <div>
@@ -24,6 +40,7 @@
         </div>
     </div>
 </header>
+@endif
 
 <!-- Main Content -->
 <main class="px-4 pt-4 pb-4 sm:p-6 lg:p-8">
@@ -61,6 +78,58 @@
 </main>
 
 <style>
+    @if(auth()->user()->isDepartmentAdmin())
+    @media (max-width: 40rem) {
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header > div {
+            column-gap: .75rem !important;
+        }
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header > div > .admin-reference-mobile-leading {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: flex-start !important;
+            gap: .5rem !important;
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+        }
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header .admin-reference-mobile-title {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            text-align: left !important;
+        }
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header #dashboardMenuToggle {
+            display: inline-flex !important;
+            position: relative !important;
+            flex: 0 0 2.5rem !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            transform: none !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #ffffff !important;
+        }
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header button[aria-label="Notifications"] {
+            box-sizing: border-box !important;
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+        }
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header button[aria-label="Notifications"] > i {
+            margin: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1 !important;
+        }
+    }
+    @endif
     #eventModalDialog {
         height: 100vh;
         height: 100dvh;

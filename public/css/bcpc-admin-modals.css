@@ -88,6 +88,13 @@
         text-align: left;
     }
     body.portal-ui.bcpc-admin-header-theme .swal2-popup.admin-archive-view-popup--case { width: min(1100px, calc(100vw - 2rem)) !important; }
+    body.portal-ui.bcpc-admin-header-theme .swal2-popup.admin-archive-view-popup .admin-archive-view-frame {
+        display: block !important;
+        width: 100% !important;
+        height: min(72dvh, 52rem) !important;
+        min-height: min(24rem, calc(100dvh - 10rem)) !important;
+        border: 0;
+    }
     body.portal-ui.bcpc-admin-header-theme .swal2-popup:not(.admin-archive-view-popup):not(.admin-archived-referral-popup):not(.app-logout-modal) > .swal2-title {
         color: #B11116 !important;
         font-size: 1.35rem !important;
@@ -124,6 +131,8 @@
     }
     body.portal-ui.bcpc-admin-header-theme.archive-case-modal-preview .case-profile-details > .bg-white > .p-6 { padding: 0 !important; }
     body.portal-ui.bcpc-admin-header-theme.archive-case-modal-preview .case-profile-details > .bg-white > .p-6 > .grid { grid-template-columns: minmax(0, 1fr) !important; gap: 0 !important; margin: 0 !important; }
+    body.portal-ui.swd-admin-header-theme.bcpc-admin-header-theme.archive-case-modal-preview .bcpc-shared-case-preview,
+    body.portal-ui.swd-admin-header-theme.bcpc-admin-header-theme.archive-case-modal-preview .bcpc-shared-case-preview .case-modal-details { width: 100%; min-width: 0; }
     body.portal-ui.bcpc-admin-header-theme.archive-case-modal-preview .case-profile-details :is(.bcpc-case-detail-row, div:has(> p.text-xs + p), div:has(> p.text-xs + div)) {
         display: grid !important;
         grid-template-columns: 128px minmax(0, 1fr) !important;
