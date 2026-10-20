@@ -229,13 +229,260 @@
         display: none !important;
     }
 }
+
+/* Archived Referrals tablet navigation (768px–1280px / 48rem–80rem): collapsed sidebar on the left without button, standard clean header */
+@media (min-width: 48rem) and (max-width: 80rem) {
+    html body.portal-ui.desk-officer-referrals-mobile-nav #mobileTopBar,
+    body.portal-ui.desk-officer-referrals-mobile-nav #mobileTopBar,
+    body.desk-officer-referrals-mobile-nav #mobileTopBar,
+    .desk-officer-referrals-mobile-nav #mobileTopBar,
+    #mobileTopBar {
+        display: none !important;
+    }
+
+    html body.portal-ui.desk-officer-referrals-mobile-nav #mobileMenuToggle,
+    body.desk-officer-referrals-mobile-nav #mobileMenuToggle,
+    #mobileMenuToggle {
+        display: none !important;
+    }
+
+    html body.portal-ui.desk-officer-referrals-mobile-nav #dashboardMenuToggle,
+    body.desk-officer-referrals-mobile-nav #dashboardMenuToggle,
+    #dashboardMenuToggle {
+        display: none !important;
+    }
+
+    html body.portal-ui.desk-officer-referrals-mobile-nav #pageMobileMenuToggle,
+    body.desk-officer-referrals-mobile-nav #pageMobileMenuToggle,
+    #pageMobileMenuToggle {
+        display: none !important;
+    }
+
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebarCloseBtn,
+    body.desk-officer-referrals-mobile-nav #sidebarCloseBtn,
+    #sidebarCloseBtn {
+        display: none !important;
+    }
+
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebarOverlay,
+    body.desk-officer-referrals-mobile-nav #sidebarOverlay,
+    #sidebarOverlay {
+        display: none !important;
+        pointer-events: none !important;
+    }
+
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebarToggleBtn,
+    body.portal-ui.desk-officer-referrals-mobile-nav #sidebarToggleBtn,
+    body.desk-officer-referrals-mobile-nav #sidebarToggleBtn,
+    .desk-officer-referrals-mobile-nav #sidebarToggleBtn,
+    #sidebarToggleBtn {
+        display: none !important;
+    }
+
+    /* Clean standard header on tablet */
+    html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky),
+    html body.portal-ui.desk-officer-referrals-mobile-nav #desk-officer-dashboard-header,
+    body.desk-officer-referrals-mobile-nav #desk-officer-dashboard-header,
+    #desk-officer-dashboard-header {
+        background: #ffffff !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        border-left: 0 !important;
+        box-sizing: border-box !important;
+    }
+    html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) > div,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #desk-officer-dashboard-header > div,
+    #desk-officer-dashboard-header > div {
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+    }
+    html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) :is(h1, h2, h3),
+    html body.portal-ui.desk-officer-referrals-mobile-nav #desk-officer-dashboard-header :is(h1, h2, h3),
+    #desk-officer-dashboard-header :is(h1, h2, h3) {
+        color: #1f2937 !important;
+        font-size: 1.5rem !important;
+        line-height: 1.25 !important;
+    }
+    html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) p,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #desk-officer-dashboard-header p,
+    #desk-officer-dashboard-header p {
+        color: #6b7280 !important;
+        font-size: 0.875rem !important;
+        display: block !important;
+    }
+    html body.portal-ui.desk-officer-referrals-mobile-nav #desk-officer-dashboard-header div:first-of-type :is(span, a),
+    #desk-officer-dashboard-header div:first-of-type :is(span, a) {
+        color: #4b5563 !important;
+    }
+    html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent > header button[aria-label="Notifications"],
+    html body.portal-ui.desk-officer-referrals-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"],
+    #desk-officer-dashboard-header button[aria-label="Notifications"] {
+        border: 1px solid #e5e7eb !important;
+        background: transparent !important;
+        color: #4b5563 !important;
+    }
+    html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent > header button[aria-label="Notifications"] > i,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"] > i,
+    #desk-officer-dashboard-header button[aria-label="Notifications"] > i {
+        color: #4b5563 !important;
+    }
+
+    /* Sidebar: collapsed icon rail on the left */
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar,
+    body.portal-ui.desk-officer-referrals-mobile-nav #sidebar,
+    body.desk-officer-referrals-mobile-nav #sidebar,
+    .desk-officer-referrals-mobile-nav #sidebar,
+    .portal-ui.desk-officer-referrals-mobile-nav #sidebar {
+        inset: 0 auto 0 0 !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        right: auto !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        max-height: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        background: #C41E3A !important;
+        border-radius: 0 !important;
+        z-index: 40 !important;
+        transition: width 0.3s ease !important;
+        width: 4.5rem !important;
+        min-width: 4.5rem !important;
+        max-width: 4.5rem !important;
+    }
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar .sidebar-header,
+    body.desk-officer-referrals-mobile-nav #sidebar .sidebar-header,
+    .desk-officer-referrals-mobile-nav #sidebar .sidebar-header {
+        display: flex !important;
+        min-height: 5.5rem;
+        padding-left: 0.75rem !important;
+        padding-right: 0.5rem !important;
+        justify-content: flex-start !important;
+    }
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar .sidebar-header img,
+    body.desk-officer-referrals-mobile-nav #sidebar .sidebar-header img,
+    .desk-officer-referrals-mobile-nav #sidebar .sidebar-header img {
+        width: 3rem !important;
+        height: 3rem !important;
+        flex-shrink: 0 !important;
+    }
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar .sidebar-header .sidebar-text,
+    body.desk-officer-referrals-mobile-nav #sidebar .sidebar-header .sidebar-text,
+    .desk-officer-referrals-mobile-nav #sidebar .sidebar-header .sidebar-text {
+        display: none !important;
+        opacity: 0 !important;
+    }
+
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed-init,
+    body.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed,
+    body.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed-init {
+        width: 4.5rem !important;
+        min-width: 4.5rem !important;
+        max-width: 4.5rem !important;
+    }
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar .sidebar-text,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed .sidebar-text,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-text,
+    body.desk-officer-referrals-mobile-nav #sidebar .sidebar-text {
+        opacity: 0 !important;
+        max-width: 0 !important;
+        display: none !important;
+        pointer-events: none !important;
+    }
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar .sidebar-menu,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed .sidebar-menu,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-menu,
+    body.desk-officer-referrals-mobile-nav #sidebar .sidebar-menu {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        overflow-x: hidden !important;
+    }
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar .sidebar-link,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed .sidebar-link,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-link,
+    body.desk-officer-referrals-mobile-nav #sidebar .sidebar-link {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        justify-content: flex-start !important;
+    }
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar .sidebar-link i,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed .sidebar-link i,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-link i,
+    body.desk-officer-referrals-mobile-nav #sidebar .sidebar-link i {
+        width: 1.25rem !important;
+        min-width: 1.25rem !important;
+        text-align: center !important;
+    }
+
+    /* Main Content offset by collapsed sidebar */
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar ~ #mainContent,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed ~ #mainContent,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed-init ~ #mainContent,
+    html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent,
+    body.desk-officer-referrals-mobile-nav #sidebar ~ #mainContent,
+    body.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed ~ #mainContent,
+    body.desk-officer-referrals-mobile-nav #sidebar.sidebar-collapsed-init ~ #mainContent,
+    body.desk-officer-referrals-mobile-nav #mainContent,
+    .desk-officer-referrals-mobile-nav #mainContent,
+    .portal-ui.desk-officer-referrals-mobile-nav #mainContent {
+        width: calc(100% - 4.5rem) !important;
+        margin-left: 4.5rem !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        min-width: 0 !important;
+        height: auto !important;
+        min-height: 100vh;
+        overflow: visible !important;
+    }
+
+    /* Tablet Content & Table Layout */
+    body.desk-officer-referrals-mobile-nav .archived-referrals-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 1.25rem 1.5rem !important;
+        box-sizing: border-box !important;
+    }
+    body.desk-officer-referrals-mobile-nav .archived-referrals-table {
+        display: block !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-radius: 0.75rem !important;
+    }
+    body.desk-officer-referrals-mobile-nav .archived-referrals-table table {
+        min-width: 50rem;
+        width: 100%;
+    }
+    body.desk-officer-referrals-mobile-nav .archived-referrals-cards {
+        display: none !important;
+    }
+    body.desk-officer-referrals-mobile-nav .archived-referral-filter-actions {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        width: auto !important;
+    }
+    body.desk-officer-referrals-mobile-nav .archived-referral-filter-button {
+        width: auto !important;
+    }
+}
 </style>
 @endpush
 @section('content')
 @php($isBcpcDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'BCPC' && !auth()->user()?->isMultiCaseDepartment())
 @php($isVawcDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'VAWC' && !auth()->user()?->isMultiCaseDepartment())
 @include('components.desk-officer.bcpc-dashboard-header', ['title' => 'Archived Referrals', 'subtitle' => 'View archived case referrals'])
-<div class="p-4 sm:p-6 lg:p-8">
+<div class="archived-referrals-container p-4 sm:p-6 lg:p-8">
     @unless($isBcpcDeskOfficer || $isVawcDeskOfficer || auth()->user()->isMultiCaseDepartment() || (auth()->user()?->position === 'Desk Officer' && auth()->user()?->isMultiCaseDepartment()))
     <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h1 class="text-2xl font-bold text-gray-800">Archived Referrals</h1>

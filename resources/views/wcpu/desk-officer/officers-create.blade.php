@@ -214,6 +214,242 @@
             display: none !important;
         }
     }
+
+    /* Add New Case tablet navigation (768px–1280px / 48rem–80rem): collapsed sidebar on the left without button, standard clean header */
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        html body.portal-ui.create-case-desk-mobile-nav #mobileTopBar,
+        body.portal-ui.create-case-desk-mobile-nav #mobileTopBar,
+        body.create-case-desk-mobile-nav #mobileTopBar,
+        .create-case-desk-mobile-nav #mobileTopBar,
+        #mobileTopBar {
+            display: none !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #mobileMenuToggle,
+        body.create-case-desk-mobile-nav #mobileMenuToggle,
+        #mobileMenuToggle {
+            display: none !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #dashboardMenuToggle,
+        body.create-case-desk-mobile-nav #dashboardMenuToggle,
+        #dashboardMenuToggle {
+            display: none !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #pageMobileMenuToggle,
+        body.create-case-desk-mobile-nav #pageMobileMenuToggle,
+        #pageMobileMenuToggle {
+            display: none !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #sidebarCloseBtn,
+        body.create-case-desk-mobile-nav #sidebarCloseBtn,
+        #sidebarCloseBtn {
+            display: none !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #sidebarOverlay,
+        body.create-case-desk-mobile-nav #sidebarOverlay,
+        #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #sidebarToggleBtn,
+        body.portal-ui.create-case-desk-mobile-nav #sidebarToggleBtn,
+        body.create-case-desk-mobile-nav #sidebarToggleBtn,
+        .create-case-desk-mobile-nav #sidebarToggleBtn,
+        #sidebarToggleBtn {
+            display: none !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header#officers-create-header,
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header,
+        body.create-case-desk-mobile-nav #officers-create-header,
+        #officers-create-header {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            border-left: 0 !important;
+            box-sizing: border-box !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header#officers-create-header > div,
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header > div,
+        #officers-create-header > div {
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header#officers-create-header :is(h1, h2, h3),
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header :is(h1, h2, h3),
+        #officers-create-header :is(h1, h2, h3) {
+            color: #1f2937 !important;
+            font-size: 1.5rem !important;
+            line-height: 1.25 !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header#officers-create-header p,
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header p,
+        #officers-create-header p {
+            color: #6b7280 !important;
+            font-size: 0.875rem !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header div:first-of-type :is(span, a),
+        #officers-create-header div:first-of-type :is(span, a) {
+            color: #4b5563 !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header button[aria-label="Notifications"],
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header button[aria-label="Notifications"],
+        #officers-create-header button[aria-label="Notifications"] {
+            border: 1px solid #e5e7eb !important;
+            background: transparent !important;
+            color: #4b5563 !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header button[aria-label="Notifications"] > i,
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header button[aria-label="Notifications"] > i,
+        #officers-create-header button[aria-label="Notifications"] > i {
+            color: #4b5563 !important;
+        }
+
+        /* Sidebar: collapsed icon rail on the left */
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar,
+        body.portal-ui.create-case-desk-mobile-nav #sidebar,
+        body.create-case-desk-mobile-nav #sidebar,
+        .create-case-desk-mobile-nav #sidebar,
+        .portal-ui.create-case-desk-mobile-nav #sidebar {
+            inset: 0 auto 0 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            right: auto !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+            background: #C41E3A !important;
+            border-radius: 0 !important;
+            z-index: 40 !important;
+            transition: width 0.3s ease !important;
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-header,
+        body.create-case-desk-mobile-nav #sidebar .sidebar-header,
+        .create-case-desk-mobile-nav #sidebar .sidebar-header {
+            display: flex !important;
+            min-height: 5.5rem;
+            padding-left: 0.75rem !important;
+            padding-right: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-header img,
+        body.create-case-desk-mobile-nav #sidebar .sidebar-header img,
+        .create-case-desk-mobile-nav #sidebar .sidebar-header img {
+            width: 3rem !important;
+            height: 3rem !important;
+            flex-shrink: 0 !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-header .sidebar-text,
+        body.create-case-desk-mobile-nav #sidebar .sidebar-header .sidebar-text,
+        .create-case-desk-mobile-nav #sidebar .sidebar-header .sidebar-text {
+            display: none !important;
+            opacity: 0 !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init,
+        body.create-case-desk-mobile-nav #sidebar.sidebar-collapsed,
+        body.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init {
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-text,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed .sidebar-text,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-text,
+        body.create-case-desk-mobile-nav #sidebar .sidebar-text {
+            opacity: 0 !important;
+            max-width: 0 !important;
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-menu,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed .sidebar-menu,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-menu,
+        body.create-case-desk-mobile-nav #sidebar .sidebar-menu {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+            overflow-x: hidden !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed .sidebar-link,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-link,
+        body.create-case-desk-mobile-nav #sidebar .sidebar-link {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link i,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed .sidebar-link i,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-link i,
+        body.create-case-desk-mobile-nav #sidebar .sidebar-link i {
+            width: 1.25rem !important;
+            min-width: 1.25rem !important;
+            text-align: center !important;
+        }
+
+        /* Main Content offset by collapsed sidebar */
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar ~ #mainContent,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed ~ #mainContent,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init ~ #mainContent,
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent,
+        body.create-case-desk-mobile-nav #sidebar ~ #mainContent,
+        body.create-case-desk-mobile-nav #sidebar.sidebar-collapsed ~ #mainContent,
+        body.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init ~ #mainContent,
+        body.create-case-desk-mobile-nav #mainContent,
+        .create-case-desk-mobile-nav #mainContent,
+        .portal-ui.create-case-desk-mobile-nav #mainContent {
+            width: calc(100% - 4.5rem) !important;
+            margin-left: 4.5rem !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            min-width: 0 !important;
+            height: auto !important;
+            min-height: 100vh;
+            overflow: visible !important;
+        }
+
+        /* Case banner actions */
+        .case-type-actions {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            width: auto !important;
+            gap: 0.5rem !important;
+        }
+        .case-type-actions .case-type-action {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            min-height: 2.5rem !important;
+            padding: 0.5rem 1rem !important;
+            font-size: 0.8125rem !important;
+        }
+        #new-case-form .p-6 {
+            padding: 1.5rem !important;
+        }
+        #new-case-form .case-form-section-header {
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+        }
+    }
 </style>
 @endpush
 

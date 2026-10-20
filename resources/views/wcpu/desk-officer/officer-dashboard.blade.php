@@ -364,6 +364,124 @@
         body.desk-officer-dashboard-mobile-nav #desk-officer-dashboard-header h2,
         body.desk-officer-dashboard-mobile-nav #desk-officer-dashboard-header p { min-width: 0; }
     }
+
+    /* Dashboard tablet navigation (768px–1280px): collapsed sidebar on the left, standard header (not top navbar), without toggle button. */
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        body.desk-officer-dashboard-mobile-nav #mobileTopBar { display: none !important; }
+        body.desk-officer-dashboard-mobile-nav #mobileMenuToggle { display: none !important; }
+        body.desk-officer-dashboard-mobile-nav #dashboardMenuToggle { display: none !important; }
+        body.desk-officer-dashboard-mobile-nav #pageMobileMenuToggle { display: none !important; }
+        body.desk-officer-dashboard-mobile-nav #sidebarCloseBtn { display: none !important; }
+        body.desk-officer-dashboard-mobile-nav #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header,
+        body.desk-officer-dashboard-mobile-nav #desk-officer-dashboard-header {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            border-left: 0 !important;
+            box-sizing: border-box !important;
+        }
+        html body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header > div > div:first-of-type :is(h1, h2, h3) {
+            color: #1f2937 !important;
+        }
+        html body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header > div > div:first-of-type p {
+            color: #6b7280 !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar {
+            inset: 0 auto 0 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            right: auto !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+            background: #C41E3A !important;
+            border-radius: 0 !important;
+            z-index: 40 !important;
+            transition: width 0.3s ease !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar .sidebar-header {
+            display: flex !important;
+            min-height: 5.5rem;
+            padding-left: 0.75rem !important;
+            padding-right: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar .sidebar-header img {
+            width: 3rem !important;
+            height: 3rem !important;
+            flex-shrink: 0 !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar .sidebar-header .sidebar-text {
+            display: none !important;
+            opacity: 0 !important;
+        }
+
+        /* Collapsed / default sidebar state on tablet */
+        body.desk-officer-dashboard-mobile-nav #sidebar,
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed,
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed-init {
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar .sidebar-text,
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed .sidebar-text,
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-text {
+            opacity: 0 !important;
+            max-width: 0 !important;
+            display: none !important;
+            pointer-events: none !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar .sidebar-menu,
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed .sidebar-menu,
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-menu {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+            overflow-x: hidden !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar .sidebar-link,
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed .sidebar-link,
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-link {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            justify-content: flex-start !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar .sidebar-link i,
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed .sidebar-link i,
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-link i {
+            width: 1.25rem !important;
+            min-width: 1.25rem !important;
+            text-align: center !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar ~ #mainContent,
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed ~ #mainContent,
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed-init ~ #mainContent,
+        .portal-ui.desk-officer-dashboard-mobile-nav #sidebar ~ #mainContent,
+        .portal-ui.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed ~ #mainContent,
+        .portal-ui.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed-init ~ #mainContent {
+            width: calc(100% - 4.5rem) !important;
+            margin-left: 4.5rem !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            min-width: 0 !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebarToggleBtn {
+            display: none !important;
+        }
+    }
 </style>
 @endpush
 

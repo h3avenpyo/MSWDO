@@ -399,8 +399,8 @@
         }
     }
 
-    /* Case Profiles tablet navigation (768px–1023px): collapsed sidebar on the left, standard header (not top navbar), no collapsed button. */
-    @media (min-width: 48rem) and (max-width: 63.9375rem) {
+    /* Case Profiles tablet navigation (768px–1280px / 48rem–80rem): collapsed sidebar on the left, standard header (not top navbar), no collapsed button. */
+    @media (min-width: 48rem) and (max-width: 80rem) {
         html body.portal-ui #mobileTopBar { display: none !important; }
         html body.portal-ui #mobileMenuToggle { display: none !important; }
         html body.portal-ui #dashboardMenuToggle { display: none !important; }
@@ -410,9 +410,19 @@
             display: none !important;
             pointer-events: none !important;
         }
-        html body.portal-ui #mainContent > header.sticky {
+        html body.portal-ui #mainContent > header:is(#case-profiles-header, #desk-officer-dashboard-header, .portal-page-header, .sticky),
+        html body.portal-ui #case-profiles-header,
+        html body.portal-ui #desk-officer-dashboard-header {
             background: #ffffff !important;
             border-bottom: 1px solid #e5e7eb !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            border-left: 0 !important;
+            box-sizing: border-box !important;
         }
         html body.portal-ui #mainContent > header > div > div:first-of-type :is(h1, h2, h3) {
             color: #1f2937 !important;
@@ -494,23 +504,16 @@
         }
         html body.portal-ui #sidebar ~ #mainContent,
         html body.portal-ui #sidebar.sidebar-collapsed ~ #mainContent,
-        html body.portal-ui #sidebar.sidebar-collapsed-init ~ #mainContent {
+        html body.portal-ui #sidebar.sidebar-collapsed-init ~ #mainContent,
+        html body.portal-ui #mainContent {
             width: calc(100% - 4.5rem) !important;
             margin-left: 4.5rem !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
             min-width: 0 !important;
         }
         html body.portal-ui #sidebarToggleBtn {
             display: none !important;
-        }
-    }
-
-    @media (min-width: 48rem) and (max-width: 80rem) {
-        html body.portal-ui #mobileTopBar { display: none !important; }
-        html body.portal-ui #mobileMenuToggle { display: none !important; }
-        html body.portal-ui #sidebar {
-            inset: 0 auto 0 0 !important;
-            height: 100vh !important;
-            height: 100dvh !important;
         }
     }
 </style>

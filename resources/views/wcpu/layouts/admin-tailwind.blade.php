@@ -801,6 +801,7 @@
 
         @media (min-width: 48rem) and (max-width: 63.9375rem) {
             body.portal-ui.admin-dashboard-mobile-nav #sidebarToggleBtn,
+            body.portal-ui.view-cases-admin-mobile-nav #sidebarToggleBtn,
             body.portal-ui.case-profiles-admin-mobile-nav #sidebarToggleBtn,
             body.portal-ui.case-profiles-mobile-profile-hidden #sidebarToggleBtn,
             body.portal-ui.barangay-cases-admin-mobile-nav #sidebarToggleBtn,
@@ -815,6 +816,11 @@
             body.portal-ui.admin-quarterly-reports-archived-mobile-nav #sidebarToggleBtn,
             body.portal-ui.admin-referrals-archived-mobile-nav #sidebarToggleBtn,
             body.portal-ui.admin-users-archived-mobile-nav #sidebarToggleBtn {
+                display: none !important;
+            }
+        }
+        @media (min-width: 48rem) and (max-width: 80rem) {
+            body.portal-ui.view-cases-admin-mobile-nav #sidebarToggleBtn {
                 display: none !important;
             }
         }
@@ -1477,7 +1483,7 @@
         @else
         localStorage.setItem(sidebarStateKey, 'false');
         @endif
-        if ((document.body.classList.contains('admin-dashboard-mobile-nav') || document.body.classList.contains('case-profiles-admin-mobile-nav') || document.body.classList.contains('case-profiles-mobile-profile-hidden') || document.body.classList.contains('barangay-cases-admin-mobile-nav') || document.body.classList.contains('add-case-admin-mobile-nav') || document.body.classList.contains('admin-referrals-mobile-nav') || document.body.classList.contains('admin-desk-officers-profile-mobile-nav') || document.body.classList.contains('admin-register-user-mobile-nav') || document.body.classList.contains('admin-user-logs-mobile-nav') || document.body.classList.contains('admin-referral-info-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-mobile-nav') || document.body.classList.contains('admin-calendar-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-archived-mobile-nav') || document.body.classList.contains('admin-referrals-archived-mobile-nav') || document.body.classList.contains('admin-users-archived-mobile-nav')) && window.matchMedia('(min-width: 48rem) and (max-width: 63.9375rem)').matches) {
+        if (((document.body.classList.contains('admin-dashboard-mobile-nav') || document.body.classList.contains('view-cases-admin-mobile-nav') || document.body.classList.contains('case-profiles-admin-mobile-nav') || document.body.classList.contains('case-profiles-mobile-profile-hidden') || document.body.classList.contains('barangay-cases-admin-mobile-nav') || document.body.classList.contains('add-case-admin-mobile-nav') || document.body.classList.contains('admin-referrals-mobile-nav') || document.body.classList.contains('admin-desk-officers-profile-mobile-nav') || document.body.classList.contains('admin-register-user-mobile-nav') || document.body.classList.contains('admin-user-logs-mobile-nav') || document.body.classList.contains('admin-referral-info-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-mobile-nav') || document.body.classList.contains('admin-calendar-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-archived-mobile-nav') || document.body.classList.contains('admin-referrals-archived-mobile-nav') || document.body.classList.contains('admin-users-archived-mobile-nav')) && window.matchMedia('(min-width: 48rem) and (max-width: 63.9375rem)').matches) || (document.body.classList.contains('view-cases-admin-mobile-nav') && window.matchMedia('(min-width: 48rem) and (max-width: 80rem)').matches)) {
             sidebar?.classList.add('sidebar-collapsed');
             localStorage.setItem(sidebarStateKey, 'true');
         }
@@ -1603,7 +1609,7 @@
 
         window.addEventListener('resize', function() {
             if (window.matchMedia('(min-width: 80.0625rem)').matches) closeMobileSidebar();
-            if ((document.body.classList.contains('admin-dashboard-mobile-nav') || document.body.classList.contains('case-profiles-admin-mobile-nav') || document.body.classList.contains('case-profiles-mobile-profile-hidden') || document.body.classList.contains('barangay-cases-admin-mobile-nav') || document.body.classList.contains('add-case-admin-mobile-nav') || document.body.classList.contains('admin-referrals-mobile-nav') || document.body.classList.contains('admin-desk-officers-profile-mobile-nav') || document.body.classList.contains('admin-register-user-mobile-nav') || document.body.classList.contains('admin-user-logs-mobile-nav') || document.body.classList.contains('admin-referral-info-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-mobile-nav') || document.body.classList.contains('admin-calendar-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-archived-mobile-nav') || document.body.classList.contains('admin-referrals-archived-mobile-nav') || document.body.classList.contains('admin-users-archived-mobile-nav')) && window.matchMedia('(min-width: 48rem) and (max-width: 63.9375rem)').matches) {
+            if (((document.body.classList.contains('admin-dashboard-mobile-nav') || document.body.classList.contains('view-cases-admin-mobile-nav') || document.body.classList.contains('case-profiles-admin-mobile-nav') || document.body.classList.contains('case-profiles-mobile-profile-hidden') || document.body.classList.contains('barangay-cases-admin-mobile-nav') || document.body.classList.contains('add-case-admin-mobile-nav') || document.body.classList.contains('admin-referrals-mobile-nav') || document.body.classList.contains('admin-desk-officers-profile-mobile-nav') || document.body.classList.contains('admin-register-user-mobile-nav') || document.body.classList.contains('admin-user-logs-mobile-nav') || document.body.classList.contains('admin-referral-info-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-mobile-nav') || document.body.classList.contains('admin-calendar-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-archived-mobile-nav') || document.body.classList.contains('admin-referrals-archived-mobile-nav') || document.body.classList.contains('admin-users-archived-mobile-nav')) && window.matchMedia('(min-width: 48rem) and (max-width: 63.9375rem)').matches) || (document.body.classList.contains('view-cases-admin-mobile-nav') && window.matchMedia('(min-width: 48rem) and (max-width: 80rem)').matches)) {
                 closeMobileSidebar();
             }
         });

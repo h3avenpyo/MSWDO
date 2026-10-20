@@ -563,8 +563,8 @@
         /* Keep shared Desk Officer pages stable across tablet portrait and landscape. */
         @media (min-width: 40.0625rem) and (max-width: 80rem) {
             .portal-ui #mainContent {
-                padding-left: .75rem !important;
-                padding-right: .75rem !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
             }
             #mainContent .tablet-header-row {
                 grid-template-columns: minmax(0, 1fr) auto !important;
@@ -885,6 +885,32 @@
         @media (max-width: 40rem) {
             body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, #officers-create-header, .portal-page-header, .sticky) div:has(> img[alt="User Profile"]) {
                 display: none !important;
+            }
+        }
+
+        @media (min-width: 48rem) and (max-width: 80rem) {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #sidebarToggleBtn {
+                display: none !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #mainContent {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                margin-left: 4.5rem !important;
+                width: calc(100% - 4.5rem) !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #case-profiles-header, #barangay-cases-view-header, #officers-create-header, .portal-page-header, .sticky),
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #desk-officer-dashboard-header,
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #case-profiles-header,
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #barangay-cases-view-header,
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #officers-create-header {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                border-left: 0 !important;
+                box-sizing: border-box !important;
             }
         }
         @endif
@@ -1491,6 +1517,11 @@
         @else
         localStorage.setItem(sidebarStateKey, 'false');
         @endif
+
+        if ((document.body.classList.contains('desk-officer-dashboard-mobile-nav') || document.body.classList.contains('view-cases-desk-mobile-nav') || document.body.classList.contains('create-case-desk-mobile-nav') || document.body.classList.contains('desk-officer-referrals-mobile-nav') || document.body.classList.contains('desk-officer-calendar-mobile-nav') || document.body.classList.contains('desk-officer-quarterly-reports-mobile-nav') || document.body.classList.contains('desk-officer-archived-cases-mobile-nav')) && window.matchMedia('(min-width: 48rem) and (max-width: 80rem)').matches) {
+            sidebar?.classList.add('sidebar-collapsed');
+            localStorage.setItem(sidebarStateKey, 'true');
+        }
 
         if (sidebarToggleBtn && sidebar) {
             sidebarToggleBtn.setAttribute('aria-expanded', String(!sidebar.classList.contains('sidebar-collapsed')));
