@@ -10,29 +10,23 @@
         #referrals-main {
             padding: clamp(1rem, 2vw, 1.5rem) !important;
         }
-
         #referrals-summary-card {
             padding: clamp(1rem, 2vw, 1.5rem) !important;
         }
-
         #referrals-table-panel {
             min-width: 0;
         }
-
         #referrals-table-panel table {
             min-width: 55rem;
         }
-
         #referrals-table-panel :is(th, td) {
             padding: .75rem clamp(.625rem, 1.2vw, 1rem) !important;
             font-size: clamp(.6875rem, 1.15vw, .8125rem);
         }
-
-        #referrals-table-panel td:last-child>div {
+        #referrals-table-panel td:last-child > div {
             gap: .375rem;
             flex-wrap: nowrap;
         }
-
         #referrals-table-panel td:last-child :is(button, a) {
             flex: 0 0 auto;
             width: 2.25rem;
@@ -40,12 +34,10 @@
             height: 2.25rem;
             padding: 0 !important;
         }
-
-        #referrals-table-panel>div:last-child {
+        #referrals-table-panel > div:last-child {
             padding: 1rem clamp(1rem, 2vw, 1.5rem) !important;
         }
-
-        #referrals-table-panel>div:last-child>div:last-child {
+        #referrals-table-panel > div:last-child > div:last-child {
             max-width: 100%;
             overflow-x: auto;
         }
@@ -54,57 +46,29 @@
     /* Phone-only referral cards. The existing table remains the presentation
        for tablet and desktop widths. */
     @media (max-width: 47.9375rem) {
-        #referrals-table-panel {
-            display: none !important;
-        }
-
+        #referrals-table-panel { display: none !important; }
         #referrals-mobile-cards {
             display: block !important;
             padding-bottom: calc(.75rem + env(safe-area-inset-bottom));
         }
-
         #referrals-mobile-cards .referral-cards-list {
             max-height: none !important;
             overflow: visible !important;
         }
-
         #referrals-mobile-cards .referral-card {
             min-width: 0;
             padding: 1rem;
         }
-
         #referrals-mobile-cards .referral-card-actions {
             display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            column-gap: .5rem !important;
-            row-gap: .375rem !important;
-            padding-top: .5rem !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: .5rem;
         }
-
-        #referrals-mobile-cards .referral-card-actions> :is(button, a) {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
+        #referrals-mobile-cards .referral-card-actions > :is(button, a) {
             width: 100% !important;
-            min-width: 0 !important;
-            height: 2.375rem !important;
-            min-height: 2.375rem !important;
-            max-height: 2.375rem !important;
-            padding: 0 .5rem !important;
-            gap: .375rem !important;
-            font-size: .75rem !important;
-            line-height: 1 !important;
-            box-sizing: border-box !important;
-            border-radius: .5rem !important;
-            text-decoration: none !important;
-        }
-
-        #referrals-mobile-cards .referral-card-actions> :is(button, a) i {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-size: .8125rem !important;
-            line-height: 1 !important;
+            min-width: 0;
+            min-height: 3rem;
+            padding: .5rem !important;
         }
         #referralModal.is-edit-mode #closeModal,
         #referralModal[data-mode="edit"] #closeModal {
@@ -121,9 +85,11 @@
             display: none !important;
         }
     }
-
+    @media (min-width: 40.0625rem) and (max-width: 47.9375rem) {
+        #referrals-mobile-cards .referral-card-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
     @media (max-width: 40rem) {
-        html body.portal-ui.admin-reference-mobile-nav #mainContent>header.admin-reference-mobile-header button[aria-label="Notifications"] {
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header button[aria-label="Notifications"] {
             box-sizing: border-box !important;
             width: 2.5rem !important;
             min-width: 2.5rem !important;
@@ -132,8 +98,7 @@
             padding: 0 !important;
             border-radius: .625rem !important;
         }
-
-        html body.portal-ui.admin-reference-mobile-nav #mainContent>header.admin-reference-mobile-header button[aria-label="Notifications"]>i {
+        html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header button[aria-label="Notifications"] > i {
             margin: 0 !important;
             font-size: 1rem !important;
             line-height: 1 !important;
@@ -148,24 +113,20 @@
         color: #B91C1C !important;
         font-weight: 700 !important;
     }
-
-    #referCaseButton:disabled>i {
+    #referCaseButton:disabled > i {
         color: #B91C1C !important;
         font-weight: 900 !important;
     }
-
-    #referCaseButton:disabled>span {
+    #referCaseButton:disabled > span {
         color: #B91C1C !important;
         font-weight: 700 !important;
     }
-
     .portal-ui #mainContent button.disabled-referral-edit.disabled-referral-edit:disabled {
         background-color: #FEE2E2 !important;
         border-color: #FCA5A5 !important;
         color: #B91C1C !important;
     }
-
-    .portal-ui #mainContent button.disabled-referral-edit.disabled-referral-edit:disabled>i {
+    .portal-ui #mainContent button.disabled-referral-edit.disabled-referral-edit:disabled > i {
         color: #B91C1C !important;
         font-weight: 900 !important;
     }
@@ -173,74 +134,28 @@
     /* Keep the referral registry readable at every desktop/tablet width.  The
        wrapper remains the horizontal-scroll boundary when this minimum width
        cannot fit, instead of compressing column content. */
-    #referrals-table-panel>div:first-child {
-        overflow-x: auto;
-    }
-
+    #referrals-table-panel > div:first-child { overflow-x: auto; }
     #referrals-table-panel table {
         min-width: 76rem;
         table-layout: fixed;
     }
-
     #referrals-table-panel table :is(th, td) {
         padding: .875rem 1rem !important;
         vertical-align: middle;
     }
-
-    #referrals-table-panel table thead {
-        background-color: #b91c1c !important;
-    }
-
-    #referrals-table-panel table th {
-        color: #ffffff !important;
-    }
-
-    #referrals-table-panel table th {
-        white-space: nowrap;
-    }
+    #referrals-table-panel table thead { background-color: #b91c1c !important; }
+    #referrals-table-panel table th { color: #ffffff !important; }
+    #referrals-table-panel table th { white-space: nowrap; }
 
     /* Client, age, sex, services, agency, date, feedback, actions. */
-    #referrals-table-panel table :is(th, td):nth-child(1) {
-        width: 15%;
-        text-align: left;
-    }
-
-    #referrals-table-panel table :is(th, td):nth-child(2) {
-        width: 5%;
-        text-align: center;
-    }
-
-    #referrals-table-panel table :is(th, td):nth-child(3) {
-        width: 6%;
-        text-align: center;
-    }
-
-    #referrals-table-panel table :is(th, td):nth-child(4) {
-        width: 18%;
-        text-align: left;
-    }
-
-    #referrals-table-panel table :is(th, td):nth-child(5) {
-        width: 19%;
-        text-align: left;
-    }
-
-    #referrals-table-panel table :is(th, td):nth-child(6) {
-        width: 11%;
-        text-align: left;
-        white-space: nowrap;
-    }
-
-    #referrals-table-panel table :is(th, td):nth-child(7) {
-        width: 14%;
-        text-align: left;
-    }
-
-    #referrals-table-panel table :is(th, td):nth-child(8) {
-        width: 12%;
-        text-align: center;
-        white-space: nowrap;
-    }
+    #referrals-table-panel table :is(th, td):nth-child(1) { width: 15%; text-align: left; }
+    #referrals-table-panel table :is(th, td):nth-child(2) { width: 5%; text-align: center; }
+    #referrals-table-panel table :is(th, td):nth-child(3) { width: 6%; text-align: center; }
+    #referrals-table-panel table :is(th, td):nth-child(4) { width: 18%; text-align: left; }
+    #referrals-table-panel table :is(th, td):nth-child(5) { width: 19%; text-align: left; }
+    #referrals-table-panel table :is(th, td):nth-child(6) { width: 11%; text-align: left; white-space: nowrap; }
+    #referrals-table-panel table :is(th, td):nth-child(7) { width: 14%; text-align: left; }
+    #referrals-table-panel table :is(th, td):nth-child(8) { width: 12%; text-align: center; white-space: nowrap; }
 
     /* Preserve the two-line client identity without splitting identifiers. */
     #referrals-table-panel table td:nth-child(1) p {
@@ -259,13 +174,11 @@
         -webkit-line-clamp: 2;
         white-space: normal;
     }
-
     #referrals-table-panel table td:nth-child(5) p:first-child {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
-
     #referrals-table-panel table td:nth-child(5) p:nth-child(2) {
         max-width: none;
         overflow-wrap: anywhere;
@@ -279,14 +192,12 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
-
-    #referrals-table-panel table td:nth-child(8)>div {
+    #referrals-table-panel table td:nth-child(8) > div {
         display: flex;
         flex-wrap: nowrap;
         justify-content: center;
         gap: .5rem;
     }
-
     #referrals-table-panel table td:nth-child(8) :is(button, a) {
         flex: 0 0 auto;
         min-width: 2.25rem;
@@ -295,10 +206,7 @@
 
     /* The mobile cards end at 767px; retain the table for the tablet range. */
     @media (min-width: 48rem) and (max-width: 63.9375rem) {
-        #referrals-table-panel {
-            display: flex !important;
-            flex-direction: column;
-        }
+        #referrals-table-panel { display: flex !important; flex-direction: column; }
     }
 </style>
 @endif
@@ -306,18 +214,14 @@
 <style>
     /* SWD referrals: allow feedback to grow within its cell and keep actions
        anchored to the left, wrapping cleanly when space is limited. */
-    #referrals-table-panel table :is(th, td):nth-child(8) {
-        text-align: left;
-    }
-
+    #referrals-table-panel table :is(th, td):nth-child(8) { text-align: left; }
     #referrals-table-panel table td:nth-child(7) p {
         overflow: visible;
         text-overflow: clip;
         white-space: normal;
         overflow-wrap: anywhere;
     }
-
-    #referrals-table-panel table td:nth-child(8)>div {
+    #referrals-table-panel table td:nth-child(8) > div {
         flex-wrap: wrap;
         justify-content: flex-start;
     }
@@ -428,7 +332,7 @@
 
 @section('content')
 @php
-$matchReportTable = auth()->user()->isDepartmentAdmin();
+    $matchReportTable = auth()->user()->isDepartmentAdmin();
 @endphp
 
 <!-- Top Header -->
@@ -436,25 +340,21 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
         <div class="admin-reference-mobile-leading min-w-0">
             @if(auth()->user()?->isDepartmentAdmin())
-            <button id="dashboardMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar"
-                aria-expanded="false">
+            <button id="dashboardMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
                 <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
             @endif
             <div class="admin-reference-mobile-title">
                 <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Referrals Management</h2>
-                <p class="admin-reference-mobile-subtitle text-sm text-gray-500 hidden sm:block">View and manage case
-                    referrals</p>
+                <p class="admin-reference-mobile-subtitle text-sm text-gray-500 hidden sm:block">View and manage case referrals</p>
             </div>
         </div>
         <div class="flex items-center gap-4">
             @include('admin-tailwind.components.notifications')
             <div class="hidden sm:flex items-center gap-3">
-                <img src="{{ asset('images/mswdo_logo.jpg') }}" alt="User Profile"
-                    class="w-10 h-10 rounded-full object-cover bg-gray-100">
+                <img src="{{ asset('images/mswdo_logo.jpg') }}" alt="User Profile" class="w-10 h-10 rounded-full object-cover bg-gray-100">
                 <div class="text-right">
-                    <p class="text-sm font-medium text-gray-800">{{ Auth::user()->first_name }} {{
-                        Auth::user()->last_name }}</p>
+                    <p class="text-sm font-medium text-gray-800">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
                     <p class="text-xs text-gray-500">{{ Auth::user()->position }}</p>
                 </div>
             </div>
@@ -464,7 +364,7 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
 
 <!-- Main Content -->
 <main id="referrals-main" class="px-4 pt-4 pb-4 sm:p-6 lg:p-8 overflow-x-hidden">
-
+    
     <!-- Header Card -->
     <div id="referrals-summary-card" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 mb-6">
         <div class="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
@@ -474,11 +374,10 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
                 </div>
                 <div>
                     <h3 class="text-lg font-semibold text-gray-800">All Referrals</h3>
-                    <p class="text-sm text-gray-500">{{ $referrals->total() }} total {{ Str::plural('referral',
-                        $referrals->total()) }}</p>
+                    <p class="text-sm text-gray-500">{{ $referrals->total() }} total {{ Str::plural('referral', $referrals->total()) }}</p>
                 </div>
             </div>
-
+            
             <a href="{{ auth()->user()->isBcpcAdmin() ? url('/admin/referrals-print-all?preview=1') : route('admin.referrals.print-all') }}"
                 class="download-referrals-btn inline-flex items-center gap-2 px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors text-sm font-medium">
                 <i class="fas fa-print"></i>
@@ -486,81 +385,60 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
             </a>
         </div>
     </div>
-
+    
     @if(auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin())
     <form id="referrals-search-form" method="GET" action="{{ route('admin.referrals') }}" class="mb-4 w-full sm:w-80">
         <label class="relative block">
-            <i
-                class="fas fa-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400"></i>
-            <input id="referrals-search-input" type="search" name="search" value="{{ request('search') }}"
-                placeholder="Search referrals..."
-                class="h-10 w-full rounded-lg border border-gray-300 py-2 pl-9 pr-3 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-500">
+            <i class="fas fa-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400"></i>
+            <input id="referrals-search-input" type="search" name="search" value="{{ request('search') }}" placeholder="Search referrals..." class="h-10 w-full rounded-lg border border-gray-300 py-2 pl-9 pr-3 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-500">
         </label>
     </form>
     @endif
 
     <!-- Referrals Table (Desktop) -->
-    <div id="referrals-table-panel"
-        class="{{ $matchReportTable ? 'bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100' : 'hidden lg:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col min-h-0' }}">
+    <div id="referrals-table-panel" class="{{ $matchReportTable ? 'bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100' : 'hidden lg:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col min-h-0' }}">
         <div class="{{ $matchReportTable ? 'overflow-x-auto' : 'overflow-auto max-h-[calc(100vh-380px)]' }}">
             <table class="{{ $matchReportTable ? 'w-full' : 'w-full table-fixed' }}">
-                <thead
-                    class="{{ $matchReportTable ? 'bg-gradient-to-r from-purple-700 to-purple-600 text-white' : 'bg-gray-50 border-b border-gray-200 sticky top-0 z-10' }}">
+                <thead class="{{ $matchReportTable ? 'bg-gradient-to-r from-purple-700 to-purple-600 text-white' : 'bg-gray-50 border-b border-gray-200 sticky top-0 z-10' }}">
                     <tr>
-                        <th class="{{ $matchReportTable ? 'px-6 py-4 text-left text-sm font-semibold' : 'px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider' }}"
-                            @unless($matchReportTable) style="width:18%" @endunless>Client</th>
-                        <th class="{{ $matchReportTable ? 'px-6 py-4 text-center text-sm font-semibold' : 'px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider' }}"
-                            @unless($matchReportTable) style="width:6%" @endunless>Age</th>
-                        <th class="{{ $matchReportTable ? 'px-6 py-4 text-center text-sm font-semibold' : 'px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider' }}"
-                            @unless($matchReportTable) style="width:6%" @endunless>Sex</th>
-                        <th class="{{ $matchReportTable ? 'px-6 py-4 text-left text-sm font-semibold' : 'px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider' }}"
-                            @unless($matchReportTable) style="width:20%" @endunless>Services Needed</th>
-                        <th class="{{ $matchReportTable ? 'px-6 py-4 text-left text-sm font-semibold' : 'px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider' }}"
-                            @unless($matchReportTable) style="width:20%" @endunless>Receiving Agency</th>
-                        <th class="{{ $matchReportTable ? 'px-6 py-4 text-left text-sm font-semibold' : 'px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider' }}"
-                            @unless($matchReportTable) style="width:10%" @endunless>Date</th>
-                        <th class="{{ $matchReportTable ? 'px-6 py-4 text-left text-sm font-semibold' : 'px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider' }}"
-                            @unless($matchReportTable) style="width:7%" @endunless>Feedback</th>
-                        <th class="{{ $matchReportTable ? 'px-6 py-4 '.(auth()->user()?->isVawcAdmin() ? 'text-left' : 'text-center').' text-sm font-semibold' : 'px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider' }}"
-                            @unless($matchReportTable) style="width:10%" @endunless>Actions</th>
+                        <th class="{{ $matchReportTable ? 'px-6 py-4 text-left text-sm font-semibold' : 'px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider' }}" @unless($matchReportTable) style="width:18%" @endunless>Client</th>
+                        <th class="{{ $matchReportTable ? 'px-6 py-4 text-center text-sm font-semibold' : 'px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider' }}" @unless($matchReportTable) style="width:6%" @endunless>Age</th>
+                        <th class="{{ $matchReportTable ? 'px-6 py-4 text-center text-sm font-semibold' : 'px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider' }}" @unless($matchReportTable) style="width:6%" @endunless>Sex</th>
+                        <th class="{{ $matchReportTable ? 'px-6 py-4 text-left text-sm font-semibold' : 'px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider' }}" @unless($matchReportTable) style="width:20%" @endunless>Services Needed</th>
+                        <th class="{{ $matchReportTable ? 'px-6 py-4 text-left text-sm font-semibold' : 'px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider' }}" @unless($matchReportTable) style="width:20%" @endunless>Receiving Agency</th>
+                        <th class="{{ $matchReportTable ? 'px-6 py-4 text-left text-sm font-semibold' : 'px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider' }}" @unless($matchReportTable) style="width:10%" @endunless>Date</th>
+                        <th class="{{ $matchReportTable ? 'px-6 py-4 text-left text-sm font-semibold' : 'px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider' }}" @unless($matchReportTable) style="width:7%" @endunless>Feedback</th>
+                        <th class="{{ $matchReportTable ? 'px-6 py-4 '.(auth()->user()?->isVawcAdmin() ? 'text-left' : 'text-center').' text-sm font-semibold' : 'px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider' }}" @unless($matchReportTable) style="width:10%" @endunless>Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($referrals as $referral)
                     @php
-                    $recipientUnavailable = $referral->recipient
-                    && ($referral->recipient->trashed() || !$referral->recipient->active);
-                    $editDisabled = false;
-                    $editDisabledTitle = 'Edit';
+                        $recipientUnavailable = $referral->recipient
+                            && ($referral->recipient->trashed() || !$referral->recipient->active);
+                        $editDisabled = false;
+                        $editDisabledTitle = 'Edit';
                     @endphp
-                    <tr class="{{ $matchReportTable ? 'hover:bg-purple-50/50 transition' : 'hover:bg-gray-50 transition-colors' }}"
-                        data-referral-id="{{ $referral->id }}">
+                    <tr class="{{ $matchReportTable ? 'hover:bg-purple-50/50 transition' : 'hover:bg-gray-50 transition-colors' }}" data-referral-id="{{ $referral->id }}">
                         <td class="{{ $matchReportTable ? 'px-6' : 'px-4' }} py-4">
                             <div class="min-w-0">
                                 <p class="text-sm font-medium text-gray-800 truncate">{{ $referral->client_name }}</p>
                                 <p class="text-xs text-gray-500 truncate">{{ $referral->referral_number }}</p>
                             </div>
                         </td>
-                        <td class="{{ $matchReportTable ? 'px-6' : 'px-4' }} py-4 text-center text-sm text-gray-600">{{
-                            $referral->client_age }}</td>
-                        <td class="{{ $matchReportTable ? 'px-6' : 'px-4' }} py-4 text-center text-sm text-gray-600">{{
-                            $referral->client_sex }}</td>
+                        <td class="{{ $matchReportTable ? 'px-6' : 'px-4' }} py-4 text-center text-sm text-gray-600">{{ $referral->client_age }}</td>
+                        <td class="{{ $matchReportTable ? 'px-6' : 'px-4' }} py-4 text-center text-sm text-gray-600">{{ $referral->client_sex }}</td>
                         <td class="{{ $matchReportTable ? 'px-6' : 'px-4' }} py-4">
-                            <p class="text-sm text-gray-600 max-w-[150px] truncate"
-                                title="{{ $referral->specific_services_requested }}">
+                            <p class="text-sm text-gray-600 max-w-[150px] truncate" title="{{ $referral->specific_services_requested }}">
                                 {{ Str::limit($referral->specific_services_requested, 40) }}
                             </p>
                         </td>
                         <td class="{{ $matchReportTable ? 'px-6' : 'px-4' }} py-4">
                             <div class="min-w-0">
-                                <p class="text-sm font-medium text-gray-800 truncate">{{ $referral->recipient_name }}
-                                </p>
-                                <p class="text-xs text-gray-500 truncate max-w-[180px]">{{
-                                    $referral->created_by_department_admin ? $referral->recipient_address :
-                                    $referral->recipient_email }}</p>
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $referral->recipient_name }}</p>
+                                <p class="text-xs text-gray-500 truncate max-w-[180px]">{{ $referral->created_by_department_admin ? $referral->recipient_address : $referral->recipient_email }}</p>
                                 @if($recipientUnavailable)
-                                <p class="mt-1 text-xs font-medium text-red-600">The recipient is currently unavailable.
-                                    The referral cannot be processed due to this reason.</p>
+                                    <p class="mt-1 text-xs font-medium text-red-600">The recipient is currently unavailable. The referral cannot be processed due to this reason.</p>
                                 @endif
                             </div>
                         </td>
@@ -569,37 +447,28 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
                         </td>
                         <td class="{{ $matchReportTable ? 'px-6' : 'px-4' }} py-4">
                             @if($referral->feedback)
-                            <p class="text-sm text-gray-600 {{ auth()->user()?->isVawcAdmin() ? 'max-w-none whitespace-normal break-words' : 'max-w-[120px] truncate' }}"
-                                title="{{ $referral->feedback }}">
-                                {{ auth()->user()?->isVawcAdmin() ? $referral->feedback :
-                                Str::limit($referral->feedback, 30) }}
-                            </p>
+                                <p class="text-sm text-gray-600 {{ auth()->user()?->isVawcAdmin() ? 'max-w-none whitespace-normal break-words' : 'max-w-[120px] truncate' }}" title="{{ $referral->feedback }}">
+                                    {{ auth()->user()?->isVawcAdmin() ? $referral->feedback : Str::limit($referral->feedback, 30) }}
+                                </p>
                             @else
-                            <span class="text-xs text-gray-400">No feedback yet</span>
+                                <span class="text-xs text-gray-400">No feedback yet</span>
                             @endif
                         </td>
                         <td class="{{ $matchReportTable ? 'px-6' : 'px-4' }} py-4 align-middle">
-                            <div
-                                class="flex w-full items-center {{ auth()->user()?->isVawcAdmin() ? 'justify-start flex-wrap' : 'justify-center' }} gap-2">
-                                <button type="button"
-                                    class="{{ $matchReportTable ? 'view-referral-btn inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition shadow-sm' : 'view-referral-btn inline-flex items-center justify-center px-3 py-1.5 bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 rounded-lg text-xs font-medium transition-colors' }}"
+                            <div class="flex w-full items-center {{ auth()->user()?->isVawcAdmin() ? 'justify-start flex-wrap' : 'justify-center' }} gap-2">
+                                <button type="button" class="{{ $matchReportTable ? 'view-referral-btn inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition shadow-sm' : 'view-referral-btn inline-flex items-center justify-center px-3 py-1.5 bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 rounded-lg text-xs font-medium transition-colors' }}"
                                     title="View Details" data-id="{{ $referral->id }}">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button type="button" @disabled($editDisabled)
-                                    class="{{ $editDisabled ? 'disabled-referral-edit inline-flex items-center justify-center border border-red-200 bg-red-50 text-red-800 px-3 py-1.5 rounded-lg text-xs font-medium cursor-not-allowed' : ($matchReportTable ? 'edit-referral-btn inline-flex items-center justify-center bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'edit-referral-btn inline-flex items-center justify-center px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 rounded-lg text-xs font-medium transition-colors') }}"
+                                <button type="button" @disabled($editDisabled) class="{{ $editDisabled ? 'disabled-referral-edit inline-flex items-center justify-center border border-red-200 bg-red-50 text-red-800 px-3 py-1.5 rounded-lg text-xs font-medium cursor-not-allowed' : ($matchReportTable ? 'edit-referral-btn inline-flex items-center justify-center bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'edit-referral-btn inline-flex items-center justify-center px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 rounded-lg text-xs font-medium transition-colors') }}"
                                     title="{{ $editDisabledTitle }}" data-id="{{ $referral->id }}">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 @if(auth()->user()->isDepartmentAdmin())
-                                <button type="button"
-                                    class="{{ $matchReportTable ? 'archive-referral-btn inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border border-red-200 px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'archive-referral-btn inline-flex items-center justify-center px-3 py-1.5 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 rounded-lg text-xs font-medium transition-colors' }}"
-                                    title="Archive" data-id="{{ $referral->id }}"><i class="fas fa-archive"></i><span
-                                        class="sr-only">Archive</span></button>
-                                @endif
+<button type="button" class="{{ $matchReportTable ? 'archive-referral-btn inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border border-red-200 px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'archive-referral-btn inline-flex items-center justify-center px-3 py-1.5 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 rounded-lg text-xs font-medium transition-colors' }}" title="Archive" data-id="{{ $referral->id }}"><i class="fas fa-archive"></i><span class="sr-only">Archive</span></button>
+@endif
                                 <a href="{{ route('admin.referrals.print', $referral->id) }}"
-                                    class="print-referral-btn {{ $matchReportTable ? 'inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'inline-flex items-center justify-center px-3 py-1.5 bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 rounded-lg text-xs font-medium transition-colors' }}"
-                                    title="Print">
+                                    class="print-referral-btn {{ $matchReportTable ? 'inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'inline-flex items-center justify-center px-3 py-1.5 bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 rounded-lg text-xs font-medium transition-colors' }}" title="Print">
                                     <i class="fas fa-print"></i>
                                 </a>
                             </div>
@@ -621,68 +490,61 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
                 </tbody>
             </table>
         </div>
-
+        
         <!-- Pagination -->
-        <div
-            class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="text-sm text-gray-600">
-                Showing <span class="font-medium">{{ $referrals->firstItem() ?? 0 }}</span> to <span
-                    class="font-medium">{{ $referrals->lastItem() ?? 0 }}</span> of <span class="font-medium">{{
-                    $referrals->total() }}</span> referrals
+                Showing <span class="font-medium">{{ $referrals->firstItem() ?? 0 }}</span> to <span class="font-medium">{{ $referrals->lastItem() ?? 0 }}</span> of <span class="font-medium">{{ $referrals->total() }}</span> referrals
             </div>
             @if($referrals->hasPages())
             <div class="flex items-center gap-2">
-                <a href="{{ $referrals->previousPageUrl() }}"
-                    class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm {{ $referrals->onFirstPage() ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' }}">
+                <a href="{{ $referrals->previousPageUrl() }}" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm {{ $referrals->onFirstPage() ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' }}">
                     <i class="fas fa-chevron-left text-gray-600"></i>
                 </a>
                 <div class="flex items-center gap-1">
                     @php
-                    $current = $referrals->currentPage();
-                    $last = $referrals->lastPage();
-                    $start = max(1, $current - 2);
-                    $end = min($last, $current + 2);
+                        $current = $referrals->currentPage();
+                        $last = $referrals->lastPage();
+                        $start = max(1, $current - 2);
+                        $end = min($last, $current + 2);
                     @endphp
                     @if($start > 1)
-                    <a href="{{ $referrals->url(1) }}"
-                        class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm">1</a>
-                    @if($start > 2)
-                    <span class="px-2">…</span>
+                        <a href="{{ $referrals->url(1) }}" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm">1</a>
+                        @if($start > 2)
+                            <span class="px-2">…</span>
+                        @endif
                     @endif
-                    @endif
-                    @for($i = $start; $i <= $end; $i++) <a href="{{ $referrals->url($i) }}"
-                        class="inline-flex items-center justify-center w-9 h-9 {{ $referrals->currentPage() == $i ? 'bg-[#C41E3A] text-white border border-[#C41E3A] font-medium' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50' }} rounded-lg text-sm">
-                        {{ $i }}
+                    @for($i = $start; $i <= $end; $i++)
+                        <a href="{{ $referrals->url($i) }}" class="inline-flex items-center justify-center w-9 h-9 {{ $referrals->currentPage() == $i ? 'bg-[#C41E3A] text-white border border-[#C41E3A] font-medium' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50' }} rounded-lg text-sm">
+                            {{ $i }}
                         </a>
-                        @endfor
-                        @if($end < $last) @if($end < $last - 1) <span class="px-2">…</span>
-                            @endif
-                            <a href="{{ $referrals->url($last) }}"
-                                class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm">{{
-                                $last }}</a>
-                            @endif
+                    @endfor
+                    @if($end < $last)
+                        @if($end < $last - 1)
+                            <span class="px-2">…</span>
+                        @endif
+                        <a href="{{ $referrals->url($last) }}" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm">{{ $last }}</a>
+                    @endif
                 </div>
-                <a href="{{ $referrals->nextPageUrl() }}"
-                    class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm {{ $referrals->currentPage() == $referrals->lastPage() ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' }}">
+                <a href="{{ $referrals->nextPageUrl() }}" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm {{ $referrals->currentPage() == $referrals->lastPage() ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' }}">
                     <i class="fas fa-chevron-right text-gray-600"></i>
                 </a>
             </div>
             @endif
         </div>
     </div>
-
+    
     <!-- Referrals Cards (Mobile/Tablet) -->
     <div id="referrals-mobile-cards" class="hidden">
         <div class="referral-cards-list space-y-4 max-h-[calc(100vh-420px)] overflow-y-auto pb-2">
             @forelse($referrals as $referral)
             @php
-            $recipientUnavailable = $referral->recipient
-            && ($referral->recipient->trashed() || !$referral->recipient->active);
-            $editDisabled = false;
-            $editDisabledTitle = 'Edit';
+                $recipientUnavailable = $referral->recipient
+                    && ($referral->recipient->trashed() || !$referral->recipient->active);
+                $editDisabled = false;
+                $editDisabledTitle = 'Edit';
             @endphp
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 referral-card"
-                data-id="{{ $referral->id }}">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 referral-card" data-id="{{ $referral->id }}">
                 <div class="flex items-start justify-between gap-3 mb-3">
                     <div>
                         <p class="text-sm font-semibold text-gray-800">{{ $referral->client_name }}</p>
@@ -693,54 +555,45 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
                         <span class="px-2 py-0.5 bg-gray-100 rounded">{{ $referral->client_sex }}</span>
                     </div>
                 </div>
-
+                
                 <div class="space-y-2 text-sm mb-4">
                     <div class="flex items-start gap-2">
                         <i class="fas fa-building text-purple-500 mt-0.5 w-4"></i>
                         <div>
                             <p class="font-medium text-gray-700">{{ $referral->recipient_name }}</p>
-                            <p class="text-xs text-gray-500">{{ $referral->created_by_department_admin ?
-                                $referral->recipient_address : $referral->recipient_email }}</p>
+                            <p class="text-xs text-gray-500">{{ $referral->created_by_department_admin ? $referral->recipient_address : $referral->recipient_email }}</p>
                             @if($recipientUnavailable)
-                            <p class="mt-1 text-xs font-medium text-red-600">The recipient is currently unavailable. The
-                                referral cannot be processed due to this reason.</p>
+                                <p class="mt-1 text-xs font-medium text-red-600">The recipient is currently unavailable. The referral cannot be processed due to this reason.</p>
                             @endif
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
                         <i class="fas fa-calendar text-purple-500 w-4"></i>
-                        <span class="text-gray-600">{{ \Carbon\Carbon::parse($referral->date_of_referral)->format('M d,
-                            Y') }}</span>
+                        <span class="text-gray-600">{{ \Carbon\Carbon::parse($referral->date_of_referral)->format('M d, Y') }}</span>
                     </div>
                     @if($referral->specific_services_requested)
                     <div class="flex items-start gap-2">
                         <i class="fas fa-clipboard-list text-purple-500 mt-0.5 w-4"></i>
-                        <span class="text-gray-600 text-xs">{{ Str::limit($referral->specific_services_requested, 60)
-                            }}</span>
+                        <span class="text-gray-600 text-xs">{{ Str::limit($referral->specific_services_requested, 60) }}</span>
                     </div>
                     @endif
                 </div>
-
+                
                 <div class="referral-card-actions flex gap-2 pt-3 border-t border-gray-100">
-                    <button type="button"
-                        class="view-referral-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+                    <button type="button" class="view-referral-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
                         data-id="{{ $referral->id }}">
                         <i class="fas fa-eye"></i>
                         View Details
                     </button>
-                    <button type="button" @disabled($editDisabled)
-                        class="{{ $editDisabled ? 'disabled-referral-edit flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-red-800 border border-red-200 bg-red-50 rounded-lg cursor-not-allowed' : 'edit-referral-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors' }}"
+                    <button type="button" @disabled($editDisabled) class="{{ $editDisabled ? 'disabled-referral-edit flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-red-800 border border-red-200 bg-red-50 rounded-lg cursor-not-allowed' : 'edit-referral-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors' }}"
                         title="{{ $editDisabledTitle }}" data-id="{{ $referral->id }}">
                         <i class="fas fa-edit"></i>
                         Edit
                     </button>
                     @if(auth()->user()->isDepartmentAdmin())
-                    <button type="button"
-                        class="archive-referral-btn p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Archive" data-id="{{ $referral->id }}"><i class="fas fa-archive"></i><span
-                            class="sr-only">Archive</span></button>
-                    @endif
-                    <a href="{{ route('admin.referrals.print', $referral->id) }}"
+<button type="button" class="archive-referral-btn p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Archive" data-id="{{ $referral->id }}"><i class="fas fa-archive"></i><span class="sr-only">Archive</span></button>
+@endif
+                                <a href="{{ route('admin.referrals.print', $referral->id) }}"
                         class="print-referral-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
                         <i class="fas fa-print"></i>
                         Print
@@ -757,48 +610,44 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
             </div>
             @endforelse
         </div>
-
+        
         <!-- Mobile Pagination -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-3 mt-4">
             <p class="text-center text-xs text-gray-600">
-                Showing {{ $referrals->firstItem() ?? 0 }}-{{ $referrals->lastItem() ?? 0 }} of {{ $referrals->total()
-                }}
+                Showing {{ $referrals->firstItem() ?? 0 }}-{{ $referrals->lastItem() ?? 0 }} of {{ $referrals->total() }}
             </p>
             @if($referrals->hasPages())
             <div class="flex justify-center mt-2 scale-90 origin-center">
                 <div class="flex items-center gap-2">
-                    <a href="{{ $referrals->previousPageUrl() }}"
-                        class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm {{ $referrals->onFirstPage() ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' }}">
+                    <a href="{{ $referrals->previousPageUrl() }}" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm {{ $referrals->onFirstPage() ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' }}">
                         <i class="fas fa-chevron-left text-gray-600"></i>
                     </a>
                     @php
-                    $current = $referrals->currentPage();
-                    $last = $referrals->lastPage();
-                    $start = max(1, $current - 2);
-                    $end = min($last, $current + 2);
+                        $current = $referrals->currentPage();
+                        $last = $referrals->lastPage();
+                        $start = max(1, $current - 2);
+                        $end = min($last, $current + 2);
                     @endphp
                     <div class="flex items-center gap-1">
                         @if($start > 1)
-                        <a href="{{ $referrals->url(1) }}"
-                            class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm">1</a>
-                        @if($start > 2)
-                        <span class="px-2">…</span>
+                            <a href="{{ $referrals->url(1) }}" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm">1</a>
+                            @if($start > 2)
+                                <span class="px-2">…</span>
+                            @endif
                         @endif
-                        @endif
-                        @for($i = $start; $i <= $end; $i++) <a href="{{ $referrals->url($i) }}"
-                            class="inline-flex items-center justify-center w-9 h-9 {{ $referrals->currentPage() == $i ? 'bg-[#C41E3A] text-white border border-[#C41E3A] font-medium' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50' }} rounded-lg text-sm">
-                            {{ $i }}
+                        @for($i = $start; $i <= $end; $i++)
+                            <a href="{{ $referrals->url($i) }}" class="inline-flex items-center justify-center w-9 h-9 {{ $referrals->currentPage() == $i ? 'bg-[#C41E3A] text-white border border-[#C41E3A] font-medium' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50' }} rounded-lg text-sm">
+                                {{ $i }}
                             </a>
-                            @endfor
-                            @if($end < $last) @if($end < $last - 1) <span class="px-2">…</span>
-                                @endif
-                                <a href="{{ $referrals->url($last) }}"
-                                    class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm">{{
-                                    $last }}</a>
-                                @endif
+                        @endfor
+                        @if($end < $last)
+                            @if($end < $last - 1)
+                                <span class="px-2">…</span>
+                            @endif
+                            <a href="{{ $referrals->url($last) }}" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm">{{ $last }}</a>
+                        @endif
                     </div>
-                    <a href="{{ $referrals->nextPageUrl() }}"
-                        class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm {{ $referrals->currentPage() == $referrals->lastPage() ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' }}">
+                    <a href="{{ $referrals->nextPageUrl() }}" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm {{ $referrals->currentPage() == $referrals->lastPage() ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' }}">
                         <i class="fas fa-chevron-right text-gray-600"></i>
                     </a>
                 </div>
@@ -821,9 +670,7 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
                 </h3>
                 <div class="flex shrink-0 items-center gap-2">
                     @if(auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin())
-                    <button id="referCaseButton" type="button" disabled aria-disabled="true"
-                        class="inline-flex cursor-not-allowed items-center justify-center gap-1.5 whitespace-nowrap rounded-lg bg-[#EEEEEE] px-2 py-1.5 text-xs font-bold text-black [&>i]:font-black [&>i]:text-black sm:gap-2 sm:px-3 sm:py-2 sm:text-sm"
-                        aria-label="Refer Case unavailable after referral">
+                    <button id="referCaseButton" type="button" disabled aria-disabled="true" class="inline-flex cursor-not-allowed items-center justify-center gap-1.5 whitespace-nowrap rounded-lg bg-[#EEEEEE] px-2 py-1.5 text-xs font-bold text-black [&>i]:font-black [&>i]:text-black sm:gap-2 sm:px-3 sm:py-2 sm:text-sm" aria-label="Refer Case unavailable after referral">
                         <i class="fas fa-share-square" aria-hidden="true"></i>
                         <span>Refer Case</span>
                     </button>
@@ -833,7 +680,7 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
                     </button>
                 </div>
             </div>
-
+            
             <!-- Modal Content -->
             <div class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]" id="referralDetails">
                 <div class="flex items-center justify-center py-8">
@@ -846,7 +693,7 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('referralModal');
     const modalOverlay = document.getElementById('modalOverlay');
     const closeModal = document.getElementById('closeModal');
@@ -1176,7 +1023,7 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
 @if(auth()->user()->isDepartmentAdmin())
 @push('scripts')
 <script>
-    document.addEventListener('click', async function(event) {
+document.addEventListener('click', async function(event) {
     const button = event.target.closest('.archive-referral-btn');
     if (!button || button.disabled) return;
     const result = await Swal.fire({title: 'Archive Referral?', text: 'This referral will be archived. Referral info stays active while other referrals remain.', icon: 'warning', showCancelButton: true, confirmButtonText: 'Archive', confirmButtonColor: '#ef4444'});
@@ -1215,7 +1062,7 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
 @if(auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin())
 @push('scripts')
 <script>
-    const referralsSearchInput = document.getElementById('referrals-search-input');
+const referralsSearchInput = document.getElementById('referrals-search-input');
 let referralsSearchTimer;
 if (referralsSearchInput) {
     referralsSearchInput.addEventListener('input', () => {

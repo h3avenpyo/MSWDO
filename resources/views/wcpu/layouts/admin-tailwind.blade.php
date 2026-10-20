@@ -739,69 +739,57 @@
             }
         }
 
-        @if(request()->routeIs('admin-dashboard', 'case-profiles.index', 'admin.barangay-cases.show'))
+        @if(request()->routeIs('admin-dashboard'))
         /* Apply after portal-theme.css so the mobile dashboard alignment wins. */
         @media (max-width: 47.9375rem) {
-            body.portal-ui:is(.admin-dashboard-mobile-nav, .case-profiles-admin-mobile-nav, .view-cases-admin-mobile-nav) #mainContent > header:is(#admin-dashboard-header, #case-profiles-header, #barangay-cases-view-header, .sticky) > div {
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div {
                 padding-left: max(.5rem, env(safe-area-inset-left)) !important;
                 padding-right: max(1rem, env(safe-area-inset-right)) !important;
                 align-items: flex-start !important;
                 flex-wrap: nowrap !important;
                 min-width: 0 !important;
             }
-            body.portal-ui:is(.admin-dashboard-mobile-nav, .case-profiles-admin-mobile-nav, .view-cases-admin-mobile-nav) #mainContent > header:is(#admin-dashboard-header, #case-profiles-header, #barangay-cases-view-header, .sticky) > div > div:last-child {
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:last-child {
                 flex: 0 0 auto !important;
                 flex-wrap: nowrap !important;
             }
-            body.portal-ui:is(.admin-dashboard-mobile-nav, .case-profiles-admin-mobile-nav, .view-cases-admin-mobile-nav) #dashboardMenuToggle {
+            body.portal-ui.admin-dashboard-mobile-nav #dashboardMenuToggle {
                 position: relative !important;
                 left: 0 !important;
                 margin-left: 0 !important;
                 transform: none !important;
             }
-            body.portal-ui:is(.admin-dashboard-mobile-nav, .case-profiles-admin-mobile-nav, .view-cases-admin-mobile-nav) #mainContent > header:is(#admin-dashboard-header, #case-profiles-header, #barangay-cases-view-header, .sticky) > div > div:first-of-type {
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-of-type {
                 flex-direction: row !important;
                 align-items: flex-start !important;
                 gap: .5rem !important;
                 min-width: 0 !important;
                 flex: 1 1 auto !important;
             }
-            body.portal-ui:is(.admin-dashboard-mobile-nav, .case-profiles-admin-mobile-nav, .view-cases-admin-mobile-nav) #mainContent > header:is(#admin-dashboard-header, #case-profiles-header, #barangay-cases-view-header, .sticky) > div > div:first-of-type > div {
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-of-type > div {
                 width: auto !important;
                 flex: 1 1 auto !important;
                 min-width: 0 !important;
                 text-align: left !important;
             }
-            body.portal-ui:is(.admin-dashboard-mobile-nav, .case-profiles-admin-mobile-nav, .view-cases-admin-mobile-nav) #mainContent .tablet-header-row {
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent .tablet-header-row {
                 display: flex !important;
             }
-            body.portal-ui:is(.admin-dashboard-mobile-nav, .case-profiles-admin-mobile-nav, .view-cases-admin-mobile-nav) #sidebar ~ #mainContent {
+            body.portal-ui.admin-dashboard-mobile-nav #sidebar ~ #mainContent {
                 width: 100% !important;
                 min-width: 0 !important;
                 margin-left: 0 !important;
             }
-            body.portal-ui:is(.admin-dashboard-mobile-nav, .case-profiles-admin-mobile-nav, .view-cases-admin-mobile-nav) #mainContent > header:is(#admin-dashboard-header, #case-profiles-header, #barangay-cases-view-header, .sticky) :is(h1, h2, h3) {
-                color: #ffffff !important;
-                opacity: 1 !important;
-            }
-            body.portal-ui:is(.admin-dashboard-mobile-nav, .case-profiles-admin-mobile-nav, .view-cases-admin-mobile-nav) #mainContent > header:is(#admin-dashboard-header, #case-profiles-header, #barangay-cases-view-header, .sticky) p {
-                color: #ffffff !important;
-                opacity: 1 !important;
-            }
-            body.portal-ui:is(.admin-dashboard-mobile-nav, .case-profiles-admin-mobile-nav, .view-cases-admin-mobile-nav) #mainContent > header:is(#admin-dashboard-header, #case-profiles-header, #barangay-cases-view-header, .sticky) div:first-of-type :is(span, a) {
-                color: #ffffff !important;
-            }
         }
 
         @media (max-width: 40rem) {
-            body.portal-ui:is(.admin-dashboard-mobile-nav, .case-profiles-admin-mobile-nav, .view-cases-admin-mobile-nav) #mainContent > header:is(#admin-dashboard-header, #case-profiles-header, #barangay-cases-view-header, .sticky) div:has(> img[alt="User Profile"]) {
+            body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header div:has(> img[alt="User Profile"]) {
                 display: none !important;
             }
         }
 
         @media (min-width: 48rem) and (max-width: 63.9375rem) {
             body.portal-ui.admin-dashboard-mobile-nav #sidebarToggleBtn,
-            body.portal-ui.view-cases-admin-mobile-nav #sidebarToggleBtn,
             body.portal-ui.case-profiles-admin-mobile-nav #sidebarToggleBtn,
             body.portal-ui.case-profiles-mobile-profile-hidden #sidebarToggleBtn,
             body.portal-ui.barangay-cases-admin-mobile-nav #sidebarToggleBtn,
@@ -816,11 +804,6 @@
             body.portal-ui.admin-quarterly-reports-archived-mobile-nav #sidebarToggleBtn,
             body.portal-ui.admin-referrals-archived-mobile-nav #sidebarToggleBtn,
             body.portal-ui.admin-users-archived-mobile-nav #sidebarToggleBtn {
-                display: none !important;
-            }
-        }
-        @media (min-width: 48rem) and (max-width: 80rem) {
-            body.portal-ui.view-cases-admin-mobile-nav #sidebarToggleBtn {
                 display: none !important;
             }
         }
@@ -1023,7 +1006,7 @@
     @endif
     <script src="{{ asset('js/portal-modal-presentation.js') }}?v={{ filemtime(public_path('js/portal-modal-presentation.js')) }}" defer></script>
 </head>
-<body class="portal-ui {{ request()->routeIs('admin-dashboard') ? 'admin-dashboard-mobile-nav' : '' }} {{ request()->routeIs('case-profiles.index') ? 'case-profiles-mobile-profile-hidden' : '' }} {{ request()->routeIs('case-profiles.index') && auth()->user()?->isDepartmentAdmin() ? 'case-profiles-admin-mobile-nav' : '' }} {{ request()->routeIs('cases.show') && auth()->user()?->isDepartmentAdmin() ? 'case-details-admin-mobile-nav' : '' }} {{ request()->routeIs('admin.users.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-desk-officers-profile-mobile-nav' : '' }} {{ request()->routeIs('admin.users.create') && auth()->user()?->isDepartmentAdmin() ? 'admin-register-user-mobile-nav' : '' }} {{ (request()->routeIs('admin.users.logs', 'admin.users.archived', 'admin.referrals.index', 'admin.referrals', 'admin.referrals.archived', 'admin.referral-info.index', 'admin.quarterly-reports.index', 'admin.quarterly-reports.show', 'admin.quarterly-reports.edit', 'admin.bcpc-case-monitoring.edit', 'admin.bcpc-case-monitoring.archived', 'admin.calendar.index') || (request()->routeIs('admin.quarterly-reports.archived') && in_array(request('section'), ['barangay-cases', 'quarterly'], true))) && auth()->user()?->isDepartmentAdmin() ? 'admin-reference-mobile-nav' : '' }} {{ request()->routeIs('admin.referrals', 'admin.referrals.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-referrals-mobile-nav' : '' }} {{ request()->routeIs('admin.referral-info.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-referral-info-mobile-nav' : '' }} {{ request()->routeIs('admin.quarterly-reports.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-quarterly-reports-mobile-nav' : '' }} {{ request()->routeIs('admin.calendar.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-calendar-mobile-nav' : '' }} {{ request()->routeIs('admin.quarterly-reports.archived') && auth()->user()?->isDepartmentAdmin() ? 'admin-quarterly-reports-archived-mobile-nav' : '' }} {{ request()->routeIs('admin.referrals.archived') && auth()->user()?->isDepartmentAdmin() ? 'admin-referrals-archived-mobile-nav' : '' }} {{ request()->routeIs('admin.users.archived') && auth()->user()?->isDepartmentAdmin() ? 'admin-users-archived-mobile-nav' : '' }} {{ request()->routeIs('admin.users.logs') && auth()->user()?->isDepartmentAdmin() ? 'admin-user-logs-mobile-nav' : '' }} {{ request()->routeIs('admin-barangay-cases') && auth()->user()?->isDepartmentAdmin() ? 'barangay-cases-admin-mobile-nav' : '' }} {{ request()->routeIs('admin.barangay-cases.show') ? 'view-cases-admin-mobile-nav' : '' }} {{ request()->routeIs('admin-add-new-case') && auth()->user()?->isDepartmentAdmin() ? 'add-case-admin-mobile-nav' : '' }} {{ auth()->user()?->isBcpcAdmin() ? 'bcpc-admin-header-theme' : (auth()->user()?->isVawcAdmin() ? 'swd-admin-header-theme' : '') }} font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased" style="--portal-user-initials: '{{ strtoupper(mb_substr((string) auth()->user()?->first_name, 0, 1) . mb_substr((string) auth()->user()?->last_name, 0, 1)) }}';">
+<body class="portal-ui {{ request()->routeIs('admin-dashboard') ? 'admin-dashboard-mobile-nav' : '' }} {{ request()->routeIs('case-profiles.index') ? 'case-profiles-mobile-profile-hidden' : '' }} {{ request()->routeIs('case-profiles.index') && auth()->user()?->isDepartmentAdmin() ? 'case-profiles-admin-mobile-nav' : '' }} {{ request()->routeIs('cases.show') && auth()->user()?->isDepartmentAdmin() ? 'case-details-admin-mobile-nav' : '' }} {{ request()->routeIs('admin.users.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-desk-officers-profile-mobile-nav' : '' }} {{ request()->routeIs('admin.users.create') && auth()->user()?->isDepartmentAdmin() ? 'admin-register-user-mobile-nav' : '' }} {{ (request()->routeIs('admin.users.logs', 'admin.users.archived', 'admin.referrals.index', 'admin.referrals', 'admin.referrals.archived', 'admin.referral-info.index', 'admin.quarterly-reports.index', 'admin.quarterly-reports.show', 'admin.quarterly-reports.edit', 'admin.bcpc-case-monitoring.edit', 'admin.bcpc-case-monitoring.archived', 'admin.calendar.index') || (request()->routeIs('admin.quarterly-reports.archived') && in_array(request('section'), ['barangay-cases', 'quarterly'], true))) && auth()->user()?->isDepartmentAdmin() ? 'admin-reference-mobile-nav' : '' }} {{ request()->routeIs('admin.referrals', 'admin.referrals.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-referrals-mobile-nav' : '' }} {{ request()->routeIs('admin.referral-info.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-referral-info-mobile-nav' : '' }} {{ request()->routeIs('admin.quarterly-reports.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-quarterly-reports-mobile-nav' : '' }} {{ request()->routeIs('admin.calendar.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-calendar-mobile-nav' : '' }} {{ request()->routeIs('admin.quarterly-reports.archived') && auth()->user()?->isDepartmentAdmin() ? 'admin-quarterly-reports-archived-mobile-nav' : '' }} {{ request()->routeIs('admin.referrals.archived') && auth()->user()?->isDepartmentAdmin() ? 'admin-referrals-archived-mobile-nav' : '' }} {{ request()->routeIs('admin.users.archived') && auth()->user()?->isDepartmentAdmin() ? 'admin-users-archived-mobile-nav' : '' }} {{ request()->routeIs('admin.users.logs') && auth()->user()?->isDepartmentAdmin() ? 'admin-user-logs-mobile-nav' : '' }} {{ request()->routeIs('admin-barangay-cases') && auth()->user()?->isDepartmentAdmin() ? 'barangay-cases-admin-mobile-nav' : '' }} {{ request()->routeIs('admin.barangay-cases.show') && auth()->user()?->isDepartmentAdmin() ? 'view-cases-admin-mobile-nav' : '' }} {{ request()->routeIs('admin-add-new-case') && auth()->user()?->isDepartmentAdmin() ? 'add-case-admin-mobile-nav' : '' }} {{ auth()->user()?->isBcpcAdmin() ? 'bcpc-admin-header-theme' : (auth()->user()?->isVawcAdmin() ? 'swd-admin-header-theme' : '') }} font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased" style="--portal-user-initials: '{{ strtoupper(mb_substr((string) auth()->user()?->first_name, 0, 1) . mb_substr((string) auth()->user()?->last_name, 0, 1)) }}';">
     
     <!-- Mobile Sticky Top Bar -->
     <div id="mobileTopBar" class="lg:hidden sticky top-0 z-30 bg-purple-900 text-white flex items-center justify-between px-4 py-2.5 shadow-md border-b border-purple-800">
@@ -1472,7 +1455,7 @@
             || (document.body.classList.contains('admin-desk-officers-profile-mobile-nav') && window.matchMedia('(max-width: 40rem)').matches)
             || (document.body.classList.contains('admin-register-user-mobile-nav') && window.matchMedia('(max-width: 40rem)').matches)
             || (document.body.classList.contains('barangay-cases-admin-mobile-nav') && window.matchMedia('(max-width: 40rem)').matches)
-            || (document.body.classList.contains('view-cases-admin-mobile-nav') && window.matchMedia('(max-width: 47.9375rem)').matches)
+            || (document.body.classList.contains('view-cases-admin-mobile-nav') && window.matchMedia('(max-width: 40rem)').matches)
             || (document.body.classList.contains('add-case-admin-mobile-nav') && window.matchMedia('(max-width: 40rem)').matches);
         
         @if($persistsAdminSidebar)
@@ -1483,7 +1466,7 @@
         @else
         localStorage.setItem(sidebarStateKey, 'false');
         @endif
-        if (((document.body.classList.contains('admin-dashboard-mobile-nav') || document.body.classList.contains('view-cases-admin-mobile-nav') || document.body.classList.contains('case-profiles-admin-mobile-nav') || document.body.classList.contains('case-profiles-mobile-profile-hidden') || document.body.classList.contains('barangay-cases-admin-mobile-nav') || document.body.classList.contains('add-case-admin-mobile-nav') || document.body.classList.contains('admin-referrals-mobile-nav') || document.body.classList.contains('admin-desk-officers-profile-mobile-nav') || document.body.classList.contains('admin-register-user-mobile-nav') || document.body.classList.contains('admin-user-logs-mobile-nav') || document.body.classList.contains('admin-referral-info-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-mobile-nav') || document.body.classList.contains('admin-calendar-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-archived-mobile-nav') || document.body.classList.contains('admin-referrals-archived-mobile-nav') || document.body.classList.contains('admin-users-archived-mobile-nav')) && window.matchMedia('(min-width: 48rem) and (max-width: 63.9375rem)').matches) || (document.body.classList.contains('view-cases-admin-mobile-nav') && window.matchMedia('(min-width: 48rem) and (max-width: 80rem)').matches)) {
+        if ((document.body.classList.contains('admin-dashboard-mobile-nav') || document.body.classList.contains('case-profiles-admin-mobile-nav') || document.body.classList.contains('case-profiles-mobile-profile-hidden') || document.body.classList.contains('barangay-cases-admin-mobile-nav') || document.body.classList.contains('add-case-admin-mobile-nav') || document.body.classList.contains('admin-referrals-mobile-nav') || document.body.classList.contains('admin-desk-officers-profile-mobile-nav') || document.body.classList.contains('admin-register-user-mobile-nav') || document.body.classList.contains('admin-user-logs-mobile-nav') || document.body.classList.contains('admin-referral-info-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-mobile-nav') || document.body.classList.contains('admin-calendar-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-archived-mobile-nav') || document.body.classList.contains('admin-referrals-archived-mobile-nav') || document.body.classList.contains('admin-users-archived-mobile-nav')) && window.matchMedia('(min-width: 48rem) and (max-width: 63.9375rem)').matches) {
             sidebar?.classList.add('sidebar-collapsed');
             localStorage.setItem(sidebarStateKey, 'true');
         }
@@ -1550,8 +1533,6 @@
                         toggle.querySelector('i')?.classList.replace('fa-bars', 'fa-xmark');
                     });
                     const dashboardHeader = document.getElementById('admin-dashboard-header')
-                        || document.getElementById('barangay-cases-view-header')
-                        || document.getElementById('case-profiles-header')
                         || document.querySelector('#mainContent > header.sticky');
                     if (dashboardHeader) {
                         const headerBottom = Math.max(0, dashboardHeader.getBoundingClientRect().bottom);
@@ -1609,7 +1590,7 @@
 
         window.addEventListener('resize', function() {
             if (window.matchMedia('(min-width: 80.0625rem)').matches) closeMobileSidebar();
-            if (((document.body.classList.contains('admin-dashboard-mobile-nav') || document.body.classList.contains('view-cases-admin-mobile-nav') || document.body.classList.contains('case-profiles-admin-mobile-nav') || document.body.classList.contains('case-profiles-mobile-profile-hidden') || document.body.classList.contains('barangay-cases-admin-mobile-nav') || document.body.classList.contains('add-case-admin-mobile-nav') || document.body.classList.contains('admin-referrals-mobile-nav') || document.body.classList.contains('admin-desk-officers-profile-mobile-nav') || document.body.classList.contains('admin-register-user-mobile-nav') || document.body.classList.contains('admin-user-logs-mobile-nav') || document.body.classList.contains('admin-referral-info-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-mobile-nav') || document.body.classList.contains('admin-calendar-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-archived-mobile-nav') || document.body.classList.contains('admin-referrals-archived-mobile-nav') || document.body.classList.contains('admin-users-archived-mobile-nav')) && window.matchMedia('(min-width: 48rem) and (max-width: 63.9375rem)').matches) || (document.body.classList.contains('view-cases-admin-mobile-nav') && window.matchMedia('(min-width: 48rem) and (max-width: 80rem)').matches)) {
+            if ((document.body.classList.contains('admin-dashboard-mobile-nav') || document.body.classList.contains('case-profiles-admin-mobile-nav') || document.body.classList.contains('case-profiles-mobile-profile-hidden') || document.body.classList.contains('barangay-cases-admin-mobile-nav') || document.body.classList.contains('add-case-admin-mobile-nav') || document.body.classList.contains('admin-referrals-mobile-nav') || document.body.classList.contains('admin-desk-officers-profile-mobile-nav') || document.body.classList.contains('admin-register-user-mobile-nav') || document.body.classList.contains('admin-user-logs-mobile-nav') || document.body.classList.contains('admin-referral-info-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-mobile-nav') || document.body.classList.contains('admin-calendar-mobile-nav') || document.body.classList.contains('admin-quarterly-reports-archived-mobile-nav') || document.body.classList.contains('admin-referrals-archived-mobile-nav') || document.body.classList.contains('admin-users-archived-mobile-nav')) && window.matchMedia('(min-width: 48rem) and (max-width: 63.9375rem)').matches) {
                 closeMobileSidebar();
             }
         });
