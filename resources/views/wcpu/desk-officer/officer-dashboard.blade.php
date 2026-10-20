@@ -199,6 +199,171 @@
         [data-swd-dashboard-fit] .dashboard-recent-box > :first-child { padding: .5rem; flex-wrap: wrap; gap: .25rem; }
         [data-swd-dashboard-fit] .dashboard-recent-box h3 { font-size: .875rem; }
     }
+
+    #dashboardMenuToggle { display: none; }
+
+    /* Mobile-first Dashboard layout for 320px–430px Android phones/iPhones. */
+    @media (max-width: 26.875rem) {
+        #desk-officer-dashboard-header > div {
+            padding-top: max(.875rem, env(safe-area-inset-top));
+            padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right));
+        }
+        #desk-officer-dashboard-header button,
+        #mobileMenuToggle {
+            min-width: 3rem;
+            min-height: 3rem;
+        }
+        #mobileMenuToggle {
+            width: 2.25rem !important;
+            min-width: 2.25rem !important;
+            height: 2.25rem !important;
+            min-height: 2.25rem !important;
+            padding: .5rem !important;
+        }
+        #mobileMenuToggle i { font-size: 1rem !important; }
+    }
+
+    /* Dashboard mobile navigation opens as a full-width drawer directly below the header, keeping the top navbar visible. */
+    @media (max-width: 47.9375rem) {
+        html:has([data-swd-dashboard-fit]), body:has([data-swd-dashboard-fit]) {
+            height: auto !important;
+            overflow-y: auto !important;
+        }
+        #mainContent:has([data-swd-dashboard-fit]) {
+            height: auto !important;
+            min-height: 100vh !important;
+            min-height: 100dvh !important;
+            overflow-y: visible !important;
+        }
+        #desk-officer-dashboard-content[data-swd-dashboard-fit] {
+            overflow: visible !important;
+            height: auto !important;
+        }
+
+        body.desk-officer-dashboard-mobile-nav #mobileTopBar { display: none !important; }
+        body.desk-officer-dashboard-mobile-nav #mobileMenuToggle { display: none !important; }
+        body.desk-officer-dashboard-mobile-nav #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar {
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: auto !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: calc(100vh - 60px) !important;
+            overflow-y: auto !important;
+            z-index: 999 !important;
+            border-radius: 0 0 14px 14px !important;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, .22) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(-8px) !important;
+            transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-open {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed,
+        body.desk-officer-dashboard-mobile-nav #sidebar.sidebar-collapsed-init {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar .sidebar-header { display: none !important; }
+        html body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar {
+            background: #C41E3A !important;
+            background-image: none !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar .sidebar-text {
+            opacity: 1 !important;
+            max-width: none !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar .sidebar-menu {
+            flex: 0 1 auto;
+            min-height: 0;
+            padding: .5rem !important;
+            overflow-y: auto !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar .sidebar-link {
+            justify-content: flex-start !important;
+            gap: .75rem !important;
+        }
+        body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar nav :is(a, button),
+        body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar .sidebar-link {
+            background: #C41E3A !important;
+            color: #ffffff !important;
+        }
+        body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar nav :is(a, button) :is(i, svg, span),
+        body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar .sidebar-link :is(i, svg, span) {
+            color: #ffffff !important;
+        }
+        body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar nav :is(a, button):hover,
+        body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar .sidebar-link:hover {
+            background: #99172E !important;
+            color: #ffffff !important;
+        }
+        body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar .sidebar-link:is(.bg-purple-600, .bg-purple-700\/70),
+        body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar nav [x-show] > :is(a, button).bg-purple-600 {
+            background: #99172E !important;
+            color: #ffffff !important;
+            box-shadow: inset 3px 0 0 #ffffff !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebar #sidebarCloseBtn {
+            display: none !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #sidebarToggleBtn { display: none !important; }
+        body.desk-officer-dashboard-mobile-nav #mainContent {
+            width: 100% !important;
+            min-width: 0 !important;
+            margin-left: 0 !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #desk-officer-dashboard-header > div > div:first-child {
+            min-width: 0;
+            flex: 1 1 auto;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: .5rem;
+        }
+        body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header > div {
+            align-items: flex-start;
+            padding-left: max(.5rem, env(safe-area-inset-left)) !important;
+            padding-right: max(1rem, env(safe-area-inset-right)) !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #desk-officer-dashboard-header > div > div:first-child > div {
+            width: auto;
+            flex: 1 1 auto;
+            text-align: left;
+        }
+        body.desk-officer-dashboard-mobile-nav #dashboardMenuToggle {
+            display: inline-flex !important;
+            flex: 0 0 2.5rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            align-items: center;
+            justify-content: center;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #ffffff;
+        }
+        html body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header {
+            background: #C41E3A !important;
+            border-bottom-color: #99172E !important;
+        }
+        html body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header > div > div:first-of-type :is(h1, h2, h3, p) {
+            color: #ffffff !important;
+        }
+        body.desk-officer-dashboard-mobile-nav #desk-officer-dashboard-header h2,
+        body.desk-officer-dashboard-mobile-nav #desk-officer-dashboard-header p { min-width: 0; }
+    }
 </style>
 @endpush
 
@@ -219,11 +384,16 @@
 @endphp
 
 <!-- Top Header -->
-<header data-dashboard-header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
+<header id="desk-officer-dashboard-header" data-dashboard-header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
-        <div>
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Welcome, {{ $dashboardDepartment }} SILANG</h2>
-            <p class="text-sm text-gray-500">{{ $dashboardDepartment }} {{ $dashboardRole }} - Silang, Cavite</p>
+        <div class="flex items-center gap-3 min-w-0">
+            <button id="dashboardMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="min-w-0">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Welcome, {{ $dashboardDepartment }} SILANG</h2>
+                <p class="text-sm text-gray-500">{{ $dashboardDepartment }} {{ $dashboardRole }} - Silang, Cavite</p>
+            </div>
         </div>
         <div class="flex items-center gap-4">
             <!-- Notifications -->

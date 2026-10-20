@@ -2,28 +2,219 @@
 
 @section('title', 'Add ' . ($isBCPCCase ? 'BCPC' : 'SWD') . ' Case - iSERVE SILANG Desk Officer')
 @push('styles')
-@if(Auth::user()?->position === 'Desk Officer' && Auth::user()?->isMultiCaseDepartment())
 <style>
-    @media (max-width: 47.9375rem) and (orientation: portrait) {
-        .case-type-actions {
-            display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui.create-case-desk-mobile-nav #mobileTopBar {
+            display: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header#officers-create-header {
+            background: #C41E3A !important;
+            border-bottom: 1px solid #99172E !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header > div {
+            align-items: flex-start !important;
+            flex-wrap: nowrap !important;
+            min-width: 0 !important;
+            padding-left: max(.5rem, env(safe-area-inset-left)) !important;
+            padding-right: max(1rem, env(safe-area-inset-right)) !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent #mobileMenuToggle {
+            display: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent .officers-create-header-leading {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: flex-start !important;
             gap: .5rem !important;
-            width: 100%;
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent .officers-create-header-leading > div {
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+            text-align: left !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #dashboardMenuToggle {
+            position: relative !important;
+            left: 0 !important;
+            margin-left: 0 !important;
+            transform: none !important;
+            display: inline-flex !important;
+            flex: 0 0 2.5rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            align-items: center;
+            justify-content: center;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #fff !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #dashboardMenuToggle i {
+            color: inherit !important;
+        }
+        html body.portal-ui #mainContent > header#officers-create-header :is(h1, h2, h3),
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header :is(h1, h2, h3) {
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+        html body.portal-ui #mainContent > header#officers-create-header p,
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header p {
+            display: block !important;
+            margin-top: .125rem !important;
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+        html body.portal-ui #mainContent > header#officers-create-header p :is(span, strong),
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header p :is(span, strong) {
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+        html body.portal-ui #mainContent > header#officers-create-header div:first-of-type :is(span, a),
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header div:first-of-type :is(span, a) {
+            color: #ffffff !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header > div > div:last-child {
+            flex: 0 0 auto !important;
+            flex-wrap: nowrap !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header button[aria-label="Notifications"] {
+            box-sizing: border-box !important;
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header button[aria-label="Notifications"] > i {
+            margin: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1 !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header #notifications-unread-count {
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+            top: -.25rem !important;
+            right: -.25rem !important;
+            font-size: .75rem !important;
+            line-height: 1 !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar {
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: auto !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: calc(100vh - 60px) !important;
+            overflow-y: auto !important;
+            z-index: 999 !important;
+            border-radius: 0 0 14px 14px !important;
+            box-shadow: 0 14px 28px rgba(0,0,0,.22) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(-8px) !important;
+            transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+            background: #C41E3A !important;
+            background-image: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-open {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-header {
+            display: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-text {
+            opacity: 1 !important;
+            max-width: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-menu {
+            flex: 0 1 auto;
+            min-height: 0;
+            padding: .5rem !important;
+            overflow-y: auto !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link {
+            justify-content: flex-start !important;
+            gap: .75rem !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar nav :is(a, button),
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link {
+            background: #C41E3A !important;
+            color: #fff !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar nav :is(a, button) :is(i,svg,span),
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link :is(i,svg,span) {
+            color: #fff !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar nav :is(a,button):hover,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link:hover {
+            background: #99172E !important;
+            color: #fff !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link:is([class~="bg-purple-600"],[class~="bg-purple-700/70"]),
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar nav [x-show] > :is(a,button).bg-purple-600 {
+            background: #99172E !important;
+            color: #fff !important;
+            box-shadow: inset 3px 0 0 #fff !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar #sidebarCloseBtn,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebarToggleBtn {
+            display: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent {
+            width: 100% !important;
+            min-width: 0 !important;
+            margin-left: 0 !important;
+        }
+        .case-type-actions {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: .5rem !important;
+            width: 100% !important;
         }
         .case-type-actions .case-type-action {
-            width: 100%;
-            min-width: 0;
-            min-height: 2.5rem;
-            justify-content: center;
-            gap: .375rem;
-            padding: .5rem;
-            font-size: .6875rem;
-            white-space: nowrap;
+            flex: 1 1 calc(50% - 0.25rem) !important;
+            min-width: 0 !important;
+            min-height: 2.5rem !important;
+            justify-content: center !important;
+            gap: .375rem !important;
+            padding: .5rem !important;
+            font-size: .75rem !important;
+            white-space: nowrap !important;
+        }
+        #new-case-form .p-6 {
+            padding: 1rem !important;
+        }
+        #new-case-form .case-form-section-header {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+    }
+
+    @media (max-width: 40rem) {
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header div:has(> img[alt="User Profile"]) {
+            display: none !important;
         }
     }
 </style>
-@endif
 @endpush
 
 @section('content')
@@ -38,24 +229,29 @@
 @endphp
 
 <!-- Top Header -->
-<header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
+<header id="officers-create-header" class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
-        <div>
-            <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Add New Case</h2>
-                @if($isBCPCCase)
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-600 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-                        <i class="fas fa-child"></i> BCPC Case
-                    </span>
-                @else
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-700 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-                        <i class="fas fa-shield-alt"></i> SWD Case
-                    </span>
-                @endif
+        <div class="officers-create-header-leading flex items-center gap-3 min-w-0">
+            <button id="dashboardMenuToggle" class="hidden" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Add New Case</h2>
+                    @if($isBCPCCase)
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-600 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
+                            <i class="fas fa-child"></i> BCPC Case
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-700 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
+                            <i class="fas fa-shield-alt"></i> SWD Case
+                        </span>
+                    @endif
+                </div>
+                <p class="text-sm text-gray-500 mt-0.5">
+                    Creating a new <span class="font-semibold text-gray-700">{{ $isBCPCCase ? 'BCPC (Child Protection)' : 'SWD' }}</span> record for <strong>{{ $userBarangay->name }}</strong>
+                </p>
             </div>
-            <p class="text-sm text-gray-500 hidden sm:block mt-0.5">
-                Creating a new <span class="font-semibold text-gray-700">{{ $isBCPCCase ? 'BCPC (Child Protection)' : 'SWD' }}</span> record for <strong>{{ $userBarangay->name }}</strong>
-            </p>
         </div>
         <div class="flex items-center gap-3 sm:gap-4">
             @include('desk-officer.components.notifications')
@@ -517,10 +713,10 @@
         <!-- Form Actions -->
         <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 pt-4">
             <a href="{{ route('desk-officer.cases.index', ['type' => $type]) }}" 
-               class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-center">
+               class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-center w-full sm:w-auto">
                 Cancel
             </a>
-            <button type="submit" class="px-6 py-2.5 bg-purple-700 hover:bg-purple-800 text-white rounded-lg transition-colors text-sm font-medium shadow-sm flex items-center justify-center gap-2">
+            <button type="submit" class="px-6 py-2.5 bg-purple-700 hover:bg-purple-800 text-white rounded-lg transition-colors text-sm font-medium shadow-sm flex items-center justify-center gap-2 w-full sm:w-auto">
                 <i class="fas fa-save"></i>
                 <span>Save {{ $isBCPCCase ? 'BCPC' : 'SWD' }} Case</span>
             </button>
