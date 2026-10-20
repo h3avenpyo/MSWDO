@@ -133,11 +133,68 @@
         box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25) !important;
     }
 
+    /* Table responsiveness */
+    #familyTable {
+        min-width: 680px;
+    }
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+        border-radius: 8px;
+    }
+
+    /* Tablet layout optimization (768px - 991.98px) */
+    @media (min-width: 768px) and (max-width: 991.98px) {
+        .form-card .row.g-3 > .col-md-3 {
+            width: 50% !important;
+            flex: 0 0 50% !important;
+        }
+        .form-card .row.g-3 > .col-md-2 {
+            width: 33.333% !important;
+            flex: 0 0 33.333% !important;
+        }
+        .form-card .row.g-3 > .col-md-4 {
+            width: 50% !important;
+            flex: 0 0 50% !important;
+        }
+    }
+
+    /* Mobile layout optimization (< 768px) */
+    @media (max-width: 767.98px) {
+        .border-end {
+            border-right: none !important;
+            border-bottom: 1px solid #E2E8F0 !important;
+            padding-bottom: 1.5rem !important;
+            margin-bottom: 1.5rem !important;
+            padding-right: 0 !important;
+        }
+        .ps-md-4 {
+            padding-left: 0 !important;
+        }
+    }
+
     @media (max-width: 575.98px) {
+        .form-card .card-body {
+            padding: 1.15rem 1rem !important;
+        }
+        .form-header-bar, .historical-header-bar {
+            padding: 0.85rem 1rem !important;
+        }
+        .toggle-card {
+            padding: 0.85rem 1rem !important;
+        }
         .row.g-3>[class*="col-"] {
             width: 100%;
             max-width: 100%;
             flex: 0 0 100%;
+        }
+        .intake-actions-bar {
+            flex-direction: column-reverse !important;
+            width: 100%;
+        }
+        .intake-actions-bar .btn {
+            width: 100% !important;
+            text-align: center;
+            justify-content: center;
         }
     }
 </style>
@@ -835,7 +892,7 @@
         </div>
 
         <!-- Submit & Actions Bar -->
-        <div class="d-flex justify-content-end align-items-center gap-3 mb-5 flex-wrap">
+        <div class="d-flex justify-content-end align-items-center gap-3 mb-5 flex-wrap intake-actions-bar">
             <a href="{{ route('admin.dashboard') }}" class="btn btn-light border px-4 py-2 rounded-3 fw-semibold">
                 Cancel
             </a>

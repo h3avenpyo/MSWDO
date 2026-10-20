@@ -323,17 +323,16 @@ $initials = count($words) >= 2
     .table-responsive-container {
         width: 100%;
         max-width: 100%;
-        overflow: hidden !important;
-        overflow-x: hidden !important;
-        overflow-y: hidden !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
         border-radius: 14px;
         border: 1px solid #EDF2F7;
         background: #FFFFFF;
     }
     .officers-tbl {
         width: 100% !important;
-        max-width: 100% !important;
-        table-layout: fixed;
+        min-width: 720px;
+        table-layout: auto;
         border-collapse: separate;
         border-spacing: 0;
         font-size: 0.875rem;
@@ -487,6 +486,21 @@ $initials = count($words) >= 2
         .status-pill {
             padding: 0.25rem 0.5rem;
             font-size: 0.7rem;
+        }
+    }
+
+    /* ── Tablet Optimization (768px - 1199.98px) ── */
+    @media (min-width: 768px) and (max-width: 1199.98px) {
+        .officer-kpi-strip {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem !important;
+        }
+        .filter-rail {
+            flex-wrap: wrap !important;
+        }
+        .filter-item.filter-search {
+            min-width: 200px !important;
+            max-width: 280px !important;
         }
     }
 
@@ -793,7 +807,7 @@ $initials = count($words) >= 2
 </style>
 
 {{-- Page Header Banner --}}
-<header class="dash-banner flex flex-col md:flex-row md:items-center justify-between gap-4 select-none">
+<header class="dash-banner flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 select-none">
     <div>
         <div class="dash-banner-title">Officers Directory</div>
         <div class="dash-banner-sub">
@@ -805,8 +819,8 @@ $initials = count($words) >= 2
             </span>
         </div>
     </div>
-    <div class="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto">
-        <div class="text-left md:text-right">
+    <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+        <div class="text-left sm:text-right">
             <div class="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-white/70">Philippine Standard Time</div>
             <div class="text-xs md:text-sm font-semibold text-white tracking-wide" id="liveClock">Loading date...</div>
         </div>
