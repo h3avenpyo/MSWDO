@@ -5,6 +5,9 @@
 @section('content')
 @if($isAdmin)
 <style>
+    body.portal-ui.archive-report-modal-preview #case-records .case-records-table-view { display: none !important; }
+    body.portal-ui.archive-report-modal-preview #case-records-mobile-cards { display: block !important; }
+    body.portal-ui.archive-report-modal-preview #case-records-mobile-cards > .case-record-card { padding: 1rem !important; }
     /* Admin phone view: Case Records use cards; tablet and desktop retain
        the original table. */
     @media (max-width: 47.9375rem) {
@@ -95,6 +98,16 @@
 @endif
 @if($isAdmin && (auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin()))
 <style>
+    @media (min-width: 48rem) {
+        body.portal-ui.admin-reference-mobile-nav #mobileTopBar { display: none !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        body.portal-ui.admin-reference-mobile-nav #sidebar {
+            inset: 0 auto 0 0 !important;
+            height: 100dvh !important;
+        }
+        body.portal-ui.admin-reference-mobile-nav #sidebarToggleBtn { top: 1.5rem !important; }
+    }
     @media (max-width: 40rem) {
         html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header > div {
             column-gap: .75rem !important;

@@ -11,6 +11,15 @@
 @endphp
 @if($isAdminEditor)
 <style>
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        body:has([data-quarterly-report-edit-header]) #sidebar {
+            inset: 0 auto 0 0 !important;
+            height: 100dvh !important;
+        }
+        body:has([data-quarterly-report-edit-header]) #sidebarToggleBtn { top: 1.5rem !important; }
+    }    @media (min-width: 48rem) {
+        body:has([data-quarterly-report-edit-header]) #mobileTopBar { display: none !important; }
+    }
     @media (max-width: 40rem) {
         html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header > div {
             column-gap: .75rem !important;

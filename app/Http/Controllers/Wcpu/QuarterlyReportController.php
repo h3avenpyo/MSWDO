@@ -654,7 +654,7 @@ class QuarterlyReportController extends Controller
         }
 
         $allCaseRecords = collect($report->report_data['cases'] ?? [])->values();
-        $perPage = 5;
+        $perPage = $isAdmin && $request->boolean('archive_report_preview') ? max(1, $allCaseRecords->count()) : 5;
         $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage('case_records_page');
         $caseRecords = new \Illuminate\Pagination\LengthAwarePaginator(
             $allCaseRecords->forPage($currentPage, $perPage)->values(),

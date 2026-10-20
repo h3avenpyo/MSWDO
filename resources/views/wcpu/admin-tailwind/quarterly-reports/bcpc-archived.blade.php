@@ -222,25 +222,25 @@
     @if(request('section') === 'barangay-cases')
     <form id="archived-case-filter-form" method="GET" action="{{ route('admin.quarterly-reports.archived') }}" class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
         <input type="hidden" name="section" value="barangay-cases">
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:flex xl:items-center gap-2 sm:gap-3">
-            <div class="relative min-w-0 sm:col-span-2 xl:flex-1 xl:min-w-[240px]">
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 xl:items-start gap-2 sm:gap-3">
+            <div class="relative min-w-0 sm:col-span-2 xl:col-span-1">
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
                 <input id="archived-case-search" type="search" name="search" value="{{ $archivedCaseSearch ?? request('search') }}" placeholder="Search archived cases..." class="w-full h-10 pl-9 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
             </div>
-            <select name="quarter" data-archived-case-filter class="w-full xl:w-[130px] h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700">
+            <select name="quarter" data-archived-case-filter class="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700">
                 <option value="">All Quarters</option>
                 @foreach([1, 2, 3, 4] as $quarter)<option value="{{ $quarter }}" {{ (string) ($archivedCaseQuarter ?? request('quarter')) === (string) $quarter ? 'selected' : '' }}>Q{{ $quarter }}</option>@endforeach
             </select>
-            <select name="year" data-archived-case-filter class="w-full xl:w-[115px] h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700">
+            <select name="year" data-archived-case-filter class="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700">
                 <option value="">All Years</option>
                 @foreach(range(2026, 2030) as $year)<option value="{{ $year }}" {{ (string) ($archivedCaseYear ?? request('year')) === (string) $year ? 'selected' : '' }}>{{ $year }}</option>@endforeach
             </select>
-            <select name="barangay_id" data-archived-case-filter class="w-full xl:w-[160px] h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700">
+            <select name="barangay_id" data-archived-case-filter class="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700">
                 <option value="">All Barangays</option>
                 @foreach($barangays as $barangay)<option value="{{ $barangay->id }}" {{ (string) ($archivedCaseBarangayId ?? request('barangay_id')) === (string) $barangay->id ? 'selected' : '' }}>{{ $barangay->name }}</option>@endforeach
             </select>
-            <button type="submit" class="inline-flex h-10 items-center justify-center gap-2 px-4 bg-[#C41E3A] hover:bg-[#A01830] text-white rounded-xl text-sm font-medium shadow-sm transition shrink-0"><i class="fas fa-filter"></i><span>Filter</span></button>
-            @if(request()->filled('search') || request()->filled('quarter') || request()->filled('year') || request()->filled('barangay_id'))<a href="{{ route('admin.quarterly-reports.archived', ['section' => 'barangay-cases']) }}" class="inline-flex h-10 items-center justify-center gap-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-medium transition shrink-0"><i class="fas fa-times"></i><span>Clear</span></a>@endif
+            <div class="flex items-center gap-2 sm:col-span-2 xl:col-span-1 xl:flex-col xl:items-stretch"><button type="submit" class="inline-flex w-full sm:flex-1 xl:flex-none h-10 items-center justify-center gap-2 px-3 bg-[#C41E3A] hover:bg-[#A01830] text-white rounded-xl text-sm font-medium shadow-sm transition shrink-0"><i class="fas fa-filter"></i><span>Filter</span></button>
+            @if(request()->filled('search') || request()->filled('quarter') || request()->filled('year') || request()->filled('barangay_id'))<a href="{{ route('admin.quarterly-reports.archived', ['section' => 'barangay-cases']) }}" class="inline-flex w-full sm:flex-1 xl:flex-none h-10 items-center justify-center gap-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-medium transition shrink-0"><i class="fas fa-times"></i><span>Clear</span></a>@endif</div>
         </div>
     </form>
     @elseif(auth()->user()->isVawcAdmin())

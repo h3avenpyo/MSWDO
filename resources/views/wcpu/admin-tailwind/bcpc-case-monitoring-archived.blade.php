@@ -24,7 +24,13 @@
             justify-content: center;
         }
     }
-</style>
+    @media (min-width: 48rem) {
+        body:has([data-archived-bcpc-monitoring-header]) #mobileTopBar { display: none !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        body:has([data-archived-bcpc-monitoring-header]) #sidebar { inset: 0 auto 0 0 !important; height: 100dvh !important; }
+        body:has([data-archived-bcpc-monitoring-header]) #sidebarToggleBtn { top: 1.5rem !important; }
+    }</style>
 @if(auth()->user()->isDepartmentAdmin())
 <style>
     @media (max-width: 40rem) {
@@ -82,7 +88,7 @@
 @endpush
 
 @section('content')
-<header class="admin-reference-mobile-header sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
+<header data-archived-bcpc-monitoring-header class="admin-reference-mobile-header sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
         <div class="admin-reference-mobile-leading min-w-0">
             <button id="dashboardMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
@@ -124,13 +130,14 @@
 
     <!-- Filters -->
     <form id="archived-bcpc-report-filter-form" method="GET" action="{{ route('admin.bcpc-case-monitoring.archived') }}" class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 mb-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:flex xl:items-center gap-2 sm:gap-3">
-            <div class="relative min-w-0 sm:col-span-2 xl:flex-1 xl:min-w-[240px]"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i><input type="search" name="search" id="archived-bcpc-report-search" value="{{ request('search') }}" placeholder="Search archived reports..." class="w-full h-10 pl-9 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"></div>
-            <select name="quarter" id="archived-bcpc-report-quarter" class="w-full xl:w-[130px] h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700"><option value="">All Quarters</option>@foreach([1, 2, 3, 4] as $quarterOption)<option value="{{ $quarterOption }}" {{ (string) $quarter === (string) $quarterOption ? 'selected' : '' }}>Q{{ $quarterOption }}</option>@endforeach</select>
-            <select name="year" id="archived-bcpc-report-year" class="w-full xl:w-[115px] h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700"><option value="">All Years</option>@foreach(range(2026, 2030) as $yearOption)<option value="{{ $yearOption }}" {{ (string) $year === (string) $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>@endforeach</select>
-            <select name="barangay_id" id="archived-bcpc-report-barangay" class="w-full xl:w-[160px] h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700"><option value="">All Barangays</option>@foreach($barangays as $barangay)<option value="{{ $barangay->id }}" {{ (string) $barangayId === (string) $barangay->id ? 'selected' : '' }}>{{ $barangay->name }}</option>@endforeach</select>
-            <button type="submit" id="archived-bcpc-report-filter-button" class="inline-flex h-10 items-center justify-center gap-2 px-4 bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-sm font-medium shadow-sm transition shrink-0"><i class="fas fa-filter"></i><span>Filter</span></button>
-            @if(request()->filled('search') || request()->filled('quarter') || request()->filled('year') || request()->filled('barangay_id'))<a href="{{ route('admin.bcpc-case-monitoring.archived') }}" class="inline-flex h-10 items-center justify-center gap-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-medium transition shrink-0"><i class="fas fa-times"></i><span>Clear</span></a>@endif
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 xl:items-start gap-2 sm:gap-3">
+            <div class="relative min-w-0 sm:col-span-2 xl:col-span-1"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i><input type="search" name="search" id="archived-bcpc-report-search" value="{{ request('search') }}" placeholder="Search archived reports..." class="w-full h-10 pl-9 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"></div>
+            <select name="quarter" id="archived-bcpc-report-quarter" class="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700"><option value="">All Quarters</option>@foreach([1, 2, 3, 4] as $quarterOption)<option value="{{ $quarterOption }}" {{ (string) $quarter === (string) $quarterOption ? 'selected' : '' }}>Q{{ $quarterOption }}</option>@endforeach</select>
+            <select name="year" id="archived-bcpc-report-year" class="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700"><option value="">All Years</option>@foreach(range(2026, 2030) as $yearOption)<option value="{{ $yearOption }}" {{ (string) $year === (string) $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>@endforeach</select>
+            <select name="barangay_id" id="archived-bcpc-report-barangay" class="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700"><option value="">All Barangays</option>@foreach($barangays as $barangay)<option value="{{ $barangay->id }}" {{ (string) $barangayId === (string) $barangay->id ? 'selected' : '' }}>{{ $barangay->name }}</option>@endforeach</select>
+            <div class="flex items-center gap-2 sm:col-span-2 xl:col-span-1 xl:flex-col xl:items-stretch"><button type="submit" id="archived-bcpc-report-filter-button" class="inline-flex w-full sm:flex-1 xl:flex-none h-10 items-center justify-center gap-2 px-3 bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-sm font-medium shadow-sm transition"><i class="fas fa-filter"></i><span>Filter</span></button>
+                @if(request()->filled('search') || request()->filled('quarter') || request()->filled('year') || request()->filled('barangay_id'))<a href="{{ route('admin.bcpc-case-monitoring.archived') }}" class="inline-flex w-full sm:flex-1 xl:flex-none h-10 items-center justify-center gap-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-medium transition"><i class="fas fa-times"></i><span>Clear</span></a>@endif
+            </div>
         </div>
     </form>
 

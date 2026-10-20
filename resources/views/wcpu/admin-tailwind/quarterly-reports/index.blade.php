@@ -116,15 +116,16 @@
         }
         #quarterly-reports-filter-form {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: clamp(.75rem, 1.5vw, 1rem);
         }
         #quarterly-reports-filter-form > div {
             width: auto !important;
             min-width: 0 !important;
         }
-        #quarterly-reports-filter-form > div:first-child { grid-column: 1 / -1; }
-        #quarterly-reports-filter-form :is(button, a) { justify-self: start; }
+        #quarterly-reports-filter-form > div:first-child { grid-column: auto; }
+        #quarterly-reports-filter-form > div:last-child { flex-direction: row; align-items: stretch; }
+        #quarterly-reports-filter-form :is(button, a) { justify-self: stretch; }
         #quarterly-reports-results table { min-width: 56rem; }
         #quarterly-reports-results :is(th, td) {
             padding: .75rem clamp(.625rem, 1.2vw, 1rem) !important;
@@ -317,13 +318,16 @@
 
     <!-- Filters -->
     <div class="bg-white rounded-xl shadow-md p-4 mb-6 border border-gray-100">
-        <form id="quarterly-reports-filter-form" action="{{ route('admin.quarterly-reports.index') }}" method="GET" class="flex flex-wrap items-end gap-4">
-            <div class="flex-1 min-w-[150px]">
-                <label for="barangay-search" class="block text-sm font-medium text-gray-600 mb-1">Barangay</label>
-                <input type="search" id="barangay-search" name="barangay_name" list="barangay-options" maxlength="255" placeholder="Search Barangay" autocomplete="off"
-                       value="{{ old('barangay_name', request('barangay_name', $barangays->firstWhere('id', request('barangay_id'))?->name)) }}"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm"
-                       oninput="this.setCustomValidity('')">
+        <form id="quarterly-reports-filter-form" action="{{ route('admin.quarterly-reports.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:items-start gap-3">
+            <div class="min-w-0">
+                <label for="barangay-search" class="block text-sm font-medium text-gray-600 mb-1 lg:hidden">Barangay</label>
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" aria-hidden="true"></i>
+                    <input type="search" id="barangay-search" name="barangay_name" aria-label="Search Barangay" list="barangay-options" maxlength="255" placeholder="Search Barangay" autocomplete="off"
+                           value="{{ old('barangay_name', request('barangay_name', $barangays->firstWhere('id', request('barangay_id'))?->name)) }}"
+                           class="w-full h-10 pl-9 pr-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm"
+                           oninput="this.setCustomValidity('')">
+                </div>
                 <datalist id="barangay-options">
                     @foreach($barangays as $brgy)
                     <option value="{{ $brgy->name }}"></option>
@@ -331,33 +335,35 @@
                 </datalist>
                 @error('barangay_name')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
             </div>
-            <div class="w-32">
-                <label class="block text-sm font-medium text-gray-600 mb-1">Quarter</label>
-                <select name="quarter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm">
-                    <option value="">All</option>
+            <div class="min-w-0">
+                <label class="block text-sm font-medium text-gray-600 mb-1 lg:hidden">Quarter</label>
+                <select name="quarter" aria-label="Quarter" class="w-full h-10 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm">
+                    <option value="">All Quarters</option>
                     <option value="1" {{ request('quarter') == 1 ? 'selected' : '' }}>Q1</option>
                     <option value="2" {{ request('quarter') == 2 ? 'selected' : '' }}>Q2</option>
                     <option value="3" {{ request('quarter') == 3 ? 'selected' : '' }}>Q3</option>
                     <option value="4" {{ request('quarter') == 4 ? 'selected' : '' }}>Q4</option>
                 </select>
             </div>
-            <div class="w-32">
-                <label class="block text-sm font-medium text-gray-600 mb-1">Year</label>
-                <select name="year" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm">
-                    <option value="">All</option>
+            <div class="min-w-0">
+                <label class="block text-sm font-medium text-gray-600 mb-1 lg:hidden">Year</label>
+                <select name="year" aria-label="Year" class="w-full h-10 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm">
+                    <option value="">All Years</option>
                     @for($y = now()->year; $y >= now()->year - 3; $y--)
                     <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
                     @endfor
                 </select>
             </div>
-            <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition">
-                <i class="fas fa-filter mr-1"></i> Filter
-            </button>
-            @if(request()->hasAny(['barangay_name', 'barangay_id', 'quarter', 'year']))
-            <a href="{{ route('admin.quarterly-reports.index') }}" class="px-4 py-2 border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg text-sm transition">
-                Clear
-            </a>
-            @endif
+            <div class="flex items-end gap-2 sm:col-span-2 lg:col-span-1">
+                <button type="submit" class="w-full sm:flex-1 lg:flex-1 h-10 px-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition">
+                    <i class="fas fa-filter mr-1"></i> Filter
+                </button>
+                @if(request()->hasAny(['barangay_name', 'barangay_id', 'quarter', 'year']))
+                <a href="{{ route('admin.quarterly-reports.index') }}" class="w-full sm:flex-1 lg:flex-1 h-10 inline-flex items-center justify-center px-3 border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg text-sm transition">
+                    Clear
+                </a>
+                @endif
+            </div>
         </form>
     </div>
 

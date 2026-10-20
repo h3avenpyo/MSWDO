@@ -5,6 +5,16 @@
 @push('styles')
 @if(auth()->user()?->isDepartmentAdmin())
 <style>
+    @media (min-width: 48rem) {
+        body.portal-ui.case-details-admin-mobile-nav #mobileTopBar { display: none !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        body.portal-ui.case-details-admin-mobile-nav #sidebar {
+            inset: 0 auto 0 0 !important;
+            height: 100dvh !important;
+        }
+        body.portal-ui.case-details-admin-mobile-nav #sidebarToggleBtn { top: 1.5rem !important; }
+    }
     @media (max-width: 40rem) {
         html body.portal-ui.case-details-admin-mobile-nav #mobileTopBar { display: none !important; }
         html body.portal-ui.case-details-admin-mobile-nav #mainContent > header#case-details-page-header {

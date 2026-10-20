@@ -4,6 +4,16 @@
 <link rel="stylesheet" href="{{ asset('css/desk-officer-tables.css') }}">
 @if(auth()->user()->isDepartmentAdmin())
 <style>
+    @media (min-width: 48rem) {
+        body:has([data-bcpc-monitoring-form-header]) #mobileTopBar { display: none !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        body:has([data-bcpc-monitoring-form-header]) #sidebar {
+            inset: 0 auto 0 0 !important;
+            height: 100dvh !important;
+        }
+        body:has([data-bcpc-monitoring-form-header]) #sidebarToggleBtn { top: 1.5rem !important; }
+    }
     @media (max-width: 40rem) {
         html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header > div {
             column-gap: .75rem !important;
@@ -165,7 +175,7 @@
     ];
 @endphp
 @if((auth()->user()?->isBcpcAdmin() && ($isView || request()->filled('edit') || $isBcpcAdminAdd)) || ($isView && request()->boolean('archived') && auth()->user()?->isVawcAdmin()) || (request()->filled('edit') && auth()->user()?->isVawcAdmin()))
-<header class="{{ $isReferenceHeader ? 'admin-reference-mobile-header' : '' }} sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm portal-page-header">
+<header data-bcpc-monitoring-form-header class="{{ $isReferenceHeader ? 'admin-reference-mobile-header' : '' }} sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm portal-page-header">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
         <div class="{{ $isReferenceHeader ? 'admin-reference-mobile-leading' : '' }} min-w-0 {{ $isView && request()->boolean('archived') ? 'flex-1' : '' }}">
             @if($isReferenceHeader)

@@ -4,7 +4,7 @@
 
 @section('content')
 @if(auth()->user()->isDepartmentAdmin())
-<header class="admin-reference-mobile-header sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm {{ auth()->user()->isVawcAdmin() ? 'bcpc-monitoring-mobile-header-swd-only' : '' }}">
+<header data-bcpc-monitoring-page-header class="admin-reference-mobile-header sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm {{ auth()->user()->isVawcAdmin() ? 'bcpc-monitoring-mobile-header-swd-only' : '' }}">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
         <div class="admin-reference-mobile-leading min-w-0">
             <button id="dashboardMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
@@ -20,6 +20,16 @@
 </header>
 @endif
 <style>
+    @media (min-width: 48rem) {
+        body:has([data-bcpc-monitoring-page-header]) #mobileTopBar { display: none !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        body:has([data-bcpc-monitoring-page-header]) #sidebar {
+            inset: 0 auto 0 0 !important;
+            height: 100dvh !important;
+        }
+        body:has([data-bcpc-monitoring-page-header]) #sidebarToggleBtn { top: 1.5rem !important; }
+    }
     .bcpc-monitoring-mobile-header-swd-only { display: none; }
     .bcpc-monitoring-actions > * { display: inline-flex !important; width: 2.75rem !important; height: 1.875rem !important; min-width: 2.75rem !important; min-height: 1.875rem !important; padding: 0 !important; margin: 0 !important; align-items: center !important; justify-content: center !important; gap: 0 !important; text-align: center !important; }
     .bcpc-monitoring-actions > * > i { display: inline-flex !important; width: 1rem !important; height: 1rem !important; margin: 0 !important; padding: 0 !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; flex: 0 0 1rem !important; text-align: center !important; }

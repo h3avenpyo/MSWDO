@@ -75,6 +75,7 @@
             display: none !important;
         }
     }
+    #referralModal[data-mode="edit"] .portal-modal-dismiss-footer .portal-modal-close { display: none !important; }
     @media (max-width: 48rem) {
         #referralModal[data-mode="edit"] .portal-modal-dismiss-footer .portal-modal-close {
             display: none !important;
@@ -948,6 +949,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <textarea name="remarks" class="w-full border rounded p-2" rows="2">${data.additional_notes || ''}</textarea>
                             </div>
                             <div class="flex justify-end gap-2">
+
                                 <button type="button" id="cancelEdit" class="px-4 py-2 bg-gray-100 rounded">Cancel</button>
                                 <button type="submit" class="px-4 py-2 bg-purple-700 text-white rounded">Save changes</button>
                             </div>
@@ -956,8 +958,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
 
                 // cancel handler
-                document.getElementById('cancelEdit').addEventListener('click', hideModal);
 
+                document.getElementById('cancelEdit').addEventListener('click', hideModal);
                 // submit handler
                 document.getElementById('adminReferralEditForm').addEventListener('submit', function(ev){
                     ev.preventDefault();
