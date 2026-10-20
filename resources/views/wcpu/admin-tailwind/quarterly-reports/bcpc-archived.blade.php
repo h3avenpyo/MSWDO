@@ -10,14 +10,16 @@
         .archived-barangay-cases-mobile-cards .archived-barangay-case-card { min-width: 0; padding: 1rem; }
         .archived-barangay-cases-mobile-cards .archived-barangay-case-actions {
             display: grid !important;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: .5rem;
         }
         .archived-barangay-cases-mobile-cards .archived-barangay-case-actions > form { display: contents; }
         .archived-barangay-cases-mobile-cards .archived-barangay-case-actions > :is(a, button),
         .archived-barangay-cases-mobile-cards .archived-barangay-case-actions > form > button {
             width: 100% !important;
-            min-width: 0;
+            box-sizing: border-box;
+            max-width: 100% !important;
+            min-width: 0 !important;
             min-height: 3rem;
             padding: .5rem !important;
             justify-content: center;

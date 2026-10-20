@@ -8,9 +8,15 @@
     #userModal .archived-user-modal-card { max-height: calc(100dvh - 2rem); }
     #userModal #modalContent { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
     @media (max-width: 47.9375rem) {
+        #users-cards-mobile .user-row > div:first-child .flex.items-center.justify-between > span {
+            max-width: 45%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
         #users-cards-mobile .archived-user-card-actions {
             display: grid !important;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: .5rem;
         }
         #users-cards-mobile .archived-user-card-actions > button {

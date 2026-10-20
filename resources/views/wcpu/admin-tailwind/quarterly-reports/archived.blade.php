@@ -11,9 +11,19 @@
     @media (max-width: 47.9375rem) {
         .archived-quarterly-table-view { display: none !important; }
         .archived-quarterly-mobile-cards { display: block !important; }
+        .archived-quarterly-mobile-cards dl > div:nth-child(2) dd {
+            display: inline-flex;
+            box-sizing: border-box;
+            max-width: 100%;
+            margin-top: .375rem;
+            padding: .25rem .625rem;
+            border-radius: 9999px;
+            background: #f3e8ff;
+            color: #7e22ce;
+        }
         .archived-quarterly-card-actions {
             display: grid !important;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: .5rem;
         }
         .archived-quarterly-card-actions > form { display: contents; }
@@ -23,7 +33,9 @@
             align-items: center !important;
             justify-content: center !important;
             width: 100% !important;
-            min-width: 0;
+            box-sizing: border-box;
+            max-width: 100% !important;
+            min-width: 0 !important;
             min-height: 3rem;
             padding: .5rem !important;
             background-color: #C41E3A !important;

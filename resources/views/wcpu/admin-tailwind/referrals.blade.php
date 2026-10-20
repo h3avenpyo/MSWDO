@@ -70,6 +70,19 @@
             min-height: 3rem;
             padding: .5rem !important;
         }
+        #referralModal.is-edit-mode #closeModal,
+        #referralModal[data-mode="edit"] #closeModal {
+            display: none !important;
+        }
+    }
+    @media (max-width: 48rem) {
+        #referralModal[data-mode="edit"] .portal-modal-dismiss-footer .portal-modal-close {
+            display: none !important;
+        }
+        #referralModal.is-edit-mode #closeModal,
+        #referralModal[data-mode="edit"] #closeModal {
+            display: none !important;
+        }
     }
     @media (min-width: 40.0625rem) and (max-width: 47.9375rem) {
         #referrals-mobile-cards .referral-card-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -646,6 +659,8 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         modal.classList.remove('hidden');
+        modal.classList.remove('is-edit-mode');
+        modal.removeAttribute('data-mode');
         document.body.style.overflow = 'hidden';
         const modalHeading = document.getElementById('referralModalHeading');
         const modalIcon = document.getElementById('referralModalIcon');
@@ -790,6 +805,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             modal.classList.remove('hidden');
+            modal.classList.add('is-edit-mode');
+            modal.setAttribute('data-mode', 'edit');
             document.body.style.overflow = 'hidden';
             const modalHeading = document.getElementById('referralModalHeading');
             const modalIcon = document.getElementById('referralModalIcon');
@@ -838,10 +855,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
 
                 // cancel handler
-                document.getElementById('cancelEdit').addEventListener('click', function(){
-                    modal.classList.add('hidden');
-                    document.body.style.overflow = '';
-                });
+                document.getElementById('cancelEdit').addEventListener('click', hideModal);
 
                 // submit handler
                 document.getElementById('adminReferralEditForm').addEventListener('submit', function(ev){
@@ -862,8 +876,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         return response;
                     })
                     .then(resp => {
-                        modal.classList.add('hidden');
-                        document.body.style.overflow = '';
+                        hideModal();
                         Swal.fire({ icon: 'success', title: 'Updated!', text: resp.message || 'Referral updated successfully.', confirmButtonText: 'OK' })
                             .then(() => window.location.assign(resp.redirect || window.location.href));
                     }).catch(err => {
@@ -888,6 +901,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Close modal
     function hideModal() {
         modal.classList.add('hidden');
+        modal.classList.remove('is-edit-mode');
+        modal.removeAttribute('data-mode');
         document.body.style.overflow = '';
     }
     

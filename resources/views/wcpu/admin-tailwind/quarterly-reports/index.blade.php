@@ -151,7 +151,8 @@
         #quarterly-mobile-cards .quarterly-report-card { min-width: 0; padding: 1rem; }
         #quarterly-mobile-cards .quarterly-report-card-actions {
             display: grid !important;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-auto-rows: minmax(3rem, auto);
             gap: .5rem;
         }
         #quarterly-mobile-cards .quarterly-report-card-actions > :is(a, button) {
