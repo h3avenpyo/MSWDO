@@ -745,6 +745,135 @@
             }
         }
 
+        @if(request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard') || request()->is('desk-officer/dashboard*', 'desk-officer/bcpc-dashboard*'))
+        /* Apply after portal-theme.css so the mobile dashboard alignment wins (matches admin/dashboard). */
+        @media (max-width: 47.9375rem) {
+            body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header > div {
+                padding-top: max(1rem, env(safe-area-inset-top)) !important;
+                padding-bottom: 1rem !important;
+                padding-left: max(.75rem, env(safe-area-inset-left)) !important;
+                padding-right: max(1rem, env(safe-area-inset-right)) !important;
+                align-items: center !important;
+                flex-wrap: nowrap !important;
+                min-width: 0 !important;
+            }
+            body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header > div > div:last-child {
+                flex: 0 0 auto !important;
+                flex-wrap: nowrap !important;
+                align-items: center !important;
+            }
+            body.portal-ui.desk-officer-dashboard-mobile-nav #dashboardMenuToggle {
+                position: relative !important;
+                left: 0 !important;
+                margin: 0 !important;
+                align-self: center !important;
+                transform: none !important;
+            }
+            body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header > div > div:first-of-type {
+                flex-direction: row !important;
+                align-items: center !important;
+                gap: .625rem !important;
+                min-width: 0 !important;
+                flex: 1 1 auto !important;
+            }
+            body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header > div > div:first-of-type > div {
+                width: auto !important;
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+                text-align: left !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                margin: 0 !important;
+                align-self: center !important;
+            }
+            body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent .tablet-header-row {
+                display: flex !important;
+            }
+            body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar ~ #mainContent {
+                width: 100% !important;
+                min-width: 0 !important;
+                margin-left: 0 !important;
+            }
+        }
+
+        @media (max-width: 40rem) {
+            body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header div:has(> img[alt="User Profile"]) {
+                display: none !important;
+            }
+        }
+
+        body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header button[aria-label="Notifications"] {
+            box-sizing: border-box !important;
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+            background: var(--mswdo-profile, #BC0202) !important;
+            border: 1px solid #8f0202 !important;
+            box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+            color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            position: relative !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+        body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header button[aria-label="Notifications"]:hover {
+            background: #8f0202 !important;
+        }
+        body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header button[aria-label="Notifications"] > i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1 !important;
+            color: #ffffff !important;
+            vertical-align: middle !important;
+        }
+        body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header :is(#notifications-unread-count, [data-unread-badge], .notification-badge) {
+            position: absolute !important;
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+            min-width: 1.25rem !important;
+            top: -0.25rem !important;
+            right: -0.25rem !important;
+            font-size: 0.75rem !important;
+            line-height: 1 !important;
+            background-color: #eab308 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            border-radius: 9999px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+        }
+        @media (max-width: 47.9375rem) {
+            body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header :is(#notifications-unread-count, [data-unread-badge], .notification-badge) {
+                border: 2px solid #C41E3A !important;
+            }
+        }
+        @media (min-width: 48rem) {
+            body.portal-ui.desk-officer-dashboard-mobile-nav #mainContent > header#desk-officer-dashboard-header :is(#notifications-unread-count, [data-unread-badge], .notification-badge) {
+                border: 2px solid #ffffff !important;
+            }
+        }
+
+        @media (min-width: 48rem) and (max-width: 63.9375rem) {
+            body.portal-ui.desk-officer-dashboard-mobile-nav #sidebarToggleBtn {
+                display: none !important;
+            }
+        }
+        @endif
+
         .overflow-x-auto,
         .table-responsive {
             -webkit-overflow-scrolling: touch;
@@ -822,6 +951,10 @@
         }
     </style>
     
+    @if(request()->is('desk-officer/calendar*', 'desk-officer/bcpc-case-monitoring*', 'desk-officer/quarterly-reports*', 'desk-officer/archived-barangay-cases*', 'desk-officer/referrals', 'desk-officer/referrals/archived*'))
+        @include('components.desk-officer.page-mobile-nav-styles')
+    @endif
+    
     <script>
         document.documentElement.classList.add('js');
     </script>
@@ -830,8 +963,7 @@
     <script src="{{ asset('js/portal-modal-close.js') }}?v={{ filemtime(public_path('js/portal-modal-close.js')) }}" defer></script>
     <link rel="stylesheet" href="{{ asset('css/logout-modal.css') }}?v={{ filemtime(public_path('css/logout-modal.css')) }}">
     <script src="{{ asset('js/portal-modal-presentation.js') }}?v={{ filemtime(public_path('js/portal-modal-presentation.js')) }}" defer></script>
-</head>
-<body class="portal-ui {{ auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) ? 'desk-officer-header-theme' : '' }} font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased overflow-x-hidden" style="--portal-user-initials: '{{ strtoupper(mb_substr((string) auth()->user()?->first_name, 0, 1) . mb_substr((string) auth()->user()?->last_name, 0, 1)) }}';">
+<body class="portal-ui {{ (request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard') || request()->is('desk-officer/dashboard*', 'desk-officer/bcpc-dashboard*')) ? 'desk-officer-dashboard-mobile-nav' : '' }} {{ (request()->routeIs('cases.create', 'desk-officer.cases.create') || request()->is('desk-officer/cases/create*')) ? 'desk-officer-create-case-mobile-nav' : '' }} {{ request()->routeIs('admin.barangay-cases.show') ? 'desk-officer-cases-view-mobile-nav' : '' }} {{ request()->routeIs('desk-officer.referrals') ? 'desk-officer-referrals-mobile-nav' : '' }} {{ request()->is('desk-officer/calendar*', 'desk-officer/bcpc-case-monitoring*', 'desk-officer/quarterly-reports*', 'desk-officer/archived-barangay-cases*', 'desk-officer/referrals', 'desk-officer/referrals/archived*') ? 'desk-officer-page-mobile-nav' : '' }} {{ auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) ? 'desk-officer-header-theme' : '' }} font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased overflow-x-hidden" style="--portal-user-initials: '{{ strtoupper(mb_substr((string) auth()->user()?->first_name, 0, 1) . mb_substr((string) auth()->user()?->last_name, 0, 1)) }}';">
 @php
     $passwordResetNotice = session('password_reset_notice');
     $passwordResetNoticeSeen = session('password_reset_notice_popup_displayed', false);
@@ -1408,7 +1540,8 @@
         const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
         const pageMobileMenuToggle = document.getElementById('pageMobileMenuToggle');
-        const mobileMenuToggles = [mobileMenuToggle, pageMobileMenuToggle].filter(Boolean);
+        const dashboardMenuToggle = document.getElementById('dashboardMenuToggle');
+        const mobileMenuToggles = [mobileMenuToggle, pageMobileMenuToggle, dashboardMenuToggle].filter(Boolean);
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
         const sidebarStateKey = @json($deskOfficerSidebarStateKey);
@@ -1460,17 +1593,43 @@
             });
         }
         
+        const isDashboardDrawer = () => ((document.body.classList.contains('desk-officer-dashboard-mobile-nav') || document.body.classList.contains('desk-officer-create-case-mobile-nav') || document.body.classList.contains('desk-officer-cases-view-mobile-nav') || document.body.classList.contains('desk-officer-referrals-mobile-nav') || document.body.classList.contains('desk-officer-page-mobile-nav')) && window.matchMedia('(max-width: 47.9375rem)').matches);
+        
         // Mobile toggle - open sidebar
-        mobileMenuToggles.forEach(function(toggle) {
-            toggle.addEventListener('click', function() {
-                if (sidebar) sidebar.classList.add('sidebar-open');
-                mobileMenuToggles.forEach(function(menuToggle) {
-                    menuToggle.setAttribute('aria-expanded', 'true');
-                    menuToggle.setAttribute('aria-label', 'Close navigation menu');
+        if (mobileMenuToggles.length) {
+            mobileMenuToggles.forEach(function(menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (isDashboardDrawer() && sidebar && sidebar.classList.contains('sidebar-open')) {
+                        closeMobileSidebar();
+                        return;
+                    }
+                    if (sidebar) sidebar.classList.add('sidebar-open');
+                    mobileMenuToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'true'));
+                    if (isDashboardDrawer()) {
+                        document.body.style.overflow = 'hidden';
+                        document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
+                        mobileMenuToggles.forEach(toggle => {
+                            toggle.setAttribute('aria-label', 'Close navigation menu');
+                            toggle.querySelector('i')?.classList.replace('fa-bars', 'fa-xmark');
+                        });
+                        const dashboardHeader = document.getElementById('desk-officer-dashboard-header')
+                            || document.getElementById('desk-officer-create-case-header')
+                            || document.getElementById('barangay-cases-view-header')
+                            || document.querySelector('#mainContent > header.sticky')
+                            || document.querySelector('#mainContent > header');
+                        if (dashboardHeader && sidebar) {
+                            const headerBottom = Math.max(0, dashboardHeader.getBoundingClientRect().bottom);
+                            sidebar.style.setProperty('top', `${headerBottom}px`, 'important');
+                            sidebar.style.setProperty('max-height', `calc(100vh - ${headerBottom}px)`, 'important');
+                        }
+                    } else {
+                        if (sidebarOverlay) sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                    }
                 });
-                if (sidebarOverlay) sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
             });
-        });
+        }
         
         // Function to close mobile sidebar
         function closeMobileSidebar() {
@@ -1479,6 +1638,17 @@
                 toggle.setAttribute('aria-expanded', 'false');
                 toggle.setAttribute('aria-label', 'Open navigation menu');
             });
+            if (isDashboardDrawer()) {
+                document.body.style.overflow = '';
+                document.documentElement.style.removeProperty('overflow-y');
+                mobileMenuToggles.forEach(toggle => {
+                    toggle.querySelector('i')?.classList.replace('fa-xmark', 'fa-bars');
+                });
+                if (sidebar) {
+                    sidebar.style.removeProperty('top');
+                    sidebar.style.removeProperty('max-height');
+                }
+            }
             if (sidebarOverlay) sidebarOverlay.classList.add('opacity-0', 'pointer-events-none');
         }
         
@@ -1489,6 +1659,15 @@
         if (sidebarCloseBtn) {
             sidebarCloseBtn.addEventListener('click', closeMobileSidebar);
         }
+
+        document.addEventListener('click', function(event) {
+            if (isDashboardDrawer() && sidebar?.classList.contains('sidebar-open')) {
+                const isToggleClick = mobileMenuToggles.some(t => t.contains(event.target));
+                if (!sidebar.contains(event.target) && !isToggleClick) {
+                    closeMobileSidebar();
+                }
+            }
+        });
 
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape' && sidebar?.classList.contains('sidebar-open')) {

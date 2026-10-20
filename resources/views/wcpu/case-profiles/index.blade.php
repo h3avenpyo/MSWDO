@@ -241,78 +241,101 @@
         }
     }
 
-    /* Match the Admin Dashboard header controls on phone screens. */
-    @media (max-width: 40rem) {
-        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header > div {
-            align-items: flex-start !important;
+    /* Match the Dashboard header controls on phone and tablet screens (< 768px). */
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #mainContent > header > div {
+            align-items: center !important;
             flex-wrap: nowrap !important;
             min-width: 0 !important;
-            padding-left: max(.5rem, env(safe-area-inset-left)) !important;
+            padding-top: max(1rem, env(safe-area-inset-top)) !important;
+            padding-bottom: 1rem !important;
+            padding-left: max(.75rem, env(safe-area-inset-left)) !important;
             padding-right: max(1rem, env(safe-area-inset-right)) !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header .tablet-header-row {
+        html body.portal-ui #mainContent > header .tablet-header-row {
             display: flex !important;
-            align-items: flex-start !important;
+            align-items: center !important;
             gap: 0 !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header .portal-header-clock[hidden] {
+        html body.portal-ui #mainContent > header .portal-header-clock[hidden] {
             display: none !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent .tablet-header-row {
+        html body.portal-ui #mainContent .tablet-header-row {
             grid-template-columns: minmax(0, 1fr) auto !important;
-            align-items: flex-start !important;
+            align-items: center !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent #mobileMenuToggle {
+        html body.portal-ui #mainContent #mobileMenuToggle {
             display: none !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent .case-profiles-header-leading {
+        html body.portal-ui #mainContent > header :is(.case-profiles-header-leading, header > div > div:first-child) {
             display: flex !important;
             flex-direction: row !important;
             flex-wrap: nowrap !important;
-            align-items: flex-start !important;
-            gap: .5rem !important;
+            align-items: center !important;
+            gap: .625rem !important;
             min-width: 0 !important;
             flex: 1 1 auto !important;
             grid-column: 1 !important;
             grid-row: 1 !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent .tablet-header-row > div:last-child {
+        html body.portal-ui #mainContent .tablet-header-row > div:last-child {
             grid-column: 2 !important;
             grid-row: 1 !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #dashboardMenuToggle {
+        html body.portal-ui #mainContent > header :is(#dashboardMenuToggle, #pageMobileMenuToggle) {
             position: relative !important;
             left: 0 !important;
             margin-left: 0 !important;
             transform: none !important;
             display: inline-flex !important;
-            flex: 0 0 2.5rem;
-            width: 2.5rem;
-            height: 2.5rem;
-            align-items: center;
-            justify-content: center;
+            flex: 0 0 2.5rem !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
             border: 0 !important;
             border-radius: 0 !important;
             background: transparent !important;
             box-shadow: none !important;
             color: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1 !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #dashboardMenuToggle i {
+        html body.portal-ui #mainContent > header :is(#dashboardMenuToggle, #pageMobileMenuToggle) i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             color: inherit !important;
+            font-size: 1.25rem !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            vertical-align: middle !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent .case-profiles-header-leading > div {
+        html body.portal-ui #mainContent > header :is(.case-profiles-header-leading, header > div > div:first-child) > div {
             min-width: 0 !important;
             flex: 1 1 auto !important;
             text-align: left !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            align-self: center !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent .case-profiles-header-leading :is(h1, h2, h3, p) {
+        html body.portal-ui #mainContent > header :is(.case-profiles-header-leading, header > div > div:first-child) :is(h1, h2, h3, p) {
             color: #ffffff !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header > div > div:last-child {
+        html body.portal-ui #mainContent > header > div > div:last-child {
             flex: 0 0 auto !important;
             flex-wrap: nowrap !important;
+            display: flex !important;
+            align-items: center !important;
+            align-self: center !important;
+            margin: 0 !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header button[aria-label="Notifications"] {
+        html body.portal-ui #mainContent > header button[aria-label="Notifications"] {
             box-sizing: border-box !important;
             width: 2.5rem !important;
             min-width: 2.5rem !important;
@@ -320,50 +343,78 @@
             min-height: 2.5rem !important;
             padding: 0 !important;
             border-radius: .625rem !important;
-        }
-        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header button[aria-label="Notifications"] > i {
+            background: var(--mswdo-profile, #BC0202) !important;
+            border: 1px solid #8f0202 !important;
+            box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+            color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            position: relative !important;
             margin: 0 !important;
-            font-size: 1rem !important;
             line-height: 1 !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header #notifications-unread-count {
+        html body.portal-ui #mainContent > header button[aria-label="Notifications"]:hover {
+            background: #8f0202 !important;
+        }
+        html body.portal-ui #mainContent > header button[aria-label="Notifications"] > i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 1.05rem !important;
+            line-height: 1 !important;
+            color: #ffffff !important;
+            vertical-align: middle !important;
+        }
+        html body.portal-ui #mainContent > header :is(#notifications-unread-count, [data-unread-badge], .notification-badge) {
+            position: absolute !important;
             width: 1.25rem !important;
             height: 1.25rem !important;
+            min-width: 1.25rem !important;
             top: -.25rem !important;
             right: -.25rem !important;
             font-size: .75rem !important;
             line-height: 1 !important;
+            background-color: #eab308 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            border-radius: 9999px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+            border: 2px solid #C41E3A !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #sidebarOverlay {
+        html body.portal-ui #mainContent > header div:has(> img[alt="User Profile"]) {
+            display: none !important;
+        }
+        html body.portal-ui #sidebarOverlay {
             display: none !important;
             pointer-events: none !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar nav :is(a, button),
-        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar .sidebar-link {
+        html body.portal-ui #sidebar nav :is(a, button),
+        html body.portal-ui #sidebar .sidebar-link {
             background: #C41E3A !important;
             color: #ffffff !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar nav :is(a, button) :is(i, svg, span),
-        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar .sidebar-link :is(i, svg, span) {
+        html body.portal-ui #sidebar nav :is(a, button) :is(i, svg, span),
+        html body.portal-ui #sidebar .sidebar-link :is(i, svg, span) {
             color: #ffffff !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar nav :is(a, button):hover,
-        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar .sidebar-link:hover {
+        html body.portal-ui #sidebar nav :is(a, button):hover,
+        html body.portal-ui #sidebar .sidebar-link:hover {
             background: #99172E !important;
             color: #ffffff !important;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar .sidebar-link:is([class~="bg-purple-600"], [class~="bg-purple-700/70"]),
-        html body.portal-ui.case-profiles-admin-mobile-nav #sidebar nav [x-show] > :is(a, button).bg-purple-600 {
+        html body.portal-ui #sidebar .sidebar-link:is([class~="bg-purple-600"], [class~="bg-purple-700/70"]),
+        html body.portal-ui #sidebar nav [x-show] > :is(a, button).bg-purple-600 {
             background: #99172E !important;
             color: #ffffff !important;
             box-shadow: inset 3px 0 0 #ffffff !important;
-        }
-    }
-
-    @media (max-width: 26.875rem) {
-        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent > header button {
-            min-width: 3rem !important;
-            min-height: 3rem !important;
         }
     }
 

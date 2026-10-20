@@ -155,12 +155,14 @@
             min-width: 0;
             flex: 1 1 auto;
             flex-direction: row;
-            align-items: flex-start;
-            gap: .5rem;
+            align-items: center;
+            gap: .625rem;
         }
         body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div {
-            align-items: flex-start;
-            padding-left: max(.5rem, env(safe-area-inset-left)) !important;
+            align-items: center;
+            padding-top: max(1rem, env(safe-area-inset-top)) !important;
+            padding-bottom: 1rem !important;
+            padding-left: max(.75rem, env(safe-area-inset-left)) !important;
             padding-right: max(1rem, env(safe-area-inset-right)) !important;
         }
         body.admin-dashboard-mobile-nav #admin-dashboard-header > div > div:first-child > div {
@@ -180,6 +182,11 @@
             background: transparent !important;
             box-shadow: none !important;
             color: #ffffff;
+            margin-top: .15rem !important;
+        }
+        body.admin-dashboard-mobile-nav #dashboardMenuToggle > i {
+            font-size: 1.25rem !important;
+            line-height: 1 !important;
         }
         html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header {
             background: #C41E3A !important;

@@ -2,8 +2,8 @@
 
 @section('title', 'Add ' . ($isBCPCCase ? 'BCPC' : 'SWD') . ' Case - iSERVE SILANG Desk Officer')
 @push('styles')
-@if(Auth::user()?->position === 'Desk Officer' && Auth::user()?->isMultiCaseDepartment())
 <style>
+    @if(Auth::user()?->position === 'Desk Officer' && Auth::user()?->isMultiCaseDepartment())
     @media (max-width: 47.9375rem) and (orientation: portrait) {
         .case-type-actions {
             display: grid !important;
@@ -22,8 +22,314 @@
             white-space: nowrap;
         }
     }
+    @endif
+
+    /* ── Mobile view (< 768px): crimson top header, centered controls, dropdown drawer ── */
+    @media (max-width: 47.9375rem) {
+        body.desk-officer-create-case-mobile-nav #mobileTopBar { display: none !important; }
+        body.desk-officer-create-case-mobile-nav #mobileMenuToggle { display: none !important; }
+
+        html body.portal-ui.desk-officer-create-case-mobile-nav #mainContent > header#desk-officer-create-case-header {
+            background: #C41E3A !important;
+            border-bottom: 1px solid #99172E !important;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 30 !important;
+        }
+
+        body.portal-ui.desk-officer-create-case-mobile-nav #mainContent > header#desk-officer-create-case-header > div {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            flex-wrap: nowrap !important;
+            min-width: 0 !important;
+            padding-top: max(1rem, env(safe-area-inset-top)) !important;
+            padding-bottom: 1rem !important;
+            padding-left: max(.75rem, env(safe-area-inset-left)) !important;
+            padding-right: max(1rem, env(safe-area-inset-right)) !important;
+        }
+
+        body.desk-officer-create-case-mobile-nav #desk-officer-create-case-header > div > div:first-child {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            gap: .625rem !important;
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+            margin: 0 !important;
+            align-self: center !important;
+        }
+
+        body.desk-officer-create-case-mobile-nav #desk-officer-create-case-header > div > div:first-child > div {
+            width: auto !important;
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            text-align: left !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            align-self: center !important;
+        }
+
+        html body.portal-ui.desk-officer-create-case-mobile-nav #mainContent > header#desk-officer-create-case-header :is(h1, h2, h3, p) {
+            color: #ffffff !important;
+        }
+
+        body.desk-officer-create-case-mobile-nav #dashboardMenuToggle {
+            position: relative !important;
+            left: 0 !important;
+            margin: 0 !important;
+            transform: none !important;
+            display: inline-flex !important;
+            flex: 0 0 2.5rem !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #ffffff !important;
+            padding: 0 !important;
+            line-height: 1 !important;
+        }
+
+        body.desk-officer-create-case-mobile-nav #dashboardMenuToggle > i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 1.25rem !important;
+            line-height: 1 !important;
+            color: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            vertical-align: middle !important;
+        }
+
+        body.portal-ui.desk-officer-create-case-mobile-nav #mainContent > header#desk-officer-create-case-header > div > div:last-child {
+            flex: 0 0 auto !important;
+            flex-wrap: nowrap !important;
+            display: flex !important;
+            align-items: center !important;
+            align-self: center !important;
+            margin: 0 !important;
+        }
+
+        body.portal-ui.desk-officer-create-case-mobile-nav #mainContent > header#desk-officer-create-case-header > div > div:last-child > div.relative {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            align-self: center !important;
+        }
+
+        /* Notifications bell button matching dashboard */
+        html body.portal-ui.desk-officer-create-case-mobile-nav #mainContent > header#desk-officer-create-case-header button[aria-label="Notifications"] {
+            box-sizing: border-box !important;
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+            background: var(--mswdo-profile, #BC0202) !important;
+            border: 1px solid #8f0202 !important;
+            box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+            color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            position: relative !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+
+        html body.portal-ui.desk-officer-create-case-mobile-nav #mainContent > header#desk-officer-create-case-header button[aria-label="Notifications"]:hover {
+            background: #8f0202 !important;
+        }
+
+        html body.portal-ui.desk-officer-create-case-mobile-nav #mainContent > header#desk-officer-create-case-header button[aria-label="Notifications"] > i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 1.05rem !important;
+            line-height: 1 !important;
+            color: #ffffff !important;
+            vertical-align: middle !important;
+        }
+
+        html body.portal-ui.desk-officer-create-case-mobile-nav #mainContent > header#desk-officer-create-case-header :is(#notifications-unread-count, [data-unread-badge], .notification-badge) {
+            position: absolute !important;
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+            min-width: 1.25rem !important;
+            top: -0.25rem !important;
+            right: -0.25rem !important;
+            font-size: 0.75rem !important;
+            line-height: 1 !important;
+            background-color: #eab308 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            border-radius: 9999px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+            border: 2px solid #C41E3A !important;
+        }
+
+        body.portal-ui.desk-officer-create-case-mobile-nav #mainContent > header#desk-officer-create-case-header div:has(> img[alt="User Profile"]) {
+            display: none !important;
+        }
+
+        /* Sidebar dropdown drawer */
+        body.desk-officer-create-case-mobile-nav #sidebar {
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: auto !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: calc(100vh - 60px) !important;
+            overflow-y: auto !important;
+            z-index: 999 !important;
+            border-radius: 0 0 14px 14px !important;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, .22) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(-8px) !important;
+            transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+            background: #C41E3A !important;
+            background-image: none !important;
+        }
+
+        body.desk-officer-create-case-mobile-nav #sidebar.sidebar-open {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
+        }
+
+        body.desk-officer-create-case-mobile-nav #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        body.desk-officer-create-case-mobile-nav #sidebar .sidebar-header { display: none !important; }
+        body.desk-officer-create-case-mobile-nav #sidebar .sidebar-text { opacity: 1 !important; max-width: none !important; }
+        body.desk-officer-create-case-mobile-nav #sidebar .sidebar-menu {
+            flex: 0 1 auto;
+            min-height: 0;
+            padding: .5rem !important;
+            overflow-y: auto !important;
+        }
+        body.desk-officer-create-case-mobile-nav #sidebar .sidebar-link {
+            justify-content: flex-start !important;
+            gap: .75rem !important;
+        }
+        body.desk-officer-create-case-mobile-nav #sidebar #sidebarCloseBtn { display: none !important; }
+        body.desk-officer-create-case-mobile-nav #sidebarOverlay { display: none !important; pointer-events: none !important; }
+        body.portal-ui.desk-officer-create-case-mobile-nav #sidebar nav :is(a, button),
+        body.portal-ui.desk-officer-create-case-mobile-nav #sidebar .sidebar-link {
+            background: #C41E3A !important;
+            color: #ffffff !important;
+        }
+        body.portal-ui.desk-officer-create-case-mobile-nav #sidebar nav :is(a, button) :is(i, svg, span),
+        body.portal-ui.desk-officer-create-case-mobile-nav #sidebar .sidebar-link :is(i, svg, span) {
+            color: #ffffff !important;
+        }
+        body.portal-ui.desk-officer-create-case-mobile-nav #sidebar nav :is(a, button):hover,
+        body.portal-ui.desk-officer-create-case-mobile-nav #sidebar .sidebar-link:hover {
+            background: #99172E !important;
+            color: #ffffff !important;
+        }
+        body.portal-ui.desk-officer-create-case-mobile-nav #sidebar .sidebar-link:is([class~="bg-purple-600"], [class~="bg-purple-700/70"]),
+        body.portal-ui.desk-officer-create-case-mobile-nav #sidebar nav [x-show] > :is(a, button).bg-purple-600 {
+            background: #99172E !important;
+            color: #ffffff !important;
+            box-shadow: inset 3px 0 0 #ffffff !important;
+        }
+        body.desk-officer-create-case-mobile-nav #mainContent {
+            width: 100% !important;
+            min-width: 0 !important;
+            margin-left: 0 !important;
+        }
+    }
+
+    /* ── Tablet view (768px–1023px, up to 1280px / 80rem): collapsed rail, full-width content & clean header ── */
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        body.desk-officer-create-case-mobile-nav #mobileTopBar { display: none !important; }
+        body.desk-officer-create-case-mobile-nav #mobileMenuToggle { display: none !important; }
+        body.desk-officer-create-case-mobile-nav #dashboardMenuToggle { display: none !important; }
+        body.desk-officer-create-case-mobile-nav #sidebarCloseBtn { display: none !important; }
+        body.desk-officer-create-case-mobile-nav #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui.desk-officer-create-case-mobile-nav #mainContent > header#desk-officer-create-case-header {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+        body.desk-officer-create-case-mobile-nav #mainContent > header#desk-officer-create-case-header > div {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            min-height: 4.25rem !important;
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+        }
+        body.desk-officer-create-case-mobile-nav #sidebar {
+            inset: 0 auto 0 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            right: auto !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+            background: #C41E3A !important;
+            border-radius: 0 !important;
+            z-index: 40 !important;
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+            transition: width 0.3s ease !important;
+        }
+        body.desk-officer-create-case-mobile-nav #sidebar .sidebar-header {
+            display: flex !important;
+            min-height: 4.25rem !important;
+            padding-left: 0.75rem !important;
+            padding-right: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+        body.desk-officer-create-case-mobile-nav #sidebar:not(.sidebar-expanded) .sidebar-text {
+            display: none !important;
+        }
+        body.desk-officer-create-case-mobile-nav #sidebar ~ #mainContent {
+            width: calc(100% - 4.5rem) !important;
+            min-width: 0 !important;
+            margin-left: 4.5rem !important;
+        }
+        body.desk-officer-create-case-mobile-nav #sidebarToggleBtn {
+            display: none !important;
+        }
+    }
 </style>
-@endif
 @endpush
 
 @section('content')
@@ -38,24 +344,29 @@
 @endphp
 
 <!-- Top Header -->
-<header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
+<header id="desk-officer-create-case-header" class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
-        <div>
-            <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Add New Case</h2>
-                @if($isBCPCCase)
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-600 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-                        <i class="fas fa-child"></i> BCPC Case
-                    </span>
-                @else
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-700 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-                        <i class="fas fa-shield-alt"></i> SWD Case
-                    </span>
-                @endif
+        <div class="flex items-center gap-3 min-w-0">
+            <button id="dashboardMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false" class="hidden">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="min-w-0">
+                <div class="flex flex-nowrap items-center gap-2 sm:gap-3 min-w-0">
+                    <h2 class="text-lg sm:text-2xl font-bold text-gray-800 truncate leading-tight m-0">Add New Case</h2>
+                    @if($isBCPCCase)
+                        <span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 bg-red-600 text-white rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider shadow-sm shrink-0 whitespace-nowrap">
+                            <i class="fas fa-child"></i> BCPC Case
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 bg-purple-700 text-white rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider shadow-sm shrink-0 whitespace-nowrap">
+                            <i class="fas fa-shield-alt"></i> SWD Case
+                        </span>
+                    @endif
+                </div>
+                <p class="text-sm text-gray-500 hidden sm:block mt-0.5">
+                    Creating a new <span class="font-semibold text-gray-700">{{ $isBCPCCase ? 'BCPC (Child Protection)' : 'SWD' }}</span> record for <strong>{{ $userBarangay->name }}</strong>
+                </p>
             </div>
-            <p class="text-sm text-gray-500 hidden sm:block mt-0.5">
-                Creating a new <span class="font-semibold text-gray-700">{{ $isBCPCCase ? 'BCPC (Child Protection)' : 'SWD' }}</span> record for <strong>{{ $userBarangay->name }}</strong>
-            </p>
         </div>
         <div class="flex items-center gap-3 sm:gap-4">
             @include('desk-officer.components.notifications')
