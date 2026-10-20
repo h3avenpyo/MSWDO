@@ -66,7 +66,7 @@
     }
 
     /* Dashboard mobile navigation opens as a full-width drawer directly below the header, keeping the top navbar visible. */
-    @media (max-width: 63.9375rem) {
+    @media (max-width: 47.9375rem) {
         body.admin-dashboard-mobile-nav #mobileTopBar { display: none !important; }
         body.admin-dashboard-mobile-nav #mobileMenuToggle { display: none !important; }
         body.admin-dashboard-mobile-nav #sidebarOverlay {
@@ -190,6 +190,116 @@
         }
         body.admin-dashboard-mobile-nav #admin-dashboard-header h2,
         body.admin-dashboard-mobile-nav #admin-dashboard-header p { min-width: 0; }
+    }
+
+    /* Dashboard tablet navigation (768px–1023px): collapsed sidebar on the left, standard header (not top navbar). */
+    @media (min-width: 48rem) and (max-width: 63.9375rem) {
+        body.admin-dashboard-mobile-nav #mobileTopBar { display: none !important; }
+        body.admin-dashboard-mobile-nav #mobileMenuToggle { display: none !important; }
+        body.admin-dashboard-mobile-nav #dashboardMenuToggle { display: none !important; }
+        body.admin-dashboard-mobile-nav #sidebarCloseBtn { display: none !important; }
+        body.admin-dashboard-mobile-nav #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-of-type :is(h1, h2, h3) {
+            color: #1f2937 !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-of-type p {
+            color: #6b7280 !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar {
+            inset: 0 auto 0 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            right: auto !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+            background: #C41E3A !important;
+            border-radius: 0 !important;
+            z-index: 40 !important;
+            transition: width 0.3s ease !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar .sidebar-header {
+            display: flex !important;
+            min-height: 5.5rem;
+            padding-left: 0.75rem !important;
+            padding-right: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar .sidebar-header img {
+            width: 3rem !important;
+            height: 3rem !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Collapsed / default sidebar state on tablet */
+        body.admin-dashboard-mobile-nav #sidebar,
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed,
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed-init {
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar .sidebar-text,
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed .sidebar-text,
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-text {
+            opacity: 0 !important;
+            max-width: 0 !important;
+            display: none !important;
+            pointer-events: none !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar .sidebar-menu,
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed .sidebar-menu,
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-menu {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+            overflow-x: hidden !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar .sidebar-link,
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed .sidebar-link,
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-link {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            justify-content: flex-start !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar .sidebar-link i,
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed .sidebar-link i,
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-link i {
+            width: 1.25rem !important;
+            min-width: 1.25rem !important;
+            text-align: center !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebar ~ #mainContent,
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed ~ #mainContent,
+        body.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed-init ~ #mainContent {
+            width: calc(100% - 4.5rem) !important;
+            margin-left: 4.5rem !important;
+            min-width: 0 !important;
+        }
+        body.admin-dashboard-mobile-nav #sidebarToggleBtn {
+            display: none !important;
+        }
+    }
+
+    /* Prevent gap from generic layout tablet rule */
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        body.admin-dashboard-mobile-nav #mobileTopBar { display: none !important; }
+        body.admin-dashboard-mobile-nav #mobileMenuToggle { display: none !important; }
+        body.admin-dashboard-mobile-nav #sidebar {
+            inset: 0 auto 0 0 !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+        }
     }
 </style>
 @endpush

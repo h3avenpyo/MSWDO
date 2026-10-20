@@ -40,6 +40,91 @@
         }
     }
 
+    /* User Logs tablet navigation (768px–1023px): collapsed sidebar on the left, standard header (not top navbar), no collapsed button. */
+    @media (min-width: 48rem) and (max-width: 63.9375rem) {
+        html body.portal-ui #mobileTopBar { display: none !important; }
+        html body.portal-ui #mobileMenuToggle { display: none !important; }
+        html body.portal-ui #dashboardMenuToggle { display: none !important; }
+        html body.portal-ui #sidebarCloseBtn { display: none !important; }
+        html body.portal-ui #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui #sidebar {
+            inset: 0 auto 0 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            right: auto !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+            background: #C41E3A !important;
+            border-radius: 0 !important;
+            z-index: 40 !important;
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+            transition: width 0.3s ease !important;
+        }
+        html body.portal-ui #sidebar .sidebar-header {
+            display: flex !important;
+            min-height: 5.5rem;
+            padding-left: 0.75rem !important;
+            padding-right: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui #sidebar .sidebar-header img {
+            width: 3rem !important;
+            height: 3rem !important;
+            flex-shrink: 0 !important;
+        }
+        html body.portal-ui #sidebar .sidebar-header .sidebar-text,
+        html body.portal-ui #sidebar .sidebar-text {
+            opacity: 0 !important;
+            max-width: 0 !important;
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui #sidebar .sidebar-menu {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+            overflow-x: hidden !important;
+        }
+        html body.portal-ui #sidebar .sidebar-link {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui #sidebar .sidebar-link i {
+            width: 1.25rem !important;
+            min-width: 1.25rem !important;
+            text-align: center !important;
+        }
+        html body.portal-ui #sidebar ~ #mainContent,
+        html body.portal-ui #sidebar.sidebar-collapsed ~ #mainContent,
+        html body.portal-ui #sidebar.sidebar-collapsed-init ~ #mainContent {
+            width: calc(100% - 4.5rem) !important;
+            margin-left: 4.5rem !important;
+            min-width: 0 !important;
+        }
+        html body.portal-ui #sidebarToggleBtn {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        html body.portal-ui #mobileTopBar { display: none !important; }
+        html body.portal-ui #mobileMenuToggle { display: none !important; }
+        html body.portal-ui #sidebar {
+            inset: 0 auto 0 0 !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+        }
+    }
 </style>
 @endpush
 
