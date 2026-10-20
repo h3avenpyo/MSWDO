@@ -106,6 +106,19 @@
             font-size: .8125rem !important;
             line-height: 1 !important;
         }
+        #referralModal.is-edit-mode #closeModal,
+        #referralModal[data-mode="edit"] #closeModal {
+            display: none !important;
+        }
+    }
+    @media (max-width: 48rem) {
+        #referralModal[data-mode="edit"] .portal-modal-dismiss-footer .portal-modal-close {
+            display: none !important;
+        }
+        #referralModal.is-edit-mode #closeModal,
+        #referralModal[data-mode="edit"] #closeModal {
+            display: none !important;
+        }
     }
 
     @media (max-width: 40rem) {
@@ -309,6 +322,107 @@
     }
 </style>
 @endif
+
+<style>
+    /* Referrals tablet navigation (768px–1023px): collapsed sidebar on the left, standard header (not top navbar), no collapsed button. */
+    @media (min-width: 48rem) and (max-width: 63.9375rem) {
+        html body.portal-ui #mobileTopBar { display: none !important; }
+        html body.portal-ui #mobileMenuToggle { display: none !important; }
+        html body.portal-ui #dashboardMenuToggle { display: none !important; }
+        html body.portal-ui #sidebarCloseBtn { display: none !important; }
+        html body.portal-ui #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header,
+        html body.portal-ui #mainContent > header.sticky {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header h2,
+        html body.portal-ui #mainContent > header.sticky h2 {
+            color: #1f2937 !important;
+        }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header p,
+        html body.portal-ui #mainContent > header.sticky p {
+            color: #6b7280 !important;
+        }
+        html body.portal-ui #sidebar {
+            inset: 0 auto 0 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            right: auto !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+            background: #C41E3A !important;
+            border-radius: 0 !important;
+            z-index: 40 !important;
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+            transition: width 0.3s ease !important;
+        }
+        html body.portal-ui #sidebar .sidebar-header {
+            display: flex !important;
+            min-height: 5.5rem;
+            padding-left: 0.75rem !important;
+            padding-right: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui #sidebar .sidebar-header img {
+            width: 3rem !important;
+            height: 3rem !important;
+            flex-shrink: 0 !important;
+        }
+        html body.portal-ui #sidebar .sidebar-header .sidebar-text,
+        html body.portal-ui #sidebar .sidebar-text {
+            opacity: 0 !important;
+            max-width: 0 !important;
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui #sidebar .sidebar-menu {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+            overflow-x: hidden !important;
+        }
+        html body.portal-ui #sidebar .sidebar-link {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui #sidebar .sidebar-link i {
+            width: 1.25rem !important;
+            min-width: 1.25rem !important;
+            text-align: center !important;
+        }
+        html body.portal-ui #sidebar ~ #mainContent,
+        html body.portal-ui #sidebar.sidebar-collapsed ~ #mainContent,
+        html body.portal-ui #sidebar.sidebar-collapsed-init ~ #mainContent {
+            width: calc(100% - 4.5rem) !important;
+            margin-left: 4.5rem !important;
+            min-width: 0 !important;
+        }
+        html body.portal-ui #sidebarToggleBtn {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        html body.portal-ui #mobileTopBar { display: none !important; }
+        html body.portal-ui #mobileMenuToggle { display: none !important; }
+        html body.portal-ui #sidebar {
+            inset: 0 auto 0 0 !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+        }
+    }
+</style>
 @endpush
 
 @section('content')
@@ -799,6 +913,8 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
             </div>
         `;
         modal.classList.remove('hidden');
+        modal.classList.remove('is-edit-mode');
+        modal.removeAttribute('data-mode');
         document.body.style.overflow = 'hidden';
         const modalHeading = document.getElementById('referralModalHeading');
         const modalIcon = document.getElementById('referralModalIcon');
@@ -943,6 +1059,8 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
                 </div>
             `;
             modal.classList.remove('hidden');
+            modal.classList.add('is-edit-mode');
+            modal.setAttribute('data-mode', 'edit');
             document.body.style.overflow = 'hidden';
             const modalHeading = document.getElementById('referralModalHeading');
             const modalIcon = document.getElementById('referralModalIcon');
@@ -991,10 +1109,7 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
                 `;
 
                 // cancel handler
-                document.getElementById('cancelEdit').addEventListener('click', function(){
-                    modal.classList.add('hidden');
-                    document.body.style.overflow = '';
-                });
+                document.getElementById('cancelEdit').addEventListener('click', hideModal);
 
                 // submit handler
                 document.getElementById('adminReferralEditForm').addEventListener('submit', function(ev){
@@ -1015,8 +1130,7 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
                         return response;
                     })
                     .then(resp => {
-                        modal.classList.add('hidden');
-                        document.body.style.overflow = '';
+                        hideModal();
                         Swal.fire({ icon: 'success', title: 'Updated!', text: resp.message || 'Referral updated successfully.', confirmButtonText: 'OK' })
                             .then(() => window.location.assign(resp.redirect || window.location.href));
                     }).catch(err => {
@@ -1041,6 +1155,8 @@ $matchReportTable = auth()->user()->isDepartmentAdmin();
     // Close modal
     function hideModal() {
         modal.classList.add('hidden');
+        modal.classList.remove('is-edit-mode');
+        modal.removeAttribute('data-mode');
         document.body.style.overflow = '';
     }
     

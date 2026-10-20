@@ -18,9 +18,20 @@
             display: block !important;
         }
 
+        .archived-quarterly-mobile-cards dl>div:nth-child(2) dd {
+            display: inline-flex;
+            box-sizing: border-box;
+            max-width: 100%;
+            margin-top: .375rem;
+            padding: .25rem .625rem;
+            border-radius: 9999px;
+            background: #f3e8ff;
+            color: #7e22ce;
+        }
+
         .archived-quarterly-card-actions {
             display: grid !important;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: .5rem;
         }
 
@@ -34,7 +45,9 @@
             align-items: center !important;
             justify-content: center !important;
             width: 100% !important;
-            min-width: 0;
+            box-sizing: border-box;
+            max-width: 100% !important;
+            min-width: 0 !important;
             min-height: 3rem;
             padding: .5rem !important;
             background-color: #C41E3A !important;
@@ -116,6 +129,135 @@
             margin: 0 !important;
             font-size: 1rem !important;
             line-height: 1 !important;
+        }
+    }
+
+    /* Archived Quarterly Reports tablet navigation (768px–1023px): collapsed sidebar on the left, standard header (not top navbar), no collapsed button. */
+    @media (min-width: 48rem) and (max-width: 63.9375rem) {
+        html body.portal-ui #mobileTopBar {
+            display: none !important;
+        }
+
+        html body.portal-ui #mobileMenuToggle {
+            display: none !important;
+        }
+
+        html body.portal-ui #dashboardMenuToggle {
+            display: none !important;
+        }
+
+        html body.portal-ui #sidebarCloseBtn {
+            display: none !important;
+        }
+
+        html body.portal-ui #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+
+        html body.portal-ui #mainContent>header.admin-reference-mobile-header,
+        html body.portal-ui #mainContent>header.sticky {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+
+        html body.portal-ui #mainContent>header.admin-reference-mobile-header h2,
+        html body.portal-ui #mainContent>header.sticky h2 {
+            color: #1f2937 !important;
+        }
+
+        html body.portal-ui #mainContent>header.admin-reference-mobile-header p,
+        html body.portal-ui #mainContent>header.sticky p {
+            color: #6b7280 !important;
+        }
+
+        html body.portal-ui #sidebar {
+            inset: 0 auto 0 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            right: auto !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+            background: #C41E3A !important;
+            border-radius: 0 !important;
+            z-index: 40 !important;
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+            transition: width 0.3s ease !important;
+        }
+
+        html body.portal-ui #sidebar .sidebar-header {
+            display: flex !important;
+            min-height: 5.5rem;
+            padding-left: 0.75rem !important;
+            padding-right: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+
+        html body.portal-ui #sidebar .sidebar-header img {
+            width: 3rem !important;
+            height: 3rem !important;
+            flex-shrink: 0 !important;
+        }
+
+        html body.portal-ui #sidebar .sidebar-header .sidebar-text,
+        html body.portal-ui #sidebar .sidebar-text {
+            opacity: 0 !important;
+            max-width: 0 !important;
+            display: none !important;
+            pointer-events: none !important;
+        }
+
+        html body.portal-ui #sidebar .sidebar-menu {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+            overflow-x: hidden !important;
+        }
+
+        html body.portal-ui #sidebar .sidebar-link {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            justify-content: flex-start !important;
+        }
+
+        html body.portal-ui #sidebar .sidebar-link i {
+            width: 1.25rem !important;
+            min-width: 1.25rem !important;
+            text-align: center !important;
+        }
+
+        html body.portal-ui #sidebar~#mainContent,
+        html body.portal-ui #sidebar.sidebar-collapsed~#mainContent,
+        html body.portal-ui #sidebar.sidebar-collapsed-init~#mainContent {
+            width: calc(100% - 4.5rem) !important;
+            margin-left: 4.5rem !important;
+            min-width: 0 !important;
+        }
+
+        html body.portal-ui #sidebarToggleBtn {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        html body.portal-ui #mobileTopBar {
+            display: none !important;
+        }
+
+        html body.portal-ui #mobileMenuToggle {
+            display: none !important;
+        }
+
+        html body.portal-ui #sidebar {
+            inset: 0 auto 0 0 !important;
+            height: 100vh !important;
+            height: 100dvh !important;
         }
     }
 </style>
@@ -326,7 +468,8 @@
                         class="inline-flex w-10 h-10 items-center justify-center {{ $restoreBlocked ? '!bg-red-100
                         hover:!bg-red-100 !text-red-800 !border !border-red-200 cursor-not-allowed pointer-events-none'
                         : 'bg-red-600 hover:bg-red-700 text-white' }} rounded-lg transition shadow-sm"><i
-                            class="fas fa-undo text-sm"></i></button></div>
+                            class="fas fa-undo text-sm"></i></button>
+                </div>
             </article>
             @empty
             <div class="text-center py-10 text-gray-500">No archived quarterly reports found.</div>
