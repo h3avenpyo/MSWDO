@@ -11,8 +11,8 @@
 @endphp
 
 @push('styles')
-@if(auth()->user()?->position !== 'Desk Officer')
 <style>
+<<<<<<< HEAD
     @media (min-width: 48rem) {
         body.portal-ui.view-cases-admin-mobile-nav #mobileTopBar { display: none !important; }
     }
@@ -25,26 +25,42 @@
     }
     @media (max-width: 40rem) {
         html body.portal-ui.view-cases-admin-mobile-nav #mobileTopBar {
+=======
+    @media (max-width: 80rem) {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mobileTopBar {
+>>>>>>> ae03808e905a0ebf66670f34b308b7626cdc8efb
             display: none !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #mainContent > header#barangay-cases-view-header {
-            background: #C41E3A !important;
-            border-bottom-color: #99172E !important;
+    }
+
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mobileTopBar {
+            display: none !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-header > div {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mobileMenuToggle,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebarCloseBtn,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebarOverlay,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebarToggleBtn {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header:is(#barangay-cases-view-header, .portal-page-header, .sticky),
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header {
+            background: #C41E3A !important;
+            border-bottom: 1px solid #99172E !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header:is(#barangay-cases-view-header, .portal-page-header, .sticky) > div,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header > div {
             align-items: flex-start !important;
             flex-wrap: nowrap !important;
             min-width: 0 !important;
-            padding: max(.75rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) .75rem max(.5rem, env(safe-area-inset-left)) !important;
+            padding-left: max(.5rem, env(safe-area-inset-left)) !important;
+            padding-right: max(1rem, env(safe-area-inset-right)) !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #mainContent .tablet-header-row {
-            grid-template-columns: minmax(0, 1fr) auto !important;
-            align-items: flex-start !important;
-        }
-        html body.portal-ui.view-cases-admin-mobile-nav #mainContent #mobileMenuToggle {
-            display: none !important;
-        }
-        html body.portal-ui.view-cases-admin-mobile-nav #mainContent .view-cases-header-leading {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header:is(#barangay-cases-view-header, .portal-page-header, .sticky) > div > div:first-of-type,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header > div > div:first-of-type,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent .view-cases-header-leading,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header .view-cases-header-leading {
             display: flex !important;
             flex-direction: row !important;
             flex-wrap: nowrap !important;
@@ -52,49 +68,96 @@
             gap: .5rem !important;
             min-width: 0 !important;
             flex: 1 1 auto !important;
-            grid-column: 1 !important;
-            grid-row: 1 !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #mainContent .tablet-header-row > div:last-child {
-            grid-column: 2 !important;
-            grid-row: 1 !important;
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header:is(#barangay-cases-view-header, .portal-page-header, .sticky) > div > div:first-of-type > div,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header > div > div:first-of-type > div,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent .view-cases-header-leading > div,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header .view-cases-header-leading > div {
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+            text-align: left !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #dashboardMenuToggle {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) :is(#dashboardMenuToggle, #pageMobileMenuToggle) {
+            position: relative !important;
+            left: 0 !important;
+            margin-left: 0 !important;
+            transform: none !important;
             display: inline-flex !important;
-            flex: 0 0 2.5rem;
-            width: 2.5rem;
-            height: 2.5rem;
-            align-items: center;
-            justify-content: center;
+            flex: 0 0 2.5rem !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            align-items: center !important;
+            justify-content: center !important;
             border: 0 !important;
             border-radius: 0 !important;
             background: transparent !important;
             box-shadow: none !important;
-            color: #fff !important;
+            color: #ffffff !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #dashboardMenuToggle i {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) :is(#dashboardMenuToggle, #pageMobileMenuToggle) i {
             color: inherit !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-header h2 {
-            color: #fff !important;
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header:is(#barangay-cases-view-header, .portal-page-header, .sticky) :is(h1, h2, h3),
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header :is(h1, h2, h3) {
+            color: #ffffff !important;
+            opacity: 1 !important;
+            font-size: 1.125rem !important;
+            line-height: 1.25 !important;
+            margin: 0 !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-header p {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header:is(#barangay-cases-view-header, .portal-page-header, .sticky) p,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header p {
             display: block !important;
             margin-top: .125rem !important;
-            color: rgba(255,255,255,.85) !important;
+            color: #ffffff !important;
+            opacity: 1 !important;
+            font-size: .75rem !important;
+            line-height: 1.2 !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-header div:has(> img[alt="User Profile"]) {
-            display: none !important;
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header:is(#barangay-cases-view-header, .portal-page-header, .sticky) p :is(span, strong),
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header p :is(span, strong) {
+            color: #ffffff !important;
+            opacity: 1 !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-header > div > div:last-child {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header:is(#barangay-cases-view-header, .portal-page-header, .sticky) div:first-of-type :is(span, a),
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header div:first-of-type :is(span, a) {
+            color: #ffffff !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header:is(#barangay-cases-view-header, .portal-page-header, .sticky) > div > div:last-child,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header > div > div:last-child {
             flex: 0 0 auto !important;
             flex-wrap: nowrap !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebarOverlay {
-            display: none !important;
-            pointer-events: none !important;
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header button[aria-label="Notifications"],
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header button[aria-label="Notifications"] {
+            box-sizing: border-box !important;
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+            background: transparent !important;
+            color: #ffffff !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header button[aria-label="Notifications"] > i,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header button[aria-label="Notifications"] > i {
+            margin: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1 !important;
+            color: #ffffff !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header #notifications-unread-count,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header #notifications-unread-count {
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+            top: -.25rem !important;
+            right: -.25rem !important;
+            font-size: .75rem !important;
+            line-height: 1 !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar {
             top: 0 !important;
             left: 0 !important;
             right: 0 !important;
@@ -115,66 +178,72 @@
             background: #C41E3A !important;
             background-image: none !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar.sidebar-open {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-open {
             opacity: 1 !important;
             visibility: visible !important;
             transform: translateY(0) !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar.sidebar-collapsed,
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar.sidebar-collapsed-init {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed-init {
             width: 100% !important;
             min-width: 100% !important;
             max-width: 100% !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-header {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-header {
             display: none !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-text {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-text {
             opacity: 1 !important;
             max-width: none !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-menu {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-menu {
             flex: 0 1 auto;
             min-height: 0;
             padding: .5rem !important;
             overflow-y: auto !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-link {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-link {
             justify-content: flex-start !important;
             gap: .75rem !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar nav :is(a, button),
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-link {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar nav :is(a, button),
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-link {
             background: #C41E3A !important;
             color: #fff !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar nav :is(a, button) :is(i,svg,span),
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-link :is(i,svg,span) {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar nav :is(a, button) :is(i,svg,span),
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-link :is(i,svg,span) {
             color: #fff !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar nav :is(a,button):hover,
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-link:hover {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar nav :is(a,button):hover,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-link:hover {
             background: #99172E !important;
             color: #fff !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-link:is([class~="bg-purple-600"],[class~="bg-purple-700/70"]),
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar nav [x-show] > :is(a,button).bg-purple-600 {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-link:is([class~="bg-purple-600"],[class~="bg-purple-700/70"]),
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar nav [x-show] > :is(a,button).bg-purple-600 {
             background: #99172E !important;
             color: #fff !important;
             box-shadow: inset 3px 0 0 #fff !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebar #sidebarCloseBtn,
-        html body.portal-ui.view-cases-admin-mobile-nav #sidebarToggleBtn {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar #sidebarCloseBtn,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebarToggleBtn {
             display: none !important;
         }
-        html body.portal-ui.view-cases-admin-mobile-nav #mainContent {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent {
             width: 100% !important;
             min-width: 0 !important;
             margin-left: 0 !important;
         }
     }
 
-    /* Prevent page scrolling - only table should scroll */
+    @media (max-width: 40rem) {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header div:has(> img[alt="User Profile"]) {
+            display: none !important;
+        }
+    }
+
+    /* Prevent page scrolling on desktop - only table should scroll */
     html, body { overflow: hidden !important; height: 100vh !important; }
     #mainContent { height: 100vh !important; overflow: hidden !important; }
     [x-cloak] { display: none !important; }
@@ -190,10 +259,10 @@
     }
 
     /* Keep case content in a single fluid column while the shared sidebar is
-       an off-canvas drawer on Android tablets (600px–1280px). */
-    @media (min-width: 37.5rem) and (max-width: 80rem) {
-        html, body { height: auto !important; overflow: auto !important; }
-        #mainContent { height: auto !important; overflow: visible !important; }
+       an off-canvas drawer on Android tablets and mobile screens (<= 80rem). */
+    @media (max-width: 80rem) {
+        html, body { height: auto !important; min-height: 100%; overflow-x: hidden !important; overflow-y: auto !important; }
+        #mainContent { height: auto !important; min-height: 100%; overflow: visible !important; }
         #mainContent > main {
             height: auto !important;
             min-height: 0;
@@ -306,29 +375,20 @@
         .view-cases-pagination :is(a, span) { min-width: 3rem; min-height: 3rem; display: inline-flex; align-items: center; justify-content: center; }
     }
 
-    @media (max-width: 26.875rem) {
-        html body.portal-ui.view-cases-admin-mobile-nav #mainContent > header#barangay-cases-view-header {
-            background: #C41E3A !important;
-            border-bottom-color: #99172E !important;
-        }
-        html body.portal-ui.view-cases-admin-mobile-nav #mainContent > header#barangay-cases-view-header :is(h1, h2, h3, p) {
-            color: #fff !important;
-        }
-        html body.portal-ui.view-cases-admin-mobile-nav #mainContent > header#barangay-cases-view-header p {
-            opacity: .85 !important;
-        }
-    }
-</style>
-@endif
-@if($isBarangayDeskOfficer || $isMultiroleDeskOfficer)
-<style>
-    @media (max-width: 767px), (hover: none) and (pointer: coarse) {
+    @media (max-width: 47.9375rem) {
         #barangay-cases-view-main {
             height: auto !important;
             min-height: 0;
             overflow: visible !important;
         }
         .view-cases-toolbar { display: contents !important; }
+        .view-cases-toolbar > a {
+            order: 0;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: .5rem;
+            min-height: 2.5rem;
+        }
         .view-cases-toolbar > .relative {
             order: 1;
             width: 100%;
@@ -390,47 +450,336 @@
         }
     }
 
-    @media (min-width: 768px) and (max-width: 1439px) {
-        /* Stable tablet sidebar dimensions and internal navigation scrolling. */
-        #sidebar:not(.sidebar-collapsed) {
-            position: fixed !important;
-            inset: 0 auto 0 0 !important;
-            width: 18rem !important;
-            min-width: 18rem !important;
-            max-width: 18rem !important;
-            height: 100dvh !important;
-            max-height: 100dvh !important;
-            box-sizing: border-box;
-            overflow: hidden;
+    /* Barangay Cases tablet navigation (768px–1280px / 48rem–80rem): collapsed sidebar on the left without button, standard clean header */
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mobileTopBar,
+        body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mobileTopBar,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mobileTopBar,
+        #mobileTopBar {
+            display: none !important;
         }
-        #sidebar .sidebar-menu { min-height: 0; overflow-y: auto; }
 
-        .view-cases-statistics {
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            gap: .75rem !important;
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mobileMenuToggle,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mobileMenuToggle,
+        #mobileMenuToggle {
+            display: none !important;
         }
-        .view-cases-statistics > div { min-width: 0; padding: .875rem 1rem !important; }
+
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #dashboardMenuToggle,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #dashboardMenuToggle,
+        #dashboardMenuToggle {
+            display: none !important;
+        }
+
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #pageMobileMenuToggle,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #pageMobileMenuToggle,
+        #pageMobileMenuToggle {
+            display: none !important;
+        }
+
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebarCloseBtn,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebarCloseBtn,
+        #sidebarCloseBtn {
+            display: none !important;
+        }
+
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebarOverlay,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebarOverlay,
+        #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebarToggleBtn,
+        body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebarToggleBtn,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebarToggleBtn,
+        body.view-cases-admin-mobile-nav #sidebarToggleBtn,
+        body.view-cases-desk-mobile-nav #sidebarToggleBtn,
+        .view-cases-admin-mobile-nav #sidebarToggleBtn,
+        .view-cases-desk-mobile-nav #sidebarToggleBtn,
+        #sidebarToggleBtn {
+            display: none !important;
+        }
+
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header:is(#barangay-cases-view-header, .portal-page-header, .sticky),
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header,
+        #barangay-cases-view-header {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            border-left: 0 !important;
+            box-sizing: border-box !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header:is(#barangay-cases-view-header, .portal-page-header, .sticky) > div,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header > div,
+        #barangay-cases-view-header > div {
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header:is(#barangay-cases-view-header, .portal-page-header, .sticky) :is(h1, h2, h3),
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header :is(h1, h2, h3),
+        #barangay-cases-view-header :is(h1, h2, h3) {
+            color: #1f2937 !important;
+            font-size: 1.5rem !important;
+            line-height: 1.25 !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header:is(#barangay-cases-view-header, .portal-page-header, .sticky) p,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header p,
+        #barangay-cases-view-header p {
+            color: #6b7280 !important;
+            font-size: 0.875rem !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header:is(#barangay-cases-view-header, .portal-page-header, .sticky) div:first-of-type :is(span, a),
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header div:first-of-type :is(span, a),
+        #barangay-cases-view-header div:first-of-type :is(span, a) {
+            color: #4b5563 !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header button[aria-label="Notifications"],
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header button[aria-label="Notifications"],
+        #barangay-cases-view-header button[aria-label="Notifications"] {
+            border: 1px solid #e5e7eb !important;
+            background: transparent !important;
+            color: #4b5563 !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent > header button[aria-label="Notifications"] > i,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header button[aria-label="Notifications"] > i,
+        #barangay-cases-view-header button[aria-label="Notifications"] > i {
+            color: #4b5563 !important;
+        }
+
+        /* Sidebar: collapsed icon rail on the left */
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar,
+        body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar,
+        body.view-cases-admin-mobile-nav #sidebar,
+        body.view-cases-desk-mobile-nav #sidebar,
+        .view-cases-admin-mobile-nav #sidebar,
+        .view-cases-desk-mobile-nav #sidebar {
+            inset: 0 auto 0 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            right: auto !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+            background: #C41E3A !important;
+            border-radius: 0 !important;
+            z-index: 40 !important;
+            transition: width 0.3s ease !important;
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-header,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-header,
+        .view-cases-admin-mobile-nav #sidebar .sidebar-header,
+        .view-cases-desk-mobile-nav #sidebar .sidebar-header {
+            display: flex !important;
+            min-height: 5.5rem;
+            padding-left: 0.75rem !important;
+            padding-right: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-header img,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-header img,
+        .view-cases-admin-mobile-nav #sidebar .sidebar-header img,
+        .view-cases-desk-mobile-nav #sidebar .sidebar-header img {
+            width: 3rem !important;
+            height: 3rem !important;
+            flex-shrink: 0 !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-header .sidebar-text,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-header .sidebar-text,
+        .view-cases-admin-mobile-nav #sidebar .sidebar-header .sidebar-text,
+        .view-cases-desk-mobile-nav #sidebar .sidebar-header .sidebar-text {
+            display: none !important;
+            opacity: 0 !important;
+        }
+
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed-init,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed-init {
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-text,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed .sidebar-text,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed-init .sidebar-text,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-text {
+            opacity: 0 !important;
+            max-width: 0 !important;
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-menu,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed .sidebar-menu,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed-init .sidebar-menu,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-menu {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+            overflow-x: hidden !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-link,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed .sidebar-link,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed-init .sidebar-link,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-link {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-link i,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed .sidebar-link i,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed-init .sidebar-link i,
+        body:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar .sidebar-link i {
+            width: 1.25rem !important;
+            min-width: 1.25rem !important;
+            text-align: center !important;
+        }
+
+        /* Main Content offset by collapsed sidebar */
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar ~ #mainContent,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed ~ #mainContent,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #sidebar.sidebar-collapsed-init ~ #mainContent,
+        html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #mainContent,
+        body.view-cases-admin-mobile-nav #sidebar ~ #mainContent,
+        body.view-cases-desk-mobile-nav #sidebar ~ #mainContent,
+        body.view-cases-admin-mobile-nav #mainContent,
+        body.view-cases-desk-mobile-nav #mainContent,
+        .view-cases-admin-mobile-nav #mainContent,
+        .view-cases-desk-mobile-nav #mainContent {
+            width: calc(100% - 4.5rem) !important;
+            margin-left: 4.5rem !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            min-width: 0 !important;
+            height: auto !important;
+            min-height: 100vh;
+            overflow: visible !important;
+        }
+        #barangay-cases-view-main {
+            height: auto !important;
+            min-height: 0;
+            overflow: visible !important;
+            padding: 1.25rem 1.5rem !important;
+        }
+
+        .view-cases-toolbar {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 1rem !important;
+        }
+        .view-cases-toolbar > a {
+            order: initial !important;
+            width: auto !important;
+            margin-bottom: 0 !important;
+        }
+        .view-cases-toolbar > .relative {
+            order: initial !important;
+            width: auto !important;
+            margin-bottom: 0 !important;
+        }
+        .view-cases-toolbar-actions {
+            order: initial !important;
+            display: flex !important;
+            width: auto !important;
+            gap: 0.5rem !important;
+            margin-bottom: 0 !important;
+        }
+        .view-cases-statistics {
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            gap: 0.75rem !important;
+        }
+        .view-cases-statistics > div { min-width: 0; padding: 0.875rem 1rem !important; }
         .view-cases-statistics > div > div { min-width: 0; }
         .view-cases-statistics p:first-child {
             overflow-wrap: anywhere;
             line-height: 1.2;
         }
 
+        .view-cases-list {
+            flex: none !important;
+            height: auto !important;
+            min-height: 0 !important;
+            overflow: visible !important;
+        }
         .view-cases-table-desktop { display: none !important; }
-        .view-cases-table-cards { display: block !important; }
-        .view-cases-table-cards .case-card { min-width: 0; }
+        .view-cases-table-cards {
+            display: block !important;
+            overflow: visible !important;
+            padding: 1rem 1.25rem !important;
+        }
+        .view-cases-table-cards .case-card {
+            min-width: 0 !important;
+            padding: 1rem 1.25rem !important;
+            display: flex !important;
+            flex-direction: column !important;
+            min-height: auto !important;
+            position: static !important;
+        }
+        .view-cases-table-cards .case-card > span {
+            position: static !important;
+            align-self: flex-start !important;
+            margin-top: 0.5rem !important;
+            order: 5 !important;
+        }
         .view-cases-table-cards .case-card-actions {
+            position: static !important;
+            display: flex !important;
+            align-items: center !important;
             justify-content: flex-end !important;
-            gap: .5rem !important;
+            gap: 0.5rem !important;
+            margin-top: 0.75rem !important;
+            margin-bottom: 0 !important;
+            flex-wrap: nowrap !important;
+            order: 6 !important;
+        }
+        .view-cases-table-cards .case-card-actions :is(button, a, form > button) {
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            flex: 0 0 auto !important;
+        }
+        .multirole-desk-case-cards .case-card-actions {
+            justify-content: flex-end !important;
+            gap: 0.5rem !important;
             flex-wrap: nowrap !important;
         }
-        .view-cases-table-cards .case-card-actions :is(button, a, form > button) { flex: 0 0 auto; }
-        .multirole-desk-case-cards .case-card-actions { justify-content: flex-end !important; gap: .5rem !important; flex-wrap: nowrap !important; }
-        .multirole-desk-case-cards .case-card-actions > * { flex: 0 0 auto !important; }
-        .multirole-desk-case-cards .case-card-actions :is(button, a, form > button) { width: 2.5rem !important; min-width: 2.5rem !important; height: 2.5rem !important; min-height: 2.5rem !important; padding: 0 !important; }
+        .multirole-desk-case-cards .case-card-actions > * {
+            flex: 0 0 auto !important;
+        }
+        .multirole-desk-case-cards .case-card-actions :is(button, a, form > button) {
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+        }
+    }
+
+    @media (min-width: 48rem) and (max-width: 58rem) {
+        .view-cases-statistics {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        }
     }
 </style>
-@endif
 @if(auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin())
 <style>
     .view-cases-table-desktop table :is(th, td) { text-align: center; vertical-align: middle; }
@@ -548,14 +897,12 @@
 <header id="barangay-cases-view-header" class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
         <div class="view-cases-header-leading flex items-center gap-3 min-w-0">
-            @if(auth()->user()->isDepartmentAdmin())
             <button id="dashboardMenuToggle" class="hidden" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
                 <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
-            @endif
             <div class="min-w-0">
                 <h2 class="text-xl sm:text-2xl font-bold text-gray-800">{{ $barangay->name }} Cases</h2>
-                <p class="text-sm text-gray-500 {{ auth()->user()->isDepartmentAdmin() ? '' : 'hidden sm:block' }}">Viewing cases for this barangay</p>
+                <p class="text-sm text-gray-500">Viewing cases for this barangay</p>
             </div>
         </div>
         <div class="flex items-center gap-4">

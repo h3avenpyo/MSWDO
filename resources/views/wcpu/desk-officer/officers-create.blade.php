@@ -2,28 +2,455 @@
 
 @section('title', 'Add ' . ($isBCPCCase ? 'BCPC' : 'SWD') . ' Case - iSERVE SILANG Desk Officer')
 @push('styles')
-@if(Auth::user()?->position === 'Desk Officer' && Auth::user()?->isMultiCaseDepartment())
 <style>
-    @media (max-width: 47.9375rem) and (orientation: portrait) {
-        .case-type-actions {
-            display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui.create-case-desk-mobile-nav #mobileTopBar {
+            display: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header#officers-create-header {
+            background: #C41E3A !important;
+            border-bottom: 1px solid #99172E !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header > div {
+            align-items: flex-start !important;
+            flex-wrap: nowrap !important;
+            min-width: 0 !important;
+            padding-left: max(.5rem, env(safe-area-inset-left)) !important;
+            padding-right: max(1rem, env(safe-area-inset-right)) !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent #mobileMenuToggle {
+            display: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent .officers-create-header-leading {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: flex-start !important;
             gap: .5rem !important;
-            width: 100%;
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent .officers-create-header-leading > div {
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+            text-align: left !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #dashboardMenuToggle {
+            position: relative !important;
+            left: 0 !important;
+            margin-left: 0 !important;
+            transform: none !important;
+            display: inline-flex !important;
+            flex: 0 0 2.5rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            align-items: center;
+            justify-content: center;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #fff !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #dashboardMenuToggle i {
+            color: inherit !important;
+        }
+        html body.portal-ui #mainContent > header#officers-create-header :is(h1, h2, h3),
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header :is(h1, h2, h3) {
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+        html body.portal-ui #mainContent > header#officers-create-header p,
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header p {
+            display: block !important;
+            margin-top: .125rem !important;
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+        html body.portal-ui #mainContent > header#officers-create-header p :is(span, strong),
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header p :is(span, strong) {
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+        html body.portal-ui #mainContent > header#officers-create-header div:first-of-type :is(span, a),
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header div:first-of-type :is(span, a) {
+            color: #ffffff !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header > div > div:last-child {
+            flex: 0 0 auto !important;
+            flex-wrap: nowrap !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header button[aria-label="Notifications"] {
+            box-sizing: border-box !important;
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header button[aria-label="Notifications"] > i {
+            margin: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1 !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header #notifications-unread-count {
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+            top: -.25rem !important;
+            right: -.25rem !important;
+            font-size: .75rem !important;
+            line-height: 1 !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar {
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: auto !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: calc(100vh - 60px) !important;
+            overflow-y: auto !important;
+            z-index: 999 !important;
+            border-radius: 0 0 14px 14px !important;
+            box-shadow: 0 14px 28px rgba(0,0,0,.22) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(-8px) !important;
+            transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+            background: #C41E3A !important;
+            background-image: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-open {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-header {
+            display: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-text {
+            opacity: 1 !important;
+            max-width: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-menu {
+            flex: 0 1 auto;
+            min-height: 0;
+            padding: .5rem !important;
+            overflow-y: auto !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link {
+            justify-content: flex-start !important;
+            gap: .75rem !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar nav :is(a, button),
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link {
+            background: #C41E3A !important;
+            color: #fff !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar nav :is(a, button) :is(i,svg,span),
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link :is(i,svg,span) {
+            color: #fff !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar nav :is(a,button):hover,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link:hover {
+            background: #99172E !important;
+            color: #fff !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link:is([class~="bg-purple-600"],[class~="bg-purple-700/70"]),
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar nav [x-show] > :is(a,button).bg-purple-600 {
+            background: #99172E !important;
+            color: #fff !important;
+            box-shadow: inset 3px 0 0 #fff !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar #sidebarCloseBtn,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebarToggleBtn {
+            display: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent {
+            width: 100% !important;
+            min-width: 0 !important;
+            margin-left: 0 !important;
+        }
+        .case-type-actions {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: .5rem !important;
+            width: 100% !important;
         }
         .case-type-actions .case-type-action {
-            width: 100%;
-            min-width: 0;
-            min-height: 2.5rem;
-            justify-content: center;
-            gap: .375rem;
-            padding: .5rem;
-            font-size: .6875rem;
-            white-space: nowrap;
+            flex: 1 1 calc(50% - 0.25rem) !important;
+            min-width: 0 !important;
+            min-height: 2.5rem !important;
+            justify-content: center !important;
+            gap: .375rem !important;
+            padding: .5rem !important;
+            font-size: .75rem !important;
+            white-space: nowrap !important;
+        }
+        #new-case-form .p-6 {
+            padding: 1rem !important;
+        }
+        #new-case-form .case-form-section-header {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+    }
+
+    @media (max-width: 40rem) {
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header div:has(> img[alt="User Profile"]) {
+            display: none !important;
+        }
+    }
+
+    /* Add New Case tablet navigation (768px–1280px / 48rem–80rem): collapsed sidebar on the left without button, standard clean header */
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        html body.portal-ui.create-case-desk-mobile-nav #mobileTopBar,
+        body.portal-ui.create-case-desk-mobile-nav #mobileTopBar,
+        body.create-case-desk-mobile-nav #mobileTopBar,
+        .create-case-desk-mobile-nav #mobileTopBar,
+        #mobileTopBar {
+            display: none !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #mobileMenuToggle,
+        body.create-case-desk-mobile-nav #mobileMenuToggle,
+        #mobileMenuToggle {
+            display: none !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #dashboardMenuToggle,
+        body.create-case-desk-mobile-nav #dashboardMenuToggle,
+        #dashboardMenuToggle {
+            display: none !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #pageMobileMenuToggle,
+        body.create-case-desk-mobile-nav #pageMobileMenuToggle,
+        #pageMobileMenuToggle {
+            display: none !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #sidebarCloseBtn,
+        body.create-case-desk-mobile-nav #sidebarCloseBtn,
+        #sidebarCloseBtn {
+            display: none !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #sidebarOverlay,
+        body.create-case-desk-mobile-nav #sidebarOverlay,
+        #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #sidebarToggleBtn,
+        body.portal-ui.create-case-desk-mobile-nav #sidebarToggleBtn,
+        body.create-case-desk-mobile-nav #sidebarToggleBtn,
+        .create-case-desk-mobile-nav #sidebarToggleBtn,
+        #sidebarToggleBtn {
+            display: none !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header#officers-create-header,
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header,
+        body.create-case-desk-mobile-nav #officers-create-header,
+        #officers-create-header {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            border-left: 0 !important;
+            box-sizing: border-box !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header#officers-create-header > div,
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header > div,
+        #officers-create-header > div {
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header#officers-create-header :is(h1, h2, h3),
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header :is(h1, h2, h3),
+        #officers-create-header :is(h1, h2, h3) {
+            color: #1f2937 !important;
+            font-size: 1.5rem !important;
+            line-height: 1.25 !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header#officers-create-header p,
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header p,
+        #officers-create-header p {
+            color: #6b7280 !important;
+            font-size: 0.875rem !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header div:first-of-type :is(span, a),
+        #officers-create-header div:first-of-type :is(span, a) {
+            color: #4b5563 !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header button[aria-label="Notifications"],
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header button[aria-label="Notifications"],
+        #officers-create-header button[aria-label="Notifications"] {
+            border: 1px solid #e5e7eb !important;
+            background: transparent !important;
+            color: #4b5563 !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header button[aria-label="Notifications"] > i,
+        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header button[aria-label="Notifications"] > i,
+        #officers-create-header button[aria-label="Notifications"] > i {
+            color: #4b5563 !important;
+        }
+
+        /* Sidebar: collapsed icon rail on the left */
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar,
+        body.portal-ui.create-case-desk-mobile-nav #sidebar,
+        body.create-case-desk-mobile-nav #sidebar,
+        .create-case-desk-mobile-nav #sidebar,
+        .portal-ui.create-case-desk-mobile-nav #sidebar {
+            inset: 0 auto 0 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            right: auto !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+            background: #C41E3A !important;
+            border-radius: 0 !important;
+            z-index: 40 !important;
+            transition: width 0.3s ease !important;
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-header,
+        body.create-case-desk-mobile-nav #sidebar .sidebar-header,
+        .create-case-desk-mobile-nav #sidebar .sidebar-header {
+            display: flex !important;
+            min-height: 5.5rem;
+            padding-left: 0.75rem !important;
+            padding-right: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-header img,
+        body.create-case-desk-mobile-nav #sidebar .sidebar-header img,
+        .create-case-desk-mobile-nav #sidebar .sidebar-header img {
+            width: 3rem !important;
+            height: 3rem !important;
+            flex-shrink: 0 !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-header .sidebar-text,
+        body.create-case-desk-mobile-nav #sidebar .sidebar-header .sidebar-text,
+        .create-case-desk-mobile-nav #sidebar .sidebar-header .sidebar-text {
+            display: none !important;
+            opacity: 0 !important;
+        }
+
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init,
+        body.create-case-desk-mobile-nav #sidebar.sidebar-collapsed,
+        body.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init {
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-text,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed .sidebar-text,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-text,
+        body.create-case-desk-mobile-nav #sidebar .sidebar-text {
+            opacity: 0 !important;
+            max-width: 0 !important;
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-menu,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed .sidebar-menu,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-menu,
+        body.create-case-desk-mobile-nav #sidebar .sidebar-menu {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+            overflow-x: hidden !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed .sidebar-link,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-link,
+        body.create-case-desk-mobile-nav #sidebar .sidebar-link {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link i,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed .sidebar-link i,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init .sidebar-link i,
+        body.create-case-desk-mobile-nav #sidebar .sidebar-link i {
+            width: 1.25rem !important;
+            min-width: 1.25rem !important;
+            text-align: center !important;
+        }
+
+        /* Main Content offset by collapsed sidebar */
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar ~ #mainContent,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed ~ #mainContent,
+        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init ~ #mainContent,
+        html body.portal-ui.create-case-desk-mobile-nav #mainContent,
+        body.create-case-desk-mobile-nav #sidebar ~ #mainContent,
+        body.create-case-desk-mobile-nav #sidebar.sidebar-collapsed ~ #mainContent,
+        body.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init ~ #mainContent,
+        body.create-case-desk-mobile-nav #mainContent,
+        .create-case-desk-mobile-nav #mainContent,
+        .portal-ui.create-case-desk-mobile-nav #mainContent {
+            width: calc(100% - 4.5rem) !important;
+            margin-left: 4.5rem !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            min-width: 0 !important;
+            height: auto !important;
+            min-height: 100vh;
+            overflow: visible !important;
+        }
+
+        /* Case banner actions */
+        .case-type-actions {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            width: auto !important;
+            gap: 0.5rem !important;
+        }
+        .case-type-actions .case-type-action {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            min-height: 2.5rem !important;
+            padding: 0.5rem 1rem !important;
+            font-size: 0.8125rem !important;
+        }
+        #new-case-form .p-6 {
+            padding: 1.5rem !important;
+        }
+        #new-case-form .case-form-section-header {
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
         }
     }
 </style>
-@endif
 @endpush
 
 @section('content')
@@ -38,24 +465,29 @@
 @endphp
 
 <!-- Top Header -->
-<header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
+<header id="officers-create-header" class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
-        <div>
-            <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Add New Case</h2>
-                @if($isBCPCCase)
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-600 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-                        <i class="fas fa-child"></i> BCPC Case
-                    </span>
-                @else
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-700 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-                        <i class="fas fa-shield-alt"></i> SWD Case
-                    </span>
-                @endif
+        <div class="officers-create-header-leading flex items-center gap-3 min-w-0">
+            <button id="dashboardMenuToggle" class="hidden" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Add New Case</h2>
+                    @if($isBCPCCase)
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-600 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
+                            <i class="fas fa-child"></i> BCPC Case
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-700 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
+                            <i class="fas fa-shield-alt"></i> SWD Case
+                        </span>
+                    @endif
+                </div>
+                <p class="text-sm text-gray-500 mt-0.5">
+                    Creating a new <span class="font-semibold text-gray-700">{{ $isBCPCCase ? 'BCPC (Child Protection)' : 'SWD' }}</span> record for <strong>{{ $userBarangay->name }}</strong>
+                </p>
             </div>
-            <p class="text-sm text-gray-500 hidden sm:block mt-0.5">
-                Creating a new <span class="font-semibold text-gray-700">{{ $isBCPCCase ? 'BCPC (Child Protection)' : 'SWD' }}</span> record for <strong>{{ $userBarangay->name }}</strong>
-            </p>
         </div>
         <div class="flex items-center gap-3 sm:gap-4">
             @include('desk-officer.components.notifications')
@@ -517,10 +949,10 @@
         <!-- Form Actions -->
         <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 pt-4">
             <a href="{{ route('desk-officer.cases.index', ['type' => $type]) }}" 
-               class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-center">
+               class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-center w-full sm:w-auto">
                 Cancel
             </a>
-            <button type="submit" class="px-6 py-2.5 bg-purple-700 hover:bg-purple-800 text-white rounded-lg transition-colors text-sm font-medium shadow-sm flex items-center justify-center gap-2">
+            <button type="submit" class="px-6 py-2.5 bg-purple-700 hover:bg-purple-800 text-white rounded-lg transition-colors text-sm font-medium shadow-sm flex items-center justify-center gap-2 w-full sm:w-auto">
                 <i class="fas fa-save"></i>
                 <span>Save {{ $isBCPCCase ? 'BCPC' : 'SWD' }} Case</span>
             </button>

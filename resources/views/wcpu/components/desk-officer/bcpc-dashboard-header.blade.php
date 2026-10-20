@@ -1,5 +1,5 @@
 @if(auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true))
-<header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm portal-page-header">
+<header id="desk-officer-dashboard-header" class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm portal-page-header">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
         <div class="flex min-w-0 items-center gap-3">
             <button

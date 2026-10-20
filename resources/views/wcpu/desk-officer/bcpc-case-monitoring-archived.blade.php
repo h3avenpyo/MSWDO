@@ -2,8 +2,7 @@
 
 @section('title', 'Archived BCPC Case Monitoring')
 
-@section('content')
-@include('components.desk-officer.bcpc-dashboard-header', ['title' => 'Archived BCPC Case Monitoring', 'subtitle' => auth()->user()->isMultiCaseDepartment() ? 'Barangay ' . $barangay->name . ' • Archived Records' : 'View archived BCPC monitoring records'])
+@push('styles')
 <style>
     .bcpc-monitoring-actions > :is(a, button) { width: 2.5rem; height: 2.5rem; padding: 0 !important; gap: 0 !important; background-color: #C41E3A !important; border-color: #C41E3A !important; color: #ffffff !important; transition: none !important; }
     .bcpc-monitoring-actions > :is(a, button) > i { margin: 0 !important; }
@@ -23,13 +22,120 @@
         .archived-monitoring-table-view { display: none !important; }
         .archived-monitoring-mobile-cards { display: grid !important; gap: .75rem; }
         .archived-monitoring-card-actions { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
-        .archived-monitoring-card-actions > :is(a, button) { width: 100% !important; height: 3rem !important; min-width: 3rem !important; min-height: 3rem !important; }
+        .archived-monitoring-card-actions > :is(a, button) { width: 100% !important; height: 3rem !important; min-width: 0 !important; min-height: 3rem !important; }
     }
     @media (min-width: 37.5rem) and (min-height: 30.0625rem) {
         .archived-monitoring-table-view { display: block !important; }
         .archived-monitoring-mobile-cards { display: none !important; }
     }
+
+    /* Dashboard-style red navbar for mobile/tablet */
+    @media (max-width: 80rem) {
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mobileTopBar {
+            display: none !important;
+        }
+    }
+
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mobileTopBar {
+            display: none !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mobileMenuToggle,
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #sidebarCloseBtn,
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky),
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header {
+            background: #C41E3A !important;
+            border-bottom: 1px solid #99172E !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) > div,
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header > div {
+            align-items: flex-start !important;
+            flex-wrap: nowrap !important;
+            min-width: 0 !important;
+            padding-left: max(.5rem, env(safe-area-inset-left)) !important;
+            padding-right: max(1rem, env(safe-area-inset-right)) !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) > div > div:first-of-type,
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header > div > div:first-of-type {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: flex-start !important;
+            gap: .5rem !important;
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) > div > div:first-of-type > div,
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header > div > div:first-of-type > div {
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+            text-align: left !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav :is(#dashboardMenuToggle, #pageMobileMenuToggle) {
+            position: relative !important;
+            left: 0 !important;
+            margin-left: 0 !important;
+            transform: none !important;
+            display: inline-flex !important;
+            flex: 0 0 2.5rem !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #ffffff !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav :is(#dashboardMenuToggle, #pageMobileMenuToggle) i {
+            color: inherit !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) :is(h1, h2, h3),
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header :is(h1, h2, h3) {
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) p,
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header p {
+            display: block !important;
+            margin-top: .125rem !important;
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) p :is(span, strong),
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header p :is(span, strong) {
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) div:first-of-type :is(span, a),
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header div:first-of-type :is(span, a) {
+            color: #ffffff !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) > div > div:last-child,
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header > div > div:last-child {
+            flex: 0 0 auto !important;
+            flex-wrap: nowrap !important;
+        }
+    }
+
+    @media (max-width: 40rem) {
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header div:has(> img[alt="User Profile"]) {
+            display: none !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header button:has(> img[alt="User Profile"]) {
+            display: none !important;
+        }
+    }
 </style>
+@endpush
+
+@section('content')
+@include('components.desk-officer.bcpc-dashboard-header', ['title' => 'Archived BCPC Case Monitoring', 'subtitle' => auth()->user()->isMultiCaseDepartment() ? 'Barangay ' . $barangay->name . ' • Archived Records' : 'View archived BCPC monitoring records'])
 <div class="max-w-7xl mx-auto py-4 px-2 sm:px-4">
     <!-- Header -->
     <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
