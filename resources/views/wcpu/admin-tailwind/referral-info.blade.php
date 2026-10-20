@@ -84,18 +84,37 @@
         #recipientsCardsMobile .recipient-row > div:nth-child(2) { flex-wrap: wrap; gap: .5rem 1rem; }
         #recipientsCardsMobile .recipient-card-actions {
             display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: .5rem;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            column-gap: .5rem !important;
+            row-gap: .375rem !important;
+            padding-top: .5rem !important;
         }
-        #recipientsCardsMobile .recipient-card-actions > button {
+
+        #recipientsCardsMobile .recipient-card-actions > :is(button, a) {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             width: 100% !important;
-            min-width: 0;
-            min-height: 3rem;
-            padding: .5rem !important;
+            min-width: 0 !important;
+            height: 2.375rem !important;
+            min-height: 2.375rem !important;
+            max-height: 2.375rem !important;
+            padding: 0 .5rem !important;
+            gap: .375rem !important;
+            font-size: .75rem !important;
+            line-height: 1 !important;
+            box-sizing: border-box !important;
+            border-radius: .5rem !important;
+            text-decoration: none !important;
         }
-    }
-    @media (min-width: 40.0625rem) and (max-width: 47.9375rem) {
-        #recipientsCardsMobile .recipient-card-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+        #recipientsCardsMobile .recipient-card-actions > :is(button, a) i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: .8125rem !important;
+            line-height: 1 !important;
+        }
     }
     @media (max-width: 40rem) {
         html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header button[aria-label="Notifications"] {
