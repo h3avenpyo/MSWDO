@@ -486,7 +486,7 @@ class LoginController extends Controller
      */
     protected function guard()
     {
-        return Auth::guard();
+        return Auth::guard('wcpu');
     }
 
     /**
@@ -525,7 +525,7 @@ class LoginController extends Controller
      */
     protected function loggedOut(Request $request)
     {
-        return redirect()->route('login');
+        return null;
     }
 
     /**

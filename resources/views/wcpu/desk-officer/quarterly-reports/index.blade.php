@@ -15,6 +15,41 @@
             padding-left: .75rem;
         }
     }
+    @media (max-width: 47.9375rem) {
+        body.desk-officer-quarterly-reports-mobile-nav #mobileTopBar,
+        body.desk-officer-quarterly-reports-mobile-nav #mobileMenuToggle,
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mobileMenuToggle,
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent #mobileMenuToggle,
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav .tablet-header-row > #mobileMenuToggle,
+        #mobileMenuToggle {
+            display: none !important;
+        }
+
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent > header.portal-page-header #pageMobileMenuToggle {
+            display: inline-flex !important;
+            flex: 0 0 2.5rem !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #ffffff !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent > header.portal-page-header #pageMobileMenuToggle > i {
+            display: inline-flex !important;
+            font-size: 1.25rem !important;
+            line-height: 1 !important;
+            color: #ffffff !important;
+            margin: 0 !important;
+        }
+    }
     @if(auth()->user()?->position === 'Desk Officer' && auth()->user()?->isMultiCaseDepartment())
     @media (max-width: 47.9375rem) and (orientation: portrait) {
         .quarterly-print-all-button {

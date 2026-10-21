@@ -2123,7 +2123,7 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
         const sidebarStateKey = @json($deskOfficerSidebarStateKey);
-        const isDashboardDrawer = () => ((document.body.classList.contains('desk-officer-dashboard-mobile-nav') || document.body.classList.contains('case-profiles-desk-mobile-nav') || document.body.classList.contains('view-cases-desk-mobile-nav') || document.body.classList.contains('desk-officer-referrals-mobile-nav') || document.body.classList.contains('desk-officer-calendar-mobile-nav') || document.body.classList.contains('desk-officer-quarterly-reports-mobile-nav') || document.body.classList.contains('desk-officer-archived-cases-mobile-nav') || document.body.classList.contains('desk-officer-bcpc-monitoring-mobile-nav')) && window.matchMedia('(max-width: 47.9375rem)').matches);
+        const isDashboardDrawer = () => ((document.body.classList.contains('desk-officer-dashboard-mobile-nav') || document.body.classList.contains('case-profiles-desk-mobile-nav') || document.body.classList.contains('view-cases-desk-mobile-nav') || document.body.classList.contains('desk-officer-referrals-mobile-nav') || document.body.classList.contains('desk-officer-calendar-mobile-nav') || document.body.classList.contains('desk-officer-quarterly-reports-mobile-nav') || document.body.classList.contains('desk-officer-archived-cases-mobile-nav') || document.body.classList.contains('desk-officer-bcpc-monitoring-mobile-nav') || document.body.classList.contains('desk-officer-create-case-mobile-nav') || document.body.classList.contains('desk-officer-cases-view-mobile-nav') || document.body.classList.contains('desk-officer-page-mobile-nav')) && window.matchMedia('(max-width: 47.9375rem)').matches);
         
         @if($persistsDeskOfficerSidebar)
         if (sidebar) sidebar.classList.toggle('sidebar-collapsed', localStorage.getItem(sidebarStateKey) === 'true');
@@ -2177,8 +2177,6 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
                 }
             });
         }
-        
-        const isDashboardDrawer = () => ((document.body.classList.contains('desk-officer-dashboard-mobile-nav') || document.body.classList.contains('desk-officer-create-case-mobile-nav') || document.body.classList.contains('desk-officer-cases-view-mobile-nav') || document.body.classList.contains('desk-officer-referrals-mobile-nav') || document.body.classList.contains('desk-officer-page-mobile-nav')) && window.matchMedia('(max-width: 47.9375rem)').matches);
         
         // Mobile toggle - open sidebar
         if (mobileMenuToggles.length) {
@@ -2297,6 +2295,15 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
             logoutButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 
+                if (typeof Swal === 'undefined') {
+                    if (confirm('Are you sure you want to log out?')) {
+                        if (logoutForm) {
+                            logoutForm.submit();
+                        }
+                    }
+                    return;
+                }
+                
                 Swal.fire({
                     title: 'Logout',
         html: '<svg class="logout-modal-symbol" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M12 5l7 7-7 7v-4H7V9h5V5Z" fill="currentColor"/></svg><p class="logout-modal-message">Are you sure you want to log out?</p>',
@@ -2334,6 +2341,12 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
                 });
             });
         }
+
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
     });
     </script>
 
