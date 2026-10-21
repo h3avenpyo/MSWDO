@@ -323,19 +323,51 @@ $initials = count($words) >= 2
         border-color: #94A3B8;
     }
 
+    /* ── Tablet Viewports (768px - 1199.98px) ── */
+    @media (min-width: 768px) and (max-width: 1199.98px) {
+        .form-shell {
+            padding: 1.5rem;
+        }
+    }
+
+    /* ── Mobile Viewports (< 768px) ── */
     @media (max-width: 767.98px) {
         .dash-banner {
-            padding: 1.25rem 1.4rem;
-            border-radius: 14px;
-            margin-bottom: 1.25rem;
+            padding: 1.15rem 1.15rem !important;
+            border-radius: 14px !important;
+            margin-bottom: 1.25rem !important;
         }
-        .dash-banner-title { font-size: 1.35rem; }
-        .form-shell { padding: 1.25rem; }
+        .dash-banner-title {
+            font-size: 1.25rem !important;
+            line-height: 1.25 !important;
+        }
+        .dash-banner-sub {
+            font-size: 0.825rem !important;
+        }
+        .form-shell {
+            padding: 1.15rem;
+            border-radius: 14px;
+        }
+        .pw-list {
+            grid-template-columns: 1fr;
+        }
+        .btn-action-primary,
+        .btn-action-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .status-pill-group {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
     }
 </style>
 
 {{-- Page Header Banner --}}
-<header class="dash-banner flex flex-col md:flex-row md:items-center justify-between gap-4 select-none">
+<header class="dash-banner flex flex-col sm:flex-row sm:items-center justify-between gap-3 select-none">
     <div>
         <div class="dash-banner-title">Add New Officer</div>
         <div class="dash-banner-sub">
@@ -347,12 +379,12 @@ $initials = count($words) >= 2
             </span>
         </div>
     </div>
-    <div class="flex items-center gap-3 self-start md:self-auto">
-        <div class="text-right hidden sm:block">
-            <div class="text-xs font-semibold uppercase tracking-wider text-white/70">Philippine Standard Time</div>
-            <div class="text-sm font-semibold text-white tracking-wide" id="liveClock">Loading date...</div>
+    <div class="flex items-center gap-3 self-start sm:self-auto">
+        <div class="text-right">
+            <div class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-white/70">Philippine Standard Time</div>
+            <div class="text-xs sm:text-sm font-semibold text-white tracking-wide" id="liveClock">Loading date...</div>
         </div>
-        <div class="w-11 h-11 rounded-full bg-white/20 border-2 border-white/40 text-white font-bold text-sm flex items-center justify-center shadow-inner cursor-default" title="Logged in as: {{ $adminName }}">
+        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 border-2 border-white/40 text-white font-bold text-sm flex items-center justify-center shadow-inner cursor-default flex-shrink-0" title="Logged in as: {{ $adminName }}">
             {{ $initials }}
         </div>
     </div>

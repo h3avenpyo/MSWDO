@@ -147,7 +147,7 @@
     >
         <i class="fas fa-bell text-xl"></i>
         @if($unreadCount > 0)
-        <span @if($isMultiroleNotifications) data-unread-badge @endif class="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full" style="color: #ffffff !important;">
+        <span id="notifications-unread-count" class="notification-badge absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full" @if($isMultiroleNotifications) data-unread-badge @endif style="background-color: #eab308 !important; color: #ffffff !important;">
             {{ $unreadCount > 9 ? '9+' : $unreadCount }}
         </span>
         @endif
@@ -164,22 +164,23 @@
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="opacity-100 transform scale-100"
         x-transition:leave-end="opacity-0 transform scale-95"
-        class="notification-dropdown absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden"
+        class="notification-dropdown absolute right-0 mt-2 w-80 max-h-[50vh] flex flex-col bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden"
         style="display: none; max-height: 50vh; max-height: 50dvh;"
     >
         <!-- Header -->
         <div class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-purple-700 to-purple-600 text-white">
-            <h4 class="font-semibold text-sm">Notifications</h4>
+            <h4 class="font-semibold text-sm text-white" style="color: #ffffff !important;">Notifications</h4>
             <button 
                 id="deskMarkAllReadBtn"
-                class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition-colors"
+                class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition-colors text-white"
+                style="color: #ffffff !important;"
             >
                 Mark all as read
             </button>
         </div>
         
         <!-- Notification List -->
-        <div class="notification-dropdown-list max-h-80 overflow-y-auto divide-y divide-gray-100">
+        <div id="recent-activity-list" class="notification-dropdown-list min-h-0 flex-1 overflow-y-auto divide-y divide-gray-100">
             @forelse($recentActivities as $activity)
             <a 
                 href="{{ $activity['url'] ?? '#' }}" 
@@ -210,7 +211,7 @@
         
         <!-- Footer -->
         <div class="px-4 py-2 bg-gray-50 border-t border-gray-100">
-            <span class="text-xs text-gray-400">Last 10 activities</span>
+            <span class="text-xs" style="color: #6b7280 !important;">Last 10 activities</span>
         </div>
     </div>
 </div>

@@ -24,10 +24,11 @@
     .archived-static-table .archive-action[data-action="restore"] i { color: #ffffff !important; }
     @endif
     #archived-referrals-controls { position: relative; gap: .75rem; }
+    #archived-referrals-filter-panel { width: max-content; min-width: 14rem; }
     @media (min-width: 37.5rem) and (max-width: 80rem) {
         #archived-referrals-controls { width: 100%; }
         #archived-referrals-search { width: 100%; }
-        #archived-referrals-filter-panel { right: 0; left: auto; width: min(100%, 18rem); }
+        #archived-referrals-filter-panel { right: 0; left: auto; width: 18rem; max-width: calc(100vw - 2rem); }
     }
     @media (max-width: 47.9375rem) {
         #archived-referrals-controls { gap: .75rem; }
@@ -251,13 +252,12 @@
             <button id="archived-referrals-filter-button" type="button" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50" aria-expanded="false" aria-controls="archived-referrals-filter-panel">
                 <i class="fas fa-filter text-purple-600" aria-hidden="true"></i> Filter
             </button>
-            <div id="archived-referrals-filter-panel" class="absolute right-0 z-20 mt-2 hidden rounded-lg border border-gray-200 bg-white p-3 shadow-lg">
-                <label for="archived-referrals-type" class="mb-1 block text-xs font-medium text-gray-600">Show</label>
-                <select id="archived-referrals-type" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-500">
-                    <option value="all">All archived records</option>
-                    <option value="referral">Referrals only</option>
-                    <option value="recipient">Referral info only</option>
-                </select>
+            <div id="archived-referrals-filter-panel" class="absolute right-0 top-full z-20 mt-2 hidden rounded-lg border border-gray-200 bg-white p-3 shadow-lg">
+                <div class="flex min-w-48 flex-col gap-1" role="group" aria-label="Filter archived referrals">
+                    <button type="button" data-archive-filter="all" aria-pressed="true" class="rounded-md bg-purple-50 px-3 py-2 text-left text-sm font-medium text-purple-700 hover:bg-purple-100">All archived records</button>
+                    <button type="button" data-archive-filter="referral" aria-pressed="false" class="rounded-md px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">Referrals only</button>
+                    <button type="button" data-archive-filter="recipient" aria-pressed="false" class="rounded-md px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">Referral info only</button>
+                </div>
             </div>
         </div>
     </div>
@@ -397,12 +397,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const search = document.getElementById('archived-referrals-search');
     const filterButton = document.getElementById('archived-referrals-filter-button');
     const filterPanel = document.getElementById('archived-referrals-filter-panel');
-    const type = document.getElementById('archived-referrals-type');
+    const filterChoices = filterPanel?.querySelectorAll('[data-archive-filter]') || [];
+    let selectedType = 'all';
     const count = document.getElementById('archived-referrals-result-count');
 
     const applyArchivedReferralFilters = () => {
         const query = (search?.value || '').trim().toLowerCase();
-        const selectedType = type?.value || 'all';
+
         let visible = 0;
 
         const records = window.matchMedia('(max-width: 47.9375rem)').matches
@@ -422,7 +423,20 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     search?.addEventListener('input', applyArchivedReferralFilters);
-    type?.addEventListener('change', applyArchivedReferralFilters);
+    filterChoices.forEach((choice) => {
+        choice.addEventListener('click', () => {
+            selectedType = choice.dataset.archiveFilter || 'all';
+            filterChoices.forEach((item) => {
+                const selected = item === choice;
+                item.setAttribute('aria-pressed', selected.toString());
+                item.classList.toggle('bg-purple-50', selected);
+                item.classList.toggle('text-purple-700', selected);
+                item.classList.toggle('font-medium', selected);
+                item.classList.toggle('text-gray-700', !selected);
+            });
+            applyArchivedReferralFilters();
+        });
+    });
     filterButton?.addEventListener('click', () => {
         const open = filterPanel.classList.toggle('hidden');
         filterButton.setAttribute('aria-expanded', (!open).toString());

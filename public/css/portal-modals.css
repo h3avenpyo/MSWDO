@@ -1360,12 +1360,29 @@
     body.portal-ui.archive-case-modal-preview .case-profile-details { grid-template-columns: minmax(0, 1fr); }
     body.portal-ui.archive-case-modal-preview .archive-case-person-card .detail-row { grid-template-columns: minmax(0, 1fr); gap: 4px !important; }
     body.portal-ui.archive-report-modal-preview #mainContent > .max-w-7xl { padding: 12px !important; }
+    body.portal-ui.archive-report-modal-preview #mainContent > .max-w-7xl:has(#bcpc-monitoring-form) { padding-bottom: 32px !important; }
     .portal-ui .swal2-popup:is(.archived-referral-view-popup, .admin-archived-referral-popup) > .swal2-html-container { padding: 12px !important; }
     .portal-ui .swal2-popup.swd-archive-detail-popup > .swal2-html-container { padding: 12px !important; }
     .portal-ui #referralModal #referralDetails { padding: 12px !important; }
     .portal-ui #referralDetails > .space-y-6 > div:first-child > .grid { grid-template-columns: minmax(0, 1fr) !important; }
 }
 
+body.portal-ui.archive-report-modal-preview #mainContent > .max-w-7xl:has(#bcpc-monitoring-form) {
+    padding-bottom: 40px !important;
+}
+body.portal-ui.archive-report-modal-preview #bcpc-monitoring-form > div:has(input[name^="bcpc_organizations"]) {
+    margin-bottom: 24px !important;
+}
+@media screen and (min-width: 48rem) {
+    body.portal-ui.archive-report-modal-preview #mainContent > .max-w-7xl:has(#case-records) {
+        padding-bottom: 48px !important;
+    }
+    body.portal-ui.archive-report-modal-preview #case-records {
+        margin-bottom: 24px !important;
+    }
+    body.portal-ui.archive-report-modal-preview #case-records .case-records-table-view { padding-bottom: 24px !important; }
+    body.portal-ui.archive-report-modal-preview #case-records-mobile-cards { padding-bottom: 36px !important; }
+}
 /* Shared BCPC/SWD modal presentation. Existing actions and ordering stay intact. */
 @media screen {
     body.portal-ui .swal2-popup:is(.portal-alert-popup, .portal-form-popup) {
@@ -1445,10 +1462,31 @@
 /* Admin and multi-role archived cases render the same detail partial. */
 @media screen {
     body.portal-ui .swal2-popup.admin-archive-view-popup {
+        display: flex !important;
+        flex-direction: column !important;
         box-sizing: border-box;
+        height: min(88dvh, calc(100dvh - 2rem));
         max-height: calc(100dvh - 2rem);
         overflow: hidden;
         padding: 0 !important;
+    }
+    body.portal-ui .swal2-popup.admin-archive-view-popup > :is(.swal2-title, .swal2-actions) { flex: 0 0 auto; }
+    body.portal-ui .swal2-popup.admin-archive-view-popup > .swal2-html-container {
+        display: flex !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
+    body.portal-ui .swal2-popup.admin-archive-view-popup .admin-archive-view-frame {
+        display: block !important;
+        flex: 1 1 0% !important;
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        border: 0;
     }
     body.portal-ui .swal2-popup.admin-archive-view-popup--case {
         display: flex !important;

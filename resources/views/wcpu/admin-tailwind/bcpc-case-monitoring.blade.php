@@ -4,7 +4,7 @@
 
 @section('content')
 @if(auth()->user()->isDepartmentAdmin())
-<header class="admin-reference-mobile-header sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm {{ auth()->user()->isVawcAdmin() ? 'bcpc-monitoring-mobile-header-swd-only' : '' }}">
+<header data-bcpc-monitoring-page-header class="admin-reference-mobile-header sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm portal-page-header {{ auth()->user()->isVawcAdmin() ? 'bcpc-monitoring-mobile-header-swd-only' : '' }}">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
         <div class="admin-reference-mobile-leading min-w-0">
             <button id="dashboardMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
@@ -24,6 +24,105 @@
     .bcpc-monitoring-actions > * { display: inline-flex !important; width: 2.75rem !important; height: 1.875rem !important; min-width: 2.75rem !important; min-height: 1.875rem !important; padding: 0 !important; margin: 0 !important; align-items: center !important; justify-content: center !important; gap: 0 !important; text-align: center !important; }
     .bcpc-monitoring-actions > * > i { display: inline-flex !important; width: 1rem !important; height: 1rem !important; margin: 0 !important; padding: 0 !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; flex: 0 0 1rem !important; text-align: center !important; }
     .bcpc-monitoring-actions > * > span { display: none !important; }
+
+    /* BCPC Case Monitoring tablet navigation (768px–1023px): collapsed sidebar on the left, standard header (not top navbar), no collapsed button. */
+    @media (min-width: 48rem) and (max-width: 63.9375rem) {
+        html body.portal-ui #mobileTopBar { display: none !important; }
+        html body.portal-ui #mobileMenuToggle { display: none !important; }
+        html body.portal-ui #dashboardMenuToggle { display: none !important; }
+        html body.portal-ui #sidebarCloseBtn { display: none !important; }
+        html body.portal-ui #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header,
+        html body.portal-ui #mainContent > header.sticky {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header h2,
+        html body.portal-ui #mainContent > header.sticky h2 {
+            color: #1f2937 !important;
+        }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header p,
+        html body.portal-ui #mainContent > header.sticky p {
+            color: #6b7280 !important;
+        }
+        html body.portal-ui #sidebar {
+            inset: 0 auto 0 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            right: auto !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+            background: #C41E3A !important;
+            border-radius: 0 !important;
+            z-index: 40 !important;
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+            transition: width 0.3s ease !important;
+        }
+        html body.portal-ui #sidebar .sidebar-header {
+            display: flex !important;
+            min-height: 5.5rem;
+            padding-left: 0.75rem !important;
+            padding-right: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui #sidebar .sidebar-header img {
+            width: 3rem !important;
+            height: 3rem !important;
+            flex-shrink: 0 !important;
+        }
+        html body.portal-ui #sidebar .sidebar-header .sidebar-text,
+        html body.portal-ui #sidebar .sidebar-text {
+            opacity: 0 !important;
+            max-width: 0 !important;
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui #sidebar .sidebar-menu {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+            overflow-x: hidden !important;
+        }
+        html body.portal-ui #sidebar .sidebar-link {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui #sidebar .sidebar-link i {
+            width: 1.25rem !important;
+            min-width: 1.25rem !important;
+            text-align: center !important;
+        }
+        html body.portal-ui #sidebar ~ #mainContent,
+        html body.portal-ui #sidebar.sidebar-collapsed ~ #mainContent,
+        html body.portal-ui #sidebar.sidebar-collapsed-init ~ #mainContent {
+            width: calc(100% - 4.5rem) !important;
+            margin-left: 4.5rem !important;
+            min-width: 0 !important;
+        }
+        html body.portal-ui #sidebarToggleBtn {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        html body.portal-ui #mobileTopBar { display: none !important; }
+        html body.portal-ui #mobileMenuToggle { display: none !important; }
+        html body.portal-ui #sidebar {
+            inset: 0 auto 0 0 !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+        }
+    }
 
     @if(auth()->user()->isDepartmentAdmin())
     @media (max-width: 40rem) {
@@ -78,7 +177,7 @@
         }
     }
 
-    @media (max-width: 47.9375rem) and (orientation: portrait) {
+    @media (max-width: 47.9375rem) {
         #bcpc-monitoring-mobile-action-flow {
             display: flex;
             flex-direction: column;
@@ -138,7 +237,7 @@
         .bcpc-monitoring-mobile-cards { display: none !important; }
     }
 </style>
-<div class="w-full max-w-full p-4 sm:p-6 lg:p-8">
+<div class="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
     <!-- Header -->
     <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         @unless(auth()->user()->isBcpcAdmin())
@@ -227,46 +326,53 @@
     <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-6">
         <!-- Desktop Table View -->
         <div class="bcpc-monitoring-table-view overflow-x-auto hidden md:block">
-            <table class="w-full text-sm">
+            <table class="w-full min-w-[700px] text-sm table-fixed">
+                <colgroup>
+                    <col class="w-[26%]">
+                    <col class="w-[16%]">
+                    <col class="w-[24%]">
+                    <col class="w-[16%]">
+                    <col class="w-[18%] min-w-[13rem]">
+                </colgroup>
                 <thead class="bg-gradient-to-r from-purple-700 to-purple-600 text-white">
                     <tr>
-                        <th class="px-5 py-3.5 text-left font-semibold text-xs uppercase tracking-wider">Barangay</th>
-                        <th class="px-5 py-3.5 text-center font-semibold text-xs uppercase tracking-wider">Period</th>
-                        <th class="px-5 py-3.5 text-left font-semibold text-xs uppercase tracking-wider">Submitted By</th>
-                        <th class="px-5 py-3.5 text-left font-semibold text-xs uppercase tracking-wider">Submitted At</th>
-                        <th class="px-5 py-3.5 text-center font-semibold text-xs uppercase tracking-wider">Actions</th>
+                        <th class="px-4 py-3.5 sm:px-5 text-left font-semibold text-xs uppercase tracking-wider">Barangay</th>
+                        <th class="px-4 py-3.5 sm:px-5 text-center font-semibold text-xs uppercase tracking-wider">Period</th>
+                        <th class="px-4 py-3.5 sm:px-5 text-left font-semibold text-xs uppercase tracking-wider">Submitted By</th>
+                        <th class="px-4 py-3.5 sm:px-5 text-left font-semibold text-xs uppercase tracking-wider">Submitted At</th>
+                        <th class="px-4 py-3.5 sm:px-5 text-center font-semibold text-xs uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($monitorings as $monitoring)
                         <tr class="hover:bg-purple-50/40 transition">
-                            <td class="px-5 py-4">
-                                <div class="flex items-center gap-3">
+                            <td class="px-4 py-3.5 sm:px-5 sm:py-4">
+                                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
                                     <div class="w-9 h-9 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center font-semibold flex-shrink-0">
                                         <i class="fas fa-map-marker-alt text-sm"></i>
                                     </div>
-                                    <span class="text-gray-800 font-semibold">{{ $monitoring->barangay->name ?? 'N/A' }}</span>
+                                    <span class="text-gray-800 font-semibold truncate">{{ $monitoring->barangay->name ?? 'N/A' }}</span>
                                 </div>
                             </td>
-                            <td class="px-5 py-4 text-center whitespace-nowrap">
-                                <span class="inline-flex items-center gap-1.5 bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-semibold">
+                            <td class="px-4 py-3.5 sm:px-5 sm:py-4 text-center whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1.5 bg-purple-100 text-purple-700 px-2.5 sm:px-3 py-1 rounded-full text-xs font-semibold">
                                     <i class="fas fa-calendar-alt text-xs"></i>
                                     Q{{ $monitoring->quarter }} {{ $monitoring->year }}
                                 </span>
                             </td>
-                            <td class="px-5 py-4">
-                                <div class="text-gray-800 font-medium">
+                            <td class="px-4 py-3.5 sm:px-5 sm:py-4 min-w-0">
+                                <div class="text-gray-800 font-medium truncate">
                                     {{ $monitoring->submitter?->first_name ?? $monitoring->creator?->first_name }} {{ $monitoring->submitter?->last_name ?? $monitoring->creator?->last_name }}
                                 </div>
-                                <div class="text-xs text-gray-400">
+                                <div class="text-xs text-gray-400 truncate">
                                     {{ $monitoring->submitter?->email ?? $monitoring->creator?->email }}
                                 </div>
                             </td>
-                            <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
+                            <td class="px-4 py-3.5 sm:px-5 sm:py-4 text-gray-600 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-700">{{ $monitoring->submitted_at?->format('M d, Y') ?? 'Not submitted' }}</div>
                                 <div class="text-xs text-gray-400">{{ $monitoring->submitted_at?->format('g:i A') ?? '' }}</div>
                             </td>
-                            <td class="px-5 py-4 text-center whitespace-nowrap">
+                            <td class="px-4 py-3.5 sm:px-5 sm:py-4 text-center whitespace-nowrap">
                                 <div class="bcpc-monitoring-actions flex items-center justify-center gap-2">
                                     <a href="{{ route('admin.bcpc-case-monitoring.edit', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'view' => $monitoring->id]) }}"
                                        class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition shadow-sm"

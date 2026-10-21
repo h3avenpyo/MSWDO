@@ -3,7 +3,6 @@ const makeAdminArchiveFrameReadOnly = frame => {
     const doc = frame.contentDocument;
     if (!doc) return;
     window.applyArchiveReportModalDesign(doc, Swal.getTitle(), @json(auth()->user()?->isBcpcAdmin()));
-
     if (doc.querySelector('.case-profile-details')) {
         doc.body.classList.add('archive-case-modal-preview');
         @if(auth()->user()?->isVawcAdmin())
@@ -34,6 +33,30 @@ const makeAdminArchiveFrameReadOnly = frame => {
         event.preventDefault();
         event.stopImmediatePropagation();
     }, true);
+    if (doc.body.classList.contains('archive-report-modal-preview') || doc.body.classList.contains('archive-case-modal-preview')) {
+        doc.documentElement.style.setProperty('height', 'auto', 'important');
+        doc.documentElement.style.setProperty('overflow-y', 'auto', 'important');
+        doc.body.style.setProperty('height', 'auto', 'important');
+        doc.body.style.setProperty('overflow-y', 'auto', 'important');
+        const scrollArea = frame.parentElement;
+        if (scrollArea) {
+            scrollArea.style.setProperty('overflow-y', 'auto', 'important');
+            scrollArea.style.setProperty('overflow-x', 'hidden', 'important');
+            const fitFrameToContent = () => {
+                const contentHeight = Math.max(doc.documentElement.scrollHeight, doc.body.scrollHeight, scrollArea.clientHeight);
+                frame.style.setProperty('height', `${contentHeight}px`, 'important');
+                frame.style.setProperty('flex', '0 0 auto', 'important');
+            };
+            doc.addEventListener('wheel', event => {
+                scrollArea.scrollTop += event.deltaY;
+                event.preventDefault();
+            }, { passive: false });
+            requestAnimationFrame(() => {
+                fitFrameToContent();
+                requestAnimationFrame(fitFrameToContent);
+            });
+        }
+    }
 };
 
 document.addEventListener('click', event => {
@@ -48,6 +71,7 @@ document.addEventListener('click', event => {
     const isSwdArchivedCase = @json(auth()->user()?->isVawcAdmin()) && type === 'case';
     const frame = document.createElement('iframe');
     frame.className = 'admin-archive-view-frame';
+    frame.setAttribute('scrolling', 'yes');
     frame.style.visibility = 'hidden';
     frame.addEventListener('load', () => {
         try {
@@ -61,6 +85,7 @@ document.addEventListener('click', event => {
     @if(auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin())
     const previewUrl = new URL(link.href, window.location.href);
     if (type === 'case') previewUrl.searchParams.set('bcpc_modal_preview', '1');
+    if (type === 'report') previewUrl.searchParams.set('archive_report_preview', '1');
     frame.src = previewUrl.href;
     @else
     frame.src = link.href;

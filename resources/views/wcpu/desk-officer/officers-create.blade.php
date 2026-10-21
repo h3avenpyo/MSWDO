@@ -46,7 +46,7 @@
             align-items: center !important;
         }
 
-        body.portal-ui #officers-create-header div:has(> img[alt="User Profile"]) > div {
+        body.portal-ui #officers-create-header div:has(> img[alt="User Profile"])>div {
             display: block !important;
         }
     }
@@ -97,6 +97,7 @@
     }
 
     @media (max-width: 40rem) {
+
         body.portal-ui #officers-create-header .desk-officer-user-profile,
         body.portal-ui #officers-create-header div:has(> img[alt="User Profile"]) {
             display: none !important;
@@ -147,6 +148,7 @@
             flex-direction: column !important;
             width: 100% !important;
         }
+
         .case-type-actions .case-type-action {
             flex: 1 1 100% !important;
             width: 100% !important;
@@ -160,6 +162,7 @@
             flex-direction: row !important;
             width: 100% !important;
         }
+
         .case-type-actions .case-type-action {
             flex: 1 1 calc(50% - 0.25rem) !important;
             max-width: calc(50% - 0.25rem) !important;
@@ -174,6 +177,7 @@
             width: auto !important;
             justify-content: flex-end !important;
         }
+
         .case-type-actions .case-type-action {
             flex: 0 0 auto !important;
             width: auto !important;
@@ -185,6 +189,7 @@
         #new-case-form .p-6 {
             padding: 1rem !important;
         }
+
         #new-case-form .case-form-section-header {
             padding-left: 1rem !important;
             padding-right: 1rem !important;
@@ -210,14 +215,9 @@ $isSwdCase = !$isBCPCCase;
     <div class="px-3 px-sm-4 px-lg-8 py-2.5 sm:py-3.5">
         <div class="d-flex align-items-center justify-content-between gap-2.5 sm:gap-4 flex-nowrap">
             <div class="d-flex align-items-center gap-2.5 sm:gap-3 min-w-0 flex-grow-1">
-                <button
-                    type="button"
-                    id="pageMobileMenuToggle"
+                <button type="button" id="pageMobileMenuToggle"
                     class="inline-flex flex-none items-center justify-center text-white focus:outline-none"
-                    aria-label="Open navigation menu"
-                    aria-controls="sidebar"
-                    aria-expanded="false"
-                >
+                    aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
                     <i class="fas fa-bars" aria-hidden="true"></i>
                 </button>
                 <div class="officers-create-header-leading d-flex flex-column align-items-start min-w-0 flex-grow-1">
@@ -237,7 +237,8 @@ $isSwdCase = !$isBCPCCase;
                         @endif
                     </div>
                     <p class="text-xs sm:text-sm text-gray-500 m-0 mt-0.5">
-                        Creating a new <span class="font-semibold text-gray-700">{{ $isBCPCCase ? 'BCPC' : 'SWD' }}</span> record for <strong>{{ $userBarangay->name }}</strong>
+                        Creating a new <span class="font-semibold text-gray-700">{{ $isBCPCCase ? 'BCPC' : 'SWD'
+                            }}</span> record for <strong>{{ $userBarangay->name }}</strong>
                     </p>
                 </div>
             </div>
@@ -249,7 +250,8 @@ $isSwdCase = !$isBCPCCase;
                     <div class="text-end text-right">
                         <p class="text-xs sm:text-sm font-bold text-gray-800 m-0">{{ Auth::user()->first_name }} {{
                             Auth::user()->last_name }}</p>
-                        <p class="text-[11px] sm:text-xs text-gray-500 m-0">{{ Auth::user()->position ?? ($isBCPCCase ? 'BCPC Desk Officer' :
+                        <p class="text-[11px] sm:text-xs text-gray-500 m-0">{{ Auth::user()->position ?? ($isBCPCCase ?
+                            'BCPC Desk Officer' :
                             'SWD Desk Officer') }}</p>
                     </div>
                 </div>
@@ -263,7 +265,8 @@ $isSwdCase = !$isBCPCCase;
     <!-- Active Case Type Banner & Form Note -->
     <div
         class="mb-4 sm:mb-6 rounded-xl border overflow-hidden shadow-sm {{ $isMultiroleDeskOfficer || $isBCPCCase ? 'border-[#C41E3A] bg-[#C41E3A]' : 'border-purple-200 bg-gradient-to-r from-purple-50 via-white to-purple-50/30' }}">
-        <div class="p-3 p-sm-4 p-md-5 d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3 gap-md-4">
+        <div
+            class="p-3 p-sm-4 p-md-5 d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3 gap-md-4">
             <div class="d-flex align-items-center gap-3 min-w-0 w-100 w-lg-auto">
                 <div
                     class="w-12 h-12 rounded-xl d-flex align-items-center justify-content-center flex-shrink-0 bg-white text-red-600 shadow-md">

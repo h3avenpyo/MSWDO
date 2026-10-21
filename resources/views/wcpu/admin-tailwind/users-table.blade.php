@@ -285,53 +285,27 @@
         }
         #users-mobile-view .user-profile-card-actions {
             display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            column-gap: .5rem !important;
-            row-gap: .375rem !important;
-            padding-top: .5rem !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: .5rem;
         }
-
-        #users-mobile-view .user-profile-card-actions > :is(button, a) {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
+        #users-mobile-view .user-profile-card-actions > button {
             width: 100% !important;
-            min-width: 0 !important;
-            height: 2.375rem !important;
-            min-height: 2.375rem !important;
-            max-height: 2.375rem !important;
-            padding: 0 .5rem !important;
-            gap: .375rem !important;
-            font-size: .75rem !important;
-            line-height: 1 !important;
-            box-sizing: border-box !important;
-            border-radius: .5rem !important;
-            text-decoration: none !important;
+            min-width: 0;
+            min-height: 3rem;
+            padding: .5rem !important;
         }
-
-        #users-mobile-view .user-profile-card-actions > :is(button, a) i {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-size: .8125rem !important;
-            line-height: 1 !important;
-        }
-
         #users-mobile-view .user-profile-card-actions .archive-user-action,
         #users-mobile-view .user-profile-card-actions .archive-user-action:hover {
             background-color: #C41E3A !important;
             border-color: #C41E3A !important;
             color: #ffffff !important;
         }
-
-        #users-mobile-view .user-profile-card-actions .archive-user-action i {
-            color: #ffffff !important;
-        }
+        #users-mobile-view .user-profile-card-actions .archive-user-action i { color: #ffffff !important; }
     }
-
     @media (min-width: 40.0625rem) and (max-width: 47.9375rem) {
         #users-mobile-view { grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); padding: 1rem; gap: 1rem; }
         #users-mobile-view .user-profile-card { padding: 1rem; }
+        #users-mobile-view .user-profile-card-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     }
     @media (min-width: 1024px) {
         /* Prevent page scrolling on desktop - only table should scroll */
@@ -1747,11 +1721,11 @@ function openEditModal(userId) {
                         </div>
                     </div>
                     <div class="flex gap-3 pt-4">
-                        <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors text-sm font-medium">
-                            <i class="fas fa-save"></i> Save Changes
-                        </button>
                         <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
                             Cancel
+                        </button>
+                        <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors text-sm font-medium">
+                            <i class="fas fa-save"></i> Save Changes
                         </button>
                     </div>
                 </form>

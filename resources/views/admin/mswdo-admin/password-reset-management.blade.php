@@ -326,6 +326,7 @@ $initials = count($words) >= 2
     }
     .reset-tbl {
         width: 100%;
+        min-width: 720px;
         border-collapse: separate;
         border-spacing: 0;
         font-size: 0.875rem;
@@ -416,6 +417,21 @@ $initials = count($words) >= 2
         background: #FEF2F2;
         color: #DC2626;
         border-color: #FECACA;
+    }
+
+    /* ── Tablet Optimization (768px - 1199.98px) ── */
+    @media (min-width: 768px) and (max-width: 1199.98px) {
+        .reset-kpi-strip {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem !important;
+        }
+        .filter-rail {
+            flex-wrap: wrap !important;
+        }
+        .filter-item.filter-search {
+            min-width: 200px !important;
+            max-width: 280px !important;
+        }
     }
 
     /* ── Mobile Stacked Cards (< 768px) ── */
@@ -730,7 +746,7 @@ $initials = count($words) >= 2
 </style>
 
 {{-- Page Header Banner --}}
-<header class="dash-banner flex flex-col md:flex-row md:items-center justify-between gap-4 select-none">
+<header class="dash-banner flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 select-none">
     <div>
         <div class="dash-banner-title">Password Reset Management</div>
         <div class="dash-banner-sub">
@@ -749,8 +765,8 @@ $initials = count($words) >= 2
             @endif
         </div>
     </div>
-    <div class="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto">
-        <div class="text-left md:text-right">
+    <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+        <div class="text-left sm:text-right">
             <div class="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-white/70">Philippine Standard Time</div>
             <div class="text-xs md:text-sm font-semibold text-white tracking-wide" id="liveClock">Loading date...</div>
         </div>

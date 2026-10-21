@@ -5,23 +5,124 @@
 @push('styles')
 <style>
     .archived-static-table { table-layout: fixed; }
-    .archived-static-table th:last-child, .archived-static-table td:last-child { width: 15rem; white-space: nowrap; }
-    @media (max-width: 47.9375rem) and (orientation: portrait) {
+    .archived-static-table th:last-child, .archived-static-table td:last-child { width: 7rem; white-space: nowrap; }
+    @media (max-width: 47.9375rem) {
         .archived-bcpc-monitoring-table-view { display: none !important; }
         .archived-bcpc-monitoring-mobile-cards { display: grid !important; gap: .75rem; }
         .archived-bcpc-monitoring-mobile-cards .archived-bcpc-monitoring-card { min-width: 0; }
         .archived-bcpc-monitoring-mobile-cards .archived-bcpc-monitoring-card-actions {
-            display: grid;
+            display: grid !important;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: .5rem;
         }
         .archived-bcpc-monitoring-mobile-cards .archived-bcpc-monitoring-card-actions > :is(a, button) {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             width: 100% !important;
             min-width: 0;
             height: 2.75rem !important;
             min-height: 2.75rem !important;
             padding: .5rem !important;
-            justify-content: center;
+        }
+    }
+
+    /* Archived BCPC Case Monitoring tablet navigation (768px–1023px): collapsed sidebar on the left, standard header (not top navbar), no collapsed button. */
+    @media (min-width: 48rem) and (max-width: 63.9375rem) {
+        html body.portal-ui #mobileTopBar { display: none !important; }
+        html body.portal-ui #mobileMenuToggle { display: none !important; }
+        html body.portal-ui #dashboardMenuToggle { display: none !important; }
+        html body.portal-ui #sidebarCloseBtn { display: none !important; }
+        html body.portal-ui #sidebarOverlay {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header,
+        html body.portal-ui #mainContent > header.sticky {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header h2,
+        html body.portal-ui #mainContent > header.sticky h2 {
+            color: #1f2937 !important;
+        }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header p,
+        html body.portal-ui #mainContent > header.sticky p {
+            color: #6b7280 !important;
+        }
+        html body.portal-ui #sidebar {
+            inset: 0 auto 0 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            right: auto !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+            background: #C41E3A !important;
+            border-radius: 0 !important;
+            z-index: 40 !important;
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+            transition: width 0.3s ease !important;
+        }
+        html body.portal-ui #sidebar .sidebar-header {
+            display: flex !important;
+            min-height: 5.5rem;
+            padding-left: 0.75rem !important;
+            padding-right: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui #sidebar .sidebar-header img {
+            width: 3rem !important;
+            height: 3rem !important;
+            flex-shrink: 0 !important;
+        }
+        html body.portal-ui #sidebar .sidebar-header .sidebar-text,
+        html body.portal-ui #sidebar .sidebar-text {
+            opacity: 0 !important;
+            max-width: 0 !important;
+            display: none !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui #sidebar .sidebar-menu {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+            overflow-x: hidden !important;
+        }
+        html body.portal-ui #sidebar .sidebar-link {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui #sidebar .sidebar-link i {
+            width: 1.25rem !important;
+            min-width: 1.25rem !important;
+            text-align: center !important;
+        }
+        html body.portal-ui #sidebar ~ #mainContent,
+        html body.portal-ui #sidebar.sidebar-collapsed ~ #mainContent,
+        html body.portal-ui #sidebar.sidebar-collapsed-init ~ #mainContent {
+            width: calc(100% - 4.5rem) !important;
+            margin-left: 4.5rem !important;
+            min-width: 0 !important;
+        }
+        html body.portal-ui #sidebarToggleBtn {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        html body.portal-ui #mobileTopBar { display: none !important; }
+        html body.portal-ui #mobileMenuToggle { display: none !important; }
+        html body.portal-ui #sidebar {
+            inset: 0 auto 0 0 !important;
+            height: 100vh !important;
+            height: 100dvh !important;
         }
     }
 </style>
@@ -82,7 +183,7 @@
 @endpush
 
 @section('content')
-<header class="admin-reference-mobile-header sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
+<header data-archived-bcpc-monitoring-header class="admin-reference-mobile-header sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm portal-page-header">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
         <div class="admin-reference-mobile-leading min-w-0">
             <button id="dashboardMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
@@ -96,7 +197,7 @@
         @include('admin-tailwind.components.header-account')
     </div>
 </header>
-<div class="p-6">
+<div class="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
     <!-- Success/Error Messages -->
     @if(session('success'))
     <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6 flex items-center gap-3">
@@ -124,13 +225,14 @@
 
     <!-- Filters -->
     <form id="archived-bcpc-report-filter-form" method="GET" action="{{ route('admin.bcpc-case-monitoring.archived') }}" class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 mb-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:flex xl:items-center gap-2 sm:gap-3">
-            <div class="relative min-w-0 sm:col-span-2 xl:flex-1 xl:min-w-[240px]"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i><input type="search" name="search" id="archived-bcpc-report-search" value="{{ request('search') }}" placeholder="Search archived reports..." class="w-full h-10 pl-9 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"></div>
-            <select name="quarter" id="archived-bcpc-report-quarter" class="w-full xl:w-[130px] h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700"><option value="">All Quarters</option>@foreach([1, 2, 3, 4] as $quarterOption)<option value="{{ $quarterOption }}" {{ (string) $quarter === (string) $quarterOption ? 'selected' : '' }}>Q{{ $quarterOption }}</option>@endforeach</select>
-            <select name="year" id="archived-bcpc-report-year" class="w-full xl:w-[115px] h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700"><option value="">All Years</option>@foreach(range(2026, 2030) as $yearOption)<option value="{{ $yearOption }}" {{ (string) $year === (string) $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>@endforeach</select>
-            <select name="barangay_id" id="archived-bcpc-report-barangay" class="w-full xl:w-[160px] h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700"><option value="">All Barangays</option>@foreach($barangays as $barangay)<option value="{{ $barangay->id }}" {{ (string) $barangayId === (string) $barangay->id ? 'selected' : '' }}>{{ $barangay->name }}</option>@endforeach</select>
-            <button type="submit" id="archived-bcpc-report-filter-button" class="inline-flex h-10 items-center justify-center gap-2 px-4 bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-sm font-medium shadow-sm transition shrink-0"><i class="fas fa-filter"></i><span>Filter</span></button>
-            @if(request()->filled('search') || request()->filled('quarter') || request()->filled('year') || request()->filled('barangay_id'))<a href="{{ route('admin.bcpc-case-monitoring.archived') }}" class="inline-flex h-10 items-center justify-center gap-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-medium transition shrink-0"><i class="fas fa-times"></i><span>Clear</span></a>@endif
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 items-center gap-2 sm:gap-3">
+            <div class="relative min-w-0 sm:col-span-2 md:col-span-4 lg:col-span-1"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i><input type="search" name="search" id="archived-bcpc-report-search" value="{{ request('search') }}" placeholder="Search archived reports..." class="w-full h-10 pl-9 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"></div>
+            <select name="quarter" id="archived-bcpc-report-quarter" class="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700"><option value="">All Quarters</option>@foreach([1, 2, 3, 4] as $quarterOption)<option value="{{ $quarterOption }}" {{ (string) $quarter === (string) $quarterOption ? 'selected' : '' }}>Q{{ $quarterOption }}</option>@endforeach</select>
+            <select name="year" id="archived-bcpc-report-year" class="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700"><option value="">All Years</option>@foreach(range(2026, 2030) as $yearOption)<option value="{{ $yearOption }}" {{ (string) $year === (string) $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>@endforeach</select>
+            <select name="barangay_id" id="archived-bcpc-report-barangay" class="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700"><option value="">All Barangays</option>@foreach($barangays as $barangay)<option value="{{ $barangay->id }}" {{ (string) $barangayId === (string) $barangay->id ? 'selected' : '' }}>{{ $barangay->name }}</option>@endforeach</select>
+            <div class="flex items-center gap-2 sm:col-span-2 md:col-span-4 lg:col-span-1"><button type="submit" id="archived-bcpc-report-filter-button" class="inline-flex w-full flex-1 h-10 items-center justify-center gap-2 px-3 bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-sm font-medium shadow-sm transition shrink-0"><i class="fas fa-filter"></i><span>Filter</span></button>
+                @if(request()->filled('search') || request()->filled('quarter') || request()->filled('year') || request()->filled('barangay_id'))<a href="{{ route('admin.bcpc-case-monitoring.archived') }}" class="inline-flex w-full flex-1 h-10 items-center justify-center gap-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-medium transition shrink-0"><i class="fas fa-times"></i><span>Clear</span></a>@endif
+            </div>
         </div>
     </form>
 
@@ -138,47 +240,54 @@
     <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-6">
         <!-- Desktop Table View -->
         <div class="archived-bcpc-monitoring-table-view overflow-x-auto hidden md:block">
-            <table class="archived-static-table w-full text-sm">
+            <table class="archived-static-table w-full min-w-[640px] text-sm table-fixed">
+                <colgroup>
+                    <col class="w-[28%]">
+                    <col class="w-[18%]">
+                    <col class="w-[26%]">
+                    <col class="w-[18%]">
+                    <col class="w-[10%] min-w-[7rem]">
+                </colgroup>
                 <thead class="bg-gradient-to-r from-amber-700 to-amber-600 text-white">
                     <tr>
-                        <th class="px-5 py-3.5 text-left font-semibold text-xs uppercase tracking-wider">Barangay</th>
-                        <th class="px-5 py-3.5 text-center font-semibold text-xs uppercase tracking-wider">Period</th>
-                        <th class="px-5 py-3.5 text-left font-semibold text-xs uppercase tracking-wider">Submitted By</th>
-                        <th class="px-5 py-3.5 text-left font-semibold text-xs uppercase tracking-wider">Archived At</th>
-                        <th class="px-5 py-3.5 text-center font-semibold text-xs uppercase tracking-wider">Actions</th>
+                        <th class="px-4 py-3.5 sm:px-5 text-left font-semibold text-xs uppercase tracking-wider">Barangay</th>
+                        <th class="px-4 py-3.5 sm:px-5 text-center font-semibold text-xs uppercase tracking-wider">Period</th>
+                        <th class="px-4 py-3.5 sm:px-5 text-left font-semibold text-xs uppercase tracking-wider">Submitted By</th>
+                        <th class="px-4 py-3.5 sm:px-5 text-left font-semibold text-xs uppercase tracking-wider">Archived At</th>
+                        <th class="px-4 py-3.5 sm:px-5 text-center font-semibold text-xs uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($monitorings as $monitoring)
                         @php($restoreBlocked = !empty(($activeMonitoringPeriods ?? [])[$monitoring->barangay_id . '-' . $monitoring->quarter . '-' . $monitoring->year]))
                         <tr class="hover:bg-amber-50/40 transition">
-                            <td class="px-5 py-4">
-                                <div class="flex items-center gap-3">
+                            <td class="px-4 py-3.5 sm:px-5 sm:py-4">
+                                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
                                     <div class="w-9 h-9 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center font-semibold flex-shrink-0">
                                         <i class="fas fa-map-marker-alt text-sm"></i>
                                     </div>
-                                    <span class="text-gray-800 font-semibold">{{ $monitoring->barangay->name ?? 'N/A' }}</span>
+                                    <span class="text-gray-800 font-semibold truncate">{{ $monitoring->barangay->name ?? 'N/A' }}</span>
                                 </div>
                             </td>
-                            <td class="px-5 py-4 text-center whitespace-nowrap">
-                                <span class="inline-flex items-center gap-1.5 bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-semibold">
+                            <td class="px-4 py-3.5 sm:px-5 sm:py-4 text-center whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1.5 bg-amber-100 text-amber-800 px-2.5 sm:px-3 py-1 rounded-full text-xs font-semibold">
                                     <i class="fas fa-calendar-alt text-xs"></i>
                                     Q{{ $monitoring->quarter }} {{ $monitoring->year }}
                                 </span>
                             </td>
-                            <td class="px-5 py-4">
-                                <div class="text-gray-800 font-medium">
+                            <td class="px-4 py-3.5 sm:px-5 sm:py-4 min-w-0">
+                                <div class="text-gray-800 font-medium truncate">
                                     {{ $monitoring->creator?->first_name }} {{ $monitoring->creator?->last_name }}
                                 </div>
-                                <div class="text-xs text-gray-400">
+                                <div class="text-xs text-gray-400 truncate">
                                     {{ $monitoring->creator?->email }}
                                 </div>
                             </td>
-                            <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
+                            <td class="px-4 py-3.5 sm:px-5 sm:py-4 text-gray-600 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-700">{{ $monitoring->archived_at?->format('M d, Y') ?? 'N/A' }}</div>
                                 <div class="text-xs text-gray-400">{{ $monitoring->archived_at?->format('g:i A') ?? '' }}</div>
                             </td>
-                            <td class="px-5 py-4 text-center whitespace-nowrap">
+                            <td class="px-4 py-3.5 sm:px-5 sm:py-4 text-center whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-2 [&>a]:inline-flex [&>a]:items-center [&>a]:justify-center [&>button]:inline-flex [&>button]:items-center [&>button]:justify-center">
                                     <a href="{{ route('admin.bcpc-case-monitoring.edit', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'view' => $monitoring->id, 'archived' => 1]) }}" data-admin-archive-view="monitoring" data-modal-title="BCPC Case Monitoring Details"
                                        class="inline-flex items-center justify-center w-9 h-9 bg-[#C41E3A] hover:bg-[#A01830] text-white rounded-lg text-xs font-medium transition shadow-sm"
@@ -239,14 +348,14 @@
 
                     <div class="archived-bcpc-monitoring-card-actions grid grid-cols-2 gap-2 pt-2 border-t border-gray-100 [&>a]:inline-flex [&>a]:items-center [&>a]:justify-center [&>button]:inline-flex [&>button]:items-center [&>button]:justify-center">
                         <a href="{{ route('admin.bcpc-case-monitoring.edit', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'view' => $monitoring->id, 'archived' => 1]) }}" data-admin-archive-view="monitoring" data-modal-title="BCPC Case Monitoring Details"
-                           class="inline-flex items-center justify-center w-10 h-10 bg-[#C41E3A] hover:bg-[#A01830] text-white rounded-lg text-xs font-medium transition shadow-sm"
+                           class="inline-flex items-center justify-center gap-1.5 w-full h-10 bg-[#C41E3A] hover:bg-[#A01830] text-white rounded-lg text-xs font-medium transition shadow-sm"
                            title="View Details" aria-label="View Details">
                             <i class="fas fa-eye text-xs"></i>
-                            <span class="sr-only">View Details</span>
+                            <span>View</span>
                         </a>
                         <button type="button" {{ $restoreBlocked ? 'disabled' : '' }}
                                 @unless($restoreBlocked) onclick="restoreMonitoring({{ $monitoring->id }}, '{{ addslashes($monitoring->barangay->name ?? 'Barangay') }}', 'Q{{ $monitoring->quarter }} {{ $monitoring->year }}')" @endunless
-                                class="inline-flex items-center justify-center gap-1 px-2.5 py-2 {{ $restoreBlocked ? '!bg-red-100 hover:!bg-red-100 !text-red-800 !border !border-red-200 cursor-not-allowed pointer-events-none' : 'bg-[#C41E3A] hover:bg-[#A01830] text-white' }} rounded-lg text-xs font-medium transition shadow-sm"
+                                class="inline-flex items-center justify-center gap-1.5 w-full h-10 {{ $restoreBlocked ? '!bg-red-100 hover:!bg-red-100 !text-red-800 !border !border-red-200 cursor-not-allowed pointer-events-none' : 'bg-[#C41E3A] hover:bg-[#A01830] text-white' }} rounded-lg text-xs font-medium transition shadow-sm"
                                 title="{{ $restoreBlocked ? 'An active BCPC monitoring case already exists for this barangay, quarter, and year' : 'Restore Record' }}">
                             <i class="fas fa-undo text-xs"></i>
                             <span>Restore</span>

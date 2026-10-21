@@ -305,6 +305,7 @@
     }
 </style>
 @endpush
+@endif
 
 @section('content')
 @include('components.desk-officer.bcpc-dashboard-header', ['title' => 'Archived Barangay Cases', 'subtitle' =>

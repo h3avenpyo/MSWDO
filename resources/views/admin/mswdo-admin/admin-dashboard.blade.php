@@ -94,7 +94,7 @@ $initials = count($words) >= 2
     /* ── Top Executive KPI Strip ── */
     .kpi-strip {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
         gap: 1.25rem;
         margin-bottom: 2rem;
     }
@@ -110,6 +110,7 @@ $initials = count($words) >= 2
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         position: relative;
         overflow: hidden;
+        min-width: 0;
     }
     .kpi-card:hover {
         transform: translateY(-3px);
@@ -185,9 +186,16 @@ $initials = count($words) >= 2
     /* ── Service Cards Responsive Grid ── */
     .services-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 1.35rem;
         margin-bottom: 2rem;
+        align-items: stretch;
+    }
+    .services-grid > .service-card {
+        grid-column: span 1;
+    }
+    .services-grid > .service-card:last-child {
+        grid-column: 1 / -1;
     }
     .service-card {
         background: #FFFFFF;
@@ -200,6 +208,9 @@ $initials = count($words) >= 2
         justify-content: space-between;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         position: relative;
+        min-width: 0;
+        overflow: hidden;
+        word-wrap: break-word;
     }
     .service-card:hover {
         transform: translateY(-2px);
@@ -212,11 +223,15 @@ $initials = count($words) >= 2
         margin-bottom: 1.15rem;
         padding-bottom: 0.85rem;
         border-bottom: 1px solid #F1F5F9;
+        gap: 0.75rem;
+        flex-wrap: wrap;
     }
     .service-info {
         display: flex;
         align-items: center;
         gap: 0.75rem;
+        min-width: 0;
+        flex: 1 1 auto;
     }
     .service-avatar {
         width: 42px;
@@ -234,6 +249,8 @@ $initials = count($words) >= 2
         color: #0F172A;
         margin: 0;
         line-height: 1.2;
+        word-break: break-word;
+        overflow-wrap: anywhere;
     }
     .service-badge {
         font-size: 0.75rem;
@@ -243,6 +260,8 @@ $initials = count($words) >= 2
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
     
     /* 4-Stat Box Grid inside Service Card */
@@ -260,6 +279,8 @@ $initials = count($words) >= 2
         flex-direction: column;
         justify-content: center;
         min-height: 72px;
+        min-width: 0;
+        overflow: hidden;
     }
     .stat-tile-label {
         font-size: 0.7rem;
@@ -268,15 +289,19 @@ $initials = count($words) >= 2
         text-transform: uppercase;
         letter-spacing: 0.03em;
         margin-bottom: 0.25rem;
-        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
+        word-break: break-word;
     }
     .stat-tile-val {
-        font-size: 1.25rem;
+        font-size: clamp(0.95rem, 2vw, 1.25rem);
         font-weight: 700;
         color: #0F172A;
         line-height: 1.1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     .stat-tile-val.val-success { color: #0F172A; }
     .stat-tile-val.val-info { color: #0F172A; }
@@ -335,7 +360,7 @@ $initials = count($words) >= 2
     /* ── Analytics Charts Grid ── */
     .analytics-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
         gap: 1.35rem;
         margin-bottom: 2rem;
     }
@@ -347,6 +372,9 @@ $initials = count($words) >= 2
         box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
         display: flex;
         flex-direction: column;
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
     }
     .chart-panel-header {
         display: flex;
@@ -368,6 +396,8 @@ $initials = count($words) >= 2
         position: relative;
         height: 320px;
         width: 100%;
+        min-width: 0;
+        max-width: 100%;
         flex: 1;
     }
 
@@ -486,10 +516,10 @@ $initials = count($words) >= 2
         border-color: #1E3A8A;
     }
 
-    /* ── Mobile Stacked Case Cards (<640px) ── */
+    /* ── Mobile Stacked Case Cards (<768px) ── */
     .mobile-cases-list { display: none; }
-    @media (max-width: 639.98px) {
-        .dash-table-wrap { display: none; }
+    @media (max-width: 767.98px) {
+        .panel-box .dash-table-wrap { display: none; }
         .mobile-cases-list {
             display: flex;
             flex-direction: column;
@@ -700,12 +730,6 @@ $initials = count($words) >= 2
         margin-top: 1.25rem;
         margin-bottom: 1.25rem;
     }
-    @media (max-width: 767.98px) {
-        .report-breakdown-grid { grid-template-columns: 1fr; }
-        .report-controls-bar { grid-template-columns: 1fr; }
-        .report-actions-wrap { width: 100%; flex-wrap: wrap; }
-        .btn-report-action { width: 100%; }
-    }
 
     /* ── Action Buttons ── */
     .btn-pill {
@@ -739,60 +763,395 @@ $initials = count($words) >= 2
         border-color: #8A0D11;
     }
 
-    /* ── Responsive Adaptations ── */
+    .report-head-links {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    /* ── Tablet Viewports (768px - 1199.98px) ── */
+    @media (min-width: 768px) and (max-width: 1199.98px) {
+        .kpi-strip {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .services-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.15rem;
+        }
+        .services-grid > .service-card {
+            grid-column: span 1;
+        }
+        .services-grid > .service-card:last-child {
+            grid-column: 1 / -1;
+        }
+        html.sidebar-collapsed .services-grid,
+        body.sidebar-collapsed .services-grid,
+        .sidebar-collapsed .services-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 1.15rem;
+        }
+        html.sidebar-collapsed .services-grid > .service-card,
+        body.sidebar-collapsed .services-grid > .service-card,
+        .sidebar-collapsed .services-grid > .service-card {
+            grid-column: span 1 !important;
+        }
+        html.sidebar-collapsed .services-grid > .service-card:last-child,
+        body.sidebar-collapsed .services-grid > .service-card:last-child,
+        .sidebar-collapsed .services-grid > .service-card:last-child {
+            grid-column: 1 / -1 !important;
+        }
+
+        .analytics-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.15rem;
+        }
+        .chart-canvas-box {
+            height: 280px;
+        }
+        .report-controls-bar {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.85rem;
+        }
+        .report-actions-wrap {
+            grid-column: span 2;
+            justify-content: flex-end;
+            margin-top: 0.25rem;
+        }
+        .report-actions-wrap .btn-report-generate {
+            flex: initial;
+            min-width: 130px;
+        }
+        .report-breakdown-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+    }
+
+    /* ── Sidebar collapsed (any viewport) ── */
+    html.sidebar-collapsed .services-grid,
+    body.sidebar-collapsed .services-grid,
+    .sidebar-collapsed .services-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+    html.sidebar-collapsed .services-grid > .service-card,
+    body.sidebar-collapsed .services-grid > .service-card,
+    .sidebar-collapsed .services-grid > .service-card {
+        grid-column: span 1 !important;
+    }
+    html.sidebar-collapsed .services-grid > .service-card:last-child,
+    body.sidebar-collapsed .services-grid > .service-card:last-child,
+    .sidebar-collapsed .services-grid > .service-card:last-child {
+        grid-column: 1 / -1 !important;
+    }
+
+    /* ── Mobile Viewports (< 768px) ── */
+
     @media (max-width: 767.98px) {
         .dash-banner {
-            padding: 1.25rem 1.4rem;
-            border-radius: 14px;
-            margin-bottom: 1.25rem;
+            padding: 1.15rem 1.15rem !important;
+            border-radius: 14px !important;
+            margin-bottom: 1.25rem !important;
         }
         .dash-banner-title {
-            font-size: 1.35rem;
+            font-size: 1.25rem !important;
+            line-height: 1.25 !important;
+        }
+        .dash-banner-sub {
+            font-size: 0.825rem !important;
         }
         .kpi-strip {
             grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+        .kpi-card {
+            padding: 0.85rem;
+            gap: 0.65rem;
+            border-radius: 12px;
+        }
+        .kpi-icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+        .kpi-icon-box svg {
+            width: 20px;
+            height: 20px;
+        }
+        .kpi-label {
+            font-size: 0.7rem;
+            margin-bottom: 0.15rem;
+        }
+        .kpi-val {
+            font-size: 1.25rem;
+        }
+        .kpi-hint {
+            font-size: 0.68rem;
+            margin-top: 0.15rem;
+        }
+        .section-head {
+            margin-bottom: 0.85rem;
+            gap: 0.5rem;
+        }
+        .section-title {
+            font-size: 1.1rem;
+        }
+        .section-subtitle {
+            font-size: 0.78rem;
+        }
+        .services-grid {
+            grid-template-columns: 1fr;
             gap: 0.85rem;
             margin-bottom: 1.5rem;
         }
-        .kpi-card {
+        .services-grid > .service-card {
+            grid-column: 1 / -1;
+        }
+        .services-grid > .service-card:nth-last-child(-n+2) {
+            grid-column: 1 / -1;
+        }
+        .service-card {
+            padding: 1.1rem;
+            border-radius: 14px;
+            min-width: 0;
+        }
+        .service-card-top {
+            flex-wrap: nowrap;
+            gap: 0.75rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .service-info {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .service-avatar {
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+        }
+        .service-avatar svg {
+            width: 18px;
+            height: 18px;
+        }
+        .service-title-text {
+            font-size: 0.98rem;
+        }
+        .service-badge {
+            align-self: center;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .service-metrics-grid {
+            gap: 0.5rem;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .service-stat-tile {
+            padding: 0.65rem 0.7rem;
+            min-height: 62px;
+            min-width: 0;
+        }
+        .stat-tile-label {
+            font-size: 0.62rem;
+            white-space: nowrap;
+        }
+        .stat-tile-val {
+            font-size: clamp(0.9rem, 4vw, 1.12rem);
+            white-space: nowrap;
+        }
+        .analytics-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .chart-panel {
             padding: 1rem;
+            border-radius: 14px;
+            min-width: 0;
+            max-width: 100%;
+            overflow: hidden;
+        }
+        .chart-canvas-box {
+            height: auto;
+            min-height: 250px;
+            max-height: 70vh;
+            min-width: 0;
+            max-width: 100%;
+        }
+        .chart-canvas-box canvas {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        .panel-box {
+            padding: 1rem;
+            border-radius: 14px;
+            margin-bottom: 1.25rem;
+        }
+        .panel-box .dash-table-wrap {
+            display: none !important;
+        }
+        .report-studio-card .dash-table-wrap {
+            display: block !important;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .mobile-cases-list {
+            display: flex !important;
+            flex-direction: column;
             gap: 0.75rem;
         }
-        .kpi-icon-box {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
+        .report-studio-card {
+            padding: 1rem;
+            border-radius: 14px;
+            margin-bottom: 1.5rem;
         }
-        .kpi-icon-box svg { width: 20px; height: 20px; }
-        .kpi-val { font-size: 1.35rem; }
-        .panel-box { padding: 1.15rem; }
+        .report-head-links {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .report-head-links .btn-pill {
+            flex: 1 1 calc(50% - 0.5rem);
+            justify-content: center;
+            font-size: 0.75rem;
+            padding: 0.4rem 0.5rem;
+        }
+        .report-head-links .btn-pill-primary {
+            flex: 1 1 100%;
+        }
+        .report-controls-bar {
+            grid-template-columns: 1fr;
+            padding: 0.85rem;
+            gap: 0.75rem;
+            border-radius: 12px;
+        }
+        .report-actions-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            width: 100%;
+            margin-top: 0.25rem;
+        }
+        .btn-report-generate {
+            grid-column: span 2;
+            width: 100% !important;
+            height: 42px !important;
+            font-size: 0.875rem !important;
+        }
+        .btn-report-pdf,
+        .btn-report-print {
+            width: 100% !important;
+            height: 38px !important;
+        }
+        .report-scope-strip {
+            padding: 0.65rem 0.75rem;
+            gap: 0.4rem;
+        }
+        .report-scope-info {
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            font-size: 0.775rem;
+        }
+        .rep-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.65rem;
+        }
+        .rep-card {
+            padding: 0.85rem;
+        }
+        .rep-title {
+            font-size: 0.68rem;
+        }
+        .rep-val {
+            font-size: 1.2rem;
+        }
+        .report-breakdown-grid {
+            grid-template-columns: 1fr;
+            gap: 0.85rem;
+        }
     }
 
+    /* ── Extra Small Phones (< 480px) ── */
     @media (max-width: 480px) {
         .kpi-strip {
             grid-template-columns: 1fr;
+            gap: 0.65rem;
         }
         .services-grid {
+            grid-template-columns: 1fr;
+            gap: 0.7rem;
+        }
+        .services-grid > .service-card {
+            grid-column: 1 / -1;
+        }
+        .service-card {
+            padding: 0.9rem;
+        }
+        .service-card-top {
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 0.65rem;
+        }
+        .service-info {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .service-avatar {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+        }
+        .service-avatar svg {
+            width: 18px;
+            height: 18px;
+        }
+        .service-title-text {
+            font-size: 0.92rem;
+        }
+        .service-badge {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .service-metrics-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 0.45rem;
+        }
+        .service-stat-tile {
+            padding: 0.6rem 0.65rem;
+            min-height: 58px;
+        }
+        .stat-tile-label {
+            font-size: 0.6rem;
+            white-space: nowrap;
+        }
+        .stat-tile-val {
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+        .rep-grid {
             grid-template-columns: 1fr;
         }
     }
 </style>
 
 {{-- Page Header Banner --}}
-<header class="dash-banner flex flex-col md:flex-row md:items-center justify-between gap-4 select-none">
+<header class="dash-banner flex flex-col sm:flex-row sm:items-center justify-between gap-3 select-none">
     <div>
         <div class="dash-banner-title">Welcome back, {{ $adminName }}</div>
         <div class="dash-banner-sub">
             <span>MSWDO Silang Portal</span>
-            
         </div>
     </div>
-    <div class="flex items-center gap-3 self-start md:self-auto">
-        <div class="text-right hidden sm:block">
-            <div class="text-xs font-semibold uppercase tracking-wider text-white/70">Philippine Standard Time</div>
-            <div class="text-sm font-semibold text-white tracking-wide" id="liveClock">Loading date...</div>
+    <div class="flex items-center gap-3 self-start sm:self-auto">
+        <div class="text-right">
+            <div class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-white/70">Philippine Standard Time</div>
+            <div class="text-xs sm:text-sm font-semibold text-white tracking-wide" id="liveClock">Loading date...</div>
         </div>
-        <div class="w-11 h-11 rounded-full bg-white/20 border-2 border-white/40 text-white font-bold text-sm flex items-center justify-center shadow-inner cursor-default" title="Logged in as: {{ $adminName }}">
+        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 border-2 border-white/40 text-white font-bold text-sm flex items-center justify-center shadow-inner cursor-default flex-shrink-0" title="Logged in as: {{ $adminName }}">
             {{ $initials }}
         </div>
     </div>
@@ -1114,7 +1473,7 @@ $initials = count($words) >= 2
             </h3>
             <p class="section-subtitle">Produce official weekly, monthly, quarterly, and yearly welfare reports per service division with live metrics and PDF export</p>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="report-head-links">
             <a href="{{ route('admin.social-case.cases') }}" class="btn-pill" title="Jump to Social Cases">
                 <i data-lucide="file-text" class="w-4 h-4 text-indigo-600"></i> Social Cases
             </a>
@@ -1276,7 +1635,7 @@ $initials = count($words) >= 2
                 <span class="text-xs text-slate-500" id="reportRecordsCount">0 records listed</span>
             </div>
             <div class="dash-table-wrap" style="max-height: 380px; overflow-y: auto;">
-                <table class="dash-table" style="font-size: 13px;">
+                <table class="dash-table" style="font-size: 13px; min-width: 580px;">
                     <thead>
                         <tr>
                             <th style="width: 16%;">Control / Ref No.</th>
