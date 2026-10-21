@@ -474,9 +474,11 @@
             transition: none !important;
         }
 
-        /* Keep the only phone/tablet sidebar entry point visible. */
-        @media (max-width: 80rem) {
-            #mobileTopBar { display: flex !important; }
+        /* Mobile phone navigation (< 600px / < 37.5rem) */
+        @media (max-width: 37.4375rem) {
+            #mobileTopBar {
+                display: flex !important;
+            }
             #mobileMenuToggle {
                 display: flex !important;
                 flex: 0 0 2.25rem;
@@ -486,63 +488,51 @@
                 justify-content: center;
                 visibility: visible !important;
             }
-        }
-
-        /*
-         * Tablet navigation (600px–1280px): retain one stable content column
-         * and use the existing mobile menu controls as an off-canvas drawer.
-         * rem/clamp values keep the layout proportional across portrait and
-         * landscape Android tablets.
-         */
-        @media (min-width: 37.5rem) and (max-width: 80rem) {
-            .department-admin-tablet-role-badge { display: none !important; }
-            #mobileTopBar {
-                display: flex !important;
-            }
-
             #sidebarOverlay {
                 display: block !important;
             }
-
             #sidebar {
                 inset: 0 auto 0 0 !important;
                 width: min(18rem, 82vw) !important;
                 min-width: min(18rem, 82vw) !important;
                 max-width: 82vw !important;
-                height: auto !important;
+                height: 100vh !important;
+                height: 100dvh !important;
                 max-height: none !important;
                 opacity: 0;
                 transform: translateX(-100%) !important;
                 transition: transform .3s ease, opacity .2s ease !important;
+                z-index: 50 !important;
             }
-
-            /* A desktop preference must not reduce the tablet drawer. */
             #sidebar.sidebar-collapsed,
             #sidebar.sidebar-collapsed-init {
                 width: min(18rem, 82vw) !important;
                 min-width: min(18rem, 82vw) !important;
                 max-width: 82vw !important;
             }
-
             #sidebar.sidebar-collapsed .sidebar-text,
             #sidebar.sidebar-collapsed-init .sidebar-text {
                 opacity: 1 !important;
                 max-width: 12.5rem !important;
             }
-
             #sidebar.sidebar-open {
-                opacity: 1;
+                opacity: 1 !important;
                 transform: translateX(0) !important;
             }
-
             #sidebarCloseBtn {
                 display: flex !important;
+                top: .75rem !important;
+                right: .75rem !important;
+                width: 2rem !important;
+                height: 2rem !important;
+                background-color: #ffffff !important;
+                color: #C41E3A !important;
+                border: .0625rem solid rgba(196, 30, 58, .2);
+                z-index: 60;
             }
-
             #sidebarToggleBtn {
                 display: none !important;
             }
-
             #mainContent,
             #sidebar.sidebar-collapsed ~ #mainContent,
             #sidebar.sidebar-collapsed-init ~ #mainContent {
@@ -553,15 +543,32 @@
             }
         }
 
-        /* Keep the navigation rail visible on tablets and iPads. */
+        /* Tablet navigation (600px–1280px / 37.5rem–80rem):
+         * Remove the extra top header (#mobileTopBar) and retain the visible navigation rail.
+         * The sidebar starts at the vertical top of the viewport (top: 0).
+         * Sidebar toggle button is positioned at top: calc(1.25rem + 1.5rem) and correctly
+         * aligned when expanded (276px) and collapsed (60px).
+         */
         @media (min-width: 37.5rem) and (max-width: 80rem) {
-            #sidebarOverlay { display: none !important; }
+            #mobileTopBar {
+                display: none !important;
+            }
+            #sidebarOverlay {
+                display: none !important;
+                pointer-events: none !important;
+            }
+            #sidebarCloseBtn,
+            #mobileMenuToggle,
+            #mainContent #mobileMenuToggle {
+                display: none !important;
+            }
             #sidebar {
-                inset: 3.5rem auto 0 0 !important;
+                inset: 0 auto 0 0 !important;
                 width: 18rem !important;
                 min-width: 18rem !important;
                 max-width: 18rem !important;
-                height: calc(100dvh - 3.5rem) !important;
+                height: 100vh !important;
+                height: 100dvh !important;
                 max-height: none !important;
                 opacity: 1 !important;
                 transform: translateX(0) !important;
@@ -578,11 +585,66 @@
                 opacity: 0 !important;
                 max-width: 0 !important;
             }
-            #sidebarCloseBtn,
-            #mobileMenuToggle { display: none !important; }
+            #sidebar.sidebar-collapsed .sidebar-icon-container,
+            #sidebar.sidebar-collapsed-init .sidebar-icon-container {
+                justify-content: center !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            #sidebar.sidebar-collapsed .sidebar-chevron,
+            #sidebar.sidebar-collapsed-init .sidebar-chevron,
+            #sidebar.sidebar-collapsed .sidebar-submenu,
+            #sidebar.sidebar-collapsed-init .sidebar-submenu {
+                display: none !important;
+            }
+            #sidebar.sidebar-collapsed .logo-container,
+            #sidebar.sidebar-collapsed-init .logo-container {
+                justify-content: center !important;
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+            #sidebar.sidebar-collapsed .logo-text,
+            #sidebar.sidebar-collapsed-init .logo-text {
+                display: none !important;
+            }
+            #sidebar.sidebar-collapsed .user-profile-compact,
+            #sidebar.sidebar-collapsed-init .user-profile-compact {
+                display: flex !important;
+                justify-content: center !important;
+            }
+            #sidebar.sidebar-collapsed .user-profile-expanded,
+            #sidebar.sidebar-collapsed-init .user-profile-expanded {
+                display: none !important;
+            }
+            #sidebar.sidebar-collapsed nav a,
+            #sidebar.sidebar-collapsed nav button,
+            #sidebar.sidebar-collapsed-init nav a,
+            #sidebar.sidebar-collapsed-init nav button {
+                justify-content: center !important;
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+            #sidebar.sidebar-collapsed > div:last-of-type,
+            #sidebar.sidebar-collapsed-init > div:last-of-type {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
             #sidebarToggleBtn {
                 display: flex !important;
-                top: calc(3.5rem + 1.5rem) !important;
+                position: fixed !important;
+                top: calc(1.25rem + 1.5rem) !important;
+                left: calc(18rem - 0.75rem) !important;
+                transform: translateY(-50%) !important;
+                z-index: 50 !important;
+                transition: left .3s ease !important;
+            }
+            #sidebar.sidebar-collapsed ~ #sidebarToggleBtn,
+            #sidebar.sidebar-collapsed-init ~ #sidebarToggleBtn {
+                left: calc(4.5rem - 0.75rem) !important;
+            }
+            #sidebar.sidebar-collapsed ~ #sidebarToggleBtn i,
+            #sidebar.sidebar-collapsed-init ~ #sidebarToggleBtn i {
+                transform: rotate(180deg) !important;
             }
             .portal-ui #sidebar ~ #mainContent {
                 width: calc(100vw - 18rem) !important;
@@ -593,6 +655,7 @@
             .portal-ui #sidebar.sidebar-collapsed ~ #mainContent,
             .portal-ui #sidebar.sidebar-collapsed-init ~ #mainContent {
                 width: calc(100vw - 4.5rem) !important;
+                min-width: 0 !important;
                 margin-left: 4.5rem !important;
             }
         }
@@ -708,24 +771,23 @@
 
             #mainContent .tablet-header-row {
                 display: grid !important;
-                grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+                grid-template-columns: minmax(0, 1fr) auto !important;
                 align-items: center;
                 column-gap: .75rem;
             }
 
             #mainContent .tablet-header-row > #mobileMenuToggle {
-                grid-column: 1;
-                grid-row: 1;
+                display: none !important;
             }
 
             #mainContent .tablet-header-row > #mobileMenuToggle + div {
-                grid-column: 2;
+                grid-column: 1 !important;
                 grid-row: 1;
                 min-width: 0;
             }
 
             #mainContent .tablet-header-row > #mobileMenuToggle + div ~ div:last-child {
-                grid-column: 3;
+                grid-column: 2 !important;
                 grid-row: 1;
                 min-width: 0;
             }

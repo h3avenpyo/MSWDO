@@ -73,8 +73,8 @@
 
         .case-profiles-mobile-cards .case-profile-card :is(h1, h2, h3, h4, p, a, span, dt, dd, div) {
             min-width: 0;
-            overflow-wrap: anywhere !important;
-            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            word-break: normal !important;
         }
 
         .case-profiles-mobile-cards .case-profile-card .grid {
@@ -178,9 +178,6 @@
         }
         .case-profiles-search-age-row .case-profiles-age-control {
             width: 100% !important;
-        }
-        .case-profiles-mobile-cards .case-profile-card .grid {
-            grid-template-columns: 1fr !important;
         }
     }
     @media (min-width: 37.5rem) and (max-width: 79.9375rem) and (orientation: portrait) {
@@ -755,18 +752,18 @@
                         <div class="flex items-start justify-between gap-3 mb-4 min-w-0">
                             <div class="flex-1 min-w-0">
                                 <p class="text-xs text-gray-500 mb-1">{{ $isVictim ? 'Victim' : 'Perpetrator' }}</p>
-                                <p class="font-semibold text-gray-800 break-words [overflow-wrap:anywhere]">{{ $isVictim ? $person->victim_name : $person->abuser_name }}</p>
+                                <p class="font-semibold text-gray-800 break-words">{{ $isVictim ? $person->victim_name : $person->abuser_name }}</p>
                             </div>
                             <span class="shrink-0 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700 whitespace-nowrap">{{ $records->count() }} {{ $records->count() === 1 ? 'case' : 'cases' }}</span>
                         </div>
                         <div class="grid grid-cols-2 gap-3 text-sm mb-4 w-full min-w-0">
-                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Age</p><p class="text-gray-800 break-words [overflow-wrap:anywhere]">{{ $profileAge }}</p></div>
-                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Address</p><p class="text-gray-800 break-words [overflow-wrap:anywhere]">{{ ($isVictim ? $person->victim_address : $person->abuser_address) ?: 'Not recorded' }}</p></div>
-                            <div class="col-span-2 min-w-0"><p class="text-xs text-gray-500 mb-1">Type of Case</p><p class="text-gray-800 break-words [overflow-wrap:anywhere]">{{ $records->map(fn($case) => ($isSwdDeskOfficer && $case->type === 'VAWC' ? 'SWD' : $case->type) . ' - ' . ($case->caseType?->name ?? $case->abuse_type))->unique()->implode(', ') }}</p></div>
-                            <div class="col-span-2 min-w-0"><p class="text-xs text-gray-500 mb-1">Cases</p><div class="flex flex-wrap gap-x-3 gap-y-1 min-w-0">@foreach($records as $case)<a class="text-sm text-purple-700 underline break-all [overflow-wrap:anywhere]" href="{{ $isAdmin ? route('cases.show', ['id' => $case->id, 'from' => 'case-profiles']) : route('desk-officer.cases.show', ['hash' => encrypt($case->id), 'from' => in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) ? 'case-profiles' : null]) }}">{{ $case->case_number }}</a>@endforeach</div></div>
+                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Age</p><p class="text-gray-800 break-words">{{ $profileAge }}</p></div>
+                            <div class="min-w-0"><p class="text-xs text-gray-500 mb-1">Address</p><p class="text-gray-800 break-words">{{ ($isVictim ? $person->victim_address : $person->abuser_address) ?: 'Not recorded' }}</p></div>
+                            <div class="col-span-2 min-w-0"><p class="text-xs text-gray-500 mb-1">Type of Case</p><p class="text-gray-800 break-words">{{ $records->map(fn($case) => ($isSwdDeskOfficer && $case->type === 'VAWC' ? 'SWD' : $case->type) . ' - ' . ($case->caseType?->name ?? $case->abuse_type))->unique()->implode(', ') }}</p></div>
+                            <div class="col-span-2 min-w-0"><p class="text-xs text-gray-500 mb-1">Cases</p><div class="flex flex-wrap gap-x-3 gap-y-1 min-w-0">@foreach($records as $case)<a class="text-sm text-purple-700 underline break-words" href="{{ $isAdmin ? route('cases.show', ['id' => $case->id, 'from' => 'case-profiles']) : route('desk-officer.cases.show', ['hash' => encrypt($case->id), 'from' => in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) ? 'case-profiles' : null]) }}">{{ $case->case_number }}</a>@endforeach</div></div>
                         </div>
                         @if($guardians->isNotEmpty())
-                        <div class="flex items-center justify-between gap-3 pt-3 border-t border-gray-100 min-w-0"><span class="text-sm font-medium text-gray-700 flex-1 min-w-0 break-words [overflow-wrap:anywhere]">Guardian Information</span><button type="button" class="case-profile-card-action shrink-0 rounded-lg bg-purple-700 text-white hover:bg-purple-800 transition" aria-haspopup="dialog" aria-controls="{{ $guardianDialogId }}" onclick="const guardianDialog = document.getElementById('{{ $guardianDialogId }}'); if (guardianDialog && !guardianDialog.open) { document.body.appendChild(guardianDialog); guardianDialog.showModal(); }"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View guardian information</span></button></div>
+                        <div class="flex items-center justify-between gap-3 pt-3 border-t border-gray-100 min-w-0"><span class="text-sm font-medium text-gray-700 flex-1 min-w-0 break-words">Guardian Information</span><button type="button" class="case-profile-card-action shrink-0 rounded-lg bg-purple-700 text-white hover:bg-purple-800 transition" aria-haspopup="dialog" aria-controls="{{ $guardianDialogId }}" onclick="const guardianDialog = document.getElementById('{{ $guardianDialogId }}'); if (guardianDialog && !guardianDialog.open) { document.body.appendChild(guardianDialog); guardianDialog.showModal(); }"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View guardian information</span></button></div>
                         @endif
                     </article>
                 @empty

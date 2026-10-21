@@ -19,11 +19,11 @@
 @endphp
 <section class="dashboard-announcements-box w-full bg-white rounded-xl shadow-sm border border-gray-100 p-4" aria-labelledby="swd-announcements-heading">
     <h2 id="swd-announcements-heading" class="text-lg font-semibold text-gray-800 mb-3">Announcements</h2>
-    <div class="dashboard-announcement-list {{ $announcementsTwoColumns ? 'grid grid-cols-2 gap-2' : 'space-y-2' }} max-h-48 overflow-y-auto">
+    <div class="dashboard-announcement-list {{ $announcementsTwoColumns ? 'grid grid-cols-1 sm:grid-cols-2 gap-2' : 'space-y-2' }} max-h-48 overflow-y-auto">
         @forelse($visibleAnnouncements as $index => $item)
-        <button type="button" onclick="showSwdDashboardAnnouncement({{ $index }})" class="block w-full text-left border border-gray-200 rounded-lg px-3 py-2 hover:bg-purple-50">
-            <span class="block font-semibold text-gray-800">{{ $item['title'] }}</span>
-            <span class="block text-sm text-gray-500">{{ \Carbon\Carbon::parse($item['date'])->format('F j, Y') }}</span>
+        <button type="button" onclick="showSwdDashboardAnnouncement({{ $index }})" class="block w-full text-left border border-gray-200 rounded-lg px-3 py-2 hover:bg-purple-50 transition">
+            <span class="block font-semibold text-gray-800 text-sm break-words">{{ $item['title'] }}</span>
+            <span class="block text-xs text-gray-500 mt-0.5">{{ \Carbon\Carbon::parse($item['date'])->format('F j, Y') }}</span>
         </button>
         @empty
         <p class="text-sm text-gray-500">No announcements yet.</p>

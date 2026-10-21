@@ -3,203 +3,185 @@
 @section('title', 'Add ' . ($isBCPCCase ? 'BCPC' : 'SWD') . ' Case - iSERVE SILANG Desk Officer')
 @push('styles')
 <style>
-    @media (max-width: 47.9375rem) {
-        html body.portal-ui.create-case-desk-mobile-nav #mobileTopBar {
+    /* Ensure no duplicate mobile top bar or duplicate toggle */
+    html body.portal-ui #mobileTopBar,
+    body.portal-ui #mobileTopBar,
+    body #mobileTopBar,
+    #mobileTopBar {
+        display: none !important;
+    }
+
+    html body.portal-ui #mobileMenuToggle,
+    body.portal-ui #mobileMenuToggle,
+    body #mobileMenuToggle,
+    #mobileMenuToggle,
+    html body.portal-ui #sidebarCloseBtn,
+    html body.portal-ui #sidebarOverlay {
+        display: none !important;
+        pointer-events: none !important;
+    }
+
+    /* Page header styling matching reference Case Profiles */
+    @media (min-width: 48rem) {
+        #officers-create-header {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+
+        #officers-create-header :is(h1, h2, h3) {
+            color: #1f2937 !important;
+        }
+
+        #officers-create-header p {
+            color: #6b7280 !important;
+        }
+
+        body.portal-ui #officers-create-header #pageMobileMenuToggle {
             display: none !important;
         }
-        html body.portal-ui.create-case-desk-mobile-nav #mainContent > header#officers-create-header {
+
+        body.portal-ui #officers-create-header .desk-officer-user-profile,
+        body.portal-ui #officers-create-header div:has(> img[alt="User Profile"]) {
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        body.portal-ui #officers-create-header div:has(> img[alt="User Profile"]) > div {
+            display: block !important;
+        }
+    }
+
+    @media (max-width: 47.9375rem) {
+        #officers-create-header {
             background: #C41E3A !important;
             border-bottom: 1px solid #99172E !important;
         }
-        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header > div {
-            align-items: flex-start !important;
-            flex-wrap: nowrap !important;
-            min-width: 0 !important;
-            padding-left: max(.5rem, env(safe-area-inset-left)) !important;
-            padding-right: max(1rem, env(safe-area-inset-right)) !important;
+
+        #officers-create-header :is(h1, h2, h3) {
+            color: #ffffff !important;
         }
-        html body.portal-ui.create-case-desk-mobile-nav #mainContent #mobileMenuToggle {
-            display: none !important;
+
+        #officers-create-header p,
+        #officers-create-header p :is(span, strong) {
+            color: rgba(255, 255, 255, 0.9) !important;
         }
-        html body.portal-ui.create-case-desk-mobile-nav #mainContent .officers-create-header-leading {
-            display: flex !important;
-            flex-direction: row !important;
-            flex-wrap: nowrap !important;
-            align-items: flex-start !important;
-            gap: .5rem !important;
-            min-width: 0 !important;
-            flex: 1 1 auto !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #mainContent .officers-create-header-leading > div {
-            min-width: 0 !important;
-            flex: 1 1 auto !important;
-            text-align: left !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #dashboardMenuToggle {
+
+        body.portal-ui #officers-create-header #pageMobileMenuToggle {
             position: relative !important;
             left: 0 !important;
             margin-left: 0 !important;
             transform: none !important;
             display: inline-flex !important;
-            flex: 0 0 2.5rem;
-            width: 2.5rem;
-            height: 2.5rem;
-            align-items: center;
-            justify-content: center;
+            flex: 0 0 2.5rem !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-width: 2.5rem !important;
+            min-height: 2.5rem !important;
+            align-items: center !important;
+            justify-content: center !important;
             border: 0 !important;
-            border-radius: 0 !important;
+            border-radius: 0.375rem !important;
             background: transparent !important;
             box-shadow: none !important;
-            color: #fff !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #dashboardMenuToggle i {
-            color: inherit !important;
-        }
-        html body.portal-ui #mainContent > header#officers-create-header :is(h1, h2, h3),
-        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header :is(h1, h2, h3) {
             color: #ffffff !important;
-            opacity: 1 !important;
-        }
-        html body.portal-ui #mainContent > header#officers-create-header p,
-        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header p {
-            display: block !important;
-            margin-top: .125rem !important;
-            color: #ffffff !important;
-            opacity: 1 !important;
-        }
-        html body.portal-ui #mainContent > header#officers-create-header p :is(span, strong),
-        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header p :is(span, strong) {
-            color: #ffffff !important;
-            opacity: 1 !important;
-        }
-        html body.portal-ui #mainContent > header#officers-create-header div:first-of-type :is(span, a),
-        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header div:first-of-type :is(span, a) {
-            color: #ffffff !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header > div > div:last-child {
-            flex: 0 0 auto !important;
-            flex-wrap: nowrap !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header button[aria-label="Notifications"] {
-            box-sizing: border-box !important;
-            width: 2.5rem !important;
-            min-width: 2.5rem !important;
-            height: 2.5rem !important;
-            min-height: 2.5rem !important;
             padding: 0 !important;
-            border-radius: .625rem !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header button[aria-label="Notifications"] > i {
+            cursor: pointer;
             margin: 0 !important;
-            font-size: 1rem !important;
+        }
+
+        body.portal-ui #officers-create-header #pageMobileMenuToggle i {
+            color: inherit !important;
+            font-size: 1.125rem !important;
             line-height: 1 !important;
         }
-        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header #notifications-unread-count {
-            width: 1.25rem !important;
-            height: 1.25rem !important;
-            top: -.25rem !important;
-            right: -.25rem !important;
-            font-size: .75rem !important;
-            line-height: 1 !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #sidebarOverlay {
-            display: none !important;
-            pointer-events: none !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar {
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: auto !important;
-            width: 100% !important;
-            min-width: 100% !important;
-            max-width: 100% !important;
-            height: auto !important;
-            max-height: calc(100vh - 60px) !important;
-            overflow-y: auto !important;
-            z-index: 999 !important;
-            border-radius: 0 0 14px 14px !important;
-            box-shadow: 0 14px 28px rgba(0,0,0,.22) !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
-            transform: translateY(-8px) !important;
-            transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
-            background: #C41E3A !important;
-            background-image: none !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-open {
-            opacity: 1 !important;
-            visibility: visible !important;
-            transform: translateY(0) !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed,
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar.sidebar-collapsed-init {
-            width: 100% !important;
-            min-width: 100% !important;
-            max-width: 100% !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-header {
+    }
+
+    @media (max-width: 40rem) {
+        body.portal-ui #officers-create-header .desk-officer-user-profile,
+        body.portal-ui #officers-create-header div:has(> img[alt="User Profile"]) {
             display: none !important;
         }
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-text {
-            opacity: 1 !important;
-            max-width: none !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-menu {
-            flex: 0 1 auto;
-            min-height: 0;
-            padding: .5rem !important;
-            overflow-y: auto !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link {
-            justify-content: flex-start !important;
-            gap: .75rem !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar nav :is(a, button),
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link {
-            background: #C41E3A !important;
-            color: #fff !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar nav :is(a, button) :is(i,svg,span),
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link :is(i,svg,span) {
-            color: #fff !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar nav :is(a,button):hover,
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link:hover {
-            background: #99172E !important;
-            color: #fff !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar .sidebar-link:is([class~="bg-purple-600"],[class~="bg-purple-700/70"]),
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar nav [x-show] > :is(a,button).bg-purple-600 {
-            background: #99172E !important;
-            color: #fff !important;
-            box-shadow: inset 3px 0 0 #fff !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #sidebar #sidebarCloseBtn,
-        html body.portal-ui.create-case-desk-mobile-nav #sidebarToggleBtn {
-            display: none !important;
-        }
-        html body.portal-ui.create-case-desk-mobile-nav #mainContent {
-            width: 100% !important;
-            min-width: 0 !important;
-            margin-left: 0 !important;
-        }
+    }
+
+    /* Active SWD/BCPC case banner action buttons */
+    .case-type-actions {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+    }
+
+    .case-type-actions .case-type-action {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.375rem !important;
+        padding: 0.5rem 0.875rem !important;
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        line-height: 1.25 !important;
+        white-space: nowrap !important;
+        min-height: 2.375rem !important;
+        color: #000000 !important;
+        background-color: #ffffff !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 0.5rem !important;
+        text-decoration: none !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
+    }
+
+    .case-type-actions .case-type-action:hover,
+    .case-type-actions .case-type-action:focus {
+        background-color: #f9fafb !important;
+        color: #000000 !important;
+    }
+
+    .case-type-actions .case-type-action i {
+        color: #000000 !important;
+    }
+
+    /* Small screens (<= 420px): stack action buttons on separate rows so labels never clip or overflow */
+    @media (max-width: 26.25rem) {
         .case-type-actions {
-            display: flex !important;
-            flex-wrap: wrap !important;
-            gap: .5rem !important;
+            flex-direction: column !important;
+            width: 100% !important;
+        }
+        .case-type-actions .case-type-action {
+            flex: 1 1 100% !important;
+            width: 100% !important;
+            justify-content: center !important;
+        }
+    }
+
+    /* Medium-small screens (421px to 991px): buttons sit side-by-side with equal width */
+    @media (min-width: 26.251rem) and (max-width: 61.9375rem) {
+        .case-type-actions {
+            flex-direction: row !important;
             width: 100% !important;
         }
         .case-type-actions .case-type-action {
             flex: 1 1 calc(50% - 0.25rem) !important;
-            min-width: 0 !important;
-            min-height: 2.5rem !important;
+            max-width: calc(50% - 0.25rem) !important;
             justify-content: center !important;
-            gap: .375rem !important;
-            padding: .5rem !important;
-            font-size: .75rem !important;
-            white-space: nowrap !important;
         }
+    }
+
+    /* Desktop (>= 992px): natural auto width aligned to the right */
+    @media (min-width: 62rem) {
+        .case-type-actions {
+            flex-direction: row !important;
+            width: auto !important;
+            justify-content: flex-end !important;
+        }
+        .case-type-actions .case-type-action {
+            flex: 0 0 auto !important;
+            width: auto !important;
+        }
+    }
+
+    /* Form padding adjustments on mobile */
+    @media (max-width: 47.9375rem) {
         #new-case-form .p-6 {
             padding: 1rem !important;
         }
@@ -208,58 +190,68 @@
             padding-right: 1rem !important;
         }
     }
-
-    @media (max-width: 40rem) {
-        html body.portal-ui.create-case-desk-mobile-nav #officers-create-header div:has(> img[alt="User Profile"]) {
-            display: none !important;
-        }
-    }
 </style>
 @endpush
 
 @section('content')
 
 @php
-    use Carbon\Carbon;
-    $nowPst = Carbon::now('Asia/Manila');
-    $todayPst = $nowPst->format('Y-m-d');
-    $isMultiroleDeskOfficer = Auth::user()->position === 'Desk Officer' && Auth::user()->isMultiCaseDepartment();
-    $isSwdDeskOfficer = Auth::user()->position === 'Desk Officer' && Auth::user()->defaultCaseDepartment() === 'VAWC' && !$isMultiroleDeskOfficer;
-    $isSwdCase = !$isBCPCCase;
+use Carbon\Carbon;
+$nowPst = Carbon::now('Asia/Manila');
+$todayPst = $nowPst->format('Y-m-d');
+$isMultiroleDeskOfficer = Auth::user()->position === 'Desk Officer' && Auth::user()->isMultiCaseDepartment();
+$isSwdDeskOfficer = Auth::user()->position === 'Desk Officer' && Auth::user()->defaultCaseDepartment() === 'VAWC' &&
+!$isMultiroleDeskOfficer;
+$isSwdCase = !$isBCPCCase;
 @endphp
 
 <!-- Top Header -->
 <header id="officers-create-header" class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
-    <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
-        <div class="officers-create-header-leading flex items-center gap-3 min-w-0">
-            <button id="dashboardMenuToggle" class="hidden" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
-                <i class="fas fa-bars" aria-hidden="true"></i>
-            </button>
-            <div class="min-w-0">
-                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-                    <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Add New Case</h2>
-                    @if($isBCPCCase)
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-600 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
+    <div class="px-3 px-sm-4 px-lg-8 py-2.5 sm:py-3.5">
+        <div class="d-flex align-items-center justify-content-between gap-2.5 sm:gap-4 flex-nowrap">
+            <div class="d-flex align-items-center gap-2.5 sm:gap-3 min-w-0 flex-grow-1">
+                <button
+                    type="button"
+                    id="pageMobileMenuToggle"
+                    class="inline-flex flex-none items-center justify-center text-white focus:outline-none"
+                    aria-label="Open navigation menu"
+                    aria-controls="sidebar"
+                    aria-expanded="false"
+                >
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
+                <div class="officers-create-header-leading d-flex flex-column align-items-start min-w-0 flex-grow-1">
+                    <div class="d-flex flex-wrap align-items-center gap-1.5 sm:gap-2">
+                        <h2 class="text-lg sm:text-2xl font-bold text-gray-800 m-0">Add New Case</h2>
+                        @if($isBCPCCase)
+                        <span
+                            class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-red-600 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
                             <i class="fas fa-child"></i> BCPC Case
                         </span>
-                    @else
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-700 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
+                        @else
+                        <span
+                            class="inline-flex items-center gap-1 px-2.5 py-0.5 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm"
+                            style="background-color: #C41E3A !important;">
                             <i class="fas fa-shield-alt"></i> SWD Case
                         </span>
-                    @endif
+                        @endif
+                    </div>
+                    <p class="text-xs sm:text-sm text-gray-500 m-0 mt-0.5">
+                        Creating a new <span class="font-semibold text-gray-700">{{ $isBCPCCase ? 'BCPC' : 'SWD' }}</span> record for <strong>{{ $userBarangay->name }}</strong>
+                    </p>
                 </div>
-                <p class="text-sm text-gray-500 mt-0.5">
-                    Creating a new <span class="font-semibold text-gray-700">{{ $isBCPCCase ? 'BCPC (Child Protection)' : 'SWD' }}</span> record for <strong>{{ $userBarangay->name }}</strong>
-                </p>
             </div>
-        </div>
-        <div class="flex items-center gap-3 sm:gap-4">
-            @include('desk-officer.components.notifications')
-            <div class="hidden sm:flex items-center gap-3">
-                <img src="{{ asset('images/mswdo_logo.jpg') }}" alt="User Profile" class="w-10 h-10 rounded-full object-cover bg-gray-100">
-                <div class="text-right">
-                    <p class="text-sm font-medium text-gray-800">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
-                    <p class="text-xs text-gray-500">{{ Auth::user()->position ?? ($isBCPCCase ? 'BCPC Desk Officer' : 'SWD Desk Officer') }}</p>
+            <div class="d-flex align-items-center gap-2 sm:gap-3 flex-shrink-0 ms-auto">
+                @include('desk-officer.components.notifications')
+                <div class="desk-officer-user-profile d-flex align-items-center gap-2 gap-sm-3">
+                    <img src="{{ asset('images/mswdo_logo.jpg') }}" alt="User Profile"
+                        class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover bg-gray-100">
+                    <div class="text-end text-right">
+                        <p class="text-xs sm:text-sm font-bold text-gray-800 m-0">{{ Auth::user()->first_name }} {{
+                            Auth::user()->last_name }}</p>
+                        <p class="text-[11px] sm:text-xs text-gray-500 m-0">{{ Auth::user()->position ?? ($isBCPCCase ? 'BCPC Desk Officer' :
+                            'SWD Desk Officer') }}</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -267,38 +259,44 @@
 </header>
 
 <!-- Main Content -->
-<main class="px-4 sm:px-6 lg:px-8 pt-4 pb-4 sm:pt-6 sm:pb-6 lg:pt-8 lg:pb-8 max-w-5xl mx-auto">
+<main class="px-3 sm:px-6 lg:px-8 pt-4 pb-4 sm:pt-6 sm:pb-6 lg:pt-8 lg:pb-8 max-w-5xl mx-auto">
     <!-- Active Case Type Banner & Form Note -->
-    <div class="mb-6 rounded-xl border overflow-hidden shadow-sm {{ $isMultiroleDeskOfficer || $isBCPCCase ? 'border-[#C41E3A] bg-[#C41E3A]' : 'border-purple-200 bg-gradient-to-r from-purple-50 via-white to-purple-50/30' }}">
-        <div class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-white text-red-600 shadow-md">
-                    <i class="fas {{ $isBCPCCase ? 'fa-child text-xl text-red-600' : 'fa-shield-alt text-xl' }} {{ $isMultiroleDeskOfficer ? 'text-red-600' : '' }}"></i>
+    <div
+        class="mb-4 sm:mb-6 rounded-xl border overflow-hidden shadow-sm {{ $isMultiroleDeskOfficer || $isBCPCCase ? 'border-[#C41E3A] bg-[#C41E3A]' : 'border-purple-200 bg-gradient-to-r from-purple-50 via-white to-purple-50/30' }}">
+        <div class="p-3 p-sm-4 p-md-5 d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3 gap-md-4">
+            <div class="d-flex align-items-center gap-3 min-w-0 w-100 w-lg-auto">
+                <div
+                    class="w-12 h-12 rounded-xl d-flex align-items-center justify-content-center flex-shrink-0 bg-white text-red-600 shadow-md">
+                    <i
+                        class="fas {{ $isBCPCCase ? 'fa-child text-xl text-red-600' : 'fa-shield-alt text-xl' }} {{ $isMultiroleDeskOfficer ? 'text-red-600' : '' }}"></i>
                 </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h3 class="text-base sm:text-lg font-bold {{ $isMultiroleDeskOfficer || $isBCPCCase ? 'text-white' : 'bg-purple-700 text-white px-3 py-1 rounded-lg' }}">
+                <div class="min-w-0 flex-grow-1">
+                    <div class="d-flex align-items-center gap-2">
+                        <h3
+                            class="text-base sm:text-lg font-bold m-0 {{ $isMultiroleDeskOfficer || $isBCPCCase ? 'text-white' : 'bg-purple-700 text-white px-3 py-1 rounded-lg' }}">
                             {{ $isBCPCCase ? 'BCPC Case (Child Protection)' : 'SWD Cases' }}
                         </h3>
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $isBCPCCase ? 'justify-center text-center leading-none bg-white text-[#991b1b]' : 'bg-purple-100 text-[#991b1b]' }}" @if($isBCPCCase) style="background-color: #FFFFFF !important; color: #991b1b !important;" @else style="color: #991b1b !important;" @endif>
-                            Active Form
-                        </span>
                     </div>
-                    <p class="text-xs sm:text-sm text-white {{ $isMultiroleDeskOfficer || $isBCPCCase ? 'mt-1' : 'bg-purple-700 px-3 py-1.5 rounded-lg mt-1' }}">
-                        Recording for <strong class="text-white">{{ $userBarangay->name }}</strong> &bull; Fields marked with <span class="text-white font-bold">*</span> are required.
+                    <p
+                        class="text-xs sm:text-sm text-white m-0 mt-1 {{ $isMultiroleDeskOfficer || $isBCPCCase ? '' : 'bg-purple-700 px-3 py-1.5 rounded-lg' }}">
+                        Recording for <strong class="text-white">{{ $userBarangay->name }}</strong> &bull; Fields marked
+                        with <span class="text-white font-bold">*</span> are required.
                     </p>
                 </div>
             </div>
-            <div class="case-type-actions flex flex-shrink-0 items-center gap-2 sm:pl-4">
+            <div class="case-type-actions d-flex flex-wrap align-items-center gap-2 w-100 w-lg-auto flex-shrink-0">
                 <a href="{{ route('desk-officer.cases.index', ['type' => $type]) }}"
-                   class="case-type-action inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border transition shadow-sm {{ $isBCPCCase ? 'border-gray-200 bg-white text-black hover:bg-gray-50' : 'border-gray-300 bg-white text-black hover:bg-gray-50' }}">
+                    class="case-type-action inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border transition shadow-sm {{ $isBCPCCase ? 'border-gray-200 bg-white text-black hover:bg-gray-50' : 'border-gray-300 bg-white text-black hover:bg-gray-50' }}">
                     <i class="fas fa-arrow-left" style="color: #000000 !important;"></i>
                     <span style="color: #000000 !important;">Back to Cases</span>
                 </a>
                 @if(Auth::user()->isMultiCaseDepartment())
-                <button type="button" id="change-case-type" data-change-case-type-url="{{ route('desk-officer.cases.create', ['type' => $isBCPCCase ? 'vawc' : 'bcpc']) }}"
-                        class="case-type-action inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border {{ $isBCPCCase ? 'border-red-300 text-black bg-white hover:bg-red-50' : 'border-purple-300 text-black bg-white hover:bg-purple-50' }} transition shadow-sm" style="color: #000000 !important;">
-                    <i class="fas fa-exchange-alt" style="color: #000000 !important;"></i> Change Case Type
+                <button type="button" id="change-case-type"
+                    data-change-case-type-url="{{ route('desk-officer.cases.create', ['type' => $isBCPCCase ? 'vawc' : 'bcpc']) }}"
+                    class="case-type-action inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border {{ $isBCPCCase ? 'border-red-300 text-black bg-white hover:bg-red-50' : 'border-purple-300 text-black bg-white hover:bg-purple-50' }} transition shadow-sm"
+                    style="color: #000000 !important;">
+                    <i class="fas fa-exchange-alt" style="color: #000000 !important;"></i>
+                    <span style="color: #000000 !important;">Change Case Type</span>
                 </button>
                 @endif
             </div>
@@ -314,26 +312,29 @@
         </div>
         <ul class="list-disc list-inside text-sm text-red-600 space-y-1">
             @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
+            <li>{{ $error }}</li>
             @endforeach
         </ul>
     </div>
     @endif
-    
+
     <!-- Case Form -->
-    <form id="new-case-form" action="{{ route('desk-officer.cases.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+    <form id="new-case-form" action="{{ route('desk-officer.cases.store') }}" method="POST"
+        enctype="multipart/form-data" class="space-y-6">
         @csrf
         <input type="hidden" name="case_type" value="{{ $type }}">
         <input type="hidden" name="timezone_used" value="Asia/Manila">
-        
+
         <!-- Case Information Section -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="case-form-section-header bg-gradient-to-r from-purple-700 to-purple-600 px-6 py-4 flex items-center justify-between">
+            <div
+                class="case-form-section-header bg-gradient-to-r from-purple-700 to-purple-600 px-6 py-4 flex items-center justify-between">
                 <h3 class="text-lg font-semibold text-white flex items-center gap-2">
                     <i class="fas fa-folder-open"></i>
                     Case Information
                 </h3>
-                <span class="text-xs text-white/90 font-medium uppercase tracking-wider bg-white/10 px-2.5 py-1 rounded">
+                <span
+                    class="text-xs text-white/90 font-medium uppercase tracking-wider bg-white/10 px-2.5 py-1 rounded">
                     {{ $isBCPCCase ? 'BCPC Case Record' : 'SWD Case Record' }}
                 </span>
             </div>
@@ -345,12 +346,14 @@
                         </label>
                         <div class="relative">
                             <input type="text" readonly disabled
-                                value="{{ $userBarangay->name }} - [{{ strtoupper($userBarangay->code ?? 'N/A') }}]" 
+                                value="{{ $userBarangay->name }} - [{{ strtoupper($userBarangay->code ?? 'N/A') }}]"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 text-sm font-medium cursor-not-allowed">
-                            <input type="hidden" id="case-designation" name="case_designation" value="{{ $userBarangay->id }}">
+                            <input type="hidden" id="case-designation" name="case_designation"
+                                value="{{ $userBarangay->id }}">
                         </div>
                         <p class="text-xs text-gray-500 mt-1.5 flex items-center gap-1">
-                            <i class="fas fa-lock text-gray-400"></i> Cases are automatically designated to your barangay.
+                            <i class="fas fa-lock text-gray-400"></i> Cases are automatically designated to your
+                            barangay.
                         </p>
                     </div>
                     <div>
@@ -368,29 +371,35 @@
                         <label for="priority" class="block text-sm font-medium text-gray-700 mb-2">
                             Case Priority <span class="text-red-500">*</span>
                         </label>
-                        <select id="priority" name="case_priority" required 
-                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white">
+                        <select id="priority" name="case_priority" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white">
                             <option value="">Select Priority</option>
-                            <option value="Non-urgent" {{ old('case_priority', 'Non-urgent') == 'Non-urgent' ? 'selected' : '' }}>Non-urgent</option>
-                            <option value="Urgent" {{ old('case_priority') == 'Urgent' ? 'selected' : '' }}>Urgent</option>
-                            <option value="Emergency" {{ old('case_priority') == 'Emergency' ? 'selected' : '' }}>Emergency</option>
+                            <option value="Non-urgent" {{ old('case_priority', 'Non-urgent' )=='Non-urgent' ? 'selected'
+                                : '' }}>Non-urgent</option>
+                            <option value="Urgent" {{ old('case_priority')=='Urgent' ? 'selected' : '' }}>Urgent
+                            </option>
+                            <option value="Emergency" {{ old('case_priority')=='Emergency' ? 'selected' : '' }}>
+                                Emergency</option>
                         </select>
                     </div>
                     <div>
                         <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
                             Case Status <span class="text-red-500">*</span>
                         </label>
-                        <select id="status" name="status" required 
-                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white">
-                            <option value="Case Filed" {{ old('status', 'Case Filed') == 'Case Filed' ? 'selected' : '' }}>Case Filed</option>
-                            <option value="Case Closed" {{ old('status') == 'Case Closed' ? 'selected' : '' }}>Case Closed</option>
-                            <option value="Case Referred" {{ old('status') == 'Case Referred' ? 'selected' : '' }}>Case Referred</option>
+                        <select id="status" name="status" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white">
+                            <option value="Case Filed" {{ old('status', 'Case Filed' )=='Case Filed' ? 'selected' : ''
+                                }}>Case Filed</option>
+                            <option value="Case Closed" {{ old('status')=='Case Closed' ? 'selected' : '' }}>Case Closed
+                            </option>
+                            <option value="Case Referred" {{ old('status')=='Case Referred' ? 'selected' : '' }}>Case
+                                Referred</option>
                         </select>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Victim Information Section -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="case-form-section-header bg-gradient-to-r from-purple-700 to-purple-600 px-6 py-4">
@@ -405,21 +414,22 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Full Name <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" id="victim_name" name="victim_name" required value="{{ old('victim_name') }}" placeholder="Full Name"
+                        <input type="text" id="victim_name" name="victim_name" required value="{{ old('victim_name') }}"
+                            placeholder="Full Name"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Age <span class="text-red-500">*</span>
-                            @unless($isSwdCase)<span class="text-xs text-red-600 font-bold">(0 - 17 only)</span>@endunless
+                            @unless($isSwdCase)<span class="text-xs text-red-600 font-bold">(0 - 17
+                                only)</span>@endunless
                         </label>
-                        <input type="number" id="victim_age" name="victim_age" required 
-                            min="0"
-                            @unless($isSwdCase) max="17" @endunless
-                            value="{{ old('victim_age') }}" 
+                        <input type="number" id="victim_age" name="victim_age" required min="0" @unless($isSwdCase)
+                            max="17" @endunless value="{{ old('victim_age') }}"
                             placeholder="{{ $isSwdCase ? 'Age' : 'Age (0-17)' }}"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
-                        @unless($isSwdCase)<p class="text-xs text-gray-500 mt-1">Victim age must be from 0 to 17 years old.</p>@endunless
+                        @unless($isSwdCase)<p class="text-xs text-gray-500 mt-1">Victim age must be from 0 to 17 years
+                            old.</p>@endunless
                         <p id="victim_age_error" class="text-xs text-red-600 font-semibold mt-1 hidden">
                             <i class="fas fa-exclamation-circle"></i> Victim age can only be 17 and below.
                         </p>
@@ -431,18 +441,22 @@
                         <select id="victim_gender" name="victim_gender" required
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white">
                             <option value="">Select Gender</option>
-                            <option value="Female" {{ old('victim_gender') == 'Female' ? 'selected' : '' }}>Female</option>
-                            <option value="Male" {{ old('victim_gender') == 'Male' ? 'selected' : '' }}>Male</option>
-                            <option value="LGBTQIA+" {{ old('victim_gender') == 'LGBTQIA+' ? 'selected' : '' }}>LGBTQIA+</option>
-                            <option value="Prefer not to say" {{ old('victim_gender') == 'Prefer not to say' ? 'selected' : '' }}>Prefer not to say</option>
+                            <option value="Female" {{ old('victim_gender')=='Female' ? 'selected' : '' }}>Female
+                            </option>
+                            <option value="Male" {{ old('victim_gender')=='Male' ? 'selected' : '' }}>Male</option>
+                            <option value="LGBTQIA+" {{ old('victim_gender')=='LGBTQIA+' ? 'selected' : '' }}>LGBTQIA+
+                            </option>
+                            <option value="Prefer not to say" {{ old('victim_gender')=='Prefer not to say' ? 'selected'
+                                : '' }}>Prefer not to say</option>
                         </select>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Contact Number</label>
-                        <input type="tel" id="victim_contact" name="victim_contact" maxlength="11" pattern="[0-9]{11}" inputmode="numeric" 
-                            value="{{ old('victim_contact') }}" placeholder="11-digit phone number (e.g. 09123456789)"
+                        <input type="tel" id="victim_contact" name="victim_contact" maxlength="11" pattern="[0-9]{11}"
+                            inputmode="numeric" value="{{ old('victim_contact') }}"
+                            placeholder="11-digit phone number (e.g. 09123456789)"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                     </div>
                 </div>
@@ -450,11 +464,11 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Address <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" id="victim_address" name="victim_address" required 
+                    <input type="text" id="victim_address" name="victim_address" required
                         value="{{ old('victim_address') }}" placeholder="Street, Barangay, Municipality, Province"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                 </div>
-                
+
                 <!-- Guardian Information (for minor victims / BCPC) -->
                 <div id="guardian-section" class="{{ $isBCPCCase ? '' : 'hidden' }} mt-6 pt-6 border-t border-gray-200">
                     <h4 class="text-md font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -469,23 +483,24 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Guardian Name <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" id="guardian_name" name="guardian" 
-                                value="{{ old('guardian') }}" placeholder="Full Name of Guardian"
+                            <input type="text" id="guardian_name" name="guardian" value="{{ old('guardian') }}"
+                                placeholder="Full Name of Guardian"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Guardian Contact <span class="text-red-500">*</span>
                             </label>
-                            <input type="tel" id="guardian_contact" name="guardian_contact" maxlength="11" pattern="[0-9]{11}" inputmode="numeric" 
-                                value="{{ old('guardian_contact') }}" placeholder="Contact Number (11 digits)"
+                            <input type="tel" id="guardian_contact" name="guardian_contact" maxlength="11"
+                                pattern="[0-9]{11}" inputmode="numeric" value="{{ old('guardian_contact') }}"
+                                placeholder="Contact Number (11 digits)"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Guardian Address <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" id="guardian_address" name="guardian_address" 
+                            <input type="text" id="guardian_address" name="guardian_address"
                                 value="{{ old('guardian_address') }}" placeholder="Full Address"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                         </div>
@@ -496,19 +511,25 @@
                             <select id="relationship_to_victim" name="relationship_to_victim"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white">
                                 <option value="">Select Relationship</option>
-                                <option value="Parent" {{ old('relationship_to_victim') == 'Parent' ? 'selected' : '' }}>Parent</option>
-                                <option value="Legal Guardian" {{ old('relationship_to_victim') == 'Legal Guardian' ? 'selected' : '' }}>Legal Guardian</option>
-                                <option value="Grandparent" {{ old('relationship_to_victim') == 'Grandparent' ? 'selected' : '' }}>Grandparent</option>
-                                <option value="Aunt/Uncle" {{ old('relationship_to_victim') == 'Aunt/Uncle' ? 'selected' : '' }}>Aunt/Uncle</option>
-                                <option value="Sibling" {{ old('relationship_to_victim') == 'Sibling' ? 'selected' : '' }}>Sibling</option>
-                                <option value="Other" {{ old('relationship_to_victim') == 'Other' ? 'selected' : '' }}>Other</option>
+                                <option value="Parent" {{ old('relationship_to_victim')=='Parent' ? 'selected' : '' }}>
+                                    Parent</option>
+                                <option value="Legal Guardian" {{ old('relationship_to_victim')=='Legal Guardian'
+                                    ? 'selected' : '' }}>Legal Guardian</option>
+                                <option value="Grandparent" {{ old('relationship_to_victim')=='Grandparent' ? 'selected'
+                                    : '' }}>Grandparent</option>
+                                <option value="Aunt/Uncle" {{ old('relationship_to_victim')=='Aunt/Uncle' ? 'selected'
+                                    : '' }}>Aunt/Uncle</option>
+                                <option value="Sibling" {{ old('relationship_to_victim')=='Sibling' ? 'selected' : ''
+                                    }}>Sibling</option>
+                                <option value="Other" {{ old('relationship_to_victim')=='Other' ? 'selected' : '' }}>
+                                    Other</option>
                             </select>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Perpetrator Information Section -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="bg-[#C41E3A] px-6 py-4 flex items-center justify-between">
@@ -516,7 +537,8 @@
                     <i class="fas fa-user-slash"></i>
                     Perpetrator Information
                 </h3>
-                <span class="text-xs text-white/90 font-medium uppercase tracking-wider bg-white/10 px-2.5 py-1 rounded">
+                <span
+                    class="text-xs text-white/90 font-medium uppercase tracking-wider bg-white/10 px-2.5 py-1 rounded">
                     Mandatory Details
                 </span>
             </div>
@@ -526,11 +548,15 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Perpetrator Name <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" id="abuser_name" name="perpetrator_name" required 
+                        <input type="text" id="abuser_name" name="perpetrator_name" required
                             value="{{ old('perpetrator_name') }}" placeholder="Full Name"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
-                        <label for="abuser_address" class="block text-sm font-medium text-gray-700 mt-3 mb-2">Perpetrator Address <span class="text-red-500">*</span></label>
-                        <input type="text" id="abuser_address" name="abuser_address" maxlength="2000" value="{{ old('abuser_address', $case->abuser_address ?? '') }}" placeholder="Full Address" class="form-control w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm" required>
+                        <label for="abuser_address"
+                            class="block text-sm font-medium text-gray-700 mt-3 mb-2">Perpetrator Address <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="abuser_address" name="abuser_address" maxlength="2000"
+                            value="{{ old('abuser_address', $case->abuser_address ?? '') }}" placeholder="Full Address"
+                            class="form-control w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm" required>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -548,31 +574,40 @@
                         <select id="abuse_relationship" name="abuse_relationship" required
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white">
                             <option value="">Select Relationship</option>
-                            <option value="spouse" {{ old('abuse_relationship') == 'spouse' ? 'selected' : '' }}>Spouse</option>
-                            <option value="partner" {{ old('abuse_relationship') == 'partner' ? 'selected' : '' }}>Live-in Partner</option>
-                            <option value="parent" {{ old('abuse_relationship') == 'parent' ? 'selected' : '' }}>Parent</option>
-                            <option value="child" {{ old('abuse_relationship') == 'child' ? 'selected' : '' }}>Child</option>
-                            <option value="sibling" {{ old('abuse_relationship') == 'sibling' ? 'selected' : '' }}>Sibling</option>
-                            <option value="relative" {{ old('abuse_relationship') == 'relative' ? 'selected' : '' }}>Other Relative</option>
-                            <option value="acquaintance" {{ old('abuse_relationship') == 'acquaintance' ? 'selected' : '' }}>Acquaintance</option>
-                            <option value="stranger" {{ old('abuse_relationship') == 'stranger' ? 'selected' : '' }}>Stranger</option>
+                            <option value="spouse" {{ old('abuse_relationship')=='spouse' ? 'selected' : '' }}>Spouse
+                            </option>
+                            <option value="partner" {{ old('abuse_relationship')=='partner' ? 'selected' : '' }}>Live-in
+                                Partner</option>
+                            <option value="parent" {{ old('abuse_relationship')=='parent' ? 'selected' : '' }}>Parent
+                            </option>
+                            <option value="child" {{ old('abuse_relationship')=='child' ? 'selected' : '' }}>Child
+                            </option>
+                            <option value="sibling" {{ old('abuse_relationship')=='sibling' ? 'selected' : '' }}>Sibling
+                            </option>
+                            <option value="relative" {{ old('abuse_relationship')=='relative' ? 'selected' : '' }}>Other
+                                Relative</option>
+                            <option value="acquaintance" {{ old('abuse_relationship')=='acquaintance' ? 'selected' : ''
+                                }}>Acquaintance</option>
+                            <option value="stranger" {{ old('abuse_relationship')=='stranger' ? 'selected' : '' }}>
+                                Stranger</option>
                         </select>
                     </div>
                 </div>
-                
+
                 <!-- Guardian of Perpetrator (for minor perpetrators under 18) -->
                 <div id="guardian-abuser-section" class="hidden mt-6 pt-6 border-t border-gray-200">
                     <h4 class="text-md font-semibold text-gray-800 mb-4 flex items-center gap-2">
                         <i class="fas fa-user-shield text-red-500"></i>
                         Guardian of Perpetrator Information
-                        <span class="text-xs font-semibold text-red-600">(Required when perpetrator is a minor under 18)</span>
+                        <span class="text-xs font-semibold text-red-600">(Required when perpetrator is a minor under
+                            18)</span>
                     </h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Guardian Name <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" id="guardian_abuser_name" name="guardian_abuser_name" 
+                            <input type="text" id="guardian_abuser_name" name="guardian_abuser_name"
                                 value="{{ old('guardian_abuser_name') }}" placeholder="Full Name of Guardian"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                         </div>
@@ -580,15 +615,16 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Guardian Contact <span class="text-red-500">*</span>
                             </label>
-                            <input type="tel" id="guardian_abuser_contact" name="guardian_abuser_contact" maxlength="11" pattern="[0-9]{11}" inputmode="numeric" 
-                                value="{{ old('guardian_abuser_contact') }}" placeholder="09XXXXXXXXX (11 digits)"
+                            <input type="tel" id="guardian_abuser_contact" name="guardian_abuser_contact" maxlength="11"
+                                pattern="[0-9]{11}" inputmode="numeric" value="{{ old('guardian_abuser_contact') }}"
+                                placeholder="09XXXXXXXXX (11 digits)"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Guardian Address <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" id="guardian_abuser_address" name="guardian_abuser_address" 
+                            <input type="text" id="guardian_abuser_address" name="guardian_abuser_address"
                                 value="{{ old('guardian_abuser_address') }}" placeholder="Complete Address"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                         </div>
@@ -599,17 +635,21 @@
                             <select id="relationship_to_abuser" name="relationship_to_abuser"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white">
                                 <option value="">Select Relationship</option>
-                                <option value="Parent" {{ old('relationship_to_abuser') == 'Parent' ? 'selected' : '' }}>Parent</option>
-                                <option value="Legal Guardian" {{ old('relationship_to_abuser') == 'Legal Guardian' ? 'selected' : '' }}>Legal Guardian</option>
-                                <option value="Grandparent" {{ old('relationship_to_abuser') == 'Grandparent' ? 'selected' : '' }}>Grandparent</option>
-                                <option value="Other Relative" {{ old('relationship_to_abuser') == 'Other Relative' ? 'selected' : '' }}>Other Relative</option>
+                                <option value="Parent" {{ old('relationship_to_abuser')=='Parent' ? 'selected' : '' }}>
+                                    Parent</option>
+                                <option value="Legal Guardian" {{ old('relationship_to_abuser')=='Legal Guardian'
+                                    ? 'selected' : '' }}>Legal Guardian</option>
+                                <option value="Grandparent" {{ old('relationship_to_abuser')=='Grandparent' ? 'selected'
+                                    : '' }}>Grandparent</option>
+                                <option value="Other Relative" {{ old('relationship_to_abuser')=='Other Relative'
+                                    ? 'selected' : '' }}>Other Relative</option>
                             </select>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Incident Details Section -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="bg-[#C41E3A] px-6 py-4" style="background: linear-gradient(90deg, #C41E3A 0%, #A01830 100%);">
@@ -624,25 +664,28 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Date of Incident <span class="text-red-500">*</span>
                         </label>
-                        <input type="date" id="incident_date" name="incident_date" required value="{{ old('incident_date', $todayPst) }}"
+                        <input type="date" id="incident_date" name="incident_date" required
+                            value="{{ old('incident_date', $todayPst) }}"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Time of Incident <span class="text-red-500">*</span>
                         </label>
-                        <input type="time" id="incident_time" name="incident_time" required value="{{ old('incident_time') }}"
+                        <input type="time" id="incident_time" name="incident_time" required
+                            value="{{ old('incident_time') }}"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Date Reported <span class="text-red-500">*</span>
                         </label>
-                        <input type="date" id="date_reported" name="date_reported" required value="{{ old('date_reported', $todayPst) }}"
+                        <input type="date" id="date_reported" name="date_reported" required
+                            value="{{ old('date_reported', $todayPst) }}"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                     </div>
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Type of Abuse <span class="text-red-500">*</span>
@@ -651,19 +694,21 @@
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white">
                         <option value="">Select type of abuse</option>
                         @foreach($caseTypes as $caseType)
-                            @if(strcasecmp($caseType->republic_act, 'Others') !== 0)
-                            <option value="{{ $caseType->republic_act }}" {{ old('abuse_type') == $caseType->republic_act ? 'selected' : '' }}>
-                                @if($caseType->republic_act) {{ $caseType->republic_act }} - @endif
-                                {{ $caseType->name }}
-                            </option>
-                            @endif
+                        @if(strcasecmp($caseType->republic_act, 'Others') !== 0)
+                        <option value="{{ $caseType->republic_act }}" {{ old('abuse_type')==$caseType->republic_act ?
+                            'selected' : '' }}>
+                            @if($caseType->republic_act) {{ $caseType->republic_act }} - @endif
+                            {{ $caseType->name }}
+                        </option>
+                        @endif
                         @endforeach
-                        <option value="Others" {{ old('abuse_type') == 'Others' ? 'selected' : '' }}>Others</option>
+                        <option value="Others" {{ old('abuse_type')=='Others' ? 'selected' : '' }}>Others</option>
                     </select>
                 </div>
 
                 <!-- Specific Type of Abuse Explanation (Displayed when Others is selected) -->
-                <div id="other-abuse-container" class="{{ old('abuse_type') == 'Others' ? '' : 'hidden' }} p-4 rounded-xl border border-purple-200 bg-purple-50/50 transition-all duration-200">
+                <div id="other-abuse-container"
+                    class="{{ old('abuse_type') == 'Others' ? '' : 'hidden' }} p-4 rounded-xl border border-purple-200 bg-purple-50/50 transition-all duration-200">
                     <label for="other_abuse_details" class="block text-sm font-semibold text-gray-800 mb-1.5">
                         Specific Type of Abuse Explanation <span class="text-red-500">*</span>
                     </label>
@@ -672,51 +717,56 @@
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white resize-none">{{ old('other_abuse_details') }}</textarea>
                     <p class="text-xs text-gray-600 mt-1 flex items-center gap-1.5">
                         <i class="fas fa-info-circle text-purple-600"></i>
-                        <span>{{ $isBCPCCase ? 'Detailed explanation of the specific child abuse or offense is required when Others is selected.' : 'Detailed explanation of the specific abuse committed is required when Others is selected.' }}</span>
+                        <span>{{ $isBCPCCase ? 'Detailed explanation of the specific child abuse or offense is required
+                            when Others is selected.' : 'Detailed explanation of the specific abuse committed is
+                            required when Others is selected.' }}</span>
                     </p>
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Incident Location <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" id="incident_location" name="incident_location" required 
+                    <input type="text" id="incident_location" name="incident_location" required
                         value="{{ old('incident_location') }}" placeholder="Where did the incident happen?"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Incident Details <span class="text-red-500">*</span>
                     </label>
-                    <textarea id="incident_details" name="incident_details" rows="4" required placeholder="Provide details about the case"
+                    <textarea id="incident_details" name="incident_details" rows="4" required
+                        placeholder="Provide details about the case"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm resize-none">{{ old('incident_details') }}</textarea>
                 </div>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Witness Name (if any)</label>
-                        <input type="text" id="witness_name" name="witness_name" 
-                            value="{{ old('witness_name') }}" placeholder="Full name of witness"
+                        <input type="text" id="witness_name" name="witness_name" value="{{ old('witness_name') }}"
+                            placeholder="Full name of witness"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Witness Contact</label>
-                        <input type="tel" id="witness_contact" name="witness_contact" maxlength="11" pattern="[0-9]*" inputmode="numeric" 
-                            value="{{ old('witness_contact') }}" placeholder="Contact number (11 digits)"
+                        <input type="tel" id="witness_contact" name="witness_contact" maxlength="11" pattern="[0-9]*"
+                            inputmode="numeric" value="{{ old('witness_contact') }}"
+                            placeholder="Contact number (11 digits)"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Form Actions -->
         <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 pt-4">
-            <a href="{{ route('desk-officer.cases.index', ['type' => $type]) }}" 
-               class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-center w-full sm:w-auto">
+            <a href="{{ route('desk-officer.cases.index', ['type' => $type]) }}"
+                class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-center w-full sm:w-auto">
                 Cancel
             </a>
-            <button type="submit" class="px-6 py-2.5 bg-purple-700 hover:bg-purple-800 text-white rounded-lg transition-colors text-sm font-medium shadow-sm flex items-center justify-center gap-2 w-full sm:w-auto">
+            <button type="submit"
+                class="px-6 py-2.5 bg-purple-700 hover:bg-purple-800 text-white rounded-lg transition-colors text-sm font-medium shadow-sm flex items-center justify-center gap-2 w-full sm:w-auto">
                 <i class="fas fa-save"></i>
                 <span>Save {{ $isBCPCCase ? 'BCPC' : 'SWD' }} Case</span>
             </button>
@@ -726,7 +776,7 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     const isBCPCCase = {{ $isBCPCCase ? 'true' : 'false' }};
     const isSwdCase = !isBCPCCase;
     const victimAgeInput = document.getElementById('victim_age');

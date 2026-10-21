@@ -3,14 +3,14 @@
 @section('title', 'Calendar')
 
 @php
-    $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer'
-        && auth()->user()?->isMultiCaseDepartment();
-    $isBcpcDeskOfficer = auth()->user()?->position === 'Desk Officer'
-        && auth()->user()?->defaultCaseDepartment() === 'BCPC'
-        && !$isMultiroleDeskOfficer;
-    $isSwdDeskOfficer = auth()->user()?->position === 'Desk Officer'
-        && auth()->user()?->defaultCaseDepartment() === 'VAWC'
-        && !$isMultiroleDeskOfficer;
+$isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer'
+&& auth()->user()?->isMultiCaseDepartment();
+$isBcpcDeskOfficer = auth()->user()?->position === 'Desk Officer'
+&& auth()->user()?->defaultCaseDepartment() === 'BCPC'
+&& !$isMultiroleDeskOfficer;
+$isSwdDeskOfficer = auth()->user()?->position === 'Desk Officer'
+&& auth()->user()?->defaultCaseDepartment() === 'VAWC'
+&& !$isMultiroleDeskOfficer;
 @endphp
 
 @push('styles')
@@ -26,27 +26,31 @@
         html body.portal-ui.desk-officer-calendar-mobile-nav #mobileTopBar {
             display: none !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav #mobileMenuToggle,
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebarCloseBtn,
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebarOverlay {
             display: none !important;
             pointer-events: none !important;
         }
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky),
+
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky),
         html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header {
             background: #C41E3A !important;
             border-bottom: 1px solid #99172E !important;
         }
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) > div,
-        html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header > div {
+
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky)>div,
+        html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header>div {
             align-items: flex-start !important;
             flex-wrap: nowrap !important;
             min-width: 0 !important;
             padding-left: max(.5rem, env(safe-area-inset-left)) !important;
             padding-right: max(1rem, env(safe-area-inset-right)) !important;
         }
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) > div > div:first-of-type,
-        html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header > div > div:first-of-type {
+
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky)>div>div:first-of-type,
+        html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header>div>div:first-of-type {
             display: flex !important;
             flex-direction: row !important;
             flex-wrap: nowrap !important;
@@ -55,12 +59,14 @@
             min-width: 0 !important;
             flex: 1 1 auto !important;
         }
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) > div > div:first-of-type > div,
-        html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header > div > div:first-of-type > div {
+
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky)>div>div:first-of-type>div,
+        html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header>div>div:first-of-type>div {
             min-width: 0 !important;
             flex: 1 1 auto !important;
             text-align: left !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav :is(#dashboardMenuToggle, #pageMobileMenuToggle) {
             position: relative !important;
             left: 0 !important;
@@ -78,36 +84,43 @@
             box-shadow: none !important;
             color: #ffffff !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav :is(#dashboardMenuToggle, #pageMobileMenuToggle) i {
             color: inherit !important;
         }
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) :is(h1, h2, h3),
+
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) :is(h1, h2, h3),
         html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header :is(h1, h2, h3) {
             color: #ffffff !important;
             opacity: 1 !important;
         }
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) p,
+
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) p,
         html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header p {
             display: block !important;
             margin-top: .125rem !important;
             color: #ffffff !important;
             opacity: 1 !important;
         }
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) p :is(span, strong),
+
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) p :is(span, strong),
         html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header p :is(span, strong) {
             color: #ffffff !important;
             opacity: 1 !important;
         }
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) div:first-of-type :is(span, a),
+
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) div:first-of-type :is(span, a),
         html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header div:first-of-type :is(span, a) {
             color: #ffffff !important;
         }
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) > div > div:last-child,
-        html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header > div > div:last-child {
+
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky)>div>div:last-child,
+        html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header>div>div:last-child {
             flex: 0 0 auto !important;
             flex-wrap: nowrap !important;
         }
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent > header button[aria-label="Notifications"],
+
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header button[aria-label="Notifications"],
         html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"] {
             box-sizing: border-box !important;
             width: 2.5rem !important;
@@ -117,13 +130,15 @@
             padding: 0 !important;
             border-radius: .625rem !important;
         }
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent > header button[aria-label="Notifications"] > i,
-        html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"] > i {
+
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header button[aria-label="Notifications"]>i,
+        html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"]>i {
             margin: 0 !important;
             font-size: 1rem !important;
             line-height: 1 !important;
         }
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent > header #notifications-unread-count,
+
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header #notifications-unread-count,
         html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header #notifications-unread-count {
             width: 1.25rem !important;
             height: 1.25rem !important;
@@ -155,53 +170,64 @@
             background: #C41E3A !important;
             background-image: none !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar.sidebar-open {
             opacity: 1 !important;
             visibility: visible !important;
             transform: translateY(0) !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar.sidebar-collapsed,
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar.sidebar-collapsed-init {
             width: 100% !important;
             min-width: 100% !important;
             max-width: 100% !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar .sidebar-header {
             display: none !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar .sidebar-text {
             opacity: 1 !important;
             max-width: none !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar .sidebar-menu {
             flex: 0 1 auto;
             min-height: 0;
             padding: .5rem !important;
             overflow-y: auto !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar .sidebar-link {
             justify-content: flex-start !important;
             gap: .75rem !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar #sidebarCloseBtn {
             display: none !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar nav :is(a, button),
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar .sidebar-link {
             background: #C41E3A !important;
             color: #ffffff !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar nav :is(a, button) :is(i, svg, span),
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar .sidebar-link :is(i, svg, span) {
             color: #ffffff !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar nav :is(a, button):hover,
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar .sidebar-link:hover {
             background: #99172E !important;
             color: #ffffff !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar .sidebar-link:is(.bg-purple-600, .bg-purple-700\/70),
-        html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar nav [x-show] > :is(a, button).bg-purple-600 {
+        html body.portal-ui.desk-officer-calendar-mobile-nav #sidebar nav [x-show]> :is(a, button).bg-purple-600 {
             background: #99172E !important;
             color: #ffffff !important;
             box-shadow: inset 3px 0 0 #ffffff !important;
@@ -212,6 +238,7 @@
         html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header div:has(> img[alt="User Profile"]) {
             display: none !important;
         }
+
         html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header button:has(> img[alt="User Profile"]) {
             display: none !important;
         }
@@ -220,23 +247,28 @@
 @endpush
 
 @section('content')
-@include('components.desk-officer.bcpc-dashboard-header', ['title' => 'Calendar', 'subtitle' => 'View scheduled activities'])
+@include('components.desk-officer.bcpc-dashboard-header', ['title' => 'Calendar', 'subtitle' => 'View scheduled
+activities'])
 
 <!-- Top Header -->
-@unless($isBcpcDeskOfficer || $isSwdDeskOfficer || (auth()->user()?->position === 'Desk Officer' && auth()->user()?->isMultiCaseDepartment()))
+@unless($isBcpcDeskOfficer || $isSwdDeskOfficer || (auth()->user()?->position === 'Desk Officer' &&
+auth()->user()?->isMultiCaseDepartment()))
 <header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
         <div>
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Calendar</h2>
             <p class="text-sm text-gray-500 hidden sm:block">View and manage events</p>
         </div>
-        @if(auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'BCPC' && !auth()->user()?->isMultiCaseDepartment())
+        @if(auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'BCPC' &&
+        !auth()->user()?->isMultiCaseDepartment())
         <div class="flex items-center gap-4">
             @include('desk-officer.components.notifications')
             <div class="hidden sm:flex items-center gap-3">
-                <img src="{{ asset('images/mswdo_logo.jpg') }}" alt="User Profile" class="w-10 h-10 rounded-full object-cover bg-gray-100">
+                <img src="{{ asset('images/mswdo_logo.jpg') }}" alt="User Profile"
+                    class="w-10 h-10 rounded-full object-cover bg-gray-100">
                 <div class="text-right">
-                    <p class="text-sm font-medium text-gray-800">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
+                    <p class="text-sm font-medium text-gray-800">{{ Auth::user()->first_name }} {{
+                        Auth::user()->last_name }}</p>
                     <p class="text-xs text-gray-500">{{ Auth::user()->position }}</p>
                 </div>
             </div>
@@ -250,10 +282,12 @@
 <main class="px-4 pt-4 pb-4 sm:p-6 lg:p-8">
     @if($isMultiroleDeskOfficer)
     <div class="calendar-department-toggle mb-4 flex flex-wrap gap-2">
-        <button type="button" data-calendar-department="BCPC" class="calendar-department-button inline-flex items-center gap-2 rounded-lg bg-[#C41E3A] px-4 py-2 text-sm font-medium text-white">
+        <button type="button" data-calendar-department="BCPC"
+            class="calendar-department-button inline-flex items-center gap-2 rounded-lg bg-[#C41E3A] px-4 py-2 text-sm font-medium text-white">
             <i class="fas fa-child"></i> BCPC Calendar
         </button>
-        <button type="button" data-calendar-department="VAWC" class="calendar-department-button inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700">
+        <button type="button" data-calendar-department="VAWC"
+            class="calendar-department-button inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700">
             <i class="fas fa-shield-alt"></i> SWD Calendar
         </button>
     </div>
@@ -263,7 +297,8 @@
         @if(true)
         <div id="calendar-list-filter" class="hidden mb-4">
             <label for="calendar-list-range" class="block text-sm font-medium text-gray-700 mb-2">Date range</label>
-            <select id="calendar-list-range" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500">
+            <select id="calendar-list-range"
+                class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500">
                 <option value="all">Whole month</option>
                 <option value="3">Days 1–3</option>
                 <option value="7">Days 1–7</option>
@@ -276,29 +311,31 @@
         <div id="calendar-list-pagination" class="hidden mt-4 flex items-center justify-between gap-3 text-sm">
             <span id="calendar-list-page-info" aria-live="polite"></span>
             <div class="flex gap-2">
-                <button type="button" id="calendar-list-prev" class="px-3 py-2 border border-gray-300 rounded-lg text-purple-700 disabled:bg-red-100 disabled:text-red-800 disabled:border-red-200 disabled:opacity-100 disabled:cursor-not-allowed">Previous</button>
-                <button type="button" id="calendar-list-next" class="px-3 py-2 border border-gray-300 rounded-lg text-purple-700 disabled:bg-red-100 disabled:text-red-800 disabled:border-red-200 disabled:opacity-100 disabled:cursor-not-allowed">Next</button>
+                <button type="button" id="calendar-list-prev"
+                    class="px-3 py-2 border border-gray-300 rounded-lg text-purple-700 disabled:bg-red-100 disabled:text-red-800 disabled:border-red-200 disabled:opacity-100 disabled:cursor-not-allowed">Previous</button>
+                <button type="button" id="calendar-list-next"
+                    class="px-3 py-2 border border-gray-300 rounded-lg text-purple-700 disabled:bg-red-100 disabled:text-red-800 disabled:border-red-200 disabled:opacity-100 disabled:cursor-not-allowed">Next</button>
             </div>
         </div>
         @endif
     </div>
     <div class="flex justify-center mt-6">
         <button type="button" onclick="openEventModal()"
-           class="inline-flex w-full sm:w-80 items-center justify-center gap-2 bg-purple-700 hover:bg-purple-800 text-white px-5 py-3 rounded-lg font-medium transition shadow-md">
+            class="inline-flex w-full sm:w-80 items-center justify-center gap-2 bg-purple-700 hover:bg-purple-800 text-white px-5 py-3 rounded-lg font-medium transition shadow-md">
             <i class="fas fa-plus-circle"></i> Add Event
         </button>
     </div>
 </main>
 
 <style>
-    @if($isMultiroleDeskOfficer)
-    @media (max-width: 47.9375rem) and (orientation: portrait) {
+    @if($isMultiroleDeskOfficer) @media (max-width: 47.9375rem) and (orientation: portrait) {
         .calendar-department-toggle {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: .5rem;
             width: 100%;
         }
+
         .calendar-department-toggle .calendar-department-button {
             width: 100%;
             min-width: 0;
@@ -309,15 +346,17 @@
             white-space: nowrap;
         }
     }
-    @endif
-    .fc {
+
+    @endif .fc {
         font-family: 'Raleway', 'Montserrat', sans-serif;
     }
+
     .fc .fc-toolbar-title {
         font-size: 1.5rem;
         font-weight: 600;
         color: #1f2937;
     }
+
     .fc .fc-button {
         background-color: #7c3aed;
         border-color: #7c3aed;
@@ -325,28 +364,34 @@
         font-family: 'Raleway', 'Montserrat', sans-serif;
         font-weight: 500;
     }
+
     .fc .fc-button:hover {
         background-color: #6d28d9;
         border-color: #6d28d9;
     }
+
     .fc .fc-button:active,
     .fc .fc-button.fc-button-active {
         background-color: #5b21b6;
         border-color: #5b21b6;
     }
+
     .fc .fc-col-header-cell-cushion {
         font-weight: 600;
         color: #6b7280;
         text-transform: uppercase;
         font-size: 0.75rem;
     }
+
     .fc .fc-daygrid-day-number {
         color: #374151;
         font-weight: 500;
     }
+
     .fc .fc-day-today {
         background-color: #f3e8ff !important;
     }
+
     .fc .fc-event {
         border: none;
         border-radius: 0.375rem;
@@ -358,19 +403,28 @@
         padding: 0.125rem 0.25rem;
         transition: filter 120ms ease, box-shadow 120ms ease;
     }
+
     .fc .fc-daygrid-day-events,
     .fc .fc-daygrid-event-harness {
         min-width: 0;
         max-width: 100%;
     }
+
     .fc .fc-daygrid-day-events {
         width: 100%;
         box-sizing: border-box;
         overflow-x: clip;
         overflow-y: visible;
     }
-    .fc .fc-daygrid-event-harness { padding-inline: 0.125rem; }
-    .fc .fc-daygrid-event { width: calc(100% - 0.25rem); }
+
+    .fc .fc-daygrid-event-harness {
+        padding-inline: 0.125rem;
+    }
+
+    .fc .fc-daygrid-event {
+        width: calc(100% - 0.25rem);
+    }
+
     .fc .fc-daygrid-event .fc-event-main,
     .fc .fc-daygrid-event .fc-event-main-frame,
     .fc .fc-daygrid-event .fc-event-title-container,
@@ -382,11 +436,13 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
     .fc .fc-event:hover,
     .fc .fc-event:focus-visible {
         filter: brightness(0.97);
         box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
     }
+
     .fc .calendar-event-count {
         clear: both;
         width: 100%;
@@ -395,6 +451,7 @@
         box-sizing: border-box;
         padding-inline: 0.125rem;
     }
+
     .fc .calendar-event-count button {
         width: auto;
         max-width: 100%;
@@ -404,16 +461,24 @@
         overflow-wrap: anywhere;
         text-align: center;
     }
-    @if(true)
-    .bcpc-admin-calendar {
+
+    @if(true) .bcpc-admin-calendar {
         max-width: 960px;
         margin-inline: auto;
         padding: 20px;
         border-color: #e5e7eb;
     }
+
     .bcpc-admin-calendar .fc,
-    .bcpc-admin-calendar .fc .fc-button { font-family: inherit; }
-    .bcpc-admin-calendar .fc .fc-toolbar-title { font-size: 1.25rem; font-weight: 700; }
+    .bcpc-admin-calendar .fc .fc-button {
+        font-family: inherit;
+    }
+
+    .bcpc-admin-calendar .fc .fc-toolbar-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
     .bcpc-admin-calendar .fc .fc-button {
         background-color: #7e22ce;
         border-color: #7e22ce;
@@ -421,17 +486,33 @@
         border-radius: .5rem;
         padding: .4rem .7rem;
     }
+
     .bcpc-admin-calendar .fc .fc-button:hover,
     .bcpc-admin-calendar .fc .fc-button.fc-button-active {
         background-color: #6b21a8;
         border-color: #6b21a8;
     }
-    .bcpc-admin-calendar .fc { --fc-border-color: #e5e7eb; }
-    .bcpc-admin-calendar .fc .fc-col-header-cell { background: #faf5ff; }
-    @media (max-width: 640px) {
-        .bcpc-admin-calendar { padding: 12px; }
-        .bcpc-admin-calendar .fc .fc-toolbar { flex-wrap: wrap; justify-content: center; gap: .75rem; }
+
+    .bcpc-admin-calendar .fc {
+        --fc-border-color: #e5e7eb;
     }
+
+    .bcpc-admin-calendar .fc .fc-col-header-cell {
+        background: #faf5ff;
+    }
+
+    @media (max-width: 640px) {
+        .bcpc-admin-calendar {
+            padding: 12px;
+        }
+
+        .bcpc-admin-calendar .fc .fc-toolbar {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: .75rem;
+        }
+    }
+
     @media (max-width: 37.4375rem) {
         .bcpc-admin-calendar .fc .fc-header-toolbar {
             display: grid;
@@ -442,36 +523,45 @@
             row-gap: .875rem;
             margin-bottom: 1rem;
         }
-        .bcpc-admin-calendar .fc .fc-header-toolbar > .fc-toolbar-chunk:nth-child(1) {
+
+        .bcpc-admin-calendar .fc .fc-header-toolbar>.fc-toolbar-chunk:nth-child(1) {
             grid-column: 1;
             grid-row: 1;
             display: flex;
             min-width: 0;
             align-items: center;
-            gap: .5rem;
+            gap: .20rem;
         }
-        .bcpc-admin-calendar .fc .fc-header-toolbar > .fc-toolbar-chunk:nth-child(3) {
+
+        .bcpc-admin-calendar .fc .fc-header-toolbar>.fc-toolbar-chunk:nth-child(3) {
             grid-column: 2;
             grid-row: 1;
             display: flex;
             align-items: center;
             justify-self: end;
         }
-        .bcpc-admin-calendar .fc .fc-header-toolbar > .fc-toolbar-chunk:nth-child(3) .fc-button-group {
+
+        .bcpc-admin-calendar .fc .fc-header-toolbar>.fc-toolbar-chunk:nth-child(3) .fc-button-group {
             display: flex;
             gap: .5rem;
         }
-        .bcpc-admin-calendar .fc .fc-header-toolbar > .fc-toolbar-chunk:nth-child(3) .fc-button {
+
+        .bcpc-admin-calendar .fc .fc-header-toolbar>.fc-toolbar-chunk:nth-child(3) .fc-button {
             border-radius: .5rem !important;
         }
-        .bcpc-admin-calendar .fc .fc-header-toolbar > .fc-toolbar-chunk:nth-child(2) {
+
+        .bcpc-admin-calendar .fc .fc-header-toolbar>.fc-toolbar-chunk:nth-child(2) {
             grid-column: 1 / -1;
             grid-row: 2;
             justify-self: center;
             text-align: center;
         }
-        .bcpc-admin-calendar .fc .fc-toolbar-title { font-size: 1.125rem; }
+
+        .bcpc-admin-calendar .fc .fc-toolbar-title {
+            font-size: 1.125rem;
+        }
     }
+
     @endif
 
     /* Scroll the modal card itself so its form and actions remain reachable on short screens. */
@@ -482,6 +572,7 @@
         padding: 1rem;
         overflow: hidden;
     }
+
     #eventModalContent {
         width: min(100%, 34rem);
         max-height: calc(100vh - 2rem);
@@ -490,6 +581,7 @@
         overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
     }
+
     #dateEventsModalContent,
     #eventDetailsModalContent {
         max-height: calc(100vh - 2rem);
@@ -501,10 +593,16 @@
 
     /* Keep the existing tablet modal width and spacing. */
     @media (min-width: 37.5rem) and (max-width: 80rem) {
-        #eventModalContent { width: min(100%, 34rem); }
+        #eventModalContent {
+            width: min(100%, 34rem);
+        }
     }
+
     @media (min-width: 64rem) and (max-width: 80rem) {
-        #eventModalDialog { padding: 1.5rem; }
+        #eventModalDialog {
+            padding: 1.5rem;
+        }
+
         #eventModalContent {
             width: min(100%, 42rem);
             max-height: min(46rem, calc(100dvh - 3rem));
@@ -517,12 +615,13 @@
 <div id="dateEventsModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeDateEventsModal()"></div>
     <div class="flex min-h-full items-center justify-center overflow-y-auto p-4">
-        <div id="dateEventsModalContent" class="relative bg-white rounded-xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain p-6">
+        <div id="dateEventsModalContent"
+            class="relative bg-white rounded-xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain p-6">
             <h2 class="text-xl font-bold text-gray-800 mb-4" id="dateEventsTitle">Events on Date</h2>
             <div id="dateEventsList" class="space-y-3 mb-6"></div>
             <div class="flex justify-end">
-                <button type="button" onclick="closeDateEventsModal()" 
-                        class="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                <button type="button" onclick="closeDateEventsModal()"
+                    class="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
                     Close
                 </button>
             </div>
@@ -534,64 +633,71 @@
 <div id="eventModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeEventModal()"></div>
     <div id="eventModalDialog" class="flex items-center justify-center overflow-y-auto p-4">
-        <div id="eventModalContent" class="relative bg-white rounded-xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain p-6">
+        <div id="eventModalContent"
+            class="relative bg-white rounded-xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain p-6">
             <h2 class="text-xl font-bold text-gray-800 mb-4">Add New Event</h2>
-            
+
             <form id="eventForm" onsubmit="submitEvent(event)">
                 @csrf
                 <input type="hidden" name="event_date" id="event_date">
                 <div id="eventFormFields">
-                <div class="mb-4">
-                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Title <span class="text-red-500">*</span></label>
-                    <input type="text" id="title" name="title" required
-                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                </div>
-                
-                <div class="mb-4">
-                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                    <textarea id="description" name="description" rows="3"
-                              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"></textarea>
-                </div>
-                
-                <div class="mb-4">
-                    <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                    <input type="text" id="location" name="location"
-                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                </div>
-                
-                <div class="mb-4">
-                    <label for="event_date_input" class="block text-sm font-medium text-gray-700 mb-2">Date <span class="text-red-500">*</span></label>
-                    <input type="datetime-local" id="event_date_input" name="event_date_input" required oninput="validateEventEndTime()"
-                           min="{{ date('Y-m-d\TH:i') }}"
-                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                </div>
-                
-                <div class="mb-4">
-                    <label for="end_time" class="block text-sm font-medium text-gray-700 mb-2">End Time</label>
-                    <input type="datetime-local" id="end_time" name="end_time" oninput="validateEventEndTime()" aria-describedby="eventEndTimeHint"
-                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                    <p id="eventEndTimeHint" class="mt-1 text-xs text-gray-500">Optional. Choose a date and time after the event starts.</p>
-                </div>
-                
-                <div class="mb-4">
-                    <label for="target_audience" class="block text-sm font-medium text-gray-700 mb-2">Target Audience <span class="text-red-500">*</span></label>
-                    <select id="target_audience" name="target_audience" required
+                    <div class="mb-4">
+                        <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Title <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="title" name="title" required
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                        <option value="all">All Users</option>
-                        <option value="admins_only">Administrators Only</option>
-                        <option value="bcpc_only">BCPC Only</option>
-                        <option value="vawc_only">SWD Only</option>
-                    </select>
-                </div>
-                
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="description"
+                            class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea id="description" name="description" rows="3"
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                        <input type="text" id="location" name="location"
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="event_date_input" class="block text-sm font-medium text-gray-700 mb-2">Date <span
+                                class="text-red-500">*</span></label>
+                        <input type="datetime-local" id="event_date_input" name="event_date_input" required
+                            oninput="validateEventEndTime()" min="{{ date('Y-m-d\TH:i') }}"
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="end_time" class="block text-sm font-medium text-gray-700 mb-2">End Time</label>
+                        <input type="datetime-local" id="end_time" name="end_time" oninput="validateEventEndTime()"
+                            aria-describedby="eventEndTimeHint"
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <p id="eventEndTimeHint" class="mt-1 text-xs text-gray-500">Optional. Choose a date and time
+                            after the event starts.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="target_audience" class="block text-sm font-medium text-gray-700 mb-2">Target
+                            Audience <span class="text-red-500">*</span></label>
+                        <select id="target_audience" name="target_audience" required
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                            <option value="all">All Users</option>
+                            <option value="admins_only">Administrators Only</option>
+                            <option value="bcpc_only">BCPC Only</option>
+                            <option value="vawc_only">SWD Only</option>
+                        </select>
+                    </div>
+
                 </div>
                 <div id="eventFormActions" class="flex gap-3 justify-end">
-                    <button type="button" onclick="closeEventModal()" 
-                            class="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                    <button type="button" onclick="closeEventModal()"
+                        class="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
                         Cancel
                     </button>
-                    <button type="submit" 
-                            class="px-4 py-2.5 bg-purple-700 hover:bg-purple-800 text-white rounded-lg transition">
+                    <button type="submit"
+                        class="px-4 py-2.5 bg-purple-700 hover:bg-purple-800 text-white rounded-lg transition">
                         Save Event
                     </button>
                 </div>
@@ -604,7 +710,8 @@
 <div id="conflictModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeConflictModal()"></div>
     <div class="flex min-h-full items-center justify-center overflow-y-auto p-4">
-        <div class="relative bg-white rounded-xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain p-6">
+        <div
+            class="relative bg-white rounded-xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain p-6">
             <div class="flex justify-center mb-4">
                 <div class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center">
                     <i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>
@@ -615,12 +722,12 @@
                 There is already an event on this date. Do you want to continue adding this event?
             </p>
             <div class="flex gap-3">
-                <button type="button" onclick="closeConflictModal()" 
-                        class="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                <button type="button" onclick="closeConflictModal()"
+                    class="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
                     Cancel
                 </button>
-                <button type="button" onclick="submitEventWithConflict()" 
-                        class="flex-1 px-4 py-2.5 bg-purple-700 hover:bg-purple-800 text-white rounded-lg transition">
+                <button type="button" onclick="submitEventWithConflict()"
+                    class="flex-1 px-4 py-2.5 bg-purple-700 hover:bg-purple-800 text-white rounded-lg transition">
                     Continue
                 </button>
             </div>
@@ -632,16 +739,17 @@
 <div id="eventDetailsModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeEventDetailsModal()"></div>
     <div class="flex min-h-full items-center justify-center overflow-y-auto p-4">
-        <div id="eventDetailsModalContent" class="relative bg-white rounded-xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain p-6">
+        <div id="eventDetailsModalContent"
+            class="relative bg-white rounded-xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain p-6">
             <h2 id="eventTitle" class="text-xl font-bold text-gray-800 mb-4"></h2>
             <div id="eventDetails" class="space-y-3 mb-6"></div>
             <div class="flex gap-3 justify-end">
-                <button type="button" onclick="closeEventDetailsModal()" 
-                        class="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                <button type="button" onclick="closeEventDetailsModal()"
+                    class="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
                     Close
                 </button>
                 <button type="button" id="deleteEventBtn" onclick="deleteEvent()"
-                        class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
+                    class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
                     Delete
                 </button>
             </div>
@@ -653,7 +761,7 @@
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
 
 <script>
-let calendar;
+    let calendar;
 let currentEventId = null;
 let pendingEventData = null;
 let allEvents = [];

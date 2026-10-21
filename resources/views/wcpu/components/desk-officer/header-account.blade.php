@@ -1,4 +1,4 @@
-@if(auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true))
+@if(auth()->user() && (strtolower(trim((string) auth()->user()->position)) === 'desk officer' || in_array(strtoupper((string) auth()->user()->defaultCaseDepartment()), ['BCPC', 'VAWC'], true)))
 <div class="flex items-center gap-4">
     @include('desk-officer.components.notifications')
     <div class="hidden sm:flex items-center gap-3">

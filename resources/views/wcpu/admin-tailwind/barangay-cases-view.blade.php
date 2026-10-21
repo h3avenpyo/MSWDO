@@ -102,6 +102,11 @@
             min-height: 2.5rem !important;
             padding: 0 !important;
             border-radius: .625rem !important;
+            background-color: #A01830 !important;
+            color: #ffffff !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
         html body.portal-ui:is(.view-cases-admin-mobile-nav, .view-cases-desk-mobile-nav) #barangay-cases-view-header button[aria-label="Notifications"] > i {
             margin: 0 !important;
@@ -567,12 +572,15 @@
 <header id="barangay-cases-view-header" class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
         <div class="view-cases-header-leading flex items-center gap-3 min-w-0">
-            <button id="dashboardMenuToggle" class="hidden" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+            <button id="dashboardMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
                 <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
             <div class="min-w-0">
-                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">{{ $barangay->name }} Cases</h2>
-                <p class="text-sm text-gray-500">Viewing cases for this barangay</p>
+                @php
+                    $deskDept = in_array(Auth::user()?->defaultCaseDepartment(), ['VAWC', 'SWD'], true) ? 'SWD' : 'BCPC';
+                @endphp
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">{{ $isBarangayDeskOfficer ? 'Welcome, ' . $deskDept . ' SILANG' : $barangay->name . ' Cases' }}</h2>
+                <p class="text-sm text-gray-500">{{ $isBarangayDeskOfficer ? $deskDept . ' Desk Officer - Silang, Cavite' : 'Viewing cases for this barangay' }}</p>
             </div>
         </div>
         <div class="flex items-center gap-4">

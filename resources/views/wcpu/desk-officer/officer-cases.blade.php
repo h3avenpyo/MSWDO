@@ -4,9 +4,9 @@
 
 @php
     $defaultCaseType = strtolower(Auth::user()->defaultCaseDepartment());
-    $isDeskOfficer = Auth::user()->position === 'Desk Officer';
+    $isDeskOfficer = strtolower(trim((string) Auth::user()?->position)) === 'desk officer';
     $isMultiroleDeskOfficer = $isDeskOfficer && Auth::user()->isMultiCaseDepartment();
-    $isSwdDeskOfficer = Auth::user()->position === 'Desk Officer' && Auth::user()->defaultCaseDepartment() === 'VAWC';
+    $isSwdDeskOfficer = $isDeskOfficer && Auth::user()->defaultCaseDepartment() === 'VAWC';
 @endphp
 
 @push('modals')
@@ -218,6 +218,45 @@
     <style>
         /* Print-specific content will be controlled later via JS; keep original print CSS embedded for generated print window */
         [x-cloak] { display: none !important; }
+
+        /* Mobile & Tablet views (<= 80rem / <= 1280px): Hide Cases List table */
+        @media (max-width: 80rem) {
+            #desk-officer-cases-content .cases-table-desktop,
+            .cases-list-section .cases-table-desktop {
+                display: none !important;
+            }
+        }
+
+        /* Mobile view (< 48rem / < 768px): Show case cards using mobile spacing */
+        @media (max-width: 47.999rem), (max-width: 767.98px) {
+            #desk-officer-cases-content #mobile-case-cards,
+            .cases-list-section #mobile-case-cards {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 0.75rem !important;
+                padding: 0.875rem !important;
+            }
+            #desk-officer-cases-content #mobile-case-cards .bcpc-case-referred-badge {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                line-height: 1.25 !important;
+            }
+        }
+
+        /* Desktop view (> 80rem / > 1280px): Display Cases List table, hide case cards */
+        @media (min-width: 80.0625rem) {
+            #desk-officer-cases-content .cases-table-desktop,
+            .cases-list-section .cases-table-desktop {
+                display: block !important;
+            }
+            #desk-officer-cases-content #mobile-case-cards,
+            .cases-list-section #mobile-case-cards {
+                display: none !important;
+            }
+        }
+
         @if($isMultiroleDeskOfficer)
         @media (max-width: 47.9375rem) and (orientation: portrait) {
             #caseModal .case-modal-header-actions {
@@ -230,114 +269,94 @@
                 margin-left: auto;
                 justify-content: flex-end;
             }
-            #desk-officer-cases-content.multirole-cases-page {
-                display: flex;
-                flex-direction: column;
-            }
-            #desk-officer-cases-content .case-view-mobile-controls { display: contents; }
-            #desk-officer-cases-content .case-view-mobile-search { order: 1; }
-            #desk-officer-cases-content .case-summary-grid { order: 2; }
-            #desk-officer-cases-content .swd-desk-case-controls {
-                order: 3;
-                margin-bottom: 1rem;
-            }
-            #desk-officer-cases-content .swd-desk-case-controls > .relative { order: 4; }
-            #desk-officer-cases-content .swd-desk-case-controls > button { order: 3; }
-            #desk-officer-cases-content .cases-list-section { order: 4; }
         }
-        .multirole-cases-page .case-summary-grid > div { padding: 1rem; border-color: #f3f4f6; }
-        .multirole-cases-page .case-summary-grid p:first-child { font-weight: 400; }
         .multirole-cases-page .swd-desk-table th { padding: .75rem 1.5rem; text-transform: uppercase; letter-spacing: .05em; }
         .multirole-cases-page .swd-desk-table td { padding: 1rem 1.5rem; }
-        @media (min-width: 37.5rem) and (max-width: 47.999rem) {
-            #desk-officer-cases-content.multirole-cases-page .swd-desk-case-controls {
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            }
-            #desk-officer-cases-content.multirole-cases-page .case-summary-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: clamp(.75rem, 2vw, 1rem) !important;
-            }
-        }
+        /* Tablet Case Cards: Card presentation on tablet screens (768px–1280px / 48rem–80rem) */
         @media (min-width: 48rem) and (max-width: 80rem) {
-            #desk-officer-cases-content.multirole-cases-page .swd-desk-case-controls {
-                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            #desk-officer-cases-content #mobile-case-cards {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 0.875rem !important;
+                padding: 1rem !important;
             }
-            #desk-officer-cases-content.multirole-cases-page .case-summary-grid {
-                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-                gap: clamp(.75rem, 1.5vw, 1rem) !important;
+            #desk-officer-cases-content #mobile-case-cards .case-card {
+                margin: 0 !important;
+                background: #ffffff;
+                border: 1px solid #e5e7eb;
+                border-radius: 0.75rem;
+                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+                overflow: hidden;
             }
-            #desk-officer-cases-content.multirole-cases-page .case-summary-grid > div {
-                padding: clamp(.75rem, 1.5vw, 1rem) !important;
-            }
-        }
-        @media (min-width: 37.5rem) and (max-width: 80rem) {
-            /* Match the multi-role tablet cards to the established BCPC card
-               hierarchy: identity/status first, details left, actions right. */
-            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card > .p-4 {
-                position: relative;
-                display: grid;
-                grid-template-columns: minmax(0, 1fr) auto;
-                grid-template-rows: auto auto 1fr auto;
-                min-height: 9rem;
-                padding: clamp(.875rem, 1.5vw, 1rem) !important;
-            }
-            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card > .p-4 > :first-child {
-                grid-column: 1 / -1;
-                margin-bottom: .25rem;
-            }
-            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card h3 {
-                grid-column: 1;
-                margin: .25rem 0 0;
-            }
-            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details {
-                grid-column: 1;
+            #desk-officer-cases-content #mobile-case-cards .case-card > .p-4 {
+                padding: 1.125rem 1.25rem !important;
                 display: flex;
                 flex-direction: column;
-                align-items: flex-start;
-                gap: .25rem;
-                margin: .25rem 0 0;
-                padding-bottom: 1.75rem;
+                gap: 0.625rem;
             }
-            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details > div {
-                width: auto;
-            }
-            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details > div:nth-child(3)::before {
-                content: 'Generated by: ';
-                color: #6b7280;
-            }
-            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions {
-                position: absolute;
-                right: clamp(.875rem, 1.5vw, 1rem);
-                bottom: clamp(.875rem, 1.5vw, 1rem);
+            #desk-officer-cases-content #mobile-case-cards .case-card-details {
                 display: grid !important;
-                grid-template-columns: repeat(3, 2.5rem);
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 0.5rem 1.5rem !important;
+                margin: 0.25rem 0 !important;
+                padding: 0.625rem 0 !important;
+                border-top: 1px solid #f3f4f6;
+                border-bottom: 1px solid #f3f4f6;
+            }
+            #desk-officer-cases-content #mobile-case-cards .case-card-details > div {
+                display: flex !important;
+                align-items: center;
+                gap: 0.375rem;
+                font-size: 0.875rem !important;
+                color: #4b5563 !important;
+            }
+            #desk-officer-cases-content #mobile-case-cards .case-card-actions {
+                display: flex !important;
+                justify-content: flex-end !important;
+                align-items: center !important;
+                gap: 0.5rem !important;
+                margin-top: 0.25rem !important;
+            }
+            #desk-officer-cases-content #mobile-case-cards .case-card-actions > * {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 0.375rem !important;
+                height: 2.25rem !important;
+                min-width: 2.25rem !important;
+                border-radius: 0.5rem !important;
+                font-size: 0.8125rem !important;
+                font-weight: 500 !important;
+            }
+            #desk-officer-cases-content #mobile-case-cards .case-card-actions > :is(a, button):not(form button) {
+                padding: 0 0.875rem !important;
                 width: auto !important;
-                gap: .5rem !important;
             }
-            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions > * {
-                width: 2.5rem !important;
-                min-width: 2.5rem !important;
-                height: 2.5rem;
-                min-height: 2.5rem;
-            }
-            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions > form > button {
-                width: 100% !important;
-                height: 100% !important;
-            }
-            /* The multi-role card uses its compact identity layout: omit the
-               RA/type and date rows, and keep all existing actions icon-only. */
-            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details > div:nth-child(1),
-            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details > div:nth-child(2),
-            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details > div:nth-child(4) {
-                display: none;
-            }
-            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions :is(button, a, span) {
-                font-size: 0 !important;
-                gap: 0 !important;
-            }
-            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions i {
-                font-size: .75rem !important;
+            #desk-officer-cases-content #mobile-case-cards .case-card-actions form {
+                display: inline-flex !important;
                 margin: 0 !important;
+            }
+            #desk-officer-cases-content #mobile-case-cards .case-card-actions form > button {
+                width: 2.25rem !important;
+                height: 2.25rem !important;
+                padding: 0 !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            #desk-officer-cases-content #mobile-case-cards .case-card-action-label {
+                display: inline !important;
+            }
+            #desk-officer-cases-content #mobile-case-cards .case-card-icon-action i {
+                margin: 0 !important;
+                font-size: 0.75rem !important;
+            }
+        }
+
+        /* 4-column details on wider tablet landscape (1024px to 1280px) */
+        @media (min-width: 64rem) and (max-width: 80rem) {
+            #desk-officer-cases-content #mobile-case-cards .case-card-details {
+                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
             }
         }
         @endif
@@ -366,46 +385,580 @@
             color: #ffffff !important;
         }
         @endif
-        @media (max-width: 639px) {
-            .swd-desk-cases-page { padding: 1rem !important; }
-            .swd-desk-cases-page .swd-desk-case-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
-            .swd-desk-cases-page .swd-desk-case-controls > * { min-width: 0; width: 100%; }
-            .swd-desk-cases-page .swd-desk-case-controls :is(button, a) { width: 100%; justify-content: center; }
-            .swd-desk-cases-page .case-summary-grid { gap: .75rem; }
-            .swd-desk-cases-page .case-summary-grid > div { padding: .75rem 1rem; }
-            .swd-desk-cases-page #mobile-case-cards { gap: .75rem; }
+        /* ==========================================================================
+           Container Queries and View Cases Page Content Base
+           ========================================================================== */
+        #mainContent {
+            container-type: inline-size;
+            container-name: cases-main;
         }
 
-        /* Android tablets (600px–1280px): retain the current case cards,
-           while the shared Desk Officer navigation is an off-canvas drawer. */
-        @media (min-width: 37.5rem) and (max-width: 80rem) {
+        #desk-officer-cases-content {
+            container-type: inline-size;
+            container-name: cases-content;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Top header text truncation to prevent overflow */
+        #desk-officer-dashboard-header .min-w-0 h2,
+        #desk-officer-dashboard-header .min-w-0 p {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* ==========================================================================
+           Mobile and Tablet Navigation (matching Case Profiles reference)
+           ========================================================================== */
+        /* Hide redundant mobile top bar across mobile and tablet */
+        @media (max-width: 80rem) {
+            html body.portal-ui #mobileTopBar {
+                display: none !important;
+            }
+        }
+
+        /* Mobile View (< 48rem / < 768px): Single header with hamburger drawer */
+        @media (max-width: 47.9375rem) {
+            html body.portal-ui #mobileTopBar {
+                display: none !important;
+            }
+            html body.portal-ui #mobileMenuToggle,
+            html body.portal-ui #sidebarCloseBtn,
+            html body.portal-ui #sidebarOverlay {
+                display: none !important;
+                pointer-events: none !important;
+            }
+            html body.portal-ui #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky),
+            html body.portal-ui #desk-officer-dashboard-header {
+                background: #C41E3A !important;
+                border-bottom: 1px solid #99172E !important;
+                position: sticky !important;
+                top: 0 !important;
+                z-index: 35 !important;
+                width: 100% !important;
+            }
+            html body.portal-ui #desk-officer-dashboard-header > div {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                flex-wrap: nowrap !important;
+                gap: 0.5rem !important;
+                padding-left: max(.5rem, env(safe-area-inset-left)) !important;
+                padding-right: max(1rem, env(safe-area-inset-right)) !important;
+                min-width: 0 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            html body.portal-ui #desk-officer-dashboard-header > div > div:first-child {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                align-items: center !important;
+                gap: 0.5rem !important;
+                min-width: 0 !important;
+                flex: 1 1 auto !important;
+            }
+            html body.portal-ui :is(#dashboardMenuToggle, #pageMobileMenuToggle) {
+                position: relative !important;
+                left: 0 !important;
+                margin-left: 0 !important;
+                transform: none !important;
+                display: inline-flex !important;
+                flex: 0 0 2.5rem !important;
+                width: 2.5rem !important;
+                height: 2.5rem !important;
+                min-width: 2.5rem !important;
+                min-height: 2.5rem !important;
+                align-items: center !important;
+                justify-content: center !important;
+                border: 0 !important;
+                border-radius: 0.375rem !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                color: #ffffff !important;
+                padding: 0 !important;
+                cursor: pointer;
+            }
+            html body.portal-ui :is(#dashboardMenuToggle, #pageMobileMenuToggle) > i {
+                color: inherit !important;
+            }
+            html body.portal-ui #desk-officer-dashboard-header > div > div:first-child > div {
+                width: auto !important;
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+                text-align: left !important;
+            }
+            html body.portal-ui #desk-officer-dashboard-header h2 {
+                color: #ffffff !important;
+                font-size: clamp(0.875rem, 3.8vw, 1.125rem) !important;
+                font-weight: 700 !important;
+                line-height: 1.25 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                margin: 0 !important;
+            }
+            html body.portal-ui #desk-officer-dashboard-header p {
+                display: block !important;
+                color: rgba(255, 255, 255, 0.85) !important;
+                font-size: clamp(0.6875rem, 2.8vw, 0.75rem) !important;
+                line-height: 1.2 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                margin: 0 !important;
+            }
+            html body.portal-ui #desk-officer-dashboard-header > div > div:last-child {
+                display: flex !important;
+                align-items: center !important;
+                gap: 0.5rem !important;
+                flex: 0 0 auto !important;
+                flex-wrap: nowrap !important;
+            }
+            html body.portal-ui #desk-officer-dashboard-header button[aria-label="Notifications"] {
+                color: #ffffff !important;
+                background-color: #A01830 !important;
+                box-sizing: border-box !important;
+                width: 2.5rem !important;
+                min-width: 2.5rem !important;
+                height: 2.5rem !important;
+                min-height: 2.5rem !important;
+                padding: 0 !important;
+                border-radius: .625rem !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            html body.portal-ui #desk-officer-dashboard-header button[aria-label="Notifications"]:hover {
+                background-color: rgba(255, 255, 255, 0.15) !important;
+            }
+
+            /* Mobile Sidebar Dropdown Drawer below header */
+            html body.portal-ui #sidebar {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: auto !important;
+                width: 100% !important;
+                min-width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                max-height: calc(100vh - 60px) !important;
+                max-height: calc(100dvh - 60px) !important;
+                overflow-y: auto !important;
+                z-index: 999 !important;
+                border-radius: 0 0 14px 14px !important;
+                box-shadow: 0 14px 28px rgba(0, 0, 0, .22) !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                transform: translateY(-8px) !important;
+                transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+                background: #C41E3A !important;
+                background-image: none !important;
+            }
+            html body.portal-ui #sidebar.sidebar-open {
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: translateY(0) !important;
+            }
+            html body.portal-ui #sidebar.sidebar-collapsed,
+            html body.portal-ui #sidebar.sidebar-collapsed-init {
+                width: 100% !important;
+                min-width: 100% !important;
+                max-width: 100% !important;
+            }
+            html body.portal-ui #sidebar .sidebar-header { display: none !important; }
+            html body.portal-ui #sidebar .sidebar-text { opacity: 1 !important; max-width: none !important; }
+            html body.portal-ui #sidebar .sidebar-menu { flex: 0 1 auto; min-height: 0; padding: .5rem !important; overflow-y: auto !important; }
+            html body.portal-ui #sidebar .sidebar-link { justify-content: flex-start !important; gap: .75rem !important; }
+            html body.portal-ui #sidebar #sidebarCloseBtn { display: none !important; }
+            html body.portal-ui #sidebarToggleBtn { display: none !important; }
+            html body.portal-ui #sidebar nav :is(a, button),
+            html body.portal-ui #sidebar .sidebar-link {
+                background: #C41E3A !important;
+                color: #ffffff !important;
+            }
+            html body.portal-ui #sidebar nav :is(a, button) :is(i, svg, span),
+            html body.portal-ui #sidebar .sidebar-link :is(i, svg, span) {
+                color: #ffffff !important;
+            }
+            html body.portal-ui #sidebar nav :is(a, button):hover,
+            html body.portal-ui #sidebar .sidebar-link:hover {
+                background: #99172E !important;
+                color: #ffffff !important;
+            }
+            html body.portal-ui #sidebar .sidebar-link:is([class~="bg-purple-600"], [class~="bg-purple-700/70"]),
+            html body.portal-ui #sidebar nav [x-show] > :is(a, button).bg-purple-600 {
+                background: #99172E !important;
+                color: #ffffff !important;
+                box-shadow: inset 3px 0 0 #ffffff !important;
+            }
+
+            /* Mobile Content Padding */
             #desk-officer-cases-content {
-                max-width: none;
+                padding: 0.75rem !important;
+                padding-bottom: max(1.5rem, calc(1rem + env(safe-area-inset-bottom))) !important;
+            }
+        }
+
+        /* Screen widths < 640px: hide user profile avatar/name to keep header clean */
+        @media (max-width: 40rem) {
+            html body.portal-ui #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) div:has(> img[alt="User Profile"]) {
+                display: none !important;
+            }
+            html body.portal-ui #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) button:has(> img[alt="User Profile"]) {
+                display: none !important;
+            }
+        }
+
+        /* Extra small devices (<= 340px) */
+        @media (max-width: 21.25rem) {
+            #desk-officer-cases-content {
+                padding: 0.5rem !important;
+            }
+        }
+
+        /* Tablet navigation (768px–1023px / 48rem–63.9375rem): collapsed sidebar rail on left, standard white header, no hamburger button */
+        @media (min-width: 48rem) and (max-width: 63.9375rem) {
+            html body.portal-ui #mobileTopBar { display: none !important; }
+            html body.portal-ui #mobileMenuToggle { display: none !important; }
+            html body.portal-ui #dashboardMenuToggle { display: none !important; }
+            html body.portal-ui #pageMobileMenuToggle { display: none !important; }
+            html body.portal-ui #sidebarCloseBtn { display: none !important; }
+            html body.portal-ui #sidebarOverlay {
+                display: none !important;
+                pointer-events: none !important;
+            }
+            html body.portal-ui #mainContent > header.sticky,
+            html body.portal-ui #desk-officer-dashboard-header {
+                background: #ffffff !important;
+                border-bottom: 1px solid #e5e7eb !important;
+            }
+            html body.portal-ui #mainContent > header > div > div:first-of-type :is(h1, h2, h3),
+            html body.portal-ui #desk-officer-dashboard-header h2 {
+                color: #1f2937 !important;
+            }
+            html body.portal-ui #mainContent > header > div > div:first-of-type p,
+            html body.portal-ui #desk-officer-dashboard-header p {
+                color: #6b7280 !important;
+            }
+            html body.portal-ui #sidebar {
+                inset: 0 auto 0 0 !important;
+                top: 0 !important;
+                left: 0 !important;
+                bottom: 0 !important;
+                right: auto !important;
+                height: 100vh !important;
+                height: 100dvh !important;
+                max-height: none !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: none !important;
+                background: #C41E3A !important;
+                border-radius: 0 !important;
+                z-index: 40 !important;
+                width: 4.5rem !important;
+                min-width: 4.5rem !important;
+                max-width: 4.5rem !important;
+                transition: width 0.3s ease !important;
+            }
+            html body.portal-ui #sidebar .sidebar-header {
+                display: flex !important;
+                min-height: 5.5rem;
+                padding-left: 0.75rem !important;
+                padding-right: 0.5rem !important;
+                justify-content: flex-start !important;
+            }
+            html body.portal-ui #sidebar .sidebar-header img {
+                width: 3rem !important;
+                height: 3rem !important;
+                flex-shrink: 0 !important;
+            }
+            html body.portal-ui #sidebar .sidebar-header .sidebar-text {
+                display: none !important;
+            }
+            html body.portal-ui #sidebar .sidebar-text {
+                display: none !important;
+            }
+            html body.portal-ui #sidebar .sidebar-link {
+                justify-content: center !important;
+                padding: 0.75rem !important;
+            }
+            html body.portal-ui #sidebar .sidebar-link i {
+                margin: 0 !important;
+                font-size: 1.25rem !important;
+            }
+            html body.portal-ui #sidebarToggleBtn {
+                display: none !important;
+            }
+            html body.portal-ui #sidebar ~ #mainContent {
+                margin-left: 4.5rem !important;
+                width: calc(100% - 4.5rem) !important;
+            }
+            #desk-officer-cases-content {
                 padding: clamp(1rem, 2vw, 1.5rem) !important;
             }
-            .swd-desk-cases-page .case-summary-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: clamp(.75rem, 1.5vw, 1rem) !important;
-            }
-            .swd-desk-cases-page .case-summary-grid > div { min-width: 0; }
-            .swd-desk-cases-page .case-summary-grid p { overflow-wrap: anywhere; }
-            .swd-desk-cases-page .swd-desk-case-controls {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
-                width: 100%;
-                gap: clamp(.5rem, 1.25vw, .75rem);
-            }
-            .swd-desk-cases-page .swd-desk-case-controls > * { width: 100%; min-width: 0; }
-            .swd-desk-cases-page .swd-desk-case-controls :is(button, a) { width: 100%; justify-content: center; }
-            .swd-desk-cases-page .cases-list-heading { padding: .875rem 1rem; }
-            .swd-desk-cases-page #mobile-case-cards .case-card { margin-top: .75rem; }
-            .swd-desk-cases-page #mobile-case-cards .case-card-actions {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
-                gap: .5rem;
-            }
-            .swd-desk-cases-page #mobile-case-cards .case-card-actions > * { min-width: 0; }
         }
+
+        /* ==========================================================================
+           Summary Statistic Cards Responsiveness
+           ========================================================================== */
+        .case-summary-grid {
+            display: grid !important;
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            gap: 0.75rem !important;
+            width: 100%;
+            margin-bottom: 1.25rem !important;
+        }
+
+        .case-summary-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            padding: 0.875rem 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 0;
+            transition: box-shadow 0.15s ease, border-color 0.15s ease;
+        }
+
+        .case-summary-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
+            border-color: #d1d5db;
+        }
+
+        .case-summary-dot {
+            width: 0.75rem;
+            height: 0.75rem;
+            min-width: 0.75rem;
+            border-radius: 9999px;
+            flex-shrink: 0;
+        }
+
+        .case-summary-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            overflow-wrap: normal !important;
+            word-break: keep-all !important;
+            line-height: 1.25;
+            margin: 0;
+        }
+
+        .case-summary-value {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1f2937;
+            line-height: 1.2;
+            margin-top: 0.125rem;
+            margin-bottom: 0;
+        }
+
+        /* Summary Grid on Mobile (< 640px) */
+        @media (max-width: 39.999rem) {
+            .case-summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 0.625rem !important;
+                margin-bottom: 1rem !important;
+            }
+            .case-summary-card {
+                padding: 0.625rem 0.75rem !important;
+                gap: 0.5rem !important;
+            }
+            .case-summary-label {
+                font-size: 0.6875rem !important;
+            }
+            .case-summary-value {
+                font-size: 1rem !important;
+            }
+        }
+
+        /* Narrow content width (< 590px via Container Query, e.g. tablet portrait with open sidebar) */
+        @container cases-content (max-width: 589.98px) {
+            .case-summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 0.625rem !important;
+            }
+            .case-summary-card {
+                padding: 0.75rem 0.875rem !important;
+                gap: 0.625rem !important;
+            }
+            .case-summary-label {
+                font-size: 0.6875rem !important;
+            }
+            .case-summary-value {
+                font-size: 1.0625rem !important;
+            }
+        }
+
+        /* Explicit tablet portrait fallback with expanded sidebar */
+        #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) ~ #mainContent .case-summary-grid,
+        html:not(.bcpc-desk-sidebar-collapsed) #mainContent .case-summary-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        }
+        @media (min-width: 64rem) {
+            #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) ~ #mainContent .case-summary-grid,
+            html:not(.bcpc-desk-sidebar-collapsed) #mainContent .case-summary-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            }
+        }
+        #sidebar.sidebar-collapsed ~ #mainContent .case-summary-grid,
+        #sidebar.sidebar-collapsed-init ~ #mainContent .case-summary-grid,
+        html.bcpc-desk-sidebar-collapsed #mainContent .case-summary-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        }
+
+        /* ==========================================================================
+           Search and Action Controls Responsiveness
+           ========================================================================== */
+        .case-controls-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            width: 100%;
+            margin-bottom: 1.25rem;
+        }
+
+        .case-search-wrapper {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .case-actions-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .case-department-switcher {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .case-buttons-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .case-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 2.5rem; /* 40px */
+            padding: 0 0.875rem;
+            border-radius: 0.625rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            white-space: nowrap;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            gap: 0.375rem;
+        }
+
+        /* Mobile Controls Layout (< 640px) */
+        @media (max-width: 39.999rem) {
+            .case-controls-section {
+                gap: 0.625rem;
+                margin-bottom: 1rem;
+            }
+            .case-actions-toolbar {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 0.5rem !important;
+                width: 100% !important;
+            }
+            .case-department-switcher {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                width: 100% !important;
+                gap: 0.5rem !important;
+            }
+            .case-department-switcher > a {
+                width: 100% !important;
+                min-width: 0 !important;
+                padding: 0 0.5rem !important;
+                font-size: 0.75rem !important;
+                height: 2.5rem !important;
+            }
+            .case-buttons-group {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                width: 100% !important;
+                gap: 0.5rem !important;
+            }
+            .case-filter-wrapper {
+                width: 100% !important;
+            }
+            .case-filter-btn,
+            .case-print-btn {
+                width: 100% !important;
+                min-width: 0 !important;
+                padding: 0 0.5rem !important;
+                font-size: 0.75rem !important;
+                height: 2.5rem !important;
+            }
+        }
+
+        /* Tablet portrait & landscape controls layout */
+        @media (min-width: 40rem) and (max-width: 63.999rem) {
+            .case-controls-section {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            .case-search-wrapper {
+                width: 100%;
+            }
+            .case-actions-toolbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Desktop layout (>= 64rem / 1024px) */
+        @media (min-width: 64rem) {
+            .case-controls-section {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+            }
+            .case-search-wrapper {
+                max-width: 22rem;
+                flex: 1 1 22rem;
+            }
+            .case-actions-toolbar {
+                width: auto;
+                justify-content: flex-end;
+            }
+        }
+
+        /* Retain Case Cards actions and list heading on tablet/mobile */
+        .swd-desk-cases-page .cases-list-heading { padding: .875rem 1rem; }
+        .swd-desk-cases-page #mobile-case-cards .case-card { margin-top: .75rem; }
+        .swd-desk-cases-page #mobile-case-cards .case-card-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+            gap: .5rem;
+        }
+        .swd-desk-cases-page #mobile-case-cards .case-card-actions > * { min-width: 0; }
         @endif
         
         /* Modal content styles */
@@ -601,8 +1154,16 @@
 @endpush
 
 @section('content')
-@if($isMultiroleDeskOfficer)
-@include('components.desk-officer.bcpc-dashboard-header', ['title' => 'View Cases', 'subtitle' => 'Viewing cases for ' . $barangayName])
+<script>document.body.classList.add('view-cases-desk-mobile-nav');</script>
+@if($isDeskOfficer)
+@php
+    $currentCaseType = strtoupper((string) request('type', (Auth::user()?->defaultCaseDepartment() ?: 'BCPC')));
+    $currentDept = in_array($currentCaseType, ['VAWC', 'SWD'], true) ? 'SWD' : 'BCPC';
+@endphp
+@include('components.desk-officer.bcpc-dashboard-header', [
+    'title' => 'Welcome, ' . $currentDept . ' SILANG',
+    'subtitle' => $currentDept . ' Desk Officer - Silang, Cavite'
+])
 @endif
 <!-- Print Content (hidden on screen, visible on print popup) -->
 <div class="print-content hidden">
@@ -671,100 +1232,111 @@
 </div>
 
 <div id="desk-officer-cases-content" class="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 {{ $isDeskOfficer ? 'space-y-0 swd-desk-cases-page' : '' }} {{ $isMultiroleDeskOfficer ? 'multirole-cases-page' : '' }}">
-<!-- Page Header -->
-@unless($isMultiroleDeskOfficer)
+<!-- Page Header (Fallback for non-desk-officer roles) -->
+@unless($isDeskOfficer)
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
     <div class="w-full sm:w-auto text-left">
         <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">{{ $isSwdDeskOfficer ? 'View Cases' : (request()->filled('type') ? (strtolower(request('type')) === 'vawc' ? 'SWD' : strtoupper(request('type'))) : (Auth::user()->isMultiCaseDepartment() ? 'BCPC and SWD' : strtoupper(Auth::user()->defaultCaseDepartment()))) . ' Cases Management' }}</h2>
         <p class="text-sm text-gray-500 mt-1">{{ $isSwdDeskOfficer ? 'View and manage cases by barangay' : 'Viewing cases for ' . $barangayName }}</p>
     </div>
-
 </div>
-
 @endunless
-@if($isMultiroleDeskOfficer)
-<div class="case-view-mobile-controls flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-@endif
-<!-- Search -->
-@if(!(Auth::user()->position === 'Desk Officer' && Auth::user()->defaultCaseDepartment() === 'BCPC'))
-<div class="case-view-mobile-search mb-4">
-    <div class="w-full sm:max-w-md">
-        <div class="relative">
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input id="case-search" type="text" placeholder="Search cases..." class="w-full h-10 pl-10 pr-4 border rounded-md text-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300">
+
+<!-- Case Summary Statistics Cards -->
+<div class="case-summary-grid">
+    <div class="case-summary-card">
+        <span class="case-summary-dot bg-amber-400"></span>
+        <div class="min-w-0 flex-1">
+            <p class="case-summary-label" title="Case Closed">Case Closed</p>
+            <p class="case-summary-value">{{ $stats['case_closed'] ?? 0 }}</p>
+        </div>
+    </div>
+    <div class="case-summary-card">
+        <span class="case-summary-dot bg-orange-500"></span>
+        <div class="min-w-0 flex-1">
+            <p class="case-summary-label" title="Case Referred">Case Referred</p>
+            <p class="case-summary-value">{{ $stats['case_referred'] ?? 0 }}</p>
+        </div>
+    </div>
+    <div class="case-summary-card">
+        <span class="case-summary-dot bg-green-500"></span>
+        <div class="min-w-0 flex-1">
+            <p class="case-summary-label" title="Case Filed">Case Filed</p>
+            <p class="case-summary-value">{{ $stats['case_filed'] ?? 0 }}</p>
+        </div>
+    </div>
+    <div class="case-summary-card">
+        <span class="case-summary-dot bg-[#C41E3A]"></span>
+        <div class="min-w-0 flex-1">
+            <p class="case-summary-label" title="Total Cases">Total Cases</p>
+            <p class="case-summary-value">{{ $stats['total_cases'] ?? 0 }}</p>
         </div>
     </div>
 </div>
-@endif
 
-@if(Auth::user()->position === 'Desk Officer' && Auth::user()->defaultCaseDepartment() === 'BCPC')
-<div class="case-view-mobile-search mb-4">
-    <div class="w-full sm:max-w-md">
-        <div class="relative">
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input id="case-search" type="text" placeholder="Search cases..." class="w-full h-10 pl-10 pr-4 border rounded-md text-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300">
+<!-- Controls Section: Search and Action Toolbar -->
+<div class="case-controls-section">
+    <!-- Search Bar -->
+    <div class="case-search-wrapper">
+        <div class="relative w-full">
+            <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input id="case-search" type="text" placeholder="Search cases..." class="w-full h-10 pl-10 pr-4 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-[#C41E3A]/20 focus:border-[#C41E3A] transition">
         </div>
     </div>
-</div>
-@endif
 
-<!-- Table Controls -->
-<div class="flex flex-wrap items-center {{ $isDeskOfficer ? 'justify-end swd-desk-case-controls' : 'justify-center sm:justify-end' }} gap-2 sm:gap-3 mb-4">
-    @if(Auth::user()->isMultiCaseDepartment())
-    <a href="{{ route('desk-officer.cases.index', ['type' => 'bcpc']) }}" class="inline-flex h-10 items-center justify-center px-3.5 rounded-xl text-xs font-semibold transition shadow-sm {{ strtolower(request('type', 'bcpc')) === 'bcpc' ? 'bg-purple-700 text-white shadow-purple-200' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50' }}"><i class="fas fa-child mr-1"></i> BCPC Cases</a>
-    <a href="{{ route('desk-officer.cases.index', ['type' => 'vawc']) }}" class="inline-flex h-10 items-center justify-center px-3.5 rounded-xl text-xs font-semibold transition shadow-sm {{ strtolower(request('type', '')) === 'vawc' ? 'bg-purple-700 text-white shadow-purple-200' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50' }}"><i class="fas fa-shield-alt mr-1"></i> SWD Cases</a>
-    @endif
-    <div x-data="{ open: false }" class="relative">
-        <button @click="open = !open" class="inline-flex h-10 items-center gap-2 px-3 border rounded-md bg-white text-sm hover:bg-gray-50"><i class="fas fa-filter"></i> Filter <svg :class="{ 'rotate-180': open }" class="h-4 w-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-        <div x-cloak x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-56 bg-white border rounded-md shadow-lg z-40" style="display: none; max-height: 300px; overflow-y: auto;">
-            <div class="p-4 space-y-3">
-                <div>
-                    <label for="status-filter" class="block text-xs font-medium text-gray-700 mb-1">Status</label>
-                    <select id="status-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                        <option value="">All Status</option>
-                        <option value="Case Filed" {{ ($activeFilters['status'] ?? '') === 'Case Filed' ? 'selected' : '' }}>Case Filed</option>
-                        <option value="Case Referred" {{ ($activeFilters['status'] ?? '') === 'Case Referred' ? 'selected' : '' }}>Case Referred</option>
-                        <option value="Case closed" {{ ($activeFilters['status'] ?? '') === 'Case closed' ? 'selected' : '' }}>Case Closed</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Date Range</label>
-                    <input id="date-from" type="date" value="{{ $activeFilters['dateFrom'] ?? '' }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-2">
-                    <input id="date-to" type="date" value="{{ $activeFilters['dateTo'] ?? '' }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                </div>
-                <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
-                    <button type="button" id="reset-filters" class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">Clear</button>
-                    <button type="button" id="apply-filters" class="px-3 py-1.5 text-sm bg-purple-700 text-white hover:bg-purple-800 rounded-lg">Apply</button>
+    <!-- Actions Toolbar: Department Switcher + Filter + Print (+ New Case) -->
+    <div class="case-actions-toolbar swd-desk-case-controls">
+        @if(Auth::user()->isMultiCaseDepartment())
+        <div class="case-department-switcher">
+            <a href="{{ route('desk-officer.cases.index', ['type' => 'bcpc']) }}" class="case-action-btn case-dept-btn {{ strtolower(request('type', 'bcpc')) === 'bcpc' ? 'bg-purple-700 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50' }}">
+                <i class="fas fa-child"></i> <span>BCPC Cases</span>
+            </a>
+            <a href="{{ route('desk-officer.cases.index', ['type' => 'vawc']) }}" class="case-action-btn case-dept-btn {{ strtolower(request('type', '')) === 'vawc' ? 'bg-purple-700 text-white shadow-purple-200' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50' }}">
+                <i class="fas fa-shield-alt"></i> <span>SWD Cases</span>
+            </a>
+        </div>
+        @endif
+
+        <div class="case-buttons-group">
+            <div x-data="{ open: false }" class="relative case-filter-wrapper">
+                <button @click="open = !open" type="button" class="case-action-btn case-filter-btn bg-white border border-gray-300 text-gray-700 hover:bg-gray-50">
+                    <i class="fas fa-filter"></i> <span>Filter</span>
+                    <svg :class="{ 'rotate-180': open }" class="h-4 w-4 transition-transform ml-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                </button>
+                <div x-cloak x-show="open" @click.away="open = false" x-transition class="absolute left-0 sm:left-auto sm:right-0 mt-2 w-56 sm:w-64 max-w-[calc(100vw-2rem)] bg-white border border-gray-200 rounded-xl shadow-xl z-40" style="display: none; max-height: 320px; overflow-y: auto;">
+                    <div class="p-4 space-y-3">
+                        <div>
+                            <label for="status-filter" class="block text-xs font-semibold text-gray-700 mb-1">Status</label>
+                            <select id="status-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-purple-200 focus:border-purple-600">
+                                <option value="">All Status</option>
+                                <option value="Case Filed" {{ ($activeFilters['status'] ?? '') === 'Case Filed' ? 'selected' : '' }}>Case Filed</option>
+                                <option value="Case Referred" {{ ($activeFilters['status'] ?? '') === 'Case Referred' ? 'selected' : '' }}>Case Referred</option>
+                                <option value="Case closed" {{ ($activeFilters['status'] ?? '') === 'Case closed' ? 'selected' : '' }}>Case Closed</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Date Range</label>
+                            <input id="date-from" type="date" value="{{ $activeFilters['dateFrom'] ?? '' }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-2">
+                            <input id="date-to" type="date" value="{{ $activeFilters['dateTo'] ?? '' }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        </div>
+                        <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                            <button type="button" id="reset-filters" class="px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition">Clear</button>
+                            <button type="button" id="apply-filters" class="px-3 py-1.5 text-xs font-medium bg-purple-700 text-white hover:bg-purple-800 rounded-lg shadow-sm transition">Apply</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <button onclick="printAllCases()" class="inline-flex h-10 items-center gap-2 px-3.5 rounded-lg {{ $isDeskOfficer ? 'bg-[#C41E3A] hover:bg-[#A01830]' : 'bg-green-600 hover:bg-green-700' }} text-white text-sm font-medium shadow-sm transition"><i class="fas fa-print"></i> <span>{{ $isDeskOfficer ? 'Print All' : 'Print All Cases' }}</span></button>
-    @unless(Auth::user()->isMultiCaseDepartment())
-    <a href="{{ route('desk-officer.cases.create', ['type' => $defaultCaseType]) }}" class="inline-flex h-10 items-center gap-2 px-3.5 rounded-lg bg-purple-700 text-white hover:bg-purple-800 text-sm font-medium shadow-sm transition"><i class="fas fa-plus"></i> <span>New Case</span></a>
-    @endunless
-</div>
 
-<!-- Case Summary -->
-@if($isMultiroleDeskOfficer)
-</div>
-@endif
-<div class="case-summary-grid grid {{ $isMultiroleDeskOfficer ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' }} gap-4 mb-4">
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm px-4 py-3 flex items-center gap-4">
-        <span class="w-3 h-3 rounded-full bg-amber-400"></span>
-        <div><p class="text-xs font-medium uppercase tracking-wide text-gray-500">Case Closed</p><p class="text-lg font-bold text-gray-800">{{ $stats['case_closed'] ?? 0 }}</p></div>
-    </div>
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm px-4 py-3 flex items-center gap-4">
-        <span class="w-3 h-3 rounded-full bg-orange-500"></span>
-        <div><p class="text-xs font-medium uppercase tracking-wide text-gray-500">Case Referred</p><p class="text-lg font-bold text-gray-800">{{ $stats['case_referred'] ?? 0 }}</p></div>
-    </div>
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm px-4 py-3 flex items-center gap-4">
-        <span class="w-3 h-3 rounded-full bg-green-500"></span>
-        <div><p class="text-xs font-medium uppercase tracking-wide text-gray-500">Case Filed</p><p class="text-lg font-bold text-gray-800">{{ $stats['case_filed'] ?? 0 }}</p></div>
-    </div>
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm px-4 py-3 flex items-center gap-4">
-        <span class="w-3 h-3 rounded-full bg-[#C41E3A]"></span>
-        <div><p class="text-xs font-medium uppercase tracking-wide text-gray-500">Total Cases</p><p class="text-lg font-bold text-gray-800">{{ $stats['total_cases'] ?? 0 }}</p></div>
+            <button onclick="printAllCases()" type="button" class="case-action-btn case-print-btn {{ $isDeskOfficer ? 'bg-[#C41E3A] hover:bg-[#A01830]' : 'bg-green-600 hover:bg-green-700' }} text-white shadow-sm">
+                <i class="fas fa-print"></i> <span>{{ $isDeskOfficer ? 'Print All' : 'Print All Cases' }}</span>
+            </button>
+
+            @unless(Auth::user()->isMultiCaseDepartment())
+            <a href="{{ route('desk-officer.cases.create', ['type' => $defaultCaseType]) }}" class="case-action-btn bg-purple-700 text-white hover:bg-purple-800 shadow-sm">
+                <i class="fas fa-plus"></i> <span>New Case</span>
+            </a>
+            @endunless
+        </div>
     </div>
 </div>
 
@@ -773,7 +1345,7 @@
         <h3 class="font-semibold flex items-center gap-2"><i class="fas fa-folder-open"></i> Cases List ({{ $cases->total() }} total)</h3>
     </div>
 <!-- Cases Table (Desktop) -->
-<div class="cases-table-desktop {{ $isMultiroleDeskOfficer ? 'hidden md:block' : 'block' }} overflow-x-auto">
+<div class="cases-table-desktop hidden xl:block overflow-x-auto">
     <table class="min-w-full table-fixed min-w-[1100px] swd-desk-table">
         <thead class="bg-[#C41E3A] text-white">
             <tr>
@@ -886,9 +1458,8 @@
     </table>
 </div>
 
-<!-- Cases Cards (Mobile) -->
-@if($isMultiroleDeskOfficer)
-<div class="md:hidden space-y-3" id="mobile-case-cards">
+<!-- Cases Cards (Mobile & Tablet) -->
+<div class="xl:hidden space-y-3" id="mobile-case-cards">
     @forelse($cases as $case)
     <div class="case-card bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div class="p-4">
@@ -904,8 +1475,10 @@
                     $b = hexdec(substr($hex, 4, 2));
                     $luminance = (0.299 * $r) + (0.587 * $g) + (0.114 * $b);
                     $textColor = $luminance > 186 ? '#111' : '#fff';
+                    $isBcpcView = strtolower(request('type', $defaultCaseType)) === 'bcpc';
+                    $isCaseReferredBadge = $isBcpcView && trim((string)$case->status) === 'Case Referred';
                 @endphp
-                <span class="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full" style="background-color: {{ $bgColor }}; color: {{ $textColor }};">
+                <span class="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full {{ $isCaseReferredBadge ? 'bcpc-case-referred-badge' : '' }}" style="background-color: {{ $bgColor }}; color: {{ $textColor }};">
                     {{ $case->status === 'Resolved' ? 'Case Filed' : $case->status }}
                 </span>
             </div>
@@ -982,7 +1555,6 @@
         <p class="text-sm">No results found</p>
     </div>
 </div>
-@endif
 
 @if($cases->hasPages())
 <div class="px-6 py-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">

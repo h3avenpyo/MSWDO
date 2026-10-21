@@ -439,22 +439,11 @@
             transition: none !important;
         }
 
-        /* Keep the only phone/tablet sidebar entry point visible. */
-        @media (max-width: 80rem) {
-            #mobileTopBar { display: flex !important; }
-            #mobileMenuToggle {
+        /* Mobile phone navigation (< 600px / < 37.5rem) */
+        @media (max-width: 37.4375rem) {
+            #mobileTopBar {
                 display: flex !important;
-                flex: 0 0 2.25rem;
-                width: 2.25rem;
-                height: 2.25rem;
-                align-items: center;
-                justify-content: center;
-                visibility: visible !important;
             }
-        }
-
-        @media (min-width: 37.5rem) and (max-width: 80rem) {
-            #mobileTopBar { display: flex !important; }
             #mobileTopBar .multi-role-mobile-brand {
                 max-width: min(13rem, calc(100vw - 12rem));
                 gap: .5rem;
@@ -470,17 +459,30 @@
                 text-overflow: ellipsis;
                 font-size: clamp(.8125rem, 1.5vw, 1rem);
             }
-            #sidebarOverlay { display: block !important; }
+            #mobileMenuToggle {
+                display: flex !important;
+                flex: 0 0 2.25rem;
+                width: 2.25rem;
+                height: 2.25rem;
+                align-items: center;
+                justify-content: center;
+                visibility: visible !important;
+            }
+            #sidebarOverlay {
+                display: block !important;
+            }
             #sidebar {
                 inset: 0 auto 0 0 !important;
                 width: min(18rem, 82vw) !important;
                 min-width: min(18rem, 82vw) !important;
                 max-width: 82vw !important;
-                height: auto !important;
+                height: 100vh !important;
+                height: 100dvh !important;
                 max-height: none !important;
                 opacity: 0;
                 transform: translateX(-100%) !important;
                 transition: transform .3s ease, opacity .2s ease !important;
+                z-index: 50 !important;
             }
             #sidebar.sidebar-collapsed,
             #sidebar.sidebar-collapsed-init {
@@ -493,7 +495,10 @@
                 opacity: 1 !important;
                 max-width: 12.5rem !important;
             }
-            #sidebar.sidebar-open { opacity: 1; transform: translateX(0) !important; }
+            #sidebar.sidebar-open {
+                opacity: 1 !important;
+                transform: translateX(0) !important;
+            }
             #sidebarCloseBtn {
                 display: flex !important;
                 top: .75rem !important;
@@ -505,7 +510,9 @@
                 border: .0625rem solid rgba(196, 30, 58, .2);
                 z-index: 60;
             }
-            #sidebarToggleBtn { display: none !important; }
+            #sidebarToggleBtn {
+                display: none !important;
+            }
             #mainContent,
             #sidebar.sidebar-collapsed ~ #mainContent,
             #sidebar.sidebar-collapsed-init ~ #mainContent {
@@ -516,15 +523,32 @@
             }
         }
 
-        /* Keep the navigation rail visible on tablets and iPads. */
+        /* Tablet navigation (600px–1280px / 37.5rem–80rem):
+         * Remove the extra top header (#mobileTopBar) and retain the visible navigation rail.
+         * The sidebar starts at the vertical top of the viewport (top: 0).
+         * Sidebar toggle button is positioned at top: calc(1.25rem + 1.5rem) and correctly
+         * aligned when expanded (276px) and collapsed (60px).
+         */
         @media (min-width: 37.5rem) and (max-width: 80rem) {
-            #sidebarOverlay { display: none !important; }
+            #mobileTopBar {
+                display: none !important;
+            }
+            #sidebarOverlay {
+                display: none !important;
+                pointer-events: none !important;
+            }
+            #sidebarCloseBtn,
+            #mobileMenuToggle,
+            #mainContent #mobileMenuToggle {
+                display: none !important;
+            }
             #sidebar {
-                inset: 3.5rem auto 0 0 !important;
+                inset: 0 auto 0 0 !important;
                 width: 18rem !important;
                 min-width: 18rem !important;
                 max-width: 18rem !important;
-                height: calc(100dvh - 3.5rem) !important;
+                height: 100vh !important;
+                height: 100dvh !important;
                 max-height: none !important;
                 opacity: 1 !important;
                 transform: translateX(0) !important;
@@ -541,22 +565,82 @@
                 opacity: 0 !important;
                 max-width: 0 !important;
             }
-            #sidebarCloseBtn,
-            #mobileMenuToggle { display: none !important; }
+            #sidebar.sidebar-collapsed .sidebar-icon-container,
+            #sidebar.sidebar-collapsed-init .sidebar-icon-container {
+                justify-content: center !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            #sidebar.sidebar-collapsed .sidebar-chevron,
+            #sidebar.sidebar-collapsed-init .sidebar-chevron,
+            #sidebar.sidebar-collapsed .sidebar-submenu,
+            #sidebar.sidebar-collapsed-init .sidebar-submenu {
+                display: none !important;
+            }
+            #sidebar.sidebar-collapsed .logo-container,
+            #sidebar.sidebar-collapsed-init .logo-container {
+                justify-content: center !important;
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+            #sidebar.sidebar-collapsed .logo-text,
+            #sidebar.sidebar-collapsed-init .logo-text {
+                display: none !important;
+            }
+            #sidebar.sidebar-collapsed .user-profile-compact,
+            #sidebar.sidebar-collapsed-init .user-profile-compact {
+                display: flex !important;
+                justify-content: center !important;
+            }
+            #sidebar.sidebar-collapsed .user-profile-expanded,
+            #sidebar.sidebar-collapsed-init .user-profile-expanded {
+                display: none !important;
+            }
+            #sidebar.sidebar-collapsed nav a,
+            #sidebar.sidebar-collapsed nav button,
+            #sidebar.sidebar-collapsed-init nav a,
+            #sidebar.sidebar-collapsed-init nav button {
+                justify-content: center !important;
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+            #sidebar.sidebar-collapsed > div:last-of-type,
+            #sidebar.sidebar-collapsed-init > div:last-of-type {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
             #sidebarToggleBtn {
                 display: flex !important;
-                top: calc(3.5rem + 1.5rem) !important;
+                position: fixed !important;
+                top: calc(1.25rem + 1.5rem) !important;
+                left: calc(18rem - 0.75rem) !important;
+                transform: translateY(-50%) !important;
+                z-index: 50 !important;
+                transition: left .3s ease !important;
+            }
+            #sidebar.sidebar-collapsed ~ #sidebarToggleBtn,
+            #sidebar.sidebar-collapsed-init ~ #sidebarToggleBtn {
+                left: calc(4.5rem - 0.75rem) !important;
+            }
+            #sidebar.sidebar-collapsed ~ #sidebarToggleBtn i,
+            #sidebar.sidebar-collapsed-init ~ #sidebarToggleBtn i {
+                transform: rotate(180deg) !important;
             }
             .portal-ui #sidebar ~ #mainContent {
                 width: calc(100vw - 18rem) !important;
                 min-width: 0 !important;
                 margin-left: 18rem !important;
+                transition: margin-left .3s ease, width .3s ease !important;
                 overflow-x: hidden;
             }
             .portal-ui #sidebar.sidebar-collapsed ~ #mainContent,
-            .portal-ui #sidebar.sidebar-collapsed-init ~ #mainContent {
+            .portal-ui #sidebar.sidebar-collapsed-init ~ #mainContent,
+            html.bcpc-desk-sidebar-collapsed .portal-ui #sidebar ~ #mainContent,
+            html.bcpc-desk-sidebar-collapsed .portal-ui #mainContent {
                 width: calc(100vw - 4.5rem) !important;
+                min-width: 0 !important;
                 margin-left: 4.5rem !important;
+                transition: margin-left .3s ease, width .3s ease !important;
             }
         }
 
@@ -637,36 +721,25 @@
         @media (min-width: 40.0625rem) and (max-width: 80rem) {
             #mainContent .tablet-header-row {
                 display: grid !important;
-                grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+                grid-template-columns: minmax(0, 1fr) auto !important;
                 align-items: center;
                 column-gap: .75rem;
                 row-gap: 0;
                 min-height: 5.5rem;
             }
 
+            #mainContent .tablet-header-row > #mobileMenuToggle {
+                display: none !important;
+            }
+
             #mainContent .tablet-header-row > #mobileMenuToggle + div {
-                grid-column: 2;
+                grid-column: 1 !important;
                 grid-row: 1;
                 min-width: 0;
             }
 
-            #mainContent #mobileMenuToggle {
-                grid-column: 1;
-                grid-row: 1;
-            }
-
-            #mainContent #mobileMenuToggle {
-                background-color: #ffffff !important;
-                border-color: transparent !important;
-                color: #C41E3A !important;
-            }
-
-            #mainContent #mobileMenuToggle > i {
-                color: inherit !important;
-            }
-
             #mainContent .tablet-header-row > #mobileMenuToggle + div ~ div:last-child {
-                grid-column: 3;
+                grid-column: 2 !important;
                 grid-row: 1;
                 flex-wrap: nowrap;
                 justify-content: flex-end;
@@ -821,69 +894,264 @@
             }
         }
 
-        @if(request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard', 'case-profiles.index', 'admin.barangay-cases.show', 'desk-officer.cases.create', 'desk-officer.referrals*', 'desk-officer.calendar*', 'desk-officer.quarterly-reports*', 'desk-officer.archived-barangay-cases*'))
+        @if(request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard', 'case-profiles.index', 'desk-officer.cases.*', 'admin.barangay-cases.show', 'desk-officer.referrals*', 'desk-officer.calendar*', 'desk-officer.quarterly-reports*', 'desk-officer.archived-barangay-cases*', 'desk-officer.bcpc-case-monitoring*') || request()->is('desk-officer/cases*', 'admin-barangay-cases*', 'desk-officer/bcpc-case-monitoring*'))
         /* Apply after portal-theme.css so the mobile dashboard alignment wins. */
         @media (max-width: 47.9375rem) {
-            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #mobileTopBar {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mobileTopBar {
                 display: none !important;
             }
-            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, #officers-create-header, #case-profiles-header, .portal-page-header, .sticky) {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, #case-profiles-header, .portal-page-header, .sticky) {
                 background: #C41E3A !important;
                 border-bottom: 1px solid #99172E !important;
             }
-            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, #officers-create-header, .portal-page-header, .sticky) > div {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, .portal-page-header, .sticky) > div {
                 padding-left: max(.5rem, env(safe-area-inset-left)) !important;
                 padding-right: max(1rem, env(safe-area-inset-right)) !important;
                 align-items: flex-start !important;
                 flex-wrap: nowrap !important;
                 min-width: 0 !important;
             }
-            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, #officers-create-header, .portal-page-header, .sticky) > div > div:last-child {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, .portal-page-header, .sticky) > div > div:last-child {
                 flex: 0 0 auto !important;
                 flex-wrap: nowrap !important;
             }
-            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) :is(#dashboardMenuToggle, #pageMobileMenuToggle) {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) :is(#dashboardMenuToggle, #pageMobileMenuToggle) {
                 position: relative !important;
                 left: 0 !important;
                 margin-left: 0 !important;
                 transform: none !important;
+                display: inline-flex !important;
+                flex: 0 0 2.5rem !important;
+                width: 2.5rem !important;
+                height: 2.5rem !important;
+                min-width: 2.5rem !important;
+                min-height: 2.5rem !important;
+                align-items: center !important;
+                justify-content: center !important;
+                border: 0 !important;
+                border-radius: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                color: #ffffff !important;
             }
-            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, #officers-create-header, .portal-page-header, .sticky) > div > div:first-of-type {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) :is(#dashboardMenuToggle, #pageMobileMenuToggle) > i {
+                color: inherit !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, .portal-page-header, .sticky) > div > div:first-of-type {
                 flex-direction: row !important;
                 align-items: flex-start !important;
                 gap: .5rem !important;
                 min-width: 0 !important;
                 flex: 1 1 auto !important;
             }
-            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, #officers-create-header, .portal-page-header, .sticky) > div > div:first-of-type > div {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, .portal-page-header, .sticky) > div > div:first-of-type > div {
                 width: auto !important;
                 flex: 1 1 auto !important;
                 min-width: 0 !important;
                 text-align: left !important;
             }
-            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #mainContent .tablet-header-row {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mainContent .tablet-header-row {
                 display: flex !important;
             }
-            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #sidebar ~ #mainContent {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar ~ #mainContent {
                 width: 100% !important;
                 min-width: 0 !important;
                 margin-left: 0 !important;
             }
-            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, #officers-create-header, #case-profiles-header, .portal-page-header, .sticky) :is(h1, h2, h3) {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, #case-profiles-header, .portal-page-header, .sticky) :is(h1, h2, h3) {
                 color: #ffffff !important;
                 opacity: 1 !important;
             }
-            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, #officers-create-header, #case-profiles-header, .portal-page-header, .sticky) p {
-                color: #ffffff !important;
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, #case-profiles-header, .portal-page-header, .sticky) p {
+                color: rgba(255, 255, 255, 0.85) !important;
+                display: block !important;
                 opacity: 1 !important;
+                font-size: clamp(0.6875rem, 2.8vw, 0.75rem) !important;
+                line-height: 1.2 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                margin: 0 !important;
             }
-            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, #officers-create-header, #case-profiles-header, .portal-page-header, .sticky) div:first-of-type :is(span, a) {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, #case-profiles-header, .portal-page-header, .sticky) div:first-of-type :is(span, a) {
                 color: #ffffff !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebarOverlay {
+                display: none !important;
+                pointer-events: none !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: auto !important;
+                width: 100% !important;
+                min-width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                max-height: calc(100vh - 60px) !important;
+                max-height: calc(100dvh - 60px) !important;
+                overflow-y: auto !important;
+                z-index: 999 !important;
+                border-radius: 0 0 1.25rem 1.25rem !important;
+                box-shadow: 0 14px 28px rgba(0, 0, 0, .22) !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                transform: translateY(-8px) !important;
+                transition: transform .25s ease, opacity .25s ease, visibility .25s ease !important;
+                background: #C41E3A !important;
+                background-image: none !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar.sidebar-open {
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: translateY(0) !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar.sidebar-collapsed,
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar.sidebar-collapsed-init {
+                width: 100% !important;
+                min-width: 100% !important;
+                max-width: 100% !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar .sidebar-header {
+                display: none !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar .sidebar-text {
+                opacity: 1 !important;
+                max-width: none !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar .sidebar-menu {
+                flex: 0 1 auto;
+                min-height: 0;
+                padding: .5rem !important;
+                overflow-y: auto !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar .sidebar-link {
+                justify-content: flex-start !important;
+                gap: .75rem !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar #sidebarCloseBtn {
+                display: none !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebarToggleBtn {
+                display: none !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar nav :is(a, button),
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar .sidebar-link {
+                background: #C41E3A !important;
+                color: #ffffff !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar nav :is(a, button) :is(i, svg, span),
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar .sidebar-link :is(i, svg, span) {
+                color: #ffffff !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar nav :is(a, button):hover,
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar .sidebar-link:hover {
+                background: #99172E !important;
+                color: #ffffff !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar .sidebar-link:is([class~="bg-purple-600"], [class~="bg-purple-700/70"]),
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar nav [x-show] > :is(a, button).bg-purple-600 {
+                background: #99172E !important;
+                color: #ffffff !important;
+                box-shadow: inset 3px 0 0 #ffffff !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mainContent > header button[aria-label="Notifications"] {
+                box-sizing: border-box !important;
+                width: 2.5rem !important;
+                min-width: 2.5rem !important;
+                height: 2.5rem !important;
+                min-height: 2.5rem !important;
+                padding: 0 !important;
+                border-radius: .625rem !important;
+                background-color: #A01830 !important;
+                color: #ffffff !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
             }
         }
 
         @media (max-width: 40rem) {
-            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .create-case-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, #officers-create-header, .portal-page-header, .sticky) div:has(> img[alt="User Profile"]) {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mainContent > header:is(#desk-officer-dashboard-header, #barangay-cases-view-header, .portal-page-header, .sticky) div:has(> img[alt="User Profile"]) {
+                display: none !important;
+            }
+        }
+
+        /* Tablet navigation (768px–1023px / 48rem–63.9375rem) */
+        @media (min-width: 48rem) and (max-width: 63.9375rem) {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mobileTopBar { display: none !important; }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mobileMenuToggle { display: none !important; }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #dashboardMenuToggle { display: none !important; }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #pageMobileMenuToggle { display: none !important; }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebarCloseBtn { display: none !important; }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebarOverlay { display: none !important; pointer-events: none !important; }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mainContent > header.sticky,
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #desk-officer-dashboard-header,
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #barangay-cases-view-header {
+                background: #ffffff !important;
+                border-bottom: 1px solid #e5e7eb !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mainContent > header :is(h1, h2, h3) {
+                color: #1f2937 !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #mainContent > header p {
+                color: #6b7280 !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar {
+                inset: 0 auto 0 0 !important;
+                top: 0 !important;
+                left: 0 !important;
+                bottom: 0 !important;
+                right: auto !important;
+                height: 100vh !important;
+                height: 100dvh !important;
+                max-height: none !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: none !important;
+                background: #C41E3A !important;
+                border-radius: 0 !important;
+                z-index: 40 !important;
+                width: 4.5rem !important;
+                min-width: 4.5rem !important;
+                max-width: 4.5rem !important;
+                transition: width 0.3s ease !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar .sidebar-header {
+                display: flex !important;
+                min-height: 5.5rem;
+                padding-left: 0.75rem !important;
+                padding-right: 0.5rem !important;
+                justify-content: flex-start !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar .sidebar-header img {
+                width: 3rem !important;
+                height: 3rem !important;
+                flex-shrink: 0 !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar .sidebar-text {
+                display: none !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar .sidebar-link {
+                justify-content: center !important;
+                padding: 0.75rem !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar .sidebar-link i {
+                margin: 0 !important;
+                font-size: 1.25rem !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebarToggleBtn {
+                display: none !important;
+            }
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #sidebar ~ #mainContent {
+                margin-left: 4.5rem !important;
+                width: calc(100% - 4.5rem) !important;
+            }
+        }
+        @media (min-width: 48rem) {
+            body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-archived-cases-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav) #pageMobileMenuToggle {
                 display: none !important;
             }
         }
@@ -899,7 +1167,7 @@
     <link rel="stylesheet" href="{{ asset('css/logout-modal.css') }}?v={{ filemtime(public_path('css/logout-modal.css')) }}">
     <script src="{{ asset('js/portal-modal-presentation.js') }}?v={{ filemtime(public_path('js/portal-modal-presentation.js')) }}" defer></script>
 </head>
-<body class="portal-ui {{ request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard') ? 'desk-officer-dashboard-mobile-nav' : '' }} {{ request()->routeIs('case-profiles.index') ? 'case-profiles-desk-mobile-nav' : '' }} {{ request()->routeIs('admin.barangay-cases.show') ? 'view-cases-desk-mobile-nav' : '' }} {{ request()->routeIs('desk-officer.cases.create') ? 'create-case-desk-mobile-nav' : '' }} {{ request()->routeIs('desk-officer.referrals*') ? 'desk-officer-referrals-mobile-nav' : '' }} {{ request()->routeIs('desk-officer.calendar*') ? 'desk-officer-calendar-mobile-nav' : '' }} {{ request()->routeIs('desk-officer.quarterly-reports*') ? 'desk-officer-quarterly-reports-mobile-nav' : '' }} {{ request()->routeIs('desk-officer.archived-barangay-cases*') ? 'desk-officer-archived-cases-mobile-nav' : '' }} {{ auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) ? 'desk-officer-header-theme' : '' }} font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased overflow-x-hidden" style="--portal-user-initials: '{{ strtoupper(mb_substr((string) auth()->user()?->first_name, 0, 1) . mb_substr((string) auth()->user()?->last_name, 0, 1)) }}';">
+<body class="portal-ui {{ request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard') ? 'desk-officer-dashboard-mobile-nav' : '' }} {{ request()->routeIs('case-profiles.index') ? 'case-profiles-desk-mobile-nav' : '' }} {{ (request()->routeIs('admin.barangay-cases.show', 'admin-barangay-cases', 'desk-officer.cases.*') || request()->is('desk-officer/cases*', 'admin-barangay-cases*')) ? 'view-cases-desk-mobile-nav' : '' }} {{ request()->routeIs('desk-officer.referrals*') ? 'desk-officer-referrals-mobile-nav' : '' }} {{ request()->routeIs('desk-officer.calendar*') ? 'desk-officer-calendar-mobile-nav' : '' }} {{ request()->routeIs('desk-officer.quarterly-reports*') ? 'desk-officer-quarterly-reports-mobile-nav' : '' }} {{ request()->routeIs('desk-officer.archived-barangay-cases*') ? 'desk-officer-archived-cases-mobile-nav' : '' }} {{ (request()->routeIs('desk-officer.bcpc-case-monitoring*') || request()->is('desk-officer/bcpc-case-monitoring*')) ? 'desk-officer-bcpc-monitoring-mobile-nav' : '' }} {{ auth()->user() && (strtolower(trim((string) auth()->user()->position)) === 'desk officer' || in_array(strtoupper((string) auth()->user()->defaultCaseDepartment()), ['BCPC', 'VAWC'], true)) ? 'desk-officer-header-theme' : '' }} font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased overflow-x-hidden" style="--portal-user-initials: '{{ strtoupper(mb_substr((string) auth()->user()?->first_name, 0, 1) . mb_substr((string) auth()->user()?->last_name, 0, 1)) }}';">
 @php
     $passwordResetNotice = session('password_reset_notice');
     $passwordResetNoticeSeen = session('password_reset_notice_popup_displayed', false);
@@ -1075,20 +1343,23 @@
             @endif
             
             @php
-                $isDeskOfficerBarangayCasesRoute = Auth::user()?->position === 'Desk Officer' && in_array($defaultCaseDepartment, ['BCPC', 'VAWC'], true) && !Auth::user()?->isMultiCaseDepartment() && request()->routeIs('admin-barangay-cases', 'admin.barangay-cases.*');
-                $isManageCasesActive = !$isArchiveDetailPage && (request()->routeIs('case-profiles.*', 'desk-officer.cases.*') || $isDeskOfficerBarangayCasesRoute);
+                $isDeskOfficerBarangayCasesRoute = Auth::user()?->position === 'Desk Officer' && in_array($defaultCaseDepartment, ['BCPC', 'VAWC'], true) && !Auth::user()?->isMultiCaseDepartment() && (request()->routeIs('admin-barangay-cases', 'admin.barangay-cases.*') || request()->is('admin-barangay-cases*'));
+                $isAddNewCaseActive = request()->routeIs('desk-officer.cases.create', 'admin-add-new-case') || request()->is('desk-officer/cases/create*');
+                $isCaseProfileActive = request()->routeIs('case-profiles.*') || request()->is('case-profiles*');
+                $isViewCasesActive = !$isAddNewCaseActive && !$isCaseProfileActive && !$isArchiveDetailPage && (request()->routeIs('desk-officer.cases.index', 'desk-officer.cases.*') || request()->is('desk-officer/cases*') || $isDeskOfficerBarangayCasesRoute);
+                $isManageCasesActive = $isCaseProfileActive || $isViewCasesActive || $isAddNewCaseActive;
             @endphp
             <div x-data="{ manageCasesOpen: {{ $isManageCasesActive ? 'true' : 'false' }} }" @sidebar-dropdown-open.window="if ($event.detail !== 'manageCasesOpen') manageCasesOpen = false" class="mb-1">
                 <button type="button" @click="manageCasesOpen = !manageCasesOpen; if (manageCasesOpen) $dispatch('sidebar-dropdown-open', 'manageCasesOpen')" class="sidebar-link flex items-center justify-between w-full px-4 py-3 rounded-lg {{ $isManageCasesActive ? 'bg-purple-600 text-white shadow-sm font-medium' : 'text-purple-100 hover:bg-purple-700/50 hover:text-white' }}" title="Manage Cases">
                     <span class="flex items-center gap-3"><i class="fas fa-gavel w-5 text-center"></i><span class="sidebar-text">Manage Cases</span></span><i class="fas fa-chevron-down text-xs sidebar-text" :class="{ 'rotate-180': manageCasesOpen }"></i>
                 </button>
                 <div x-show="manageCasesOpen" x-cloak class="mt-1 pl-6 pr-2 space-y-1">
-                    <a href="{{ route('case-profiles.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('case-profiles.*') ? 'bg-purple-600 text-white shadow-sm font-semibold' : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"><i class="fas fa-address-card" aria-hidden="true"></i><span class="sidebar-text">Case Profile</span></a>
-                    <a href="{{ route('desk-officer.cases.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('desk-officer.cases.index') || $isDeskOfficerBarangayCasesRoute ? 'bg-purple-600 text-white shadow-sm font-semibold' : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"><i class="fas fa-folder-open" aria-hidden="true"></i><span class="sidebar-text">View Cases</span></a>
+                    <a href="{{ route('case-profiles.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium {{ $isCaseProfileActive ? 'bg-purple-600 text-white shadow-sm font-semibold' : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"><i class="fas fa-address-card" aria-hidden="true"></i><span class="sidebar-text">Case Profile</span></a>
+                    <a href="{{ route('desk-officer.cases.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium {{ $isViewCasesActive ? 'bg-purple-600 text-white shadow-sm font-semibold' : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"><i class="fas fa-folder-open" aria-hidden="true"></i><span class="sidebar-text">View Cases</span></a>
                     @if($isMultiCaseDepartment)
-                    <button type="button" onclick="openCaseTypeModal()" class="flex items-center gap-2.5 w-full text-left px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('desk-officer.cases.create') ? 'bg-purple-600 text-white shadow-sm font-semibold' : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"><i class="fas fa-plus-circle" aria-hidden="true"></i><span class="sidebar-text">Add New Case</span></button>
+                    <button type="button" onclick="openCaseTypeModal()" class="flex items-center gap-2.5 w-full text-left px-3 py-2 rounded-lg text-sm font-medium {{ $isAddNewCaseActive ? 'bg-purple-600 text-white shadow-sm font-semibold' : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"><i class="fas fa-plus-circle" aria-hidden="true"></i><span class="sidebar-text">Add New Case</span></button>
                     @else
-                    <a href="{{ route('desk-officer.cases.create') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('desk-officer.cases.create') ? 'bg-purple-600 text-white shadow-sm font-semibold' : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"><i class="fas fa-plus-circle" aria-hidden="true"></i><span class="sidebar-text">Add New Case</span></a>
+                    <a href="{{ route('desk-officer.cases.create') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium {{ $isAddNewCaseActive ? 'bg-purple-600 text-white shadow-sm font-semibold' : 'text-purple-200 hover:bg-purple-700/50 hover:text-white' }}"><i class="fas fa-plus-circle" aria-hidden="true"></i><span class="sidebar-text">Add New Case</span></a>
                     @endif
                 </div>
             </div>
@@ -1481,7 +1752,7 @@
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
         const sidebarStateKey = @json($deskOfficerSidebarStateKey);
-        const isDashboardDrawer = () => ((document.body.classList.contains('desk-officer-dashboard-mobile-nav') || document.body.classList.contains('case-profiles-desk-mobile-nav') || document.body.classList.contains('view-cases-desk-mobile-nav') || document.body.classList.contains('create-case-desk-mobile-nav') || document.body.classList.contains('desk-officer-referrals-mobile-nav') || document.body.classList.contains('desk-officer-calendar-mobile-nav') || document.body.classList.contains('desk-officer-quarterly-reports-mobile-nav') || document.body.classList.contains('desk-officer-archived-cases-mobile-nav')) && window.matchMedia('(max-width: 47.9375rem)').matches);
+        const isDashboardDrawer = () => ((document.body.classList.contains('desk-officer-dashboard-mobile-nav') || document.body.classList.contains('case-profiles-desk-mobile-nav') || document.body.classList.contains('view-cases-desk-mobile-nav') || document.body.classList.contains('desk-officer-referrals-mobile-nav') || document.body.classList.contains('desk-officer-calendar-mobile-nav') || document.body.classList.contains('desk-officer-quarterly-reports-mobile-nav') || document.body.classList.contains('desk-officer-archived-cases-mobile-nav') || document.body.classList.contains('desk-officer-bcpc-monitoring-mobile-nav')) && window.matchMedia('(max-width: 47.9375rem)').matches);
         
         @if($persistsDeskOfficerSidebar)
         if (sidebar) sidebar.classList.toggle('sidebar-collapsed', localStorage.getItem(sidebarStateKey) === 'true');
@@ -1503,6 +1774,9 @@
             @if($persistsDeskOfficerSidebar)
             document.documentElement.classList.add('bcpc-desk-sidebar-collapsed');
             @endif
+            window.dispatchEvent(new CustomEvent('sidebar-toggle', { detail: { collapsed: true } }));
+            window.dispatchEvent(new Event('resize'));
+            setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 320);
         }
         
         function expandSidebar() {
@@ -1517,6 +1791,9 @@
                 initialStyle.remove();
             }
             document.documentElement.classList.remove('sidebar-is-collapsed');
+            window.dispatchEvent(new CustomEvent('sidebar-toggle', { detail: { collapsed: false } }));
+            window.dispatchEvent(new Event('resize'));
+            setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 320);
         }
         
         // Floating toggle button click
@@ -1549,7 +1826,11 @@
                         document.body.style.overflow = 'hidden';
                         document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
                         mobileMenuToggles.forEach(function(menuToggle) {
-                            menuToggle.querySelector('i')?.classList.replace('fa-bars', 'fa-xmark');
+                            const icon = menuToggle.querySelector('i');
+                            if (icon) {
+                                icon.classList.remove('fa-bars');
+                                icon.classList.add('fa-times', 'fa-xmark');
+                            }
                         });
                         const dashboardHeader = document.getElementById('desk-officer-dashboard-header')
                             || document.getElementById('barangay-cases-view-header')
@@ -1578,7 +1859,11 @@
                 document.body.style.overflow = '';
                 document.documentElement.style.removeProperty('overflow-y');
                 mobileMenuToggles.forEach(function(toggle) {
-                    toggle.querySelector('i')?.classList.replace('fa-xmark', 'fa-bars');
+                    const icon = toggle.querySelector('i');
+                    if (icon) {
+                        icon.classList.remove('fa-times', 'fa-xmark');
+                        icon.classList.add('fa-bars');
+                    }
                 });
                 if (sidebar) {
                     sidebar.style.removeProperty('top');
@@ -1614,7 +1899,7 @@
 
         window.addEventListener('resize', function() {
             if (window.matchMedia('(min-width: 80.0625rem)').matches) closeMobileSidebar();
-            if ((document.body.classList.contains('desk-officer-dashboard-mobile-nav') || document.body.classList.contains('case-profiles-desk-mobile-nav') || document.body.classList.contains('view-cases-desk-mobile-nav') || document.body.classList.contains('create-case-desk-mobile-nav') || document.body.classList.contains('desk-officer-referrals-mobile-nav') || document.body.classList.contains('desk-officer-calendar-mobile-nav') || document.body.classList.contains('desk-officer-quarterly-reports-mobile-nav') || document.body.classList.contains('desk-officer-archived-cases-mobile-nav')) && window.matchMedia('(min-width: 48rem)').matches) {
+            if ((document.body.classList.contains('desk-officer-dashboard-mobile-nav') || document.body.classList.contains('case-profiles-desk-mobile-nav') || document.body.classList.contains('view-cases-desk-mobile-nav') || document.body.classList.contains('desk-officer-referrals-mobile-nav') || document.body.classList.contains('desk-officer-calendar-mobile-nav') || document.body.classList.contains('desk-officer-quarterly-reports-mobile-nav') || document.body.classList.contains('desk-officer-archived-cases-mobile-nav') || document.body.classList.contains('desk-officer-bcpc-monitoring-mobile-nav')) && window.matchMedia('(min-width: 48rem)').matches) {
                 closeMobileSidebar();
             }
         });
