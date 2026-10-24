@@ -744,6 +744,7 @@
     <h2 class="text-xl font-bold text-gray-800 mb-4">Generate Quarterly Report</h2>
     <form id="generateQuarterlyReportForm" method="POST" action="{{ route('admin.quarterly-reports.store') }}" class="space-y-4">
         @csrf
+        <input type="hidden" name="portrait_cards" value="0">
         <input type="hidden" name="type" value="{{ auth()->user()->isVawcAdmin() ? 'VAWC' : 'BCPC' }}">
         <label class="block text-sm text-gray-700">Barangay
             <select name="barangay_id" required class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg">
@@ -804,6 +805,12 @@
 </div>
 
 <script>
+function showQuarterlyReportFeedback(options) {
+    return Swal.fire(options).finally(() => {
+        window.quarterlyReportFeedbackPending = false;
+        window.dispatchEvent(new Event('quarterly-report-feedback-dismissed'));
+    });
+}
 function openArchiveModal(reportId, reportName) {
     document.getElementById('archiveReportName').textContent = reportName;
     document.getElementById('archiveForm').action = "{{ url('admin/quarterly-reports') }}/" + reportId + "/archive";
@@ -823,7 +830,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('generateQuarterlyReportForm');
     form?.reset();
     if (form) form.elements.year.value = '';
-    Swal.fire({
+    showQuarterlyReportFeedback({
         icon: 'success',
         title: 'Report Generated Successfully!',
         text: 'The quarterly report has been successfully generated and saved.',
@@ -838,7 +845,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('generateQuarterlyReportForm');
     form?.reset();
     if (form) form.elements.year.value = '';
-    Swal.fire({
+    showQuarterlyReportFeedback({
         icon: 'success',
         title: 'Report Generated Successfully!',
         text: 'The quarterly report has been successfully generated and saved.',
@@ -850,7 +857,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 @if(auth()->user()->isDepartmentAdmin() && session('archived_quarterly_report'))
 document.addEventListener('DOMContentLoaded', function () {
-    Swal.fire({
+    showQuarterlyReportFeedback({
         icon: 'success',
         title: 'Report Archived Successfully!',
         text: @json(session('archived_quarterly_report')),
@@ -862,7 +869,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 @if(auth()->user()->isDepartmentAdmin() && session('duplicate_quarterly_report'))
 document.addEventListener('DOMContentLoaded', function () {
-    Swal.fire({
+    showQuarterlyReportFeedback({
         icon: 'info',
         title: 'Report Already Generated',
         text: 'This report has already been generated. Please check the Quarterly Reports section to view the existing report.',
@@ -873,7 +880,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 @if(auth()->user()->isDepartmentAdmin() && session('no_cases_for_quarterly_report'))
 document.addEventListener('DOMContentLoaded', function () {
-    Swal.fire({
+    showQuarterlyReportFeedback({
         icon: 'info',
         title: 'No Cases Available',
         text: 'No cases are available for {{ session('no_cases_for_quarterly_report') }}, so a report cannot be generated.',
@@ -894,6 +901,7 @@ function openGenerateQuarterlyReportModal() {
 }
 
 document.getElementById('generateQuarterlyReportForm')?.addEventListener('submit', function (event) {
+    this.elements.portrait_cards.value = matchMedia('(min-width: 48rem) and (max-width: 85.375rem)').matches ? '1' : '0';
     const barangayId = this.elements.barangay_id.value;
     const quarter = this.elements.quarter.value;
     const year = this.elements.year.value;
@@ -912,8 +920,10 @@ document.getElementById('generateQuarterlyReportForm')?.addEventListener('submit
         });
         return;
     }
-    queueMicrotask(() => {
-        if (!event.defaultPrevented) this.closest('dialog')?.close();
+    event.preventDefault();
+    this.closest('dialog')?.close();
+    requestAnimationFrame(() => {
+        HTMLFormElement.prototype.submit.call(this);
     });
 });
 @endif
