@@ -46,15 +46,21 @@
     font-weight: 600;
 }
 
-#bcpc-monitoring-section-filter {
+#mainContent #bcpc-monitoring-section-filter-panel #bcpc-monitoring-section-filter {
     box-sizing: border-box;
     width: 100%;
     min-width: 0;
     min-height: 2.75rem;
-    padding: .625rem 2rem .625rem .75rem;
+    padding: .625rem 3.25rem .625rem .75rem;
+    -webkit-appearance: none;
+    appearance: none;
     border: 1px solid #d1d5db;
     border-radius: .5rem;
     background-color: #ffffff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234b5563' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.4rem center;
+    background-size: 1rem 1rem;
     color: #1f2937;
     font-size: 1rem;
 }
