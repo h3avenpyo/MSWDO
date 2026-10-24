@@ -4,9 +4,13 @@
         : '(min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait)';
 @endphp
 <script>
+@if(auth()->user()?->isDepartmentAdmin() && request()->routeIs('admin.quarterly-reports.index'))
+window.quarterlyReportFeedbackPending = @json((bool) (session('generated_bcpc_quarterly_report') || session('generated_vawc_quarterly_report') || session('duplicate_quarterly_report') || session('no_cases_for_quarterly_report') || session('archived_quarterly_report')));
+@endif
 (() => {
     const media = matchMedia(@json($fourCardTabletQuery));
     const sync = () => {
+        if (window.quarterlyReportFeedbackPending) return;
         const url = new URL(location.href);
         if (media.matches === (url.searchParams.get('portrait_cards') === '1')) return;
         if (media.matches) url.searchParams.set('portrait_cards', '1');
@@ -15,6 +19,7 @@
         location.replace(url.href);
     };
     sync();
+    window.addEventListener('quarterly-report-feedback-dismissed', sync);
     media.addEventListener('change', sync);
 })();
 </script>

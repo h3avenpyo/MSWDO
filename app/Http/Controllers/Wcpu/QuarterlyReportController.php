@@ -448,7 +448,8 @@ class QuarterlyReportController extends Controller
         }
         
         $response = redirect()
-            ->route($isAdmin ? 'admin.quarterly-reports.index' : 'desk-officer.quarterly-reports.index')
+            ->route($isAdmin ? 'admin.quarterly-reports.index' : 'desk-officer.quarterly-reports.index',
+                $isAdmin && $user->isDepartmentAdmin() && $request->boolean('portrait_cards') ? ['portrait_cards' => 1] : [])
             ->with('quarterly_report_completed', $generatedCount > 0)
             ->with('success', "Generated {$generatedCount} report(s) for Q{$quarter} {$year}." . ($skippedCount > 0 ? " ({$skippedCount} already existed)" : ""));
 

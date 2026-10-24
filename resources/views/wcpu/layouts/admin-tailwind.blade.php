@@ -1574,7 +1574,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    @if((session('success') || session('error')) && !session('generated_bcpc_quarterly_report') && !session('generated_vawc_quarterly_report'))
+    @if((session('success') || session('error')) && !session('generated_bcpc_quarterly_report') && !session('generated_vawc_quarterly_report') && !(auth()->user()?->isDepartmentAdmin() && request()->routeIs('admin.quarterly-reports.index') && session('archived_quarterly_report')))
     <script>
     const showFlashModal = function () {
         if (!window.Swal) return;
