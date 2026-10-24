@@ -31,29 +31,135 @@
         background-color: #A01830 !important;
         border-color: #A01830 !important;
     }
-    @media (max-width: 47.9375rem) {
+    @media (max-width: 80rem) {
+        .desk-officer-quarterly-report-table .quarterly-table-view { display: none !important; }
+        .desk-officer-quarterly-report-table .quarterly-mobile-cards {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr);
+            gap: .75rem;
+            padding: .75rem !important;
+        }
+        .desk-officer-quarterly-report-table .quarterly-mobile-cards > * {
+            min-width: 0;
+            margin-top: 0 !important;
+        }
+        .desk-officer-quarterly-report-table .quarterly-report-card {
+            display: flex;
+            min-width: 0;
+            height: 100%;
+            flex-direction: column;
+            padding: .75rem !important;
+            border: 1px solid #dbe2e8 !important;
+            border-radius: .625rem !important;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, .08) !important;
+        }
+        .desk-officer-quarterly-report-table .quarterly-report-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: .75rem;
+            margin-bottom: .75rem;
+        }
+        .desk-officer-quarterly-report-table .quarterly-report-card-marker {
+            display: inline-flex;
+            width: 2rem;
+            height: 2rem;
+            flex: 0 0 2rem;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            background: #ffe4e8;
+            color: #e11d48;
+            font-size: .75rem;
+        }
+        .desk-officer-quarterly-report-table .quarterly-report-card-count {
+            display: inline-flex;
+            width: 2rem;
+            height: 2rem;
+            flex: 0 0 2rem;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            background: #f3f4f6;
+            color: #64748b;
+            font-size: .75rem;
+            font-weight: 700;
+        }
+        .desk-officer-quarterly-report-table .quarterly-report-card-details {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: .625rem 1rem;
+            margin-bottom: .75rem;
+        }
+        .desk-officer-quarterly-report-table .quarterly-report-card-details > div { min-width: 0; }
+        .desk-officer-quarterly-report-table .quarterly-report-card-details .quarterly-report-submitter {
+            grid-column: 1 / -1;
+        }
+        .desk-officer-quarterly-report-table .quarterly-report-period,
+        .desk-officer-quarterly-report-table .quarterly-report-type {
+            display: inline-flex;
+            max-width: 100%;
+            align-items: center;
+            gap: .25rem;
+            padding: .1875rem .4375rem;
+            border-radius: 9999px;
+            background: #ffe4e8;
+            color: #e11d48;
+            font-size: .625rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
         .desk-officer-quarterly-report-table .quarterly-mobile-card-actions {
             display: grid !important;
-            grid-template-columns: repeat(auto-fit, minmax(3rem, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(2.5rem, 1fr));
             gap: .5rem;
             width: 100%;
+            margin-top: auto;
+            padding-top: .75rem !important;
         }
         .desk-officer-quarterly-report-table .quarterly-mobile-card-actions > :is(a, button, form) {
             display: inline-flex !important;
             align-items: center;
             justify-content: center;
             width: 100% !important;
-            height: 3rem !important;
-            min-width: 3rem !important;
-            min-height: 3rem !important;
+            height: 2.5rem !important;
+            min-width: 2.5rem !important;
+            min-height: 2.5rem !important;
             padding: 0 !important;
             margin: 0 !important;
         }
         .desk-officer-quarterly-report-table .quarterly-mobile-card-actions form > button { width: 100% !important; height: 100% !important; }
+        .desk-officer-quarterly-report-table .quarterly-mobile-card-actions :is(a, button):not(:disabled) {
+            border-color: #C41E3A !important;
+            background: #C41E3A !important;
+            color: #ffffff !important;
+            border-radius: .5rem !important;
+        }
+        .desk-officer-quarterly-report-table .quarterly-mobile-card-actions :is(a, button):not(:disabled):is(:hover, :focus, :active) {
+            border-color: #A01830 !important;
+            background: #A01830 !important;
+        }
+        .desk-officer-quarterly-report-table > [data-pagination-label] {
+            padding: .75rem 1rem !important;
+            gap: .75rem !important;
+            background: #f8fafc;
+        }
+        .desk-officer-quarterly-report-table > [data-pagination-label] > div:first-child {
+            font-size: .6875rem !important;
+            color: #64748b !important;
+        }
+        .desk-officer-quarterly-report-table > [data-pagination-label] > div:last-child { gap: .375rem !important; }
+        .desk-officer-quarterly-report-table > [data-pagination-label] a {
+            width: 2rem !important;
+            height: 2rem !important;
+            border-radius: .5rem !important;
+            font-size: .6875rem !important;
+        }
     }
-    @media (min-width: 37.5rem) and (max-width: 80rem) {
-        .desk-officer-quarterly-report-table .quarterly-table-view { display: block !important; }
-        .desk-officer-quarterly-report-table .quarterly-mobile-cards { display: none !important; }
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        .desk-officer-quarterly-report-table .quarterly-mobile-cards {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
     }
     @if($archived ?? false)
     .desk-officer-quarterly-report-table .restore-confirm-form {
@@ -75,7 +181,7 @@
 </style>
 
 @foreach($reportGroups as $department => $reports)
-<section class="desk-officer-quarterly-report-table {{ $isBcpcDeskOfficer ? 'bcpc-quarterly-report-table' : '' }} bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 mb-6">
+<section data-ajax-pagination="quarterly-{{ $department }}" data-ajax-page="{{ $reports->getPageName() }}" class="desk-officer-quarterly-report-table {{ $isBcpcDeskOfficer ? 'bcpc-quarterly-report-table' : '' }} bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 mb-6">
     @unless(($archived ?? false) && $isSwdDeskOfficer && !auth()->user()->isMultiCaseDepartment())
     <h2 class="px-6 py-4 text-lg font-semibold text-purple-800">{{ ($archived ?? false) && auth()->user()->isMultiCaseDepartment() ? ($department === 'VAWC' ? 'SWD' : $department) . ' Quarterly Reports' : (($archived ?? false) && $isBcpcDeskOfficer && !auth()->user()->isMultiCaseDepartment() ? 'Quarterly Reports' : (auth()->user()->isMultiCaseDepartment() && $department === 'VAWC' ? 'SWD' : $department) . ' Case Reports') }}</h2>
     @endunless
@@ -143,7 +249,7 @@
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="6" class="px-6 py-12 text-center text-gray-500">No {{ $department }} case reports found.</td></tr>
+                <tr><td colspan="6" class="px-6 py-12 text-center text-gray-500">No {{ ($archived ?? false) ? 'archived ' : '' }}{{ $department === 'VAWC' ? 'SWD' : $department }} quarterly reports found.</td></tr>
             @endforelse
             </tbody>
         </table>
@@ -152,36 +258,31 @@
     <div class="quarterly-mobile-cards md:hidden p-3 space-y-3">
         @forelse($reports as $report)
             @php($restoreDisabled = ($isBcpcDeskOfficer || $isVawcDeskOfficer) && !empty(($activeReportPeriods[$department] ?? [])[$report->quarter . '-' . $report->year]))
-            <article class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-                <div class="flex items-center justify-between gap-3 pb-3 border-b border-gray-100">
-                    <div>
-                        <p class="text-xs font-medium text-gray-500">Period</p>
-                        <p class="text-sm font-bold text-gray-800">Q{{ $report->quarter }} {{ $report->year }}</p>
+            <article class="quarterly-report-card bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+                <div class="quarterly-report-card-header">
+                    <div class="flex min-w-0 items-center gap-2.5">
+                        <span class="quarterly-report-card-marker" aria-hidden="true"><i class="fas fa-map-marker-alt"></i></span>
+                        <div class="min-w-0">
+                            <p class="truncate text-sm font-semibold text-gray-800">{{ $report->barangay?->name ?? 'N/A' }}</p>
+                            <p class="truncate text-[10px] text-gray-400">{{ $report->created_at?->format('M d, Y h:i A') }}</p>
+                        </div>
                     </div>
-                    <div class="text-right">
-                        <p class="text-xs font-medium text-gray-500">Cases</p>
-                        <p class="text-sm font-bold text-purple-700">{{ $report->report_data['total_cases'] ?? 0 }}</p>
-                    </div>
+                    <span class="quarterly-report-card-count" title="{{ $report->report_data['total_cases'] ?? 0 }} cases" aria-label="{{ $report->report_data['total_cases'] ?? 0 }} cases">{{ $report->report_data['total_cases'] ?? 0 }}</span>
                 </div>
 
-                <dl class="grid grid-cols-2 gap-x-4 gap-y-3 py-3 text-sm">
+                <dl class="quarterly-report-card-details text-sm">
                     <div>
-                        <dt class="text-xs text-gray-500">Barangay</dt>
-                        <dd class="mt-0.5 font-medium text-gray-800">{{ $report->barangay?->name ?? 'N/A' }}</dd>
+                        <dt class="mb-1 text-[10px] text-gray-500">Period</dt>
+                        <dd><span class="quarterly-report-period"><i class="fas fa-calendar-alt" aria-hidden="true"></i> Q{{ $report->quarter }} {{ $report->year }}</span></dd>
                     </div>
                     <div>
-                        <dt class="text-xs text-gray-500">Generated By</dt>
-                        <dd class="mt-0.5 font-medium text-gray-800">
-                            @if($report->user_id === Auth::id())
-                                <span class="inline-flex items-center gap-1 text-purple-700"><i class="fas fa-user-circle text-xs"></i> You</span>
-                            @else
-                                {{ $report->user ? $report->user->first_name . ' ' . substr($report->user->last_name ?? '', 0, 1) . '.' : 'Unknown' }}
-                            @endif
-                        </dd>
+                        <dt class="mb-1 text-[10px] text-gray-500">Type</dt>
+                        <dd><span class="quarterly-report-type">{{ ($report->type ?? 'VAWC') === 'VAWC' ? 'SWD' : ($report->type ?? 'BCPC') }}</span></dd>
                     </div>
-                    <div class="col-span-2">
-                        <dt class="text-xs text-gray-500">Date</dt>
-                        <dd class="mt-0.5 font-medium text-gray-800">{{ $report->created_at?->format('M d, Y') }}</dd>
+                    <div class="quarterly-report-submitter">
+                        <dt class="mb-1 text-[10px] text-gray-500">Submitted By</dt>
+                        <dd class="truncate text-xs font-medium text-gray-700">{{ trim(($report->user?->first_name ?? '') . ' ' . ($report->user?->last_name ?? '')) ?: 'Unknown' }}</dd>
+                        <dd class="truncate text-[10px] text-gray-400">{{ $report->user?->email ?? '' }}</dd>
                     </div>
                 </dl>
 
@@ -215,10 +316,15 @@
                 </div>
             </article>
         @empty
-            <div class="text-center py-10 text-gray-500">No {{ $department }} case reports found.</div>
+            <div class="col-span-full flex min-h-32 flex-col items-center justify-center px-4 py-10 text-center text-gray-500">
+                <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-[#C41E3A]" aria-hidden="true">
+                    <i class="fas fa-archive text-xl"></i>
+                </div>
+                <p class="text-sm font-semibold text-gray-700">No {{ ($archived ?? false) ? 'archived ' : '' }}{{ $department === 'VAWC' ? 'SWD' : $department }} quarterly reports found.</p>
+            </div>
         @endforelse
     </div>
-    @if($reports->hasPages())@include('components.archived-pagination', ['paginator' => $reports, 'label' => 'archived reports'])@endif
+    @if($reports->hasPages())@include('components.archived-pagination', ['paginator' => $reports, 'label' => ($archived ?? false) ? 'archived reports' : 'reports'])@endif
 </section>
 @endforeach
 @push('scripts')
@@ -247,7 +353,7 @@ document.querySelectorAll('.quarterly-mobile-cards').forEach(cards => {
     cards.style.display = isQuarterlyPhoneView ? 'grid' : '';
 });
 
-document.querySelectorAll('[data-quarterly-preview]').forEach(button => button.addEventListener('click', () => {
+window.portalPaginationElements('[data-quarterly-preview]').forEach(button => button.addEventListener('click', () => {
     const openPreview = () => window.open(button.dataset.quarterlyPreview, '_blank', 'noopener');
     if (typeof Swal === 'undefined') return openPreview();
     Swal.fire({
@@ -261,7 +367,7 @@ document.querySelectorAll('[data-quarterly-preview]').forEach(button => button.a
     }).then(result => { if (result.isConfirmed) openPreview(); });
 }));
 
-document.querySelectorAll('.delete-archived-report-form').forEach(form => form.addEventListener('submit', event => {
+window.portalPaginationElements('.delete-archived-report-form').forEach(form => form.addEventListener('submit', event => {
     event.preventDefault();
     const submit = () => submitQuarterlyReportAction(form, 'Report Deleted');
     const period = form.dataset.period || 'this report';
@@ -300,7 +406,7 @@ document.addEventListener('submit', async event => {
     }
 });
 @endif
-document.querySelectorAll('.quarterly-archive-form').forEach(form => form.addEventListener('submit', async event => {
+window.portalPaginationElements('.quarterly-archive-form').forEach(form => form.addEventListener('submit', async event => {
     event.preventDefault();
     if (typeof Swal !== 'undefined') {
         const result = await Swal.fire({
@@ -316,7 +422,7 @@ document.querySelectorAll('.quarterly-archive-form').forEach(form => form.addEve
         if (confirm('Archive this case report?')) form.submit();
     }
 }));
-document.querySelectorAll('.restore-confirm-form').forEach(form => form.addEventListener('submit', async event => {
+window.portalPaginationElements('.restore-confirm-form').forEach(form => form.addEventListener('submit', async event => {
     event.preventDefault();
     if (typeof Swal !== 'undefined') {
         const result = await Swal.fire({

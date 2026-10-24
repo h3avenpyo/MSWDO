@@ -2,6 +2,81 @@
 
 @section('title', 'BCPC Case Monitoring Form')
 
+@push('styles')
+@php
+    $usesTabletMonitoringCards = $isView || request()->filled('edit') || request()->filled('add');
+@endphp
+<link rel="stylesheet" href="{{ asset('css/bcpc-monitoring-mobile-cards.css') }}?v={{ filemtime(public_path('css/bcpc-monitoring-mobile-cards.css')) }}">
+<link rel="stylesheet" href="{{ asset('css/bcpc-monitoring-card-layout.css') }}?v={{ filemtime(public_path('css/bcpc-monitoring-card-layout.css')) }}" media="screen and (max-width: {{ $usesTabletMonitoringCards ? '80rem' : '47.9375rem' }})">
+@if($usesTabletMonitoringCards)
+<link rel="stylesheet" href="{{ asset('css/bcpc-monitoring-tablet-cards.css') }}?v={{ filemtime(public_path('css/bcpc-monitoring-tablet-cards.css')) }}" media="screen and (min-width: 48rem) and (max-width: 80rem)">
+@endif
+<style>
+    @media (max-width: 47.9375rem) {
+        body.portal-ui #mainContent > header#desk-officer-dashboard-header #pageMobileMenuToggle {
+            font-size: 1.125rem !important;
+        }
+
+        body.portal-ui #mainContent > header#desk-officer-dashboard-header #pageMobileMenuToggle > i {
+            font-size: inherit !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        body.portal-ui #mainContent > header#desk-officer-dashboard-header button[aria-label="Notifications"] {
+            box-sizing: border-box !important;
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+            background: var(--mswdo-profile, #BC0202) !important;
+            border: 1px solid #8f0202 !important;
+            box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+            color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            position: relative !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+
+        body.portal-ui #mainContent > header#desk-officer-dashboard-header button[aria-label="Notifications"]:hover {
+            background: #8f0202 !important;
+        }
+
+        body.portal-ui #mainContent > header#desk-officer-dashboard-header button[aria-label="Notifications"] > i {
+            font-size: 1rem !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            color: #ffffff !important;
+        }
+
+        body.portal-ui #mainContent > header#desk-officer-dashboard-header #notifications-unread-count {
+            position: absolute !important;
+            width: 1.25rem !important;
+            min-width: 1.25rem !important;
+            height: 1.25rem !important;
+            top: -.25rem !important;
+            right: -.25rem !important;
+            padding: 0 !important;
+            font-size: .75rem !important;
+            line-height: 1 !important;
+            background-color: #eab308 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            border: 2px solid #C41E3A !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .2) !important;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 
 @php
@@ -146,21 +221,40 @@
     @endif
 
     @if($barangay)
+        <div id="bcpc-monitoring-section-filter-panel" data-monitoring-filter hidden>
+            <label for="bcpc-monitoring-section-filter">Show section</label>
+            <div class="bcpc-monitoring-section-filter-controls">
+            <select id="bcpc-monitoring-section-filter">
+                @foreach($tables as $table)
+                    <option value="{{ $table['name'] }}">{{ $table['title'] }}</option>
+                @endforeach
+                <option value="bcpc_organizations">Child Protection Organizations</option>
+                <option value="all">All sections</option>
+            </select>
+            @if($usesTabletMonitoringCards)
+                <button type="button" id="bcpc-monitoring-clear-section-filter">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                    <span>Clear filter</span>
+                </button>
+            @endif
+            </div>
+        </div>
+
         <!-- Monitoring Data Form -->
-        <form id="bcpc-monitoring-form" method="POST" action="{{ route('desk-officer.bcpc-case-monitoring.update') }}" class="space-y-6">
+        <form id="bcpc-monitoring-form" data-card-max-width="{{ $usesTabletMonitoringCards ? '80rem' : '47.9375rem' }}" method="POST" action="{{ route('desk-officer.bcpc-case-monitoring.update') }}" class="space-y-6">
             @csrf
             <input type="hidden" name="quarter" value="{{ $quarter }}">
             <input type="hidden" name="year" value="{{ $year }}">
 
             @foreach($tables as $table)
-                <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+                <div data-monitoring-section="{{ $table['name'] }}" data-page-size="1" class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
                     <div class="bg-gradient-to-r from-purple-800 to-purple-700 px-6 py-4 text-white">
                         <h2 class="text-base font-bold">{{ $table['title'] }}</h2>
                         <p class="text-xs text-purple-200 mt-0.5">{{ $table['note'] }}</p>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="bcpc-monitoring-table w-full text-xs border-collapse">
+                    <div class="bcpc-monitoring-table-wrap overflow-x-auto">
+                        <table data-monitoring-cards class="bcpc-monitoring-table w-full text-xs border-collapse">
                             <thead>
                                 <tr class="bg-purple-50 text-purple-900 border-b border-purple-100">
                                     <th rowspan="2" class="border border-purple-100 px-4 py-3 text-left font-semibold min-w-[260px]">
@@ -185,19 +279,26 @@
                             <tbody class="divide-y divide-gray-100">
                                 @foreach($table['rows'] as $rowKey => $rowLabel)
                                     @php $isTotal = $rowKey === 'total'; @endphp
-                                    <tr class="{{ $isTotal ? 'bg-purple-50/40 font-bold' : 'hover:bg-gray-50' }}">
-                                        <td class="border border-gray-200 px-4 py-2 {{ $isTotal ? 'text-purple-900 font-bold' : 'text-gray-800' }}">
+                                    <tr data-total-row="{{ $isTotal ? 'true' : 'false' }}" class="{{ $isTotal ? 'bg-purple-50/40 font-bold' : 'hover:bg-gray-50' }}">
+                                        <td class="bcpc-monitoring-row-label border border-gray-200 px-4 py-2 {{ $isTotal ? 'text-purple-900 font-bold' : 'text-gray-800' }}">
                                             {{ $rowLabel }}
                                         </td>
                                         @foreach($yearGroups as $yearKey => $label)
                                             @foreach($sexColumns as $sexKey => $sexLabel)
-                                                <td class="border border-gray-200 p-1 text-center {{ $yearKey === 'total_2025' ? 'bg-purple-50/20' : '' }}">
-                                                    <input type="number" 
-                                                           min="0" 
-                                                           name="{{ $table['name'] }}[{{ $rowKey }}][{{ $yearKey }}][{{ $sexKey }}]" 
-                                                           value="{{ old($table['name'].'.'.$rowKey.'.'.$yearKey.'.'.$sexKey, data_get($data, $table['name'].'.'.$rowKey.'.'.$yearKey.'.'.$sexKey, 0)) }}" 
-                                                           @if($isView) readonly @endif
-                                                           class="w-full text-center border-0 rounded px-1.5 py-1 text-xs focus:ring-1 focus:ring-purple-500 {{ $isTotal ? 'font-bold text-purple-900 bg-transparent' : ($isView ? 'bg-transparent text-gray-700' : 'bg-white hover:bg-gray-50') }}">
+                                                <td class="bcpc-monitoring-value-cell border border-gray-200 p-1 text-center {{ $yearKey === 'total_2025' ? 'bg-purple-50/20' : '' }}">
+                                                    @if($sexKey === 'male')
+                                                        <span class="bcpc-monitoring-mobile-year" aria-hidden="true">{{ $label }}</span>
+                                                    @endif
+                                                    <div class="bcpc-monitoring-field">
+                                                        <span class="bcpc-monitoring-mobile-label" aria-hidden="true">{{ $sexLabel }}</span>
+                                                        <input type="number"
+                                                               aria-label="{{ $rowLabel }}, {{ $label }}, {{ $sexLabel }}"
+                                                               min="0"
+                                                               name="{{ $table['name'] }}[{{ $rowKey }}][{{ $yearKey }}][{{ $sexKey }}]"
+                                                               value="{{ old($table['name'].'.'.$rowKey.'.'.$yearKey.'.'.$sexKey, data_get($data, $table['name'].'.'.$rowKey.'.'.$yearKey.'.'.$sexKey, 0)) }}"
+                                                               @if($isView) readonly @endif
+                                                               class="w-full text-center border-0 rounded px-1.5 py-1 text-xs focus:ring-1 focus:ring-purple-500 {{ $isTotal ? 'font-bold text-purple-900 bg-transparent' : ($isView ? 'bg-transparent text-gray-700' : 'bg-white hover:bg-gray-50') }}">
+                                                    </div>
                                                 </td>
                                             @endforeach
                                         @endforeach
@@ -206,18 +307,19 @@
                             </tbody>
                         </table>
                     </div>
+                    @include('desk-officer.partials.monitoring-mobile-pagination', ['paginationLabel' => $table['title']])
                 </div>
             @endforeach
 
             <!-- Child Protection Organizations -->
-            <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+            <div data-monitoring-section="bcpc_organizations" data-page-size="1" class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
                 <div class="bg-gradient-to-r from-purple-800 to-purple-700 px-6 py-4 text-white">
                     <h2 class="text-base font-bold">Child Protection Organizations</h2>
                     <p class="text-xs text-purple-200 mt-0.5">List of NGOs, CSOs, FBOs, POs, and Youth/Children Organizations in your Barangay.</p>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs border-collapse">
+                <div class="bcpc-monitoring-table-wrap overflow-x-auto">
+                    <table data-monitoring-cards class="bcpc-organizations-table w-full text-xs border-collapse">
                         <thead>
                             <tr class="bg-purple-50 text-purple-900 border-b border-purple-100">
                                 <th class="border border-purple-100 px-4 py-3 text-left font-semibold">Name of Organization</th>
@@ -228,9 +330,11 @@
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             @for($i = 0; $i < 3; $i++)
-                                <tr class="hover:bg-gray-50">
+                                <tr class="hover:bg-gray-50" data-card-title="Organization {{ $i + 1 }}">
                                     <td class="border border-gray-200 p-2">
+                                        <label class="bcpc-monitoring-mobile-label" for="bcpc-organization-{{ $i }}-name">Name of Organization</label>
                                         <input type="text" 
+                                               id="bcpc-organization-{{ $i }}-name"
                                                name="bcpc_organizations[{{ $i }}][name]" 
                                                value="{{ old('bcpc_organizations.'.$i.'.name', data_get($data, 'bcpc_organizations.'.$i.'.name')) }}" 
                                                placeholder="Organization Name"
@@ -238,7 +342,9 @@
                                                class="w-full border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs focus:ring-1 focus:ring-purple-500 {{ $isView ? 'bg-gray-50' : 'bg-white' }}">
                                     </td>
                                     <td class="border border-gray-200 p-2">
+                                        <label class="bcpc-monitoring-mobile-label" for="bcpc-organization-{{ $i }}-person">Responsible Person &amp; Designation</label>
                                         <input type="text" 
+                                               id="bcpc-organization-{{ $i }}-person"
                                                name="bcpc_organizations[{{ $i }}][responsible_person]" 
                                                value="{{ old('bcpc_organizations.'.$i.'.responsible_person', data_get($data, 'bcpc_organizations.'.$i.'.responsible_person')) }}" 
                                                placeholder="Name & Position"
@@ -246,7 +352,9 @@
                                                class="w-full border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs focus:ring-1 focus:ring-purple-500 {{ $isView ? 'bg-gray-50' : 'bg-white' }}">
                                     </td>
                                     <td class="border border-gray-200 p-2">
+                                        <label class="bcpc-monitoring-mobile-label" for="bcpc-organization-{{ $i }}-email">Email Address</label>
                                         <input type="email" 
+                                               id="bcpc-organization-{{ $i }}-email"
                                                name="bcpc_organizations[{{ $i }}][email]" 
                                                value="{{ old('bcpc_organizations.'.$i.'.email', data_get($data, 'bcpc_organizations.'.$i.'.email')) }}" 
                                                placeholder="email@example.com"
@@ -254,7 +362,9 @@
                                                class="w-full border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs focus:ring-1 focus:ring-purple-500 {{ $isView ? 'bg-gray-50' : 'bg-white' }}">
                                     </td>
                                     <td class="border border-gray-200 p-2">
+                                        <label class="bcpc-monitoring-mobile-label" for="bcpc-organization-{{ $i }}-phone">Phone / Mobile</label>
                                         <input type="text" 
+                                               id="bcpc-organization-{{ $i }}-phone"
                                                name="bcpc_organizations[{{ $i }}][phone]" 
                                                value="{{ old('bcpc_organizations.'.$i.'.phone', data_get($data, 'bcpc_organizations.'.$i.'.phone')) }}" 
                                                placeholder="Phone Number"
@@ -266,10 +376,11 @@
                         </tbody>
                     </table>
                 </div>
+                @include('desk-officer.partials.monitoring-mobile-pagination', ['paginationLabel' => 'Child Protection Organizations'])
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex flex-wrap items-center justify-end gap-3 pt-4">
+            <div class="bcpc-monitoring-form-actions flex flex-wrap items-center justify-end gap-3 pt-4">
                 @unless($isView)
                 <a href="{{ ($fromArchived ?? false) ? route('desk-officer.bcpc-case-monitoring.archived') : route('desk-officer.bcpc-case-monitoring.edit') }}"
                    data-back
@@ -295,6 +406,7 @@
 </div>
 
 @push('scripts')
+<script src="{{ asset('js/bcpc-monitoring-mobile-cards.js') }}?v={{ filemtime(public_path('js/bcpc-monitoring-mobile-cards.js')) }}" defer></script>
 @include('components.bcpc-monitoring-input-restrictions')
 <script>
 @if(session('bcpc_sent_to_admin'))

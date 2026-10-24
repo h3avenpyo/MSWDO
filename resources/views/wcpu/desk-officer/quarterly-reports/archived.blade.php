@@ -75,6 +75,7 @@
         }
 
         html body.portal-ui.desk-officer-quarterly-reports-mobile-nav :is(#dashboardMenuToggle, #pageMobileMenuToggle) {
+            font-size: 1.125rem !important;
             position: relative !important;
             left: 0 !important;
             margin-left: 0 !important;
@@ -94,6 +95,10 @@
 
         html body.portal-ui.desk-officer-quarterly-reports-mobile-nav :is(#dashboardMenuToggle, #pageMobileMenuToggle) i {
             color: inherit !important;
+            font-size: inherit !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
         html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent>header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) :is(h1, h2, h3),
@@ -130,8 +135,7 @@
             flex-wrap: nowrap !important;
         }
 
-        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent>header button[aria-label="Notifications"],
-        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"] {
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"] {
             box-sizing: border-box !important;
             width: 2.5rem !important;
             min-width: 2.5rem !important;
@@ -139,23 +143,51 @@
             min-height: 2.5rem !important;
             padding: 0 !important;
             border-radius: .625rem !important;
+            background: var(--mswdo-profile, #BC0202) !important;
+            border: 1px solid #8f0202 !important;
+            box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+            color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            position: relative !important;
+            margin: 0 !important;
+            line-height: 1 !important;
         }
 
-        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent>header button[aria-label="Notifications"]>i,
-        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"]>i {
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"]:hover {
+            background: #8f0202 !important;
+        }
+
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"]>i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             margin: 0 !important;
+            padding: 0 !important;
             font-size: 1rem !important;
             line-height: 1 !important;
+            color: #ffffff !important;
+            vertical-align: middle !important;
         }
 
-        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent>header #notifications-unread-count,
-        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #desk-officer-dashboard-header #notifications-unread-count {
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent>header#desk-officer-dashboard-header #notifications-unread-count {
+            position: absolute !important;
             width: 1.25rem !important;
             height: 1.25rem !important;
+            min-width: 1.25rem !important;
             top: -.25rem !important;
             right: -.25rem !important;
+            padding: 0 !important;
             font-size: .75rem !important;
             line-height: 1 !important;
+            background-color: #eab308 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            border: 2px solid #C41E3A !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .2) !important;
         }
 
         html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #desk-officer-dashboard-header div:has(> img[alt="User Profile"]),
@@ -219,6 +251,32 @@
     }
 
     @endif
+    @media (min-width: 48rem) and (max-width: 80rem) and (orientation: portrait) {
+        .archived-quarterly-reports-stable .archived-quarterly-filter-controls {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) auto auto auto;
+            grid-auto-flow: column;
+            align-items: center;
+            gap: .5rem !important;
+        }
+
+        .archived-quarterly-reports-stable #archived-report-quarter {
+            width: 7.5rem !important;
+            min-width: 0 !important;
+            max-width: 7.5rem !important;
+        }
+
+        .archived-quarterly-reports-stable #archived-report-year {
+            width: 6.5rem !important;
+            min-width: 0 !important;
+            max-width: 6.5rem !important;
+        }
+
+        .archived-quarterly-reports-stable .archived-quarterly-filter-controls > :is(button, a) {
+            white-space: nowrap;
+            justify-content: center;
+        }
+    }
 </style>
 @endpush
 @section('content')

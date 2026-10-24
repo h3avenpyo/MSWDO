@@ -173,7 +173,7 @@
             <button 
                 id="deskMarkAllReadBtn"
                 class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition-colors text-white"
-                style="color: #ffffff !important;"
+                style="{{ request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard', 'case-profiles.index', 'desk-officer.cases.index', 'desk-officer.cases.create', 'desk-officer.referrals', 'desk-officer.calendar.index', 'desk-officer.quarterly-reports.index', 'desk-officer.quarterly-reports.create', 'desk-officer.quarterly-reports.show', 'desk-officer.quarterly-reports.edit', 'desk-officer.bcpc-case-monitoring.edit', 'desk-officer.archived-barangay-cases.index', 'desk-officer.referrals.archived', 'desk-officer.quarterly-reports.archived') ? 'background: #ffffff !important; color: #C41E3A !important;' : 'color: #ffffff !important;' }}"
             >
                 Mark all as read
             </button>

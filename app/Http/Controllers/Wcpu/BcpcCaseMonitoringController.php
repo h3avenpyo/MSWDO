@@ -93,7 +93,7 @@ class BcpcCaseMonitoringController extends Controller
             ->orderByDesc('created_at')
             ->orderByDesc('year')
             ->orderByDesc('quarter')
-            ->paginate(5)->withQueryString();
+            ->paginate(4)->withQueryString();
 
         $archivedCount = 0;
 

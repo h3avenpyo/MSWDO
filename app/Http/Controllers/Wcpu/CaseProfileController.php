@@ -48,7 +48,7 @@ class CaseProfileController extends Controller
                 $perPage = $request->user()->isDepartmentAdmin() && $request->boolean('portrait_cards') ? 4 : 5;
                 $page = max(1, (int) $request->input($pageName, 1));
                 return (new \Illuminate\Pagination\LengthAwarePaginator(
-                    $profiles->values()->forPage($page, $perPage)->values(), $profiles->count(), $perPage, $page,
+                    $profiles->values()->forPage($page, 4)->values(), $profiles->count(), 4, $page,
                     ['path' => $request->url(), 'pageName' => $pageName]
                 ))->withQueryString();
             };

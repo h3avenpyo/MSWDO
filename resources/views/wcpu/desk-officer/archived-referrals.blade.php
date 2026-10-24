@@ -2,18 +2,27 @@
 @section('title', 'Archived Referrals')
 @push('styles')
 <style>
-    @media (max-width: 37.49875rem) {
+    @media (max-width: 80rem) {
         .archived-referrals-table {
             display: none !important;
         }
 
         .archived-referrals-cards {
             display: grid !important;
+            grid-template-columns: minmax(0, 1fr);
             gap: .75rem;
             padding: .75rem;
         }
 
+        .archived-referrals-cards > * {
+            min-width: 0;
+            margin: 0 !important;
+        }
+
         .archived-referral-card {
+            display: flex;
+            height: 100%;
+            flex-direction: column;
             padding: 1rem;
             min-width: 0;
         }
@@ -22,6 +31,7 @@
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 2fr));
             gap: .5rem;
+            margin-top: auto;
         }
 
         .archived-referral-actions> :is(button, form) {
@@ -42,9 +52,28 @@
         }
     }
 
-    @media (min-width: 37.5rem) {
+    @media (min-width: 48rem) and (max-width: 80rem) {
         .archived-referrals-cards {
-            display: none !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .archived-referrals-cards > .archived-referrals-empty-state:not(.hidden) {
+            display: flex;
+            grid-column: 1 / -1;
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        .archived-referral-actions> :is(button, form) {
+            height: 2.5rem;
+            min-width: 2.5rem;
+            min-height: 2.5rem;
         }
     }
 
@@ -160,6 +189,7 @@
         }
 
         html body.portal-ui.desk-officer-referrals-mobile-nav :is(#dashboardMenuToggle, #pageMobileMenuToggle) {
+            font-size: 1.125rem !important;
             position: relative !important;
             left: 0 !important;
             margin-left: 0 !important;
@@ -179,6 +209,10 @@
 
         html body.portal-ui.desk-officer-referrals-mobile-nav :is(#dashboardMenuToggle, #pageMobileMenuToggle) i {
             color: inherit !important;
+            font-size: inherit !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
         html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent>header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) :is(h1, h2, h3),
@@ -212,8 +246,7 @@
             flex-wrap: nowrap !important;
         }
 
-        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent>header button[aria-label="Notifications"],
-        html body.portal-ui.desk-officer-referrals-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"] {
+        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"] {
             box-sizing: border-box !important;
             width: 2.5rem !important;
             min-width: 2.5rem !important;
@@ -221,23 +254,51 @@
             min-height: 2.5rem !important;
             padding: 0 !important;
             border-radius: .625rem !important;
+            background: var(--mswdo-profile, #BC0202) !important;
+            border: 1px solid #8f0202 !important;
+            box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+            color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            position: relative !important;
+            margin: 0 !important;
+            line-height: 1 !important;
         }
 
-        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent>header button[aria-label="Notifications"]>i,
-        html body.portal-ui.desk-officer-referrals-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"]>i {
+        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"]:hover {
+            background: #8f0202 !important;
+        }
+
+        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"]>i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             margin: 0 !important;
+            padding: 0 !important;
             font-size: 1rem !important;
             line-height: 1 !important;
+            color: #ffffff !important;
+            vertical-align: middle !important;
         }
 
-        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent>header #notifications-unread-count,
-        html body.portal-ui.desk-officer-referrals-mobile-nav #desk-officer-dashboard-header #notifications-unread-count {
+        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent>header#desk-officer-dashboard-header #notifications-unread-count {
+            position: absolute !important;
             width: 1.25rem !important;
             height: 1.25rem !important;
+            min-width: 1.25rem !important;
             top: -.25rem !important;
             right: -.25rem !important;
+            padding: 0 !important;
             font-size: .75rem !important;
             line-height: 1 !important;
+            background-color: #eab308 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            border: 2px solid #C41E3A !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .2) !important;
         }
 
         /* Sidebar dropdown drawer below header */
@@ -391,7 +452,7 @@ case referrals'])
     </form>
     @php($groups = isset($referralGroups) && !empty($referralGroups) ? $referralGroups : ['' => $referrals])
     @foreach($groups as $department => $referralList)
-    <section class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-6">
+    <section data-ajax-pagination="archived-referrals-{{ $department ?: 'all' }}" data-ajax-page="{{ $referralList->getPageName() }}" class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-6">
         @if(auth()->user()->isMultiCaseDepartment())
         <div class="border-b border-gray-100 px-6 py-4">
             <h2 class="text-lg font-semibold text-[#991b1b]">{{ $department === 'VAWC' ? 'SWD' : $department }} Archived
@@ -492,8 +553,11 @@ case referrals'])
                                 class="fas fa-trash"></i><span class="sr-only">Delete</span></button></form>@endunless
                 </div>@endif
             </article>
-            @empty <div class="rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-500">No archived
+            @empty <div class="archived-referrals-empty-state rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-500">No archived
                 referrals.</div>@endforelse
+            @if($referralList->isNotEmpty())
+            <div class="archived-referrals-empty-state archived-referrals-search-empty hidden rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-500" role="status">No results found.</div>
+            @endif
         </div>
         @if($referralList->hasPages())@include('components.archived-pagination', ['paginator' => $referralList, 'label'
         => 'archived referrals'])@endif
@@ -532,7 +596,7 @@ case referrals'])
     const modalElement = document.getElementById('archivedReferralDetailsModal');
     const modal = new bootstrap.Modal(modalElement);
     const content = document.getElementById('archivedReferralDetailsContent');
-    document.querySelectorAll('.archived-view-referral-btn').forEach(button => button.addEventListener('click', () => {
+    window.portalPaginationElements('.archived-view-referral-btn').forEach(button => button.addEventListener('click', () => {
         content.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-secondary" role="status"></div><div>Loading...</div></div>';
         modal.show();
         fetch(`/desk-officer/referrals/${button.dataset.referralId}/details?archived=1`)
@@ -542,7 +606,7 @@ case referrals'])
     }));
 });
 
-document.querySelectorAll('.delete-archived-referral-form').forEach(form => {
+window.portalPaginationElements('.delete-archived-referral-form').forEach(form => {
     form.addEventListener('submit', event => {
         event.preventDefault();
         Swal.fire({
@@ -559,7 +623,7 @@ document.querySelectorAll('.delete-archived-referral-form').forEach(form => {
     });
 });
 
-document.querySelectorAll('.restore-archived-referral-form').forEach(form => {
+window.portalPaginationElements('.restore-archived-referral-form').forEach(form => {
     form.addEventListener('submit', event => {
         event.preventDefault();
         Swal.fire({
@@ -584,6 +648,14 @@ if (refSearch) {
             if (row.cells.length < 4) return;
             const text = row.textContent.toLowerCase();
             row.style.display = (!q || text.includes(q)) ? '' : 'none';
+        });
+        document.querySelectorAll('.archived-referrals-cards').forEach(group => {
+            const cards = Array.from(group.querySelectorAll('article'));
+            cards.forEach(card => {
+                card.style.display = !q || card.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+            const hasMatch = cards.some(card => card.style.display !== 'none');
+            group.querySelector('.archived-referrals-search-empty')?.classList.toggle('hidden', !q || hasMatch);
         });
     });
 }

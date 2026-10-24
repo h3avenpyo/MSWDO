@@ -66,8 +66,35 @@
             color: rgba(255, 255, 255, 0.9) !important;
         }
 
+        /* Keep the title, department badge, and subtitle evenly spaced on phones. */
+        body.portal-ui #mainContent #officers-create-header .officers-create-header-leading {
+            gap: .25rem !important;
+            min-width: 0 !important;
+        }
+
+        body.portal-ui #mainContent #officers-create-header .officers-create-header-title-group {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: .375rem !important;
+            min-width: 0 !important;
+        }
+
+        body.portal-ui #mainContent #officers-create-header .officers-create-header-title-group > h2 {
+            margin: 0 !important;
+            line-height: 1.35 !important;
+        }
+
+        body.portal-ui #mainContent #officers-create-header .officers-create-header-leading > p {
+            margin: 0 !important;
+            font-size: .75rem !important;
+            line-height: 1.45 !important;
+            white-space: normal !important;
+            overflow-wrap: anywhere;
+        }
+
         body.portal-ui #officers-create-header #pageMobileMenuToggle {
             position: relative !important;
+            font-size: 1.125rem !important;
             left: 0 !important;
             margin-left: 0 !important;
             transform: none !important;
@@ -91,8 +118,66 @@
 
         body.portal-ui #officers-create-header #pageMobileMenuToggle i {
             color: inherit !important;
-            font-size: 1.125rem !important;
+            font-size: inherit !important;
             line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Use the dashboard notification button for both multirole case types. */
+        body.portal-ui #mainContent #officers-create-header [data-multirole-notifications] button[aria-label="Notifications"] {
+            box-sizing: border-box !important;
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+            background: var(--mswdo-profile, #BC0202) !important;
+            border: 1px solid #8f0202 !important;
+            box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+            color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            position: relative !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+
+        body.portal-ui #mainContent #officers-create-header [data-multirole-notifications] button[aria-label="Notifications"]:hover {
+            background: #8f0202 !important;
+        }
+
+        body.portal-ui #mainContent #officers-create-header [data-multirole-notifications] button[aria-label="Notifications"]>i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1 !important;
+            color: #ffffff !important;
+            vertical-align: middle !important;
+        }
+
+        body.portal-ui #mainContent #officers-create-header [data-multirole-notifications] #notifications-unread-count {
+            position: absolute !important;
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+            min-width: 1.25rem !important;
+            top: -.25rem !important;
+            right: -.25rem !important;
+            padding: 0 !important;
+            background-color: #eab308 !important;
+            color: #ffffff !important;
+            font-size: .75rem !important;
+            line-height: 1 !important;
+            font-weight: 700 !important;
+            border: 2px solid #C41E3A !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .2) !important;
         }
     }
 
@@ -221,7 +306,7 @@ $isSwdCase = !$isBCPCCase;
                     <i class="fas fa-bars" aria-hidden="true"></i>
                 </button>
                 <div class="officers-create-header-leading d-flex flex-column align-items-start min-w-0 flex-grow-1">
-                    <div class="d-flex flex-wrap align-items-center gap-1.5 sm:gap-2">
+                    <div class="officers-create-header-title-group d-flex flex-wrap align-items-center gap-1.5 sm:gap-2">
                         <h2 class="text-lg sm:text-2xl font-bold text-gray-800 m-0">Add New Case</h2>
                         @if($isBCPCCase)
                         <span

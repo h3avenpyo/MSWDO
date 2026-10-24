@@ -1,0 +1,4 @@
+#bcpc-monitoring-section-filter-panel,
+#bcpc-monitoring-form :is(.bcpc-monitoring-mobile-label, .bcpc-monitoring-mobile-year, [data-monitoring-pagination]) {
+    display: none;
+}

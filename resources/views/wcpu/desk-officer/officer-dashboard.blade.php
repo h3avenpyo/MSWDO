@@ -398,41 +398,10 @@
         }
     }
 
-    /* Multi-role controls stay balanced on Android tablet portrait widths. */
+    /* Dashboard spacing on Android tablet portrait widths. */
     @media (min-width: 37.5rem) and (max-width: 47.999rem) {
         #desk-officer-dashboard-content {
             padding: clamp(1rem, 2vw, 1.5rem) !important;
-        }
-
-        .dashboard-department-switcher {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            width: 100%;
-            gap: .5rem;
-        }
-
-        .dashboard-department-switcher>a {
-            width: 100%;
-            min-width: 0;
-            justify-content: center;
-            text-align: center;
-        }
-    }
-
-    /* Department Switcher Alignment across Tablets */
-    @media (min-width: 37.5rem) and (max-width: 80rem) {
-        .dashboard-department-switcher {
-            display: flex !important;
-            flex-wrap: nowrap !important;
-            width: auto !important;
-            flex-shrink: 0 !important;
-            gap: 0.5rem !important;
-        }
-
-        .dashboard-department-switcher>a {
-            width: auto !important;
-            flex: 0 0 auto !important;
-            white-space: nowrap !important;
         }
     }
 
@@ -486,25 +455,12 @@
             font-size: .6875rem !important;
         }
 
-        .dashboard-department-switcher {
-            display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            width: 100%;
-            gap: .5rem;
-        }
-
-        .dashboard-department-switcher>a,
         .dashboard-view-all {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             min-width: 3rem;
             min-height: 3rem;
-        }
-
-        .dashboard-department-switcher>a {
-            width: 100%;
-            padding: .5rem !important;
         }
 
         #caseTypesChart {
@@ -947,27 +903,6 @@
             overflow-wrap: break-word !important;
         }
 
-        .dashboard-department-switcher {
-            display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            width: 100% !important;
-            gap: 0.5rem !important;
-            margin-right: 0 !important;
-        }
-
-        .dashboard-department-switcher>a {
-            width: 100% !important;
-            min-width: 0 !important;
-            min-height: 2.5rem !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            text-align: center !important;
-            padding: 0.5rem 0.75rem !important;
-            font-size: 0.75rem !important;
-            box-sizing: border-box !important;
-        }
-
         /* Statistics Cards - 2 Columns on Mobile, 5th Card Full Width */
         [data-swd-dashboard-fit] .dashboard-statistics {
             display: grid !important;
@@ -1125,6 +1060,32 @@
         }
     }
 
+    /* Empty states fill their panel at the existing tablet breakpoint in either orientation. */
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        #desk-officer-dashboard-content .dashboard-recent-empty,
+        #desk-officer-dashboard-content .dashboard-announcements-empty {
+            display: flex;
+            width: 100%;
+            min-width: 0;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        #desk-officer-dashboard-content .dashboard-announcements-empty {
+            grid-column: 1 / -1;
+            margin: 0;
+        }
+
+        #desk-officer-dashboard-content #noChartData {
+            padding: 1rem;
+            text-align: center;
+        }
+    }
+
     /* Small phone optimizations (<= 640px) for Announcements */
     @media (max-width: 39.999rem) {
         .dashboard-announcement-list {
@@ -1233,7 +1194,7 @@ $chartColors = $isBCPC
 <main id="desk-officer-dashboard-content" @if(!$isBCPC && $dashboardUser->position === 'Desk Officer' &&
     $dashboardUser->canAccessCaseDepartment('VAWC')) data-swd-dashboard-fit @endif class="px-4 pt-4 pb-4 sm:p-6 lg:p-8"
     style="padding-bottom: max(2rem, calc(1rem + env(safe-area-inset-bottom))) !important;">
-    <!-- Page Title & Department Switcher -->
+    <!-- Page Title -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         @php
         $dashboardBarangayName = trim((string) ($barangayName ?? Auth::user()?->barangay ?? 'your barangay'));
@@ -1251,18 +1212,6 @@ $chartColors = $isBCPC
                     {{ $dashboardBarangayName }}</p>
             </div>
         </div>
-        @if(Auth::user()->isMultiCaseDepartment())
-        <div class="dashboard-department-switcher flex items-center gap-2">
-            <a href="{{ route('desk-officer.bcpc.dashboard') }}"
-                class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shadow-sm {{ $isBCPC ? 'bg-purple-700 text-white shadow-purple-200' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50' }}">
-                <i class="fas fa-child mr-1"></i> BCPC View
-            </a>
-            <a href="{{ route('desk-officer.dashboard', ['type' => 'VAWC']) }}"
-                class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shadow-sm {{ !$isBCPC ? 'bg-purple-700 text-white shadow-purple-200' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50' }}">
-                <i class="fas fa-shield-alt mr-1"></i> SWD View
-            </a>
-        </div>
-        @endif
     </div>
 
     <!-- Summary Statistics Grid -->
@@ -1427,7 +1376,7 @@ $chartColors = $isBCPC
                     </div>
                 </div>
                 @empty
-                <div class="text-center py-6 text-gray-400">
+                <div class="dashboard-recent-empty text-center py-6 text-gray-400">
                     <i class="fas fa-inbox text-4xl mb-2 text-gray-300"></i>
                     <p class="text-sm font-medium text-gray-500">No cases found</p>
                     <p class="text-xs text-gray-400 mt-0.5">No recent cases recorded for this period</p>

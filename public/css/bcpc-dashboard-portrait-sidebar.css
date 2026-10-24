@@ -1,0 +1,157 @@
+/* Selected Desk Officer pages: expand over the page in tablet portrait only. */
+/* This stylesheet is loaded only at the existing tablet portrait breakpoint. */
+html body.portal-ui #sidebar#sidebar {
+    min-width: 0 !important;
+    max-width: 18rem !important;
+    transition: width .3s ease !important;
+    overflow-x: hidden;
+}
+
+html body.portal-ui #sidebar ~ #sidebarToggleBtn#sidebarToggleBtn {
+    transition: left .3s ease, top .3s ease !important;
+}
+
+html body.portal-ui #sidebar .sidebar-header {
+    transition: min-height .3s ease, padding .3s ease;
+}
+
+html body.portal-ui #sidebar nav .sidebar-text {
+    display: inline-block !important;
+    transition: opacity .15s ease, max-width .3s ease;
+}
+
+html body.portal-ui #sidebarOverlay#sidebarOverlay {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    z-index: 35;
+    background: rgba(0, 0, 0, .3);
+    opacity: 0 !important;
+    visibility: hidden;
+    pointer-events: none !important;
+    transition: opacity .3s ease, visibility 0s linear .3s;
+}
+
+html body.portal-ui:has(#sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init)) #sidebarOverlay#sidebarOverlay {
+    opacity: 1 !important;
+    visibility: visible;
+    pointer-events: auto !important;
+    transition: opacity .3s ease, visibility 0s;
+}
+
+/* Collapsed dropdowns have an extra icon/text wrapper; center it like regular links. */
+html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) nav .sidebar-link {
+    justify-content: center !important;
+    gap: 0 !important;
+}
+
+html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) nav .sidebar-link > div {
+    display: flex !important;
+    flex: 0 0 1.25rem !important;
+    width: 1.25rem !important;
+    min-width: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+}
+
+html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) nav .sidebar-link > i.sidebar-text {
+    display: none !important;
+}
+
+html body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav, .desk-officer-archived-cases-mobile-nav) #sidebar ~ #mainContent {
+    width: calc(100% - 4.5rem) !important;
+    margin-left: 4.5rem !important;
+    transition: none !important;
+}
+
+html body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav, .desk-officer-archived-cases-mobile-nav) #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) {
+    width: 18rem !important;
+    min-width: 18rem !important;
+    max-width: 18rem !important;
+}
+
+html body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav, .desk-officer-archived-cases-mobile-nav) #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) .sidebar-text {
+    display: inline-block !important;
+    opacity: 1 !important;
+    max-width: 200px !important;
+}
+
+html body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav, .desk-officer-archived-cases-mobile-nav) #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) .sidebar-link {
+    justify-content: flex-start !important;
+    gap: .75rem;
+    padding: .75rem 1rem !important;
+}
+
+html body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav, .desk-officer-archived-cases-mobile-nav) #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) .sidebar-link > i.sidebar-text {
+    margin-left: auto !important;
+}
+
+html body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav, .desk-officer-archived-cases-mobile-nav) #sidebar ~ #sidebarToggleBtn {
+    display: flex !important;
+    top: 2.75rem !important;
+    left: 18rem !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+html body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav, .desk-officer-archived-cases-mobile-nav) #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) ~ #sidebarToggleBtn {
+    top: 5.5rem !important;
+    left: 2.25rem !important;
+}
+
+html body.portal-ui:is(.desk-officer-dashboard-mobile-nav, .case-profiles-desk-mobile-nav, .view-cases-desk-mobile-nav, .desk-officer-referrals-mobile-nav, .desk-officer-calendar-mobile-nav, .desk-officer-quarterly-reports-mobile-nav, .desk-officer-bcpc-monitoring-mobile-nav, .desk-officer-archived-cases-mobile-nav) #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) .sidebar-header {
+    min-height: 7rem !important;
+    padding-bottom: 3rem !important;
+    flex-shrink: 0;
+}
+
+/* Keep dashboard content arranged by available width while the sidebar overlaps. */
+html body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar ~ #mainContent .dashboard-statistic-card {
+    padding: .875rem 1rem !important;
+}
+
+html body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar ~ #mainContent .dashboard-statistic-icon {
+    width: 3rem !important;
+    height: 3rem !important;
+    min-width: 3rem !important;
+}
+
+@container dashboard-content (max-width: 869.98px) {
+    html body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar ~ #mainContent .dashboard-statistics {
+        grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+        gap: .75rem !important;
+    }
+
+    html body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar ~ #mainContent .dashboard-statistics > :nth-child(-n + 3) {
+        grid-column: span 2 !important;
+    }
+
+    html body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar ~ #mainContent .dashboard-statistics > :nth-child(n + 4) {
+        grid-column: span 3 !important;
+    }
+
+    html body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar ~ #mainContent .dashboard-lower-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+        width: 100% !important;
+    }
+}
+
+@container dashboard-content (min-width: 870px) {
+    html body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar ~ #mainContent .dashboard-statistics {
+        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+        gap: .875rem !important;
+    }
+
+    html body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar ~ #mainContent .dashboard-statistics > :nth-child(n) {
+        grid-column: span 1 !important;
+    }
+
+    html body.portal-ui.desk-officer-dashboard-mobile-nav #sidebar ~ #mainContent .dashboard-lower-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 1rem !important;
+        align-items: start !important;
+    }
+}

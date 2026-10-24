@@ -17,18 +17,27 @@
         color: #ffffff !important;
     }
 
-    @media (max-width: 47.9375rem) {
+    @media (max-width: 80rem) {
         .archived-cases-table-view {
             display: none !important;
         }
 
         .archived-cases-mobile-cards {
             display: grid !important;
+            grid-template-columns: minmax(0, 1fr);
             gap: .75rem;
             padding: .75rem;
         }
 
+        .archived-cases-mobile-cards > * {
+            min-width: 0;
+            margin: 0 !important;
+        }
+
         .archived-case-card {
+            display: flex;
+            height: 100%;
+            flex-direction: column;
             min-width: 0;
             padding: 1rem;
         }
@@ -38,6 +47,7 @@
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: .5rem;
             width: 100%;
+            margin-top: auto;
         }
 
         .archived-case-card-actions> :is(a, form) {
@@ -65,13 +75,29 @@
         }
     }
 
-    @media (min-width: 37.5rem) and (max-width: 80rem) {
-        .archived-cases-table-view {
-            display: block !important;
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        .archived-cases-mobile-cards {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .archived-cases-mobile-cards {
-            display: none !important;
+        .archived-barangay-cases-page .archived-cases-mobile-cards > .archived-cases-empty-state:not(.hidden) {
+            display: flex;
+            grid-column: 1 / -1;
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        .archived-case-card-actions> :is(a, form),
+        .archived-case-card-actions>form>button {
+            height: 2.5rem !important;
+            min-width: 2.5rem !important;
+            min-height: 2.5rem !important;
         }
     }
 
@@ -128,6 +154,7 @@
         }
 
         html body.portal-ui.desk-officer-archived-cases-mobile-nav :is(#dashboardMenuToggle, #pageMobileMenuToggle) {
+            font-size: 1.125rem !important;
             position: relative !important;
             left: 0 !important;
             margin-left: 0 !important;
@@ -147,6 +174,10 @@
 
         html body.portal-ui.desk-officer-archived-cases-mobile-nav :is(#dashboardMenuToggle, #pageMobileMenuToggle) i {
             color: inherit !important;
+            font-size: inherit !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
         html body.portal-ui.desk-officer-archived-cases-mobile-nav #mainContent>header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) :is(h1, h2, h3),
@@ -180,8 +211,7 @@
             flex-wrap: nowrap !important;
         }
 
-        html body.portal-ui.desk-officer-archived-cases-mobile-nav #mainContent>header button[aria-label="Notifications"],
-        html body.portal-ui.desk-officer-archived-cases-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"] {
+        html body.portal-ui.desk-officer-archived-cases-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"] {
             box-sizing: border-box !important;
             width: 2.5rem !important;
             min-width: 2.5rem !important;
@@ -189,23 +219,51 @@
             min-height: 2.5rem !important;
             padding: 0 !important;
             border-radius: .625rem !important;
+            background: var(--mswdo-profile, #BC0202) !important;
+            border: 1px solid #8f0202 !important;
+            box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+            color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            position: relative !important;
+            margin: 0 !important;
+            line-height: 1 !important;
         }
 
-        html body.portal-ui.desk-officer-archived-cases-mobile-nav #mainContent>header button[aria-label="Notifications"]>i,
-        html body.portal-ui.desk-officer-archived-cases-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"]>i {
+        html body.portal-ui.desk-officer-archived-cases-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"]:hover {
+            background: #8f0202 !important;
+        }
+
+        html body.portal-ui.desk-officer-archived-cases-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"]>i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             margin: 0 !important;
+            padding: 0 !important;
             font-size: 1rem !important;
             line-height: 1 !important;
+            color: #ffffff !important;
+            vertical-align: middle !important;
         }
 
-        html body.portal-ui.desk-officer-archived-cases-mobile-nav #mainContent>header #notifications-unread-count,
-        html body.portal-ui.desk-officer-archived-cases-mobile-nav #desk-officer-dashboard-header #notifications-unread-count {
+        html body.portal-ui.desk-officer-archived-cases-mobile-nav #mainContent>header#desk-officer-dashboard-header #notifications-unread-count {
+            position: absolute !important;
             width: 1.25rem !important;
             height: 1.25rem !important;
+            min-width: 1.25rem !important;
             top: -.25rem !important;
             right: -.25rem !important;
+            padding: 0 !important;
             font-size: .75rem !important;
             line-height: 1 !important;
+            background-color: #eab308 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            border: 2px solid #C41E3A !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .2) !important;
         }
 
         /* Sidebar dropdown drawer below header */
@@ -365,7 +423,7 @@ BCPC cases'])
     </form>
 
     @foreach($caseGroups as $department => $cases)
-    <section class="mb-6 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+    <section data-ajax-pagination="archived-cases-{{ $department }}" data-ajax-page="{{ $cases->getPageName() }}" class="mb-6 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
         @if(auth()->user()->isMultiCaseDepartment())
         <div class="border-b border-gray-100 px-4 py-4">
             <h2 class="text-lg font-semibold text-[#991b1b]">{{ $department === 'VAWC' ? 'SWD' : $department }} Cases
@@ -475,9 +533,12 @@ BCPC cases'])
                 </div>
             </article>
             @empty
-            <div class="rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-500">No archived barangay
+            <div class="archived-cases-empty-state rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-500">No archived barangay
                 cases.</div>
             @endforelse
+            @if($cases->isNotEmpty())
+            <div class="archived-cases-empty-state archived-cases-search-empty hidden rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-500" role="status">No results found.</div>
+            @endif
         </div>
         @if($cases->hasPages())
         @include('components.archived-pagination', ['paginator' => $cases, 'label' => 'archived cases'])
@@ -489,7 +550,7 @@ BCPC cases'])
 
 @push('scripts')
 <script>
-    document.querySelectorAll('.restore-case-form').forEach((form) => {
+    window.portalPaginationElements('.restore-case-form').forEach((form) => {
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const submit = () => form.submit();
@@ -515,7 +576,7 @@ BCPC cases'])
     });
 });
 
-document.querySelectorAll('.delete-archived-case-form').forEach((form) => {
+window.portalPaginationElements('.delete-archived-case-form').forEach((form) => {
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const submit = () => form.submit();
@@ -542,6 +603,18 @@ function filterRows() {
         const matchesSearch = !q || text.includes(q);
         const matchesStatus = !st || statusCell.includes(st) || (st === 'case closed' && (statusCell.includes('complete') || statusCell.includes('closed')));
         row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+    });
+    document.querySelectorAll('.archived-barangay-cases-page .archived-cases-mobile-cards').forEach(group => {
+        const cards = Array.from(group.querySelectorAll('.archived-case-card'));
+        cards.forEach(card => {
+            const text = (card.dataset.archiveSearch || '').toLowerCase();
+            const status = (card.dataset.archiveStatus || '').toLowerCase();
+            const matchesSearch = !q || text.includes(q);
+            const matchesStatus = !st || status.includes(st) || (st === 'case closed' && (status.includes('complete') || status.includes('closed')));
+            card.style.display = matchesSearch && matchesStatus ? '' : 'none';
+        });
+        const hasMatch = cards.some(card => card.style.display !== 'none');
+        group.querySelector('.archived-cases-search-empty')?.classList.toggle('hidden', (!q && !st) || hasMatch);
     });
 }
 if (searchInput) searchInput.addEventListener('input', filterRows);
