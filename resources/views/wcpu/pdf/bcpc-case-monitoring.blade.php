@@ -81,7 +81,7 @@
     <div class="report-meta">
         Barangay: <strong>{{ $barangay->name }}</strong>
         &nbsp; | &nbsp; Period: <strong>Q{{ $quarter }} {{ $year }}</strong>
-        &nbsp; | &nbsp; Generated: {{ now()->format('F j, Y g:i A') }}
+        &nbsp; | &nbsp; Generated: {{ now('Asia/Manila')->format('F j, Y g:i A') }}
     </div>
 
     @foreach($tables as $table)

@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!mainContent) return;
 
     let headerRow = mainContent.querySelector(':scope > header > div');
+    @if(auth()->user()?->position === 'Desk Officer' && request()->routeIs('desk-officer.cases.create'))
+    headerRow = mainContent.querySelector('#officers-create-header > div > div') || headerRow;
+    @endif
     if (!headerRow) {
         const clockOnlyHeader = document.createElement('div');
         clockOnlyHeader.className = 'portal-clock-only-header print:hidden';

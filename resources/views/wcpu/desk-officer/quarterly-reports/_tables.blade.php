@@ -206,17 +206,9 @@
                     <td class="px-6 py-4">{{ $report->barangay?->name }}</td>
                     <td class="px-6 py-4 text-center">{{ $report->report_data['total_cases'] ?? 0 }}</td>
                     <td class="px-6 py-4 text-sm">
-                        @if($report->user_id === Auth::id())
-                            <span class="inline-flex items-center gap-1 text-purple-700 font-medium">
-                                <i class="fas fa-user-circle text-xs"></i> You
-                            </span>
-                        @else
-                            <span class="text-gray-500">
-                                {{ $report->user ? $report->user->first_name . ' ' . substr($report->user->last_name ?? '', 0, 1) . '.' : 'Unknown' }}
-                            </span>
-                        @endif
+                        <span class="text-gray-500">{{ trim(($report->user?->first_name ?? '') . ' ' . ($report->user?->last_name ?? '')) ?: 'Unknown' }}</span>
                     </td>
-                    <td class="px-6 py-4">{{ $report->created_at?->format('M d, Y') }}</td>
+                    <td class="px-6 py-4">{{ ($report->updated_at ?? $report->created_at)?->timezone('Asia/Manila')->format('M d, Y') }}</td>
                     <td class="px-6 py-4 text-center align-middle whitespace-nowrap">
                         <div class="inline-flex items-center justify-center gap-2">
                             @if($isBcpcDeskOfficer)
@@ -264,7 +256,7 @@
                         <span class="quarterly-report-card-marker" aria-hidden="true"><i class="fas fa-map-marker-alt"></i></span>
                         <div class="min-w-0">
                             <p class="truncate text-sm font-semibold text-gray-800">{{ $report->barangay?->name ?? 'N/A' }}</p>
-                            <p class="truncate text-[10px] text-gray-400">{{ $report->created_at?->format('M d, Y h:i A') }}</p>
+                            <p class="truncate text-[10px] text-gray-400">{{ ($report->updated_at ?? $report->created_at)?->timezone('Asia/Manila')->format('M d, Y h:i A') }}</p>
                         </div>
                     </div>
                     <span class="quarterly-report-card-count" title="{{ $report->report_data['total_cases'] ?? 0 }} cases" aria-label="{{ $report->report_data['total_cases'] ?? 0 }} cases">{{ $report->report_data['total_cases'] ?? 0 }}</span>

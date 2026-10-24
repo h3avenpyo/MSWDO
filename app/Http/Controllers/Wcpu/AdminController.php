@@ -2378,6 +2378,10 @@ class AdminController extends Controller
 
         if (!$monitoring->exists) {
             $monitoring->created_by = Auth::id();
+            if (Auth::user()->isDepartmentAdmin()) {
+                $monitoring->submitted_at = now();
+                $monitoring->submitted_by = Auth::id();
+            }
         }
         if (!Auth::user()->isBcpcAdmin()) $monitoring->deleted_at = null;
         $monitoring->updated_by = Auth::id();

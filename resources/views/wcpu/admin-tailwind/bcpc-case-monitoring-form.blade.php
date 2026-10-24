@@ -509,6 +509,20 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     @if(!$isView)
+    @if(auth()->user()?->isDepartmentAdmin())
+    document.getElementById('bcpc-monitoring-form')?.addEventListener('submit', function (event) {
+        if (event.defaultPrevented) return;
+        this.setAttribute('data-skip-loading-modal', '');
+        Swal.fire({
+            title: 'Saving BCPC Monitoring...',
+            text: 'Please wait while the BCPC case monitoring record is saved.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading(),
+        });
+    });
+    @endif
     document.querySelectorAll('.bcpc-monitoring-table').forEach((table) => {
         const updateTotals = () => {
             const rows = [...table.tBodies[0].rows];
