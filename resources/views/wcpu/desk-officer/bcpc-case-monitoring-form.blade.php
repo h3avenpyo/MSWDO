@@ -13,6 +13,10 @@
 @endif
 <style>
     @media (max-width: 47.9375rem) {
+        @if(auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'BCPC' && !auth()->user()?->isMultiCaseDepartment())
+        #bcpc-monitoring-form > .bcpc-monitoring-form-actions > a[data-back] { order: 1 !important; }
+        @endif
+
         body.portal-ui #mainContent > header#desk-officer-dashboard-header #pageMobileMenuToggle {
             font-size: 1.125rem !important;
         }
@@ -458,6 +462,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const validationErrors = Object.values(saveData.errors || {}).flat().join(' ');
                 throw new Error(validationErrors || saveData.message || 'Unable to save the BCPC monitoring report.');
             }
+
+            window.portalUnsavedChanges?.markSaved(monitoringForm);
 
             const confirmation = await Swal.fire({
             title: 'Send to Admin again?',

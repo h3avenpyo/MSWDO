@@ -4,6 +4,9 @@
 
 @php
     $isSwdDeskOfficer = auth()->user()?->position === 'Desk Officer' && (auth()->user()?->defaultCaseDepartment() === 'VAWC' || auth()->user()?->isMultiCaseDepartment());
+    $isSingleDepartmentDeskOfficer = auth()->user()?->position === 'Desk Officer'
+        && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)
+        && !auth()->user()?->isMultiCaseDepartment();
 @endphp
 
 @push('styles')
@@ -728,7 +731,10 @@
             line-height: 1 !important;
         }
 
-        /* Match the multirole dashboard bell and badge in the mobile header. */
+        /* Match the dashboard bell and badge in the mobile header. */
+        @if($isSingleDepartmentDeskOfficer)
+        html body.portal-ui.case-profiles-desk-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"],
+        @endif
         html body.portal-ui.case-profiles-desk-mobile-nav #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] button[aria-label="Notifications"] {
             background: var(--mswdo-profile, #BC0202) !important;
             border: 1px solid #8f0202 !important;
@@ -743,10 +749,17 @@
             line-height: 1 !important;
         }
 
+        @if($isSingleDepartmentDeskOfficer)
+        html body.portal-ui.case-profiles-desk-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"]:hover,
+        @endif
         html body.portal-ui.case-profiles-desk-mobile-nav #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] button[aria-label="Notifications"]:hover {
             background: #8f0202 !important;
         }
 
+        @if($isSingleDepartmentDeskOfficer)
+        html body.portal-ui.case-profiles-desk-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"]>i { font-size: 1.05rem !important; }
+        html body.portal-ui.case-profiles-desk-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"]>i,
+        @endif
         html body.portal-ui.case-profiles-desk-mobile-nav #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] button[aria-label="Notifications"]>i {
             display: inline-flex !important;
             align-items: center !important;
@@ -756,6 +769,9 @@
             vertical-align: middle !important;
         }
 
+        @if($isSingleDepartmentDeskOfficer)
+        html body.portal-ui.case-profiles-desk-mobile-nav #mainContent>header#desk-officer-dashboard-header #notifications-unread-count,
+        @endif
         html body.portal-ui.case-profiles-desk-mobile-nav #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] #notifications-unread-count {
             position: absolute !important;
             min-width: 1.25rem !important;

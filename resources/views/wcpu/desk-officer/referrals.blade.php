@@ -23,6 +23,27 @@
 @endif
 @push('styles')
 <style>
+    html body.portal-ui .swal2-popup.referral-print-department-modal {
+        padding: clamp(1.25rem, 5vw, 2rem) !important;
+    }
+    html body.portal-ui .swal2-popup.referral-print-department-modal > .swal2-title {
+        margin: 0 0 1.25rem !important;
+        padding: 0 !important;
+    }
+    html body.portal-ui .swal2-popup.referral-print-department-modal > .swal2-select {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+        min-height: 2.75rem;
+        margin: 0 !important;
+        padding: .625rem .875rem;
+    }
+    html body.portal-ui .swal2-popup.referral-print-department-modal > .swal2-actions {
+        margin: 1.5rem 0 0 !important;
+        padding: 0 !important;
+        gap: .75rem !important;
+        justify-content: center !important;
+    }
     /* Reuse the case-style cards on phones and tablets in either orientation. */
     @media (max-width: 47.9375rem) {
         #desk-referrals-content [data-pagination-label] {
@@ -480,12 +501,11 @@
                                 </button>
                                 @endif
 
-<button type="button" data-icon-action="labelled" class="archive-referral-btn inline-flex items-center gap-1.5 {{ ($isBcpcDeskOfficer || auth()->user()->isMultiCaseDepartment()) ? 'bg-[#C41E3A] hover:bg-[#A01830] border-[#C41E3A] text-white' : 'bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border-red-200' }} border px-3 py-1.5 rounded-lg text-xs font-medium transition" title="Archive" data-url="{{ route('desk-officer.referrals.archive', $referral->id) }}"><i class="fas fa-archive"></i><span class="sr-only">Archive</span></button>
-
                                 <a href="{{ route('desk-officer.referrals.print', $referral->id) }}"
                                     class="print-referral-btn inline-flex items-center justify-center {{ auth()->user()?->defaultCaseDepartment() === 'VAWC' ? 'bg-[#C41E3A] hover:bg-[#A01830]' : 'bg-green-600 hover:bg-green-700' }} text-white px-3 py-1.5 rounded-lg text-xs font-medium transition" title="Print">
                                     <i class="fas fa-print"></i>
                                 </a>
+                                <button type="button" data-icon-action="labelled" class="archive-referral-btn inline-flex items-center gap-1.5 {{ ($isBcpcDeskOfficer || auth()->user()->isMultiCaseDepartment()) ? 'bg-[#C41E3A] hover:bg-[#A01830] border-[#C41E3A] text-white' : 'bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border-red-200' }} border px-3 py-1.5 rounded-lg text-xs font-medium transition" title="Archive" data-url="{{ route('desk-officer.referrals.archive', $referral->id) }}"><i class="fas fa-archive"></i><span class="sr-only">Archive</span></button>
                             </div>
                         </td>
                     </tr>
@@ -535,8 +555,8 @@
                     @else
                     <button type="button" class="edit-referral-btn inline-flex min-h-12 items-center justify-center rounded-lg bg-purple-700 text-white" title="Edit" data-id="{{ $referral->id }}"><i class="fas fa-edit"></i><span class="sr-only">Edit</span></button>
                     @endif
-                    <button type="button" class="archive-referral-btn inline-flex min-h-12 items-center justify-center rounded-lg bg-[#C41E3A] text-white" title="Archive" data-url="{{ route('desk-officer.referrals.archive', $referral->id) }}"><i class="fas fa-archive"></i><span class="sr-only">Archive</span></button>
                     <a href="{{ route('desk-officer.referrals.print', $referral->id) }}" class="print-referral-btn inline-flex min-h-12 items-center justify-center rounded-lg bg-[#C41E3A] text-white" title="Print"><i class="fas fa-print"></i><span class="sr-only">Print</span></a>
+                    <button type="button" class="archive-referral-btn inline-flex min-h-12 items-center justify-center rounded-lg bg-[#C41E3A] text-white" title="Archive" data-url="{{ route('desk-officer.referrals.archive', $referral->id) }}"><i class="fas fa-archive"></i><span class="sr-only">Archive</span></button>
                 </div>
             </article>
             @empty
@@ -736,7 +756,16 @@ document.addEventListener('click', async function (event) {
     let department = '';
     @if(auth()->user()->isMultiCaseDepartment())
     if (downloadButton) {
-        const choice = await Swal.fire({ title: 'Choose department to print', input: 'select', inputOptions: { BCPC: 'BCPC', VAWC: 'SWD' }, inputPlaceholder: 'Select department', showCancelButton: true, confirmButtonText: 'Preview PDF', inputValidator: value => !value ? 'Choose a department.' : undefined });
+        const choice = await Swal.fire({
+            title: 'Choose department to print',
+            input: 'select',
+            inputOptions: { BCPC: 'BCPC', VAWC: 'SWD' },
+            inputPlaceholder: 'Select department',
+            showCancelButton: true,
+            confirmButtonText: 'Preview PDF',
+            customClass: { popup: 'referral-print-department-modal' },
+            inputValidator: value => !value ? 'Choose a department.' : undefined
+        });
         if (!choice.isConfirmed) return;
         department = choice.value;
         const referralCounts = @json(collect($referralGroups)->map(fn ($group) => $group->total()));

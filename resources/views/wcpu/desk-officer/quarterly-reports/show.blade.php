@@ -2,6 +2,12 @@
 
 @section('title', 'Quarterly Report - ' . ($barangay->name ?? 'Barangay'))
 
+@php
+    $isSingleDepartmentDeskOfficer = auth()->user()?->position === 'Desk Officer'
+        && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)
+        && !auth()->user()?->isMultiCaseDepartment();
+@endphp
+
 @section('content')
 @if(request()->routeIs('desk-officer.quarterly-reports.show'))
 <style>
@@ -18,6 +24,15 @@
         }
 
         /* Match the notification controls on the quarterly reports list. */
+        @if($isSingleDepartmentDeskOfficer)
+        html body.portal-ui #mainContent>header#desk-officer-dashboard-header > div > div:last-child > .relative {
+            display: flex !important;
+            align-items: center !important;
+            align-self: center !important;
+            line-height: 1 !important;
+        }
+        body.portal-ui #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"],
+        @endif
         body.portal-ui #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] button[aria-label="Notifications"] {
             box-sizing: border-box !important;
             width: 2.5rem !important;
@@ -39,10 +54,17 @@
             line-height: 1 !important;
         }
 
+        @if($isSingleDepartmentDeskOfficer)
+        body.portal-ui #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"]:hover,
+        @endif
         body.portal-ui #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] button[aria-label="Notifications"]:hover {
             background: #8f0202 !important;
         }
 
+        @if($isSingleDepartmentDeskOfficer)
+        body.portal-ui #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"]>i { font-size: 1.05rem !important; }
+        body.portal-ui #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"]>i,
+        @endif
         body.portal-ui #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] button[aria-label="Notifications"]>i {
             display: inline-flex !important;
             align-items: center !important;
@@ -55,6 +77,9 @@
             vertical-align: middle !important;
         }
 
+        @if($isSingleDepartmentDeskOfficer)
+        body.portal-ui #mainContent>header#desk-officer-dashboard-header #notifications-unread-count,
+        @endif
         body.portal-ui #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] #notifications-unread-count {
             position: absolute !important;
             width: 1.25rem !important;

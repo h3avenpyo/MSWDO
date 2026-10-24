@@ -1,317 +1,258 @@
 /**
- * Unsaved changes guard for case creation, editing, referral, and monitoring forms.
- * Prompts user before exiting if they have unsaved work.
+ * Shared unsaved-changes protection for portal forms and injected edit forms.
  */
 (() => {
-    let isDirty = false;
+    const baselines = new Map();
+    const visibility = new Map();
+    const pendingForms = new Map();
+    let manualDirty = false;
     let isSubmitting = false;
     let bypassPrompt = false;
-    let historyGuarded = false;
+    let confirmation = null;
 
-    const pushHistoryGuard = () => {
-        if (!historyGuarded && window.history && typeof window.history.pushState === 'function') {
-            historyGuarded = true;
-            window.history.pushState({ unsavedGuard: true }, '', window.location.href);
+    // Several AJAX editors omit method; only explicit GET/filter forms are ignored.
+    const isEditableForm = form => form && (form.method.toUpperCase() !== 'GET' || !form.hasAttribute('method'))
+        && !form.matches('[data-unsaved-ignore], [id*="filter"], [class*="filter"]');
+    const snapshot = form => JSON.stringify(Array.from(form.elements).filter(field => {
+        if (!field.matches('input, select, textarea') || field.disabled || field.readOnly) return false;
+        if (['hidden', 'submit', 'button', 'reset', 'image'].includes(field.type)) return false;
+        return field.id !== 'selectAll' && !field.classList.contains('select-all');
+    }).map((field, index) => {
+        let value = field.value;
+        if (field.type === 'checkbox' || field.type === 'radio') value = [field.value, field.checked];
+        else if (field.type === 'file') value = Array.from(field.files || [], file => [file.name, file.size, file.lastModified]);
+        else if (field.multiple) value = Array.from(field.selectedOptions, option => option.value);
+        return [field.name || field.id || index, value];
+    }));
+    const isVisible = form => typeof form.getClientRects !== 'function' || form.getClientRects().length > 0;
+    const registerForm = form => {
+        if (!isEditableForm(form)) return;
+        const visible = isVisible(form);
+        if (!baselines.has(form) || (visible && !visibility.get(form))) baselines.set(form, snapshot(form));
+        visibility.set(form, visible);
+    };
+    const registerForms = () => document.querySelectorAll('form').forEach(registerForm);
+    const hasUnsavedChanges = () => {
+        registerForms();
+        let dirty = manualDirty;
+        for (const [form, baseline] of baselines) {
+            if (!form.isConnected) {
+                baselines.delete(form);
+                visibility.delete(form);
+                pendingForms.delete(form);
+            } else if (isVisible(form) && snapshot(form) !== baseline) dirty = true;
+        }
+        return dirty;
+    };
+    const reset = () => {
+        registerForms();
+        baselines.forEach((value, form) => baselines.set(form, snapshot(form)));
+        manualDirty = false;
+        isSubmitting = false;
+        pendingForms.clear();
+    };
+    const markSaved = form => {
+        if (isEditableForm(form)) baselines.set(form, pendingForms.get(form) ?? snapshot(form));
+        pendingForms.delete(form);
+        manualDirty = false;
+        isSubmitting = false;
+    };
+
+    // Initialize after the page's own defaults, and register AJAX forms before editing.
+    const initialize = () => {
+        registerForms();
+        if (typeof MutationObserver !== 'undefined') {
+            new MutationObserver(registerForms).observe(document.documentElement, {
+                childList: true, subtree: true, attributes: true,
+                attributeFilter: ['class', 'style', 'open', 'hidden'],
+            });
         }
     };
-
-    // Track user input in forms
-    const markDirty = (e) => {
-        if (bypassPrompt || isSubmitting) return;
-        const target = e.target;
-        if (!target) return;
-        
-        // Only track inputs inside forms or editable elements
-        const form = target.closest('form');
-        if (!form) return;
-
-        // Ignore GET forms (such as search and filter bars)
-        if (form.method && form.method.toUpperCase() === 'GET') return;
-        if (form.id === 'case-profiles-filter-form' || form.matches('[id*="filter"], [class*="filter"]')) return;
-
-        // Ignore read-only, disabled, hidden, search, age, or selectAll inputs
-        if (target.readOnly || target.disabled || target.type === 'hidden') return;
-        if (target.id === 'search' || target.name === 'search' || target.name === 'age' || target.classList.contains('search-input')) return;
-        if (target.type === 'checkbox' && (target.id === 'selectAll' || target.classList.contains('select-all'))) return;
-
-        isDirty = true;
-        pushHistoryGuard();
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => queueMicrotask(initialize));
+    else initialize();
+    ['focusin', 'beforeinput', 'pointerdown'].forEach(event => {
+        document.addEventListener(event, e => registerForm(e.target.closest('form')), true);
+    });
+    const onEdit = e => {
+        if (!isEditableForm(e.target.closest('form'))) return;
+        registerForm(e.target.closest('form'));
+        isSubmitting = false;
+        bypassPrompt = false;
     };
-
-    document.addEventListener('input', markDirty, true);
-    document.addEventListener('change', markDirty, true);
-
-    // When any non-GET form submits, clear dirty and mark submitting
-    document.addEventListener('submit', (e) => {
-        const form = e.target;
-        if (form && form.method && form.method.toUpperCase() === 'GET') return;
-        isSubmitting = true;
-        isDirty = false;
-        bypassPrompt = true;
+    document.addEventListener('input', onEdit, true);
+    document.addEventListener('change', onEdit, true);
+    document.addEventListener('reset', e => {
+        if (!isEditableForm(e.target)) return;
+        queueMicrotask(() => {
+            baselines.set(e.target, snapshot(e.target));
+            manualDirty = false;
+        });
     }, true);
 
-    // Automatically hook window.Swal to clear dirty state whenever a success alert is shown
+    // A Save attempt does not clear edits. Only an unhandled native submission
+    // bypasses beforeunload; AJAX validation/failure keeps the original baseline.
+    document.addEventListener('submit', e => {
+        if (isEditableForm(e.target)) pendingForms.set(e.target, snapshot(e.target));
+    }, true);
+    document.addEventListener('submit', e => {
+        if (isEditableForm(e.target) && !e.defaultPrevented) isSubmitting = true;
+    });
+
+    // Existing AJAX modules signal successful writes via reset(), markSaved(),
+    // or an explicit success result following a form submission.
     const hookSwal = () => {
-        if (window.Swal && typeof window.Swal.fire === 'function' && !window.Swal._unsavedHooked) {
-            window.Swal._unsavedHooked = true;
-            const origFire = window.Swal.fire;
-            window.Swal.fire = function(...args) {
-                const opt = args[0];
-                const isSuccess = opt && opt.title !== 'Unsaved Changes' && (
-                    opt.icon === 'success' ||
-                    opt === 'success' ||
-                    (typeof opt.title === 'string' && /success|created|saved|updated|restored|deleted|submitted/i.test(opt.title)) ||
-                    (typeof opt.text === 'string' && /success|created|saved|updated|restored|deleted|submitted/i.test(opt.text)) ||
-                    (typeof opt.html === 'string' && /success|created|saved|updated|restored|deleted|submitted/i.test(opt.html))
-                );
-                if (isSuccess) {
-                    isDirty = false;
-                    isSubmitting = true;
-                    bypassPrompt = true;
-                }
-                return origFire.apply(this, args);
-            };
-        }
+        if (!window.Swal || typeof window.Swal.fire !== 'function' || window.Swal._unsavedHooked) return;
+        window.Swal._unsavedHooked = true;
+        const original = window.Swal.fire;
+        window.Swal.fire = function(...args) {
+            const options = args[0];
+            const icon = typeof options === 'object' ? options?.icon : args[2];
+            if (icon === 'success') Array.from(pendingForms.keys()).forEach(markSaved);
+            else if (icon === 'error') {
+                pendingForms.clear();
+                isSubmitting = false;
+            }
+            const result = original.apply(this, args);
+            if (options?.showCancelButton) result.then(answer => {
+                if (!answer.isConfirmed) pendingForms.clear();
+            });
+            return result;
+        };
     };
     hookSwal();
     document.addEventListener('DOMContentLoaded', hookSwal);
-
-    // Browser navigation / close tab prompt
-    window.addEventListener('beforeunload', (e) => {
-        if (isSubmitting || bypassPrompt || !isDirty) return;
-        if (document.querySelector('.swal2-icon-success, .swal2-success, .swal2-loading')) {
-            isDirty = false;
-            return;
-        }
+    window.addEventListener('beforeunload', e => {
+        if (isSubmitting || bypassPrompt || !hasUnsavedChanges()) return;
         e.preventDefault();
         e.returnValue = '';
-        return '';
+    });
+    window.addEventListener('pageshow', () => {
+        isSubmitting = false;
+        bypassPrompt = false;
     });
 
+    // Keep an existing SweetAlert edit form mounted while confirming dismissal.
+    const nativeConfirmation = () => {
+        const dialog = document.createElement('dialog');
+        if (typeof dialog.showModal !== 'function') {
+            return Promise.resolve(window.confirm('Discard your unsaved changes and leave this page?'));
+        }
+        dialog.setAttribute('aria-labelledby', 'portal-unsaved-title');
+        dialog.style.cssText = 'margin:auto;padding:1.5rem;border:1px solid #e5e7eb;border-radius:.75rem;width:min(30rem,calc(100vw - 2rem));color:#374151;background:white;z-index:2147483647;';
+        dialog.innerHTML = '<h2 id="portal-unsaved-title" style="font-size:1.5rem;font-weight:600;margin-bottom:.75rem">Unsaved Changes</h2>'
+            + '<p>You have unsaved changes. Discard them and leave?</p>'
+            + '<div style="display:flex;justify-content:flex-end;gap:.75rem;margin-top:1.5rem">'
+            + '<button type="button" data-stay style="padding:.625rem 1rem;border-radius:.5rem;background:#6b7280;color:white">Stay on Page</button>'
+            + '<button type="button" data-discard style="padding:.625rem 1rem;border-radius:.5rem;background:#C41E3A;color:white">Discard Changes</button></div>';
+        document.body.append(dialog);
+        return new Promise(resolve => {
+            const finish = discard => { dialog.close(); dialog.remove(); resolve(discard); };
+            dialog.querySelector('[data-stay]').addEventListener('click', () => finish(false));
+            dialog.querySelector('[data-discard]').addEventListener('click', () => finish(true));
+            dialog.addEventListener('cancel', e => { e.preventDefault(); finish(false); });
+            dialog.showModal();
+            dialog.querySelector('[data-stay]').focus();
+        });
+    };
     const confirmExit = (onConfirm, onCancel) => {
-        if (!isDirty || isSubmitting || bypassPrompt) {
+        if (confirmation) return confirmation;
+        if (bypassPrompt || isSubmitting || !hasUnsavedChanges()) {
             if (typeof onConfirm === 'function') onConfirm();
-            return;
+            return Promise.resolve(true);
         }
-
-        const swalOpts = {
-            title: 'Unsaved Changes',
-            text: 'Are you sure you want to exit? You will lose your unsaved work.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#C41E3A',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: 'Yes, exit',
-            cancelButtonText: 'Cancel',
-            reverseButtons: true,
-            allowOutsideClick: true,
-            allowEscapeKey: true
-        };
-
-        if (window.Swal) {
-            window.Swal.fire(swalOpts).then((result) => {
-                if (result.isConfirmed) {
-                    isDirty = false;
-                    bypassPrompt = true;
+        const answer = window.Swal && !document.querySelector('.swal2-popup form, dialog[open]')
+            ? window.Swal.fire({
+                title: 'Unsaved Changes',
+                text: 'You have unsaved changes. Discard them and leave?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Discard Changes',
+                cancelButtonText: 'Stay on Page',
+                confirmButtonColor: '#C41E3A',
+                cancelButtonColor: '#6b7280',
+                reverseButtons: true,
+                focusCancel: true,
+                allowOutsideClick: false,
+            }).then(result => result.isConfirmed)
+            : nativeConfirmation();
+        confirmation = Promise.resolve(answer).then(discard => {
+            confirmation = null;
+            if (discard) {
+                reset();
+                bypassPrompt = true;
+                try {
                     if (typeof onConfirm === 'function') onConfirm();
-                } else {
-                    if (typeof onCancel === 'function') onCancel();
+                } finally {
+                    setTimeout(() => { bypassPrompt = false; }, 0);
                 }
-            });
-        } else {
-            if (window.confirm('Are you sure you want to exit? You will lose your unsaved work.')) {
-                isDirty = false;
-                bypassPrompt = true;
-                if (typeof onConfirm === 'function') onConfirm();
-            } else {
-                if (typeof onCancel === 'function') onCancel();
-            }
-        }
+            } else if (typeof onCancel === 'function') onCancel();
+            return discard;
+        });
+        return confirmation;
     };
-
-    // Handle browser Back / Forward buttons
-    window.addEventListener('popstate', () => {
-        if (isDirty && !isSubmitting && !bypassPrompt) {
-            historyGuarded = false;
-            confirmExit(
-                () => {
-                    isDirty = false;
-                    bypassPrompt = true;
-                    window.history.back();
-                },
-                () => {
-                    pushHistoryGuard();
-                }
-            );
-        }
-    });
-
-    const closeAllOpenModals = () => {
+    const closeEditModal = () => {
         window.dispatchEvent(new CustomEvent('close-edit-modal'));
-        if (typeof window.closeEditModal === 'function') {
-            try { window.closeEditModal(); } catch (err) {}
-        }
-        const editModal = document.getElementById('editCaseModal');
-        if (editModal) {
-            if (window.Alpine && typeof window.Alpine.$data === 'function') {
-                try { window.Alpine.$data(editModal).open = false; } catch (err) {}
-            }
-            if (editModal._x_dataStack && editModal._x_dataStack[0]) {
-                try { editModal._x_dataStack[0].open = false; } catch (err) {}
-            }
-            const modalContent = editModal.querySelector('.fixed.inset-0') || editModal;
-            if (modalContent) modalContent.style.display = 'none';
-        }
+        if (typeof window.closeEditModal === 'function') window.closeEditModal();
+        const modal = document.getElementById('editCaseModal');
+        if (modal?._x_dataStack?.[0]) modal._x_dataStack[0].open = false;
     };
-
-    // Keyboard ESC key to close modal
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && isDirty && !isSubmitting && !bypassPrompt) {
-            const editModal = document.getElementById('editCaseModal');
-            const isModalOpen = editModal && (
-                (editModal._x_dataStack && editModal._x_dataStack[0] && editModal._x_dataStack[0].open) ||
-                (window.Alpine && window.Alpine.$data && window.Alpine.$data(editModal)?.open)
-            );
-            if (isModalOpen) {
-                e.preventDefault();
-                e.stopPropagation();
-                confirmExit(() => {
-                    closeAllOpenModals();
-                });
-            }
-        }
+    const stop = e => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+    };
+    document.addEventListener('keydown', e => {
+        if (e.key !== 'Escape' || confirmation || bypassPrompt || !hasUnsavedChanges()) return;
+        const modal = document.getElementById('editCaseModal');
+        const open = modal && (modal._x_dataStack?.[0]?.open || window.Alpine?.$data?.(modal)?.open);
+        if (open) { stop(e); confirmExit(closeEditModal); }
     }, true);
-
-    // Intercept clicks on links, back buttons, cancel buttons, modal close (X) buttons, and backdrops
-    document.addEventListener('click', (e) => {
-        // ALWAYS ignore clicks inside SweetAlert2 modals so Cancel, Confirm, and Close buttons work naturally!
-        if (e.target.closest('.swal2-container, .swal2-popup, [class*="swal2-"]')) {
-            if (document.querySelector('.swal2-icon-success, .swal2-success')) {
-                isDirty = false;
-                isSubmitting = true;
-                bypassPrompt = true;
-            }
+    document.addEventListener('click', e => {
+        if (bypassPrompt || isSubmitting || !hasUnsavedChanges()) return;
+        const modal = document.getElementById('editCaseModal');
+        if (modal && e.target === modal.querySelector('.fixed.inset-0')
+            && (modal._x_dataStack?.[0]?.open || window.Alpine?.$data?.(modal)?.open)) {
+            stop(e);
+            confirmExit(closeEditModal);
             return;
         }
-
-        if (!isDirty || isSubmitting || bypassPrompt) return;
-
-        // Check if clicking modal backdrop on #editCaseModal
-        const editModal = document.getElementById('editCaseModal');
-        const isModalOpen = editModal && (
-            (editModal._x_dataStack && editModal._x_dataStack[0] && editModal._x_dataStack[0].open) ||
-            (window.Alpine && window.Alpine.$data && window.Alpine.$data(editModal)?.open)
-        );
-        if (isModalOpen) {
-            const backdrop = editModal.querySelector('.fixed.inset-0');
-            if (e.target === backdrop) {
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                confirmExit(() => {
-                    closeAllOpenModals();
-                });
-                return;
-            }
-        }
-
         const btn = e.target.closest('button, a');
         if (!btn) return;
-
-        // Specific modal cancel controls can opt out of this global guard when
-        // their form is intentionally designed to close without confirmation.
-        if (btn.matches('[data-skip-unsaved-guard]')) {
-            isDirty = false;
-            bypassPrompt = true;
-            setTimeout(() => { bypassPrompt = false; }, 300);
-            return;
-        }
-
-        // Skip submit buttons
-        if (btn.type === 'submit' || btn.closest('button[type="submit"]')) return;
-
-        // Skip clear buttons/links
-        const btnText = (btn.textContent || '').trim().toLowerCase();
-        if (btnText === 'clear' || btn.matches('.clear-btn, [data-clear]') || btn.closest('form[method="GET"], form[method="get"]')) {
-            isDirty = false;
-            return;
-        }
-        const hasTimesIcon = !!btn.querySelector('.fa-times, .fa-xmark');
-        const hasArrowLeftIcon = !!btn.querySelector('.fa-arrow-left, .fa-chevron-left');
-        const isBackBtn = btn.matches('a[href*="javascript:history.back"], a[href*="history.back"], #back-button, .back-btn, [data-back]')
-            || hasArrowLeftIcon
-            || btnText.startsWith('back')
-            || btnText.includes('back to');
-        const isCloseModalBtn = btn.matches('[data-close-modal], .close-modal, .btn-close, [data-bs-dismiss="modal"]')
-            || hasTimesIcon
-            || (btn.getAttribute('@click') && btn.getAttribute('@click').includes('open = false'));
-        const isCancelBtn = btn.id === 'cancel-edit-button' || btn.classList.contains('btn-cancel') || btnText === 'cancel' || btnText.includes('cancel');
-        const isRealLink = btn.tagName === 'A' && btn.href && !btn.href.startsWith('javascript:') && !btn.href.endsWith('#');
-
-        if (isRealLink && (isCancelBtn || isBackBtn || isRealLink)) {
-            // It's a link (such as Cancel link or Back link or navigation link) that navigates to a URL
-            const targetHref = btn.href;
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            confirmExit(() => {
-                isDirty = false;
-                bypassPrompt = true;
-                if (window.location.href === targetHref || window.location.href.split('#')[0] === targetHref.split('#')[0]) {
-                    window.location.assign(targetHref);
-                    window.location.reload();
-                } else {
-                    window.location.assign(targetHref);
-                }
-            });
-            return;
-        }
-
-        if (isBackBtn) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            confirmExit(() => {
-                isDirty = false;
-                bypassPrompt = true;
-                if (btn.href && !btn.href.includes('history.back') && !btn.href.startsWith('javascript:') && !btn.href.endsWith('#')) {
-                    window.location.assign(btn.href);
-                } else if (document.referrer && document.referrer !== window.location.href) {
-                    window.location.assign(document.referrer);
-                } else {
-                    window.history.back();
-                }
-            });
-            return;
-        }
-
-        if (isCloseModalBtn || isCancelBtn) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            confirmExit(() => {
-                closeAllOpenModals();
-                isDirty = false;
-                bypassPrompt = true;
-                if (btn.tagName === 'A' && btn.href) {
-                    window.location.assign(btn.href);
-                } else {
-                    btn.click();
-                    setTimeout(() => { bypassPrompt = false; }, 300);
-                }
-            });
-            return;
-        }
+        // Alert buttons stay usable; Cancel/Close on an editable popup is guarded.
+        const popup = btn.closest('.swal2-popup');
+        if (btn.closest('.swal2-container, .swal2-popup, [class*="swal2-"]')
+            && !(popup?.querySelector('form') && btn.matches('.swal2-cancel, .swal2-close'))) return;
+        if (btn.matches('[data-skip-unsaved-guard]')) return;
+        if (btn.tagName === 'BUTTON' && btn.type === 'submit') return;
+        if (btn.closest('form[method="GET"], form[method="get"]')) return;
+        const text = (btn.textContent || '').trim().toLowerCase();
+        if (text === 'clear' || btn.matches('.clear-btn, [data-clear]')) return;
+        const back = btn.matches('#back-button, .back-btn, [data-back]')
+            || !!btn.querySelector('.fa-arrow-left, .fa-chevron-left') || text.startsWith('back');
+        const cancel = btn.id === 'cancel-edit-button' || btn.matches('.btn-cancel, .swal2-cancel') || text.includes('cancel');
+        const close = btn.matches('[data-close-modal], .close-modal, .btn-close, [data-bs-dismiss="modal"], .swal2-close')
+            || !!btn.querySelector('.fa-times, .fa-xmark') || (btn.getAttribute('@click') || '').includes('open = false');
+        const link = btn.tagName === 'A' && btn.href && !btn.href.startsWith('javascript:') && !btn.href.endsWith('#');
+        if (link && (btn.hasAttribute('download') || btn.target === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey)) return;
+        if (!link && !back && !cancel && !close) return;
+        stop(e);
+        confirmExit(() => {
+            if (link) window.location.assign(btn.href);
+            else if (back) {
+                if (document.referrer && document.referrer !== window.location.href) window.location.assign(document.referrer);
+                else window.history.back();
+            } else btn.click();
+        });
     }, true);
 
-    // Provide manual reset / trigger API on window
     window.portalUnsavedChanges = {
         setDirty: (dirty = true) => {
-            isDirty = dirty;
-            if (dirty) pushHistoryGuard();
+            if (!dirty) reset();
+            else { manualDirty = true; isSubmitting = false; bypassPrompt = false; }
         },
-        isDirty: () => isDirty,
-        reset: (bypass = true) => { isDirty = false; isSubmitting = false; bypassPrompt = bypass; historyGuarded = false; },
-        confirmExit: confirmExit
+        isDirty: hasUnsavedChanges,
+        reset,
+        markSaved,
+        confirmExit,
     };
 })();

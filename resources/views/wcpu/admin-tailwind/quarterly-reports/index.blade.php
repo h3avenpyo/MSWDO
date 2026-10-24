@@ -773,7 +773,7 @@
             </select>
         </label>
         <div class="flex justify-end gap-3">
-            <button type="button" data-skip-unsaved-guard onclick="resetGenerateQuarterlyReportForm(); this.closest('dialog').close()" class="px-4 py-2 border border-gray-300 rounded-lg">Cancel</button>
+            <button type="button" onclick="resetGenerateQuarterlyReportForm(); this.closest('dialog').close()" class="px-4 py-2 border border-gray-300 rounded-lg">Cancel</button>
             <button type="submit" class="px-4 py-2 bg-purple-700 text-white rounded-lg">Generate</button>
         </div>
     </form>

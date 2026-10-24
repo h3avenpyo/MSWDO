@@ -1,6 +1,11 @@
 @extends('layouts.desk-officer')
 
 @section('title', 'Add ' . ($isBCPCCase ? 'BCPC' : 'SWD') . ' Case - iSERVE SILANG Desk Officer')
+@php
+    $isSingleDepartmentDeskOfficer = auth()->user()?->position === 'Desk Officer'
+        && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)
+        && !auth()->user()?->isMultiCaseDepartment();
+@endphp
 @push('styles')
 <style>
     /* Ensure no duplicate mobile top bar or duplicate toggle */
@@ -52,6 +57,42 @@
     }
 
     @media (max-width: 47.9375rem) {
+        @if($isSingleDepartmentDeskOfficer)
+        html body.portal-ui #mainContent > header#officers-create-header > div {
+            display: block !important;
+        }
+
+        html body.portal-ui #mainContent > header#officers-create-header > div > div {
+            width: 100% !important;
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            gap: .75rem !important;
+        }
+
+        html body.portal-ui #mainContent > header#officers-create-header > div > div > div:first-child {
+            flex: 1 1 0% !important;
+            min-width: 0 !important;
+        }
+
+        html body.portal-ui #mainContent > header#officers-create-header > div > div > div:last-child {
+            flex: 0 0 auto !important;
+        }
+
+        html body.portal-ui #mainContent > header#officers-create-header > div > div > div:last-child > .relative {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            line-height: 1 !important;
+            transform: translateY(.875rem) !important;
+        }
+
+        html body.portal-ui #mainContent > header#officers-create-header :is(.portal-header-clock, .desk-officer-user-profile) {
+            display: none !important;
+        }
+        @endif
+
         #officers-create-header {
             background: #C41E3A !important;
             border-bottom: 1px solid #99172E !important;
@@ -124,7 +165,10 @@
             padding: 0 !important;
         }
 
-        /* Use the dashboard notification button for both multirole case types. */
+        /* Use the dashboard notification button in the mobile case header. */
+        @if($isSingleDepartmentDeskOfficer)
+        body.portal-ui #mainContent #officers-create-header button[aria-label="Notifications"],
+        @endif
         body.portal-ui #mainContent #officers-create-header [data-multirole-notifications] button[aria-label="Notifications"] {
             box-sizing: border-box !important;
             width: 2.5rem !important;
@@ -146,10 +190,16 @@
             line-height: 1 !important;
         }
 
+        @if($isSingleDepartmentDeskOfficer)
+        body.portal-ui #mainContent #officers-create-header button[aria-label="Notifications"]:hover,
+        @endif
         body.portal-ui #mainContent #officers-create-header [data-multirole-notifications] button[aria-label="Notifications"]:hover {
             background: #8f0202 !important;
         }
 
+        @if($isSingleDepartmentDeskOfficer)
+        body.portal-ui #mainContent #officers-create-header button[aria-label="Notifications"]>i,
+        @endif
         body.portal-ui #mainContent #officers-create-header [data-multirole-notifications] button[aria-label="Notifications"]>i {
             display: inline-flex !important;
             align-items: center !important;
@@ -162,6 +212,9 @@
             vertical-align: middle !important;
         }
 
+        @if($isSingleDepartmentDeskOfficer)
+        body.portal-ui #mainContent #officers-create-header #notifications-unread-count,
+        @endif
         body.portal-ui #mainContent #officers-create-header [data-multirole-notifications] #notifications-unread-count {
             position: absolute !important;
             width: 1.25rem !important;
@@ -268,6 +321,27 @@
             width: auto !important;
         }
     }
+
+    @if($isSingleDepartmentDeskOfficer)
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        html body.portal-ui #mainContent > main > div > div.p-md-5 {
+            padding: 1.25rem !important;
+        }
+
+        html body.portal-ui #mainContent > main > .case-type-actions {
+            flex: 0 0 auto !important;
+            width: 100% !important;
+            justify-content: flex-start !important;
+            margin: 0 0 1rem !important;
+        }
+
+        html body.portal-ui #mainContent > main .case-type-actions .case-type-action {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            max-width: none !important;
+        }
+    }
+    @endif
 
     /* Form padding adjustments on mobile */
     @media (max-width: 47.9375rem) {
@@ -863,6 +937,23 @@ $isSwdCase = !$isBCPCCase;
 </main>
 
 @push('scripts')
+@if($isSingleDepartmentDeskOfficer)
+<script>
+(() => {
+    const actions = document.querySelector('#mainContent > main .case-type-actions');
+    const form = document.getElementById('new-case-form');
+    if (!actions || !form) return;
+    const originalParent = actions.parentElement;
+    const tablet = window.matchMedia('(min-width: 48rem) and (max-width: 80rem)');
+    const syncCaseActions = () => {
+        if (tablet.matches) form.parentElement.insertBefore(actions, form);
+        else originalParent.append(actions);
+    };
+    syncCaseActions();
+    tablet.addEventListener('change', syncCaseActions);
+})();
+</script>
+@endif
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     const isBCPCCase = {{ $isBCPCCase ? 'true' : 'false' }};
@@ -1014,8 +1105,7 @@ $isSwdCase = !$isBCPCCase;
     if (form) {
         let hasFormChanges = false;
         const markFormChanged = () => {
-            hasFormChanges = true;
-            window.portalUnsavedChanges?.setDirty(true);
+            hasFormChanges = window.portalUnsavedChanges?.isDirty() ?? true;
         };
         form.addEventListener('input', markFormChanged);
         form.addEventListener('change', markFormChanged);
@@ -1029,9 +1119,8 @@ $isSwdCase = !$isBCPCCase;
                     window.location.assign(changeCaseTypeButton.dataset.changeCaseTypeUrl);
                 };
 
-                if (hasFormChanges || window.portalUnsavedChanges?.isDirty()) {
+                if (window.portalUnsavedChanges?.isDirty() ?? hasFormChanges) {
                     if (window.portalUnsavedChanges) {
-                        window.portalUnsavedChanges.setDirty(true);
                         window.portalUnsavedChanges.confirmExit(switchCaseType);
                     } else {
                         switchCaseType();

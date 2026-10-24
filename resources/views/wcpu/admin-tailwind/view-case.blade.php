@@ -3,6 +3,69 @@
 @section('title', 'View Case - iSERVE SILANG Admin')
 
 @push('styles')
+@if(auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) && !auth()->user()?->isMultiCaseDepartment())
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #mainContent > header#case-details-page-header > div > div:last-child > .relative {
+            display: flex !important;
+            align-items: center !important;
+            align-self: center !important;
+            line-height: 1 !important;
+            margin-right: .5rem !important;
+        }
+        html body.portal-ui #mainContent > header#case-details-page-header button[aria-label="Notifications"] {
+            box-sizing: border-box !important;
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+            background: var(--mswdo-profile, #BC0202) !important;
+            border: 1px solid #8f0202 !important;
+            box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+            color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            position: relative !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+        html body.portal-ui #mainContent > header#case-details-page-header button[aria-label="Notifications"]:hover {
+            background: #8f0202 !important;
+        }
+        html body.portal-ui #mainContent > header#case-details-page-header button[aria-label="Notifications"] > i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 1.05rem !important;
+            line-height: 1 !important;
+            color: #ffffff !important;
+        }
+        html body.portal-ui #mainContent > header#case-details-page-header #notifications-unread-count {
+            position: absolute !important;
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+            min-width: 1.25rem !important;
+            top: -.25rem !important;
+            right: -.25rem !important;
+            padding: 0 !important;
+            font-size: .75rem !important;
+            line-height: 1 !important;
+            background-color: #eab308 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            border: 2px solid #C41E3A !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .2) !important;
+        }
+    }
+</style>
+@endif
 @if(auth()->user()?->isDepartmentAdmin())
 <style>
     @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {

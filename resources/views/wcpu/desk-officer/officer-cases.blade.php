@@ -2037,6 +2037,14 @@
         #desk-officer-cases-content .cases-reference-pagination {
             display: none !important;
         }
+        @media (min-width: 80.0625rem) {
+            #desk-officer-cases-content.barangay-case-actions-page .cases-card-pagination {
+                display: none !important;
+            }
+            #desk-officer-cases-content.barangay-case-actions-page .cases-reference-pagination {
+                display: block !important;
+            }
+        }
         @media (min-width: 48rem) and (max-width: 80rem) {
             #desk-officer-cases-content .cases-card-pagination {
                 display: none !important;
