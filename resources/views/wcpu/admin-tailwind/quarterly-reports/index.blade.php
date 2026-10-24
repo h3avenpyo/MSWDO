@@ -910,7 +910,11 @@ document.getElementById('generateQuarterlyReportForm')?.addEventListener('submit
                 confirmButtonColor: '#7c3aed',
             });
         });
+        return;
     }
+    queueMicrotask(() => {
+        if (!event.defaultPrevented) this.closest('dialog')?.close();
+    });
 });
 @endif
 

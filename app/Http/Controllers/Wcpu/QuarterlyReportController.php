@@ -11,6 +11,7 @@ use App\Models\Wcpu\Barangay;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
@@ -307,7 +308,7 @@ class QuarterlyReportController extends Controller
         // Get barangay
         $isAdmin = strtolower($user->position) === 'administrator';
         if ($isAdmin) {
-            $request->validate(['barangay_id' => 'required|exists:barangays,id', 'type' => 'required|in:VAWC,BCPC']);
+            $request->validate(['barangay_id' => ['required', Rule::exists(Barangay::class, 'id')], 'type' => 'required|in:VAWC,BCPC']);
             $barangay = Barangay::findOrFail($request->barangay_id);
         } else {
             $barangay = Barangay::where('id', $user->barangay)
@@ -1019,7 +1020,7 @@ class QuarterlyReportController extends Controller
     {
         abort_unless($request->user()->isBcpcAdmin(), 403);
         $validated = $request->validate([
-            'barangay_id' => 'required|exists:barangays,id',
+            'barangay_id' => ['required', Rule::exists(Barangay::class, 'id')],
             'quarter' => 'required|integer|between:1,4',
             'year' => 'required|integer|between:2020,2100',
         ]);

@@ -657,13 +657,13 @@
                                     title="{{ $editDisabledTitle }}" data-id="{{ $referral->id }}">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                @if(auth()->user()->isDepartmentAdmin())
-<button type="button" class="{{ $matchReportTable ? 'archive-referral-btn inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border border-red-200 px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'archive-referral-btn inline-flex items-center justify-center px-3 py-1.5 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 rounded-lg text-xs font-medium transition-colors' }}" title="Archive" data-id="{{ $referral->id }}"><i class="fas fa-archive"></i><span class="sr-only">Archive</span></button>
-@endif
                                 <a href="{{ route('admin.referrals.print', $referral->id) }}"
                                     class="print-referral-btn {{ $matchReportTable ? 'inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'inline-flex items-center justify-center px-3 py-1.5 bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 rounded-lg text-xs font-medium transition-colors' }}" title="Print">
                                     <i class="fas fa-print"></i>
                                 </a>
+                                @if(auth()->user()->isDepartmentAdmin())
+<button type="button" class="{{ $matchReportTable ? 'archive-referral-btn inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border border-red-200 px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'archive-referral-btn inline-flex items-center justify-center px-3 py-1.5 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 rounded-lg text-xs font-medium transition-colors' }}" title="Archive" data-id="{{ $referral->id }}"><i class="fas fa-archive"></i><span class="sr-only">Archive</span></button>
+@endif
                             </div>
                         </td>
                     </tr>
@@ -824,14 +824,14 @@
                         <i class="fas fa-edit"></i>
                         Edit
                     </button>
-                    @if(auth()->user()->isDepartmentAdmin())
-<button type="button" class="archive-referral-btn p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Archive" data-id="{{ $referral->id }}"><i class="fas fa-archive"></i><span class="sr-only">Archive</span></button>
-@endif
                                 <a href="{{ route('admin.referrals.print', $referral->id) }}"
                         class="print-referral-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
                         <i class="fas fa-print"></i>
                         Print
                     </a>
+                    @if(auth()->user()->isDepartmentAdmin())
+<button type="button" class="archive-referral-btn p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Archive" data-id="{{ $referral->id }}"><i class="fas fa-archive"></i><span class="sr-only">Archive</span></button>
+@endif
                 </div>
             </div>
             @empty

@@ -1643,6 +1643,23 @@
             localStorage.setItem(sidebarStateKey, 'true');
         }
 
+        @if(auth()->user()?->isDepartmentAdmin())
+        sidebar?.addEventListener('click', function(event) {
+            if (!window.matchMedia('(min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait)').matches) return;
+            const link = event.target.closest('a[href]');
+            if (link && new URL(link.href, location.origin).pathname === new URL(@json(route('admin.bcpc-case-monitoring.archived')), location.origin).pathname) {
+                if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+                if (sidebar.classList.contains('sidebar-collapsed')) return;
+                event.preventDefault();
+                const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                sidebar.style.setProperty('max-width', '18rem', 'important');
+                sidebar.style.setProperty('transition', reducedMotion ? 'none' : 'width .3s ease', 'important');
+                collapseSidebar();
+                window.setTimeout(() => location.assign(link.href), reducedMotion ? 0 : 300);
+            }
+        }, true);
+        @endif
+
         @if(auth()->user()?->isDepartmentAdmin() && (request()->routeIs('admin-dashboard', 'case-profiles.index', 'cases.show', 'admin-barangay-cases', 'admin.barangay-cases.show', 'admin-add-new-case', 'admin.users.index', 'admin.users.create', 'admin.users.logs', 'admin.referrals', 'admin.referrals.index', 'admin.referral-info.index', 'admin.quarterly-reports.index', 'admin.quarterly-reports.show', 'admin.quarterly-reports.edit', 'admin.calendar.index', 'admin.referrals.archived', 'admin.users.archived', 'admin.bcpc-case-monitoring.archived') || (request()->routeIs('admin.bcpc-case-monitoring.edit') && !request()->has('add')) || (request()->routeIs('admin.quarterly-reports.archived') && in_array(request('section'), ['barangay-cases', 'quarterly'], true))))
         sidebar?.addEventListener('click', function(event) {
             if (!window.matchMedia('(min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape)').matches) return;

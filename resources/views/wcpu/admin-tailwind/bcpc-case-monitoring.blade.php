@@ -21,6 +21,12 @@
 @endif
 <style>
     @if(auth()->user()?->isDepartmentAdmin())
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        #bcpc-monitoring-primary-actions { justify-content: flex-end; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+        #bcpc-monitoring-primary-actions { justify-content: flex-end; }
+    }
     @media (max-width: 47.9375rem) {
         html body.portal-ui #bcpc-monitoring-pagination .monitoring-legacy-pagination { display: none !important; }
         html body.portal-ui #bcpc-monitoring-pagination .monitoring-tablet-pagination { display: block !important; background: #fff; }
